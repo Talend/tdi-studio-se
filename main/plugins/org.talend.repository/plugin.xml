@@ -1603,6 +1603,14 @@
               name="Change MSSQL DBVersion"
               version="6.3.0">
         </projecttask>
+         <projecttask
+              beforeLogon="false"
+              breaks="7.3.0"
+              class="org.talend.repository.model.migration.ChangeMSSQLDBDefaultVersionMigrationTask"
+              id="org.talend.repository.model.migration.ChangeMSSQLDBDefaultVersionMigrationTask"
+              name="Change MSSQL Default DBVersion"
+              version="7.3.1">
+        </projecttask>
         <projecttask
               beforeLogon="false"
               breaks="5.1.1"
@@ -3347,7 +3355,7 @@
              name="ChangeDefaultLoadMethod4tSynapseBulkExec"
              version="7.3.1">
        </projecttask>
-        <projecttask
+       <projecttask
               beforeLogon="false"
               breaks="7.3.0"
               class="org.talend.repository.model.migration.CreateContextLinkMigrationTask"
@@ -3356,6 +3364,15 @@
               name="CreateContextLinkMigrationTask"
               version="7.3.1">
        </projecttask>
+       <projecttask
+              beforeLogon="false"
+              breaks="7.3.0"
+              class="org.talend.repository.model.migration.ChangeDefaultDriverForMSSqlMigrationTask"
+              description="Change default value of driver list in MSSql components"
+              id="org.talend.repository.model.migration.ChangeDefaultDriverForMSSqlMigrationTask"
+              name="ChangeDefaultDriverForMSSqlMigrationTask"
+              version="7.3.1">
+        </projecttask>
    </extension>
 
    <extension

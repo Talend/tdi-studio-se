@@ -106,6 +106,8 @@ public final class Expression {
         }
     }
 
+    private static final String CONTAINS = "CONTAINS"; //$NON-NLS-1$
+
     private Expression(String expressionString) {
         this.expressionString = expressionString;
     }
@@ -304,6 +306,10 @@ public final class Expression {
         }
         if ((simpleExpression.contains("SPARK_VERSION["))) { //$NON-NLS-1$
             return evaluateSparkVersion(simpleExpression, listParam, currentParam);
+        }
+        
+        if ((simpleExpression.contains(CONTAINS))) { //$NON-NLS-1$
+            return evaluateContains(simpleExpression, listParam);
         }
 
         List<String> paraNames = getParaNamesFromIsShowFunc(simpleExpression);
@@ -1063,5 +1069,28 @@ public final class Expression {
         }
         return false;
     }
+    
+    public static boolean evaluateContains(String simpleExpression, List<? extends IElementParameter> listParam) {
+        //Split to get param name and param value to look after
+        String[] splitted = simpleExpression.split(CONTAINS);
+        if (splitted.length != 2) {
+            return false;
+        }
+        String paramName = splitted[0].trim();
+        String paramValue = splitted[1].trim();
+        
+        //Look for the param name in list
+        IElementParameter param = listParam.stream()
+                .filter(p -> paramName.equals(p.getName()))
+                .findAny()
+                .orElse(null);
+        if (param == null || ! EParameterFieldType.TABLE.equals(param.getFieldType())) {
+            return false;
+        }
+        
+        // Check if we can find paraValue among table lines
+        return ((List<Map<String, Object>>) param.getValue()).stream()
+                .anyMatch(line -> paramValue.equals(line.toString()));
+    }    
 
 }

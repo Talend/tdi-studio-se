@@ -178,16 +178,41 @@
 	}
 	
 	if((codePart.equals(ECodePart.MAIN))&&(stat || logstashCurrent)&&connSet.size()>0){
+		INode jobStructureCatcher = jobCatcherNodes.get(0);//about performance monitor, no way to support more than one job catcher component, also that is not necessary
+		String subprocessName4Catcher = jobStructureCatcher.getDesignSubjobStartNode().getUniqueName();
+	
 		if(!node.getComponent().useMerge()) {
 			if(stat && logstashCurrent) {
 			%>
-			runStat.updateStatAndLog(execStat,enableLogStash,iterateId,1,1<%for(IConnection con : connSet){%>,"<%=con.getUniqueName()%>"<%}%>);
+			if(runStat.update(execStat,enableLogStash,iterateId,1,1
+				<%for(IConnection con : connSet){
+					INode source = con.getSource();
+					String sourceNodeId = source.getUniqueName();
+					
+					String sourceLabel = ElementParameterParser.getValue(source, "__LABEL__");
+					String sourceNodeLabel = ((sourceLabel==null || "__UNIQUE_NAME__".equals(sourceLabel) || sourceLabel.contains("\"")) ? sourceNodeId : sourceLabel);
+					
+					String targetLabel = ElementParameterParser.getValue(node, "__LABEL__");
+					String targetNodeLabel = ((targetLabel==null || "__UNIQUE_NAME__".equals(targetLabel) || targetLabel.contains("\"")) ? node.getUniqueName() : targetLabel);
+					
+					String sourceNodeComponent = source.getComponent().getName();
+				%>
+					,"<%=con.getUniqueName()%>","<%=sourceNodeId%>","<%=sourceNodeLabel%>","<%=sourceNodeComponent%>","<%=node.getUniqueName()%>","<%=targetNodeLabel%>","<%=node.getComponent().getName()%>"
+				<%}%>
+			)) {
+				<%=subprocessName4Catcher %>Process(globalMap);
+			}
 			<%
 			} else {
 				if(stat) {
 					%>
 					if(execStat){
-						runStat.updateStatOnConnection(iterateId,1,1<%for(IConnection con : connSet){%>,"<%=con.getUniqueName()%>"<%}%>);
+						runStat.updateStatOnConnection(iterateId,1,1
+						<%for(IConnection con : connSet){
+						%>
+							,"<%=con.getUniqueName()%>"
+						<%}%>
+						);
 					}
 					<%
 				}
@@ -195,7 +220,24 @@
 				if(logstashCurrent) {
 					%>
 					if(enableLogStash) {
-						runStat.log(iterateId,1,1<%for(IConnection con : connSet){%>,"<%=con.getUniqueName()%>"<%}%>);
+						if(runStat.updateLog(iterateId,1,1
+						<%for(IConnection con : connSet){
+							INode source = con.getSource();
+							String sourceNodeId = source.getUniqueName();
+							
+							String sourceLabel = ElementParameterParser.getValue(source, "__LABEL__");
+							String sourceNodeLabel = ((sourceLabel==null || "__UNIQUE_NAME__".equals(sourceLabel) || sourceLabel.contains("\"")) ? sourceNodeId : sourceLabel);
+							
+							String targetLabel = ElementParameterParser.getValue(node, "__LABEL__");
+							String targetNodeLabel = ((targetLabel==null || "__UNIQUE_NAME__".equals(targetLabel) || targetLabel.contains("\"")) ? node.getUniqueName() : targetLabel);
+							
+							String sourceNodeComponent = source.getComponent().getName();
+						%>
+							,"<%=con.getUniqueName()%>","<%=sourceNodeId%>","<%=sourceNodeLabel%>","<%=sourceNodeComponent%>","<%=node.getUniqueName()%>","<%=targetNodeLabel%>","<%=node.getComponent().getName()%>"
+						<%}%>
+						)) {
+							<%=subprocessName4Catcher %>Process(globalMap);
+						}
 					}
 					<%
 				}
@@ -205,18 +247,62 @@
 				if(connection.getUniqueName().equals((String)codeGenArgument.getIncomingName())){
 					if(stat && logstashCurrent) {
 					%>
-					runStat.updateStatAndLog(execStat,enableLogStash,iterateId,1,1<%for(IConnection con : connSet){if(con.getUniqueName().equals((String)codeGenArgument.getIncomingName())){%>,"<%=con.getUniqueName()%>"<%}}%>);
+					if(runStat.update(execStat,enableLogStash,iterateId,1,1
+						<%for(IConnection con : connSet){
+							INode source = con.getSource();
+							String sourceNodeId = source.getUniqueName();
+							
+							String sourceLabel = ElementParameterParser.getValue(source, "__LABEL__");
+							String sourceNodeLabel = ((sourceLabel==null || "__UNIQUE_NAME__".equals(sourceLabel) || sourceLabel.contains("\"")) ? sourceNodeId : sourceLabel);
+							
+							String targetLabel = ElementParameterParser.getValue(node, "__LABEL__");
+							String targetNodeLabel = ((targetLabel==null || "__UNIQUE_NAME__".equals(targetLabel) || targetLabel.contains("\"")) ? node.getUniqueName() : targetLabel);
+							
+							String sourceNodeComponent = source.getComponent().getName();
+							
+							if(con.getUniqueName().equals((String)codeGenArgument.getIncomingName())){%>
+							,"<%=con.getUniqueName()%>","<%=sourceNodeId%>","<%=sourceNodeLabel%>","<%=sourceNodeComponent%>","<%=node.getUniqueName()%>","<%=targetNodeLabel%>","<%=node.getComponent().getName()%>"
+							<%}
+						}%>
+					)) {
+						<%=subprocessName4Catcher %>Process(globalMap);
+					}
 					<%
 					} else {
 						if(stat) {%>
 						if(execStat){
-							runStat.updateStatOnConnection(iterateId,1,1<%for(IConnection con : connSet){if(con.getUniqueName().equals((String)codeGenArgument.getIncomingName())){%>,"<%=con.getUniqueName()%>"<%}}%>);
+							runStat.updateStatOnConnection(iterateId,1,1
+								<%for(IConnection con : connSet){
+									if(con.getUniqueName().equals((String)codeGenArgument.getIncomingName())){%>
+									,"<%=con.getUniqueName()%>"
+									<%}
+								}%>
+							);
 						}
 						<%}
 						
 						if(logstashCurrent) {%>
 						if(enableLogStash) {
-							runStat.log(iterateId,1,1<%for(IConnection con : connSet){if(con.getUniqueName().equals((String)codeGenArgument.getIncomingName())){%>,"<%=con.getUniqueName()%>"<%}}%>);
+							if(runStat.updateLog(iterateId,1,1
+								<%for(IConnection con : connSet){
+									INode source = con.getSource();
+									String sourceNodeId = source.getUniqueName();
+									
+									String sourceLabel = ElementParameterParser.getValue(source, "__LABEL__");
+									String sourceNodeLabel = ((sourceLabel==null || "__UNIQUE_NAME__".equals(sourceLabel) || sourceLabel.contains("\"")) ? sourceNodeId : sourceLabel);
+									
+									String targetLabel = ElementParameterParser.getValue(node, "__LABEL__");
+									String targetNodeLabel = ((targetLabel==null || "__UNIQUE_NAME__".equals(targetLabel) || targetLabel.contains("\"")) ? node.getUniqueName() : targetLabel);
+							
+									String sourceNodeComponent = source.getComponent().getName();
+							
+									if(con.getUniqueName().equals((String)codeGenArgument.getIncomingName())){%>
+									,"<%=con.getUniqueName()%>","<%=sourceNodeId%>","<%=sourceNodeLabel%>","<%=sourceNodeComponent%>","<%=node.getUniqueName()%>","<%=targetNodeLabel%>","<%=node.getComponent().getName()%>"
+									<%}
+								}%>
+							)) {
+								<%=subprocessName4Catcher %>Process(globalMap);
+							}
 						}
 						<%}
 					}
@@ -248,9 +334,11 @@
 		
 		if(logstashCurrent) {
 			for (INode jobStructureCatcher : jobCatcherNodes) {
+				String label = ElementParameterParser.getValue(node, "__LABEL__");
+				String nodeLabel = ((label==null || "__UNIQUE_NAME__".equals(label) || label.contains("\"")) ? node.getUniqueName() : label);
 			%>
 			if(enableLogStash) {
-				<%=jobStructureCatcher.getUniqueName() %>.addCM("<%=node.getUniqueName()%>", "<%=node.getComponent().getName()%>");
+				<%=jobStructureCatcher.getUniqueName() %>.addCM("<%=node.getUniqueName()%>", "<%=nodeLabel%>", "<%=node.getComponent().getName()%>");
 				<%=jobStructureCatcher.getDesignSubjobStartNode().getUniqueName() %>Process(globalMap);
 			}
 			<%

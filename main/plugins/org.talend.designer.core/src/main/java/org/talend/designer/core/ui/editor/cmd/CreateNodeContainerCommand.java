@@ -26,6 +26,7 @@ import org.talend.core.model.update.extension.UpdateManagerProviderDetector;
 import org.talend.core.ui.process.IGraphicalNode;
 import org.talend.designer.core.i18n.Messages;
 import org.talend.designer.core.model.components.EParameterName;
+import org.talend.designer.core.model.components.StitchPseudoComponent;
 import org.talend.designer.core.model.process.AbstractProcessProvider;
 import org.talend.designer.core.ui.AbstractMultiPageTalendEditor;
 import org.talend.designer.core.ui.editor.AbstractTalendEditor;
@@ -60,6 +61,10 @@ public class CreateNodeContainerCommand extends CreateCommand {
     @SuppressWarnings("unchecked")
     @Override
     public boolean canExecute() {
+        if (nodeContainer.getNode().getComponent() instanceof StitchPseudoComponent) {
+            return false;
+        }
+
         for (IGraphicalNode currentNode : (List<IGraphicalNode>) process.getGraphicalNodes()) {
             if ((currentNode.getLocation().x == location.x) && (currentNode.getLocation().y == location.y)) {
                 return false;

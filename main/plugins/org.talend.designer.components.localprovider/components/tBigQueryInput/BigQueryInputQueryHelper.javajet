@@ -46,10 +46,8 @@ class BigQueryUtil_<%=cid%> {
 		config.setDryRun(true);
 		<%=basePackage%>com.google.api.services.bigquery.model.Job job = new <%=basePackage%>com.google.api.services.bigquery.model.Job();
 		job.setConfiguration(config);
-		List<<%=basePackage%>com.google.api.services.bigquery.model.TableReference> referencedTables = bigqueryclient.jobs().insert(projectId, job).execute().getStatistics().getQuery().getReferencedTables();
-		if(referencedTables != null && !referencedTables.isEmpty()) {
-			location = bigqueryclient.tables().get(referencedTables.get(0).getProjectId(), referencedTables.get(0).getDatasetId(), referencedTables.get(0).getTableId()).execute().getLocation();
-		}
+		location = bigqueryclient.jobs().insert(projectId, job).execute().getJobReference().getLocation();
+		location = location == null ? "US" : location;
 		return location;
 	}
 

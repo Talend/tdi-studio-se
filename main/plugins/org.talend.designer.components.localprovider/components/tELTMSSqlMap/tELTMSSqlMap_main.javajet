@@ -25,7 +25,7 @@
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	
-    org.talend.designer.dbmap.language.generation.GenericDbGenerationManager gm = new org.talend.designer.dbmap.language.generation.GenericDbGenerationManager();
+    org.talend.designer.dbmap.language.mssql.MssqlGenerationManager gm = new org.talend.designer.dbmap.language.mssql.MssqlGenerationManager();
     String uniqueNameComponent = null;
     IDbLanguage currentLanguage = gm.getLanguage();
 

@@ -145,8 +145,11 @@ skeleton="../templates/db_output_bulk.skeleton"
 	boolean jsonMode = !dynamoDBMode && "JSON".equals(importType);
 	boolean avroMode = !dynamoDBMode && "AVRO".equals(importType);
 	boolean fixedwidthMode = !dynamoDBMode && "FIXEDWIDTH".equals(importType);
+	
+	String redshiftTracker = org.talend.core.utils.TrackerUtil.getRedshiftTracker();
 %>
 	StringBuilder command_<%=cid%> = new StringBuilder();
+	command_<%=cid%>.append("<%=redshiftTracker%> ").append('\n');
 <%
 	if(delimitedOrCsvMode) {
 %>

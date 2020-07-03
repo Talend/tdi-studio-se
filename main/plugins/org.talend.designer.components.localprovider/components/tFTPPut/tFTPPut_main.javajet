@@ -158,9 +158,9 @@ try{
                 }
             }else{
                 <%if(isLog4jEnabled){%>
-                    log.error("<%=cid%> - No match file exist!");
+                    log.warn("<%=cid%> - No matches found for mask '" + key<%=cid %> + "'!");
                 <%}%>
-                System.err.println("No match file exist!");
+                System.err.println("No matches found for mask '" + key<%=cid %> + "'!");
             }
 
             //do rename
@@ -185,125 +185,14 @@ try{
             }
         }
 
-
 <%
-    }else if (!ftps) { // *** ftp *** //
-%>
-
-        String currentStatus_<%=cid %> = "No file transfered.";
-        java.util.Set<String> keySet<%=cid %> = map<%=cid %>.keySet();
-        for (String key<%=cid %> : keySet<%=cid %>){
-            if(key<%=cid %> == null || "".equals(key<%=cid%>)){
-                System.err.println("file name invalid!");
-                <%if(isLog4jEnabled){%>
-                    log.error("<%=cid%> - file name invalid!");
-                <%}%>
-                continue;
-            }
-            String tempdir<%=cid %> =  localdir<%=cid %>;
-            String filemask<%=cid %> = key<%=cid %>;
-            String dir<%=cid %> = null;
-            <%if(!useGlob) {//perl5 mode not support windows(\) path separator at the mask string%>
-                String mask<%=cid %> = filemask<%=cid %>.replaceAll("\\\\", "/") ;
-            <%} else {%>
-                String mask<%=cid %> = filemask<%=cid%>;
-            <%}%>
-            int i<%=cid %> = mask<%=cid %>.lastIndexOf('/');
-            if (i<%=cid %>!=-1){
-                dir<%=cid %> = mask<%=cid %>.substring(0, i<%=cid %>);
-                mask<%=cid %> = mask<%=cid %>.substring(i<%=cid %>+1);
-            }
-            if (dir<%=cid %>!=null && !"".equals(dir<%=cid %>)){
-                tempdir<%=cid %> = tempdir<%=cid %> + "/" + dir<%=cid %>;
-            }
-            <%if(!useGlob) {%>
-                mask<%=cid %> = mask<%=cid %>.replaceAll("\\.", "\\\\.").replaceAll("\\*", ".*");
-            <%}%>
-            final String finalMask<%=cid %> = mask<%=cid %>;
-            java.io.File[] listings<%=cid %> = null;
-            java.io.File file<%=cid %> = new java.io.File(tempdir<%=cid %>);
-            if (file<%=cid %>.isDirectory()) {
-                listings<%=cid %> = file<%=cid %>.listFiles(new java.io.FileFilter() {
-                    public boolean accept(java.io.File pathname) {
-                        boolean result = false;
-                        if (pathname != null && pathname.isFile()) {
-                                result = java.util.regex.Pattern.compile(finalMask<%=cid %>).matcher(pathname.getName()).find();
-                            }
-                        return result;
-                        }
-                    });
-            }
-            if(listings<%=cid %> != null && listings<%=cid %>.length > 0){
-                for (int m<%=cid %> = 0; m<%=cid %> < listings<%=cid %>.length; m<%=cid %>++){
-                            java.io.File file_in_localDir = listings<%=cid %>[m<%=cid %>];
-                            String uploadingFileName_<%= cid %> = file_in_localDir.getName();
-                    String newFileName_<%= cid %> = map<%=cid %>.get(key<%=cid %>);
-                    String newName_<%=cid%> = ("".equals(newFileName_<%= cid %>)) ? uploadingFileName_<%= cid %> : newFileName_<%= cid %>;
-                    boolean targetFileExistsOnRemoteServer_<%= cid %> = false;
-                    try{
-                        if (uploadingFileName_<%= cid %>.matches(mask<%=cid %>)){
-                            <%
-                            if(("never".equals(overwrite) || "size_differ".equals(overwrite)) && !append){
-                            %>
-                               targetFileExistsOnRemoteServer_<%= cid %> = ftp_<%= cid %>.existsFile(newName_<%= cid %>);
-                               globalMap.put("<%=cid %>_CURRENT_FILE_EXISTS", targetFileExistsOnRemoteServer_<%= cid %>);
-                            <%
-                            }
-                             %>
-                            <%if(append){%>
-                                ftp_<%=cid %>.put(tempdir<%=cid %> + "/" + uploadingFileName_<%= cid %>, newName_<%= cid %>, true);
-                            <%}else if(("never").equals(overwrite)){%>
-                            if(!targetFileExistsOnRemoteServer_<%= cid %>){
-                                ftp_<%=cid %>.put(tempdir<%=cid %> + "/" + uploadingFileName_<%= cid %>, newName_<%=cid%>);
-                            }
-                            <%}else if(("always").equals(overwrite)){%>
-                                ftp_<%=cid %>.put(tempdir<%=cid %> + "/" + uploadingFileName_<%= cid %>, newName_<%=cid%>);
-                            <%}else if(("size_differ").equals(overwrite)){%>
-                                if (targetFileExistsOnRemoteServer_<%= cid %>){
-                                    com.enterprisedt.net.ftp.FTPFile ftpfile<%=cid%>=ftp_<%=cid%>.fileDetails(newName_<%=cid%>);
-                                    long ftpSize<%=cid%>=ftpfile<%=cid%>.size();
-                                    long localSize<%=cid%>=file_in_localDir.length();
-                                    if(ftpSize<%=cid%> != localSize<%=cid%>){
-                                        ftp_<%=cid %>.put(tempdir<%=cid %> + "/" + uploadingFileName_<%= cid %>, newName_<%=cid%>);
-                                    }
-                                }else{
-                                    ftp_<%=cid %>.put(tempdir<%=cid %> + "/" + uploadingFileName_<%= cid %>, newName_<%=cid%>);
-                                }
-                            <%}%>
-
-                            currentStatus_<%=cid %> = "File rename OK.";
-                            msg_<%=cid%>.add("file: " + file_in_localDir.getAbsolutePath() + ", size: "
-                                            + file_in_localDir.length() + " bytes upload successfully");
-                            <%if(isLog4jEnabled){%>
-                                log.debug("<%=cid%> - Uploaded file '" + uploadingFileName_<%= cid %> + "' successfully.");
-                            <%}%>
-
-                            nb_file_<%=cid%>++;
-                        }
-                    }catch(com.enterprisedt.net.ftp.FTPException e_<%=cid%>){
-
-                        msg_<%=cid%>.add("file " + file_in_localDir.getAbsolutePath() + " not found?");
-
-                        currentStatus_<%=cid %> = "File rename fail.";
-                        globalMap.put("<%=cid %>_CURRENT_FILE_EXISTS", targetFileExistsOnRemoteServer_<%= cid %>);
-                        throw e_<%=cid%>;
-                    }
-                }
-            }else{
-                <%if(isLog4jEnabled){%>
-                    log.warn("<%=cid%> - No match file exist!");
-                <%}%>
-                System.err.println("No match file exist!");
-            }
-
+    } else {// *** ftp+ ftps *** //
+        if (!ftps) {
+            ftpsoverwrite = overwrite; //to avoid migration, different dropdowns with same purpose
         }
-        globalMap.put("<%=cid %>_CURRENT_STATUS", currentStatus_<%=cid %>);
-
-<%
-    } else {// *** ftps *** //
 %>
         String currentStatus_<%=cid %> = "No file transfered.";
-        globalMap.put("<%=cid %>_CURRENT_STATUS", "No file transfered.");
+        globalMap.put("<%=cid %>_CURRENT_STATUS", currentStatus_<%=cid %>);
         java.util.Set<String> keySet<%=cid %> = map<%=cid %>.keySet();
         boolean needRename_<%=cid%> = false;
         for (String key<%=cid %> : keySet<%=cid %>){
@@ -368,17 +257,43 @@ try{
                         java.io.FileInputStream file_stream_<%=cid %> = new java.io.FileInputStream(file_in_localDir_<%=cid%>);
                         globalMap.put("<%=cid %>_CURRENT_FILE_EXISTS", remoteExistsFiles_<%=cid%>.contains(file_in_localDir_<%=cid%>.getName()));
                         String newName_<%=cid%> = ("".equals(map<%=cid %>.get(key<%=cid %>)))?file_in_localDir_<%=cid%>.getName():map<%=cid %>.get(key<%=cid %>);
-                        <%if("never".equals(ftpsoverwrite)){%>
+                        needRename_<%=cid%> = true;
+<%
+                        if (!ftps && append) {
+%>
+                            if ((remoteExistsFiles_<%=cid%>.contains(newName_<%=cid%>))){
+                                ftp_<%=cid %>.appendFile(file_in_localDir_<%=cid%>.getName(), file_stream_<%=cid %>);
+                            } else {
+                                ftp_<%=cid %>.storeFile(file_in_localDir_<%=cid%>.getName(), file_stream_<%=cid %>);
+                            }
+                                <%if(isLog4jEnabled){%>
+                                    log.debug("<%=cid%> - Uploaded file '" + newName_<%=cid%> + "' successfully.");
+                                <%}%>
+                                globalMap.put("<%=cid %>_CURRENT_FILE_EXISTS", remoteExistsFiles_<%=cid%>.contains(newName_<%=cid%>));
+<%
+                        } else if ("size_differ".equals(ftpsoverwrite)) {
+%>
+                            if ((remoteExistsFiles_<%=cid%>.contains(newName_<%=cid%>))){
+                                long ftpSize = java.util.Arrays.stream(ftp_<%=cid %>.listFiles(newName_<%=cid%>)).filter(org.apache.commons.net.ftp.FTPFile::isFile).findFirst().get().getSize();
+                                long localSize = file_in_localDir_<%=cid%>.length();
+                                if (ftpSize != localSize) {
+                                    ftp_<%=cid %>.deleteFile(newName_<%=cid%>);
+                                }
+                            } 
+                            ftp_<%=cid %>.storeFile(file_in_localDir_<%=cid%>.getName(), file_stream_<%=cid %>);
+<%
+                        } else if("never".equals(ftpsoverwrite)){
+%>
                             if (!(remoteExistsFiles_<%=cid%>.contains(newName_<%=cid%>))){
-                                needRename_<%=cid%> = true;
                                 ftp_<%=cid %>.storeFile(file_in_localDir_<%=cid%>.getName(), file_stream_<%=cid %>);
                                 <%if(isLog4jEnabled){%>
                                     log.debug("<%=cid%> - Uploaded file '" + newName_<%=cid%> + "' successfully.");
                                 <%}%>
                                 globalMap.put("<%=cid %>_CURRENT_FILE_EXISTS", remoteExistsFiles_<%=cid%>.contains(newName_<%=cid%>));
+                            } else {
+                                needRename_<%=cid %> = false;
                             }
                         <%}else if("always".equals(ftpsoverwrite)){%>
-                            needRename_<%=cid%> = true;
                             if ((remoteExistsFiles_<%=cid%>.contains(newName_<%=cid%>))){
                                 ftp_<%=cid %>.deleteFile(newName_<%=cid%>);
                             }
@@ -391,14 +306,22 @@ try{
 
                         <%}%>
                         file_stream_<%=cid %>.close();
+<%
+                        if (!ftps) {
+%>
+                            msg_<%=cid%>.add("file: " + file_in_localDir_<%=cid%>.getAbsolutePath() + ", size: "
+                                            + file_in_localDir_<%=cid%>.length() + " bytes upload successfully");
+<%
+                        }
+%>
                         nb_file_<%=cid%>++;
                     }
                 }
             }else{
                 <%if(isLog4jEnabled){%>
-                    log.error("<%=cid%> - No match file exist!");
+                    log.warn("<%=cid%> - No matches found for mask '" + key<%=cid %> + "'!");
                 <%}%>
-                System.err.println("No match file exist!");
+                System.err.println("No matches found for mask '" + key<%=cid %> + "'!");
             }
 
             //do rename
@@ -418,6 +341,12 @@ try{
  <%}%>
     }catch(java.lang.Exception e_<%=cid%>){
 <%
+        if (!ftps) {
+%>
+            msg_<%=cid%>.add("file not found?: " + e_<%=cid%>.getMessage());
+<%
+        
+}
         if(("true").equals(dieOnError)){
 %>
             throw(e_<%=cid%>);

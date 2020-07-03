@@ -86,11 +86,18 @@ if((codePart.equals(ECodePart.END))&&(stat || logstashCurrent)){
 			for(IConnection con:connSet){
 		  		INode source = con.getSource();
 				String sourceNodeId = source.getUniqueName();
+				
+				String sourceLabel = ElementParameterParser.getValue(source, "__LABEL__");
+				String sourceNodeLabel = ((sourceLabel==null || "__UNIQUE_NAME__".equals(sourceLabel) || sourceLabel.contains("\"")) ? sourceNodeId : sourceLabel);
+				
+				String targetLabel = ElementParameterParser.getValue(node, "__LABEL__");
+				String targetNodeLabel = ((targetLabel==null || "__UNIQUE_NAME__".equals(targetLabel) || targetLabel.contains("\"")) ? node.getUniqueName() : targetLabel);
+				
 				String sourceNodeComponent = source.getComponent().getName();
 	 			for (INode jobStructureCatcher : jobCatcherNodes) {
 	 			%>
 			 		if(runStat.updateStatAndLog(execStat,enableLogStash,resourceMap,iterateId,"<%=con.getUniqueName()%>",2,0,
-			 			<%=jobStructureCatcher.getUniqueName()%>,"<%=sourceNodeId%>","<%=sourceNodeComponent%>","<%=node.getUniqueName()%>","<%=node.getComponent().getName()%>","<%="REJECT".equals(con.getConnectorName()) ? "reject" : "output"%>")) {
+			 			"<%=sourceNodeId%>","<%=sourceNodeLabel%>","<%=sourceNodeComponent%>","<%=node.getUniqueName()%>","<%=targetNodeLabel%>","<%=node.getComponent().getName()%>","<%="REJECT".equals(con.getConnectorName()) ? "reject" : "output"%>")) {
 						<%=jobStructureCatcher.getDesignSubjobStartNode().getUniqueName() %>Process(globalMap);
 					}
 				<%
@@ -113,11 +120,18 @@ if((codePart.equals(ECodePart.END))&&(stat || logstashCurrent)){
 			  	for(IConnection con:connSet){
 			  		INode source = con.getSource();
 					String sourceNodeId = source.getUniqueName();
+					
+					String sourceLabel = ElementParameterParser.getValue(source, "__LABEL__");
+					String sourceNodeLabel = ((sourceLabel==null || "__UNIQUE_NAME__".equals(sourceLabel) || sourceLabel.contains("\"")) ? sourceNodeId : sourceLabel);
+					
+					String targetLabel = ElementParameterParser.getValue(node, "__LABEL__");
+					String targetNodeLabel = ((targetLabel==null || "__UNIQUE_NAME__".equals(targetLabel) || targetLabel.contains("\"")) ? node.getUniqueName() : targetLabel);
+					
 					String sourceNodeComponent = source.getComponent().getName();
 		 			for (INode jobStructureCatcher : jobCatcherNodes) {
 		 			%>
 				 		if(runStat.log(resourceMap,iterateId,"<%=con.getUniqueName()%>",2,0,
-				 			<%=jobStructureCatcher.getUniqueName()%>,"<%=sourceNodeId%>","<%=sourceNodeComponent%>","<%=node.getUniqueName()%>","<%=node.getComponent().getName()%>","<%="REJECT".equals(con.getConnectorName()) ? "reject" : "output"%>")) {
+				 			"<%=sourceNodeId%>","<%=sourceNodeLabel%>","<%=sourceNodeComponent%>","<%=node.getUniqueName()%>","<%=targetNodeLabel%>","<%=node.getComponent().getName()%>","<%="REJECT".equals(con.getConnectorName()) ? "reject" : "output"%>")) {
 							<%=jobStructureCatcher.getDesignSubjobStartNode().getUniqueName() %>Process(globalMap);
 						}
 					<%

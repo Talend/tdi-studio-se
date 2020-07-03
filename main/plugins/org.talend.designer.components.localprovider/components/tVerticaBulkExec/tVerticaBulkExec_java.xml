@@ -210,29 +210,11 @@
     >
       <DEFAULT>""</DEFAULT>
     </PARAMETER>
-    
-    <PARAMETER
-      NAME="USE_EXISTING_DYNAMIC"
-      FIELD="CHECK"
-      NUM_ROW="605">
-      <DEFAULT>false</DEFAULT>
-    </PARAMETER>
 
-    <PARAMETER
-      NAME="DYNAMIC"
-      FIELD="COMPONENT_LIST"
-      REQUIRED="true"
-      FILTER="tSetDynamicSchema"
-      NUM_ROW="610"
-      SHOW_IF="USE_EXISTING_DYNAMIC == 'true'"
-      >
-    </PARAMETER>
-    
     <PARAMETER
       NAME="SCHEMA"
       FIELD="SCHEMA_TYPE"
       NUM_ROW="700"
-      SHOW_IF="USE_EXISTING_DYNAMIC == 'false'"
     >
       <DEFAULT>""</DEFAULT>
     </PARAMETER>
@@ -273,16 +255,6 @@
       SHOW="false"
     >
       <DEFAULT>vertica_id</DEFAULT>
-    </PARAMETER>
-
-    <PARAMETER
-      NAME="VARCHAR_LENGTH_FOR_DYNAMIC"
-      FIELD="TEXT"
-      NUM_ROW="1500"
-      SHOW="false"
-      REPOSITORY_VALUE="VARCHAR_LENGTH_FOR_DYNAMIC"
-    >
-      <DEFAULT>65000</DEFAULT>
     </PARAMETER>
 
    </PARAMETERS>

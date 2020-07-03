@@ -185,7 +185,11 @@ String inputConnName = null;
 				for (int i = 0; i < commandLineWindows.length; i++) {
 					if (i == 0){
 		     	 	%>
-		      			paraList_<%=cid %>.add("<%=commandLineWindows[i]%>");
+                        paraList_<%=cid %>.add("<%=commandLineWindows[i]%>");
+                        String m2 = System.getProperty("talend.component.manager.m2.repository");
+                        if (m2 != null){
+                            paraList_<%=cid %>.add("-Dtalend.component.manager.m2.repository=" + m2);
+                        }
 		      		<%
 					} else if (i > 0){
 		      			if (commandLineWindows[i].indexOf("\"") >= 0){
@@ -217,7 +221,11 @@ String inputConnName = null;
 				for (int i = 0; i < commandLineUnix.length; i++) {
 					if (i == 0){
 		      		%>
-						paraList_<%=cid %>.add("<%=commandLineUnix[i]%>");
+                        paraList_<%=cid %>.add("<%=commandLineUnix[i]%>");
+                        String m2 = System.getProperty("talend.component.manager.m2.repository");
+                        if (m2 != null){
+                            paraList_<%=cid %>.add("-Dtalend.component.manager.m2.repository=" + m2);
+                        }
 		      		<%
 		    		} else if (i > 0){
 		      			String param;
@@ -247,7 +255,7 @@ String inputConnName = null;
 		  		}
 		  		%>
 			}
-			
+
 			<%
 			if(use_custom_jvm_setting) {
 			%>
@@ -265,7 +273,7 @@ String inputConnName = null;
 		}
 		%>
 		if(enableLogStash){
-			paraList_<%=cid %>.add("--monitoring="+enableLogStash);
+			paraList_<%=cid %>.add("--audit.enabled="+enableLogStash);
 		}
 		<%
 	}
@@ -408,7 +416,11 @@ String inputConnName = null;
 		%>
 		obj_<%=cid%> = <%=value %>;
 		if(obj_<%=cid%>!=null) {
-			paraList_<%=cid %>.add("--context_param <%=name %>=" + RuntimeUtils.tRunJobConvertContext(obj_<%=cid%>));
+			if (obj_<%=cid %>.getClass().getName().equals("java.util.Date")) {
+				paraList_<%=cid %>.add("--context_param <%=name %>=" + ((java.util.Date) obj_<%=cid %>).getTime());
+			} else {
+				paraList_<%=cid %>.add("--context_param <%=name %>=" + RuntimeUtils.tRunJobConvertContext(obj_<%=cid%>));
+			}
 		} else {
 			paraList_<%=cid %>.add("--context_param <%=name %>=" + NULL_VALUE_EXPRESSION_IN_COMMAND_STRING_FOR_CHILD_JOB_ONLY);
 		}

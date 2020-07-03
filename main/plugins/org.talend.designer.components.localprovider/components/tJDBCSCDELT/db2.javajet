@@ -156,7 +156,7 @@ if(isEnableType2) {
     <%
     if(isEnableDebug) {
         %>
-        System.out.println("[<%=cid%>] type2 new active row slq\n" + insertForType2_<%=cid %> + "\ndone");
+        System.out.println("[<%=cid%>] type2 new active row sql\n" + insertForType2_<%=cid %> + "\ndone");
         <%
     }
 }
