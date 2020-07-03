@@ -2243,6 +2243,35 @@ public class ProcessUpdateManager extends AbstractUpdateManager {
                                     }
                                 }
                             }
+                            if (repositoryValue == null && param.getFieldType().equals(EParameterFieldType.TABLE)
+                                    && node.getComponentProperties() != null && param.getListItemsDisplayCodeName().length > 0) {
+                                Properties properties = node.getComponentProperties().getProperties(param.getName());
+                                if (properties != null) {
+                                    org.talend.daikon.properties.property.Property<?> property = properties
+                                            .getValuedProperty(param.getListItemsDisplayCodeName()[0]);
+                                    Object storedValue = property.getStoredValue();
+                                    if (storedValue != null) {
+                                        Object value = RepositoryToComponentProperty.getValue(repositoryConnection, param.getName(),
+                                                null);
+                                        if (value instanceof List) {
+                                            List listValue = (List) value;
+                                            for (Object obj : listValue) {
+                                                if (obj instanceof Map) {
+                                                    Map map = (Map) obj;
+                                                    Object mapObj = map.get("drivers");
+                                                    sameValues = false;
+                                                    // if (mapObj instanceof String && storedValue instanceof String) {
+                                                    // if (!StringUtils.equals(mapObj.toString(),
+                                                    // storedValue.toString())) {
+                                                    // sameValues = false;
+                                                    // }
+                                                    // }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
                             if (!sameValues) {
                                 break;
                             }
@@ -2547,10 +2576,10 @@ public class ProcessUpdateManager extends AbstractUpdateManager {
                                     EConnectionParameterName.GENERIC_DRIVER_JAR.getDisplayName(), table, componentName, null);
                             Object storedValue = property.getStoredValue();
                             if (objectValue instanceof List) {
-                                List list = (List) objectValue;
+                                List objectValueList = (List) objectValue;
                                 List newValueList = new ArrayList<>();
-                                for (int i = 0; i < list.size(); i++) {
-                                    Object object = list.get(i);
+                                for (int i = 0; i < objectValueList.size(); i++) {
+                                    Object object = objectValueList.get(i);
                                     if (object instanceof HashMap) {
                                         Map objectMap = (HashMap) object;
                                         if (objectMap.containsKey(property.getName())) {
