@@ -66,7 +66,7 @@ int connectionTimeout_<%=cid %> = Integer.valueOf(<%=timeoutValue %>);
 <%
 if (!sftp && !ftps) { // *** ftp *** //
 %>
-    org.apache.commons.net.ftp.FTPClient ftp_<%=cid %> = null;
+    com.enterprisedt.net.ftp.FTPClient ftp_<%=cid %> = null;
 <%
     passwordFieldName = "__PASS__";
 %>
@@ -77,7 +77,7 @@ if (!sftp && !ftps) { // *** ftp *** //
 } else if (!ftps) { // *** sftp *** //
 %>
 	class MyUserInfo implements com.jcraft.jsch.UserInfo, com.jcraft.jsch.UIKeyboardInteractive {
-
+	
         <%
         passwordFieldName = "__PASSPHRASE__";
         if (ElementParameterParser.canEncrypt(node, passwordFieldName)) {

@@ -70,7 +70,7 @@ if (sftp) { // *** sftp *** //
 		}
 		globalMap.put("<%=cid %>_DIRECTORYNAME", <%=directoryname %>);
 <%}
-} else { // *** ftp+s *** //
+} else if (ftps) { // *** ftps *** //
 %>
 	//change working dir and save root
 	String remoteDir_<%=cid %> = (<%=remoteDir %>).replaceAll("\\\\","/");
@@ -155,5 +155,35 @@ if (sftp) { // *** sftp *** //
 		ftp_<%=cid %>.changeWorkingDirectory(remoteDir_<%=cid %>);
 <%
 	}
-}
-%>
+} else { // *** ftp *** //
+	if (isFileType){%>
+		String remoteDir_<%=cid %> = (<%=remoteDir %>).replaceAll("\\\\","/");
+		if (ftp_<%=cid %>.exists<%="File" %>(remoteDir_<%=cid %> + "/" + <%=filename %>)) {
+			<%if(isLog4jEnabled){%>
+				log.debug("<%=cid%> - '" + <%=filename%> + "' exists in the remote directory '"+ <%=remoteDir %> + "' .");
+			<%}%>
+			globalMap.put("<%=cid %>_EXISTS", true);
+		} else {
+			<%if(isLog4jEnabled){%>
+				log.debug("<%=cid%> - '" + <%=filename%> + "' doesn't exist in the remote directory '"+ <%=remoteDir %> + "' .");
+			<%}%>
+			globalMap.put("<%=cid %>_EXISTS", false);
+		}
+		globalMap.put("<%=cid %>_FILENAME", <%=filename %>);
+	<%} else {%>
+		String remoteDir_<%=cid %> = (<%=remoteDir %>).replaceAll("\\\\","/");
+		String directoryname_<%=cid %> = (<%=directoryname %>).replaceAll("\\\\","/");
+		if (ftp_<%=cid %>.exists<%="Directory" %>(remoteDir_<%=cid %> + "/" + directoryname_<%=cid %>)) {
+			<%if(isLog4jEnabled){%>
+				log.debug("<%=cid%> - '" + <%=directoryname %> + "' exists in the remote directory '"+ <%=remoteDir %> + "' .");
+			<%}%>
+			globalMap.put("<%=cid %>_EXISTS", true);
+		} else {
+			<%if(isLog4jEnabled){%>
+				log.debug("<%=cid%> - '" + <%=directoryname %> + "' doesn't exist in the remote directory '"+ <%=remoteDir %> + "' .");
+			<%}%>
+			globalMap.put("<%=cid %>_EXISTS", false);
+		}
+		globalMap.put("<%=cid %>_DIRECTORYNAME", <%=directoryname %>);
+	<%}
+}%>
