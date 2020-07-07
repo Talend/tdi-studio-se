@@ -97,7 +97,8 @@
 
 		<PARAMETER NAME="CLUSTER_VERSION" FIELD="OPENED_LIST"
 			NUM_ROW="32" SHOW_IF="(ACTION=='START') AND (USE_CUSTOMIZE_VERSION == 'false')" GROUP="CONFIGURATION">
-			<ITEMS DEFAULT="EMR5_15_0">
+			<ITEMS DEFAULT="EMR5_29_0">
+				<ITEM NAME="EMR5_29_0" VALUE="&quot;emr-5.29.0&quot;" />
 			    <ITEM NAME="EMR5_15_0" VALUE="&quot;emr-5.15.0&quot;" />
 			    <ITEM NAME="EMR5_11_0" VALUE="&quot;emr-5.11.0&quot;" />
 			    <ITEM NAME="EMR4_9_2" VALUE="&quot;emr-4.9.2&quot;" />
@@ -532,8 +533,8 @@
 
 	<CODEGENERATION>
 		<IMPORTS>
-			<IMPORT NAME="aws-java-sdk-1.11.729.jar" MODULE="aws-java-sdk-1.11.729.jar"
-				MVN="mvn:com.amazonaws/aws-java-sdk/1.11.729"
+			<IMPORT NAME="aws-java-sdk-1.11.816.jar" MODULE="aws-java-sdk-1.11.816.jar"
+				MVN="mvn:com.amazonaws/aws-java-sdk/1.11.816"
 				REQUIRED="true" />
 			<IMPORT NAME="jackson-core-2.10.1.jar" MODULE="jackson-core-2.10.1.jar"
 				MVN="mvn:com.fasterxml.jackson.core/jackson-core/2.10.1"
