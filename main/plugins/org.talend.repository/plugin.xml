@@ -3372,8 +3372,7 @@
               id="org.talend.repository.model.migration.ChangeDefaultDriverForMSSqlMigrationTask"
               name="ChangeDefaultDriverForMSSqlMigrationTask"
               version="7.3.1">
-        </projecttask>
-        
+        </projecttask>       
         <projecttask
               beforeLogon="false"
               breaks="7.3.0"
@@ -3383,7 +3382,15 @@
               name="GoogleStorageSetDefaultAuthTypeMigrationTask"
               version="7.3.1">
         </projecttask>
-        
+        <projecttask
+             beforeLogon="false"
+             breaks="7.3.0"
+             class="org.talend.repository.model.migration.RenameEXAMigrationTask"
+             description="Rename tEXAXXX components to tExasolXXX"
+             id="org.talend.repository.model.migration.RenameEXAMigrationTask"
+             name="RenameEXAMigrationTask"
+             version="7.3.1">
+       </projecttask>
    </extension>
 
    <extension
