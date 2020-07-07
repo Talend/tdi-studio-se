@@ -516,7 +516,7 @@ public final class Expression {
                     IElementParameter testedParameter = param;
                     Object value = null;
                     boolean found = false;
-                    if (param.getFieldType().equals(EParameterFieldType.TABLE)) {
+                    if (EParameterFieldType.TABLE.equals(param.getFieldType())) {
                         List<Map<String, Object>> tableValues = (List<Map<String, Object>>) param.getValue();
                         if (currentParam == null) {
                             continue;
@@ -633,11 +633,12 @@ public final class Expression {
                                 }
                             }
                         }
-                    } else if (param.getFieldType().equals(EParameterFieldType.PROPERTY_TYPE)
-                            || param.getFieldType().equals(EParameterFieldType.SCHEMA_TYPE)
-                            || param.getFieldType().equals(EParameterFieldType.SCHEMA_REFERENCE)
-                            || param.getFieldType().equals(EParameterFieldType.QUERYSTORE_TYPE)
-                            || param.getFieldType().equals(EParameterFieldType.ENCODING_TYPE)) {
+                    } else if (param.getFieldType() != null
+                            && (param.getFieldType().equals(EParameterFieldType.PROPERTY_TYPE)
+                                    || param.getFieldType().equals(EParameterFieldType.SCHEMA_TYPE)
+                                    || param.getFieldType().equals(EParameterFieldType.SCHEMA_REFERENCE)
+                                    || param.getFieldType().equals(EParameterFieldType.QUERYSTORE_TYPE)
+                                    || param.getFieldType().equals(EParameterFieldType.ENCODING_TYPE))) {
 
                         boolean child = false;
                         Map<String, IElementParameter> childParameters = param.getChildParameters();
