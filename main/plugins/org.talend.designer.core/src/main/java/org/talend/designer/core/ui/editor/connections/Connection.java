@@ -702,7 +702,7 @@ public class Connection extends Element implements IConnection, IPerformance, IA
         param.setName(EParameterName.TRACES_CONNECTION_ENABLE.getName());
         param.setDisplayName(EParameterName.TRACES_CONNECTION_ENABLE.getDisplayName());
         param.setFieldType(EParameterFieldType.CHECK);
-        param.setValue(Boolean.TRUE);
+        param.setValue(Boolean.FALSE);
         param.setCategory(EComponentCategory.ADVANCED);
         param.setShow(false);
         param.setNumRow(1);
@@ -895,8 +895,8 @@ public class Connection extends Element implements IConnection, IPerformance, IA
         List connections;
         if (target != null) {
             connections = target.getIncomingConnections();
-            for (int i = 0; i < connections.size(); i++) {
-                if (((Connection) connections.get(i)).getName().equals(name)) {
+            for (Object connection : connections) {
+                if (((Connection) connection).getName().equals(name)) {
                     canModify = false;
                 }
             }

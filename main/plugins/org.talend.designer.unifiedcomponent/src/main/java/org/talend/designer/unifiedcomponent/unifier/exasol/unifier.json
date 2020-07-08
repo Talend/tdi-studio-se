@@ -1,6 +1,6 @@
 [{
     "component_delegate":"tDBInput",
-    "component":"tEXAInput",
+    "component":"tExasolInput",
     "category":"DI",
     "family":"",
     "parameter":{
@@ -8,7 +8,7 @@
 },
 {
     "component_delegate":"tDBOutput",
-    "component" : "tEXAOutput",
+    "component" : "tExasolOutput",
     "category":"DI",
     "family":"",
     "parameter":{
@@ -16,19 +16,19 @@
 },
 {
     "component_delegate":"tDBClose",
-    "component":"tEXAClose",
+    "component":"tExasolClose",
     "category":"DI",
     "family":""
 },
 {
     "component_delegate":"tDBCommit",
-    "component":"tEXACommit",
+    "component":"tExasolCommit",
     "category":"DI",
     "family":""
 },
 {
     "component_delegate":"tDBConnection",
-    "component":"tEXAConnection",
+    "component":"tExasolConnection",
     "category":"DI",
     "family":"",
     "parameter":{
@@ -36,13 +36,13 @@
 },
 {
     "component_delegate":"tDBRollback",
-    "component":"tEXARollback",
+    "component":"tExasolRollback",
     "category":"DI",
     "family":""
 },
 {
     "component_delegate":"tDBRow",
-    "component":"tEXARow",
+    "component":"tExasolRow",
     "category":"DI",
     "family":"",
     "parameter":{
@@ -50,7 +50,7 @@
 },
 {
     "component_delegate":"tDBBulkExec",
-    "component":"tEXABulkExec",
+    "component":"tExasolBulkExec",
     "category":"DI",
     "family":"",
     "parameter":{
