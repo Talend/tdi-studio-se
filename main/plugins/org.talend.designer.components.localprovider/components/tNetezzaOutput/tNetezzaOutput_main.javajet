@@ -142,7 +142,9 @@ skeleton="../templates/db_output_bulk.skeleton"
                 <%}else{%>
                 try{
                     nb_line_<%=cid%>++;
-                    insertedCount_<%=cid%> = insertedCount_<%=cid%> + pstmt_<%=cid %>.executeUpdate();
+                    int processedCount_<%=cid%> = pstmt_<%=cid %>.executeUpdate();
+                    insertedCount_<%=cid%> += processedCount_<%=cid%>;
+                    rowsToCommitCount_<%=cid%> += processedCount_<%=cid%>;
                     <%dbLog.data().inserting(dbLog.var("nb_line"));%>
                 }catch(java.lang.Exception e)
                 {
@@ -230,7 +232,9 @@ skeleton="../templates/db_output_bulk.skeleton"
             %>
             try{
                 nb_line_<%=cid%>++;
-                updatedCount_<%=cid%> = updatedCount_<%=cid%> + pstmt_<%=cid %>.executeUpdate();
+                int processedCount_<%=cid%> = pstmt_<%=cid %>.executeUpdate();
+                updatedCount_<%=cid%> += processedCount_<%=cid%>;
+                rowsToCommitCount_<%=cid%> += processedCount_<%=cid%>;
                 <%dbLog.data().updating(dbLog.var("nb_line"));%>
             }catch(java.lang.Exception e)
             {
@@ -340,7 +344,9 @@ skeleton="../templates/db_output_bulk.skeleton"
                 }
                 %>
                 try{
-                    updatedCount_<%=cid%> = updatedCount_<%=cid%> + pstmtUpdate_<%=cid %>.executeUpdate();
+                    int processedCount_<%=cid%> = pstmtUpdate_<%=cid %>.executeUpdate();
+                    updatedCount_<%=cid%> += processedCount_<%=cid%>;
+                    rowsToCommitCount_<%=cid%> += processedCount_<%=cid%>;
                     nb_line_<%=cid%>++;
                     <%dbLog.data().updating(dbLog.var("nb_line"));%>
                 }catch(java.lang.Exception e)
@@ -394,7 +400,9 @@ skeleton="../templates/db_output_bulk.skeleton"
                 }
                 %>
                 try{
-                    insertedCount_<%=cid%> = insertedCount_<%=cid%> + pstmtInsert_<%=cid %>.executeUpdate();
+                    int processedCount_<%=cid%> = pstmtInsert_<%=cid %>.executeUpdate();
+                    insertedCount_<%=cid%> += processedCount_<%=cid%>;
+                    rowsToCommitCount_<%=cid%> += processedCount_<%=cid%>;
                     nb_line_<%=cid%>++;
                     <%dbLog.data().inserting(dbLog.var("nb_line"));%>
                 }catch(java.lang.Exception e)
@@ -477,7 +485,7 @@ skeleton="../templates/db_output_bulk.skeleton"
             try{
                 updateFlag_<%=cid%>=pstmtUpdate_<%=cid %>.executeUpdate();
                 updatedCount_<%=cid%> = updatedCount_<%=cid%>+updateFlag_<%=cid%>;
-
+                rowsToCommitCount_<%=cid%> += updateFlag_<%=cid%>;
             if(updateFlag_<%=cid%> == 0) {
                 <%
                 int counter = 1;
@@ -492,7 +500,9 @@ skeleton="../templates/db_output_bulk.skeleton"
                     }
                 }
                 %>
-                    insertedCount_<%=cid%> = insertedCount_<%=cid%> + pstmtInsert_<%=cid %>.executeUpdate();
+                    int processedCount_<%=cid%> = pstmtInsert_<%=cid %>.executeUpdate();
+                    insertedCount_<%=cid%> += processedCount_<%=cid%>;
+                    rowsToCommitCount_<%=cid%> += processedCount_<%=cid%>;
                     nb_line_<%=cid%>++;
                     <%dbLog.data().inserting(dbLog.var("nb_line"));%>
                 }else{
@@ -575,7 +585,9 @@ skeleton="../templates/db_output_bulk.skeleton"
             }else {
             %>
         try{
-            deletedCount_<%=cid%> = deletedCount_<%=cid%> + pstmt_<%=cid %>.executeUpdate();
+            int processedCount_<%=cid%> = pstmt_<%=cid %>.executeUpdate();
+            deletedCount_<%=cid%> += processedCount_<%=cid%>;
+            rowsToCommitCount_<%=cid%> += processedCount_<%=cid%>;
             nb_line_<%=cid%>++;
             <%dbLog.data().deleting(dbLog.var("nb_line"));%>
         }catch(java.lang.Exception e)
@@ -651,6 +663,7 @@ skeleton="../templates/db_output_bulk.skeleton"
                         pstmt_<%=cid %>.executeBatch();
                         <%dbLog.batch().executeDone(dbLog.str(dataAction));%>
                         pstmt_<%=cid %>.clearBatch();
+                        rowsToCommitCount_<%=cid%> += pstmt_<%=cid %>.getUpdateCount();
                         <%
                          if (("INSERT").equals(dataAction)) {
                         %>
@@ -711,7 +724,7 @@ skeleton="../templates/db_output_bulk.skeleton"
                         pstmt_<%=cid %>.executeBatch();
                         <%dbLog.batch().executeDone(dbLog.str(dataAction));%>
                         pstmt_<%=cid %>.clearBatch();
-          
+                        rowsToCommitCount_<%=cid%> += pstmt_<%=cid %>.getUpdateCount();
                         <%if (("INSERT").equals(dataAction)) {
                         %>
                             insertedCount_<%=cid%> += pstmt_<%=cid %>.getUpdateCount();
@@ -752,9 +765,12 @@ skeleton="../templates/db_output_bulk.skeleton"
                 }
                 <%
                 }%>
-                    <%dbLog.commit().commitTry(null, dbLog.var("commitCounter"));%>
-                    conn_<%=cid%>.commit();
-                    <%dbLog.commit().commitDone(null);%>
+                    if(rowsToCommitCount_<%=cid%> != 0){
+                    	<%dbLog.commit().commitTry(null, dbLog.var("rowsToCommitCount"));%>
+                    	conn_<%=cid%>.commit();
+                    	<%dbLog.commit().commitDone(null);%>
+                    	rowsToCommitCount_<%=cid%> = 0;
+                    }
                     commitCounter_<%=cid%>=0;
 
                 }
