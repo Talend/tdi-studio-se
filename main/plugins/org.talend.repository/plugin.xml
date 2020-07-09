@@ -3391,6 +3391,15 @@
               name="ChangeDefaultDriverForMSSqlMigrationTask"
               version="7.4.1">
         </projecttask>
+        <projecttask
+             beforeLogon="false"
+             breaks="7.4.0"
+             class="org.talend.repository.model.migration.RenameEXAMigrationTask"
+             description="Rename tEXAXXX components to tExasolXXX"
+             id="org.talend.repository.model.migration.RenameEXAMigrationTask"
+             name="RenameEXAMigrationTask"
+             version="7.4.1">
+       </projecttask>
    </extension>
 
    <extension
