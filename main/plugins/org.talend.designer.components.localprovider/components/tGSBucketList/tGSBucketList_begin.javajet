@@ -3,6 +3,7 @@ imports="
 	org.talend.core.model.process.INode
 	org.talend.core.model.process.ElementParameterParser
 	org.talend.designer.codegen.config.CodeGeneratorArgument
+	java.util.List
 " 
 %>
 	<%
@@ -17,13 +18,31 @@ imports="
 	String projectID=ElementParameterParser.getValue(node,"__PROJECT_ID__");
 	boolean isLog4jEnabled = ("true").equals(ElementParameterParser.getValue(node.getProcess(), "__LOG4J_ACTIVATE__"));
 	
+	String authType = ElementParameterParser.getValue(node, "__AUTH_TYPE__");
+	String connection = ElementParameterParser.getValue(node,"__CONNECTION__");
+	boolean useServiceAccountForConnection = false;
+
+	if(("true").equals(useExistingConn)) {
+		List< ? extends INode> nodes =  node.getProcess().getNodesOfType("tGSConnection");
+		for (INode ne : nodes) {
+			if (connection.equals(ne.getUniqueName())) {
+				String authTypeInConnectionComponent = ElementParameterParser.getValue(ne, "__AUTH_TYPE__");
+				useServiceAccountForConnection = "SERVICE_ACCOUNT".equals(authTypeInConnectionComponent);
+			}
+		}
+	} else {
+		useServiceAccountForConnection = "SERVICE_ACCOUNT".equals(authType);
+	}
 	%>
 	int nb_bucket_<%=cid%> = 0;
+
+<%
+if (!useServiceAccountForConnection){
+%>
 	org.jets3t.service.model.GSBucket[] buckets_<%=cid%> = new org.jets3t.service.model.GSBucket[] {};
 	org.jets3t.service.impl.rest.httpclient.GoogleStorageService service_<%=cid%> = null;
 	<%
 	if(("true").equals(useExistingConn)) {
-		String connection = ElementParameterParser.getValue(node,"__CONNECTION__");
 		%>
 		service_<%=cid%> = (org.jets3t.service.impl.rest.httpclient.GoogleStorageService)globalMap.get("service_<%=connection%>");
 		<%
@@ -63,3 +82,47 @@ imports="
 		nb_bucket_<%=cid%>++;
 		String currentBucketName_<%=cid%> = bucket_<%=cid%>.getName();
 		globalMap.put("<%=cid%>_CURRENT_BUCKET_NAME", currentBucketName_<%=cid%>);
+<%
+} else {
+%>
+	com.google.api.gax.paging.Page<com.google.cloud.storage.Bucket> buckets_<%=cid%> = null;
+	com.google.cloud.storage.Storage storage_<%=cid%> = null;
+
+	<%
+	if(("true").equals(useExistingConn)) {
+	%>
+		storage_<%=cid%> = (com.google.cloud.storage.Storage)globalMap.get("service_<%=connection%>");
+	<%
+	} else {
+		String pathToServerAccoutKeyFile = ElementParameterParser.getValue(node, "__SERVICE_ACCOUNT_KEY__");
+	%>
+		com.google.auth.Credentials credential_<%=cid%> = null;
+		try {
+			credential_<%=cid%> = com.google.auth.oauth2.GoogleCredentials
+					.fromStream(new java.io.FileInputStream(<%=pathToServerAccoutKeyFile%>));
+		} catch (IOException e_<%=cid%>) {
+			<%
+			if(isLog4jEnabled){
+			%>
+				log.error("<%=cid%> - Exception in component <%=cid%>.", e_<%=cid%>);
+			<%
+			}
+			%>
+		}
+		com.google.cloud.storage.StorageOptions.Builder builder = com.google.cloud.storage.StorageOptions.newBuilder();
+		storage_<%=cid%> = builder
+				.setCredentials(credential_<%=cid%>)
+				.build()
+				.getService();
+	<%
+	}
+	%>
+	buckets_<%=cid%> = storage_<%=cid%>.list();
+
+	for (com.google.cloud.storage.Bucket bucket_<%=cid%> : buckets_<%=cid%>.iterateAll()) {
+		String currentBucketName_<%=cid%> = bucket_<%=cid%>.getName();
+		globalMap.put("<%=cid%>_CURRENT_BUCKET_NAME", currentBucketName_<%=cid%>);
+		nb_bucket_<%=cid%>++;
+<%
+}
+%>

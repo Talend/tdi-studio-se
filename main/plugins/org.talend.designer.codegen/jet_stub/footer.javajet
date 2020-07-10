@@ -1447,11 +1447,24 @@ if (execStat) {
     private void closeGSConnections() {
         try {
 <%    for (INode gsComponent : gsComponentsList) { %>
-		org.jets3t.service.impl.rest.httpclient.GoogleStorageService service_<%=gsComponent.getUniqueName()%> =
-				(org.jets3t.service.impl.rest.httpclient.GoogleStorageService)globalMap.get("service_<%=gsComponent.getUniqueName()%>");
-		if(service_<%=gsComponent.getUniqueName()%> !=null){
-				service_<%=gsComponent.getUniqueName()%>.shutdown();
-	    }
+
+    <%
+    String authType = ElementParameterParser.getValue(gsComponent, "__AUTH_TYPE__");
+    if (authType.equals("USER_ACCOUNT_HMAC")){
+    %>
+
+    org.jets3t.service.impl.rest.httpclient.GoogleStorageService service_<%=gsComponent.getUniqueName()%> =
+            (org.jets3t.service.impl.rest.httpclient.GoogleStorageService)globalMap.get("service_<%=gsComponent.getUniqueName()%>");
+    if(service_<%=gsComponent.getUniqueName()%> !=null){
+            service_<%=gsComponent.getUniqueName()%>.shutdown();
+    }
+    <%
+    } else if (authType.equals("SERVICE_ACCOUNT")) {
+    %>
+        //Don't need to close storage when use google storage api
+    <%
+    }
+    %>
 
 <%    } %>
         } catch (java.lang.Exception e) {

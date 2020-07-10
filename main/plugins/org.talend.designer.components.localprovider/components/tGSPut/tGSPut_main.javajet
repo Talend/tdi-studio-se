@@ -25,14 +25,31 @@
 	
 	String dieOnError = ElementParameterParser.getValue(node, "__DIE_ON_ERROR__");
 	List<Map<String, String>> files = (List<Map<String,String>>)ElementParameterParser.getObjectValue(node, "__FILES__");	
-	%>
+	String connection = ElementParameterParser.getValue(node,"__CONNECTION__");
+	String authType = ElementParameterParser.getValue(node, "__AUTH_TYPE__");
+	boolean useServiceAccountForConnection = false;
 
+	//Define if connection use Service account for connection
+	if(("true").equals(useExistingConn)) {
+		List< ? extends INode> nodes =  node.getProcess().getNodesOfType("tGSConnection");
+		for (INode ne : nodes) {
+			if (connection.equals(ne.getUniqueName())) {
+				String authTypeInConnectionComponent = ElementParameterParser.getValue(ne, "__AUTH_TYPE__");
+				useServiceAccountForConnection = "SERVICE_ACCOUNT".equals(authTypeInConnectionComponent);
+			}
+		}
+	} else {
+		useServiceAccountForConnection = "SERVICE_ACCOUNT".equals(authType);
+	}
+	%>
 	int nb_line_<%=cid%> = 0;
+	<%
+if (!useServiceAccountForConnection){
+	%>
 	org.jets3t.service.impl.rest.httpclient.GoogleStorageService service_<%=cid%> = null;
 	try {
 		<%
 		if(("true").equals(useExistingConn)) {
-			String connection = ElementParameterParser.getValue(node,"__CONNECTION__");
 			%>
 			service_<%=cid%> = (org.jets3t.service.impl.rest.httpclient.GoogleStorageService)globalMap.get("service_<%=connection%>");
 			<%
@@ -152,5 +169,93 @@
 		}
 		%>
 	}
+<%
+} else {
+%>
+	com.google.cloud.storage.Storage storage_<%=cid%> = null;
+	<%
+	if(("true").equals(useExistingConn)) {
+	%>
+		storage_<%=cid%> = (com.google.cloud.storage.Storage)globalMap.get("service_<%=connection%>");
+	<%
+	} else {
+		String pathToServerAccoutKeyFile = ElementParameterParser.getValue(node, "__SERVICE_ACCOUNT_KEY__");
+	%>
+		com.google.auth.Credentials credential_<%=cid%> = null;
+		try {
+			credential_<%=cid%> = com.google.auth.oauth2.GoogleCredentials
+					.fromStream(new java.io.FileInputStream(<%=pathToServerAccoutKeyFile%>));
+		} catch (IOException e_<%=cid%>) {
+			<%
+			if (("true").equals(dieOnError)) {
+			%>
+				throw(e_<%=cid%>);
+			<%
+			}
+			%>
+			<%
+			if(isLog4jEnabled){
+			%>
+				log.error("<%=cid%> - Exception in component <%=cid%>.", e_<%=cid%>);
+			<%
+			}
+			%>
+		}
+		com.google.cloud.storage.StorageOptions.Builder builder = com.google.cloud.storage.StorageOptions.newBuilder();
+		storage_<%=cid%> = builder.setCredentials(credential_<%=cid%>).build().getService();
+	<%
+	}
+	%>
+
+	java.io.File file_<%=cid%> = new java.io.File(<%=localdir%>);
+
+	org.talend.gs.util.GSObjectUtil gsObjectUtil_<%=cid%> = new org.talend.gs.util.GSObjectUtil();
+	
+	<%
+	if ("/".equals(remotedir.substring(0, 1))){
+		remotedir = remotedir.substring(1);
+	}
+
+	if(isUseFilesList && files!=null && files.size()>0){
+		%>
+		java.util.List<java.util.Map<String,String>> list_<%=cid %> = new java.util.ArrayList<java.util.Map<String,String>>();
+		<%
+		for (int i=0; i<files.size(); i++) {
+			Map<String, String> line = files.get(i);
+			%>    
+			java.util.Map<String,String> map_<%=cid %>_<%=i %> = new java.util.HashMap<String,String>();
+			map_<%=cid %>_<%=i %>.put(<%= line.get("FILEMASK") %>,<%= line.get("NEWNAME") %>);		
+			list_<%=cid %>.add(map_<%=cid %>_<%=i %>);       
+		<%
+		}
+		%>
+		java.util.Map<String,String> fileMapFromTable_<%=cid%>=gsObjectUtil_<%=cid%>.genFileFilterList(list_<%=cid %>, <%=localdir%>, <%=remotedir%>);
+		java.util.Map<String, java.io.File> fileMap_<%=cid%> = gsObjectUtil_<%=cid%>.generateFileMap(file_<%=cid%>, <%=remotedir%>, fileMapFromTable_<%=cid%>);
+	<%
+	} else {
+	%>
+		java.util.Map<String, java.io.File> fileMap_<%=cid%> = gsObjectUtil_<%=cid%>.generateFileMap(file_<%=cid%>, <%=remotedir%>);
+	<%
+	}
+	%>
+	for (java.util.Map.Entry<String, java.io.File> currentFile_<%=cid%> : fileMap_<%=cid%>.entrySet()){
+		com.google.cloud.storage.BlobInfo blobInfo_<%=cid%> = com.google.cloud.storage.BlobInfo.
+				newBuilder(<%=bucketName%>, currentFile_<%=cid%>.getKey()).build();
+		try {
+			storage_<%=cid%>.create(blobInfo_<%=cid%>, java.nio.file.Files.readAllBytes(currentFile_<%=cid%>.getValue().toPath()));
+			nb_line_<%=cid%> ++;
+		} catch (IOException e_<%=cid%>) {
+			<%
+			if(isLog4jEnabled){
+			%>
+				log.error("<%=cid%> - Exception in component <%=cid%>:" + e_<%=cid%>.getMessage());
+			<%
+			}
+			%>
+		}
+	}
+<%
+}
+%>
 	globalMap.put("<%=cid%>_NB_LINE", nb_line_<%=cid%>);
 	
