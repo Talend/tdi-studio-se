@@ -12,9 +12,7 @@
 // ============================================================================
 package org.talend.designer.core.build;
 
-import java.util.Arrays;
 import java.util.Collections;
-import java.util.List;
 import java.util.Map;
 
 import org.eclipse.core.resources.IFile;
@@ -26,90 +24,85 @@ import org.talend.core.model.properties.Item;
 import org.talend.core.model.properties.ProcessItem;
 import org.talend.core.model.properties.Property;
 import org.talend.core.model.repository.ERepositoryObjectType;
-import org.talend.core.model.repository.IRepositoryViewObject;
 import org.talend.core.repository.utils.ItemResourceUtil;
 import org.talend.core.runtime.process.IBuildJobHandler;
+import org.talend.core.runtime.process.TalendProcessArgumentConstant;
 import org.talend.core.runtime.repository.build.BuildType;
 import org.talend.core.runtime.repository.build.IBuildExportHandler;
 import org.talend.core.runtime.repository.build.IMavenPomCreator;
 import org.talend.core.runtime.repository.build.RepositoryObjectTypeBuildProvider;
 import org.talend.designer.core.model.utils.emf.talendfile.NodeType;
-import org.talend.designer.core.model.utils.emf.talendfile.ProcessType;
 import org.talend.designer.maven.tools.creator.CreateMavenStandardJobOSGiPom;
 import org.talend.designer.runprocess.IProcessor;
+import org.talend.repository.constants.BuildJobConstants;
 import org.talend.repository.ui.wizards.exportjob.handler.BuildOSGiBundleHandler;
 import org.talend.repository.ui.wizards.exportjob.scriptsmanager.JobScriptsManager.ExportChoice;
 
 /**
- * DOC ggu class global comment. Detailled comment
+ * Build Provider for OSGI build type (ESB bundle)
  */
 public class StandardJobOSGiBundleBuildProvider extends RepositoryObjectTypeBuildProvider {
 
-    private static final List<String> ESB_COMPONENTS;
-    static {
-        final List<String> esbComponents = Arrays.asList("tRESTClient", "tRESTRequest", "tRESTResponse", "tESBConsumer",
-                "tESBProviderFault", "tESBProviderRequest", "tESBProviderResponse", "tRouteInput", "tREST");
-        ESB_COMPONENTS = Collections.unmodifiableList(esbComponents);
-    }
+    private static final String OSGI = "OSGI";
 
     @Override
     public boolean valid(Map<String, Object> parameters) {
         if (parameters == null || parameters.isEmpty()) {
             return false;
         }
-
-        ERepositoryObjectType type = null;
-        Property property = null;
-        boolean containsEsbComponent = false;
-
+        
         Object object = parameters.get(PROCESS);
         if (object != null && object instanceof IProcess2) {
-
+            Property property = ((IProcess2) object).getProperty();
+            if (isOsgiBuildType(property)) {
+                return true;
+            }
+            
             IProcess2 process = (IProcess2) object;
             for (INode node : process.getGraphicalNodes()) {
-                if (ESB_COMPONENTS.contains(node.getComponent().getName())) {
-                    containsEsbComponent = true;
-                    break;
-                }
-            }
-            property = ((IProcess2) object).getProperty();
-            if (property != null) {
-                type = ERepositoryObjectType.getType(property);
-            }
-        }
-
-        if (type == null) {
-            object = parameters.get(ITEM);
-            if (object != null && object instanceof ProcessItem) {
-                ProcessItem processItem = (ProcessItem) object;
-                ProcessType process = processItem.getProcess();
-                for (Object node : process.getNode()) {
-                    NodeType nodeType = (NodeType) node;
-                    if (ESB_COMPONENTS.contains(nodeType.getComponentName())) {
-                        containsEsbComponent = true;
-                        break;
-                    }
-                }
-
-                property = ((Item) object).getProperty();
-                if (property != null) {
-                    type = ERepositoryObjectType.getType(property);
+                if (node.isActivate() && BuildJobConstants.esbComponents.contains(node.getComponent().getName())) {
+                    fixDefaultBuildType(property);
+                    return true;
                 }
             }
         }
-        if (type == null) {
-            object = parameters.get(REPOSITORY_OBJECT);
-            if (object != null && object instanceof IRepositoryViewObject) {
-                type = ((IRepositoryViewObject) object).getRepositoryObjectType();
-                property = ((IRepositoryViewObject) object).getProperty();
+        object = parameters.get(ITEM);
+        if (object != null && object instanceof ProcessItem) {
+            Property property = ((Item) object).getProperty();
+            if (isOsgiBuildType(property)) {
+                return true;
             }
-        }
-        // && !isServiceOperation(property)
-        if (containsEsbComponent) {
-            return true;
+            
+            ProcessItem processItem = (ProcessItem) object;
+            for (Object node : processItem.getProcess().getNode()) {
+                NodeType nodeType = (NodeType) node;
+                if (BuildJobConstants.esbComponents.contains(nodeType.getComponentName())) {
+                    fixDefaultBuildType(property);
+                    return true;
+                }
+            }
         }
 
         return false;
+    }
+
+    /**
+     * @param property
+     * @return true if the build type is OSGI
+     */
+    private boolean isOsgiBuildType(Property property) {
+        return property != null && "OSGI".equals(property.getAdditionalProperties().get(TalendProcessArgumentConstant.ARG_BUILD_TYPE));
+    }
+    
+    /**
+     * Fix the default build type if it is a ESB job
+     * @param property
+     */
+    @SuppressWarnings("unchecked")
+    private void fixDefaultBuildType(Property property) {
+        if(property != null && property.getAdditionalProperties().get(TalendProcessArgumentConstant.ARG_BUILD_TYPE) == null) {
+            property.getAdditionalProperties().put(TalendProcessArgumentConstant.ARG_BUILD_TYPE, OSGI);
+        }
     }
 
     @Override
@@ -204,5 +197,4 @@ public class StandardJobOSGiBundleBuildProvider extends RepositoryObjectTypeBuil
                 contextGroup.toString(), (Map<ExportChoice, Object>) choiceOption);
         return buildHandler;
     }
-
 }

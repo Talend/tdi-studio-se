@@ -26,6 +26,7 @@ import org.talend.core.runtime.repository.build.BuildExportManager;
 import org.talend.core.runtime.repository.build.IBuildExportHandler;
 import org.talend.core.runtime.repository.build.IBuildJobParameters;
 import org.talend.core.runtime.repository.build.IBuildParametes;
+import org.talend.designer.core.model.utils.emf.talendfile.NodeType;
 import org.talend.repository.constants.BuildJobConstants;
 import org.talend.repository.ui.wizards.exportjob.JavaJobScriptsExportWSWizardPage.JobExportType;
 import org.talend.repository.ui.wizards.exportjob.handler.BuildJobHandler;
@@ -36,6 +37,8 @@ import org.talend.repository.ui.wizards.exportjob.scriptsmanager.JobScriptsManag
  *
  */
 public class BuildJobFactory {
+
+    private static final String ROUTE_MICROSERVICE = "ROUTE_MICROSERVICE";
 
     /**
      * Create the build job handler according the job export type. Now only implement the handler of standalone job.
@@ -89,27 +92,23 @@ public class BuildJobFactory {
         if (StringUtils.isEmpty(buildType)) {
             final Object type = processItem.getProperty().getAdditionalProperties()
                     .get(TalendProcessArgumentConstant.ARG_BUILD_TYPE);
-            boolean esb = false;
-
-            if (processItem instanceof ProcessItem) {
+            if (type != null && processItem instanceof ProcessItem) {
 
                 ERepositoryObjectType repositoryObjectType = ERepositoryObjectType.getItemType(processItem);
-                if (repositoryObjectType == ERepositoryObjectType.PROCESS_ROUTE && "ROUTE_MICROSERVICE".equals(type)) {
-                    esb = true;
-                } else if ("REST_MS".equals(type)) {
-                    esb = true;
+                if (repositoryObjectType == ERepositoryObjectType.PROCESS_ROUTE) {
+                    buildType = String.valueOf(type);
+                } else if (repositoryObjectType == ERepositoryObjectType.PROCESS) {
+                    for (Object o : ((ProcessItem) processItem).getProcess().getNode()) {
+                        if (o instanceof NodeType) {
+                            NodeType currentNode = (NodeType) o;
+                            if (BuildJobConstants.esbComponents.contains(currentNode.getComponentName())) {
+                                buildType = String.valueOf(type);
+                                break;
+                            }
+                        }
+                    }
                 }
-
             }
-
-            if (type != null) {
-                if (!esb) {
-                    buildType = null;
-                } else {
-                    buildType = type.toString();
-                }
-
-            } // else{ // if didn't set, should use default provider to create it.
         }
 
         Map<String, Object> parameters = new HashMap<>();

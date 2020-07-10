@@ -45,6 +45,8 @@ import org.talend.repository.ui.wizards.exportjob.scriptsmanager.JobScriptsManag
  */
 public class StandardJobStandaloneBuildProvider extends RepositoryObjectTypeBuildProvider {
 
+    private static final String REST_REQUEST = "tRESTRequest";
+
     /*
      * (non-Javadoc)
      *
@@ -74,7 +76,7 @@ public class StandardJobStandaloneBuildProvider extends RepositoryObjectTypeBuil
         if (object != null && object instanceof IProcess2) {
 
             for (INode node : ((IProcess2) object).getGraphicalNodes()) {
-                if ("tRESTRequest".equals(node.getComponent().getName())) {
+                if (node.isActivate() && REST_REQUEST.equals(node.getComponent().getName())) {
                     isRestServiceProvider = true;
                     break;
                 }
@@ -97,7 +99,7 @@ public class StandardJobStandaloneBuildProvider extends RepositoryObjectTypeBuil
                     ProcessItem processItem = (ProcessItem) object;
                     for (Object node : processItem.getProcess().getNode()) {
                         NodeType nodeType = (NodeType) node;
-                        if ("tRESTRequest".equals(nodeType.getComponentName())) {
+                        if (REST_REQUEST.equals(nodeType.getComponentName())) {
                             isRestServiceProvider = true;
                             break;
                         }
