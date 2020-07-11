@@ -51,7 +51,11 @@
                     dbnameMySQL = ElementParameterParser.getValue(node, "__DBNAME__");
                 }
 %>
-                java.sql.ResultSet rsTable_<%=cid%> = dbMetaData_<%=cid%>.getTables(<%=dbnameMySQL%>, null, null, new String[]{"TABLE"});
+                String catalogName = <%=dbnameMySQL%>;
+                if(catalogName == null) {
+                    catalogName = connection_<%=cid%>.getCatalog();
+                }
+                java.sql.ResultSet rsTable_<%=cid%> = dbMetaData_<%=cid%>.getTables(catalogName, null, null, new String[]{"TABLE"});
                 boolean whetherExist_<%=cid%> = false;
                 while(rsTable_<%=cid%>.next()) {
                     String table_<%=cid%> = rsTable_<%=cid%>.getString("TABLE_NAME");

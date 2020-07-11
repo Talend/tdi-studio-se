@@ -294,9 +294,13 @@ if (!isParallelize) {
                                     dbnameMySQL = ElementParameterParser.getValue(node, "__DBNAME__");
                                 }
                             %>
+                                String catalogName = <%=dbnameMySQL%>;
                                 java.sql.DatabaseMetaData dbMetaData_<%=cid%> = conn_<%=cid%>.getMetaData();
+                                if(catalogName == null) {
+                                    catalogName = conn_<%=cid%>.getCatalog();
+                                }
                                 boolean whetherExist_<%=cid%> = false;
-                                try (java.sql.ResultSet rsTable_<%=cid%> = dbMetaData_<%=cid%>.getTables(<%=dbnameMySQL%>, null, null, new String[]{"TABLE"})) {
+                                try (java.sql.ResultSet rsTable_<%=cid%> = dbMetaData_<%=cid%>.getTables(catalogName, null, null, new String[]{"TABLE"})) {
                                     while(rsTable_<%=cid%>.next()) {
                                         String table_<%=cid%> = rsTable_<%=cid%>.getString("TABLE_NAME");
                                         if(table_<%=cid%>.equalsIgnoreCase(<%=table%>)) {
