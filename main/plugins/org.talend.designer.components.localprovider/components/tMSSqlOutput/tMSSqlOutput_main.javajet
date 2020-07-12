@@ -1650,7 +1650,6 @@ if(incomingConnName != null && columnList != null){
                 	}
                 	%>
                			 }
-    				rowsToCommitCount_<%=cid%> = counter;
     				return counter;
             	}
             	
@@ -1696,14 +1695,17 @@ if(incomingConnName != null && columnList != null){
     		            <%if (("INSERT").equals(dataAction)) {
             	    	%>
             	    		insertedCount_<%=cid%> = new LimitBytesHelper_<%=cid%>().limitBytePart1(insertedCount_<%=cid%>,pstmt_<%=cid %>);
+            	    		rowsToCommitCount_<%=cid%> = insertedCount_<%=cid%>;
             	    	<%
             	    	}else if (("UPDATE").equals(dataAction)) {
             	    	%>
             	    		updatedCount_<%=cid%> = new LimitBytesHelper_<%=cid%>().limitBytePart1(updatedCount_<%=cid%>,pstmt_<%=cid %>);
+            	    		rowsToCommitCount_<%=cid%> = updatedCount_<%=cid%>;
             	    	<%
             	    	}else if (("DELETE").equals(dataAction)) {
             	    	%>
             	    	    deletedCount_<%=cid%> = new LimitBytesHelper_<%=cid%>().limitBytePart1(deletedCount_<%=cid%>,pstmt_<%=cid %>);
+            	    	    rowsToCommitCount_<%=cid%> = deletedCount_<%=cid%>;
             	    	<%
             	    	}%>
     			
