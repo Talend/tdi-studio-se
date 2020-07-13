@@ -80,7 +80,7 @@ String tableForSearch_<%=cid%> = tableName_<%=cid%>;
 <%}%>
 
 if(dbschema_<%=cid%>!=null && !dbschema_<%=cid%>.trim().isEmpty()) {
-	tableName_<%=cid%> = dbschema_<%=cid%> + "<%=manager.getRProtectedChar()%>.<%=manager.getLProtectedChar()%>" + tableName_<%=cid%>;
+    tableName_<%=cid%> = dbschema_<%=cid%> + "<%=manager.getRProtectedChar()%>.<%=manager.getLProtectedChar()%>" + tableName_<%=cid%>;
     sourceTable_<%=cid%> = dbschema_<%=cid%> + "<%=manager.getRProtectedChar()%>.<%=manager.getLProtectedChar()%>" + sourceTable_<%=cid%>;
     
     <%if("redshift_id".equals(dbmsId)) {%>
@@ -95,8 +95,11 @@ String table = ElementParameterParser.getValue(node, "__TABLE__");
 
 String surrogateKey = ElementParameterParser.getValue(node,"__SURROGATE_KEY__");
 
+//not mean we support hive database here, we support databricks delta lake by hive mapping
+boolean databricks_delta_lake = "hive_id".equals(dbmsId)||"databricks_delta_lake_id".equals(dbmsId);
+
 String surrogateKeyType = ElementParameterParser.getValue(node,"__SK_CREATION__");
-boolean autoIncrease = "AUTO_INCREMENT".equals(surrogateKeyType)&&surrogateKey!=null;
+boolean autoIncrease = "AUTO_INCREMENT".equals(surrogateKeyType)&&surrogateKey!=null&&!databricks_delta_lake;
 
 List<Column> stmtStructure = null;
 if(autoIncrease) {
@@ -108,19 +111,19 @@ if(autoIncrease) {
 boolean isDynamic = false;
 %>
 
-<%if("TRUNCATE".equals(tableAction)) {
-%>
-int deletedCount_<%=cid%> = 0;
-<%
-}%>
-
-<%@ include file="@{org.talend.designer.components.localprovider}/components/templates/_tableActionForOutput.javajet"%>
-
-<%
-if(isEnableDebug) {
-    %>
-    System.out.println("[<%=cid%>] table action <%=tableAction%> done\n");
-    <%
+<%if(!databricks_delta_lake) {%>
+	<%if("TRUNCATE".equals(tableAction)) {
+	%>
+	int deletedCount_<%=cid%> = 0;
+	<%
+	}%>
+	<%@ include file="@{org.talend.designer.components.localprovider}/components/templates/_tableActionForOutput.javajet"%>
+	<%
+	if(isEnableDebug) {
+	    %>
+	    System.out.println("[<%=cid%>] table action <%=tableAction%> done\n");
+	    <%
+	}
 }
 %>
 
@@ -144,7 +147,7 @@ class TextUtil {
 TextUtil text_util = new TextUtil(manager);
 %>
 
-<%if("DB_SEQUENCE".equals(surrogateKeyType)) {%>
+<%if("DB_SEQUENCE".equals(surrogateKeyType) && !databricks_delta_lake) {%>
 String sequence_<%=cid%> = <%=ElementParameterParser.getValue(node,"__SK_DB_SEQUENCE__")%>;
     <%if("snowflake_id".equals(dbmsId)) {%>
     String sequenceValueFetchPattern_<%=cid%>;
@@ -181,6 +184,8 @@ String sequenceValueFetchPattern_<%=cid%> = "NEXT VALUE FOR <%=text_util.wrap("s
 	<%@ include file="./vertica.javajet"%>
 <%} else if("saphana_id".equals(dbmsId)){%>
     <%@ include file="./sap_hana.javajet"%>
+<%} else if(databricks_delta_lake){%>
+    <%@ include file="./databricks_delta_lake.javajet"%>
 <%} else {%>
 	<%@ include file="./common_scd_pattern1.javajet"%>
 <%}%>
