@@ -53,14 +53,26 @@
 		   	SHOW_IF="USE_EXISTING_CONNECTION == 'true'" 
 		   	GROUP="CONNECTION_CONFIG"
 	  	/>
+
+		<PARAMETER
+			NAME="AUTH_TYPE"
+			FIELD="CLOSED_LIST"
+			NUM_ROW="15"
+			SHOW_IF="USE_EXISTING_CONNECTION == 'false'"
+			GROUP="CONNECTION_CONFIG">
+			<ITEMS DEFAULT="SERVICE_ACCOUNT">
+				<ITEM NAME="USER_ACCOUNT_HMAC" VALUE="USER_ACCOUNT_HMAC"/>
+				<ITEM NAME="SERVICE_ACCOUNT" VALUE="SERVICE_ACCOUNT"/>
+			</ITEMS>
+		</PARAMETER>
 	
 	    <PARAMETER
 	      	NAME="ACCESS_KEY"
 	      	FIELD="TEXT"
 	      	NUM_ROW="20"
-	      	REQUIRED="true"
+	      	REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false') AND (AUTH_TYPE == 'USER_ACCOUNT_HMAC')"
 	      	GROUP="CONNECTION_CONFIG"
-	      	SHOW_IF="USE_EXISTING_CONNECTION == 'false'"
+	      	SHOW_IF="(USE_EXISTING_CONNECTION == 'false') AND (AUTH_TYPE == 'USER_ACCOUNT_HMAC')"
 	    >
 	      <DEFAULT>""</DEFAULT>
 	    </PARAMETER>
@@ -69,12 +81,22 @@
 	      	NAME="SECRET_KEY"
 	      	FIELD="PASSWORD"
 	     	NUM_ROW="20"
-	      	REQUIRED="true"
+	      	REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false') AND (AUTH_TYPE == 'USER_ACCOUNT_HMAC')"
 	      	GROUP="CONNECTION_CONFIG"
-			SHOW_IF="USE_EXISTING_CONNECTION == 'false'"
+			SHOW_IF="(USE_EXISTING_CONNECTION == 'false') AND (AUTH_TYPE == 'USER_ACCOUNT_HMAC')"
 	    >
 	        <DEFAULT>""</DEFAULT>
 	    </PARAMETER>
+
+		<PARAMETER
+			NAME="SERVICE_ACCOUNT_KEY"
+			FIELD="FILE"
+			NUM_ROW="23"
+			REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false') AND (AUTH_TYPE == 'SERVICE_ACCOUNT')"
+			SHOW_IF="(USE_EXISTING_CONNECTION == 'false') AND (AUTH_TYPE == 'SERVICE_ACCOUNT')"
+			GROUP="CONNECTION_CONFIG">
+			<DEFAULT>"__COMP_DEFAULT_FILE_DIR__/key.json"</DEFAULT>
+		</PARAMETER>
 	    
 	    <PARAMETER
 	      	NAME="OBJECTS_PREFIX"
@@ -101,8 +123,13 @@
 	    <PARAMETER 
 		    NAME="SPECIFY_PROJECT" 
 		    FIELD="CHECK"
-	        NUM_ROW="30"  
-	        SHOW_IF="DEL_IN_LIST_BUCKETS == 'false'"
+	        NUM_ROW="30"
+			REQUIRED_IF="((DEL_IN_LIST_BUCKETS == 'false') AND (AUTH_TYPE == 'USER_ACCOUNT_HMAC') AND (USE_EXISTING_CONNECTION == 'false'))
+							OR
+						 ((DEL_IN_LIST_BUCKETS == 'false') AND (#LINK@NODE.CONNECTION.AUTH_TYPE == 'USER_ACCOUNT_HMAC') AND (USE_EXISTING_CONNECTION == 'true'))"
+	        SHOW_IF="((DEL_IN_LIST_BUCKETS == 'false') AND (AUTH_TYPE == 'USER_ACCOUNT_HMAC') AND (USE_EXISTING_CONNECTION == 'false'))
+							OR
+						 ((DEL_IN_LIST_BUCKETS == 'false') AND (#LINK@NODE.CONNECTION.AUTH_TYPE == 'USER_ACCOUNT_HMAC') AND (USE_EXISTING_CONNECTION == 'true'))"
 	        GROUP="DELETE_CONFIG"
   		>
         	<DEFAULT>false</DEFAULT>
@@ -112,8 +139,12 @@
 	      	NAME="PROJECT_ID"
 	      	FIELD="TEXT"
 	      	NUM_ROW="30"
-	     	REQUIRED="true"
-	      	SHOW_IF="(SPECIFY_PROJECT == 'true') AND (DEL_IN_LIST_BUCKETS == 'false')"
+	     	REQUIRED_IF="((SPECIFY_PROJECT == 'true') AND (DEL_IN_LIST_BUCKETS == 'false') AND (AUTH_TYPE == 'USER_ACCOUNT_HMAC') AND (USE_EXISTING_CONNECTION == 'false'))
+			 				OR
+						 ((SPECIFY_PROJECT == 'true') AND (DEL_IN_LIST_BUCKETS == 'false') AND (#LINK@NODE.CONNECTION.AUTH_TYPE == 'USER_ACCOUNT_HMAC') AND (USE_EXISTING_CONNECTION == 'true'))"
+	      	SHOW_IF="((SPECIFY_PROJECT == 'true') AND (DEL_IN_LIST_BUCKETS == 'false') AND (AUTH_TYPE == 'USER_ACCOUNT_HMAC') AND (USE_EXISTING_CONNECTION == 'false'))
+			 				OR
+						 ((SPECIFY_PROJECT == 'true') AND (DEL_IN_LIST_BUCKETS == 'false') AND (#LINK@NODE.CONNECTION.AUTH_TYPE == 'USER_ACCOUNT_HMAC') AND (USE_EXISTING_CONNECTION == 'true'))"
 	      	GROUP="DELETE_CONFIG"
     	>
         	<DEFAULT>""</DEFAULT>
@@ -159,11 +190,54 @@
 
 	<CODEGENERATION>
 	    <IMPORTS>
+			<!-- USER_ACCOUNT_HMAC -->
 	      	<IMPORT NAME="jets3t-0.9.1" MODULE="jets3t-0.9.1.jar" MVN="mvn:org.talend.libraries/jets3t-0.9.1/6.0.0"  REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false')" />
 			<IMPORT NAME="commons-logging-1.2" MODULE="commons-logging-1.2.jar" MVN="mvn:commons-logging/commons-logging/1.2" REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false')" />
 			<IMPORT NAME="httpclient-4.5.9" MODULE="httpclient-4.5.9.jar" MVN="mvn:org.apache.httpcomponents/httpclient/4.5.9" REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false')" />
 			<IMPORT NAME="httpcore-4.4.11" MODULE="httpcore-4.4.11.jar" MVN="mvn:org.apache.httpcomponents/httpcore/4.4.11" REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false')" />
 			<IMPORT NAME="commons-codec-1.11" MODULE="commons-codec-1.11.jar" MVN="mvn:commons-codec/commons-codec/1.11" REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false')" />
+
+			<!-- SERVICE_ACCOUNT -->
+			<IMPORT NAME="google-auth-library-oauth2-http-0.20.0" MODULE="google-auth-library-oauth2-http-0.20.0.jar" MVN="mvn:com.google.auth/google-auth-library-oauth2-http/0.20.0" REQUIRED_IF="(AUTH_TYPE == 'SERVICE_ACCOUNT')" />
+				<!-- Transitive dependencies of google-auth-library-oauth2-http -->
+				<IMPORT NAME="auto-value-annotations-1.7" MODULE="auto-value-annotations-1.7.jar" MVN="mvn:com.google.auto.value/auto-value-annotations/1.7" REQUIRED_IF="(AUTH_TYPE == 'SERVICE_ACCOUNT')" />
+				<IMPORT NAME="jsr305-3.0.2" MODULE="jsr305-3.0.2.jar" MVN="mvn:com.google.code.findbugs/jsr305/3.0.2" REQUIRED_IF="(AUTH_TYPE == 'SERVICE_ACCOUNT')" />
+				<IMPORT NAME="google-auth-library-credentials-0.20.0" MODULE="google-auth-library-credentials-0.20.0.jar" MVN="mvn:com.google.auth/google-auth-library-credentials/0.20.0" REQUIRED_IF="(AUTH_TYPE == 'SERVICE_ACCOUNT')" />
+				<IMPORT NAME="google-http-client-1.34.0" MODULE="google-http-client-1.34.0.jar" MVN="mvn:com.google.http-client/google-http-client/1.34.0" REQUIRED_IF="(AUTH_TYPE == 'SERVICE_ACCOUNT')" />
+				<IMPORT NAME="httpclient-4.5.10" MODULE="httpclient-4.5.10.jar" MVN="mvn:org.apache.httpcomponents/httpclient/4.5.10" REQUIRED_IF="(AUTH_TYPE == 'SERVICE_ACCOUNT')" />
+				<IMPORT NAME="commons-logging-1.2" MODULE="commons-logging-1.2.jar" MVN="mvn:commons-logging/commons-logging/1.2" REQUIRED_IF="(AUTH_TYPE == 'SERVICE_ACCOUNT')" />
+				<IMPORT NAME="commons-codec-1.11" MODULE="commons-codec-1.11.jar" MVN="mvn:commons-codec/commons-codec/1.11" REQUIRED_IF="(AUTH_TYPE == 'SERVICE_ACCOUNT')" />
+				<IMPORT NAME="httpcore-4.4.12" MODULE="httpcore-4.4.12.jar" MVN="mvn:org.apache.httpcomponents/httpcore/4.4.12" REQUIRED_IF="(AUTH_TYPE == 'SERVICE_ACCOUNT')" />
+				<IMPORT NAME="j2objc-annotations-1.3" MODULE="j2objc-annotations-1.3.jar" MVN="mvn:com.google.j2objc/j2objc-annotations/1.3" REQUIRED_IF="(AUTH_TYPE == 'SERVICE_ACCOUNT')" />
+				<IMPORT NAME="opencensus-contrib-http-util-0.24.0" MODULE="opencensus-contrib-http-util-0.24.0.jar" MVN="mvn:io.opencensus/opencensus-contrib-http-util/0.24.0" REQUIRED_IF="(AUTH_TYPE == 'SERVICE_ACCOUNT')" />
+				<IMPORT NAME="google-http-client-jackson2-1.34.0" MODULE="google-http-client-jackson2-1.34.0.jar" MVN="mvn:com.google.http-client/google-http-client-jackson2/1.34.0" REQUIRED_IF="(AUTH_TYPE == 'SERVICE_ACCOUNT')" />
+				<IMPORT NAME="jackson-core-2.10.1" MODULE="jackson-core-2.10.1.jar" MVN="mvn:com.fasterxml.jackson.core/jackson-core/2.10.1" REQUIRED_IF="(AUTH_TYPE == 'SERVICE_ACCOUNT')" />
+				<IMPORT NAME="guava-28.2-android" MODULE="guava-28.2-android.jar" MVN="mvn:com.google.guava/guava/28.2-android" REQUIRED_IF="(AUTH_TYPE == 'SERVICE_ACCOUNT')" />
+				<IMPORT NAME="failureaccess-1.0.1" MODULE="failureaccess-1.0.1.jar" MVN="mvn:com.google.guava/failureaccess/1.0.1" REQUIRED_IF="(AUTH_TYPE == 'SERVICE_ACCOUNT')" />
+				<IMPORT NAME="listenablefuture-9999.0-empty-to-avoid-conflict-with-guava" MODULE="listenablefuture-9999.0-empty-to-avoid-conflict-with-guava.jar" MVN="mvn:com.google.guava/listenablefuture/9999.0-empty-to-avoid-conflict-with-guava" REQUIRED_IF="(AUTH_TYPE == 'SERVICE_ACCOUNT')" />
+				<IMPORT NAME="checker-compat-qual-2.5.5" MODULE="checker-compat-qual-2.5.5.jar" MVN="mvn:org.checkerframework/checker-compat-qual/2.5.5" REQUIRED_IF="(AUTH_TYPE == 'SERVICE_ACCOUNT')" />
+				<IMPORT NAME="error_prone_annotations-2.3.4" MODULE="error_prone_annotations-2.3.4.jar" MVN="mvn:com.google.errorprone/error_prone_annotations/2.3.4" REQUIRED_IF="(AUTH_TYPE == 'SERVICE_ACCOUNT')" />
+
+			<IMPORT NAME="google-cloud-storage-1.108.0" MODULE="google-cloud-storage-1.108.0.jar" MVN="mvn:com.google.cloud/google-cloud-storage/1.108.0" REQUIRED_IF="(AUTH_TYPE == 'SERVICE_ACCOUNT')" />
+				<!-- Transitive dependencies of google-cloud-storage -->
+				<IMPORT NAME="google-api-client-1.30.9" MODULE="google-api-client-1.30.9.jar" MVN="mvn:com.google.api-client/google-api-client/1.30.9" REQUIRED_IF="(AUTH_TYPE == 'SERVICE_ACCOUNT')" />
+				<IMPORT NAME="google-oauth-client-1.30.5" MODULE="google-oauth-client-1.30.5.jar" MVN="mvn:com.google.oauth-client/google-oauth-client/1.30.5" REQUIRED_IF="(AUTH_TYPE == 'SERVICE_ACCOUNT')" />
+				<IMPORT NAME="google-api-services-storage-v1-rev20200326-1.30.9" MODULE="google-api-services-storage-v1-rev20200326-1.30.9.jar" MVN="mvn:com.google.apis/google-api-services-storage/v1-rev20200326-1.30.9" REQUIRED_IF="(AUTH_TYPE == 'SERVICE_ACCOUNT')" />
+				<IMPORT NAME="gson-2.8.6" MODULE="gson-2.8.6.jar" MVN="mvn:com.google.code.gson/gson/2.8.6" REQUIRED_IF="(AUTH_TYPE == 'SERVICE_ACCOUNT')" />
+				<IMPORT NAME="google-cloud-core-1.93.4" MODULE="google-cloud-core-1.93.4.jar" MVN="mvn:com.google.cloud/google-cloud-core/1.93.4" REQUIRED_IF="(AUTH_TYPE == 'SERVICE_ACCOUNT')" />
+				<IMPORT NAME="proto-google-common-protos-1.17.0" MODULE="proto-google-common-protos-1.17.0.jar" MVN="mvn:com.google.api.grpc/proto-google-common-protos/1.17.0" REQUIRED_IF="(AUTH_TYPE == 'SERVICE_ACCOUNT')" />
+				<IMPORT NAME="google-cloud-core-http-1.93.4" MODULE="google-cloud-core-http-1.93.4.jar" MVN="mvn:com.google.cloud/google-cloud-core-http/1.93.4" REQUIRED_IF="(AUTH_TYPE == 'SERVICE_ACCOUNT')" />
+				<IMPORT NAME="google-http-client-appengine-1.34.2" MODULE="google-http-client-appengine-1.34.2.jar" MVN="mvn:com.google.http-client/google-http-client-appengine/1.34.2" REQUIRED_IF="(AUTH_TYPE == 'SERVICE_ACCOUNT')" />
+				<IMPORT NAME="gax-httpjson-0.73.0" MODULE="gax-httpjson-0.73.0.jar" MVN="mvn:com.google.api/gax-httpjson/0.73.0" REQUIRED_IF="(AUTH_TYPE == 'SERVICE_ACCOUNT')" />
+				<IMPORT NAME="gax-1.56.0" MODULE="gax-1.56.0.jar" MVN="mvn:com.google.api/gax/1.56.0" REQUIRED_IF="(AUTH_TYPE == 'SERVICE_ACCOUNT')" />
+				<IMPORT NAME="api-common-1.9.0" MODULE="api-common-1.9.0.jar" MVN="mvn:com.google.api/api-common/1.9.0" REQUIRED_IF="(AUTH_TYPE == 'SERVICE_ACCOUNT')" />
+				<IMPORT NAME="javax.annotation-api-1.3.2" MODULE="javax.annotation-api-1.3.2.jar" MVN="mvn:javax.annotation/javax.annotation-api/1.3.2" REQUIRED_IF="(AUTH_TYPE == 'SERVICE_ACCOUNT')" />
+				<IMPORT NAME="opencensus-api-0.24.0" MODULE="opencensus-api-0.24.0.jar" MVN="mvn:io.opencensus/opencensus-api/0.24.0" REQUIRED_IF="(AUTH_TYPE == 'SERVICE_ACCOUNT')" />
+				<IMPORT NAME="grpc-context-1.22.1" MODULE="grpc-context-1.22.1.jar" MVN="mvn:io.grpc/grpc-context/1.22.1" REQUIRED_IF="(AUTH_TYPE == 'SERVICE_ACCOUNT')" />
+				<IMPORT NAME="proto-google-iam-v1-0.13.0" MODULE="proto-google-iam-v1-0.13.0.jar" MVN="mvn:com.google.api.grpc/proto-google-iam-v1/0.13.0" REQUIRED_IF="(AUTH_TYPE == 'SERVICE_ACCOUNT')" />
+				<IMPORT NAME="protobuf-java-3.11.4" MODULE="protobuf-java-3.11.4.jar" MVN="mvn:com.google.protobuf/protobuf-java/3.11.4" REQUIRED_IF="(AUTH_TYPE == 'SERVICE_ACCOUNT')" />
+				<IMPORT NAME="protobuf-java-util-3.11.4" MODULE="protobuf-java-util-3.11.4.jar" MVN="mvn:com.google.protobuf/protobuf-java-util/3.11.4" REQUIRED_IF="(AUTH_TYPE == 'SERVICE_ACCOUNT')" />
+				<IMPORT NAME="threetenbp-1.4.4" MODULE="threetenbp-1.4.4.jar" MVN="mvn:org.threeten/threetenbp/1.4.4" REQUIRED_IF="(AUTH_TYPE == 'SERVICE_ACCOUNT')" />
 	    </IMPORTS>
    	</CODEGENERATION>
 

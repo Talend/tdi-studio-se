@@ -32,6 +32,7 @@ dbLog = new DBLogUtil(node);
 //some global var
 boolean isEnableDebug = ("true").equals(ElementParameterParser.getValue(node, "__DEBUG__"));
 String dbmsId = ElementParameterParser.getValue(node,"__MAPPING__");
+boolean log4jEnabled = ("true").equals(ElementParameterParser.getValue(node, "__LOG4J_ACTIVATE__"));
 
 //get or create db connection statement generation
 String useExistingConnection = ElementParameterParser.getValue(node, "__USE_EXISTING_CONNECTION__");

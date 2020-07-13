@@ -242,7 +242,7 @@
     </PARAMETER>
 
     <PARAMETER
-      NAME="USE_L1"
+      NAME="USE_L0"
       FIELD="CHECK"
       NUM_ROW="70"
     >
@@ -250,9 +250,29 @@
     </PARAMETER>
 
     <PARAMETER
-      NAME="L1_FIELDS"
+      NAME="L0_FIELDS"
       FIELD="TABLE"
       NUM_ROW="71"
+      NB_LINES="5"
+      SHOW_IF="USE_L0 == 'true'"
+    >
+      <ITEMS>
+        <ITEM NAME="NAME" FIELD="COLUMN_LIST" />
+      </ITEMS>
+    </PARAMETER>
+
+    <PARAMETER
+      NAME="USE_L1"
+      FIELD="CHECK"
+      NUM_ROW="75"
+    >
+      <DEFAULT>false</DEFAULT>
+    </PARAMETER>
+
+    <PARAMETER
+      NAME="L1_FIELDS"
+      FIELD="TABLE"
+      NUM_ROW="76"
       NB_LINES="5"
       SHOW_IF="USE_L1 == 'true'"
     >

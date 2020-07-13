@@ -291,20 +291,22 @@ int nb_file_<%=cid%> = 0;
 %>
         String rootDir_<%=cid %> = ftp_<%=cid %>.printWorkingDirectory();
         String remotedir_<%=cid%> = (<%=remotedir%>).replaceAll("\\\\", "/");
+        boolean cwdSuccess_<%=cid %> = ftp_<%=cid %>.changeWorkingDirectory(remotedir_<%=cid %>);
 <%
         if(createDirIfNotExist) {
 %>
-            String[] dirsTree_<%=cid %> = remotedir_<%=cid %>.split("/");
-            for (String dir: dirsTree_<%=cid %>) {
-                ftp_<%=cid %>.makeDirectory(dir);
-                ftp_<%=cid %>.changeWorkingDirectory(dir);
-            }
-
-            ftp_<%=cid %>.changeWorkingDirectory(rootDir_<%=cid %>);
+			if(!cwdSuccess_<%=cid %>){
+				String[] dirsTree_<%=cid %> = remotedir_<%=cid %>.split("/");
+				for (String dir: dirsTree_<%=cid %>) {
+					ftp_<%=cid %>.makeDirectory(dir);
+					ftp_<%=cid %>.changeWorkingDirectory(dir);
+				}
+				ftp_<%=cid %>.changeWorkingDirectory(rootDir_<%=cid %>);
+				cwdSuccess_<%=cid %> = ftp_<%=cid %>.changeWorkingDirectory(remotedir_<%=cid %>);
+			}
 <%
         }
 %>
-        boolean cwdSuccess_<%=cid %> = ftp_<%=cid %>.changeWorkingDirectory(remotedir_<%=cid %>);
 
         if (!cwdSuccess_<%=cid %>) {
             throw new RuntimeException("Failed to change remote directory. " + ftp_<%=cid %>.getReplyString());

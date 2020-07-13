@@ -1,0 +1,346 @@
+<COMPONENT>
+  <HEADER
+    PLATEFORM="ALL"
+    SERIAL=""
+    VERSION="2.0"
+    STATUS="PROD"
+    
+    COMPATIBILITY="ALL"
+    AUTHOR="Talend"
+    RELEASE_DATE="20151112A"
+    STARTABLE="false"
+    DATA_AUTO_PROPAGATE="false"
+    HAS_CONDITIONAL_OUTPUTS="true"
+    PARALLELIZE="false"
+	PARTITIONING="AUTO"
+    LOG4J_ENABLED="true"
+  >
+    <SIGNATURE/>
+  </HEADER>
+
+  <FAMILIES>
+    <FAMILY>Databases/DB Specifics/EXASolution</FAMILY>
+  </FAMILIES>
+
+  <DOCUMENTATION>
+    <URL/>
+  </DOCUMENTATION>
+
+  <CONNECTORS>
+    <CONNECTOR CTYPE="FLOW" MAX_INPUT="1" MAX_OUTPUT="1"/>
+    <CONNECTOR NAME="REJECT" CTYPE="FLOW" MAX_INPUT="0" MAX_OUTPUT="1" LINE_STYLE="2" COLOR="FF0000" BASE_SCHEMA="FLOW" 
+    			NOT_SHOW_IF="(DIE_ON_ERROR == 'true')"/>
+    <CONNECTOR CTYPE="ITERATE" MAX_OUTPUT="0" MAX_INPUT="0"/>
+    <CONNECTOR CTYPE="SUBJOB_OK" MAX_INPUT="1" />
+    <CONNECTOR CTYPE="SUBJOB_ERROR" MAX_INPUT="1" />
+    <CONNECTOR CTYPE="COMPONENT_OK"/>
+    <CONNECTOR CTYPE="COMPONENT_ERROR"/>
+    <CONNECTOR CTYPE="RUN_IF"/>
+  </CONNECTORS>
+
+  <PARAMETERS>
+
+    <PARAMETER
+      NAME="PROPERTY"
+      FIELD="PROPERTY_TYPE"
+      SHOW="true"
+      NUM_ROW="2"
+      REPOSITORY_VALUE="DATABASE:Exasol"
+    />
+
+    <PARAMETER
+      NAME="USE_EXISTING_CONNECTION"
+      FIELD="CHECK"
+      NUM_ROW="10"
+    >
+      <DEFAULT>false</DEFAULT>
+    </PARAMETER>
+
+    <PARAMETER
+      NAME="CONNECTION"
+      FIELD="COMPONENT_LIST"
+      REQUIRED="true" FILTER="tExasolConnection"
+      NUM_ROW="10"
+      SHOW_IF="USE_EXISTING_CONNECTION == 'true'"
+      DYNAMIC_SETTINGS="true"
+    />
+
+    <PARAMETER
+      NAME="HOST"
+      FIELD="TEXT"
+      NUM_ROW="20"
+      SHOW_IF="USE_EXISTING_CONNECTION == 'false'"
+      REPOSITORY_VALUE="SERVER_NAME"
+	  REQUIRED="true"
+    >
+      <DEFAULT>""</DEFAULT>
+    </PARAMETER>
+
+    <PARAMETER
+      NAME="PORT"
+      FIELD="TEXT"
+      NUM_ROW="20"
+      SHOW_IF="USE_EXISTING_CONNECTION == 'false'"
+      REPOSITORY_VALUE="PORT"
+      REQUIRED="true"
+    >
+      <DEFAULT>"8563"</DEFAULT>
+    </PARAMETER>    
+    
+    <PARAMETER
+        NAME="NOTE"
+        FIELD="LABEL"
+        SHOW_IF="USE_EXISTING_CONNECTION == 'false'"
+        NUM_ROW="21">
+      <DEFAULT>Note: You can configure a server or cluster as ip-address range or comma separated host/ip-address list. 
+        Examples: "172.16.173.128" or "172.16.173.128..130" or "server1,server2"</DEFAULT>
+    </PARAMETER>
+
+	<PARAMETER
+      NAME="DB_SCHEMA"
+      FIELD="TEXT"
+      NUM_ROW="30"
+      SHOW_IF="USE_EXISTING_CONNECTION == 'false'"
+      SHOW="true"
+      REPOSITORY_VALUE="SID"
+	REQUIRED="true"
+    >
+      <DEFAULT>"SYS"</DEFAULT>
+    </PARAMETER>    
+
+    <PARAMETER
+      NAME="USER"
+      FIELD="TEXT"
+      NUM_ROW="40"
+      SHOW_IF="USE_EXISTING_CONNECTION == 'false'"
+      REPOSITORY_VALUE="USERNAME"
+      REQUIRED="true"
+    >
+      <DEFAULT>""</DEFAULT>
+    </PARAMETER>
+    
+    <PARAMETER
+      NAME="PASS"
+      FIELD="PASSWORD"
+      NUM_ROW="40"
+      SHOW_IF="USE_EXISTING_CONNECTION == 'false'"
+      REPOSITORY_VALUE="PASSWORD"
+      REQUIRED="true"
+    >
+      <DEFAULT>""</DEFAULT>
+    </PARAMETER>
+
+    <PARAMETER
+      NAME="TABLE"
+      FIELD="DBTABLE"
+      NUM_ROW="50"
+      REQUIRED="true"
+    >
+      <DEFAULT>""</DEFAULT>
+    </PARAMETER>
+
+    <PARAMETER
+      NAME="TABLE_ACTION"
+      FIELD="CLOSED_LIST"
+      NUM_ROW="60"
+    >
+      <ITEMS DEFAULT="NONE">
+        <ITEM NAME="NONE" VALUE="NONE" />
+        <ITEM NAME="DROP_CREATE" VALUE="DROP_CREATE"/>
+        <ITEM NAME="CREATE" VALUE="CREATE"/>
+        <ITEM NAME="CREATE_IF_NOT_EXISTS" VALUE="CREATE_IF_NOT_EXISTS"/>
+        <ITEM NAME="DROP_IF_EXISTS_AND_CREATE" VALUE="DROP_IF_EXISTS_AND_CREATE" />
+        <ITEM NAME="CLEAR" VALUE="CLEAR"/>
+        <ITEM NAME="TRUNCATE" VALUE="TRUNCATE"/>
+      </ITEMS>
+    </PARAMETER>
+
+    <PARAMETER
+      NAME="DATA_ACTION"
+      FIELD="CLOSED_LIST"
+      NUM_ROW="70"
+    >
+      <ITEMS DEFAULT="INSERT">
+        <ITEM NAME="INSERT"           VALUE="INSERT" />
+        <ITEM NAME="UPDATE"           VALUE="UPDATE"/>
+        <ITEM NAME="INSERT_OR_UPDATE" VALUE="INSERT_OR_UPDATE"/>
+        <ITEM NAME="UPDATE_OR_INSERT" VALUE="UPDATE_OR_INSERT"/>
+        <ITEM NAME="DELETE"           VALUE="DELETE"/>
+      </ITEMS>
+    </PARAMETER>
+         
+    <PARAMETER
+      NAME="SCHEMA_FLOW"
+      FIELD="SCHEMA_TYPE"
+      NUM_ROW="80"
+    >
+      <DEFAULT>""</DEFAULT>
+    </PARAMETER>
+    
+    <PARAMETER
+      NAME="SCHEMA_REJECT"
+      FIELD="SCHEMA_TYPE"
+      REQUIRED="true"
+      NUM_ROW="90"
+      CONTEXT="REJECT"
+      SHOW="true">
+      <TABLE READONLY="true">
+        <COLUMN NAME="errorCode" TYPE="id_String" LENGTH="255" READONLY="false" CUSTOM="true"/>
+        <COLUMN NAME="errorMessage" TYPE="id_String" LENGTH="255" READONLY="false" CUSTOM="true"/>
+      </TABLE>
+    </PARAMETER>    
+    
+    <PARAMETER
+      NAME="DIE_ON_ERROR"
+      FIELD="CHECK"
+      NUM_ROW="91"
+    >
+      <DEFAULT>false</DEFAULT>
+    </PARAMETER>
+
+	<PARAMETER
+      NAME="MAPPING"
+      FIELD="MAPPING_TYPE"
+      NUM_ROW="100"
+      SHOW="false"
+    >       
+      <DEFAULT>Exasol_id</DEFAULT>
+    </PARAMETER>
+    
+    <PARAMETER
+      NAME="TYPE"
+      FIELD="TEXT"
+      NUM_ROW="110"
+      SHOW="false"
+      REPOSITORY_VALUE="TYPE"
+    >
+      <DEFAULT>Exasol</DEFAULT>
+    </PARAMETER>
+    
+  </PARAMETERS>
+  
+  <ADVANCED_PARAMETERS>
+	<PARAMETER
+      NAME="USE_COMMIT_CONTROL"
+      FIELD="CHECK"
+      SHOW_IF="USE_EXISTING_CONNECTION == 'false'"
+      NUM_ROW="10" 
+    >
+      <DEFAULT>true</DEFAULT>
+    </PARAMETER>
+	
+    <PARAMETER
+      NAME="COMMIT_EVERY"
+      FIELD="TEXT"
+      NUM_ROW="10"
+      REQUIRED="true"
+      SHOW_IF="(USE_EXISTING_CONNECTION == 'false') and (USE_COMMIT_CONTROL == 'true')"
+    >
+      <DEFAULT>10000</DEFAULT>
+    </PARAMETER> 
+    
+    <PARAMETER 
+      NAME="PROPERTIES" 
+      FIELD="TEXT" 
+      NUM_ROW="20" 
+      SHOW_IF="USE_EXISTING_CONNECTION == 'false'"
+      REPOSITORY_VALUE="PROPERTIES_STRING" 
+    >
+		<DEFAULT>"encryption=0;clientname=Talend"</DEFAULT>
+	</PARAMETER>
+
+    <PARAMETER
+        NAME="NOTE"
+        FIELD="LABEL"
+        NUM_ROW="21">
+      <DEFAULT>Note: Example for Additional JDBC Parameters: "parameterName1=value1;parameterName2=value2;"</DEFAULT>
+    </PARAMETER>
+
+    <PARAMETER
+      NAME="ADD_COLS"
+      FIELD="TABLE"
+      REQUIRED="false"
+      NUM_ROW="40"
+      NB_LINES="3"
+    >
+      <ITEMS>
+        <ITEM NAME="NAME" VALUE='"colname"' />
+		    <ITEM NAME="DATATYPE" VALUE="VARCHAR(50)" RAW="true" NOT_SHOW_IF="(TABLE_ACTION=='NONE') or (TABLE_ACTION=='CLEAR')"/>
+        <ITEM NAME="SQL" VALUE='"now()"' />
+        <ITEM NAME="POS" FIELD="CLOSED_LIST">
+          <ITEMS DEFAULT="BEFORE">
+            <ITEM NAME="BEFORE" VALUE="BEFORE"/>
+            <ITEM NAME="AFTER" VALUE="AFTER"/>
+            <ITEM NAME="REPLACE" VALUE="REPLACE"/>
+          </ITEMS>
+        </ITEM>
+        <ITEM NAME="REFCOL" FIELD="COLUMN_LIST" />
+      </ITEMS>
+    </PARAMETER>
+	
+    <PARAMETER
+      NAME="USE_FIELD_OPTIONS"
+      FIELD="CHECK"
+      NUM_ROW="50"
+    >
+      <DEFAULT>false</DEFAULT>
+    </PARAMETER>
+
+    <PARAMETER
+      NAME="FIELD_OPTIONS"
+      FIELD="TABLE"
+      REQUIRED="true"
+      NUM_ROW="60"
+      NB_LINES="5"
+      SHOW_IF="USE_FIELD_OPTIONS == 'true'"
+    >
+      <ITEMS BASED_ON_SCHEMA="true">
+        <ITEM NAME="UPDATE_KEY" VALUE="false" FIELD="CHECK" />
+        <ITEM NAME="DELETE_KEY" VALUE="false" FIELD="CHECK" />
+        <ITEM NAME="UPDATABLE"  VALUE="true"  FIELD="CHECK" />
+        <ITEM NAME="INSERTABLE" VALUE="true"  FIELD="CHECK" />
+      </ITEMS>
+    </PARAMETER>
+    
+  	<PARAMETER 
+  	  NAME="ENABLE_DEBUG_MODE" 
+  	  FIELD="CHECK"
+	  NUM_ROW="70">
+	  <DEFAULT>false</DEFAULT>
+    </PARAMETER>
+    
+    <PARAMETER
+  	  NAME="USE_BATCH_SIZE"
+  	  FIELD="CHECK"
+	  NUM_ROW="80"
+	  SHOW_IF="(DATA_ACTION == 'INSERT') OR (DATA_ACTION == 'DELETE')"
+	>
+	    <DEFAULT>true</DEFAULT>
+	  </PARAMETER>
+    
+    <PARAMETER
+  	  NAME="BATCH_SIZE"
+  	  FIELD="TEXT"
+  	  NUM_ROW="80"
+  	  SHOW_IF="(USE_BATCH_SIZE == 'true') AND (isShow[USE_BATCH_SIZE])"
+	>
+	    <DEFAULT>10000</DEFAULT>
+	  </PARAMETER>
+    
+  </ADVANCED_PARAMETERS>
+
+   <CODEGENERATION>
+     <IMPORTS>
+         <IMPORT NAME="Driver-EXASolution" MODULE="exajdbc-6.0.9302.jar" MVN="mvn:org.talend.libraries/exajdbc-6.0.9302/6.3.0"  REQUIRED="true" />
+     </IMPORTS>
+   </CODEGENERATION>
+   
+  <RETURNS>
+    <RETURN NAME="NB_LINE"          TYPE="id_Integer" AVAILABILITY="AFTER"/>
+    <RETURN NAME="NB_LINE_UPDATED"  TYPE="id_Integer" AVAILABILITY="AFTER"/>
+    <RETURN NAME="NB_LINE_INSERTED" TYPE="id_Integer" AVAILABILITY="AFTER"/>
+    <RETURN NAME="NB_LINE_DELETED"  TYPE="id_Integer" AVAILABILITY="AFTER"/>
+    <RETURN NAME="NB_LINE_REJECTED" TYPE="id_Integer" AVAILABILITY="AFTER"/>
+    <RETURN NAME="QUERY" TYPE="id_String" AVAILABILITY="FLOW" SHOW_IF="ENABLE_DEBUG_MODE=='true'"/>
+  </RETURNS>
+</COMPONENT>

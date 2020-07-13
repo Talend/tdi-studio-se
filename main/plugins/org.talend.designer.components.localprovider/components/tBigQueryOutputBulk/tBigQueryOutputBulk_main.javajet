@@ -30,7 +30,8 @@
             boolean checkDiskSpace = ("true").equals(ElementParameterParser.getValue(node,"__CHECK_DISK_SPACE__"));
             boolean flushOnRow = ("true").equals(ElementParameterParser.getValue(node, "__FLUSHONROW__"));
             String flushMod = ElementParameterParser.getValue(node, "__FLUSHONROW_NUM__");
-            
+            boolean useCustomNullMarker = ElementParameterParser.getBooleanValue(node, "__USE_CUSTOM_NULL_MARKER__");
+            String nullMarker = useCustomNullMarker ? ElementParameterParser.getValue(node, "__CUSTOM_NULL_MARKER__") : "\"\\\\N\"";
             String encoding = ElementParameterParser.getValue(node,"__ENCODING__");        
             
             List< ? extends IConnection> conns = node.getIncomingConnections();
@@ -43,7 +44,7 @@
 						IMetadataColumn dynamicCol = metadata.getDynamicColumn();
             			%>
 						String[] row_<%=cid%>=new String[<%=sizeColumns%><%=hasDynamic?"+"+conn.getName()+".":"" %><%=dynamicCol==null?"":dynamicCol.getLabel()+".getColumnCount()-1" %>];
-						java.util.Arrays.fill(row_<%=cid%>, "\\N");
+						java.util.Arrays.fill(row_<%=cid%>, <%= nullMarker %>);
                     	<%
 						int dynamicColIndex = -1;
 						%>
@@ -114,7 +115,7 @@
                 			        }
                 			        %>                			    
                 			    } else {
-                                    row_<%=cid%>[curColumnIndex_<%=cid%>] = "\\N";
+                                    row_<%=cid%>[curColumnIndex_<%=cid%>] = <%= nullMarker %>;
                                 }
                 		 	<% 
                 			}
