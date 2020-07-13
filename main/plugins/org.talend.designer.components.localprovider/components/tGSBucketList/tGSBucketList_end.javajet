@@ -11,10 +11,12 @@ imports="
     String cid = node.getUniqueName();
     
     String useExistingConn = ElementParameterParser.getValue(node,"__USE_EXISTING_CONNECTION__");
+	String authType = ElementParameterParser.getValue(node, "__AUTH_TYPE__");
+	boolean useServiceAccountForConnection = "SERVICE_ACCOUNT".equals(authType);
 	%>
 		}
 	<%
-	if(!("true").equals(useExistingConn)) {
+	if(!("true").equals(useExistingConn) && !useServiceAccountForConnection) {
 	%>
 		}finally{
 			if(service_<%=cid%> !=null){

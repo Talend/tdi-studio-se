@@ -45,6 +45,7 @@ import org.talend.commons.ui.runtime.ws.WindowSystem;
 import org.talend.commons.ui.swt.drawing.background.BackgroundRefresher;
 import org.talend.commons.ui.swt.linking.BgDrawableComposite;
 import org.talend.commons.utils.threading.ExecutionLimiter;
+import org.talend.core.model.process.IConnection;
 import org.talend.designer.abstractmap.model.table.IDataMapTable;
 import org.talend.designer.abstractmap.ui.dnd.DraggingInfosPopup;
 import org.talend.designer.abstractmap.ui.listener.DropTargetOperationListener;
@@ -230,6 +231,20 @@ public class MapperUI {
                 dbmsId = input.getMetadataTable().getDbms();
             }
         }
+        if(dbmsId == null && mapperModel.getOutputDataMapTables() != null && !mapperModel.getOutputDataMapTables().isEmpty()) {
+            OutputTable output = mapperModel.getOutputDataMapTables().get(0);
+            if (output.getMetadataTable() != null) {
+                dbmsId = output.getMetadataTable().getDbms();
+            }
+        }
+        if(dbmsId == null && mapperManager.getAbstractMapComponent() != null 
+                && !mapperManager.getAbstractMapComponent().getIncomingConnections().isEmpty()){
+            IConnection conn = mapperManager.getAbstractMapComponent().getIncomingConnections().get(0);
+            if(conn.getMetadataTable() != null) {
+                dbmsId = conn.getMetadataTable().getDbms();
+            }
+        }
+        
         tabFolderEditors = new TabFolderEditors(mainSashForm, SWT.BORDER, mapperManager, dbmsId);
 
         createInputZoneWithTables(mapperModel, uiManager, display);

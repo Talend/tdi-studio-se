@@ -74,6 +74,22 @@ public class ExpressionTest {
         updateParameters(parameters, param1, param2, param3);
         assertFalse(Expression.evaluate("isShow[PARA2]", parameters, param3));
     }
+    
+    @Test
+    public void testIsShowFunctionItemShownOnMapping() {
+        List<IElementParameter> parameters = new ArrayList<IElementParameter>();
+        ElementParameter  param1 = createMockParameter("MAPPING", "hive_id");
+        ElementParameter  param2 = createMockParameter("PARA2",  "isShow[PARA1]");
+        ElementParameter  param3 = createMockParameter("L2_STARTDATE_FIELD_TYPE", "MAPPING == 'hive_id'");
+        updateParameters(parameters, param3, param2, param1);
+        assertTrue(Expression.evaluate("MAPPING == 'hive_id'", parameters, param3));
+        
+        param1 = createMockParameter("MAPPING", "mysql_id");
+        param2 = createMockParameter("PARA2",  "isShow[PARA1]");
+        param3 = createMockParameter("L2_STARTDATE_FIELD_TYPE", "MAPPING == 'hive_id'");
+        updateParameters(parameters, param3, param2, param1);
+        assertFalse(Expression.evaluate("MAPPING == 'hive_id'", parameters, param3));
+    }
 
     @Test
     public void testIsShowFunctionBooleanItem() {

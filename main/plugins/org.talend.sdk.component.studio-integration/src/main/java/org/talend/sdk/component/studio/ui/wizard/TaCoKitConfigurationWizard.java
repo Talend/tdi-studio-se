@@ -35,6 +35,7 @@ import org.talend.sdk.component.studio.model.parameter.Metadatas;
 import org.talend.sdk.component.studio.model.parameter.PropertyNode;
 import org.talend.sdk.component.studio.model.parameter.PropertyTreeCreator;
 import org.talend.sdk.component.studio.ui.wizard.page.TaCoKitConfigurationWizardPage;
+import org.talend.sdk.component.studio.ui.wizard.page.TaCoKitPageBuildHelper;
 import org.talend.sdk.component.studio.ui.wizard.page.WizardTypeMapper;
 import org.talend.sdk.component.studio.util.TaCoKitConst;
 
@@ -146,15 +147,36 @@ public abstract class TaCoKitConfigurationWizard extends CheckLastVersionReposit
         wizardPropertiesPage.setDescription(""); //$NON-NLS-1$
         addPage(wizardPropertiesPage);
         final PropertyNode root = new PropertyTreeCreator(new WizardTypeMapper()).createPropertyTree(configTypeNode);
+        TaCoKitPageBuildHelper helper = new TaCoKitPageBuildHelper(this.runtimeData);
         if (root.hasLeaves(Metadatas.MAIN_FORM)) {
-            mainPage = new TaCoKitConfigurationWizardPage(runtimeData, Metadatas.MAIN_FORM, isNew());
+            helper.infer(Metadatas.MAIN_FORM);
+        }
+        if (root.hasLeaves(Metadatas.ADVANCED_FORM)) {
+            helper.infer(Metadatas.ADVANCED_FORM);
+        }
+        helper.terminate();
+        if (root.hasLeaves(Metadatas.MAIN_FORM)) {
+
+            mainPage = new TaCoKitConfigurationWizardPage(runtimeData,
+                    Metadatas.MAIN_FORM,
+                    isNew(),
+                    helper.getParameters(Metadatas.MAIN_FORM));
             addPage(mainPage);
         }
         if (root.hasLeaves(Metadatas.ADVANCED_FORM)) {
-            advancedPage = new TaCoKitConfigurationWizardPage(runtimeData, Metadatas.ADVANCED_FORM, isNew());
+            advancedPage = new TaCoKitConfigurationWizardPage(runtimeData,
+                    Metadatas.ADVANCED_FORM,
+                    isNew(),
+                    helper.getParameters(Metadatas.ADVANCED_FORM));
             addPage(advancedPage);
         }
     }
+
+    /*public Iterable<? extends IElementParameter> getElementsParameters() {
+        return Iterables.concat(
+                this.mainPage != null ? this.mainPage.getElementsParameters() : Collections.emptyList(),
+                this.advancedPage != null ? this.advancedPage.getElementsParameters() : Collections.emptyList());
+    }*/
 
     @Override
     public boolean performFinish() {

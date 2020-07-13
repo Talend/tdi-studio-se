@@ -516,7 +516,7 @@ public final class Expression {
                     IElementParameter testedParameter = param;
                     Object value = null;
                     boolean found = false;
-                    if (param.getFieldType().equals(EParameterFieldType.TABLE)) {
+                    if (EParameterFieldType.TABLE.equals(param.getFieldType())) {
                         List<Map<String, Object>> tableValues = (List<Map<String, Object>>) param.getValue();
                         if (currentParam == null) {
                             continue;
@@ -633,11 +633,12 @@ public final class Expression {
                                 }
                             }
                         }
-                    } else if (param.getFieldType().equals(EParameterFieldType.PROPERTY_TYPE)
-                            || param.getFieldType().equals(EParameterFieldType.SCHEMA_TYPE)
-                            || param.getFieldType().equals(EParameterFieldType.SCHEMA_REFERENCE)
-                            || param.getFieldType().equals(EParameterFieldType.QUERYSTORE_TYPE)
-                            || param.getFieldType().equals(EParameterFieldType.ENCODING_TYPE)) {
+                    } else if (param.getFieldType() != null
+                            && (param.getFieldType().equals(EParameterFieldType.PROPERTY_TYPE)
+                                    || param.getFieldType().equals(EParameterFieldType.SCHEMA_TYPE)
+                                    || param.getFieldType().equals(EParameterFieldType.SCHEMA_REFERENCE)
+                                    || param.getFieldType().equals(EParameterFieldType.QUERYSTORE_TYPE)
+                                    || param.getFieldType().equals(EParameterFieldType.ENCODING_TYPE))) {
 
                         boolean child = false;
                         Map<String, IElementParameter> childParameters = param.getChildParameters();
@@ -684,9 +685,12 @@ public final class Expression {
                             Object[] values = testedParameter.getListItemsValue();
                             for (int i = 0; i < values.length && !found; i++) {
                                 if (value.equals(values[i])) {
-                                    String variableCode = testedParameter.getListItemsDisplayCodeName()[i];
-                                    if (variableCode.equals(variableValue)) {
-                                        found = true;
+                                    String[] listItemsDisplayCodeName = testedParameter.getListItemsDisplayCodeName();
+                                    if(listItemsDisplayCodeName!=null) {
+                                        String variableCode = listItemsDisplayCodeName[i];
+                                        if (variableCode.equals(variableValue)) {
+                                            found = true;
+                                        }
                                     }
                                 }
                             }

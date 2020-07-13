@@ -17,6 +17,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -1773,7 +1774,6 @@ public class DataProcess implements IGeneratingProcess {
 
         for (INode node : newGraphicalNodeList) {
             checkUseParallelize(node);
-            checkUseHadoopConfs(node);
         }
 
         // calculate the merge info for every node
@@ -1991,6 +1991,8 @@ public class DataProcess implements IGeneratingProcess {
 	            }
         	}
         }
+
+        checkUseHadoopConfs(newGraphicalNodeList);
 
         // IGenericDBService dbService = null;
         // if (GlobalServiceRegister.getDefault().isServiceRegistered(IGenericDBService.class)) {
@@ -3243,15 +3245,155 @@ public class DataProcess implements IGeneratingProcess {
         addDataNode(asyncOutNode);
     }
 
-    private void checkUseHadoopConfs(INode graphicalNode) {
-        String id = JavaProcessUtil.getHadoopClusterItemId(graphicalNode);
-        if (id != null) {
+    private void checkUseHadoopConfs(List<INode> newGraphicalNodes) {
+        try {
+            if (newGraphicalNodes == null || newGraphicalNodes.isEmpty()) {
+                return;
+            }
+            List<INode> newGraphicalNodeList = new LinkedList<>(newGraphicalNodes);
+            newGraphicalNodeList.sort((left, right) -> {
+                try {
+                    if (left == null || right == null) {
+                        // keep the order same like before
+                        return 0;
+                    }
+
+                    final String prejobCompName = "tPrejob";
+                    INode leftStartNode = left.getSubProcessStartNode(true);
+                    INode rightStartNode = right.getSubProcessStartNode(true);
+
+                    boolean isLeftPrejob = Optional.ofNullable(leftStartNode).map(n -> n.getComponent()).map(c -> c.getName())
+                            .map(n -> prejobCompName.equals(n)).orElse(false);
+                    boolean isRightPrejob = Optional.ofNullable(rightStartNode).map(n -> n.getComponent()).map(c -> c.getName())
+                            .map(n -> prejobCompName.equals(n)).orElse(false);
+                    /**
+                     * Same logic for prejob in joblet
+                     */
+                    if (isLeftPrejob && isRightPrejob) {
+                        // keep the order same like before
+                        return 0;
+                    } else if (isLeftPrejob) {
+                        return -1;
+                    } else if (isRightPrejob) {
+                        return 1;
+                    }
+                } catch (Throwable e) {
+                    ExceptionHandler.process(e);
+                }
+
+                // keep the order same like before
+                return 0;
+            });
+            String addedClusterId = null;
+            boolean added = false;
+            for (INode node : newGraphicalNodeList) {
+                String hadoopClusterId = JavaProcessUtil.getHadoopClusterItemId(node);
+                if (StringUtils.isBlank(hadoopClusterId)) {
+                    continue;
+                }
+                if (added) {
+                    if (StringUtils.equals(addedClusterId, hadoopClusterId)) {
+                        ExceptionHandler.log(
+                                "Duplicated defination of hadoop cluster metadata, using existing connection is recommanded");
+                    } else {
+                        ExceptionHandler.log("Each job can only load one hadoop configuration, loaded cluster metadata: "
+                                + addedClusterId + ", ignored cluster metadata: " + hadoopClusterId);
+                    }
+                } else {
+                    added = checkUseHadoopConfs(node, hadoopClusterId);
+                    if (added) {
+                        addedClusterId = hadoopClusterId;
+                    }
+                }
+            }
+        } catch (Throwable e) {
+            ExceptionHandler.process(e);
+        }
+    }
+
+    private boolean checkUseHadoopConfs(INode graphicalNode, String id) {
+        boolean added = false;
+        if (StringUtils.isNotBlank(id)) {
             DataNode confNode = createHadoopConfManagerNode(id, "tHadoopConfManager", ComponentCategory.CATEGORY_4_DI,
                     graphicalNode);
             if (confNode != null) {
-                addDataNode(confNode);
+                INode addedNode = addDataNode(confNode);
+                added = (addedNode != null);
+                if (!(addedNode instanceof AbstractNode)) {
+                    return added;
+                }
+                AbstractNode addedConfDataNode = (AbstractNode) addedNode;
+                INode bdDataNode = Optional.ofNullable(buildCheckMap).map(m -> m.get(graphicalNode)).orElse(null);
+                if (bdDataNode != null && addedConfDataNode != null && bdDataNode.isActivate()
+                        && addedConfDataNode.isActivate()) {
+                    INode startNode = bdDataNode.getSubProcessStartNode(true);
+                    if (Optional.ofNullable(startNode).map(n -> n.getComponent()).map(c -> c.getName())
+                            .map(n -> "tPrejob".equals(n)).orElse(false)) {
+                        IConnection conn = null;
+                        try {
+                            conn = findConnection2InsertHadoopConf(startNode, bdDataNode, new HashSet<>());
+                        } catch (Throwable e) {
+                            ExceptionHandler.process(e);
+                        }
+                        if (conn instanceof AbstractConnection) {
+                            INode relinkNode = conn.getTarget();
+                            if (relinkNode instanceof AbstractNode) {
+                                ((AbstractConnection) conn).setTarget(addedConfDataNode);
+
+                                addedConfDataNode.setStart(false);
+                                addedConfDataNode.setSubProcessStart(relinkNode.isSubProcessStart());
+                                addedConfDataNode.setDesignSubjobStartNode(null);
+
+                                DataConnection onCompOkConn = new DataConnection();
+                                onCompOkConn.setActivate(true);
+                                onCompOkConn.setLineStyle(EConnectionType.ON_COMPONENT_OK);
+                                onCompOkConn.setTraceConnection(false);
+                                onCompOkConn
+                                        .setName("after_" + addedConfDataNode.getUniqueName() + "_" + relinkNode.getUniqueName()); //$NON-NLS-1$ //$NON-NLS-2$
+                                onCompOkConn.setSource(addedConfDataNode);
+                                onCompOkConn.setTarget(relinkNode);
+                                onCompOkConn.setConnectorName(EConnectionType.ON_COMPONENT_OK.getName());
+
+                                ((AbstractNode) relinkNode).setSubProcessStart(true);
+                                ((AbstractNode) relinkNode).setDesignSubjobStartNode(null);
+                                createDataConnection(addedConfDataNode, (AbstractNode) relinkNode, onCompOkConn, null);
+                            }
+                        }
+                    }
+                }
             }
         }
+        return added;
+    }
+
+    private IConnection findConnection2InsertHadoopConf(INode startNode, INode node, Set<INode> visited) {
+        if (node == null || startNode == null) {
+            return null;
+        }
+        if (visited.contains(node)) {
+            return null;
+        } else {
+            visited.add(node);
+        }
+        List<? extends IConnection> inConns = node.getIncomingConnections();
+        if (inConns == null) {
+            return null;
+        }
+        for (IConnection inConn : inConns) {
+            if (!inConn.isActivate()) {
+                continue;
+            }
+            EConnectionType lineStyle = inConn.getLineStyle();
+            if (lineStyle.hasConnectionCategory(IConnectionCategory.CONDITION)
+                    && lineStyle.hasConnectionCategory(IConnectionCategory.DEPENDENCY)) {
+                return inConn;
+            }
+            IConnection conn = findConnection2InsertHadoopConf(startNode, inConn.getSource(), visited);
+            if (conn != null) {
+                return conn;
+            }
+        }
+        return null;
     }
 
     /**
