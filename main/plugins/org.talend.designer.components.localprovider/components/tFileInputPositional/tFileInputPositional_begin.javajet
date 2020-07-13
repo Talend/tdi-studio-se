@@ -761,10 +761,10 @@
                 try {//TD110 begin
                 	if(filename_<%=cid %> instanceof java.io.InputStream){
                 		in_<%=cid %> = 
-                				new java.io.BufferedReader(new java.io.InputStreamReader((java.io.InputStream)filename_<%=cid %>, <%=encoding %>));
+                				new java.io.BufferedReader(new routines.system.UnicodeReader((java.io.InputStream)filename_<%=cid %>, <%=encoding %>));
                 	}else{
                 		in_<%=cid %> = 
-                			new java.io.BufferedReader(new java.io.InputStreamReader(new java.io.FileInputStream(String.valueOf(filename_<%=cid %>)), <%=encoding %>));
+                			new java.io.BufferedReader(new routines.system.UnicodeReader(new java.io.FileInputStream(String.valueOf(filename_<%=cid %>)), <%=encoding %>));
                 	}
 
 			<%
@@ -838,7 +838,7 @@
             	if(filename_<%=cid %> instanceof java.io.InputStream){
             		throw new java.lang.RuntimeException("When the input source is a stream,footer shouldn't be bigger than 0.");
             	}else{
-            		in_<%=cid %> = new java.io.BufferedReader(new java.io.InputStreamReader(new java.io.FileInputStream(String.valueOf(filename_<%=cid %>)), <%=encoding %>));
+            		in_<%=cid %> = new java.io.BufferedReader(new routines.system.UnicodeReader(new java.io.FileInputStream(String.valueOf(filename_<%=cid %>)), <%=encoding %>));
             	}
 				<%
 				if("BYTES".equals(patternUnits)&&(("").equals(rowSeparator) || ("\"\"").equals(rowSeparator))){
