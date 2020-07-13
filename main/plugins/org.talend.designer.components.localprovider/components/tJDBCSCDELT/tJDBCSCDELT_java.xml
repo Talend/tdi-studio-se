@@ -245,6 +245,7 @@
       NAME="USE_L0"
       FIELD="CHECK"
       NUM_ROW="70"
+      NOT_SHOW_IF="MAPPING == 'hive_id'"
     >
       <DEFAULT>false</DEFAULT>
     </PARAMETER>
@@ -254,7 +255,7 @@
       FIELD="TABLE"
       NUM_ROW="71"
       NB_LINES="5"
-      SHOW_IF="USE_L0 == 'true'"
+      SHOW_IF="isShow[USE_L0] AND (USE_L0 == 'true')"
     >
       <ITEMS>
         <ITEM NAME="NAME" FIELD="COLUMN_LIST" />
