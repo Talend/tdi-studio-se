@@ -553,7 +553,7 @@ public class JobJavaScriptOSGIForESBManager extends JobJavaScriptsManager {
             // TESB-24998 Add context bean in blueprint
             endpointInfo.put("useContextBean", true); //$NON-NLS-1$
             endpointInfo.put("defaultContext", processItem.getProcess().getDefaultContext()); //$NON-NLS-1$
-        } else if (!endpointUri.isEmpty() && !endpointUri.contains("://") && !endpointUri.startsWith("/")) { //$NON-NLS-1$ //$NON-NLS-2$
+        } else if (!endpointUri.contains("://") && !endpointUri.startsWith("/")) { //$NON-NLS-1$ //$NON-NLS-2$
             endpointUri = '/' + endpointUri;
         }
 
