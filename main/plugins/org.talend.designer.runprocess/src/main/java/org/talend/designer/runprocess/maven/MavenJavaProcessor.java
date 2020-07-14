@@ -389,7 +389,8 @@ public class MavenJavaProcessor extends JavaProcessor {
         if (!isMainJob && isGoalInstall) {
             if (!buildCacheManager.isJobBuild(getProperty())) {
                 deleteExistedJobJarFile(talendJavaProject);
-                if ("ROUTE".equalsIgnoreCase(getBuildType(getProperty())) && project != null &&
+                String buildType = getBuildType(getProperty());
+                if (("ROUTE".equalsIgnoreCase(buildType) || "OSGI".equalsIgnoreCase(buildType)) && project != null &&
                         ERepositoryObjectType.PROCESS.equals(ERepositoryObjectType.getType(getProperty()))) {
                     // TESB-23870
                     // child routes job project must be compiled explicitly for
