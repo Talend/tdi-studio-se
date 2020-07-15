@@ -1352,28 +1352,32 @@ skeleton="../templates/db_output_bulk.skeleton"
                         <%
                         }
                         %>
-                        rowsToCommitCount_<%=cid%> += pstmt_<%=cid %>.getUpdateCount();
                         <%
                         if (("INSERT").equals(dataAction)) {
                         %>
                             insertedCount_<%=cid%> += pstmt_<%=cid %>.getUpdateCount();
+                            rowsToCommitCount_<%=cid%> += pstmt_<%=cid %>.getUpdateCount();
                         <%
                         }else if (("UPDATE").equals(dataAction)) {
                         %>
                             updatedCount_<%=cid%> += pstmt_<%=cid %>.getUpdateCount();
+                            rowsToCommitCount_<%=cid%> += pstmt_<%=cid %>.getUpdateCount();
                         <%
                         }else if (("DELETE").equals(dataAction)) {
                         %>
                             deletedCount_<%=cid%> += pstmt_<%=cid %>.getUpdateCount();
+                            rowsToCommitCount_<%=cid%> += pstmt_<%=cid %>.getUpdateCount();
                         <%
                         }else if (("COPY").equals(dataAction)) {
                             if("vertica_3.0_jdk_5.jar".equals(db_version) || "vertica_3.5_jdk_5.jar".equals(db_version) || "vertica_4.0_jdk_5.jar".equals(db_version) || "vertica_4.1.7_jdk_5.jar".equals(db_version) || "vertica_4.1.14_jdk_5.jar".equals(db_version)){
                         %>
                                 copiedCount_<%=cid%> += stmt_<%=cid %>.getUpdateCount();
+                                rowsToCommitCount_<%=cid%> += stmt_<%=cid %>.getUpdateCount();
                         <%
                             }else{
                         %> 
                                 copiedCount_<%=cid%> += vcs_<%=cid%>.getRowCount();
+                                rowsToCommitCount_<%=cid%> += vcs_<%=cid%>.getRowCount();
                         <%
                             }
                         }

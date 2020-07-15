@@ -1235,7 +1235,7 @@ IMetadataColumn talendDynCol = null;
         	    	<%
         	    	}%>
         	    	+= (tmp_batchUpdateCount_<%=cid%>!=-1?tmp_batchUpdateCount_<%=cid%>:0);
-        	    	rowsToCommitCount_<%=cid%> += tmp_batchUpdateCount_<%=cid%> != -1 ? tmp_batchUpdateCount_<%=cid%> : 0);
+        	    	rowsToCommitCount_<%=cid%> += tmp_batchUpdateCount_<%=cid%> != -1 ? tmp_batchUpdateCount_<%=cid%> : 0;
         	    	batchSizeCounter_<%=cid%> = 0;
     			}
 	    		<%
@@ -1285,7 +1285,7 @@ IMetadataColumn talendDynCol = null;
 		    	    	<%
 		    	    	}%>
 		    	    	+= (tmp_batchUpdateCount_<%=cid%>!=-1?tmp_batchUpdateCount_<%=cid%>:0);
-		    	    	rowsToCommitCount_<%=cid%> += tmp_batchUpdateCount_<%=cid%> != -1 ? tmp_batchUpdateCount_<%=cid%> : 0);
+		    	    	rowsToCommitCount_<%=cid%> += tmp_batchUpdateCount_<%=cid%> != -1 ? tmp_batchUpdateCount_<%=cid%> : 0;
 		    	    	batchSizeCounter_<%=cid%> = 0;
 		    	    	}
 	                <%
