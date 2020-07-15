@@ -214,7 +214,7 @@ imports="
 	}
 	
 	boolean compressed = "true".equals(ElementParameterParser.getValue(node, "__COMPRESS__"));
-	if(compressed) {
+	if(!"PARQUET".equals(exportType) && compressed) {
 		String compression = ElementParameterParser.getValue(node, "__COMPRESSION__");
 %>
 		.append("<%=compression%> ")
