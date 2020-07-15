@@ -4,7 +4,7 @@ Bundle-Name: Webservice Plug-in
 Bundle-SymbolicName: org.talend.designer.webservice;singleton:=true
 Bundle-Version: 7.4.1.qualifier
 Bundle-Activator: org.talend.designer.webservice.WebServiceComponentPlugin
-Require-Bundle: org.apache.commons.beanutils,
+Require-Bundle: org.apache.commons.commons-beanutils,
  org.talend.core,
  org.talend.core.ui,
  org.talend.designer.core,
