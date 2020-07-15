@@ -138,7 +138,7 @@ abstract class Manager {
                 dataType = metadataColumn.getType();
             }
             
-            Integer length = metadataColumn.getLength() == null ? 0 : metadataColumn.getLength();
+            Integer length = metadataColumn.getLength() == null ? "sybase_id".equalsIgnoreCase(getDBMSId()) ? 1 : 0 : metadataColumn.getLength();
             
             if ("mysql_id".equalsIgnoreCase(getDBMSId()) && dataType.endsWith("UNSIGNED") ) {
             	createTableSQL.append(dataType.substring(0,dataType.indexOf("UNSIGNED"))) ; 

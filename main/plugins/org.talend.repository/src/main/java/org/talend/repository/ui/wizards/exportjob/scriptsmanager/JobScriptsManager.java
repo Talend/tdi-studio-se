@@ -231,7 +231,8 @@ public abstract class JobScriptsManager {
         registryUsername,
         registryPassword,
         avoidBranchName,
-        mainJobOnly
+        mainJobOnly,
+        clearPasswordContextParameters
     }
 
     /**
