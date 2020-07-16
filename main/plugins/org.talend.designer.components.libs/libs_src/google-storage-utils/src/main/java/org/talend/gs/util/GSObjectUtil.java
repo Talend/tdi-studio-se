@@ -184,6 +184,6 @@ public class GSObjectUtil {
     private String combineTwoNames(String coreDir, String targetDir, File file){
         String filePath = file.getAbsolutePath();
         String relativePath =  targetDir + filePath.replace(coreDir + FileSystems.getDefault().getSeparator(), "");
-        return relativePath;
+        return relativePath.replaceAll("\\\\","/");
     }
 }
