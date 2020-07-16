@@ -139,16 +139,16 @@ if(("true").equals(useExistingConn)) {
 				.fromStream(new java.io.FileInputStream(<%=pathToServerAccoutKeyFile%>));
 	} catch (IOException e_<%=cid%>) {
 		<%
-		if (("true").equals(dieOnError)) {
+		if(isLog4jEnabled){
 		%>
-			throw(e_<%=cid%>);
+			log.error("<%=cid%> - Exception in component <%=cid%>.", e_<%=cid%>);
 		<%
 		}
 		%>
 		<%
-		if(isLog4jEnabled){
+		if (("true").equals(dieOnError)) {
 		%>
-			log.error("<%=cid%> - Exception in component <%=cid%>.", e_<%=cid%>);
+			throw(e_<%=cid%>);
 		<%
 		}
 		%>
