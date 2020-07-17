@@ -69,7 +69,7 @@ public class BuildOSGiBundleHandler extends BuildJobHandler {
         if (processItem != null) {
             String v = PomIdsHelper.getJobVersion(processItem.getProperty());
             if (v != null) {
-                v = v.replace("-", ".");
+                return v.replace("-", ".");
             }
         }
         return null;
