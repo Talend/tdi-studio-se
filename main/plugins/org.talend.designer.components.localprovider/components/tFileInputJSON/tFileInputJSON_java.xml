@@ -172,7 +172,7 @@
 			    REQUIRED_IF="(READ_BY == 'XPATH')" />
 			<IMPORT NAME="xom" MODULE="xom-1.2.7.jar" MVN="mvn:org.talend.libraries/xom-1.2.7/6.0.0"
 			    REQUIRED_IF="(READ_BY == 'XPATH')" />
-			<IMPORT NAME="commons_beanutils" MODULE="commons-beanutils-1.8.3.jar" MVN="mvn:commons-beanutils/commons-beanutils/1.8.3"  UrlPath="platform:/plugin/org.talend.libraries.apache.common/lib/commons-beanutils-1.8.3.jar"
+			<IMPORT NAME="commons_beanutils" MODULE="commons-beanutils-1.9.4.jar" MVN="mvn:commons-beanutils/commons-beanutils/1.9.4"
 				REQUIRED_IF="(READ_BY == 'XPATH')" />
 			<IMPORT NAME="commons_collections" MODULE="commons-collections-3.2.2.jar" MVN="mvn:commons-collections/commons-collections/3.2.2"  UrlPath="platform:/plugin/org.talend.libraries.apache.common/lib/commons-collections-3.2.2.jar"
 				REQUIRED_IF="(READ_BY == 'XPATH')" />
