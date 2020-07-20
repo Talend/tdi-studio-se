@@ -358,7 +358,7 @@ public class ChangeValuesFromRepository extends ChangeMetadataCommand {
                     param.setRepositoryValue(repositoryValue);
                     param.setRepositoryValueUsed(true);
                 }
-                if (StringUtils.equals("MAPPING", param.getName())) {//$NON-NLS-1$
+                if (connection instanceof DatabaseConnection && StringUtils.equals("MAPPING", param.getName())) {//$NON-NLS-1$
                     repositoryValue = param.getName();
                 }
                 if (repositoryValue == null
