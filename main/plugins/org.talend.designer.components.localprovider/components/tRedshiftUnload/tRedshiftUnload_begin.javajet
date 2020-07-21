@@ -191,7 +191,7 @@ imports="
         .append("FORMAT PARQUET ")
 <%
     }
-	if(encrypt) {
+	if(!"PARQUET".equals(exportType) && encrypt) {
 %>
 		.append("ENCRYPTED ")
 <%
