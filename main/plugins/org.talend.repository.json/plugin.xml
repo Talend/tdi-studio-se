@@ -47,6 +47,15 @@
             >
       </preview>
    </extension>
+     <extension
+       point="org.talend.core.runtime.filepreview_provider">
+      <preview
+            class="org.talend.designer.runprocess.shadow.ShadowFilePreview"
+            language="java"
+            type="FILE_XML"
+            >
+      </preview>
+   </extension>
    <extension
          point="org.talend.core.repository.repository_content">
       <RepositoryContent
