@@ -658,6 +658,7 @@ public class VersionManagementPage extends AbstractVersionManagementProjectSetti
                                             }
                                             builder.addOrUpdateItem(item, true);
                                         }
+                                        builder.saveRelations();
                                     } catch (PersistenceException e) {
                                         ExceptionHandler.process(e);
                                     }
