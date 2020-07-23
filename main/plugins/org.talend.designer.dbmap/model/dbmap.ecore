@@ -1,45 +1,88 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<ecore:EPackage xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" name="dbmap" nsURI="http://www.talend.org/dbmap" nsPrefix="TalendDBMap">
-  <eClassifiers xsi:type="ecore:EClass" name="DBMapData" eSuperTypes="../../org.talend.model/model/TalendFile.ecore#//AbstractExternalData">
-    <eStructuralFeatures xsi:type="ecore:EReference" name="VarTables" upperBound="-1"
-        eType="#//VarTable" containment="true"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="InputTables" upperBound="-1"
-        eType="#//InputTable" containment="true"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="OutputTables" upperBound="-1"
-        eType="#//OutputTable" containment="true"/>
-  </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="DBMapperTableEntry">
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="expression" ordered="false"
-        eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="type" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="nullable" ordered="false"
-        eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean"/>
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="join" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean"/>
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="operator" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
-  </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="AbstractDBDataMapTable">
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="minimized" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean"/>
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="readonly" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="DBMapperTableEntries" upperBound="-1"
-        eType="#//DBMapperTableEntry" containment="true"/>
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="tableName" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
-  </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="AbstaceDBInOutTable" eSuperTypes="#//AbstractDBDataMapTable"/>
-  <eClassifiers xsi:type="ecore:EClass" name="VarTable" eSuperTypes="#//AbstractDBDataMapTable"/>
-  <eClassifiers xsi:type="ecore:EClass" name="InputTable" eSuperTypes="#//AbstaceDBInOutTable">
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="joinType" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="alias" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
-  </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="OutputTable" eSuperTypes="#//AbstaceDBInOutTable">
-    <eStructuralFeatures xsi:type="ecore:EReference" name="FilterEntries" upperBound="-1"
-        eType="#//FilterEntry" containment="true"/>
-  </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="FilterEntry">
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="expression" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="filterKind" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
-  </eClassifiers>
+<ecore:EPackage xmi:version="2.0"
+	xmlns:xmi="http://www.omg.org/XMI"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" name="dbmap"
+	nsURI="http://www.talend.org/dbmap" nsPrefix="TalendDBMap">
+	<eClassifiers xsi:type="ecore:EClass" name="DBMapData"
+		eSuperTypes="../../org.talend.model/model/TalendFile.ecore#//AbstractExternalData">
+		<eStructuralFeatures xsi:type="ecore:EReference"
+			name="VarTables" upperBound="-1" eType="#//VarTable"
+			containment="true" />
+		<eStructuralFeatures xsi:type="ecore:EReference"
+			name="InputTables" upperBound="-1" eType="#//InputTable"
+			containment="true" />
+		<eStructuralFeatures xsi:type="ecore:EReference"
+			name="OutputTables" upperBound="-1" eType="#//OutputTable"
+			containment="true" />
+	</eClassifiers>
+	<eClassifiers xsi:type="ecore:EClass"
+		name="DBMapperTableEntry">
+		<eStructuralFeatures xsi:type="ecore:EAttribute"
+			name="name"
+			eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString" />
+		<eStructuralFeatures xsi:type="ecore:EAttribute"
+			name="expression" ordered="false"
+			eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString" />
+		<eStructuralFeatures xsi:type="ecore:EAttribute"
+			name="type"
+			eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString" />
+		<eStructuralFeatures xsi:type="ecore:EAttribute"
+			name="nullable" ordered="false"
+			eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean" />
+		<eStructuralFeatures xsi:type="ecore:EAttribute"
+			name="join"
+			eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean" />
+		<eStructuralFeatures xsi:type="ecore:EAttribute"
+			name="operator"
+			eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString" />
+	</eClassifiers>
+	<eClassifiers xsi:type="ecore:EClass"
+		name="AbstractDBDataMapTable">
+		<eStructuralFeatures xsi:type="ecore:EAttribute"
+			name="name"
+			eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString" />
+		<eStructuralFeatures xsi:type="ecore:EAttribute"
+			name="minimized"
+			eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean" />
+		<eStructuralFeatures xsi:type="ecore:EAttribute"
+			name="readonly"
+			eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean" />
+		<eStructuralFeatures xsi:type="ecore:EReference"
+			name="DBMapperTableEntries" upperBound="-1"
+			eType="#//DBMapperTableEntry" containment="true" />
+		<eStructuralFeatures xsi:type="ecore:EAttribute"
+			name="tableName"
+			eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString" />
+	</eClassifiers>
+	<eClassifiers xsi:type="ecore:EClass"
+		name="AbstaceDBInOutTable" eSuperTypes="#//AbstractDBDataMapTable" />
+	<eClassifiers xsi:type="ecore:EClass" name="VarTable"
+		eSuperTypes="#//AbstractDBDataMapTable" />
+	<eClassifiers xsi:type="ecore:EClass" name="InputTable"
+		eSuperTypes="#//AbstaceDBInOutTable">
+		<eStructuralFeatures xsi:type="ecore:EAttribute"
+			name="joinType"
+			eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString" />
+		<eStructuralFeatures xsi:type="ecore:EAttribute"
+			name="alias"
+			eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString" />
+	</eClassifiers>
+	<eClassifiers xsi:type="ecore:EClass" name="OutputTable"
+		eSuperTypes="#//AbstaceDBInOutTable">
+		<eStructuralFeatures xsi:type="ecore:EReference"
+			name="FilterEntries" upperBound="-1" eType="#//FilterEntry"
+			containment="true" />
+	</eClassifiers>
+	<eClassifiers xsi:type="ecore:EClass" name="FilterEntry">
+		<eStructuralFeatures xsi:type="ecore:EAttribute"
+			name="name"
+			eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString" />
+		<eStructuralFeatures xsi:type="ecore:EAttribute"
+			name="expression"
+			eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString" />
+		<eStructuralFeatures xsi:type="ecore:EAttribute"
+			name="filterKind"
+			eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString" />
+	</eClassifiers>
 </ecore:EPackage>

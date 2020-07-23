@@ -6,9 +6,10 @@ Automatic-Module-Name: org.talend.designer.dbmap
 Bundle-Version: 7.4.1.qualifier
 Bundle-ClassPath: .
 Require-Bundle: org.eclipse.core.runtime,
+ org.eclipse.emf.ecore;visibility:=reexport,
  org.apache.commons.collections,
  org.apache.commons.lang,
- org.talend.model,
+ org.talend.model;visibility:=reexport,
  org.talend.core,
  org.talend.core.ui,
  org.talend.designer.core,
@@ -25,7 +26,7 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.gef,
  org.eclipse.ui.workbench,
  org.talend.libraries.apache,
- org.eclipse.emf.ecore.xmi,
+ org.eclipse.emf.ecore.xmi;visibility:=reexport,
  org.talend.components.api
 Bundle-ActivationPolicy: lazy
 Eclipse-LazyStart: true
@@ -66,4 +67,5 @@ Export-Package: org.talend.designer.dbmap,
  org.talend.designer.dbmap.utils.problems
 Bundle-Vendor: %providerName
 Bundle-Localization: plugin
+Bundle-RequiredExecutionEnvironment: J2SE-1.5
 Eclipse-RegisterBuddy: org.talend.testutils

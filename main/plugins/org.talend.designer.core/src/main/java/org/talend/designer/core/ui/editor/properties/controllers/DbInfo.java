@@ -40,6 +40,8 @@ public class DbInfo {
     private String driverClassName = null;
 
     private String driverJarPath = null;
+    
+    private String driverJarUri = null;
 
     private String dbType = null;
 
@@ -197,12 +199,12 @@ public class DbInfo {
             List list = null;
             if (dbType.equals(EDatabaseTypeName.GENERAL_JDBC.getProduct())
                     || dbType.equals(EDatabaseTypeName.GENERAL_JDBC.getXmlName())) {
-                list = extractMeta.connect(trueDBTypeForJDBC, url, username, pwd, driverClassName, driverJarPath, dbVersion,
+                list = extractMeta.connect(trueDBTypeForJDBC, url, username, pwd, driverClassName, driverJarPath,driverJarUri, dbVersion,
                         additionalParams);
             } else {
                 // driverJarPath set to null,to reget driverJarPath
                 driverJarPath = "";
-                list = extractMeta.connect(dbType, url, username, pwd, driverClassName, driverJarPath, dbVersion,
+                list = extractMeta.connect(dbType, url, username, pwd, driverClassName, driverJarPath,driverJarUri, dbVersion,
                         additionalParams);
             }
             if (list != null && list.size() > 0) {

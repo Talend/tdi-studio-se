@@ -186,7 +186,7 @@ public class SessionTreeNodeUtils {
         ExtractMetaDataUtils extractMeta = ExtractMetaDataUtils.getInstance();
         List list = extractMeta.getConnection(iMetadataConnection.getDbType(), iMetadataConnection.getUrl(),
                 iMetadataConnection.getUsername(), iMetadataConnection.getPassword(), iMetadataConnection.getDatabase(),
-                iMetadataConnection.getSchema(), iMetadataConnection.getDriverClass(), iMetadataConnection.getDriverJarPath(),
+                iMetadataConnection.getSchema(), iMetadataConnection.getDriverClass(), iMetadataConnection.getDriverJarPath(),iMetadataConnection.getDriverJarUri(),
                 iMetadataConnection.getDbVersionString(), iMetadataConnection.getAdditionalParams());
         SQLConnection sqlConnection = new SQLConnection(extractMeta.getConn(), null);
         if (sqlConnection != null) {

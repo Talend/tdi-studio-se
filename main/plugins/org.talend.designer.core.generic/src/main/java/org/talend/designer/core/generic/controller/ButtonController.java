@@ -14,7 +14,9 @@ package org.talend.designer.core.generic.controller;
 
 import java.beans.PropertyChangeEvent;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -43,9 +45,11 @@ import org.talend.core.model.metadata.builder.connection.Connection;
 import org.talend.core.model.metadata.builder.database.ExtractMetaDataUtils;
 import org.talend.core.model.process.IElementParameter;
 import org.talend.core.model.properties.ConnectionItem;
+import org.talend.core.runtime.maven.MavenUrlHelper;
 import org.talend.core.runtime.util.GenericTypeUtils;
 import org.talend.core.ui.CoreUIPlugin;
 import org.talend.core.ui.properties.tab.IDynamicProperty;
+import org.talend.core.utils.TalendQuoteUtils;
 import org.talend.daikon.NamedThing;
 import org.talend.daikon.properties.Properties;
 import org.talend.daikon.properties.property.Property;
@@ -157,6 +161,7 @@ public class ButtonController extends AbstractElementPropertySectionController {
             return null;
         }
         List<String> jars = new ArrayList<String>();
+        Map<String,String> jarNameToUri = new HashMap<>();
         for(NamedThing thing : drivers.getProperties()){
             if(!(thing instanceof Property)){
                 continue;
@@ -169,12 +174,17 @@ public class ButtonController extends AbstractElementPropertySectionController {
                 for(String path : listString){
                     if (!StringUtils.isBlank(path)) {
                         jars.add(GenericTableUtils.getDriverJarPath(path));
+                        String uri = TalendQuoteUtils.removeQuotesIfExist(path);
+                        jarNameToUri.put(GenericTableUtils.getDriverJarPath(path),uri);
                     }
                 }
 
             }
         }
-        return librairesManagerService.retrieve(jars, ExtractMetaDataUtils.getInstance().getJavaLibPath(),
+        
+//        return librairesManagerService.retrieve(jars, ExtractMetaDataUtils.getInstance().getJavaLibPath(),
+//                new NullProgressMonitor());
+        return librairesManagerService.retrieve(jarNameToUri, ExtractMetaDataUtils.getInstance().getJavaLibPath(),
                 new NullProgressMonitor());
     }
 

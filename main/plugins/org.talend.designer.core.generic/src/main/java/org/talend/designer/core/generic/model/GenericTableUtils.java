@@ -17,11 +17,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.talend.core.GlobalServiceRegister;
+import org.talend.core.ILibraryManagerService;
 import org.talend.core.model.param.EConnectionParameterName;
 import org.talend.core.model.process.EParameterFieldType;
 import org.talend.core.model.process.ElementParameterParser;
 import org.talend.core.model.process.IElementParameter;
+import org.talend.core.runtime.maven.MavenArtifact;
 import org.talend.core.runtime.maven.MavenUrlHelper;
 import org.talend.core.runtime.services.IGenericDBService;
 import org.talend.core.utils.TalendQuoteUtils;
@@ -42,9 +45,27 @@ public class GenericTableUtils {
             dbService = (IGenericDBService) GlobalServiceRegister.getDefault().getService(
                     IGenericDBService.class);
         }
+        Map<String,String> jarNameToMavenUri = new HashMap<>();
+        ILibraryManagerService libManagerService = (ILibraryManagerService) GlobalServiceRegister.getDefault()
+                .getService(ILibraryManagerService.class);
         for (String column : param.getListItemsDisplayCodeName()) {
             Property property = tableProperties.getValuedProperty(column);
             if (property.getValue() instanceof List) {
+                List uriList = (List) property.getValue();
+                for (Object uri : uriList) {
+                    String removeQuotesUri = TalendQuoteUtils.removeQuotesIfExist(uri.toString());
+                    if (MavenUrlHelper.isMvnUrl(removeQuotesUri)) {
+                        MavenArtifact parseMvnUrl = MavenUrlHelper.parseMvnUrl(removeQuotesUri);
+                        if (libManagerService != null) {
+                            String mavenUriFromIndex = libManagerService
+                                    .getMavenUriFromIndex(parseMvnUrl.getFileName());
+                            if (StringUtils.isEmpty(mavenUriFromIndex)) {
+                                jarNameToMavenUri.put(parseMvnUrl.getFileName(), uri.toString());
+                            }
+                        }
+                    }
+                }
+                
                 property.setValue(new ArrayList<>());
             }
         }
@@ -62,6 +83,10 @@ public class GenericTableUtils {
                 if(dbService != null){
                     for(String v:values){
                         if(param.getName().equals(EConnectionParameterName.GENERIC_DRIVER_JAR.getDisplayName())){
+                            String mavenUri = jarNameToMavenUri.get(v);
+                            if (StringUtils.isNotEmpty(mavenUri)) {
+                                v = mavenUri;
+                            }
                             v = dbService.getMVNPath(v);
                         }
                         valueList.add(v);
@@ -155,6 +180,25 @@ public class GenericTableUtils {
             jars.append(getDriverJarPath(str));
         }
         if(jars == null){
+            return null;
+        }
+        return jars.toString();
+    }
+
+    public static String getDriverJarUris(List<String> listString) {
+        StringBuffer jars = null;
+        if (listString == null) {
+            return null;
+        }
+        for (String str : listString) {
+            if (jars == null) {
+                jars = new StringBuffer();
+            } else {
+                jars.append(";");
+            }
+            jars.append(str);
+        }
+        if (jars == null) {
             return null;
         }
         return jars.toString();

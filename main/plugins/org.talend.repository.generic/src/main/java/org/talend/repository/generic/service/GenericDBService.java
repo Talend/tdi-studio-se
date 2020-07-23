@@ -369,6 +369,10 @@ public class GenericDBService implements IGenericDBService{
                     if (jars != null) {
                         dbConnection.setDriverJarPath(jars);
                     }
+                    String driverJarUris = GenericTableUtils.getDriverJarUris(listString);
+                    if (driverJarUris != null) {
+                        dbConnection.setDriverJarUri(driverJarUris);
+                    }
                 }
             }
         }
@@ -383,6 +387,7 @@ public class GenericDBService implements IGenericDBService{
             ModuleNeeded module = null;
             if (isMvnUri) {
                 module = new ModuleNeeded("", "", true, valueNoQuote);//$NON-NLS-1$ //$NON-NLS-2$
+                module.setMavenUri(valueNoQuote);
             } else {
                 module = new ModuleNeeded("", valueNoQuote, "", true);//$NON-NLS-1$ //$NON-NLS-2$
             }

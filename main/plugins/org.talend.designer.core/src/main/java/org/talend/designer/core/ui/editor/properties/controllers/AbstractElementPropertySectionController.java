@@ -2322,7 +2322,7 @@ public abstract class AbstractElementPropertySectionController implements Proper
             List list = new ArrayList();
             list = ExtractMetaDataUtils.getInstance().connect(metadataConnection.getDbType(), metadataConnection.getUrl(),
                     metadataConnection.getUsername(), metadataConnection.getPassword(), metadataConnection.getDriverClass(),
-                    metadataConnection.getDriverJarPath(), metadataConnection.getDbVersionString(),
+                    metadataConnection.getDriverJarPath(),metadataConnection.getDriverJarUri(), metadataConnection.getDbVersionString(),
                     metadataConnection.getAdditionalParams());
             if (list != null && list.size() > 0) {
                 for (int i = 0; i < list.size(); i++) {

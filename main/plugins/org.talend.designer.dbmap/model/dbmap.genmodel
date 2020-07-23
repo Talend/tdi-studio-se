@@ -1,44 +1,76 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<genmodel:GenModel xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore"
-    xmlns:genmodel="http://www.eclipse.org/emf/2002/GenModel" modelDirectory="/org.talend.designer.dbmap/src/main/java" modelPluginID="org.talend.designer.dbmap"
-    modelName="Dbmap" importerID="org.eclipse.emf.importer.ecore" complianceLevel="5.0"
-    copyrightFields="false" usedGenPackages="../../org.talend.model/model/TalendFile.genmodel#//talendfile">
-  <foreignModel>dbmap.ecore</foreignModel>
-  <genPackages prefix="Dbmap" basePackage="org.talend.designer.dbmap.model.emf" resource="XML"
-      disposableProviderFactory="true" ecorePackage="dbmap.ecore#/">
-    <genClasses ecoreClass="dbmap.ecore#//DBMapData">
-      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference dbmap.ecore#//DBMapData/VarTables"/>
-      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference dbmap.ecore#//DBMapData/InputTables"/>
-      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference dbmap.ecore#//DBMapData/OutputTables"/>
-    </genClasses>
-    <genClasses ecoreClass="dbmap.ecore#//DBMapperTableEntry">
-      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute dbmap.ecore#//DBMapperTableEntry/name"/>
-      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute dbmap.ecore#//DBMapperTableEntry/expression"/>
-      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute dbmap.ecore#//DBMapperTableEntry/type"/>
-      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute dbmap.ecore#//DBMapperTableEntry/nullable"/>
-      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute dbmap.ecore#//DBMapperTableEntry/join"/>
-      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute dbmap.ecore#//DBMapperTableEntry/operator"/>
-    </genClasses>
-    <genClasses ecoreClass="dbmap.ecore#//AbstractDBDataMapTable">
-      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute dbmap.ecore#//AbstractDBDataMapTable/name"/>
-      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute dbmap.ecore#//AbstractDBDataMapTable/minimized"/>
-      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute dbmap.ecore#//AbstractDBDataMapTable/readonly"/>
-      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference dbmap.ecore#//AbstractDBDataMapTable/DBMapperTableEntries"/>
-      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute dbmap.ecore#//AbstractDBDataMapTable/tableName"/>
-    </genClasses>
-    <genClasses ecoreClass="dbmap.ecore#//AbstaceDBInOutTable"/>
-    <genClasses ecoreClass="dbmap.ecore#//VarTable"/>
-    <genClasses ecoreClass="dbmap.ecore#//InputTable">
-      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute dbmap.ecore#//InputTable/joinType"/>
-      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute dbmap.ecore#//InputTable/alias"/>
-    </genClasses>
-    <genClasses ecoreClass="dbmap.ecore#//OutputTable">
-      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference dbmap.ecore#//OutputTable/FilterEntries"/>
-    </genClasses>
-    <genClasses ecoreClass="dbmap.ecore#//FilterEntry">
-      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute dbmap.ecore#//FilterEntry/name"/>
-      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute dbmap.ecore#//FilterEntry/expression"/>
-      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute dbmap.ecore#//FilterEntry/filterKind"/>
-    </genClasses>
-  </genPackages>
+<genmodel:GenModel xmi:version="2.0"
+	xmlns:xmi="http://www.omg.org/XMI"
+	xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore"
+	xmlns:genmodel="http://www.eclipse.org/emf/2002/GenModel"
+	modelDirectory="/org.talend.designer.dbmap/src/main/java"
+	modelPluginID="org.talend.designer.dbmap" modelName="Dbmap"
+	importerID="org.eclipse.emf.importer.ecore" complianceLevel="5.0"
+	copyrightFields="false"
+	usedGenPackages="../../org.talend.model/model/TalendFile.genmodel#//talendfile">
+	<foreignModel>dbmap.ecore</foreignModel>
+	<genPackages prefix="Dbmap"
+		basePackage="org.talend.designer.dbmap.model.emf" resource="XML"
+		disposableProviderFactory="true" ecorePackage="dbmap.ecore#/">
+		<genClasses ecoreClass="dbmap.ecore#//DBMapData">
+			<genFeatures property="None" children="true"
+				createChild="true"
+				ecoreFeature="ecore:EReference dbmap.ecore#//DBMapData/VarTables" />
+			<genFeatures notify="false" createChild="false"
+				propertySortChoices="true"
+				ecoreFeature="ecore:EReference dbmap.ecore#//DBMapData/InputTables" />
+			<genFeatures notify="false" createChild="false"
+				propertySortChoices="true"
+				ecoreFeature="ecore:EReference dbmap.ecore#//DBMapData/OutputTables" />
+		</genClasses>
+		<genClasses ecoreClass="dbmap.ecore#//DBMapperTableEntry">
+			<genFeatures createChild="false"
+				ecoreFeature="ecore:EAttribute dbmap.ecore#//DBMapperTableEntry/name" />
+			<genFeatures createChild="false"
+				ecoreFeature="ecore:EAttribute dbmap.ecore#//DBMapperTableEntry/expression" />
+			<genFeatures createChild="false"
+				ecoreFeature="ecore:EAttribute dbmap.ecore#//DBMapperTableEntry/type" />
+			<genFeatures createChild="false"
+				ecoreFeature="ecore:EAttribute dbmap.ecore#//DBMapperTableEntry/nullable" />
+			<genFeatures createChild="false"
+				ecoreFeature="ecore:EAttribute dbmap.ecore#//DBMapperTableEntry/join" />
+			<genFeatures createChild="false"
+				ecoreFeature="ecore:EAttribute dbmap.ecore#//DBMapperTableEntry/operator" />
+		</genClasses>
+		<genClasses
+			ecoreClass="dbmap.ecore#//AbstractDBDataMapTable">
+			<genFeatures createChild="false"
+				ecoreFeature="ecore:EAttribute dbmap.ecore#//AbstractDBDataMapTable/name" />
+			<genFeatures createChild="false"
+				ecoreFeature="ecore:EAttribute dbmap.ecore#//AbstractDBDataMapTable/minimized" />
+			<genFeatures createChild="false"
+				ecoreFeature="ecore:EAttribute dbmap.ecore#//AbstractDBDataMapTable/readonly" />
+			<genFeatures property="None" children="true"
+				createChild="true"
+				ecoreFeature="ecore:EReference dbmap.ecore#//AbstractDBDataMapTable/DBMapperTableEntries" />
+			<genFeatures createChild="false"
+				ecoreFeature="ecore:EAttribute dbmap.ecore#//AbstractDBDataMapTable/tableName" />
+		</genClasses>
+		<genClasses ecoreClass="dbmap.ecore#//AbstaceDBInOutTable" />
+		<genClasses ecoreClass="dbmap.ecore#//VarTable" />
+		<genClasses ecoreClass="dbmap.ecore#//InputTable">
+			<genFeatures createChild="false"
+				ecoreFeature="ecore:EAttribute dbmap.ecore#//InputTable/joinType" />
+			<genFeatures createChild="false"
+				ecoreFeature="ecore:EAttribute dbmap.ecore#//InputTable/alias" />
+		</genClasses>
+		<genClasses ecoreClass="dbmap.ecore#//OutputTable">
+			<genFeatures property="None" children="true"
+				createChild="true"
+				ecoreFeature="ecore:EReference dbmap.ecore#//OutputTable/FilterEntries" />
+		</genClasses>
+		<genClasses ecoreClass="dbmap.ecore#//FilterEntry">
+			<genFeatures createChild="false"
+				ecoreFeature="ecore:EAttribute dbmap.ecore#//FilterEntry/name" />
+			<genFeatures createChild="false"
+				ecoreFeature="ecore:EAttribute dbmap.ecore#//FilterEntry/expression" />
+			<genFeatures createChild="false"
+				ecoreFeature="ecore:EAttribute dbmap.ecore#//FilterEntry/filterKind" />
+		</genClasses>
+	</genPackages>
 </genmodel:GenModel>

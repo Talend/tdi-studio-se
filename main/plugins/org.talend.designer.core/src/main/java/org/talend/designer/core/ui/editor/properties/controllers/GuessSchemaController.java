@@ -938,7 +938,7 @@ public class GuessSchemaController extends AbstractElementPropertySectionControl
 
             ConnectionStatus testConnection = ExtractMetaDataFromDataBase.testConnection(metadataConnection.getDbType(),
                     metadataConnection.getUrl(), metadataConnection.getUsername(), metadataConnection.getPassword(),
-                    metadataConnection.getSchema(), metadataConnection.getDriverClass(), metadataConnection.getDriverJarPath(),
+                    metadataConnection.getSchema(), metadataConnection.getDriverClass(), metadataConnection.getDriverJarPath(),metadataConnection.getDriverJarUri(),
                     metadataConnection.getDbVersionString(), metadataConnection.getAdditionalParams());
             connParameters.setConnectionComment(testConnection.getMessageException());
             return testConnection.getResult();
@@ -1016,7 +1016,7 @@ public class GuessSchemaController extends AbstractElementPropertySectionControl
                                 extractMeta.getConnection(iMetadataConnection.getDbType(), iMetadataConnection.getUrl(),
                                         iMetadataConnection.getUsername(), iMetadataConnection.getPassword(),
                                         iMetadataConnection.getDatabase(), iMetadataConnection.getSchema(),
-                                        iMetadataConnection.getDriverClass(), iMetadataConnection.getDriverJarPath(),
+                                        iMetadataConnection.getDriverClass(), iMetadataConnection.getDriverJarPath(),iMetadataConnection.getDriverJarUri(),
                                         iMetadataConnection.getDbVersionString(), iMetadataConnection.getAdditionalParams());
                                 if (extractMeta.getConn() != null) {
                                     Statement smst = extractMeta.getConn().createStatement();
