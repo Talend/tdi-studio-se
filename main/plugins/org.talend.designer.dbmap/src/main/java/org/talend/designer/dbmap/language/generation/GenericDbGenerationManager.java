@@ -33,7 +33,10 @@ public class GenericDbGenerationManager extends DbGenerationManager {
         try {
             if (Optional.ofNullable(component).map(c -> c.getComponent()).map(c -> "tELTMSSqlMap".equals(c.getName()))
                     .orElse(false)) {
-                return new MssqlGenerationManager().buildSqlSelect(component, outputTableName);
+                MssqlGenerationManager genManager = new MssqlGenerationManager();
+                String result = genManager.buildSqlSelect(component, outputTableName);
+                this.queryColumnsName = genManager.getQueryColumnsName();
+                return result;
             }
         } catch (Throwable e) {
             ExceptionHandler.process(e);
