@@ -145,6 +145,9 @@
 	String cid = node.getUniqueName();
 	boolean logstashCurrent = !cid.startsWith("tJobStructureCatcher") && !cid.startsWith("talend") && enableLogStash;
 	
+	//about performance monitor, no way to support more than one job catcher component, also that is not necessary
+	final String subprocessName4Catcher = logstashCurrent ? jobCatcherNodes.get(0).getDesignSubjobStartNode().getUniqueName() : null;
+	
 	if ((codePart.equals(ECodePart.BEGIN))&&(stat || logstashCurrent)&&connSet.size()>0) {
 		if(containsTPartitioner) {
 			%>
@@ -178,9 +181,6 @@
 	}
 	
 	if((codePart.equals(ECodePart.MAIN))&&(stat || logstashCurrent)&&connSet.size()>0){
-		INode jobStructureCatcher = jobCatcherNodes.get(0);//about performance monitor, no way to support more than one job catcher component, also that is not necessary
-		String subprocessName4Catcher = jobStructureCatcher.getDesignSubjobStartNode().getUniqueName();
-	
 		if(!node.getComponent().useMerge()) {
 			if(stat && logstashCurrent) {
 			%>

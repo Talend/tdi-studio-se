@@ -25,6 +25,7 @@
 	String version = ElementParameterParser.getValue(node, "__CLUSTER_VERSION__");
 	String zone = ElementParameterParser.getValue(node, "__ZONE__");
 	String region = ElementParameterParser.getValue(node, "__REGION__");
+	boolean internalIpOnly = ElementParameterParser.getBooleanValue(node, "__ONLY_INTERNAL_IP_ADDRESSES__");
 
 	
 	String masterNumInstances = ElementParameterParser.getValue(node, "__MASTER_NUM_INSTANCES__");
@@ -108,6 +109,7 @@
 <%
 			}
 %>
+         .withInternalIpOnly(<%=internalIpOnly%>)
          .withInitializationActions(<%=cid%>_initializationActions) //
          .withTags(<%=cid%>_tags) //
          .build() //

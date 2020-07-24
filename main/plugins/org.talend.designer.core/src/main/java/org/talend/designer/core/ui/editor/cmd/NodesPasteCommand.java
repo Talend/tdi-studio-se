@@ -379,7 +379,7 @@ public class NodesPasteCommand extends Command {
         Map<SubjobContainer, List<Node>> junitGroup = null;
         if (isJunitCreate()) {
             if (GlobalServiceRegister.getDefault().isServiceRegistered(ITestContainerGEFService.class)) {
-                testContainerService = (ITestContainerGEFService) GlobalServiceRegister.getDefault()
+                testContainerService = GlobalServiceRegister.getDefault()
                         .getService(ITestContainerGEFService.class);
                 if (testContainerService != null) {
                     junitGroup = testContainerService.caculateJunitGroup(nodeParts);
@@ -401,7 +401,7 @@ public class NodesPasteCommand extends Command {
             if (component == null) {
                 boolean isJobletInOutComponent = false;
                 if (PluginChecker.isJobLetPluginLoaded()) {
-                    IJobletProviderService service = (IJobletProviderService) GlobalServiceRegister.getDefault()
+                    IJobletProviderService service = GlobalServiceRegister.getDefault()
                             .getService(IJobletProviderService.class);
                     if (service != null && service.isJobletInOutComponent(copiedNode)) {
                         isJobletInOutComponent = true;
@@ -849,10 +849,12 @@ public class NodesPasteCommand extends Command {
     	IRepositoryViewObject connObj;
 		try {
 			connObj = ProxyRepositoryFactory.getInstance().getLastVersion(id);
-			Item item = connObj.getProperty().getItem();
-          	if(item instanceof ConnectionItem) {
-          		ConnectionContextHelper.addContextForNodeParameter((Node) copiedNode, (ConnectionItem)item, false);
-          	}
+            if (connObj != null && connObj.getProperty() != null) {
+                Item item = connObj.getProperty().getItem();
+                if (item instanceof ConnectionItem) {
+                    ConnectionContextHelper.addContextForNodeParameter(copiedNode, (ConnectionItem) item, false);
+                }
+            }
 		} catch (PersistenceException e) {
 			ExceptionHandler.process(e);
 		}

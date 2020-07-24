@@ -15,13 +15,6 @@
  */
 package org.talend.sdk.component.studio.model.parameter;
 
-import static java.util.Collections.emptyMap;
-import static java.util.Collections.unmodifiableList;
-import static java.util.Optional.ofNullable;
-import static java.util.function.Function.identity;
-import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toMap;
-
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
@@ -31,9 +24,9 @@ import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.TreeMap;
-import java.util.concurrent.Callable;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -62,6 +55,13 @@ import org.talend.sdk.component.studio.model.parameter.resolver.HealthCheckResol
 import org.talend.sdk.component.studio.model.parameter.resolver.ParameterResolver;
 import org.talend.sdk.component.studio.model.parameter.resolver.SuggestionsResolver;
 import org.talend.sdk.component.studio.model.parameter.resolver.ValidationResolver;
+
+import static java.util.Collections.emptyMap;
+import static java.util.Collections.unmodifiableList;
+import static java.util.Optional.ofNullable;
+import static java.util.function.Function.identity;
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
 
 /**
  * Creates properties from leafs
@@ -184,7 +184,15 @@ public class SettingVisitor implements PropertyVisitor {
 
             final Map<String, TaCoKitElementParameter> targetParams = conditionGroups.stream()
                     .flatMap(it -> it.getConditions().stream())
-                    .map(c -> TaCoKitElementParameter.class.cast(settings.get(c.getTargetPath())))
+                    .map(PropertyDefinitionDecorator.Condition::getTargetPath)
+                    .peek((String key) -> {
+                        if (!this.settings.containsKey(key)) {
+                            LOGGER.error("Path " + path + " not found in settings for form " + this.form);
+                        }
+                    })
+                    .map(this.settings::get)
+                    .filter(Objects::nonNull).filter(TaCoKitElementParameter.class::isInstance)
+                    .map(TaCoKitElementParameter.class::cast)
                     .collect(toMap(ElementParameter::getName, identity()));
 
             final ActiveIfListener activationListener = new ActiveIfListener(conditionGroups, param, targetParams);
@@ -322,7 +330,7 @@ public class SettingVisitor implements PropertyVisitor {
                     checkableLayout.getChildLayout(checkableLayout.getPath() + PropertyNode.CONNECTION_BUTTON);
             if (buttonLayout.isPresent()) {
                 new HealthCheckResolver(element, family, node, action, category, buttonLayout.get().getPosition())
-                        .resolveParameters(settings);
+                        .resolveParameters(this.form, this.settings);
             } else {
                 LOGGER.debug("Button layout {} not found for form {}", checkableLayout.getPath() + PropertyNode.CONNECTION_BUTTON, form);
             }
@@ -343,6 +351,7 @@ public class SettingVisitor implements PropertyVisitor {
                 final UpdateAction action = new UpdateAction(updatable.getActionName(), family);
                 final UpdateResolver resolver = new UpdateResolver(element, category, buttonPosition, action, node,
                         actions, redrawParameter, settings, () -> hasVisibleChild(formLayout.getPath()));
+                resolver.getButton().setForm(this.form);
                 parameterResolvers.add(resolver);
             } else {
                 LOGGER.debug("Button layout {} not found for form {}", formLayout.getPath() + PropertyNode.UPDATE_BUTTON, form);
@@ -553,14 +562,11 @@ public class SettingVisitor implements PropertyVisitor {
             final TaCoKitElementParameter taCoKitElementParameter = TaCoKitElementParameter.class.cast(parameter);
             taCoKitElementParameter.setPropertyNode(node);
             taCoKitElementParameter.updateValueOnly(defaultValue);
+            taCoKitElementParameter.setForm(this.form);
             if (node.getProperty().hasConstraint() || node.getProperty().hasValidation()) {
-                taCoKitElementParameter.setRegistValidatorCallback(new Callable<Void>() {
-
-                    @Override
-                    public Void call() throws Exception {
+                taCoKitElementParameter.setRegistValidatorCallback(() -> {
                         createValidationLabel(node, taCoKitElementParameter);
                         return null;
-                    }
                 });
             }
             buildActivationCondition(node, node);

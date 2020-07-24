@@ -3531,20 +3531,27 @@ public abstract class DataMapTableView extends Composite implements IDataMapTabl
                             }
                         }
 
-                        // avoid fire UIManager#handleEvent execute afterOperationListener
-                        // resize will fire focuseLost to applyEditorValue remove the columnViewEditorListener
-                        extendedTableModel.removeAll(copyedAllList, true, false);
-                        for (IMetadataColumn metaColumnToAdd : columns) {
-                            String label = metaColumnToAdd.getLabel();
-                            String expression = oldMappingMap.get(label);
-                            if (expression != null && !"".equals(expression)) {
-                                metaColumnToAdd.setExpression(expression);
+                        // avoid UIManager#handleEvent execute afterOperationListener
+                        // resize fire focuseLost to applyEditorValue remove the columnViewEditorListener
+                        // after extendedTableModel remove/add reset back the original customSized
+                        boolean isCustom = DataMapTableView.this.customSized;
+                        try {
+                            DataMapTableView.this.customSized = true;
+                            extendedTableModel.removeAll(copyedAllList);
+                            for (IMetadataColumn metaColumnToAdd : columns) {
+                                String label = metaColumnToAdd.getLabel();
+                                String expression = oldMappingMap.get(label);
+                                if (expression != null && !"".equals(expression)) {
+                                    metaColumnToAdd.setExpression(expression);
+                                }
                             }
+                            extendedTableModel.addAll(columns);
+                            mapperManager.getUiManager().parseAllExpressionsForAllTables();
+                            mapperManager.getUiManager().getOldMappingMap().clear();
+                            oldMappingMap.clear();
+                        } finally {
+                            DataMapTableView.this.customSized = isCustom;
                         }
-                        extendedTableModel.addAll(columns, true, false);
-                        mapperManager.getUiManager().parseAllExpressionsForAllTables();
-                        mapperManager.getUiManager().getOldMappingMap().clear();
-                        oldMappingMap.clear();
                         return value;
                     }
                 }

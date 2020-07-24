@@ -455,7 +455,12 @@
 									%>
 
 										if (value_<%=cid%>.toString().contains("-")) {
-											<%=connName%>.<%=columnName%> = ParserUtils.parseTo_Date(value_<%=cid%>.toString(),<%=patternValue%>);
+											String sValue_<%=cid%> = value_<%=cid%>.toString();
+											if (sValue_<%=cid%>.matches(".*\\.\\d{6}")) {
+												// microseconds must be ignored
+												sValue_<%=cid%> = sValue_<%=cid%>.substring(0, sValue_<%=cid%>.length() - 3);
+											}
+											<%=connName%>.<%=columnName%> = ParserUtils.parseTo_Date(sValue_<%=cid%>,<%=patternValue%>);
 										} else {
 											<%=connName%>.<%=columnName%> = ParserUtils.parseTo_Date(value_<%=cid%>.toString());
 										}

@@ -3390,7 +3390,35 @@
               id="org.talend.repository.model.migration.ChangeDefaultDriverForMSSqlMigrationTask"
               name="ChangeDefaultDriverForMSSqlMigrationTask"
               version="7.4.1">
+        </projecttask>       
+        <projecttask
+              beforeLogon="false"
+              breaks="7.3.0"
+              class="org.talend.repository.model.migration.GoogleStorageSetDefaultAuthTypeMigrationTask"
+              description="Change default value of auth type for Google Storage components"
+              id="org.talend.repository.model.migration.GoogleStorageSetDefaultAuthTypeMigrationTask"
+              name="GoogleStorageSetDefaultAuthTypeMigrationTask"
+              version="7.3.1">
         </projecttask>
+
+        <projecttask
+             beforeLogon="false"
+             breaks="7.4.0"
+             class="org.talend.repository.model.migration.RenameEXAMigrationTask"
+             description="Rename tEXAXXX components to tExasolXXX"
+             id="org.talend.repository.model.migration.RenameEXAMigrationTask"
+             name="RenameEXAMigrationTask"
+             version="7.4.1">
+       </projecttask>
+       <projecttask
+               beforeLogon="false"
+               breaks="7.3.0"
+               class="org.talend.repository.model.migration.BigQuerySetDefaultAuthTypeForGSMigrationTask"
+               description="Change default value of auth type in BigQuery components which use GCS"
+               id="org.talend.repository.model.migration.BigQuerySetDefaultAuthTypeForGSMigrationTask"
+               name="BigQuerySetDefaultAuthTypeForGSMigrationTask"
+               version="7.3.1">
+       </projecttask>
    </extension>
 
    <extension

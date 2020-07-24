@@ -157,6 +157,7 @@
       NAME="TABLE_ACTION"
       FIELD="CLOSED_LIST"
       NUM_ROW="52"
+      NOT_SHOW_IF="MAPPING == 'hive_id'"
     >
       <ITEMS DEFAULT="NONE">
         <ITEM NAME="NONE" VALUE="NONE"/>
@@ -194,6 +195,7 @@
       NAME="SURROGATE_KEY"
       FIELD="COLUMN_LIST"
       NUM_ROW="61"
+      NOT_SHOW_IF="MAPPING == 'hive_id'"
     >
       <DEFAULT></DEFAULT>
     </PARAMETER>
@@ -202,6 +204,7 @@
       NAME="SK_CREATION"
       FIELD="CLOSED_LIST"
       NUM_ROW="61"
+      NOT_SHOW_IF="MAPPING == 'hive_id'"
     >
       <ITEMS DEFAULT="AUTO_INCREMENT">
         <ITEM NAME="AUTO_INCREMENT"   VALUE="AUTO_INCREMENT" />
@@ -213,7 +216,7 @@
       NAME="SK_DB_SEQUENCE"
       FIELD="TEXT"
       NUM_ROW="61"
-      SHOW_IF="SK_CREATION == 'DB_SEQUENCE'"
+      SHOW_IF="isShow[SK_CREATION] AND (SK_CREATION == 'DB_SEQUENCE')"
     >
       <DEFAULT>""</DEFAULT>
     </PARAMETER>
@@ -222,6 +225,7 @@
       NAME="NOTE_SK_CREATION"
       FIELD="LABEL"
 	  NUM_ROW="66"
+	  NOT_SHOW_IF="MAPPING == 'hive_id'"
 	 >
 	   <DEFAULT>Some databases support "DB sequence" only, some other databases support "Auto increment" only, please select the right type</DEFAULT>
 	</PARAMETER>
@@ -238,9 +242,30 @@
     </PARAMETER>
 
     <PARAMETER
-      NAME="USE_L1"
+      NAME="USE_L0"
       FIELD="CHECK"
       NUM_ROW="70"
+      NOT_SHOW_IF="MAPPING == 'hive_id'"
+    >
+      <DEFAULT>false</DEFAULT>
+    </PARAMETER>
+
+    <PARAMETER
+      NAME="L0_FIELDS"
+      FIELD="TABLE"
+      NUM_ROW="71"
+      NB_LINES="5"
+      SHOW_IF="isShow[USE_L0] AND (USE_L0 == 'true')"
+    >
+      <ITEMS>
+        <ITEM NAME="NAME" FIELD="COLUMN_LIST" />
+      </ITEMS>
+    </PARAMETER>
+
+    <PARAMETER
+      NAME="USE_L1"
+      FIELD="CHECK"
+      NUM_ROW="75"
     >
       <DEFAULT>false</DEFAULT>
     </PARAMETER>
@@ -248,7 +273,7 @@
     <PARAMETER
       NAME="L1_FIELDS"
       FIELD="TABLE"
-      NUM_ROW="71"
+      NUM_ROW="76"
       NB_LINES="5"
       SHOW_IF="USE_L1 == 'true'"
     >
@@ -285,9 +310,9 @@
     >
     </PARAMETER>
     
-    <!-- this field only work for oracle, keep it hidden and use the default now -->
+    <!-- this field only work for Oracle and Databricks Delta Lake(now use hive mapping for delta lake)-->
     <PARAMETER NAME="L2_STARTDATE_FIELD_TYPE" FIELD="CLOSED_LIST" NUM_ROW="82"
-		SHOW="false"
+		SHOW_IF="(MAPPING == 'hive_id') AND (USE_L2 == 'true')"
 		>
 		<ITEMS DEFAULT="JOB_START_TIME">
 			<ITEM NAME="JOB_START_TIME" VALUE="JOB_START_TIME" />
@@ -295,7 +320,7 @@
 		</ITEMS>
 	</PARAMETER>
 
-	<!-- this field only work for oracle, keep it hidden and use the default now -->
+	<!-- this field only work for Oracle and Databricks Delta Lake(now use hive mapping for delta lake)-->
     <PARAMETER
       NAME="INPUT_FIELD_NAME"
       FIELD="COLUMN_LIST"

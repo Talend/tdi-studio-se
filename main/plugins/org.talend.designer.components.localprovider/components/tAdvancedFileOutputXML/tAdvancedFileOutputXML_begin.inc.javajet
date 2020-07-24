@@ -465,7 +465,7 @@ class GenerateToolByDom4j{
 				}
 %>
 		}
-		<%touchXMLNode.getXMLElement(parentName);%>.elements().add(orders_<%=cid %>[<%=currPos %>],<%touchXMLNode.getXMLNode(currEleName);%>);
+		<%touchXMLNode.getXMLElement(parentName);%>.elements().add(orders_<%=cid %>[<%=currPos %>],<%touchXMLNode.getXMLElement(currEleName);%>);
 <%
 			}else{
 %>
@@ -475,7 +475,7 @@ class GenerateToolByDom4j{
         if(<%=currPos +1 %> < orders_<%=cid %>.length){
         		orders_<%=cid %>[<%=currPos +1 %>] = 0;
         }
-        <%touchXMLNode.getXMLElement(parentName);%>.elements().add(orders_<%=cid %>[<%=currPos %>]++,<%touchXMLNode.getXMLNode(currEleName);%>);
+        <%touchXMLNode.getXMLElement(parentName);%>.elements().add(orders_<%=cid %>[<%=currPos %>]++,<%touchXMLNode.getXMLElement(currEleName);%>);
 <%
 			}
 		}else{

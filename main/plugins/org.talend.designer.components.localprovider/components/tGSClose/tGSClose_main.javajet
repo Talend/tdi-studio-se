@@ -3,6 +3,7 @@
 	    org.talend.core.model.process.INode 
 	    org.talend.core.model.process.ElementParameterParser 
 	    org.talend.designer.codegen.config.CodeGeneratorArgument
+		java.util.List
 	" 
 %>
 	<%
@@ -13,11 +14,29 @@
 
    	String connection = ElementParameterParser.getValue(node, "__CONNECTION__");
 	boolean isLog4jEnabled = ("true").equals(ElementParameterParser.getValue(node.getProcess(), "__LOG4J_ACTIVATE__"));
-	
-	%>
+	boolean useServiceAccountForConnection = false;
+
+	//Define if connection use Service account for connection
+	List< ? extends INode> nodes =  node.getProcess().getNodesOfType("tGSConnection");
+	for (INode ne : nodes) {
+		if (connection.equals(ne.getUniqueName())) {
+			String authTypeInConnectionComponent = ElementParameterParser.getValue(ne, "__AUTH_TYPE__");
+			useServiceAccountForConnection = "SERVICE_ACCOUNT".equals(authTypeInConnectionComponent);
+		}
+	}
+
+if (!useServiceAccountForConnection){
+%>
 	org.jets3t.service.impl.rest.httpclient.GoogleStorageService service_<%=cid%> = 
 			(org.jets3t.service.impl.rest.httpclient.GoogleStorageService)globalMap.get("service_<%=connection%>");
 	if(service_<%=cid%> !=null){
 			service_<%=cid%>.shutdown();
 	}
+<%
+} else {
+%>
+	//Don't need to close storage when use google storage api
+<%
+}
+%>
 	

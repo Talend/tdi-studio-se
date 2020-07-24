@@ -658,8 +658,8 @@ String inputConnName = null;
             error_<%=cid %>.start();
 
             result_<%=cid %> = ps_<%=cid %>.waitFor();
-            normal_<%=cid %>.join(10000);
-            error_<%=cid %>.join(10000);
+            normal_<%=cid %>.join();
+            error_<%=cid %>.join();
         } catch (ThreadDeath tde) {
             <%if(isLog4jEnabled){%>
             	log.error("<%=cid %> - thread was terminated.");

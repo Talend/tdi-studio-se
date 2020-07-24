@@ -403,7 +403,7 @@
 	if(wait_for_cluster_ready) {
 	%>
 		boolean clusterIsAlive_<%=cid%> = false;
-        System.out.println("Wating for cluster to become available.");
+        System.out.println("Waiting for cluster to become available.");
         while (true) {
             com.amazonaws.services.elasticmapreduce.model.DescribeClusterResult result2_<%=cid%> = emr_<%=cid%>.describeCluster(
             	new com.amazonaws.services.elasticmapreduce.model.DescribeClusterRequest()
@@ -433,7 +433,7 @@
 		boolean waitForStep_<%=cid%> = clusterIsAlive_<%=cid%> && (steps_<%=cid %>.size() > 1);
 		
 		if(waitForStep_<%=cid%>) {
-        	System.out.println("Wating for steps to complete.");
+        	System.out.println("Waiting for steps to complete.");
         }
         
         while (waitForStep_<%=cid%>) {

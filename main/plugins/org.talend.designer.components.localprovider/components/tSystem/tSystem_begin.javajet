@@ -251,8 +251,8 @@ if(ps_<%=cid %>.getOutputStream()!=null){
     ps_<%=cid %>.getOutputStream().close();
 }
 ps_<%=cid %>.waitFor();
-normal_<%=cid %>.join(10000);
-error_<%=cid %>.join(10000);
+normal_<%=cid %>.join();
+error_<%=cid %>.join();
 
 <%
 if(("NORMAL_OUTPUT").equals(outputAction)||("NORMAL_OUTPUT").equals(errorOuput)){

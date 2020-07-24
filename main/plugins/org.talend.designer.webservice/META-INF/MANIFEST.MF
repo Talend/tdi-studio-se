@@ -4,7 +4,7 @@ Bundle-Name: Webservice Plug-in
 Bundle-SymbolicName: org.talend.designer.webservice;singleton:=true
 Bundle-Version: 7.4.1.qualifier
 Bundle-Activator: org.talend.designer.webservice.WebServiceComponentPlugin
-Require-Bundle: org.apache.commons.beanutils,
+Require-Bundle: org.apache.commons.commons-beanutils,
  org.talend.core,
  org.talend.core.ui,
  org.talend.designer.core,
@@ -26,6 +26,5 @@ Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .,
  lib/talend-ws-1.0.jar,
  lib/XmlSchema-1.4.5.jar,
- lib/xerces-1.2.3.jar,
- lib/xercesImpl.jar
+ lib/xerces-1.2.3.jar
 Bundle-Vendor: .Talend SA.

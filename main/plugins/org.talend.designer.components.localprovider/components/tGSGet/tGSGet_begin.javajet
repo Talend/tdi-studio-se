@@ -23,16 +23,39 @@ imports="
 	String delimiter=ElementParameterParser.getValue(node,"__DELIMITER__");
 	String dieOnError = ElementParameterParser.getValue(node, "__DIE_ON_ERROR__");
 	boolean isLog4jEnabled = ("true").equals(ElementParameterParser.getValue(node.getProcess(), "__LOG4J_ACTIVATE__"));
+	String connection = ElementParameterParser.getValue(node,"__CONNECTION__");
+	String authType = ElementParameterParser.getValue(node, "__AUTH_TYPE__");
+	boolean useServiceAccountForConnection = false;
 	
 	String outputsDir = ElementParameterParser.getValue(node, "__DIRECTORY__");
 	List<Map<String, String>> buckets = (List<Map<String,String>>)ElementParameterParser.getObjectValue(node, "__BUCKETS__");
+	boolean getList = "true".equals(ElementParameterParser.getValue(node,"__GETLIST__"));
+	boolean useKeysList = "true".equals(ElementParameterParser.getValue(node,"__USE_KEYS_LIST__"));
 	%>
 	int nb_line_<%=cid%> = 0;
+
+<%
+
+	//Define if connection use Service account for connection
+	if(("true").equals(useExistingConn)) {
+		List< ? extends INode> nodes =  node.getProcess().getNodesOfType("tGSConnection");
+		for (INode ne : nodes) {
+			if (connection.equals(ne.getUniqueName())) {
+				String authTypeInConnectionComponent = ElementParameterParser.getValue(ne, "__AUTH_TYPE__");
+				useServiceAccountForConnection = "SERVICE_ACCOUNT".equals(authTypeInConnectionComponent);
+			}
+		}
+	} else {
+		useServiceAccountForConnection = "SERVICE_ACCOUNT".equals(authType);
+	}
+
+if (!useServiceAccountForConnection){
+%>
+
 	org.jets3t.service.impl.rest.httpclient.GoogleStorageService service_<%=cid%> = null;
 	try {
 	<%
 	if(("true").equals(useExistingConn)) {
-		String connection = ElementParameterParser.getValue(node,"__CONNECTION__");
 		%>
 		service_<%=cid%> = (org.jets3t.service.impl.rest.httpclient.GoogleStorageService)globalMap.get("service_<%=connection%>");
 		<%
@@ -57,8 +80,6 @@ imports="
 		service_<%=cid%>.getAccountOwner();
 	<%		
 	}
-	boolean getList = "true".equals(ElementParameterParser.getValue(node,"__GETLIST__"));
-	boolean useKeysList = "true".equals(ElementParameterParser.getValue(node,"__USE_KEYS_LIST__"));
 	if(!getList && !useKeysList){
 		if(isSpecifyprojectID){
 		%>
@@ -275,4 +296,178 @@ imports="
 			obj_<%=cid%>.closeDataInputStream();
 <%
 	}
+%>
+<%
+} else {
+%>
+	com.google.cloud.storage.Storage storage_<%=cid%> = null;
+	<%
+	if(("true").equals(useExistingConn)) {
+	%>
+		storage_<%=cid%> = (com.google.cloud.storage.Storage)globalMap.get("service_<%=connection%>");
+	<%
+	} else {
+		String pathToServerAccoutKeyFile = ElementParameterParser.getValue(node, "__SERVICE_ACCOUNT_KEY__");
+	%>
+		com.google.auth.Credentials credential_<%=cid%> = null;
+		try {
+			credential_<%=cid%> = com.google.auth.oauth2.GoogleCredentials
+					.fromStream(new java.io.FileInputStream(<%=pathToServerAccoutKeyFile%>));
+		} catch (IOException e_<%=cid%>) {
+			<%
+			if(isLog4jEnabled){
+			%>
+				log.error("<%=cid%> - Exception in component <%=cid%>.", e_<%=cid%>);
+			<%
+			}
+			%>
+			<%
+			if (("true").equals(dieOnError)) {
+			%>
+				throw(e_<%=cid%>);
+			<%
+			}
+			%>
+		}
+		com.google.cloud.storage.StorageOptions.Builder builder = com.google.cloud.storage.StorageOptions.newBuilder();
+		storage_<%=cid%> = builder.setCredentials(credential_<%=cid%>).build().getService();
+	<%
+	}
+	if(!getList && !useKeysList){
+		%>
+		com.google.api.gax.paging.Page<com.google.cloud.storage.Bucket> buckets_<%=cid%> = storage_<%=cid%>.list();
+		for (com.google.cloud.storage.Bucket bucket_<%=cid%> : buckets_<%=cid%>.iterateAll()) {
+			String currentBucketName_<%=cid%> = bucket_<%=cid%>.getName();
+			com.google.cloud.storage.Storage.BlobListOption blobListOptionPrefix_<%=cid%> = com.google.cloud.storage.Storage.BlobListOption.prefix(<%=objects_prefix%>);
+			com.google.cloud.storage.Storage.BlobListOption blobListOptionDelimiter_<%=cid%> = com.google.cloud.storage.Storage.BlobListOption.delimiter(<%=delimiter%>);
+
+			com.google.api.gax.paging.Page<com.google.cloud.storage.Blob> allBlobs_<%=cid%> = bucket_<%=cid%>.list(blobListOptionPrefix_<%=cid%>, blobListOptionDelimiter_<%=cid%>);
+	<%
+	}else if(useKeysList && keys.size()>0){
+	%>
+		java.util.List<java.util.Map<String,String>> list_<%=cid%> = new java.util.ArrayList<java.util.Map<String,String>>();
+		<%
+		for(int i=0;i<keys.size();i++){
+			Map<String, String> objKey=keys.get(i);
+			String bucket_name =objKey.get("BUCKET_NAME");
+			String key =objKey.get("KEY");
+			String newName =objKey.get("NEW_NAME");
+			if(key!=null && key.trim().length()>0){
+			%>
+				java.util.Map<String,String> map_<%=cid %>_<%=i %> = new java.util.HashMap<String,String>();
+				map_<%=cid %>_<%=i %>.put("BUCKET_NAME",<%=bucket_name%>);
+				map_<%=cid %>_<%=i %>.put("OBJECT_KEY",<%=key%>);
+				<%
+				if(newName!=null && !"".equals(newName.trim()) && !"\"\"".equals(newName.trim())){
+				%>
+					map_<%=cid %>_<%=i %>.put("OBJECT_NEWNAME",<%=newName%>);
+				<%
+				}else{
+				%>
+					map_<%=cid %>_<%=i %>.put("OBJECT_NEWNAME",<%=key%>);
+				<%
+				}
+			}
+			%>
+			list_<%=cid%>.add(map_<%=cid %>_<%=i %>);
+		<%
+		}
+	} else if(getList && buckets.size()>0){
+	%>
+		java.util.List<java.util.Map<String,String>> list_<%=cid%> = new java.util.ArrayList<java.util.Map<String,String>>();
+		<%
+		for(int i=0;i<buckets.size();i++){
+			Map<String, String> map=buckets.get(i);
+			String bucket_name =map.get("BUCKET_NAME");
+			String object_prefix =map.get("OBJECT_PREFIX");
+			String object_delimiter =map.get("OBJECT_DELIMITER");
+			%>
+			java.util.Map<String,String> map_<%=cid %>_<%=i %> = new java.util.HashMap<String,String>();
+			map_<%=cid %>_<%=i %>.put("BUCKET_NAME",<%=bucket_name%>);
+			<%
+			if(object_prefix!=null && object_prefix.trim().length()>0){
+			%>
+				map_<%=cid %>_<%=i %>.put("OBJECT_PREFIX",<%=object_prefix%>);
+			<%
+			}
+			if(object_delimiter!=null && object_delimiter.trim().length()>0){
+			%>
+				map_<%=cid %>_<%=i %>.put("OBJECT_DELIMITER",<%=object_delimiter%>);
+			<%
+			}
+			%>
+			list_<%=cid%>.add(map_<%=cid %>_<%=i %>);
+		<%
+		}
+		%>
+		for (java.util.Map<String, String> map_<%=cid %>: list_<%=cid%>) {
+			String currentBucketName_<%=cid%>=map_<%=cid %>.get("BUCKET_NAME");
+			com.google.cloud.storage.Bucket currentBucket_<%=cid%> = storage_<%=cid%>.get(currentBucketName_<%=cid%>);
+
+			com.google.cloud.storage.Storage.BlobListOption blobListOptionPrefix_<%=cid%> = com.google.cloud.storage.Storage.BlobListOption.prefix(map_<%=cid %>.get("OBJECT_PREFIX"));
+			com.google.cloud.storage.Storage.BlobListOption blobListOptionDelimiter_<%=cid%> = com.google.cloud.storage.Storage.BlobListOption.delimiter(map_<%=cid %>.get("OBJECT_DELIMITER"));
+
+			com.google.api.gax.paging.Page<com.google.cloud.storage.Blob> allBlobs_<%=cid%> = currentBucket_<%=cid%>.list(blobListOptionPrefix_<%=cid%>, blobListOptionDelimiter_<%=cid%>);
+	<%
+	}
+	if((!getList && !useKeysList) || (useKeysList && keys.size()>0) || (getList && buckets.size()>0)){
+		if(!useKeysList){
+		%>
+			for (com.google.cloud.storage.Blob blob_<%=cid%> : allBlobs_<%=cid%>.iterateAll()) {
+				if (blob_<%=cid%>.isDirectory()){
+					continue;
+				}
+				String objkey_<%=cid%> = blob_<%=cid%>.getName();
+				java.io.File file_<%=cid%> = new java.io.File(<%=outputsDir%>, objkey_<%=cid%>);
+
+
+				com.google.cloud.storage.Blob obj_<%=cid%> = storage_<%=cid%>.get(currentBucketName_<%=cid%>, objkey_<%=cid%>);
+		<%
+		}else{
+		%>
+			for (java.util.Map<String, String> map_<%=cid %>: list_<%=cid%>) {
+				String currentBucketName_<%=cid%>=map_<%=cid %>.get("BUCKET_NAME");
+				java.io.File file_<%=cid%> = new java.io.File(<%=outputsDir%>, map_<%=cid %>.get("OBJECT_NEWNAME"));
+				com.google.cloud.storage.Blob obj_<%=cid%> = null;
+				obj_<%=cid%> = storage_<%=cid%>.get(currentBucketName_<%=cid%>, map_<%=cid %>.get("OBJECT_KEY"));
+		<%
+		}
+		%>
+		if(obj_<%=cid%>!=null){
+			nb_line_<%=cid%>++;
+			boolean isDirectory_<%=cid%>=false;
+			String fileName_<%=cid%> =file_<%=cid%> .getAbsolutePath();
+			fileName_<%=cid%> =fileName_<%=cid%> .replace("\\", "/");
+			String createDir_<%=cid%>="";
+			if(obj_<%=cid%>.isDirectory()){
+				createDir_<%=cid%> = fileName_<%=cid%>;
+			}else{
+				createDir_<%=cid%>=	fileName_<%=cid%>.substring(0,fileName_<%=cid%>.indexOf("/"));
+			}
+			if (!"".equals(createDir_<%=cid%>)) {
+				java.io.File parentDir_<%=cid%>=new java.io.File(createDir_<%=cid%>);
+				if(!parentDir_<%=cid%>.exists()){
+					parentDir_<%=cid%>.mkdirs();
+				}
+			}
+			if(!obj_<%=cid%>.isDirectory()){
+				java.io.File parentDir_<%=cid%>=new java.io.File(file_<%=cid%>.getParent());
+				if(!parentDir_<%=cid%>.exists()){
+					boolean isFolderCreated_<%=cid%> = parentDir_<%=cid%>.mkdirs();
+					if(!isFolderCreated_<%=cid%>){
+						log.error("<%=cid%> - Can't create directory in '" + parentDir_<%=cid%> + "'");
+					}
+				}
+				
+				java.io.FileOutputStream out_<%=cid%> = new java.io.FileOutputStream(file_<%=cid%>);
+				out_<%=cid%>.write(obj_<%=cid%>.getContent());
+
+				out_<%=cid%>.flush();
+				out_<%=cid%>.close(); 
+			}
+<%
+	}
+%>
+<%
+}
 %>

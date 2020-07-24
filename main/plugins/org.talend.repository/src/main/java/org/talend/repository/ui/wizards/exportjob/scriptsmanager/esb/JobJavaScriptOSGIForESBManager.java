@@ -603,7 +603,7 @@ public class JobJavaScriptOSGIForESBManager extends JobJavaScriptsManager {
             // TESB-24998 Add context bean in blueprint
             endpointInfo.put("useContextBean", true); //$NON-NLS-1$
             endpointInfo.put("defaultContext", processItem.getProcess().getDefaultContext()); //$NON-NLS-1$
-        } else if (!endpointUri.isEmpty() && !endpointUri.contains("://") && !endpointUri.startsWith("/")) { //$NON-NLS-1$ //$NON-NLS-2$
+        } else if (!endpointUri.contains("://") && !endpointUri.startsWith("/")) { //$NON-NLS-1$ //$NON-NLS-2$
             endpointUri = '/' + endpointUri;
         }
 
@@ -922,7 +922,14 @@ public class JobJavaScriptOSGIForESBManager extends JobJavaScriptsManager {
         }
         analyzer.setProperty(Analyzer.BUNDLE_NAME, bundleName);
         analyzer.setProperty(Analyzer.BUNDLE_SYMBOLICNAME, symbolicName);
-        analyzer.setProperty(Analyzer.BUNDLE_VERSION, getBundleVersion());
+        String bundleVersion = null;
+        if (processItem.getProperty().getAdditionalProperties() != null &&
+            processItem.getProperty().getAdditionalProperties().containsKey("USER_VERSION")) {
+            bundleVersion = (String) processItem.getProperty().getAdditionalProperties().get("USER_VERSION");
+        } else {
+            bundleVersion = getBundleVersion();
+        }
+        analyzer.setProperty(Analyzer.BUNDLE_VERSION, bundleVersion);
         IBrandingService brandingService = (IBrandingService) GlobalServiceRegister.getDefault().getService(
                 IBrandingService.class);
         analyzer.setProperty(Analyzer.BUNDLE_VENDOR, brandingService.getFullProductName() + " (" //$NON-NLS-1$

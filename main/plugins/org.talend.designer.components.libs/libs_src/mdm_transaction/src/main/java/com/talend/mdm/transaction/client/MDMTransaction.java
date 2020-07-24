@@ -1,13 +1,12 @@
 package com.talend.mdm.transaction.client;
 
 import java.io.IOException;
+import java.util.Base64;
 import java.util.List;
 
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpException;
 import org.apache.commons.httpclient.HttpMethod;
-import org.apache.commons.httpclient.UsernamePasswordCredentials;
-import org.apache.commons.httpclient.auth.AuthScope;
 import org.apache.commons.httpclient.methods.DeleteMethod;
 import org.apache.commons.httpclient.methods.PostMethod;
 
@@ -26,24 +25,27 @@ public class MDMTransaction {
 
     public void commit() throws IOException {
         HttpClient client = new HttpClient();
-        client.getState().setCredentials(AuthScope.ANY, new UsernamePasswordCredentials(username, password));
+        client.getParams().setAuthenticationPreemptive(true);
+        byte[] authBytes = (username + ":" + password).getBytes("UTF-8");
+        String authString = Base64.getEncoder().encodeToString(authBytes);
 
-        HttpMethod method = new PostMethod(url + "/" + id);
-        method.setDoAuthentication(true);
+        HttpMethod post = new PostMethod(url + "/" + id);
+        post.setDoAuthentication(true);
+        post.setRequestHeader("Authorization", "Basic " + authString);
         try {
             for (String cookie : cookies) {
-                method.addRequestHeader("Cookie", cookie);
+                post.addRequestHeader("Cookie", cookie);
             }
-            client.executeMethod(method);
+            client.executeMethod(post);
         } catch (HttpException e) {
             throw e;
         } catch (IOException e) {
             throw e;
         } finally {
-            method.releaseConnection();
+            post.releaseConnection();
         }
 
-        int statuscode = method.getStatusCode();
+        int statuscode = post.getStatusCode();
         if (statuscode >= 400) {
             throw new MDMTransactionException("Commit failed. The commit operation has returned the code " + statuscode + ".");
         }
@@ -51,24 +53,27 @@ public class MDMTransaction {
 
     public void rollback() throws IOException {
         HttpClient client = new HttpClient();
-        client.getState().setCredentials(AuthScope.ANY, new UsernamePasswordCredentials(username, password));
+        client.getParams().setAuthenticationPreemptive(true);
+        byte[] authBytes = (username + ":" + password).getBytes("UTF-8");
+        String authString = Base64.getEncoder().encodeToString(authBytes);
 
-        HttpMethod method = new DeleteMethod(url + "/" + id);
-        method.setDoAuthentication(true);
+        HttpMethod delete = new DeleteMethod(url + "/" + id);
+        delete.setDoAuthentication(true);
+        delete.setRequestHeader("Authorization", "Basic " + authString);
         try {
             for (String cookie : cookies) {
-                method.addRequestHeader("Cookie", cookie);
+                delete.addRequestHeader("Cookie", cookie);
             }
-            client.executeMethod(method);
+            client.executeMethod(delete);
         } catch (HttpException e) {
             throw e;
         } catch (IOException e) {
             throw e;
         } finally {
-            method.releaseConnection();
+            delete.releaseConnection();
         }
 
-        int statuscode = method.getStatusCode();
+        int statuscode = delete.getStatusCode();
         if (statuscode >= 400) {
             throw new MDMTransactionException(
                     "Rollback failed. The rollback operation has returned the code " + statuscode + ".");

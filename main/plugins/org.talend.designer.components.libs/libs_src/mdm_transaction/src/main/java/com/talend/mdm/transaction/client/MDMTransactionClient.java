@@ -2,14 +2,13 @@ package com.talend.mdm.transaction.client;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 
 import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpException;
 import org.apache.commons.httpclient.HttpMethod;
-import org.apache.commons.httpclient.UsernamePasswordCredentials;
-import org.apache.commons.httpclient.auth.AuthScope;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.PutMethod;
 
@@ -18,11 +17,13 @@ public class MDMTransactionClient {
 
     public static MDMTransaction newTransaction(String url, String username, String password) throws IOException {
         HttpClient client = new HttpClient();
-        client.getState().setCredentials(AuthScope.ANY, new UsernamePasswordCredentials(username, password));
         client.getParams().setAuthenticationPreemptive(true);
+        byte[] authBytes = (username + ":" + password).getBytes("UTF-8");
+        String authString = Base64.getEncoder().encodeToString(authBytes);
 
         PutMethod put = new PutMethod(url);
         put.setDoAuthentication(true);
+        put.setRequestHeader("Authorization", "Basic " + authString);
         String tid;
         List<String> cookies;
         try {
@@ -76,11 +77,13 @@ public class MDMTransactionClient {
 
     public static List<String> getCookies(String url, String username, String password) throws IOException {
         HttpClient client = new HttpClient();
-        client.getState().setCredentials(AuthScope.ANY, new UsernamePasswordCredentials(username, password));
         client.getParams().setAuthenticationPreemptive(true);
+        byte[] authBytes = (username + ":" + password).getBytes("UTF-8");
+        String authString = Base64.getEncoder().encodeToString(authBytes);
 
         GetMethod get = new GetMethod(url);
         get.setDoAuthentication(true);
+        get.setRequestHeader("Authorization", "Basic " + authString);
         List<String> cookies;
         try {
             client.executeMethod(get);

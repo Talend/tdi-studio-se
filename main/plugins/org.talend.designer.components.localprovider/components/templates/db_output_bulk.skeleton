@@ -363,7 +363,7 @@ public class CLASS {
                         } else {
                             dataType = column.getColumn().getType();
                         }
-                        Integer length = column.getColumn().getLength() == null ? 0 : column.getColumn().getLength();
+                        Integer length = column.getColumn().getLength() == null ? SYBASE.equalsIgnoreCase(getDBMSId()) ? 1 : 0 : column.getColumn().getLength();
                         if (MYSQL.equalsIgnoreCase(getDBMSId()) && dataType.endsWith("UNSIGNED")) {                            
                             createSQL.append(dataType.substring(0,dataType.indexOf("UNSIGNED"))) ;                            
                         }else if(ORACLE.equalsIgnoreCase(getDBMSId()) && dataType.matches("TIMESTAMP WITH TIME ZONE")){

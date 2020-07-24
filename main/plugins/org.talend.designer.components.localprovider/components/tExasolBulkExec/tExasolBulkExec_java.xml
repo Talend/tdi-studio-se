@@ -1,0 +1,666 @@
+<COMPONENT>
+
+  <HEADER PLATEFORM="ALL" 
+	SERIAL="" 
+	VERSION="2.0" 
+	STATUS="PROD"
+	COMPATIBILITY="ALL" 
+	AUTHOR="Talend" 
+	RELEASE_DATE="20160401A"
+    LOG4J_ENABLED="true"
+   	STARTABLE="true">
+	<SIGNATURE />
+  </HEADER>
+
+  <FAMILIES>
+    <FAMILY>Databases/DB Specifics/EXASolution</FAMILY>
+  </FAMILIES>
+
+	<DOCUMENTATION>
+		<URL />
+	</DOCUMENTATION>
+
+	<CONNECTORS>
+		<CONNECTOR CTYPE="FLOW" MAX_INPUT="0" MAX_OUTPUT="0" />
+		<CONNECTOR CTYPE="ITERATE" MAX_OUTPUT="1" MAX_INPUT="1" />
+		<CONNECTOR CTYPE="SUBJOB_OK" MAX_INPUT="1" />
+		<CONNECTOR CTYPE="SUBJOB_ERROR" MAX_INPUT="1" />
+		<CONNECTOR CTYPE="COMPONENT_OK" MAX_OUTPUT="1" />
+		<CONNECTOR CTYPE="COMPONENT_ERROR" MAX_OUTPUT="1" />
+		<CONNECTOR CTYPE="RUN_IF" MAX_OUTPUT="1" />
+	</CONNECTORS>
+
+	<PARAMETERS>
+    	<PARAMETER 
+    		NAME="USE_EXISTING_CONNECTION" 
+    		FIELD="CHECK"
+      		NUM_ROW="2"
+      	>
+      		<DEFAULT>false</DEFAULT>
+    	</PARAMETER>
+    
+	    <PARAMETER 
+	    	NAME="CONNECTION" 
+	    	FIELD="COMPONENT_LIST" 
+	    	FILTER="tExasolConnection"
+	      	NUM_ROW="2" 
+		    REQUIRED="true" 
+	      	SHOW_IF="USE_EXISTING_CONNECTION == 'true'" 
+	      	DYNAMIC_SETTINGS="true"
+	    /> 
+	      
+	    <PARAMETER 
+	    	NAME="PROPERTY" 
+	    	FIELD="PROPERTY_TYPE" 
+			SHOW_IF="USE_EXISTING_CONNECTION == 'false'"
+	    	NUM_ROW="10" 
+	    	REPOSITORY_VALUE="DATABASE:Exasol"
+	    />
+
+	    <PARAMETER 
+	    	NAME="HOST" 
+	    	FIELD="TEXT" 
+			SHOW_IF="USE_EXISTING_CONNECTION == 'false'"
+	    	NUM_ROW="20" 
+	    	REPOSITORY_VALUE="SERVER_NAME" 
+	    	REQUIRED="true"
+	    >
+	      <DEFAULT>""</DEFAULT>
+	    </PARAMETER>
+
+	    <PARAMETER 
+	    	NAME="PORT" 
+	    	FIELD="TEXT" 
+	    	NUM_ROW="20" 
+			SHOW_IF="USE_EXISTING_CONNECTION == 'false'"
+	    	REPOSITORY_VALUE="PORT" 
+	    	REQUIRED="true"
+	    >
+	      <DEFAULT>"8563"</DEFAULT>
+	    </PARAMETER>
+
+	    <PARAMETER
+	        NAME="NOTE"
+	        FIELD="LABEL"
+			SHOW_IF="USE_EXISTING_CONNECTION == 'false'"
+	        NUM_ROW="21"
+	    >
+	      <DEFAULT>Note: You can configure a server or cluster as ip-address range or comma separated host/ip-address list. 
+	           Examples: "172.16.173.128" or "172.16.173.128..130" or "server1,server2"</DEFAULT>
+	    </PARAMETER>
+
+	    <PARAMETER 
+	    	NAME="DB_SCHEMA" 
+	    	FIELD="TEXT" 
+	    	NUM_ROW="30" 
+			SHOW_IF="USE_EXISTING_CONNECTION == 'false'"
+	    	REPOSITORY_VALUE="SID" 
+	    	REQUIRED="true"
+	    >
+	      <DEFAULT>""</DEFAULT>
+	    </PARAMETER>
+
+	    <PARAMETER 
+	    	NAME="USER" 
+	    	FIELD="TEXT" 
+			SHOW_IF="USE_EXISTING_CONNECTION == 'false'"
+	    	NUM_ROW="40" 
+	    	REPOSITORY_VALUE="USERNAME" 
+	    	REQUIRED="true"
+	    >
+	      <DEFAULT>""</DEFAULT>
+	    </PARAMETER>
+
+	    <PARAMETER 
+	    	NAME="PASS" 
+	    	FIELD="PASSWORD" 
+			SHOW_IF="USE_EXISTING_CONNECTION == 'false'"
+	    	NUM_ROW="40" 
+	    	REPOSITORY_VALUE="PASSWORD" 
+	    	REQUIRED="true"
+	    >
+	      <DEFAULT>""</DEFAULT>
+	    </PARAMETER>
+
+		<PARAMETER 
+			NAME="TABLE" 
+			FIELD="TEXT" 
+			NUM_ROW="100"
+		>
+			<DEFAULT>""</DEFAULT>
+		</PARAMETER>
+
+		<PARAMETER 
+			NAME="TABLE_ACTION" 
+			FIELD="CLOSED_LIST"
+			NUM_ROW="110" 
+			NOT_SHOW_IF="PARALLELIZE == 'true'"
+		>
+			<ITEMS DEFAULT="NONE">
+				<ITEM NAME="NONE" VALUE="NONE" />
+				<ITEM NAME="DROP_CREATE" VALUE="DROP_CREATE" />
+				<ITEM NAME="CREATE" VALUE="CREATE" />
+				<ITEM NAME="CREATE_IF_NOT_EXISTS" VALUE="CREATE_IF_NOT_EXISTS" />
+				<ITEM NAME="TRUNCATE" VALUE="TRUNCATE"/>
+			</ITEMS>
+		</PARAMETER>
+		
+		<PARAMETER 
+			NAME="SOURCE" 
+			FIELD="CLOSED_LIST"
+			GROUP="SOURCE_CONF"
+			NUM_ROW="120"
+		>
+			<ITEMS DEFAULT="LOCAL_FILE">
+				<ITEM NAME="LOCAL_FILE" VALUE="LOCAL_FILE" />
+				<ITEM NAME="REMOTE_FILE" VALUE="REMOTE_FILE" />
+				<ITEM NAME="REMOTE_EXA" VALUE="REMOTE_EXA" />
+				<ITEM NAME="REMOTE_ORA" VALUE="REMOTE_ORA" />
+				<ITEM NAME="REMOTE_JDBC" VALUE="REMOTE_JDBC"/>
+			</ITEMS>
+		</PARAMETER>
+
+		<!-- Local file -->
+
+		<PARAMETER 
+			NAME="FILENAME" 
+			FIELD="FILE" 
+			GROUP="SOURCE_CONF"
+			NUM_ROW="130"
+			REQUIRED="true"
+			SHOW_IF="SOURCE == 'LOCAL_FILE'"
+		>
+			<DEFAULT>"__COMP_DEFAULT_FILE_DIR__/in.csv"</DEFAULT>
+		</PARAMETER>
+
+		<!-- Remote connection -->
+
+		<PARAMETER 
+			NAME="REMOTE_USE_EXISTING_CONNECTION" 
+			FIELD="CHECK" 
+			GROUP="SOURCE_CONF"
+			NUM_ROW="140"
+			REQUIRED="true"
+			SHOW_IF="SOURCE != 'LOCAL_FILE'"
+		>
+			<DEFAULT>false</DEFAULT>
+		</PARAMETER>
+
+		<PARAMETER 
+			NAME="REMOTE_EXISTING_CONNECTION_NAME" 
+			FIELD="TEXT"
+			GROUP="SOURCE_CONF"
+			NUM_ROW="140"
+			REQUIRED="true"
+			SHOW_IF="(SOURCE != 'LOCAL_FILE') and (REMOTE_USE_EXISTING_CONNECTION == 'true')"
+		>
+			<DEFAULT>"my_remote_conn_name"</DEFAULT>
+		</PARAMETER>
+
+	    <PARAMETER
+	        NAME="NOTE0"
+	        FIELD="LABEL"
+			GROUP="SOURCE_CONF"
+	        NUM_ROW="141"
+			SHOW_IF="(SOURCE != 'LOCAL_FILE') and (REMOTE_USE_EXISTING_CONNECTION == 'true')"
+	    >
+	      <DEFAULT>Note: The connection must already be configured in your EXASol database. Check the table SYS.EXA_DBA_CONNECTIONS.</DEFAULT>
+	    </PARAMETER>
+
+		<!-- Remote file -->
+
+		<PARAMETER 
+			NAME="REMOTE_FILE_URL" 
+			FIELD="TEXT" 
+			GROUP="SOURCE_CONF"
+			NUM_ROW="150"
+			REQUIRED="true"
+			SHOW_IF="(SOURCE == 'REMOTE_FILE') and (REMOTE_USE_EXISTING_CONNECTION == 'false')"
+		>
+			<DEFAULT>"http://192.168.1.1:8080/path_without_file_name/"</DEFAULT>
+		</PARAMETER>
+
+	    <PARAMETER
+	        NAME="NOTE1"
+	        FIELD="LABEL"
+			GROUP="SOURCE_CONF"
+	        SHOW_IF="(SOURCE == 'REMOTE_FILE') and (REMOTE_USE_EXISTING_CONNECTION == 'false')"
+	        NUM_ROW="151"
+	    >
+	      <DEFAULT>Note: http(s), sftp, ftps urls are allowed here</DEFAULT>
+	    </PARAMETER>
+
+		<PARAMETER 
+			NAME="REMOTE_FILENAME" 
+			FIELD="TEXT" 
+			GROUP="SOURCE_CONF"
+			NUM_ROW="160"
+			REQUIRED="true"
+			SHOW_IF="SOURCE == 'REMOTE_FILE'"
+		>
+			<DEFAULT>"in.csv"</DEFAULT>
+		</PARAMETER>
+
+		<PARAMETER 
+			NAME="REMOTE_URL_PARAMS" 
+			FIELD="TEXT"
+			GROUP="SOURCE_CONF"
+			NUM_ROW="170"
+	        SHOW_IF="(SOURCE == 'REMOTE_FILE') and (REMOTE_USE_EXISTING_CONNECTION == 'false')"
+		>
+			<DEFAULT></DEFAULT>
+		</PARAMETER>
+		
+	    <PARAMETER
+	        NAME="NOTE2"
+	        FIELD="LABEL"
+			GROUP="SOURCE_CONF"
+	        NUM_ROW="171"
+	        SHOW_IF="(SOURCE == 'REMOTE_FILE') and (REMOTE_USE_EXISTING_CONNECTION == 'false')"
+	    >
+	      <DEFAULT>Note: Example for URL parameters: "op=OPEN&amp;user.name=user"</DEFAULT>
+	    </PARAMETER>
+
+		<!-- Remote EXA database -->
+
+		<PARAMETER 
+			NAME="REMOTE_EXA_HOST" 
+			FIELD="TEXT" 
+			GROUP="SOURCE_CONF"
+			NUM_ROW="180"
+			REQUIRED="true"
+			SHOW_IF="(SOURCE == 'REMOTE_EXA') and (REMOTE_USE_EXISTING_CONNECTION == 'false')" 
+		>
+			<DEFAULT>"172.16.174.128"</DEFAULT>
+		</PARAMETER>
+
+	    <PARAMETER
+	        NAME="NOTE3"
+	        FIELD="LABEL"
+			GROUP="SOURCE_CONF"
+			SHOW_IF="(SOURCE == 'REMOTE_EXA') and (REMOTE_USE_EXISTING_CONNECTION == 'false')" 
+	        NUM_ROW="181"
+	    >
+	      <DEFAULT>Note: You can address as source a server or cluster as ip-address range or comma separated host/ip-address list. 
+	           Examples: "172.16.174.128" or "172.16.174.128..130" or "server3,server4"</DEFAULT>
+	    </PARAMETER>
+
+		<!-- Remote JDBC source -->
+
+		<PARAMETER 
+			NAME="REMOTE_JDBC_URL"
+			FIELD="TEXT" 
+			GROUP="SOURCE_CONF"
+			NUM_ROW="190"
+			REQUIRED="true"
+			SHOW_IF="(SOURCE == 'REMOTE_JDBC') and (REMOTE_USE_EXISTING_CONNECTION == 'false')"
+		>
+			<DEFAULT>"jdbc:mysql://172.16.214.132:3306/mysql"</DEFAULT>
+		</PARAMETER>
+
+		<!-- Remote Oracle source -->
+
+		<PARAMETER 
+			NAME="REMOTE_ORA_URL"
+			FIELD="TEXT" 
+			GROUP="SOURCE_CONF"
+			NUM_ROW="200"
+			REQUIRED="true"
+			SHOW_IF="(SOURCE == 'REMOTE_ORA') and (REMOTE_USE_EXISTING_CONNECTION == 'false')"
+		>
+			<DEFAULT>"jdbc:oracle:thin:@//my_oracle_host:1521/my_service"</DEFAULT>
+		</PARAMETER>
+
+		<!-- Remote Table -->
+
+		<PARAMETER 
+			NAME="USE_SELF_DEFINED_SELECT" 
+			FIELD="CHECK" 
+			GROUP="SOURCE_CONF"
+			NUM_ROW="600"
+			REQUIRED="true"
+			SHOW_IF="(SOURCE == 'REMOTE_EXA') or (SOURCE == 'REMOTE_ORA') or (SOURCE == 'REMOTE_JDBC')"
+		>
+			<DEFAULT>false</DEFAULT>
+		</PARAMETER>
+
+		<PARAMETER 
+			NAME="SOURCE_SCHEMA_DB"
+			FIELD="TEXT" 
+			GROUP="SOURCE_CONF"
+			NUM_ROW="610"
+			SHOW_IF="(USE_SELF_DEFINED_SELECT == 'false') and ((SOURCE == 'REMOTE_EXA') or (SOURCE == 'REMOTE_ORA') or (SOURCE == 'REMOTE_JDBC'))" 
+		>
+			<DEFAULT></DEFAULT>
+		</PARAMETER>
+
+		<PARAMETER 
+			NAME="SOURCE_TABLE"
+			FIELD="TEXT" 
+			GROUP="SOURCE_CONF"
+			NUM_ROW="610"
+			REQUIRED="true" 
+			SHOW_IF="(USE_SELF_DEFINED_SELECT == 'false') and ((SOURCE == 'REMOTE_EXA') or (SOURCE == 'REMOTE_ORA') or (SOURCE == 'REMOTE_JDBC'))" 
+		>
+			<DEFAULT></DEFAULT>
+		</PARAMETER>
+
+		<PARAMETER 
+			NAME="SOURCE_QUERY" 
+			FIELD="MEMO_SQL" 
+			GROUP="SOURCE_CONF"
+			NUM_ROW="610"
+			REQUIRED="true" 
+			SHOW_IF="(USE_SELF_DEFINED_SELECT == 'true') and ((SOURCE == 'REMOTE_EXA') or (SOURCE == 'REMOTE_ORA') or (SOURCE == 'REMOTE_JDBC'))" 
+			NB_LINES="5"
+		>
+			<DEFAULT>"select field1, field2 from schema.table where field=value...."</DEFAULT>
+		</PARAMETER>
+
+
+		<!-- Remote User credentials -->
+
+		<PARAMETER 
+			NAME="USE_REMOTE_ATHENTICATION" 
+			FIELD="CHECK" 
+			GROUP="SOURCE_CONF"
+			NUM_ROW="800"
+			SHOW_IF="SOURCE != 'LOCAL_FILE'"
+		>
+			<DEFAULT>true</DEFAULT>
+		</PARAMETER>
+
+		<PARAMETER 
+			NAME="REMOTE_USER" 
+			FIELD="TEXT" 
+			GROUP="SOURCE_CONF"
+			NUM_ROW="810"
+			REQUIRED="true" 
+			SHOW_IF="(SOURCE != 'LOCAL_FILE') and (USE_REMOTE_ATHENTICATION == 'true')"
+		>
+			<DEFAULT></DEFAULT>
+		</PARAMETER>
+
+		<PARAMETER 
+			NAME="REMOTE_PASSWORD" 
+			FIELD="PASSWORD" 
+			GROUP="SOURCE_CONF"
+			NUM_ROW="810"
+			REQUIRED="true" 
+			SHOW_IF="(SOURCE != 'LOCAL_FILE') and (USE_REMOTE_ATHENTICATION == 'true')"
+		>
+			<DEFAULT></DEFAULT>
+		</PARAMETER>
+
+		<PARAMETER 
+			NAME="SCHEMA" 
+			FIELD="SCHEMA_TYPE" 
+			NUM_ROW="900"/>
+
+		<PARAMETER 
+			NAME="MAPPING" 
+			FIELD="MAPPING_TYPE" 
+			NUM_ROW="910"
+			SHOW="false">
+			<DEFAULT>Exasol_id</DEFAULT>
+		</PARAMETER>
+
+	</PARAMETERS>
+	
+	<ADVANCED_PARAMETERS>
+
+		<PARAMETER 
+			NAME="PROPERTIES" 
+			FIELD="TEXT" 
+			NUM_ROW="10" 
+	        SHOW_IF="USE_EXISTING_CONNECTION == 'false'"
+			REPOSITORY_VALUE="PROPERTIES_STRING" 
+		>
+			<DEFAULT>"encryption=0;clientname=" + jobName</DEFAULT>
+		</PARAMETER>
+			
+	    <PARAMETER
+	        NAME="NOTE"
+	        FIELD="LABEL"
+	        SHOW_IF="USE_EXISTING_CONNECTION == 'false'"
+	        NUM_ROW="11"
+	    >
+	      <DEFAULT>Note: Example for Additional EXASol JDBC Parameters: "parameterName1=value1;parameterName2=value2;"</DEFAULT>
+	    </PARAMETER>
+	    
+		<PARAMETER 
+			NAME="COLUMN_CONFIG" 
+			FIELD="TABLE" 
+			NUM_ROW="15" 
+			NB_LINES="5" 
+			SHOW_IF="(SOURCE == 'LOCAL_FILE') or (SOURCE == 'REMOTE_FILE')"
+		>
+			<ITEMS BASED_ON_SCHEMA="true">
+				<ITEM NAME="HAS_GROUP_DELIMITERS" FIELD="CHECK" />
+				<ITEM NAME="FORMAT" FIELD="TEXT"/>
+			</ITEMS>
+		</PARAMETER>
+	    
+		<PARAMETER 
+			NAME="SOURCE_TABLE_COLUMN_CONFIG" 
+			FIELD="TABLE" 
+			NUM_ROW="16" 
+			NB_LINES="5" 
+			SHOW_IF="(USE_SELF_DEFINED_SELECT == 'false') and ((SOURCE == 'REMOTE_EXA') or (SOURCE == 'REMOTE_ORA') or (SOURCE == 'REMOTE_JDBC'))" 
+		>
+			<ITEMS BASED_ON_SCHEMA="true">
+				<ITEM NAME="SOURCE_COLUMN_NAME" FIELD="TEXT" />
+			</ITEMS>
+		</PARAMETER>
+
+		<PARAMETER 
+			NAME="COLUMN_SEPARATOR" 
+			FIELD="TEXT" 
+			NUM_ROW="20"
+			REQUIRED="true"
+			SHOW_IF="(SOURCE == 'LOCAL_FILE') or (SOURCE == 'REMOTE_FILE')"
+		>
+			<DEFAULT>";"</DEFAULT>
+		</PARAMETER>
+
+		<PARAMETER 
+			NAME="COLUMN_DELIMITER" 
+			FIELD="TEXT" 
+			NUM_ROW="20"
+			SHOW_IF="(SOURCE == 'LOCAL_FILE') or (SOURCE == 'REMOTE_FILE')"
+		>
+			<DEFAULT>"\""</DEFAULT>
+		</PARAMETER>
+
+		<PARAMETER 
+			NAME="ROW_SEPARATOR"
+			FIELD="TEXT" 
+			NUM_ROW="40"
+			SHOW_IF="(SOURCE == 'LOCAL_FILE') or (SOURCE == 'REMOTE_FILE')"
+		>
+			<DEFAULT>"\n"</DEFAULT>
+	    </PARAMETER>
+		
+		<PARAMETER 
+			NAME="NULLSTRING" 
+			FIELD="TEXT" 
+			NUM_ROW="40"
+			SHOW_IF="(SOURCE == 'LOCAL_FILE') or (SOURCE == 'REMOTE_FILE')"
+		>
+			<DEFAULT>"NULL"</DEFAULT>
+		</PARAMETER>
+
+		<PARAMETER 
+			NAME="SKIP" 
+			FIELD="TEXT" 
+			NUM_ROW="50"
+			SHOW_IF="(SOURCE == 'LOCAL_FILE') or (SOURCE == 'REMOTE_FILE')"
+		>
+			<DEFAULT>0</DEFAULT>
+		</PARAMETER>
+		
+		<PARAMETER 
+			NAME="ENCODING" 
+			FIELD="TEXT" 
+			NUM_ROW="50"
+			SHOW_IF="(SOURCE == 'LOCAL_FILE') or (SOURCE == 'REMOTE_FILE')"
+		>
+			<DEFAULT>"UTF8"</DEFAULT>
+		</PARAMETER>
+
+		<PARAMETER 
+			NAME="TRIM_METHOD" 
+			FIELD="CLOSED_LIST" 
+			NUM_ROW="60"
+		>
+			<ITEMS DEFAULT="NONE">
+				<ITEM NAME="NONE" VALUE="NONE" />
+				<ITEM NAME="TRIM" VALUE="TRIM" />
+				<ITEM NAME="LTRIM" VALUE="LTRIM" />
+				<ITEM NAME="RTRIM" VALUE="RTRIM" />
+			</ITEMS>
+	    </PARAMETER>
+
+		<PARAMETER 
+			NAME="DEFAULT_DATE_FORMAT" 
+			FIELD="TEXT" 
+			NUM_ROW="70"
+			SHOW_IF="(SOURCE == 'LOCAL_FILE') or (SOURCE == 'REMOTE_FILE')"
+		>
+			<DEFAULT>"YYYY-MM-DD"</DEFAULT>
+		</PARAMETER>
+
+		<PARAMETER 
+			NAME="DEFAULT_TIMESTAMP_FORMAT" 
+			FIELD="TEXT" 
+			NUM_ROW="70"
+			SHOW_IF="(SOURCE == 'LOCAL_FILE') or (SOURCE == 'REMOTE_FILE')"
+		>
+			<DEFAULT>"YYYY-MM-DD HH24:MI:SS.FF3"</DEFAULT>
+		</PARAMETER>
+
+		<PARAMETER 
+			NAME="THOUSANDS_SEPARATOR" 
+			FIELD="TEXT" 
+			NUM_ROW="80"
+			SHOW_IF="(SOURCE == 'LOCAL_FILE') or (SOURCE == 'REMOTE_FILE')"
+		>
+			<DEFAULT>","</DEFAULT>
+		</PARAMETER>
+
+		<PARAMETER 
+			NAME="DECIMAL_SEPARATOR" 
+			FIELD="TEXT" 
+			NUM_ROW="80"
+			SHOW_IF="(SOURCE == 'LOCAL_FILE') or (SOURCE == 'REMOTE_FILE')"
+		>
+			<DEFAULT>"."</DEFAULT>
+		</PARAMETER>
+
+		<PARAMETER 
+			NAME="ERROR_LIMIT" 
+			FIELD="TEXT" 
+			NUM_ROW="85"
+		>
+			<DEFAULT>0</DEFAULT>
+		</PARAMETER>
+
+		<PARAMETER 
+			NAME="ERROR_LOG_DESTINATION" 
+			FIELD="CLOSED_LIST" 
+			NUM_ROW="90"
+		>
+			<ITEMS DEFAULT="NONE">
+				<ITEM NAME="NONE" VALUE="NONE" />
+				<ITEM NAME="LOCAL_FILE" VALUE="LOCAL_FILE" />
+				<ITEM NAME="TABLE" VALUE="TABLE" />
+			</ITEMS>
+		</PARAMETER>
+
+		<PARAMETER 
+			NAME="LOCAL_ERROR_FILE"
+			FIELD="FILE" 
+			NUM_ROW="95"
+	        SHOW_IF="ERROR_LOG_DESTINATION == 'LOCAL_FILE'"
+			REQUIRED="true"
+		>
+			<DEFAULT>"__COMP_DEFAULT_FILE_DIR__/import_error.log"</DEFAULT>
+		</PARAMETER>
+
+		<PARAMETER 
+			NAME="LOCAL_ERROR_FILE_WITH_CURRENT_TIMESTAMP"
+			FIELD="CHECK" 
+			NUM_ROW="95"
+	        SHOW_IF="ERROR_LOG_DESTINATION == 'LOCAL_FILE'"
+			REQUIRED="true"
+		>
+			<DEFAULT>true</DEFAULT>
+		</PARAMETER>
+
+		<PARAMETER 
+			NAME="ERROR_TABLE"
+			FIELD="TEXT" 
+			NUM_ROW="95"
+	        SHOW_IF="ERROR_LOG_DESTINATION == 'TABLE'"
+			REQUIRED="true"
+		>
+			<DEFAULT></DEFAULT>
+		</PARAMETER>
+
+		<PARAMETER 
+			NAME="ERROR_TABLE_WITH_CURRENT_TIMESTAMP"
+			FIELD="CHECK" 
+			NUM_ROW="95"
+	        SHOW_IF="ERROR_LOG_DESTINATION == 'TABLE'"
+			REQUIRED="true"
+		>
+			<DEFAULT>true</DEFAULT>
+		</PARAMETER>
+
+		<PARAMETER 
+			NAME="SECURE_TRANSFER"
+			FIELD="CHECK" 
+			NUM_ROW="100"
+			REQUIRED="true"
+			SHOW_IF="SOURCE == 'LOCAL_FILE'"
+		>
+			<DEFAULT>false</DEFAULT>
+		</PARAMETER>
+
+		<PARAMETER 
+			NAME="TEST_MODE"
+			FIELD="CHECK" 
+			NUM_ROW="110"
+			REQUIRED="true"
+		>
+			<DEFAULT>false</DEFAULT>
+		</PARAMETER>
+		
+		<PARAMETER 
+			NAME="USE_PRECISION_LENGTH_FROM_SCHEMA"
+			FIELD="CHECK" 
+			NUM_ROW="115"
+			REQUIRED="true"
+		>
+			<DEFAULT>false</DEFAULT>
+		</PARAMETER>
+
+	</ADVANCED_PARAMETERS>
+
+   <CODEGENERATION>
+     <IMPORTS>
+        <IMPORT NAME="Driver-EXASolution" MODULE="exajdbc-6.0.9302.jar" MVN="mvn:org.talend.libraries/exajdbc-6.0.9302/6.3.0"  REQUIRED="true" />
+		<IMPORT NAME="Talend-DB-Exasol-Util" MODULE="talend-db-exasol-2.1.5.jar" MVN="mvn:org.talend.components.lib/talend-db-exasol/2.1.5" 
+			UrlPath="platform:/plugin/org.talend.libraries.jdbc.exasol/lib/talend-db-exasol-2.1.5.jar" REQUIRED="true" />
+     </IMPORTS>
+   </CODEGENERATION>
+
+	<RETURNS>
+	    <RETURN NAME="NB_LINE_INSERTED" TYPE="id_Integer" AVAILABILITY="AFTER"/>
+    	<RETURN NAME="NB_LINE_DELETED"  TYPE="id_Integer" AVAILABILITY="AFTER"/>
+    	<RETURN NAME="FILENAME" TYPE="id_String" AVAILABILITY="AFTER"/>
+    	<RETURN NAME="ERROR_LOG_FILE" TYPE="id_String" AVAILABILITY="AFTER"/>
+    	<RETURN NAME="SOURCE_QUERY" TYPE="id_String" AVAILABILITY="AFTER"/>
+	</RETURNS>
+	
+</COMPONENT>
