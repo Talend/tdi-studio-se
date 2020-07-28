@@ -82,6 +82,8 @@ import org.talend.core.model.properties.Item;
 import org.talend.core.model.properties.ProcessItem;
 import org.talend.core.model.properties.Project;
 import org.talend.core.model.properties.Property;
+import org.talend.core.model.relationship.Relation;
+import org.talend.core.model.relationship.RelationshipItemBuilder;
 import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.core.model.repository.Folder;
 import org.talend.core.model.repository.IExtendedRepositoryNodeHandler;
@@ -159,11 +161,8 @@ public class ExportItemWizardPage extends WizardPage {
     Set uncheckedNodes = new HashSet();
 
     Collection<IRepositoryViewObject> implicitDependences = new ArrayList<IRepositoryViewObject>();
-    
-    private Set<String> beanDependenciesNames = new HashSet<String>();
 
     Set checkedDependency = new HashSet();
-    Set beanDependencies = new HashSet();
 
     private String baseViewId;
 
@@ -250,8 +249,7 @@ public class ExportItemWizardPage extends WizardPage {
         if (selection != null && !selection.isEmpty()) {
             initcheckedNodes.addAll(selection.toList());
             
-            beanDependencies.clear();
-            beanDependenciesNames.clear();
+            Set<IRepositoryNode> beanDependencies = null;
             
             List list = selection.toList();
             Object firstFromList = null;
@@ -268,7 +266,9 @@ public class ExportItemWizardPage extends WizardPage {
                 Map<String, Item> items = new HashMap<String, Item>();
                 collectNodes(items, routeElements);
 
-                collectBeanDependenciesForItems(items.values());
+                registerRelatedBeans(items.values());
+                
+                beanDependencies = getBeanDependencies(items.values());
             }
 
             Set nodes = new HashSet();
@@ -279,17 +279,68 @@ public class ExportItemWizardPage extends WizardPage {
                 expandParent(exportItemsTreeViewer, obj, objectType);
                 checkElement(obj, nodes);
             }
-            for (Object obj : beanDependencies) {
-                ERepositoryObjectType objectType = getObjectType(obj);
-                expandRoot(objectType);
-                expandParent(exportItemsTreeViewer, obj, objectType);
-                checkElement(obj, nodes);
+            
+            if (beanDependencies != null) {
+	            for (Object obj : beanDependencies) {
+	                ERepositoryObjectType objectType = getObjectType(obj);
+	                expandRoot(objectType);
+	                expandParent(exportItemsTreeViewer, obj, objectType);
+	                checkElement(obj, nodes);
+	            }
             }
             TimeMeasure.step(this.getClass().getSimpleName(), "finished to collect nodes"); //$NON-NLS-1$
             exportItemsTreeViewer.setCheckedElements(nodes.toArray());
             TimeMeasure.step(this.getClass().getSimpleName(), "finished to check nodes"); //$NON-NLS-1$
         }
     }
+
+	private Set<IRepositoryNode> getBeanDependencies(Collection<Item> items) {
+		Set<Relation> relations = RelationshipItemBuilder.getInstance().getBeanRelations(items);
+		Set<String> relationsIds = new HashSet<String>();
+
+		if (relations != null) {
+			for (Relation rel : relations) {
+				relationsIds.add(rel.getId());
+			}
+		}
+		
+		Set<IRepositoryNode> repositoryNode = getBeansWithIds(relationsIds);
+		
+		return repositoryNode;
+	}
+
+	private Set<IRepositoryNode> getBeansWithIds(Set<String> ids) {
+		RepositoryNode codeRepositoryNode = ProjectRepositoryNode.getInstance().getRootRepositoryNode(
+                ERepositoryObjectType.valueOf("BEANS"));
+        List<IRepositoryNode> checkedNodesCode = codeRepositoryNode.getChildren();
+        
+        Set<IRepositoryNode> repositoryNodes = new HashSet<IRepositoryNode>();
+        getBeansWithIdsHelper(checkedNodesCode, ids, repositoryNodes);
+        
+        return repositoryNodes;
+	}
+	
+    private void getBeansWithIdsHelper(List<IRepositoryNode> children, Set<String> beanIds, Set<IRepositoryNode> repositoryNodes) {
+    	if (children != null) {
+	    	for (Object element : children) {
+	            if (element instanceof RepositoryNode) {
+	                RepositoryNode checkedNode = (RepositoryNode) element;
+	                
+	                if (checkedNode.getChildren() != null && checkedNode.getChildren().size() > 0) {
+	                	getBeansWithIdsHelper(checkedNode.getChildren(), beanIds, repositoryNodes);
+	                } else {
+		            	if (checkedNode.getObject() != null && 
+		            	    checkedNode.getObject().getLabel() != null &&
+		        			ENodeType.REPOSITORY_ELEMENT.equals(checkedNode.getType()) &&
+		        			beanIds.contains(checkedNode.getId())) {
+		            		repositoryNodes.add(checkedNode);
+		                }
+	                }
+	        	}
+	        }
+    	}
+    }
+	
 
     private ERepositoryObjectType getObjectType(Object nodeObject) {
         ERepositoryObjectType objectType = null;
@@ -486,9 +537,6 @@ public class ExportItemWizardPage extends WizardPage {
             @Override
             public void checkStateChanged(CheckStateChangedEvent event) {
 
-                beanDependencies.clear();
-                beanDependenciesNames.clear();
-
                 ArrayList elementList = new ArrayList();
                 elementList.add(event.getElement());
                 Object[] elements = elementList.toArray();
@@ -496,23 +544,26 @@ public class ExportItemWizardPage extends WizardPage {
                 Map<String, Item> items = new HashMap<String, Item>();
                 collectNodes(items, routeElements);
 
-                collectBeanDependenciesForItems(items.values());
+                Set<IRepositoryNode> beanDependencies = getBeanDependencies(items.values());
                 
                 Set toselect = new HashSet();
                 if (event.getChecked()) {
                     initcheckedNodes.add(event.getElement());
+                    
                     checkedDependency.addAll(beanDependencies);
                     
-                    for (Object obj : beanDependencies) {
-                        ERepositoryObjectType objectType = getObjectType(obj);
-                        expandRoot(objectType);
-                        expandParent(exportItemsTreeViewer, obj, objectType);
-                        checkElement(obj, toselect);
+                    if (beanDependencies != null) {
+	                    for (Object obj : beanDependencies) {
+	                        ERepositoryObjectType objectType = getObjectType(obj);
+	                        expandRoot(objectType);
+	                        expandParent(exportItemsTreeViewer, obj, objectType);
+	                        checkElement(obj, toselect);
+	                    }
                     }
+                    uncheckedNodes.removeAll(beanDependencies);
                     for (Object repNode : toselect) {
                     	exportItemsTreeViewer.setChecked(repNode, true);
                     }
-                    uncheckedNodes.removeAll(beanDependencies);
  
                     // remove children and parent from uncheckednodes
                     TreeItem treeItem = getTreeItem(exportItemsTreeViewer.getTree().getItems(), event.getElement());
@@ -527,9 +578,11 @@ public class ExportItemWizardPage extends WizardPage {
                     Set subItems = collectSubData(treeItem);
                     initcheckedNodes.removeAll(subItems);
                     
-                    for (Object obj : beanDependencies) {
-                        ERepositoryObjectType objectType = getObjectType(obj);
-                        checkElement(obj, toselect);
+                    if (beanDependencies != null) {
+	                    for (Object obj : beanDependencies) {
+	                        ERepositoryObjectType objectType = getObjectType(obj);
+	                        checkElement(obj, toselect);
+	                    }
                     }
                     for (Object repNode : toselect) {
                     	exportItemsTreeViewer.setChecked(repNode, false);
@@ -887,11 +940,9 @@ public class ExportItemWizardPage extends WizardPage {
             public void widgetSelected(SelectionEvent e) {
                 checkedDependency.clear();
                 implicitDependences.clear();
-                beanDependencies.clear();
-                beanDependenciesNames.clear();
                 CheckboxTreeViewer exportItemsTreeViewer = getItemsTreeViewer();
                 Set allNode = new HashSet();
-            	collectBeanDependenciesForItems(getSelectedRouteItems());
+                Set<IRepositoryNode> beanDependencies = getBeanDependencies(getSelectedRouteItems());
                 if (exportDependencies.getSelection()) {
                     refreshExportDependNodes();
                     exportDependenciesSelected();
@@ -953,14 +1004,12 @@ public class ExportItemWizardPage extends WizardPage {
         }
     }
 
-    private Set<String> getCBeanRegisterComponentDependencies(Collection<Item> selectedItems) {
+    private Set<String> getCBeanRegisterComponentDependency(Item selectedItems) {
         Set<String> result = new HashSet<String>();
-        for (Item item : selectedItems) {
-        	if (item instanceof ProcessItem) {
-	            ProcessItem prItem = (ProcessItem)item;
-	            result.addAll(getBeanDependenciesFromCodeSection(prItem.getProcess()));
-        	}
-        }
+        
+        ProcessItem prItem = (ProcessItem)selectedItems;
+        result.addAll(getBeanDependenciesFromCodeSection(prItem.getProcess()));
+
         return result;
     }
 
@@ -995,43 +1044,46 @@ public class ExportItemWizardPage extends WizardPage {
     	return classNames;
     }
 
-    private void collectBeanDependenciesForItems(Collection<Item> items) {
-        beanDependenciesNames = getCBeanRegisterComponentDependencies(items);
-
-        CheckboxTreeViewer exportItemsTreeViewer = getItemsTreeViewer();
-        Object[] checkedObj = exportItemsTreeViewer.getExpandedElements();
-        List<IRepositoryNode> checkedNodes = new ArrayList<IRepositoryNode>();
-
-        for (Object obj: checkedObj) {
-        	RepositoryNode objNode = (RepositoryNode) obj;
-        	ERepositoryObjectType contentType = objNode.getContentType();
-        	
-        	if (contentType.equals(ERepositoryObjectType.valueOf("BEANS"))) {
-        		checkedNodes.add((IRepositoryNode)obj);;
-        	}
-        }
+    private void registerRelatedBeans(Collection<Item> items) {
+        RepositoryNode codeRepositoryNode = ProjectRepositoryNode.getInstance().getRootRepositoryNode(
+                ERepositoryObjectType.valueOf("BEANS"));
+        List<IRepositoryNode> checkedNodesBeans = codeRepositoryNode.getChildren();
         
-        findBeanObjectByNamesFromRoot(checkedNodes, beanDependenciesNames, beanDependencies);
-    }
-
-    private void findBeanObjectByNamesFromRoot(List<IRepositoryNode> children, Set<String> beanDependenciesNames,
-			Set beanDependencies) {
-    	for (Object element : children) {
-            if (element instanceof RepositoryNode) {
-                RepositoryNode checkedNode = (RepositoryNode) element;
-                
-                if (checkedNode.getChildren() != null && checkedNode.getChildren().size() > 0) {
-                    findBeanObjectByNamesFromRoot(checkedNode.getChildren(), beanDependenciesNames, beanDependencies);
-                } else {
-	            	if (checkedNode.getObject() != null && 
-	            	    checkedNode.getObject().getLabel() != null &&
-	            		beanDependenciesNames.contains(checkedNode.getObject().getLabel()) && 
-	        			ENodeType.REPOSITORY_ELEMENT.equals(checkedNode.getType())) {
-	                 	beanDependencies.add(checkedNode);
-	                }
-                }
+        for (Item item : items) {
+        	Set<String> beanNames = getCBeanRegisterComponentDependency(item);
+        	
+        	if (beanNames != null && beanNames.size() > 0) {
+        		Set<IRepositoryNode> beanDependencies = new HashSet<IRepositoryNode>();
+	        	findBeanObjectByNamesFromRoot(checkedNodesBeans, beanNames, beanDependencies);
+	        	
+	        	for (IRepositoryNode node : beanDependencies) {
+	        		RelationshipItemBuilder instance = RelationshipItemBuilder.getInstance();
+	        		
+	        		instance.addRelationShip(item, node.getId(), node.getObject().getVersion(), node.getContentType().toString());
+	        	}
         	}
         }
+	}
+
+	private void findBeanObjectByNamesFromRoot(List<IRepositoryNode> children, Set<String> beanDependenciesNames, Set<IRepositoryNode> beanDependencies) {
+    	if (children != null) {
+			for (Object element : children) {
+	            if (element instanceof RepositoryNode) {
+	                RepositoryNode checkedNode = (RepositoryNode) element;
+	                
+	                if (checkedNode.getChildren() != null && checkedNode.getChildren().size() > 0) {
+	                	findBeanObjectByNamesFromRoot(checkedNode.getChildren(), beanDependenciesNames, beanDependencies);
+	                } else {
+		            	if (checkedNode.getObject() != null && 
+		            	    checkedNode.getObject().getLabel() != null &&
+		            		beanDependenciesNames.contains(checkedNode.getObject().getLabel()) && 
+		        			ENodeType.REPOSITORY_ELEMENT.equals(checkedNode.getType())) {
+		                 	beanDependencies.add(checkedNode);
+		                }
+	                }
+	        	}
+	        }
+    	}
     }
 	
 	/**
@@ -1351,16 +1403,17 @@ public class ExportItemWizardPage extends WizardPage {
 
     private Object[] getRoutes(Object[] elements) {
 
-    	ArrayList<Object> result = new ArrayList(elements.length);
+    	ArrayList<Object> result = new ArrayList(elements != null ? elements.length : 0);
         for (Object object : elements) {
             if (object instanceof RepositoryNode) {
                 RepositoryNode repositoryNode = (RepositoryNode) object;
-                if (repositoryNode.getObjectType().equals(ERepositoryObjectType.PROCESS_ROUTE)) {
+                if (repositoryNode.getObjectType() != null &&
+                	repositoryNode.getObjectType().equals(ERepositoryObjectType.PROCESS_ROUTE)) {
                 	result.add(object);
                 }
             }
         }
-                
+        
 		return result.toArray();
 	}
 
