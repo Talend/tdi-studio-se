@@ -1512,6 +1512,8 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
             }
         }
 
+        // remove lower version of same artifact
+        removeLowerVersionArtifacts(neededModules, highPriorityModuleNeeded);
         StringBuffer libPath = new StringBuffer();
         if (isExportConfig() || isRunAsExport()) {
             boolean hasLibPrefix = libPrefixPath.length() > 0;
@@ -2339,5 +2341,39 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
             }
         }
 
+    }
+
+    public static void removeLowerVersionArtifacts(List<ModuleNeeded> neededModules, Set<ModuleNeeded> highPriorityModuleNeeded) {
+        // remove lower version of same artifact
+        Set<ModuleNeeded> toBeDeletedSet = new HashSet<ModuleNeeded>();
+        Map<String, ModuleNeeded> keepModules = new HashMap<String, ModuleNeeded>();
+        Iterator<ModuleNeeded> moduleIter = neededModules.iterator();
+        while (moduleIter.hasNext()) {
+            ModuleNeeded module = moduleIter.next();
+            MavenArtifact artifact = MavenUrlHelper.parseMvnUrl(module.getMavenUri(), true);
+            if (artifact != null) {
+                String key = artifact.getGroupId() + ":" + artifact.getArtifactId();
+                ModuleNeeded checkedModule = keepModules.get(key);
+                if (checkedModule != null) {
+                    MavenArtifact checkedArtifact = MavenUrlHelper.parseMvnUrl(checkedModule.getMavenUri(), true);
+                    if (MavenArtifact.compareVersion(artifact.getVersion(), checkedArtifact.getVersion()) > 0) {
+                        keepModules.put(key, module);
+                        toBeDeletedSet.add(checkedModule);
+                    } else {
+                        keepModules.put(key, checkedModule);
+                        toBeDeletedSet.add(module);
+                    }
+                } else {
+                    keepModules.put(key, module);
+                }
+            }
+        }
+
+        // delete
+        for (ModuleNeeded mod : toBeDeletedSet) {
+            if (!highPriorityModuleNeeded.contains(mod)) {
+                neededModules.remove(mod);
+            }
+        }
     }
 }

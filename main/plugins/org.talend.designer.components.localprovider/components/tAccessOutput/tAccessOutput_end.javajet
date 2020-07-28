@@ -61,9 +61,13 @@ imports="
 	{
         if(!("").equals(commitEvery)&&!("0").equals(commitEvery)){
         %>
-        <%dbLog.commit().commitTry(null, dbLog.var("commitCounter"));%>
-        conn_<%=cid%>.commit();
-        <%dbLog.commit().commitDone(null);%>
+        if(rowsToCommitCount_<%=cid%> != 0){
+            <%dbLog.commit().commitTry(null, dbLog.var("rowsToCommitCount"));%>
+            conn_<%=cid%>.commit();
+            <%dbLog.commit().commitDone(null);%>
+            rowsToCommitCount_<%=cid%> = 0;
+        }
+        commitCounter_<%=cid%> = 0;
         <%
     	}
     	%>

@@ -45,6 +45,7 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.osgi.framework.Bundle;
 import org.osgi.service.prefs.Preferences;
 import org.talend.commons.exception.ExceptionHandler;
+import org.talend.commons.utils.workbench.resources.ResourceUtils;
 import org.talend.core.CorePlugin;
 import org.talend.core.GlobalServiceRegister;
 import org.talend.core.IESBService;
@@ -242,14 +243,6 @@ public class DefaultRunProcessService implements IRunProcessService {
         if (GlobalServiceRegister.getDefault().isServiceRegistered(IESBMicroService.class)) {
             microService = GlobalServiceRegister.getDefault().getService(IESBMicroService.class);
 
-            if (ProcessorUtilities.isExportJobAsMicroService()) {
-                if (microService != null) {
-                    IProcessor processor = microService.createJavaProcessor(process, property, filenameFromLabel, false);
-                    if (processor != null) {
-                        return processor;
-                    }
-                }
-            }
             if (property != null && property.getAdditionalProperties() != null
                     && "REST_MS".equals(property.getAdditionalProperties().get(TalendProcessArgumentConstant.ARG_BUILD_TYPE))) {
                 if (microService != null) {
@@ -962,7 +955,7 @@ public class DefaultRunProcessService implements IRunProcessService {
             IFolder targetFolder = mainProject.getFolder(refPath.removeLastSegments(1));
 
             if (!targetFolder.exists()) {
-                targetFolder.create(true, false, progressMonitor);
+                ResourceUtils.createFolder(targetFolder);
             }
             if (codeFile.getLocation().removeLastSegments(1).equals(targetFolder.getLocation())) {
                 continue;
