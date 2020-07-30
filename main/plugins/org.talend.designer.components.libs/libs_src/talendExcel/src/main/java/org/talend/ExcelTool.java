@@ -35,12 +35,12 @@ public class ExcelTool {
 
     private Workbook wb = null;
 
-    private Workbook preWb = null;
-
     private String sheetName = null;
 
     private Sheet sheet = null;
 
+    private Workbook preWb = null;
+    
     private Sheet preSheet = null;
 
     private Row curRow = null;
