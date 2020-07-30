@@ -596,6 +596,7 @@ public class RunProcessContext {
                         TimeMeasure.begin(generateCodeId);
                         try {
                             BuildCacheManager.getInstance().clearCurrentCache();
+                            BuildCacheManager.getInstance().clearAllCodesCache();
                             ProcessorUtilities.resetExportConfig();
                             ProcessorUtilities
                                     .generateCode(processor, process, context,
