@@ -156,7 +156,7 @@
        <IMPORT NAME="Java-Feed" MODULE="feed4j.jar" MVN="mvn:org.talend.libraries/feed4j/6.0.0"  REQUIRED="true" />
        <IMPORT NAME="Java-DOM" MODULE="dom4j-2.1.1.jar" MVN="mvn:org.dom4j/dom4j/2.1.1" REQUIRED="true" BundleID="" />
         <IMPORT NAME="Java-NEKO" MODULE="nekohtml.jar" MVN="mvn:org.talend.libraries/nekohtml/6.0.0"  REQUIRED="true" />
-       <IMPORT NAME="xercesImpl-2.12.0" MODULE="xercesImpl-2.12.0.jar" MVN="mvn:xerces/xercesImpl/2.12.0" REQUIRED="true"/>
+       <IMPORT NAME="xercesImpl-2.12.0" MODULE="xercesImpl-2.12.0.jar" MVN="mvn:xerces/xercesImpl/2.12.0" REQUIRED="true" BundleID="" />
        <IMPORT NAME="xml-apis-1.4.01" MODULE="xml-apis-1.4.01.jar" MVN="mvn:xml-apis/xml-apis/1.4.01" REQUIRED="true" />
 
      </IMPORTS>
