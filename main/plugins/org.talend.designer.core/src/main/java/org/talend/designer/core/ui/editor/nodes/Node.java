@@ -89,6 +89,7 @@ import org.talend.core.model.process.INodeReturn;
 import org.talend.core.model.process.IPerformance;
 import org.talend.core.model.process.IProcess;
 import org.talend.core.model.process.IProcess2;
+import org.talend.core.model.process.IReplaceNodeHandler;
 import org.talend.core.model.process.Problem;
 import org.talend.core.model.process.Problem.ProblemStatus;
 import org.talend.core.model.properties.JobletProcessItem;
@@ -319,6 +320,8 @@ public class Node extends Element implements IGraphicalNode {
     private ComponentProperties componentProperties;
 
     private List<String> previousCustomLibs = null;
+
+    private IReplaceNodeHandler replaceNodeHandler;
 
     /**
      * Getter for index.
@@ -5628,6 +5631,15 @@ public class Node extends Element implements IGraphicalNode {
      */
     public IComponent getDelegateComponent() {
         return this.delegateComponent;
+    }
+
+    @Override
+    public IReplaceNodeHandler getReplaceNodeHandler() {
+        return replaceNodeHandler;
+    }
+
+    public void setReplaceNodeHandler(IReplaceNodeHandler replaceNodeHandler) {
+        this.replaceNodeHandler = replaceNodeHandler;
     }
 
 }
