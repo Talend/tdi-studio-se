@@ -4,7 +4,7 @@
 
   <groupId>org.talend.libraries</groupId>
   <artifactId>talend-webservice-input</artifactId>
-  <version>1.0.0-20170301</version>
+  <version>1.0.1-20200731</version>
   <packaging>jar</packaging>
 
   <name>talend-webservice-input</name>
