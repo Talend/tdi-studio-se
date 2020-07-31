@@ -14,6 +14,7 @@ import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.graphics.Image;
+import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.ui.gmf.util.DisplayUtils;
 import org.talend.commons.ui.runtime.image.ECoreImage;
 import org.talend.commons.ui.runtime.image.ImageProvider;
@@ -28,6 +29,7 @@ import org.talend.core.model.process.INode;
 import org.talend.core.model.process.INodeConnector;
 import org.talend.core.model.process.IProcess;
 import org.talend.core.model.process.IProcess2;
+import org.talend.core.model.process.JobletReplaceNodeHandler;
 import org.talend.core.model.properties.Project;
 import org.talend.core.ui.IJobletProviderService;
 import org.talend.designer.core.DesignerPlugin;
@@ -379,6 +381,12 @@ public class JobletContainer extends AbstractJobletContainer {
                         conns.addAll(temNode.getIncomingConnections());
                         conns.addAll(temNode.getOutgoingConnections());
                         Node jnode = util.cloneNode(temNode, this.node.getProcess(), paraMap, lockByOther);
+                        try {
+                            JobletReplaceNodeHandler replaceHandler = new JobletReplaceNodeHandler(node.getUniqueName() + "_");
+                            jnode.setReplaceNodeHandler(replaceHandler);
+                        } catch (Throwable e) {
+                            ExceptionHandler.process(e);
+                        }
                         if (!this.node.isActivate()) {
                             jnode.setActivate(this.node.isActivate());
                         }
