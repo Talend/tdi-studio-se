@@ -48,6 +48,7 @@ import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.ui.runtime.exception.MessageBoxExceptionHandler;
 import org.talend.commons.ui.swt.dialogs.EventLoopProgressMonitor;
 import org.talend.commons.utils.time.TimeMeasure;
+import org.talend.core.PluginChecker;
 import org.talend.core.language.ECodeLanguage;
 import org.talend.core.language.LanguageManager;
 import org.talend.core.model.components.ComponentCategory;
@@ -596,7 +597,10 @@ public class RunProcessContext {
                         TimeMeasure.begin(generateCodeId);
                         try {
                             BuildCacheManager.getInstance().clearCurrentCache();
-                            BuildCacheManager.getInstance().clearAllCodesCache();
+                            //TESB-29071
+                            if (PluginChecker.isGITProviderPluginLoaded() || PluginChecker.isSVNProviderPluginLoaded()) {
+                                BuildCacheManager.getInstance().clearAllCodesCache();
+                            }
                             ProcessorUtilities.resetExportConfig();
                             ProcessorUtilities
                                     .generateCode(processor, process, context,
