@@ -295,7 +295,7 @@ public class DefaultRunProcessService implements IRunProcessService {
             return new MavenJavaProcessor(process, property, filenameFromLabel);
         } else {
             if (property != null) {
-                if (!ProcessorUtilities.isGeneratePomOnly()) {
+                // if (!ProcessorUtilities.isGeneratePomOnly()) {
                     // for esb type only
                     boolean servicePart = false;
                     List<Relation> relations = RelationshipItemBuilder.getInstance().getItemsRelatedTo(property.getId(),
@@ -337,7 +337,7 @@ public class DefaultRunProcessService implements IRunProcessService {
                             return soapService.createOSGIJavaProcessor(process, property, filenameFromLabel);
                         }
                     }
-                }
+                // }
                 return new MavenJavaProcessor(process, property, filenameFromLabel);
             } else {
                 return new MavenJavaProcessor(process, property, filenameFromLabel);
