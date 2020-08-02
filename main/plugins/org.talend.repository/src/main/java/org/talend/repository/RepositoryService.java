@@ -327,6 +327,7 @@ public class RepositoryService implements IRepositoryService, IRepositoryContext
 
     private boolean isloginDialogDisabled() {
         boolean reload = Boolean.parseBoolean(System.getProperty("talend.project.reload")); //$NON-NLS-1$
+        reload = reload || Boolean.getBoolean("talend.project.reload4Proj");
         PreferenceManipulator preferenceManipulator = new PreferenceManipulator();
         ConnectionBean lastBean = null;
         if (reload) {
