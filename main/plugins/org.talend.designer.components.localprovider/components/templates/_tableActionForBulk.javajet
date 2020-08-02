@@ -201,7 +201,7 @@ if (!isParallelize) {
                 if (dbnameMySQL != null) { %>
                     java.sql.ResultSet rsTable_<%=cid%> = dbMetaData_<%=cid%>.getTables(<%=dbnameMySQL%>, null, null, new String[]{"TABLE"});
                 <% } else { %>
-                    java.sql.ResultSet rsTable_<%=cid%> = dbMetaData_<%=cid%>.getTables(connection_<%=cid%>.getCatalog(), null, null, new String[]{"TABLE"});
+                    java.sql.ResultSet rsTable_<%=cid%> = dbMetaData_<%=cid%>.getTables(conn_<%=cid%>.getCatalog(), null, null, new String[]{"TABLE"});
                 <% } %>
                 boolean whetherExist_<%=cid%> = false;
                 while(rsTable_<%=cid%>.next()) {
