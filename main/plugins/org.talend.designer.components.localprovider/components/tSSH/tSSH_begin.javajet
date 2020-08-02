@@ -20,51 +20,15 @@ if ((metadatas!=null)&&(metadatas.size()>0)) {
     IMetadataTable metadata = metadatas.get(0);
     if (metadata!=null) {
 
-        String host = ElementParameterParser.getValue(
-            node,
-            "__HOST__"
-        );
-
-        String port = ElementParameterParser.getValue(
-            node,
-            "__PORT__"
-        );
-
-        String user = ElementParameterParser.getValue(
-            node,
-            "__USER__"
-        );
-
-        String authMethod = ElementParameterParser.getValue(
-            node,
-            "__AUTH_METHOD__"
-        );
-
-        String privatekey = ElementParameterParser.getValue(
-            node,
-            "__PRIVATEKEY__"
-        );
-
-        String password = ElementParameterParser.getValue(
-            node,
-            "__PASSWORD__"
-        );
-        
-        String passphrase = ElementParameterParser.getValue(
-            node,
-            "__PASSPHRASE__"
-        );
-        
-        String useTimeout = ElementParameterParser.getValue(
-            node,
-            "__USE_TIMEOUT__"
-        );
-
-        String timeout = ElementParameterParser.getValue(
-            node,
-            "__TIMEOUT__"
-        );
-        
+        String host = ElementParameterParser.getValue(node,"__HOST__");
+        String port = ElementParameterParser.getValue( node,"__PORT__");
+        String user = ElementParameterParser.getValue(node,"__USER__");
+        String authMethod = ElementParameterParser.getValue( node,"__AUTH_METHOD__" );
+        String privatekey = ElementParameterParser.getValue(node,"__PRIVATEKEY__");
+        String password = ElementParameterParser.getValue( node,"__PASSWORD__");
+        String passphrase = ElementParameterParser.getValue(  node, "__PASSPHRASE__");
+        String useTimeout = ElementParameterParser.getValue( node,"__USE_TIMEOUT__");
+        String timeout = ElementParameterParser.getValue(node, "__TIMEOUT__");
         String standardOutput  = ElementParameterParser.getValue(node, "__STANDARDOUTPUT__");
 		String errorOuput  = ElementParameterParser.getValue(node, "__ERROROUTPUT__");
 		if (("NORMAL_OUTPUT").equals(standardOutput)||("NORMAL_OUTPUT").equals(errorOuput)) {
@@ -83,31 +47,18 @@ if ((metadatas!=null)&&(metadatas.size()>0)) {
 		<%if(isLog4jEnabled){%>
 			log.info("<%=cid%> - Connection attempt to '" +hostname_<%=cid%> + "' on the port '"+<%=port%>+"' as '" + username_<%=cid%> + "'.");
 		<%}%>
-<%
-        if(("").equals(port)){
-%>
-			  ch.ethz.ssh2.Connection conn_<%=cid%> = new ch.ethz.ssh2.Connection(hostname_<%=cid%>);
-<%
-        } else {
-%>
-			  ch.ethz.ssh2.Connection conn_<%=cid%> = new ch.ethz.ssh2.Connection(hostname_<%=cid%>,Integer.parseInt(<%=port %> + ""));
-<%
-        }
-%>
+		org.apache.sshd.client.SshClient client_<%=cid%> = org.apache.sshd.client.SshClient.setUpDefaultClient();
+
+        client_<%=cid%>.start();
+	
 		/* Create a session */
-		ch.ethz.ssh2.Session sess_<%=cid%> = null;
+		
+		org.apache.sshd.client.session.ClientSession session_<%=cid%> = null;
+		
               /* Now connect */
+			  
+
 <%
-        if(("true").equals(useTimeout)){
-%>
-			  conn_<%=cid%>.connect(null,0,<%=timeout%>*1000);
-<%
-        } else {
-%>
-			  conn_<%=cid%>.connect();
-<%
-        }
-        
         if (("PUBLICKEY").equals(authMethod)) {
 %>
 		<%if(isLog4jEnabled){%>
@@ -127,25 +78,10 @@ if ((metadatas!=null)&&(metadatas.size()>0)) {
 			  }
 <%
         }
-        if (("PASSWORD").equals(authMethod)) {
+
 %>
-		<%if(isLog4jEnabled){%>
-			log.info("<%=cid%> - Authentication using a password.");
-		<%}%>
-		
-        <%
-        String passwordFieldName = "__PASSWORD__";
-        %>
-        
-        <%@ include file="@{org.talend.designer.components.localprovider}/components/templates/password.javajet"%>		
-		
-        boolean isAuthenticated_<%=cid%> = conn_<%=cid%>.authenticateWithPassword(username_<%=cid%>, decryptedPassword_<%=cid%>);
-			if (isAuthenticated_<%=cid%> == false){
-				throw new RuntimeException("Authentication failed.");
-			}
+
 <%
-        }
-        
         if (("KEYBOARDINTERACTIVE").equals(authMethod)) {
 %>
 		<%if(isLog4jEnabled){%>
