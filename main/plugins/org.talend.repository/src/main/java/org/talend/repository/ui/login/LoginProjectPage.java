@@ -74,6 +74,8 @@ import org.talend.commons.exception.CommonExceptionHandler;
 import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.exception.PersistenceException;
 import org.talend.commons.exception.SystemException;
+import org.talend.commons.model.TalendObject;
+import org.talend.commons.model.KeyConstants.ProjectType;
 import org.talend.commons.ui.runtime.exception.ExceptionMessageDialog;
 import org.talend.commons.ui.runtime.exception.MessageBoxExceptionHandler;
 import org.talend.commons.ui.runtime.image.EImage;
@@ -81,6 +83,8 @@ import org.talend.commons.ui.runtime.image.ImageProvider;
 import org.talend.commons.utils.network.TalendProxySelector;
 import org.talend.commons.utils.system.EclipseCommandLine;
 import org.talend.commons.utils.system.EnvironmentUtils;
+import org.talend.configurator.common.utils.ConfiguratorHelper;
+import org.talend.configurator.common.utils.Utils;
 import org.talend.core.CorePlugin;
 import org.talend.core.GlobalServiceRegister;
 import org.talend.core.PluginChecker;
@@ -1129,8 +1133,23 @@ public class LoginProjectPage extends AbstractLoginActionPage {
                         ICoreTisService.class);
                 afterUpdate = false;
                 if (tisService != null) {
-                    tisService.downLoadAndInstallUpdates(getConnection().getUser(), getConnection().getPassword(),
-                            loginFetchLicenseHelper.getAdminURL());
+                    File curUsingLicense = Utils.getObjectFile();
+                    File defaultLicense = org.talend.configurator.common.utils.Utils.getDefaultObjectFile();
+                    ProjectType pType = ConfiguratorHelper.getProductTypeFromLicense(new TalendObject(defaultLicense));
+                    String productType = System.getProperty("talend.branding.type"); //$NON-NLS-1$
+                    if (!curUsingLicense.equals(defaultLicense) || !pType.name().equals(productType)) {
+                        EclipseCommandLine.updateOrCreateExitDataPropertyWithCommand(EclipseCommandLine.LOGIN_ONLINE_UPDATE, null,
+                                false, true);
+                        EclipseCommandLine.updateOrCreateExitDataPropertyWithCommand(EclipseCommandLine.CLEAN, null, false, true);
+                        EclipseCommandLine.updateOrCreateExitDataPropertyWithCommand(EclipseCommandLine.TALEND_RELOAD_COMMAND,
+                                Boolean.TRUE.toString(), false);
+                        EclipseCommandLine.updateOrCreateExitDataPropertyWithCommand(
+                                EclipseCommandLine.TALEND_PROJECT_TYPE_COMMAND, "", true);
+                        EclipseCommandLine.updateOrCreateExitDataPropertyWithCommand(Utils.ARG_TALEND_LICENCE_PATH, "", true);
+                    } else {
+                        tisService.downLoadAndInstallUpdates(getConnection().getUser(), getConnection().getPassword(),
+                                loginFetchLicenseHelper.getAdminURL());
+                    }
                     afterUpdate = true;
                     tisService.setNeedResartAfterUpdate(afterUpdate);
                 }
