@@ -293,8 +293,8 @@
 			<IMPORT NAME="httpclient-4.5.12.jar" MODULE="httpclient-4.5.12.jar"
 				MVN="mvn:org.apache.httpcomponents/httpclient/4.5.12"
 				REQUIRED_IF="USE_EXISTING_CONNECTION == 'false'" />
-			<IMPORT NAME="commons-codec-1.11.jar" MODULE="commons-codec-1.11.jar"
-				MVN="mvn:commons-codec/commons-codec/1.11"
+			<IMPORT NAME="commons-codec-1.14.jar" MODULE="commons-codec-1.14.jar"
+				MVN="mvn:commons-codec/commons-codec/1.14"
 				REQUIRED_IF="USE_EXISTING_CONNECTION == 'false'" />
 			<IMPORT NAME="jackson-core-2.10.1.jar" MODULE="jackson-core-2.10.1.jar"
 				MVN="mvn:com.fasterxml.jackson.core/jackson-core/2.10.1"

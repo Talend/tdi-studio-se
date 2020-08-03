@@ -276,7 +276,7 @@
 			<IMPORT NAME="httpmime-4.2.5.jar" MODULE="httpmime-4.2.5.jar" MVN="mvn:org.talend.libraries/httpmime-4.2.5/6.0.0" UrlPath="platform:/plugin/org.talend.libraries.apache.http/lib/httpmime-4.2.5.jar" REQUIRED_IF="(DB_VERSION=='BONITA_652') AND (CLIENT_MODE=='HTTP_CLIENT')" />
 			<IMPORT NAME="httpclient-4.5.12.jar" MODULE="httpclient-4.5.12.jar" MVN="mvn:org.apache.httpcomponents/httpclient/4.5.12" REQUIRED_IF="(DB_VERSION=='BONITA_652') AND (CLIENT_MODE=='HTTP_CLIENT')" />
 			<IMPORT NAME="httpcore-4.4.13.jar" MODULE="httpcore-4.4.13.jar" MVN="mvn:org.apache.httpcomponents/httpcore/4.4.13" REQUIRED_IF="(DB_VERSION=='BONITA_652') AND (CLIENT_MODE=='HTTP_CLIENT')" />
-			<IMPORT NAME="commons-codec-1.11.jar" MODULE="commons-codec-1.11.jar" MVN="mvn:commons-codec/commons-codec/1.11" REQUIRED_IF="(DB_VERSION=='BONITA_652') AND (CLIENT_MODE=='HTTP_CLIENT')" />
+			<IMPORT NAME="commons-codec-1.14.jar" MODULE="commons-codec-1.14.jar" MVN="mvn:commons-codec/commons-codec/1.14" REQUIRED_IF="(DB_VERSION=='BONITA_652') AND (CLIENT_MODE=='HTTP_CLIENT')" />
 			<IMPORT NAME="commons-logging-1.2.jar" MODULE="commons-logging-1.2.jar" MVN="mvn:commons-logging/commons-logging/1.2" REQUIRED_IF="(DB_VERSION=='BONITA_652') AND (CLIENT_MODE=='HTTP_CLIENT')" />
 			<IMPORT NAME="commons-lang3-3.8.1.jar" MODULE="commons-lang3-3.8.1.jar" MVN="mvn:org.apache.commons/commons-lang3/3.8.1" UrlPath="platform:/plugin/org.talend.libraries.apache.common/lib/commons-lang3-3.8.1.jar" REQUIRED_IF="(DB_VERSION=='BONITA_652') AND (CLIENT_MODE=='HTTP_CLIENT')" />
 			
@@ -291,7 +291,7 @@
 			<IMPORT NAME="httpclient-4.5.12.jar" MODULE="httpclient-4.5.12.jar" MVN="mvn:org.apache.httpcomponents/httpclient/4.5.12" REQUIRED_IF="(DB_VERSION=='BONITA_652') AND (CLIENT_MODE=='JAVA_CLIENT')" />
 			<IMPORT NAME="httpcore-4.4.13.jar" MODULE="httpcore-4.4.13.jar" MVN="mvn:org.apache.httpcomponents/httpcore/4.4.13" REQUIRED_IF="(DB_VERSION=='BONITA_652') AND (CLIENT_MODE=='JAVA_CLIENT')" />
 			<IMPORT NAME="commons-logging-1.2.jar" MODULE="commons-logging-1.2.jar" MVN="mvn:commons-logging/commons-logging/1.2" REQUIRED_IF="(DB_VERSION=='BONITA_652') AND (CLIENT_MODE=='JAVA_CLIENT')" />
-			<IMPORT NAME="commons-codec-1.11.jar" MODULE="commons-codec-1.11.jar" MVN="mvn:commons-codec/commons-codec/1.11" REQUIRED_IF="(DB_VERSION=='BONITA_652') AND (CLIENT_MODE=='JAVA_CLIENT')" />
+			<IMPORT NAME="commons-codec-1.14.jar" MODULE="commons-codec-1.14.jar" MVN="mvn:commons-codec/commons-codec/1.14" REQUIRED_IF="(DB_VERSION=='BONITA_652') AND (CLIENT_MODE=='JAVA_CLIENT')" />
 			
 			<!-- Bonita 7.2.4 HTTP API -->
 			<IMPORT NAME="talend-bonita-client-1.0.0.jar" MODULE="talend-bonita-client-1.0.0.jar" MVN="mvn:org.talend.libraries/talend-bonita-client-1.0.0/6.0.0" REQUIRED_IF="(DB_VERSION=='BONITA_724') AND (CLIENT_MODE=='HTTP_CLIENT')" />
@@ -302,7 +302,7 @@
 			<IMPORT NAME="httpclient-4.5.12.jar" MODULE="httpclient-4.5.12.jar" MVN="mvn:org.apache.httpcomponents/httpclient/4.5.12" REQUIRED_IF="(DB_VERSION=='BONITA_724') AND (CLIENT_MODE=='HTTP_CLIENT')" />
 			<IMPORT NAME="httpcore-4.4.13.jar" MODULE="httpcore-4.4.13.jar" MVN="mvn:org.apache.httpcomponents/httpcore/4.4.13" REQUIRED_IF="(DB_VERSION=='BONITA_724') AND (CLIENT_MODE=='HTTP_CLIENT')" />
 			<IMPORT NAME="commons-logging-1.2.jar" MODULE="commons-logging-1.2.jar" MVN="mvn:commons-logging/commons-logging/1.2" REQUIRED_IF="(DB_VERSION=='BONITA_724') AND (CLIENT_MODE=='HTTP_CLIENT')" />
-			<IMPORT NAME="commons-codec-1.11.jar" MODULE="commons-codec-1.11.jar" MVN="mvn:commons-codec/commons-codec/1.11" REQUIRED_IF="(DB_VERSION=='BONITA_724') AND (CLIENT_MODE=='HTTP_CLIENT')" />
+			<IMPORT NAME="commons-codec-1.14.jar" MODULE="commons-codec-1.14.jar" MVN="mvn:commons-codec/commons-codec/1.14" REQUIRED_IF="(DB_VERSION=='BONITA_724') AND (CLIENT_MODE=='HTTP_CLIENT')" />
 			<IMPORT NAME="commons-lang3-3.8.1.jar" MODULE="commons-lang3-3.8.1.jar" MVN="mvn:org.apache.commons/commons-lang3/3.8.1" UrlPath="platform:/plugin/org.talend.libraries.apache.common/lib/commons-lang3-3.8.1.jar" REQUIRED_IF="(DB_VERSION=='BONITA_724') AND (CLIENT_MODE=='HTTP_CLIENT')" />
 			
 			<!-- Bonita 7.2.4 JAVA API -->
@@ -316,7 +316,7 @@
 			<IMPORT NAME="httpclient-4.5.12.jar" MODULE="httpclient-4.5.12.jar" MVN="mvn:org.apache.httpcomponents/httpclient/4.5.12" REQUIRED_IF="(DB_VERSION=='BONITA_724') AND (CLIENT_MODE=='JAVA_CLIENT')" />
 			<IMPORT NAME="httpcore-4.4.13.jar" MODULE="httpcore-4.4.13.jar" MVN="mvn:org.apache.httpcomponents/httpcore/4.4.13" REQUIRED_IF="(DB_VERSION=='BONITA_724') AND (CLIENT_MODE=='JAVA_CLIENT')" />
 			<IMPORT NAME="commons-logging-1.2.jar" MODULE="commons-logging-1.2.jar" MVN="mvn:commons-logging/commons-logging/1.2" REQUIRED_IF="(DB_VERSION=='BONITA_724') AND (CLIENT_MODE=='JAVA_CLIENT')" />
-			<IMPORT NAME="commons-codec-1.11.jar" MODULE="commons-codec-1.11.jar" MVN="mvn:commons-codec/commons-codec/1.11" REQUIRED_IF="(DB_VERSION=='BONITA_724') AND (CLIENT_MODE=='JAVA_CLIENT')" />
+			<IMPORT NAME="commons-codec-1.14.jar" MODULE="commons-codec-1.14.jar" MVN="mvn:commons-codec/commons-codec/1.14" REQUIRED_IF="(DB_VERSION=='BONITA_724') AND (CLIENT_MODE=='JAVA_CLIENT')" />
 			<IMPORT NAME="commons-io-2.1.jar" MODULE="commons-io-2.1.jar" MVN="mvn:org.talend.libraries/commons-io-2.1/6.0.0" UrlPath="platform:/plugin/org.talend.libraries.apache.common/lib/commons-io-2.1.jar" REQUIRED_IF="(DB_VERSION=='BONITA_724') AND (CLIENT_MODE=='JAVA_CLIENT')" />
 			
 			<!-- Bonita Http Client -->

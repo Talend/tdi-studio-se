@@ -350,8 +350,8 @@
 		<IMPORT NAME="commons-logging-1.2.jar" MODULE="commons-logging-1.2.jar"
 			MVN="mvn:commons-logging/commons-logging/1.2"
 			REQUIRED_IF="USE_EXISTING_CONNECTION == 'false'" />
-		<IMPORT NAME="commons-codec-1.11.jar" MODULE="commons-codec-1.11.jar"
-			MVN="mvn:commons-codec/commons-codec/1.11"
+		<IMPORT NAME="commons-codec-1.14.jar" MODULE="commons-codec-1.14.jar"
+			MVN="mvn:commons-codec/commons-codec/1.14"
 			REQUIRED_IF="USE_EXISTING_CONNECTION == 'false'" />
     </IMPORTS>
    </CODEGENERATION>
