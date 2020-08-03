@@ -169,9 +169,9 @@
     <CODEGENERATION>
     <IMPORTS>
       <IMPORT NAME="paloIX3" MODULE="paloIX3.jar" MVN="mvn:org.talend.libraries/paloIX3/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.palo/lib/paloIX3.jar" REQUIRED="true" />
-      <IMPORT NAME="httpclient-4.5.9" MODULE="httpclient-4.5.9.jar" MVN="mvn:org.apache.httpcomponents/httpclient/4.5.9" REQUIRED="true" />
+      <IMPORT NAME="httpclient-4.5.12" MODULE="httpclient-4.5.12.jar" MVN="mvn:org.apache.httpcomponents/httpclient/4.5.12" REQUIRED="true" />
       <IMPORT NAME="httpmime-4.1.2" MODULE="httpmime-4.1.2.jar" MVN="mvn:org.talend.libraries/httpmime-4.1.2/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.apache.http/lib/httpmime-4.1.2.jar" REQUIRED="true" />
-      <IMPORT NAME="httpcore-4.4.11" MODULE="httpcore-4.4.11.jar" MVN="mvn:org.apache.httpcomponents/httpcore/4.4.11" REQUIRED="true" />
+      <IMPORT NAME="httpcore-4.4.13" MODULE="httpcore-4.4.13.jar" MVN="mvn:org.apache.httpcomponents/httpcore/4.4.13" REQUIRED="true" />
       <IMPORT NAME="commons-logging-1.2" MODULE="commons-logging-1.2.jar" MVN="mvn:commons-logging/commons-logging/1.2" REQUIRED="true" />
       <IMPORT NAME="commons-codec-1.11" MODULE="commons-codec-1.11.jar" MVN="mvn:commons-codec/commons-codec/1.11" REQUIRED="true" />
       <IMPORT NAME="Talend_CSV" MODULE="talendcsv.jar" MVN="mvn:org.talend.libraries/talendcsv/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.csv/lib/talendcsv.jar" REQUIRED="true" />

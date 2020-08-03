@@ -371,11 +371,11 @@
 		<IMPORT NAME="jackson-annotations-2.10.1.jar" MODULE="jackson-annotations-2.10.1.jar"
 			MVN="mvn:com.fasterxml.jackson.core/jackson-annotations/2.10.1"
 			REQUIRED_IF="USE_EXISTING_CONNECTION == 'false'" />
-		<IMPORT NAME="httpcore-4.4.11.jar" MODULE="httpcore-4.4.11.jar"
-			MVN="mvn:org.apache.httpcomponents/httpcore/4.4.11"
+		<IMPORT NAME="httpcore-4.4.13.jar" MODULE="httpcore-4.4.13.jar"
+			MVN="mvn:org.apache.httpcomponents/httpcore/4.4.13"
 			REQUIRED_IF="USE_EXISTING_CONNECTION == 'false'" />
-		<IMPORT NAME="httpclient-4.5.9.jar" MODULE="httpclient-4.5.9.jar"
-			MVN="mvn:org.apache.httpcomponents/httpclient/4.5.9"
+		<IMPORT NAME="httpclient-4.5.12.jar" MODULE="httpclient-4.5.12.jar"
+			MVN="mvn:org.apache.httpcomponents/httpclient/4.5.12"
 			REQUIRED_IF="USE_EXISTING_CONNECTION == 'false'" />
 		<IMPORT NAME="joda-time-2.8.1.jar" MODULE="joda-time-2.8.1.jar"
 			MVN="mvn:joda-time/joda-time/2.8.1"

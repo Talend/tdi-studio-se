@@ -1339,8 +1339,8 @@
 			<IMPORT NAME="apache-mime4j" MODULE="apache-mime4j-0.6.jar" MVN="mvn:org.talend.libraries/apache-mime4j-0.6/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.apache/lib/apache-mime4j-0.6.jar" REQUIRED="true" />
 			<IMPORT NAME="commons-codec" MODULE="commons-codec-1.11.jar" MVN="mvn:commons-codec/commons-codec/1.11" REQUIRED="true" />
 			<IMPORT NAME="commons-logging" MODULE="commons-logging-1.2.jar" MVN="mvn:commons-logging/commons-logging/1.2" REQUIRED="true" />
-			<IMPORT NAME="httpclient" MODULE="httpclient-4.5.9.jar" MVN="mvn:org.apache.httpcomponents/httpclient/4.5.9" REQUIRED="true" />
-			<IMPORT NAME="httpcore" MODULE="httpcore-4.4.11.jar" MVN="mvn:org.apache.httpcomponents/httpcore/4.4.11" REQUIRED="true" />
+			<IMPORT NAME="httpclient" MODULE="httpclient-4.5.12.jar" MVN="mvn:org.apache.httpcomponents/httpclient/4.5.12" REQUIRED="true" />
+			<IMPORT NAME="httpcore" MODULE="httpcore-4.4.13.jar" MVN="mvn:org.apache.httpcomponents/httpcore/4.4.13" REQUIRED="true" />
 			<IMPORT NAME="httpmime" MODULE="httpmime-4.1.2.jar" MVN="mvn:org.talend.libraries/httpmime-4.1.2/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.apache.http/lib/httpmime-4.1.2.jar" REQUIRED="true" />
 		</IMPORTS>
 	</CODEGENERATION>
