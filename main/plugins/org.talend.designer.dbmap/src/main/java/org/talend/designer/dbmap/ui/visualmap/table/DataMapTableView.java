@@ -22,7 +22,6 @@ import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TableViewer;
-import org.eclipse.jface.viewers.TextCellEditor;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.events.ControlEvent;
@@ -61,6 +60,7 @@ import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
+import org.talend.commons.ui.runtime.expressionbuilder.IExpressionBuilderDialogController;
 import org.talend.commons.ui.runtime.image.EImage;
 import org.talend.commons.ui.runtime.swt.tableviewer.TableViewerCreatorColumnNotModifiable;
 import org.talend.commons.ui.runtime.swt.tableviewer.TableViewerCreatorNotModifiable;
@@ -69,6 +69,7 @@ import org.talend.commons.ui.runtime.swt.tableviewer.behavior.CellEditorValueAda
 import org.talend.commons.ui.runtime.swt.tableviewer.behavior.DefaultTableLabelProvider;
 import org.talend.commons.ui.runtime.swt.tableviewer.behavior.ITableCellValueModifiedListener;
 import org.talend.commons.ui.runtime.swt.tableviewer.behavior.TableCellValueModifiedEvent;
+import org.talend.commons.ui.runtime.swt.tableviewer.celleditor.CellEditorDialogBehavior;
 import org.talend.commons.ui.runtime.swt.tableviewer.data.ModifiedObjectInfo;
 import org.talend.commons.ui.runtime.swt.tableviewer.selection.ILineSelectionListener;
 import org.talend.commons.ui.runtime.swt.tableviewer.selection.LineSelectionEvent;
@@ -78,7 +79,7 @@ import org.talend.commons.ui.runtime.ws.WindowSystem;
 import org.talend.commons.ui.swt.colorstyledtext.UnnotifiableColorStyledText;
 import org.talend.commons.ui.swt.extended.table.AbstractExtendedTableViewer;
 import org.talend.commons.ui.swt.proposal.ContentProposalAdapterExtended;
-import org.talend.commons.ui.swt.proposal.TextCellEditorWithProposal;
+import org.talend.commons.ui.swt.proposal.ExtendedTextCellEditorWithProposal;
 import org.talend.commons.ui.swt.tableviewer.IModifiedBeanListener;
 import org.talend.commons.ui.swt.tableviewer.ModifiedBeanEvent;
 import org.talend.commons.ui.swt.tableviewer.TableViewerCreator;
@@ -87,7 +88,10 @@ import org.talend.commons.utils.data.list.IListenableListListener;
 import org.talend.commons.utils.data.list.ListenableListEvent;
 import org.talend.commons.utils.data.list.ListenableListEvent.TYPE;
 import org.talend.commons.utils.threading.ExecutionLimiter;
+import org.talend.core.GlobalServiceRegister;
+import org.talend.core.IService;
 import org.talend.core.model.process.Problem;
+import org.talend.core.runtime.services.IExpressionBuilderDialogService;
 import org.talend.core.ui.metadata.editor.MetadataTableEditorView;
 import org.talend.designer.abstractmap.model.table.IDataMapTable;
 import org.talend.designer.abstractmap.model.tableentry.IColumnEntry;
@@ -216,6 +220,9 @@ public abstract class DataMapTableView extends Composite implements IDataMapTabl
 
     public static final String COLUMN_NAME = "Column"; //$NON-NLS-1$
 
+    private IExpressionBuilderDialogController dialog;
+
+    private static final int ExpressionBuilderForElt = 1;
     // protected GridData tableForConstraintsGridData;
 
     /**
@@ -1441,7 +1448,7 @@ public abstract class DataMapTableView extends Composite implements IDataMapTabl
      * @param tableViewerCreator
      * @param currentModifiedEntry
      */
-    protected void initExpressionProposals(final TextCellEditorWithProposal textCellEditor, Zone[] zones,
+    protected void initExpressionProposals(final ExtendedTextCellEditorWithProposal textCellEditor, Zone[] zones,
             final TableViewerCreator tableViewerCreator, ITableEntry currentModifiedEntry) {
         if (this.expressionProposalProvider == null) {
             IContentProposalProvider[] contentProposalProviders = new IContentProposalProvider[0];
@@ -1464,11 +1471,40 @@ public abstract class DataMapTableView extends Composite implements IDataMapTabl
         // System.out.println("init expression proposal:"+this.expressionProposal);
     }
 
-    protected TextCellEditor createExpressionCellEditor(final TableViewerCreator tableViewerCreator,
+    protected ExtendedTextCellEditorWithProposal createExpressionCellEditor(final TableViewerCreator tableViewerCreator,
             TableViewerCreatorColumn column, final Zone[] zones, boolean isConstraintExpressionCellEditor) {
-        final TextCellEditorWithProposal cellEditor = new TextCellEditorWithProposal(tableViewerCreator.getTable(), SWT.MULTI
-                | SWT.BORDER, column);
-        final Text expressionTextEditor = (Text) cellEditor.getControl();
+        IService expressionBuilderDialogService = GlobalServiceRegister.getDefault()
+                .getService(IExpressionBuilderDialogService.class);
+        CellEditorDialogBehavior behavior = new CellEditorDialogBehavior();
+        final ExtendedTextCellEditorWithProposal cellEditor = new ExtendedTextCellEditorWithProposal(
+                tableViewerCreator.getTable(), SWT.MULTI | SWT.BORDER, column, behavior) {
+
+            @Override
+            public void activate() {
+
+                // UIManager uiManager = mapperManager.getUiManager();
+                //
+                // ITableEntry currentModifiedBean = (ITableEntry) tableViewerCreator.getModifiedObjectInfo()
+                // .getCurrentModifiedBean();
+                //
+                // ArrayList<ITableEntry> selectedTableEntry = new ArrayList<ITableEntry>(1);
+                // selectedTableEntry.add(currentModifiedBean);
+                //
+                // uiManager.selectLinks(DataMapTableView.this, selectedTableEntry, true, false);
+                //
+                // uiManager.applyActivatedCellEditorsForAllTables(tableViewerCreator);
+
+                super.activate();
+            }
+
+        };
+        dialog = ((IExpressionBuilderDialogService) expressionBuilderDialogService).getExpressionBuilderInstance(
+                tableViewerCreator.getCompositeParent(), cellEditor, mapperManager.getAbstractMapComponent(),
+                ExpressionBuilderForElt);
+
+        behavior.setCellEditorDialog(dialog);
+
+        final Text expressionTextEditor = cellEditor.getTextControl();
 
         if (isConstraintExpressionCellEditor) {
             // moved to it's caller to execute
@@ -1479,7 +1515,7 @@ public abstract class DataMapTableView extends Composite implements IDataMapTabl
 
         cellEditor.addListener(new ICellEditorListener() {
 
-            Text text = (Text) cellEditor.getControl();
+            Text text = cellEditor.getTextControl();
 
             @Override
             public void applyEditorValue() {
