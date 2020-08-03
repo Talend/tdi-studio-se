@@ -77,7 +77,7 @@
 			<!-- USER_ACCOUNT_HMAC -->
 	       	<IMPORT NAME="jets3t-0.9.1" MODULE="jets3t-0.9.1.jar" MVN="mvn:org.talend.libraries/jets3t-0.9.1/6.0.0" REQUIRED_IF="(AUTH_TYPE == 'USER_ACCOUNT_HMAC')" />
 			<IMPORT NAME="commons-logging-1.2" MODULE="commons-logging-1.2.jar" MVN="mvn:commons-logging/commons-logging/1.2" REQUIRED="true" />
-			<IMPORT NAME="httpclient-4.5.9" MODULE="httpclient-4.5.9.jar" MVN="mvn:org.apache.httpcomponents/httpclient/4.5.9" REQUIRED="true" />
+			<IMPORT NAME="httpclient-4.5.12" MODULE="httpclient-4.5.12.jar" MVN="mvn:org.apache.httpcomponents/httpclient/4.5.12" REQUIRED="true" />
 			<IMPORT NAME="httpcore-4.4.11" MODULE="httpcore-4.4.11.jar" MVN="mvn:org.apache.httpcomponents/httpcore/4.4.11" REQUIRED="true" />
 			<IMPORT NAME="commons-codec-1.11" MODULE="commons-codec-1.11.jar" MVN="mvn:commons-codec/commons-codec/1.11" REQUIRED="true" />
 
