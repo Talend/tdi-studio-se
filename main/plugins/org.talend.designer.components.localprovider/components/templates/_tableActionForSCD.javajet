@@ -50,11 +50,11 @@
                 } else {
                     dbnameMySQL = ElementParameterParser.getValue(node, "__DBNAME__");
                 }
+                dbnameMySQL = (dbnameMySQL.equals("")) ? null : dbnameMySQL;
 %>
-                <%
-                if (dbnameMySQL != null) { %>
+                <%if (dbnameMySQL != null) { %>
                     java.sql.ResultSet rsTable_<%=cid%> = dbMetaData_<%=cid%>.getTables(<%=dbnameMySQL%>, null, null, new String[]{"TABLE"});
-                <% } else { %>
+                <%} else { %>
                     java.sql.ResultSet rsTable_<%=cid%> = dbMetaData_<%=cid%>.getTables(connection_<%=cid%>.getCatalog(), null, null, new String[]{"TABLE"});
                 <% } %>
                 boolean whetherExist_<%=cid%> = false;

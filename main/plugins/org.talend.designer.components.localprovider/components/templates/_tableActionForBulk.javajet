@@ -195,14 +195,14 @@ if (!isParallelize) {
                 } else {
                     dbnameMySQL = ElementParameterParser.getValue(node, "__DBNAME__");
                 }
+                dbnameMySQL = (dbnameMySQL.equals("")) ? null : dbnameMySQL;
             %>
                 java.sql.DatabaseMetaData dbMetaData_<%=cid%> = conn_<%=cid%>.getMetaData();
-                <%
-                if (dbnameMySQL != null) { %>
+                <%if (dbnameMySQL != null) {%>
                     java.sql.ResultSet rsTable_<%=cid%> = dbMetaData_<%=cid%>.getTables(<%=dbnameMySQL%>, null, null, new String[]{"TABLE"});
-                <% } else { %>
+                <%} else {%>
                     java.sql.ResultSet rsTable_<%=cid%> = dbMetaData_<%=cid%>.getTables(conn_<%=cid%>.getCatalog(), null, null, new String[]{"TABLE"});
-                <% } %>
+                <%}%>
                 boolean whetherExist_<%=cid%> = false;
                 while(rsTable_<%=cid%>.next()) {
                     String table_<%=cid%> = rsTable_<%=cid%>.getString("TABLE_NAME");
