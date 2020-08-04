@@ -3,6 +3,7 @@ imports="
     org.talend.core.model.process.INode 
     org.talend.core.model.process.ElementParameterParser 
     org.talend.designer.codegen.config.CodeGeneratorArgument
+    org.talend.core.model.utils.NodeUtil
 " 
 %>
 
@@ -17,7 +18,15 @@ String operator = ElementParameterParser.getValue(node,"__OPERATOR__");
 String value = ElementParameterParser.getValue(node,"__VALUE__");
 boolean isEnableWhereClause = ("true").equals(ElementParameterParser.getValue(node,"__ENABLE_WHERE_CLAUSE__"));
 boolean isEnableSQLStmt = ("true").equals(ElementParameterParser.getValue(node,"__ENABLE_SQL_STMT__"));
-String conn = "conn_" + connection ;
+
+final String conn;
+INode connNode = NodeUtil.getNodeByUniqueName(node.getProcess(), connection);
+if((connNode!=null) && "tSnowflakeConnection".equals(connNode.getComponent().getName())){
+   conn = connection + "_connection";
+}else{
+   conn = "conn_" + connection;
+}
+
 String query = "SELECT COUNT(*) FROM ";
 %>
 
