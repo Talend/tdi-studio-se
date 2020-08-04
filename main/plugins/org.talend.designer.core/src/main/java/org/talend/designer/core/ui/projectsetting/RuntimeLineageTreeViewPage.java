@@ -90,16 +90,16 @@ public class RuntimeLineageTreeViewPage extends ProjectSettingPage {
     @Override
     protected Control createContents(Composite parent) {
         runtimeLineageManager.load();
-        Composite composite = widgetFactory.createComposite(parent, SWT.NONE);
-        composite.setLayout(new FillLayout());
+        Composite composite = new Composite(parent, SWT.NONE);
         GridLayout layout = new GridLayout();
-        layout.marginLeft = 5;
-        layout.marginRight = 5;
         layout.numColumns = 1;
-        layout.makeColumnsEqualWidth = true;
         composite.setLayout(layout);
 
-        useRuntimeLineageAllButton = new Button(composite, SWT.CHECK);
+        Composite useAllComposite = new Composite(composite, SWT.NONE);
+        useAllComposite.setLayout(new GridLayout());
+        useAllComposite.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+
+        useRuntimeLineageAllButton = new Button(useAllComposite, SWT.CHECK);
         useRuntimeLineageAllButton.setText(Messages.getString("ExtraComposite.RuntimeLineageSettings.all")); //$NON-NLS-1$
 
         repositoryView = RepositoryManager.getRepositoryView();
