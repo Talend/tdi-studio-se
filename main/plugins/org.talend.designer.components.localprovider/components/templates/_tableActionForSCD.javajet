@@ -50,7 +50,7 @@
                 } else {
                     dbnameMySQL = ElementParameterParser.getValue(node, "__DBNAME__");
                 }
-                dbnameMySQL = (dbnameMySQL.equals("")) ? null : dbnameMySQL;
+                dbnameMySQL = ("".equals(dbnameMySQL)) ? null : dbnameMySQL;
 %>
                 <%if (dbnameMySQL != null) { %>
                     java.sql.ResultSet rsTable_<%=cid%> = dbMetaData_<%=cid%>.getTables(<%=dbnameMySQL%>, null, null, new String[]{"TABLE"});

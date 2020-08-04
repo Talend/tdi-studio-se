@@ -181,7 +181,7 @@ if (!isParallelize) {
                 } else {
                     dbnameMySQL = ElementParameterParser.getValue(node, "__DBNAME__");
                 }
-                dbnameMySQL = (dbnameMySQL.equals("")) ? null : dbnameMySQL;
+                dbnameMySQL = ("".equals(dbnameMySQL)) ? null : dbnameMySQL;
             %>
                 java.sql.DatabaseMetaData dbMetaData_<%=cid%> = conn_<%=cid%>.getMetaData();
                 <%if (dbnameMySQL != null) {%>
