@@ -46,7 +46,6 @@ import org.talend.core.repository.model.ProxyRepositoryFactory;
 import org.talend.core.repository.ui.view.RepositoryLabelProvider;
 import org.talend.core.runtime.projectsetting.RuntimeLineageManager;
 import org.talend.designer.core.i18n.Messages;
-import org.talend.designer.core.ui.views.properties.WidgetFactory;
 import org.talend.repository.model.IProxyRepositoryFactory;
 import org.talend.repository.model.IRepositoryNode;
 import org.talend.repository.model.IRepositoryNode.ENodeType;
@@ -74,8 +73,6 @@ public class RuntimeLineageTreeViewPage extends ProjectSettingPage {
     private List<RepositoryNode> addedObjects = new ArrayList<RepositoryNode>();
 
     private List<RepositoryNode> removedObjects = new ArrayList<RepositoryNode>();
-
-    private WidgetFactory widgetFactory = new WidgetFactory();
 
     private Button useRuntimeLineageAllButton;
 
@@ -118,7 +115,8 @@ public class RuntimeLineageTreeViewPage extends ProjectSettingPage {
     }
 
     private void createRuntimeLineageTree(Composite composite) {
-        Group g = widgetFactory.createGroup(composite, Messages.getString("ExtraComposite.RuntimeLineageSettings.select")); //$NON-NLS-1$
+        Group g = new Group(composite, SWT.NONE);
+        g.setText(Messages.getString("ExtraComposite.RuntimeLineageSettings.select")); //$NON-NLS-1$
         GridData gd = new GridData(GridData.FILL_BOTH);
         g.setLayoutData(gd);
         g.setLayout(new FillLayout());
@@ -310,14 +308,6 @@ public class RuntimeLineageTreeViewPage extends ProjectSettingPage {
     @Override
     public void refresh() {
         // TODO
-    }
-
-    @Override
-    public void dispose() {
-        if (widgetFactory != null) {
-            widgetFactory.dispose();
-        }
-        super.dispose();
     }
 
     @Override
