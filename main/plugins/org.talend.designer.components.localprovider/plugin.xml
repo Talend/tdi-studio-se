@@ -2187,15 +2187,13 @@
     	<libraryNeeded
 	   		context="plugin:org.talend.libraries.apache.kafka"
         	id="curator-framework-2.6.0.jar"
-         	name="curator-framework-2.6.0.jar" mvn_uri="mvn:org.apache.curator/curator-framework/2.6.0"
-         	uripath="platform:/plugin/org.talend.libraries.apache.kafka/lib/curator-framework-2.6.0.jar">
+         	name="curator-framework-2.6.0.jar" mvn_uri="mvn:org.apache.curator/curator-framework/2.6.0">
     	</libraryNeeded>
 
     	<libraryNeeded
 	   		context="plugin:org.talend.libraries.apache.kafka"
         	id="curator-client-2.6.0.jar"
-         	name="curator-client-2.6.0.jar" mvn_uri="mvn:org.apache.curator/curator-client/2.6.0"
-         	uripath="platform:/plugin/org.talend.libraries.apache.kafka/lib/curator-client-2.6.0.jar">
+         	name="curator-client-2.6.0.jar" mvn_uri="mvn:org.apache.curator/curator-client/2.6.0">
     	</libraryNeeded>
 
     	<!-- jars for HDP211 Tez -->
@@ -2888,68 +2886,57 @@
         <libraryNeeded
             id="kafka_2.10-0.8.2.0.jar"
             name="kafka_2.10-0.8.2.0.jar" mvn_uri="mvn:org.talend.libraries/kafka_2.10-0.8.2.0/6.0.0"
-            context="plugin:org.talend.libraries.apache.kafka"
-            uripath="platform:/plugin/org.talend.libraries.apache.kafka/lib/kafka_2.10-0.8.2.0.jar">
+            context="plugin:org.talend.libraries.apache.kafka">
         </libraryNeeded>
         <libraryNeeded
             id="scala-library-2.10.4.jar"
             name="scala-library-2.10.4.jar" mvn_uri="mvn:org.talend.libraries/scala-library-2.10.4/6.0.0"
-            context="plugin:org.talend.libraries.apache.kafka"
-            uripath="platform:/plugin/org.talend.libraries.apache.kafka/lib/scala-library-2.10.4.jar">
+            context="plugin:org.talend.libraries.apache.kafka">
         </libraryNeeded>
         <libraryNeeded
             id="jopt-simple-3.2.jar"
             name="jopt-simple-3.2.jar" mvn_uri="mvn:org.talend.libraries/jopt-simple-3.2/6.0.0"
-            context="plugin:org.talend.libraries.apache.kafka"
-            uripath="platform:/plugin/org.talend.libraries.apache.kafka/lib/jopt-simple-3.2.jar">
+            context="plugin:org.talend.libraries.apache.kafka">
         </libraryNeeded>
         <libraryNeeded
             id="kafka-clients-0.8.2.0.jar"
             name="kafka-clients-0.8.2.0.jar" mvn_uri="mvn:org.talend.libraries/kafka-clients-0.8.2.0/6.0.0"
-            context="plugin:org.talend.libraries.apache.kafka"
-            uripath="platform:/plugin/org.talend.libraries.apache.kafka/lib/kafka-clients-0.8.2.0.jar">
+            context="plugin:org.talend.libraries.apache.kafka">
         </libraryNeeded>
         <libraryNeeded
             id="lz4-1.2.0.jar"
             name="lz4-1.2.0.jar" mvn_uri="mvn:org.talend.libraries/lz4-1.2.0/6.0.0"
-            context="plugin:org.talend.libraries.apache.kafka"
-            uripath="platform:/plugin/org.talend.libraries.apache.kafka/lib/lz4-1.2.0.jar">
+            context="plugin:org.talend.libraries.apache.kafka">
         </libraryNeeded>
         <libraryNeeded
             id="metrics-core-2.2.0.jar"
             name="metrics-core-2.2.0.jar" mvn_uri="mvn:com.yammer.metrics/metrics-core/2.2.0"
-            context="plugin:org.talend.libraries.apache.kafka"
-            uripath="platform:/plugin/org.talend.libraries.apache.kafka/lib/metrics-core-2.2.0.jar">
+            context="plugin:org.talend.libraries.apache.kafka">
         </libraryNeeded>
         <libraryNeeded
             id="snappy-java-1.1.1.6.jar"
             name="snappy-java-1.1.1.6.jar" mvn_uri="mvn:org.talend.libraries/snappy-java-1.1.1.6/6.0.0"
-            context="plugin:org.talend.libraries.apache.kafka"
-            uripath="platform:/plugin/org.talend.libraries.apache.kafka/lib/snappy-java-1.1.1.6.jar">
+            context="plugin:org.talend.libraries.apache.kafka">
         </libraryNeeded>
         <libraryNeeded
             id="zkclient-0.3.jar"
             name="zkclient-0.3.jar" mvn_uri="mvn:org.talend.libraries/zkclient-0.3/6.0.0"
-            context="plugin:org.talend.libraries.apache.kafka"
-            uripath="platform:/plugin/org.talend.libraries.apache.kafka/lib/zkclient-0.3.jar">
+            context="plugin:org.talend.libraries.apache.kafka">
         </libraryNeeded>
     	<libraryNeeded
             id="log4j-1.2.16.jar"
             name="log4j-1.2.16.jar" mvn_uri="mvn:log4j/log4j/1.2.16"
-            context="plugin:org.talend.libraries.apache.kafka"
-            uripath="platform:/plugin/org.talend.libraries.apache.kafka/lib/log4j-1.2.16.jar">
+            context="plugin:org.talend.libraries.apache.kafka">
         </libraryNeeded>
         <libraryNeeded
             id="slf4j-api-1.7.6.jar"
             name="slf4j-api-1.7.6.jar" mvn_uri="mvn:org.talend.libraries/slf4j-api-1.7.6/6.0.0"
-            context="plugin:org.talend.libraries.apache.kafka"
-            uripath="platform:/plugin/org.talend.libraries.apache.kafka/lib/slf4j-api-1.7.6.jar">
+            context="plugin:org.talend.libraries.apache.kafka">
         </libraryNeeded>
         <libraryNeeded
             id="slf4j-log4j12-1.6.1.jar"
             name="slf4j-log4j12-1.6.1.jar" mvn_uri="mvn:org.talend.libraries/slf4j-log4j12-1.6.1/6.0.0"
-            context="plugin:org.talend.libraries.apache.kafka"
-            uripath="platform:/plugin/org.talend.libraries.apache.kafka/lib/slf4j-log4j12-1.6.1.jar">
+            context="plugin:org.talend.libraries.apache.kafka">
         </libraryNeeded>
         <libraryNeeded
             id="commons-lang3-3.0.jar"
