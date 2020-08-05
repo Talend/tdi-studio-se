@@ -102,10 +102,22 @@ public class AfterImportProjectUtil {
         }
     }
 
-    public static void deleteImprotedInvalidProject(String projectLable) {
-        List<String> projectLabelList = new ArrayList<String>();
-        projectLabelList.add(projectLable);
-        deleteImprotedInvalidProject(projectLabelList);
+    public static void deleteImprotedInvalidProject(String projectLabel) {
+        try {
+            IProject project = ResourceUtils.getProject(projectLabel);
+            if (project != null && project.exists()) {
+                project.delete(true, new NullProgressMonitor());
+            }
+        } catch (PersistenceException | CoreException e) {
+            ExceptionHandler.process(e);
+        }
+        if (CommonsPlugin.isHeadless()) {
+            LOGGER.warn(Messages.getString("ImportProjectAction.messageDialogContent.projectImportedFailed"));
+        } else {
+            MessageDialog.openWarning(Display.getDefault().getActiveShell(),
+                    Messages.getString("ImportProjectAction.messageDialogTitle.projectFailed"), //$NON-NLS-1$
+                    Messages.getString("ImportProjectAction.messageDialogContent.projectImportedFailed"));//$NON-NLS-1$
+        }
     }
 
     public static void deleteImprotedInvalidProject(List<String> projectLableList) {
@@ -117,7 +129,7 @@ public class AfterImportProjectUtil {
             sb.append(projectLabel);
             try {
                 IProject project = ResourceUtils.getProject(projectLabel);
-                if (project.exists()) {
+                if (project != null && project.exists()) {
                     project.delete(true, new NullProgressMonitor());
                 }
             } catch (PersistenceException | CoreException e) {
@@ -125,10 +137,11 @@ public class AfterImportProjectUtil {
             }
         }
         if (CommonsPlugin.isHeadless()) {
-            LOGGER.warn(Messages.getString("ImportProjectAction.messageDialogContent.projectImportedFailed", sb.toString()));
+            LOGGER.warn(Messages.getString("ImportProjectAction.messageDialogContent.projectsImportedFailed", sb.toString()));
         } else {
-            MessageDialog.openWarning(Display.getDefault().getActiveShell(), Messages.getString("ImportProjectAction.messageDialogTitle.projectFailed"), //$NON-NLS-1$
-                    Messages.getString("ImportProjectAction.messageDialogContent.projectImportedFailed", sb.toString()));//$NON-NLS-1$
+            MessageDialog.openWarning(Display.getDefault().getActiveShell(),
+                    Messages.getString("ImportProjectAction.messageDialogTitle.projectFailed"), //$NON-NLS-1$
+                    Messages.getString("ImportProjectAction.messageDialogContent.projectsImportedFailed", sb.toString()));//$NON-NLS-1$
         }
     }
 }
