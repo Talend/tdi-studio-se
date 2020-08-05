@@ -162,7 +162,7 @@ public class RuntimeLineageTreeViewPage extends ProjectSettingPage {
             for (RepositoryNode n : nodes) {
                 processItems(objects, n);
                 for (RepositoryNode node : objects) {
-                    if (runtimeLineageManager.isRuntimeLineageSetting(node.getId(), node.getObject().getVersion())) {
+                    if (runtimeLineageManager.isRuntimeLineageSetting(node.getId())) {
                         if (!checkedObjects.contains(node)) {
                             checkedObjects.add(node);
                         }
