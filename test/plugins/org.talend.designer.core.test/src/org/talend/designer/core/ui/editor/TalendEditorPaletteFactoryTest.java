@@ -188,6 +188,31 @@ public class TalendEditorPaletteFactoryTest {
         assertExistedComponent(TJAVAROW, keyword, componentHits);
     }
 
+    @Test
+    public void testGetRelatedComponents_DelegateComponent() {
+        storeRecentlyUsed();
+        IComponentsFactory componentsFactory = ComponentsFactoryProvider.getInstance();
+        ProcessComponentsHandler processComponentsHandler = new ProcessComponentsHandler();
+        componentsFactory.setComponentsHandler(processComponentsHandler);
+        String keyword = "tDBConnection";
+        List<IComponent> componentHits = TalendEditorPaletteFactory.getRelatedComponents(componentsFactory, keyword);
+        Assert.assertFalse("Can't find any components " + keyword, componentHits.isEmpty());
+        assert (keyword.equals(componentHits.get(0).getName()));
+
+        String keyword1 = "tDBInput";
+        List<IComponent> componentHits1 = TalendEditorPaletteFactory.getRelatedComponents(componentsFactory,
+                keyword1.toLowerCase());
+        Assert.assertFalse("Can't find any components " + keyword, componentHits1.isEmpty());
+        assert (keyword1.equals(componentHits1.get(0).getName()));
+
+        String keyword2 = "tdb";
+        List<IComponent> componentHits2 = TalendEditorPaletteFactory.getRelatedComponents(componentsFactory, keyword2);
+        Assert.assertFalse("Can't find any components related" + keyword, componentHits2.isEmpty());
+        assertExistedComponent(keyword, keyword2, componentHits2); // tdb includes tDBConnection
+        assertExistedComponent(keyword1, keyword2, componentHits2); // tdb includes tDBInput
+
+    }
+
     private void assertExistedComponent(String compName, String keywords, List<IComponent> componentHits) {
         boolean found = false;
         for (IComponent comp : componentHits) {

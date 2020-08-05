@@ -888,9 +888,9 @@
 		<IMPORT NAME="Driver-INFORMIX-TOOLS" MODULE="ifxtools.jar" MVN="mvn:org.talend.libraries/ifxtools/6.0.0"  REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false') AND (DBTYPE=='INFORMIX')"/>
 		<IMPORT NAME="Driver-INGRES" MODULE="iijdbc.jar" MVN="mvn:org.talend.libraries/iijdbc/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.jdbc.ingres/lib/iijdbc.jar" REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false') AND (DBTYPE=='INGRES')"/>
 		<IMPORT NAME="Driver-Interbase" MODULE="interclient.jar" MVN="mvn:org.talend.libraries/interclient/6.0.0"  REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false') AND (DBTYPE=='INTERBASE')" />
-		<IMPORT NAME="Driver-JAVADB-DERBY" MODULE="derby.jar" MVN="mvn:org.talend.libraries/derby/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.jdbc.derby/lib/derby.jar" REQUIRED_IF="DBTYPE=='JAVADB'"/>
-		<IMPORT NAME="Driver-JAVADB-DERBYCLIENT" MODULE="derbyclient.jar" MVN="mvn:org.talend.libraries/derbyclient/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.jdbc.derby/lib/derbyclient.jar" REQUIRED_IF="DBTYPE=='JAVADB'"/>
-		<IMPORT NAME="Driver-JAVADB-DERBYNET" MODULE="derbynet.jar" MVN="mvn:org.talend.libraries/derbynet/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.jdbc.derby/lib/derbynet.jar" REQUIRED_IF="DBTYPE=='JAVADB'"/>
+		<IMPORT NAME="Driver-JAVADB-DERBY" MODULE="derby.jar" MVN="mvn:org.talend.libraries/derby/6.0.0" REQUIRED_IF="DBTYPE=='JAVADB'"/>
+		<IMPORT NAME="Driver-JAVADB-DERBYCLIENT" MODULE="derbyclient.jar" MVN="mvn:org.talend.libraries/derbyclient/6.0.0" REQUIRED_IF="DBTYPE=='JAVADB'"/>
+		<IMPORT NAME="Driver-JAVADB-DERBYNET" MODULE="derbynet.jar" MVN="mvn:org.talend.libraries/derbynet/6.0.0" REQUIRED_IF="DBTYPE=='JAVADB'"/>
 		<IMPORT NAME="Driver-SQLITE-JDBC-NESTED" MODULE="sqlitejdbc-v056.jar" MVN="mvn:org.talend.libraries/sqlitejdbc-v056/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.jdbc.sqlite3/lib/sqlitejdbc-v056.jar" REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false') AND (DBTYPE=='SQLITE')" />
 		<IMPORT NAME="Driver-SYBASE-JCONN3" MODULE="jconn3.jar" MVN="mvn:org.talend.libraries/jconn3/6.0.0" BundleID="" REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false') AND (DBTYPE=='SYBASE') AND (DB_SYBASE_VERSION == 'SYBSEIQ_12_15')" />
 		<IMPORT NAME="Driver-SYBASE-JCONN4" MODULE="jconn4.jar" MVN="mvn:org.talend.libraries/jconn4/6.0.0" BundleID="" REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false') AND (DBTYPE=='SYBASE') AND (DB_SYBASE_VERSION == 'SYBSEIQ_16')" />

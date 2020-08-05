@@ -794,7 +794,6 @@
 				REQUIRED_IF="HIVE_VERSION=='MAPR2' AND (DISTRIBUTION!='CUSTOM')" />
 			<IMPORT NAME="derby-10.4.2.0" MODULE="derby-10.4.2.0.jar"
 				MVN="mvn:org.talend.libraries/derby-10.4.2.0/6.0.0"
-				UrlPath="platform:/plugin/org.talend.libraries.jdbc.derby/lib/derby-10.4.2.0.jar"
 				REQUIRED_IF="HIVE_VERSION=='MAPR2' AND (DISTRIBUTION!='CUSTOM')" />
 			<IMPORT NAME="maprfs-0.1.jar" MODULE="maprfs-0.1.jar"
 				MVN="mvn:org.talend.libraries/maprfs-0.1/6.0.0" REQUIRED_IF="HIVE_VERSION=='MAPR2' AND (DISTRIBUTION!='CUSTOM')" />
@@ -917,7 +916,6 @@
 				REQUIRED_IF="HIVE_VERSION=='MAPR212' AND (DISTRIBUTION!='CUSTOM')" />
 			<IMPORT NAME="derby-10.4.2.0" MODULE="derby-10.4.2.0.jar"
 				MVN="mvn:org.talend.libraries/derby-10.4.2.0/6.0.0"
-				UrlPath="platform:/plugin/org.talend.libraries.jdbc.derby/lib/derby-10.4.2.0.jar"
 				REQUIRED_IF="HIVE_VERSION=='MAPR212' AND (DISTRIBUTION!='CUSTOM')" />
 			<IMPORT NAME="maprfs-0.20.2-2.1.2.jar" MODULE="maprfs-0.20.2-2.1.2.jar"
 				MVN="mvn:org.talend.libraries/maprfs-0.20.2-2.1.2/6.0.0"
@@ -1044,7 +1042,6 @@
 				REQUIRED_IF="HIVE_VERSION=='MAPR213' AND (DISTRIBUTION!='CUSTOM')" />
 			<IMPORT NAME="derby-10.4.2.0" MODULE="derby-10.4.2.0.jar"
 				MVN="mvn:org.talend.libraries/derby-10.4.2.0/6.0.0"
-				UrlPath="platform:/plugin/org.talend.libraries.jdbc.derby/lib/derby-10.4.2.0.jar"
 				REQUIRED_IF="HIVE_VERSION=='MAPR213' AND (DISTRIBUTION!='CUSTOM')" />
 			<IMPORT NAME="maprfs-1.0.3-mapr-2.1.3.2.jar" MODULE="maprfs-1.0.3-mapr-2.1.3.2.jar"
 				MVN="mvn:org.talend.libraries/maprfs-1.0.3-mapr-2.1.3.2/6.0.0"
@@ -1167,7 +1164,6 @@
 				REQUIRED_IF="HIVE_VERSION=='MAPR301' AND (DISTRIBUTION!='CUSTOM')" />
 			<IMPORT NAME="derby-10.4.2.0" MODULE="derby-10.4.2.0.jar"
 				MVN="mvn:org.talend.libraries/derby-10.4.2.0/6.0.0"
-				UrlPath="platform:/plugin/org.talend.libraries.jdbc.derby/lib/derby-10.4.2.0.jar"
 				REQUIRED_IF="HIVE_VERSION=='MAPR301' AND (DISTRIBUTION!='CUSTOM')" />
 			<IMPORT NAME="maprfs-1.0.3-mapr-3.0.1.jar" MODULE="maprfs-1.0.3-mapr-3.0.1.jar"
 				MVN="mvn:org.talend.libraries/maprfs-1.0.3-mapr-3.0.1/6.0.0"
@@ -1295,7 +1291,6 @@
 				REQUIRED_IF="HIVE_VERSION=='MAPR310' AND (DISTRIBUTION!='CUSTOM')" />
 			<IMPORT NAME="derby-10.4.2.0" MODULE="derby-10.4.2.0.jar"
 				MVN="mvn:org.talend.libraries/derby-10.4.2.0/6.0.0"
-				UrlPath="platform:/plugin/org.talend.libraries.jdbc.derby/lib/derby-10.4.2.0.jar"
 				REQUIRED_IF="HIVE_VERSION=='MAPR310' AND (DISTRIBUTION!='CUSTOM')" />
 			<IMPORT NAME="maprfs-1.0.3-mapr-3.1.0.jar" MODULE="maprfs-1.0.3-mapr-3.1.0.jar"
 				MVN="mvn:org.talend.libraries/maprfs-1.0.3-mapr-3.1.0/6.0.0"
@@ -1843,7 +1838,6 @@
 				REQUIRED_IF="(HIVE_VERSION=='APACHE_1_0_0' OR HIVE_VERSION=='APACHE_1_0_3_EMR') AND (DISTRIBUTION!='CUSTOM')" />
 			<IMPORT NAME="derby-10.4.2.0.jar" MODULE="derby-10.4.2.0.jar"
 				MVN="mvn:org.talend.libraries/derby-10.4.2.0/6.0.0"
-				UrlPath="platform:/plugin/org.talend.libraries.jdbc.derby/lib/derby-10.4.2.0.jar"
 				REQUIRED_IF="(HIVE_VERSION=='APACHE_1_0_0' OR HIVE_VERSION=='APACHE_1_0_3_EMR') AND (DISTRIBUTION!='CUSTOM')" />
 			<IMPORT NAME="commons-configuration-1.6.jar" MODULE="commons-configuration-1.6.jar"
 				MVN="mvn:commons-configuration/commons-configuration/1.6"
@@ -1945,7 +1939,6 @@
 				REQUIRED_IF="HIVE_VERSION=='HDP_1_2' AND (DISTRIBUTION!='CUSTOM')" />
 			<IMPORT NAME="derby-10.4.2.0.jar" MODULE="derby-10.4.2.0.jar"
 				MVN="mvn:org.talend.libraries/derby-10.4.2.0/6.0.0"
-				UrlPath="platform:/plugin/org.talend.libraries.jdbc.derby/lib/derby-10.4.2.0.jar"
 				REQUIRED_IF="HIVE_VERSION=='HDP_1_2' AND (DISTRIBUTION!='CUSTOM')" />
 			<IMPORT NAME="commons-configuration-1.6.jar" MODULE="commons-configuration-1.6.jar"
 				MVN="mvn:commons-configuration/commons-configuration/1.6"
@@ -2065,7 +2058,6 @@
 				REQUIRED_IF="HIVE_VERSION=='HDP_1_3' AND (DISTRIBUTION!='CUSTOM')" />
 			<IMPORT NAME="derby-10.4.2.0.jar" MODULE="derby-10.4.2.0.jar"
 				MVN="mvn:org.talend.libraries/derby-10.4.2.0/6.0.0"
-				UrlPath="platform:/plugin/org.talend.libraries.jdbc.derby/lib/derby-10.4.2.0.jar"
 				REQUIRED_IF="HIVE_VERSION=='HDP_1_3' AND (DISTRIBUTION!='CUSTOM')" />
 			<IMPORT NAME="commons-configuration-1.6.jar" MODULE="commons-configuration-1.6.jar"
 				MVN="mvn:commons-configuration/commons-configuration/1.6"
@@ -2212,7 +2204,6 @@
 				REQUIRED_IF="HIVE_VERSION=='Cloudera_CDH4' AND (DISTRIBUTION!='CUSTOM')" />
 			<IMPORT NAME="derby-10.4.2.0.jar" MODULE="derby-10.4.2.0.jar"
 				MVN="mvn:org.talend.libraries/derby-10.4.2.0/6.0.0"
-				UrlPath="platform:/plugin/org.talend.libraries.jdbc.derby/lib/derby-10.4.2.0.jar"
 				REQUIRED_IF="HIVE_VERSION=='Cloudera_CDH4' AND (DISTRIBUTION!='CUSTOM')" />
 			<IMPORT NAME="hive-builtins-0.9.0-cdh4.1.2.jar" MODULE="hive-builtins-0.9.0-cdh4.1.2.jar"
 				MVN="mvn:org.talend.libraries/hive-builtins-0.9.0-cdh4.1.2/6.0.0"
@@ -2403,7 +2394,6 @@
 				REQUIRED_IF="HIVE_VERSION=='Cloudera_CDH4_YARN' AND (DISTRIBUTION!='CUSTOM')" />
 			<IMPORT NAME="derby-10.4.2.0.jar" MODULE="derby-10.4.2.0.jar"
 				MVN="mvn:org.talend.libraries/derby-10.4.2.0/6.0.0"
-				UrlPath="platform:/plugin/org.talend.libraries.jdbc.derby/lib/derby-10.4.2.0.jar"
 				REQUIRED_IF="HIVE_VERSION=='Cloudera_CDH4_YARN' AND (DISTRIBUTION!='CUSTOM')" />
 			<IMPORT NAME="hive-builtins-0.10.0-cdh4.4.0.jar" MODULE="hive-builtins-0.10.0-cdh4.4.0.jar"
 				MVN="mvn:org.talend.libraries/hive-builtins-0.10.0-cdh4.4.0/6.0.0"
@@ -2599,7 +2589,6 @@
 				REQUIRED_IF="HIVE_VERSION=='Cloudera_CDH5' AND (DISTRIBUTION!='CUSTOM')" />
 			<IMPORT NAME="derby-10.4.2.0.jar" MODULE="derby-10.4.2.0.jar"
 				MVN="mvn:org.talend.libraries/derby-10.4.2.0/6.0.0"
-				UrlPath="platform:/plugin/org.talend.libraries.jdbc.derby/lib/derby-10.4.2.0.jar"
 				REQUIRED_IF="HIVE_VERSION=='Cloudera_CDH5' AND (DISTRIBUTION!='CUSTOM')" />
 			<IMPORT NAME="commons-configuration-1.6.jar" MODULE="commons-configuration-1.6.jar"
 				MVN="mvn:commons-configuration/commons-configuration/1.6"
@@ -2844,7 +2833,6 @@
 				REQUIRED_IF="HIVE_VERSION=='PIVOTAL_HD_1_0_1' AND (DISTRIBUTION!='CUSTOM')" />
 			<IMPORT NAME="derby-10.4.2.0.jar" MODULE="derby-10.4.2.0.jar"
 				MVN="mvn:org.talend.libraries/derby-10.4.2.0/6.0.0"
-				UrlPath="platform:/plugin/org.talend.libraries.jdbc.derby/lib/derby-10.4.2.0.jar"
 				REQUIRED_IF="HIVE_VERSION=='PIVOTAL_HD_1_0_1' AND (DISTRIBUTION!='CUSTOM')" />
 			<IMPORT NAME="hive-builtins-0.9.1-gphd-2.0.1.0.jar" MODULE="hive-builtins-0.9.1-gphd-2.0.1.0.jar"
 				MVN="mvn:org.talend.libraries/hive-builtins-0.9.1-gphd-2.0.1.0/6.0.0"
@@ -3047,7 +3035,6 @@
 				REQUIRED_IF="HIVE_VERSION=='PIVOTAL_HD_2_0' AND (DISTRIBUTION!='CUSTOM')" />
 			<IMPORT NAME="derby-10.4.2.0.jar" MODULE="derby-10.4.2.0.jar"
 				MVN="mvn:org.talend.libraries/derby-10.4.2.0/6.0.0"
-				UrlPath="platform:/plugin/org.talend.libraries.jdbc.derby/lib/derby-10.4.2.0.jar"
 				REQUIRED_IF="HIVE_VERSION=='PIVOTAL_HD_2_0' AND (DISTRIBUTION!='CUSTOM')" />
 			<IMPORT NAME="commons-configuration-1.6.jar" MODULE="commons-configuration-1.6.jar"
 				MVN="mvn:commons-configuration/commons-configuration/1.6"
@@ -3258,7 +3245,6 @@
 				REQUIRED_IF="HIVE_VERSION=='HDP_2_0' AND (DISTRIBUTION!='CUSTOM')" />
 			<IMPORT NAME="derby-10.4.2.0.jar" MODULE="derby-10.4.2.0.jar"
 				MVN="mvn:org.talend.libraries/derby-10.4.2.0/6.0.0"
-				UrlPath="platform:/plugin/org.talend.libraries.jdbc.derby/lib/derby-10.4.2.0.jar"
 				REQUIRED_IF="HIVE_VERSION=='HDP_2_0' AND (DISTRIBUTION!='CUSTOM')" />
 			<IMPORT NAME="commons-configuration-1.6.jar" MODULE="commons-configuration-1.6.jar"
 				MVN="mvn:commons-configuration/commons-configuration/1.6"
@@ -3473,7 +3459,6 @@
 				REQUIRED_IF="HIVE_VERSION=='HDP_2_1' AND (DISTRIBUTION!='CUSTOM')" />
 			<IMPORT NAME="derby-10.4.2.0.jar" MODULE="derby-10.4.2.0.jar"
 				MVN="mvn:org.talend.libraries/derby-10.4.2.0/6.0.0"
-				UrlPath="platform:/plugin/org.talend.libraries.jdbc.derby/lib/derby-10.4.2.0.jar"
 				REQUIRED_IF="HIVE_VERSION=='HDP_2_1' AND (DISTRIBUTION!='CUSTOM')" />
 			<IMPORT NAME="commons-configuration-1.6.jar" MODULE="commons-configuration-1.6.jar"
 				MVN="mvn:commons-configuration/commons-configuration/1.6"

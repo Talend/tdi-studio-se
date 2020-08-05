@@ -992,4 +992,9 @@ public class DefaultRunProcessService implements IRunProcessService {
         return ProcessorUtilities.isCIMode();
     }
 
+    @Override
+    public boolean isExcludeDeletedItems(Property property) {
+        return PomIdsHelper.getIfExcludeDeletedItems(property);
+    }
+
 }

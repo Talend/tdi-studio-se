@@ -2080,10 +2080,9 @@
     	</libraryNeeded>
 
     	<libraryNeeded
-	   		context="plugin:org.talend.libraries.jdbc.derby"
+	   		context="derby-10.4.2.0"
         	id="derby-10.4.2.0.jar"
-         	name="derby-10.4.2.0.jar" mvn_uri="mvn:org.talend.libraries/derby-10.4.2.0/6.0.0"
-         	uripath="platform:/plugin/org.talend.libraries.jdbc.derby/lib/derby-10.4.2.0.jar">
+         	name="derby-10.4.2.0.jar" mvn_uri="mvn:org.talend.libraries/derby-10.4.2.0/6.0.0">
     	</libraryNeeded>
 
     	<libraryNeeded
@@ -2108,10 +2107,9 @@
     	</libraryNeeded>
 
     	<libraryNeeded
-	   		context="plugin:org.talend.libraries.jdbc.derby"
+	   		context="derby-10.11.1.1"
         	id="derby-10.11.1.1.jar"
-         	name="derby-10.11.1.1.jar" mvn_uri="mvn:org.talend.libraries/derby-10.11.1.1/6.0.0"
-         	uripath="platform:/plugin/org.talend.libraries.jdbc.derby/lib/derby-10.11.1.1.jar">
+         	name="derby-10.11.1.1.jar" mvn_uri="mvn:org.talend.libraries/derby-10.11.1.1/6.0.0">
     	</libraryNeeded>
 
     	<libraryNeeded

@@ -169,7 +169,7 @@ imports="
 		encrypt = "true".equals(ElementParameterParser.getValue(current_node, "__ENCRYPT__"));
 		encryptionKeyPropertyName = "__ENCRYPTED_KEY_BASE64__";
 	}
-	if(encrypt) {
+	if(!"PARQUET".equals(exportType) && encrypt) {
 %>
 		.append(";master_symmetric_key=")
 <%
@@ -191,7 +191,7 @@ imports="
         .append("FORMAT PARQUET ")
 <%
     }
-	if(encrypt) {
+	if(!"PARQUET".equals(exportType) && encrypt) {
 %>
 		.append("ENCRYPTED ")
 <%

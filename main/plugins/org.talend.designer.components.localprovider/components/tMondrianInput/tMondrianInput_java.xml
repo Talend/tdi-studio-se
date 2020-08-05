@@ -349,9 +349,9 @@
 		<IMPORT NAME="Driver-INFORMIX-TOOLS" MODULE="ifxtools.jar" MVN="mvn:org.talend.libraries/ifxtools/6.0.0"  REQUIRED="true"/>
 		<IMPORT NAME="Driver-INGRES" 		MODULE="iijdbc.jar" MVN="mvn:org.talend.libraries/iijdbc/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.jdbc.ingres/lib/iijdbc.jar" REQUIRED="true"/>
 		<IMPORT NAME="Driver-Interbase" 	MODULE="interclient.jar" MVN="mvn:org.talend.libraries/interclient/6.0.0"  REQUIRED="true" />
-		<IMPORT NAME="Driver-JAVADB-DERBY" 	MODULE="derby.jar" MVN="mvn:org.talend.libraries/derby/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.jdbc.derby/lib/derby.jar" REQUIRED="true" />
-		<IMPORT NAME="Driver-JAVADB-DERBYCLIENT" MODULE="derbyclient.jar" MVN="mvn:org.talend.libraries/derbyclient/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.jdbc.derby/lib/derbyclient.jar" REQUIRED="true" />
-		<IMPORT NAME="Driver-JAVADB-DERBYNET" MODULE="derbynet.jar" MVN="mvn:org.talend.libraries/derbynet/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.jdbc.derby/lib/derbynet.jar" REQUIRED="true" />
+		<IMPORT NAME="Driver-JAVADB-DERBY" 	MODULE="derby.jar" MVN="mvn:org.talend.libraries/derby/6.0.0"  REQUIRED="true" />
+		<IMPORT NAME="Driver-JAVADB-DERBYCLIENT" MODULE="derbyclient.jar" MVN="mvn:org.talend.libraries/derbyclient/6.0.0"  REQUIRED="true" />
+		<IMPORT NAME="Driver-JAVADB-DERBYNET" MODULE="derbynet.jar" MVN="mvn:org.talend.libraries/derbynet/6.0.0"  REQUIRED="true" />
 		<IMPORT NAME="Driver-SQLITE-JDBC-NESTED" MODULE="sqlitejdbc-v056.jar" MVN="mvn:org.talend.libraries/sqlitejdbc-v056/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.jdbc.sqlite3/lib/sqlitejdbc-v056.jar" REQUIRED="true" />
 		<IMPORT NAME="Driver-SYBASE-JCONN3" MODULE="jconn3.jar" MVN="mvn:org.talend.libraries/jconn3/6.0.0"  REQUIRED="true" />
 		<IMPORT NAME="mondrian_2"        MODULE="mondrian_2.jar" MVN="mvn:org.talend.libraries/mondrian_2/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.mondrian/lib/mondrian_2.jar" REQUIRED="false" />

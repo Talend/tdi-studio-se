@@ -509,4 +509,9 @@ public class RunProcessService implements IRunProcessService {
         return delegateService.isCIMode();
     }
 
+    @Override
+    public boolean isExcludeDeletedItems(Property property) {
+        return delegateService.isExcludeDeletedItems(property);
+    }
+
 }

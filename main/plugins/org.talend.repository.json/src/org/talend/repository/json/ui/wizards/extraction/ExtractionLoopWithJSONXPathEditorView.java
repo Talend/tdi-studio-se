@@ -13,7 +13,6 @@
 package org.talend.repository.json.ui.wizards.extraction;
 
 import org.eclipse.jface.viewers.CellEditor;
-import org.eclipse.jface.viewers.TextCellEditor;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Table;
@@ -191,32 +190,6 @@ public class ExtractionLoopWithJSONXPathEditorView extends AbstractDataTableEdit
         column.setMinimumWidth(50);
         column.setDefaultInternalValue(""); //$NON-NLS-1$
         // //////////////////////////////////////////////////////////////////////////////////////
-
-        // //////////////////////////////////////////////////////////////////////////////////////
-        // Loop limit
-        column = new TableViewerCreatorColumn(tableViewerCreator);
-        column.setTitle("Loop limit");
-        column.setBeanPropertyAccessors(new IBeanPropertyAccessors<JSONXPathLoopDescriptor, Integer>() {
-
-            @Override
-            public Integer get(JSONXPathLoopDescriptor bean) {
-                return bean.getLimitBoucle();
-            }
-
-            @Override
-            public void set(JSONXPathLoopDescriptor bean, Integer value) {
-                if (value != null) {
-                    bean.setLimitBoucle(value.intValue());
-                } else {
-                    bean.setLimitBoucle(0);
-                }
-            }
-
-        });
-        column.setModifiable(true);
-        column.setWidth(59);
-        column.setCellEditor(new TextCellEditor(table), intValueAdapter);
-
     }
 
     public JSONExtractorLoopModel getModel() {
