@@ -3,8 +3,8 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>org.talend.libraries</groupId>
-	<artifactId>talendExcel-1.6-20200728</artifactId>
-	<version>6.0.0</version>
+	<artifactId>talendExcel</artifactId>
+	<version>1.6-20200728</version>
 	<packaging>jar</packaging>
 
 	<name>talendExcel</name>
