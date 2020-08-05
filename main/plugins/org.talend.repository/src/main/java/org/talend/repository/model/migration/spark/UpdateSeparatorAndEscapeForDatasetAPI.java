@@ -78,7 +78,7 @@ public class UpdateSeparatorAndEscapeForDatasetAPI extends AbstractJobMigrationT
             return ExecutionResult.NOTHING_TO_DO;
         }
 
-        IComponentConversion adaptSeparatorAndEscape = new AdaptSeparatorAndEscape(processType);
+        IComponentConversion adaptSeparatorAndEscape = new AdaptSeparatorAndEscape();
 
         try {
             for (String componentName : IMPACTED_COMPONENTS) {
@@ -94,15 +94,9 @@ public class UpdateSeparatorAndEscapeForDatasetAPI extends AbstractJobMigrationT
 
     private class AdaptSeparatorAndEscape implements IComponentConversion {
 
-    	private ProcessType p;
-    	
     	private String ISCSV = "CSV_OPTION"; //$NON-NLS-1$
         private String ESCAPE = "ESCAPE_CHAR"; //$NON-NLS-1$
         private String SEPARATOR = "FIELDSEPARATOR"; //$NON-NLS-1$
-
-        AdaptSeparatorAndEscape(ProcessType p) {
-        	this.p = p;
-        }
         
         public void transform(NodeType node) {
         	boolean isCSV = "true".equals(ComponentUtilities.getNodePropertyValue(node, ISCSV));
