@@ -129,7 +129,7 @@ public class ExpressionBuilderDialogForElt extends TrayDialog implements IExpres
 
         final SashForm upperSashform = new SashForm(upperComposite, SWT.NONE);
 
-        expressionComposite = new ExpressionComposite(this, upperSashform, SWT.NONE, dataBean);
+        expressionComposite = new EltExpressionComposite(this, upperSashform, SWT.NONE, dataBean);
         expressionComposite.setExpression(defaultExpression, true);
         //
         // testComposite = new TestComposite(upperSashform, SWT.NONE);

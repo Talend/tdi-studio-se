@@ -54,33 +54,36 @@ public class TalendJavaViewerConfiguration extends JavaSourceViewerConfiguration
 
         assistant.setRestoreCompletionProposalSize(getSettings("completion_proposal_size")); //$NON-NLS-1$
 
-        IContentAssistProcessor javaProcessor = new TalendJavaCompletionProcessor(assistant, IDocument.DEFAULT_CONTENT_TYPE);
+        IContentAssistProcessor javaProcessor = createContentAssistProcessor(assistant, IDocument.DEFAULT_CONTENT_TYPE);
         assistant.setContentAssistProcessor(javaProcessor, IDocument.DEFAULT_CONTENT_TYPE);
 
-        ContentAssistProcessor singleLineProcessor = new TalendJavaCompletionProcessor(assistant,
+        ContentAssistProcessor singleLineProcessor = createContentAssistProcessor(assistant,
                 IJavaPartitions.JAVA_SINGLE_LINE_COMMENT);
         assistant.setContentAssistProcessor(singleLineProcessor, IJavaPartitions.JAVA_SINGLE_LINE_COMMENT);
 
-        ContentAssistProcessor stringProcessor = new TalendJavaCompletionProcessor(assistant, IJavaPartitions.JAVA_STRING);
+        ContentAssistProcessor stringProcessor = createContentAssistProcessor(assistant, IJavaPartitions.JAVA_STRING);
         assistant.setContentAssistProcessor(stringProcessor, IJavaPartitions.JAVA_STRING);
 
-        ContentAssistProcessor multiLineProcessor = new TalendJavaCompletionProcessor(assistant,
+        ContentAssistProcessor multiLineProcessor = createContentAssistProcessor(assistant,
                 IJavaPartitions.JAVA_MULTI_LINE_COMMENT);
         assistant.setContentAssistProcessor(multiLineProcessor, IJavaPartitions.JAVA_MULTI_LINE_COMMENT);
 
-        // ContentAssistProcessor javadocProcessor = new TalendJavaCompletionProcessor(assistant,
-        // IJavaPartitions.JAVA_DOC);
+        // ContentAssistProcessor javadocProcessor = createContentAssistProcessor(assistant, IJavaPartitions.JAVA_DOC);
         // assistant.setContentAssistProcessor(javadocProcessor, IJavaPartitions.JAVA_DOC);
 
-        // ContentAssistProcessor javadocProcessor = new JavadocCompletionProcessor(getInternalEditor(), assistant);
+        // ContentAssistProcessor javadocProcessor = createContentAssistProcessor(getInternalEditor(), assistant);
         // assistant.setContentAssistProcessor(javadocProcessor, IJavaPartitions.JAVA_DOC);
-        //
+
         ContentAssistPreference.configure(assistant, fPreferenceStore);
 
         assistant.setContextInformationPopupOrientation(IContentAssistant.CONTEXT_INFO_ABOVE);
         assistant.setInformationControlCreator(getInformationControlCreator(sourceViewer));
 
         return assistant;
+    }
+
+    protected ContentAssistProcessor createContentAssistProcessor(ContentAssistant assistant, String partition) {
+        return new TalendJavaCompletionProcessor(assistant, partition);
     }
 
     /**
