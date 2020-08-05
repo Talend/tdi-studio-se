@@ -150,9 +150,7 @@ public class ImportProjectAsWizard extends Wizard {
                                         Messages.getString("ImportProjectAction.messageDialogTitle.project"), //$NON-NLS-1$
                                         Messages.getString("ImportProjectAction.messageDialogContent.projectImportedSuccessfully")); //$NON-NLS-1$
                             } else {
-                                MessageDialog.openWarning(shell,
-                                        Messages.getString("ImportProjectAction.messageDialogTitle.project"), //$NON-NLS-1$
-                                        Messages.getString("ImportProjectAction.messageDialogContent.projectImportedFinish"));//$NON-NLS-1$
+                                AfterImportProjectUtil.deleteImprotedInvalidProject(technicalName);
                             }
                         }
                     } catch (PersistenceException e) {
