@@ -48,6 +48,77 @@ if ((metadatas!=null)&&(metadatas.size()>0)) {
 			log.info("<%=cid%> - Connection attempt to '" +hostname_<%=cid%> + "' on the port '"+<%=port%>+"' as '" + username_<%=cid%> + "'.");
 		<%}%>
 		org.apache.sshd.client.SshClient client_<%=cid%> = org.apache.sshd.client.SshClient.setUpDefaultClient();
+		
+		<%
+        if (("PUBLICKEY").equals(authMethod)) {
+        %>
+		<%if(isLog4jEnabled){%>
+			log.info("<%=cid%> - Authentication using a public key.");
+		<%}%>
+		client_<%=cid%>.setUserAuthFactories(java.util.Collections.singletonList(org.apache.sshd.client.auth.pubkey.UserAuthPublicKeyFactory.INSTANCE));
+		java.nio.file.Path privateKey_<%=cid%> = java.nio.file.Paths.get(<%=privatekey%>);
+		 org.apache.sshd.common.util.security.bouncycastle.BouncyCastleGeneratorHostKeyProvider keyProvider_<%=cid%> =
+                new org.apache.sshd.common.util.security.bouncycastle.BouncyCastleGeneratorHostKeyProvider(privateKey_<%=cid%>)
+
+				{
+
+                    @Override
+                    protected Iterable<java.security.KeyPair> doReadKeyPairs(org.apache.sshd.common.session.SessionContext session,
+                            org.apache.sshd.common.NamedResource resourceKey, java.io.InputStream inputStream) 
+                            throws java.io.IOException, java.security.GeneralSecurityException {
+                    <%String passwordFieldName = "__PASSPHRASE__";%>
+                    <%@ include file="@{org.talend.designer.components.localprovider}/components/templates/password.javajet"%>        
+                        Iterable<java.security.KeyPair> keyPairs =
+                                org.apache.sshd.common.util.security.SecurityUtils.loadKeyPairIdentities(session, resourceKey, inputStream,
+                                        (sessionContext, namedResource, i) -> decryptedPassword_<%=cid%>);
+                        return keyPairs;
+                    }
+                };
+				client_<%=cid%>.setKeyIdentityProvider(keyProvider_<%=cid%>);
+				
+        <%}%>
+		<%
+        if (("KEYBOARDINTERACTIVE").equals(authMethod)) {
+        %>
+		
+		client_<%=cid%>.setUserAuthFactories(java.util.Collections.singletonList(org.apache.sshd.client.auth.keyboard.UserAuthKeyboardInteractiveFactory.INSTANCE));
+		
+		<%if(isLog4jEnabled){%>
+			log.info("<%=cid%> - Authentication using an interactive action.");
+		<%}%>
+		
+		        client_<%=cid%>.setUserInteraction(new UserInteraction() {
+
+            @Override
+            public String[] interactive(ClientSession clientSession, String name, String instruction, String lang, String[] prompt,
+                    boolean[] echo) {
+					
+					<% String passwordFieldName = "__PASSWORD__"; %>
+					<%@ include file="@{org.talend.designer.components.localprovider}/components/templates/password.javajet"%>
+					String[] reply = new String[prompt.length];
+					for (int i = 0; i < reply.length; i++) {
+        				reply[i] = decryptedPassword_<%=cid%>;
+        			}
+                return reply;
+            }
+
+            @Override public String getUpdatedPassword(ClientSession clientSession, String prompt, String lang) {
+                throw new IllegalStateException("getUpdatedPassword(" + clientSession + ")[" + prompt + "] unexpected call");
+            }
+        });
+
+<%
+        }
+%>
+
+		<%if (("PASSWORD").equals(authMethod)) {%>
+			<%if(isLog4jEnabled){%>
+			    log.info("<%=cid%> - Authentication using a password.");
+		    <%}%>
+	        <%String passwordFieldName = "__PASSWORD__";%>
+		    <%@ include file="@{org.talend.designer.components.localprovider}/components/templates/password.javajet"%>		
+		    client_<%=cid%>.addPasswordIdentity(decryptedPassword_<%=cid%>);
+		<%}%>
 
         client_<%=cid%>.start();
 	
@@ -57,66 +128,6 @@ if ((metadatas!=null)&&(metadatas.size()>0)) {
 		
               /* Now connect */
 			  
-
-<%
-        if (("PUBLICKEY").equals(authMethod)) {
-%>
-		<%if(isLog4jEnabled){%>
-			log.info("<%=cid%> - Authentication using a public key.");
-		<%}%>
-        java.io.File keyfile_<%=cid%> = new java.io.File(<%=privatekey%>); 
-        
-        <%
-        String passwordFieldName = "__PASSPHRASE__";
-        %>
-        
-        <%@ include file="@{org.talend.designer.components.localprovider}/components/templates/password.javajet"%>        
-        
-		    boolean isAuthenticated_<%=cid%> = conn_<%=cid%>.authenticateWithPublicKey(username_<%=cid%>, keyfile_<%=cid%>, decryptedPassword_<%=cid%>);
-			  if (isAuthenticated_<%=cid%> == false){
-			      throw new RuntimeException("Authentication failed.");
-			  }
-<%
-        }
-
-%>
-
-<%
-        if (("KEYBOARDINTERACTIVE").equals(authMethod)) {
-%>
-		<%if(isLog4jEnabled){%>
-			log.info("<%=cid%> - Authentication using an interactive action.");
-		<%}%>
-        boolean isAuthenticated_<%=cid%> = conn_<%=cid%>.authenticateWithKeyboardInteractive(username_<%=cid%>, 
-            new ch.ethz.ssh2.InteractiveCallback() {
-        
-        		public String[] replyToChallenge(String name,
-        				String instruction, int numPrompts,
-        				String[] prompt, boolean[] echo)
-        				throws java.lang.Exception {
-        			// TODO Auto-generated method stub
-        			String[] reply = new String[numPrompts];
-        			
-                    <%
-                    String passwordFieldName = "__PASSWORD__";
-                    %>
-                    
-                    <%@ include file="@{org.talend.designer.components.localprovider}/components/templates/password.javajet"%>        			
-        			
-        			for (int i = 0; i < reply.length; i++) {
-        				reply[i] = decryptedPassword_<%=cid%>;
-        			}
-        
-        			return reply;
-        		}
-        	}	
-        );
-        	if (isAuthenticated_<%=cid%> == false){
-            	throw new RuntimeException("Authentication failed.");
-        	}
-<%
-        }
-%>
         <%if(isLog4jEnabled){%>
 			log.info("<%=cid%> - Connection to '" +hostname_<%=cid%> + "' has succeeded.");
 		<%}%>

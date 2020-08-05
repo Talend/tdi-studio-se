@@ -37,21 +37,23 @@ if ((metadatas!=null)&&(metadatas.size()>0)) {
         String timeout = ElementParameterParser.getValue(node, "__TIMEOUT__");
 %>
 		/* open a session */
-		<%if (("PASSWORD").equals(authMethod)) {%>
+
 			<%if(isLog4jEnabled){%>
 			    log.info("<%=cid%> - Authentication using a password.");
 		    <%}%>
 		
 			session_<%=cid%> = client_<%=cid%>.connect(username_<%=cid%>, hostname_<%=cid%>, <%=("").equals(port)?"22":port%>).verify(<%=("true").equals(useTimeout)?timeout+"L  * 1000":""%>).getClientSession();
-	        <%String passwordFieldName = "__PASSPHRASE__";%>
-		    <%@ include file="@{org.talend.designer.components.localprovider}/components/templates/password.javajet"%>		
-		    session_<%=cid%>.addPasswordIdentity(decryptedPassword_<%=cid%>);
-			session_<%=cid%>.auth().verify();
+	    try {
+            session_<%=cid%>.auth().verify();
+        }catch (org.apache.sshd.common.SshException se){
+            if(14 == se.getDisconnectCode()){
+                throw new IllegalArgumentException("Authentication failed.");
+            }else{
+                throw se;
+            }
+        }
 		    
-			
-			
-			
-		<%}%>
+
 		org.apache.sshd.client.channel.ClientChannel channel_<%=cid %> = null;
 			
 <%
