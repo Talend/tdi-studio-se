@@ -31,25 +31,48 @@ if ((metadatas!=null)&&(metadatas.size()>0)) {
         List<? extends IConnection> conns = node.getOutgoingSortedConnections();
        	String commandSeparator = ElementParameterParser.getValue(node,"__COMMANDSEPARATOR__");
         List<Map<String, String>> commands =(List<Map<String,String>>)ElementParameterParser.getObjectValue(node,"__COMMANDS__");
+		
+		String port = ElementParameterParser.getValue( node,"__PORT__");
+		String useTimeout = ElementParameterParser.getValue( node,"__USE_TIMEOUT__");
+        String timeout = ElementParameterParser.getValue(node, "__TIMEOUT__");
 %>
 		/* open a session */
- 		sess_<%=cid%> = conn_<%=cid%>.openSession();
+
+			<%if(isLog4jEnabled){%>
+			    log.info("<%=cid%> - Authentication using a password.");
+		    <%}%>
+		
+			session_<%=cid%> = client_<%=cid%>.connect(username_<%=cid%>, hostname_<%=cid%>, <%=("").equals(port)?"22":port%>).verify(<%=("true").equals(useTimeout)?timeout+"L  * 1000":""%>).getClientSession();
+	    try {
+            session_<%=cid%>.auth().verify();
+        }catch (org.apache.sshd.common.SshException se){
+            if(14 == se.getDisconnectCode()){
+                throw new IllegalArgumentException("Authentication failed.");
+            }else{
+                throw se;
+            }
+        }
+		    
+
+		org.apache.sshd.client.channel.ClientChannel channel_<%=cid %> = null;
+			
 <%
         if (pty) {
 %>
-			sess_<%=cid%>.requestDumbPTY();
-	        sess_<%=cid%>.startShell();
+			channel_<%=cid%> = session_<%=cid%>.createShellChannel();
+			StringBuilder cmd_<%=cid%> = new StringBuilder();
 <%
         	if(commands.size() > 0){
         		for(java.util.Map<String, String> map : commands){
         			String cmd = map.get("COMMAND");
 %>
-					sess_<%=cid%>.getStdin().write((<%=cmd%>+"\n").getBytes());
+					cmd_<%=cid%>.append(<%=cmd%>).append('\n');
 <%
 				}
 			}
 %>
-			sess_<%=cid%>.getStdin().write("exit\n".getBytes());
+            cmd_<%=cid%>.append("exit\n");
+			channel_<%=cid%>.setIn(new java.io.ByteArrayInputStream(cmd_<%=cid%>.toString().getBytes()));
 <%
 		}else{
         	if(commands.size() > 0){
@@ -67,7 +90,11 @@ if ((metadatas!=null)&&(metadatas.size()>0)) {
 				}
         	}
 %>
-			sess_<%=cid%>.execCommand((command_<%=cid %>).toString());
+            channel_<%=cid %> = session_<%=cid %>.createExecChannel((command_<%=cid %>).toString());
+			
+			
+
+
 
 <%
 		}
@@ -77,40 +104,19 @@ if ((metadatas!=null)&&(metadatas.size()>0)) {
 <%
 		}
 %>
-		java.io.InputStream stdout_<%=cid%> = new ch.ethz.ssh2.StreamGobbler(sess_<%=cid%>.getStdout());
-		java.io.InputStream stderr_<%=cid%> = new ch.ethz.ssh2.StreamGobbler(sess_<%=cid%>.getStderr());
-		
-		java.io.BufferedReader brout_<%=cid%>= new java.io.BufferedReader(new java.io.InputStreamReader(stdout_<%=cid%>));
-        String line_<%=cid%> = "";
-
-        if((line_<%=cid%> = brout_<%=cid%>.readLine()) != null){
-            stringStdout_<%=cid%>.append(line_<%=cid%>);
-        }
-		while((line_<%=cid%> = brout_<%=cid%>.readLine()) != null){
-			stringStdout_<%=cid%>.append("\n"+line_<%=cid%>);
-		}
-		
-	    brout_<%=cid%>.close();
-		stdout_<%=cid%>.close();
-		
-        java.io.BufferedReader breer_<%=cid%>= new java.io.BufferedReader(new java.io.InputStreamReader(stderr_<%=cid%>));
-        String line1_<%=cid%> = "";
-
-        if((line1_<%=cid%> = breer_<%=cid%>.readLine()) != null){
-        	stringStderr_<%=cid%>.append(line1_<%=cid%>);
-        }
-		while((line1_<%=cid%> = breer_<%=cid%>.readLine()) != null) {
-			stringStderr_<%=cid%>.append("\n"+line1_<%=cid%>);
-		}
-
-		breer_<%=cid%>.close();
-		stderr_<%=cid%>.close();
-		
-		sess_<%=cid%>.waitForCondition(ch.ethz.ssh2.ChannelCondition.EXIT_STATUS, 10000);
-		
-		 /* Close this session */
-		
-		sess_<%=cid%>.close();
+        java.io.ByteArrayOutputStream stdout_<%=cid %> = new java.io.ByteArrayOutputStream();
+		java.io.ByteArrayOutputStream stderr_<%=cid %> = new java.io.ByteArrayOutputStream();
+        channel_<%=cid%>.setOut(stdout_<%=cid %>);
+        channel_<%=cid%>.setErr(stderr_<%=cid %>);
+		channel_<%=cid%>.open();
+		java.util.Set<org.apache.sshd.client.channel.ClientChannelEvent> clientChannelEvents_<%=cid %> = 
+		channel_<%=cid%>.waitFor(java.util.EnumSet.of(
+		org.apache.sshd.client.channel.ClientChannelEvent.CLOSED,org.apache.sshd.client.channel.ClientChannelEvent.EXIT_STATUS), 0L);
+		<%if(isLog4jEnabled){%>
+			log.debug("Channel Events: "+ java.util.Arrays.toString(clientChannelEvents_<%=cid %>.toArray()));
+		<%}%>
+		stringStdout_<%=cid%>.append(stdout_<%=cid%>.toString());
+		stringStderr_<%=cid%>.append(stderr_<%=cid%>.toString());
 		
 		out_content_<%=cid%> = stringStdout_<%=cid%>.toString();
 		err_content_<%=cid%> = stringStderr_<%=cid%>.toString();
