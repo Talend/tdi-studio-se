@@ -1,67 +1,68 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <assembly
-	xmlns="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.2"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.2 http://maven.apache.org/xsd/assembly-1.1.2.xsd">
-	<id>jar-with-dependencies</id>
-	<includeBaseDirectory>false</includeBaseDirectory>
-	<formats>
-		<format>jar</format>
-	</formats>
+    xmlns="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.2"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.2 http://maven.apache.org/xsd/assembly-1.1.2.xsd">
+    <id>jar-with-dependencies</id>
+    <includeBaseDirectory>false</includeBaseDirectory>
+    <formats>
+        <format>jar</format>
+    </formats>
 
-	<fileSets>
+    <fileSets>
 
-		<fileSet> <!-- add java classes -->
-			<directory>${project.build.outputDirectory}</directory>
-			<outputDirectory>${file.separator}</outputDirectory>
-			<includes>
-				<include>${talend.job.path}/**/*.class</include>
-				<include>__tdm/**</include>
-			</includes>
-		</fileSet>
-		
-		<fileSet> <!-- add osgi resources -->
-			<directory>${current.bundle.resources.dir}</directory>
-			<outputDirectory>${file.separator}</outputDirectory>
-			<includes>
-				<include>OSGI-INF/**</include>
-				<include>TALEND-INF/**</include>
-				<include>MAVEN-INF/**</include>
-			</includes>
-		</fileSet>
+        <fileSet> <!-- add java classes -->
+            <directory>${project.build.outputDirectory}</directory>
+            <outputDirectory>${file.separator}</outputDirectory>
+            <includes>
+                <include>${talend.job.path}/**/*.class</include>
+                <include>${talend.job.path}/**/*.wsdl</include>
+                <include>__tdm/**</include>
+            </includes>
+        </fileSet>
 
-		<fileSet> <!-- add route resources -->
-			<directory>${current.bundle.resources.dir}/resources</directory>
-			<outputDirectory>${file.separator}</outputDirectory>
-			<includes>
-				<include>**</include>
-			</includes>
-		</fileSet>
+        <fileSet> <!-- add osgi resources -->
+            <directory>${current.bundle.resources.dir}</directory>
+            <outputDirectory>${file.separator}</outputDirectory>
+            <includes>
+                <include>OSGI-INF/**</include>
+                <include>TALEND-INF/**</include>
+                <include>MAVEN-INF/**</include>
+            </includes>
+        </fileSet>
 
-		<fileSet> <!-- add route lib -->
-			<directory>${current.bundle.resources.dir}/lib</directory>
-			<outputDirectory>lib</outputDirectory>
-			<includes>
-				<include>**</include>
-			</includes>
-		</fileSet>
+        <fileSet> <!-- add route resources -->
+            <directory>${current.bundle.resources.dir}/resources</directory>
+            <outputDirectory>${file.separator}</outputDirectory>
+            <includes>
+                <include>**</include>
+            </includes>
+        </fileSet>
 
-		<fileSet><!-- add context resources -->
-			<directory>${current.resources.dir}</directory>
-			<outputDirectory>${file.separator}</outputDirectory>
-			<includes>
-				<include>${talend.job.path}/**</include>
-			</includes>
-		</fileSet>
-		
-		<fileSet><!-- add context resources -->
-			<directory>${resources.path}</directory>
-			<outputDirectory>${file.separator}</outputDirectory>
-			<includes>
-				<include>${talend.job.path}/**</include>
-			</includes>
-		</fileSet>
-        
+        <fileSet> <!-- add route lib -->
+            <directory>${current.bundle.resources.dir}/lib</directory>
+            <outputDirectory>lib</outputDirectory>
+            <includes>
+                <include>**</include>
+            </includes>
+        </fileSet>
+
+        <fileSet> <!-- add context resources -->
+            <directory>${current.resources.dir}</directory>
+            <outputDirectory>${file.separator}</outputDirectory>
+            <includes>
+                <include>${talend.job.path}/**</include>
+            </includes>
+        </fileSet>
+
+        <fileSet> <!-- add context resources -->
+            <directory>${resources.path}</directory>
+            <outputDirectory>${file.separator}</outputDirectory>
+            <includes>
+                <include>${talend.job.path}/**</include>
+            </includes>
+        </fileSet>
+
         <fileSet> <!-- add provided-lib -->
             <directory>${current.bundle.resources.dir}/provided-lib</directory>
             <outputDirectory>lib</outputDirectory>
@@ -69,17 +70,17 @@
                 <include>**</include>
             </includes>
         </fileSet>
-	</fileSets>
-	
-<!-- 	<dependencySets>
-		<dependencySet>
-			<outputDirectory>lib</outputDirectory>
-			<includes>
-				<include>${routines.binaries.includes.set}</include>
-			</includes>
-			without version for talend libraries
-			<outputFileNameMapping>${artifact.artifactId}.${artifact.extension}</outputFileNameMapping>
-			<useProjectArtifact>false</useProjectArtifact>
-		</dependencySet>
-	</dependencySets> -->
+    </fileSets>
+
+    <!-- <dependencySets>
+        <dependencySet>
+            <outputDirectory>lib</outputDirectory>
+            <includes>
+                <include>${routines.binaries.includes.set}</include>
+            </includes>
+            without version for talend libraries
+            <outputFileNameMapping>${artifact.artifactId}.${artifact.extension}</outputFileNameMapping>
+            <useProjectArtifact>false</useProjectArtifact>
+        </dependencySet>
+    </dependencySets> -->
 </assembly>

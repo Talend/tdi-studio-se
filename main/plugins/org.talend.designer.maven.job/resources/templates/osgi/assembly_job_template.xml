@@ -14,6 +14,7 @@
             <outputDirectory>${file.separator}</outputDirectory>
             <includes>
                 <include>${talend.job.path}/**/*.class</include>
+                <include>${talend.job.path}/**/*.wsdl</include>
                 <include>__tdm/**</include>
             </includes>
         </fileSet>
@@ -22,8 +23,8 @@
             <outputDirectory>${file.separator}</outputDirectory>
             <includes>
                 <include>OSGI-INF/**</include>
-        				<include>TALEND-INF/**</include>
-        				<include>MAVEN-INF/**</include>
+                <include>TALEND-INF/**</include>
+                <include>MAVEN-INF/**</include>
             </includes>
         </fileSet>
         <fileSet> <!-- add resources -->
@@ -46,8 +47,8 @@
             <includes>
                 <include>**</include>
             </includes>
-        </fileSet>	
-        
+        </fileSet>
+
         <fileSet> <!-- add metadata -->
             <directory>${basedir}/src/main/resources</directory>
             <outputDirectory>${file.separator}</outputDirectory>
@@ -55,7 +56,7 @@
                 <include>metadata/**</include>
             </includes>
         </fileSet>
-        
+
         <fileSet>
             <directory>${current.resources.dir}</directory>
             <outputDirectory>${file.separator}</outputDirectory>
