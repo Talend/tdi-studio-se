@@ -100,10 +100,6 @@ public class ExpressionProposalProvider implements IContentProposalProvider {
             }
         }
 
-        // for (IContentProposalProvider contentProposalProvider : otherContentProposalProviders) {
-        // proposals.addAll(Arrays.asList(contentProposalProvider.getProposals(contents, position)));
-        // }
-        
         proposals.addAll(getContextProposal());
         
         IContentProposal[] res = new IContentProposal[proposals.size()];
@@ -124,15 +120,6 @@ public class ExpressionProposalProvider implements IContentProposalProvider {
                 proposals.add(new ContextParameterProposal(ctxParam));
             }
 
-            // Proposals based on global variables
-            // List<? extends INode> nodes = process.getGraphicalNodes();
-            // for (INode node : nodes) {
-            // List<? extends INodeReturn> nodeReturns = node.getReturns();
-            // for (INodeReturn nodeReturn : nodeReturns) {
-            // proposals.add(new NodeReturnProposal(node, nodeReturn));
-            // }
-            // }
-
         } else {
             List<ContextItem> allContextItem = ContextUtils.getAllContextItem();
             List<IContextParameter> ctxParams = new ArrayList<IContextParameter>();
@@ -147,29 +134,6 @@ public class ExpressionProposalProvider implements IContentProposalProvider {
                 proposals.add(new ContextParameterProposal(ctxParam));
             }
         }
-
-        // // Proposals based on global variables(only perl ).
-        // // add proposals on global variables in java (bugtracker 2554)
-        // // add variables in java
-        // IContentProposal[] javavars = JavaGlobalUtils.getProposals();
-        // for (IContentProposal javavar : javavars) {
-        // proposals.add(javavar);
-        // }
-        //
-        // // Proposals based on routines
-        // FunctionManager functionManager = new FunctionManager();
-        //
-        // List<TalendType> talendTypes = functionManager.getTalendTypes();
-        // for (TalendType type : talendTypes) {
-        // for (Object objectFunction : type.getFunctions()) {
-        // Function function = (Function) objectFunction;
-        // proposals.add(new RoutinesFunctionProposal(function));
-        // }
-        // }
-        //
-        // for (IExternalProposals externalProposals : ProposalFactory.getInstances()) {
-        // proposals.addAll(externalProposals.getStandardProposals());
-        // }
 
         // sort the list
         Collections.sort(proposals, new Comparator<IContentProposal>() {
