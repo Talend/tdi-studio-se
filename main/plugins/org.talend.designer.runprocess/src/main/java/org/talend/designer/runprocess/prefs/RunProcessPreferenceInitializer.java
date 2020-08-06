@@ -28,6 +28,7 @@ import org.talend.designer.maven.template.AbstractMavenTemplateManager;
 import org.talend.designer.maven.template.MavenTemplateManager;
 import org.talend.designer.runprocess.IRunProcessService;
 import org.talend.designer.runprocess.RunProcessPlugin;
+import org.talend.designer.runprocess.utils.JobVMArgumentsUtil;
 
 import us.monoid.json.JSONArray;
 import us.monoid.json.JSONException;
@@ -54,8 +55,9 @@ public class RunProcessPreferenceInitializer extends AbstractPreferenceInitializ
         JSONObject root = new JSONObject();
         try {
             JSONArray args = new JSONArray();
-            args.put("-Xms256M");//$NON-NLS-1$
-            args.put("-Xmx1024M");//$NON-NLS-1$
+            for (String arg : JobVMArgumentsUtil.DEFAULT_JVM_ARGS) {
+                args.put(arg);
+            }
             root.put("JOB_RUN_VM_ARGUMENTS", args);//$NON-NLS-1$
         } catch (JSONException e) {
             ExceptionHandler.process(e);
