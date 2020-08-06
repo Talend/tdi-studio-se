@@ -3382,15 +3382,6 @@
              name="RenameEXAMigrationTask"
              version="7.3.1">
        </projecttask>
-       <projecttask
-             beforeLogon="false"
-             breaks="7.3.0"
-             class="org.talend.repository.model.migration.ChangeTEZ_JARS_NAME4HiveComponentsTDI44481"
-             description="Change TEZ_JARS_NAME parameter for hive components in localprovider"
-             id="org.talend.repository.model.migration.ChangeTEZ_JARS_NAME4HiveComponentsTDI44481"
-             name="ChangeTEZ_JARS_NAME4HiveComponentsTDI44481"
-             version="7.3.1">
-       </projecttask>
    </extension>
 
    <extension
