@@ -45,11 +45,12 @@ if ((metadatas!=null)&&(metadatas.size()>0)) {
 			session_<%=cid%> = client_<%=cid%>.connect(username_<%=cid%>, hostname_<%=cid%>, <%=("").equals(port)?"22":port%>).verify(<%=("true").equals(useTimeout)?timeout+"L  * 1000":""%>).getClientSession();
 	    try {
             session_<%=cid%>.auth().verify();
-        }catch (org.apache.sshd.common.SshException se){
-            if(14 == se.getDisconnectCode()){
+        }catch (org.apache.sshd.common.SshException se_<%=cid%>){
+		    globalMap.put("<%=cid %>_EXIT_CODE",se_<%=cid%>.getDisconnectCode());
+            if(14 == se_<%=cid%>.getDisconnectCode()){
                 throw new IllegalArgumentException("Authentication failed.");
             }else{
-                throw se;
+                throw se_<%=cid%>;
             }
         }
 		    
@@ -112,6 +113,8 @@ if ((metadatas!=null)&&(metadatas.size()>0)) {
 		java.util.Set<org.apache.sshd.client.channel.ClientChannelEvent> clientChannelEvents_<%=cid %> = 
 		channel_<%=cid%>.waitFor(java.util.EnumSet.of(
 		org.apache.sshd.client.channel.ClientChannelEvent.CLOSED,org.apache.sshd.client.channel.ClientChannelEvent.EXIT_STATUS), 0L);
+		channel_<%=cid%>.close();
+		session_<%=cid%>.close();
 		<%if(isLog4jEnabled){%>
 			log.debug("Channel Events: "+ java.util.Arrays.toString(clientChannelEvents_<%=cid %>.toArray()));
 		<%}%>
