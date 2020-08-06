@@ -37,7 +37,7 @@ public class ChangeTEZ_JARS_NAME4HiveComponentsTDI44481 extends AbstractJobMigra
     @Override
     public ExecutionResult execute(Item item) {
         final ProcessType processType = getProcessType(item);
-        String[] compNames = { "tHiveConnection", "tHiveRow", "tHiveInput", "tHiveLoad", "tELTHiveMap"};
+        String[] compNames = { "tHiveConnection", "tHiveRow" };
 
         IComponentConversion conversion = new IComponentConversion() {
 
