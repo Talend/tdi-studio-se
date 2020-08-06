@@ -32,6 +32,7 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Group;
+import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.ui.runtime.exception.MessageBoxExceptionHandler;
 import org.talend.commons.ui.runtime.expressionbuilder.IExpressionDataBean;
 import org.talend.commons.ui.swt.colorstyledtext.ColorStyledText;
@@ -228,7 +229,7 @@ public class EltExpressionComposite extends ExpressionComposite {
             contentProposalAdapter.setPopupSize(new Point(300, 200));
 
         } catch (Exception e) {
-            //
+            ExceptionHandler.process(e);
         }
     }
 }
