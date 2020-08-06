@@ -57,8 +57,8 @@ public class ChangeTEZ_JARS_NAME4HiveComponentsTDI44481 extends AbstractJobMigra
                     String oldVersion = "commons-beanutils-1.7.0.jar,commons-beanutils-core-1.8.0.jar";
                     String newVersion = "commons-beanutils-1.9.4.jar";
                     if (value.contains(oldVersion)) {
-                        String newValue = value.replace(oldVersion, newVersion);
-                        ComponentUtilities.setNodeValue(node, "TEZ_JARS_NAME", newValue);
+                        String newDBVersion = value.replace(oldVersion, newVersion);
+                        ComponentUtilities.setNodeValue(node, "TEZ_JARS_NAME", newDBVersion);
                     }
                 }
             }
