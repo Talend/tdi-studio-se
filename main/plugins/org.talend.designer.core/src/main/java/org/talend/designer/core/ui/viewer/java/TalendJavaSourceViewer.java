@@ -52,7 +52,6 @@ import org.eclipse.jface.text.source.ISharedTextColors;
 import org.eclipse.jface.text.source.ISourceViewer;
 import org.eclipse.jface.text.source.IVerticalRuler;
 import org.eclipse.jface.text.source.OverviewRuler;
-import org.eclipse.jface.text.source.SourceViewerConfiguration;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IEditorInput;
@@ -98,8 +97,6 @@ public class TalendJavaSourceViewer extends ReconcilerViewer {
     private static int currentId = 0;
 
     private ICompilationUnit compilationUnit;
-
-    private ISourceViewerConfigurationBuilder sourceViewerConfigBuilder;
 
     private static final String NL = "\n"; //$NON-NLS-1$
 
@@ -148,18 +145,8 @@ public class TalendJavaSourceViewer extends ReconcilerViewer {
     public TalendJavaSourceViewer(Composite parent, Process process, IVerticalRuler verticalRuler, IOverviewRuler overviewRuler,
             boolean showAnnotationsOverview, int styles, IAnnotationAccess annotationAccess, ISharedTextColors sharedColors,
             boolean checkCode, IDocument document) {
-        this(parent, process, verticalRuler, overviewRuler, showAnnotationsOverview, styles, annotationAccess, sharedColors,
-                checkCode, document, createDefaultSourceViewerConfigBuilder());
-    }
-
-    public TalendJavaSourceViewer(Composite parent, Process process, IVerticalRuler verticalRuler, IOverviewRuler overviewRuler,
-            boolean showAnnotationsOverview, int styles, IAnnotationAccess annotationAccess, ISharedTextColors sharedColors,
-            boolean checkCode, IDocument document, ISourceViewerConfigurationBuilder sourceViewerConfigBuilder) {
         super(parent, verticalRuler, overviewRuler, showAnnotationsOverview, styles, annotationAccess, sharedColors, checkCode,
                 document, null);
-        this.sourceViewerConfigBuilder = sourceViewerConfigBuilder;
-        this.initializeViewerDelay(document);
-
         this.process = process;
         int id = currentId++;
         className = TalendJavaSourceViewer.VIEWER_CLASS_NAME + id;
@@ -190,14 +177,6 @@ public class TalendJavaSourceViewer extends ReconcilerViewer {
             ExceptionHandler.process(e);
         }
         updateContents();
-    }
-
-    protected void initializeViewer(IDocument document) {
-        // init viewer after constructor
-    }
-
-    protected void initializeViewerDelay(IDocument document) {
-        super.initializeViewer(document);
     }
 
     private static IRunProcessService getRunProcessService() {
@@ -310,23 +289,7 @@ public class TalendJavaSourceViewer extends ReconcilerViewer {
         return initializeViewer(composite, process, styles, checkCode, document, documentOffset);
     }
 
-    public static ReconcilerViewer createViewerWithVariables4Elt(Composite composite, int styles, IExpressionDataBean dataBean) {
-        return createViewerWithVariables(composite, styles, dataBean, new ISourceViewerConfigurationBuilder() {
-
-            @Override
-            public SourceViewerConfiguration build(IColorManager colorManager, IPreferenceStore preferenceStore,
-                    TalendJavaSourceViewer viewer) {
-                return new TalendJavaViewerConfiguration4Elt(colorManager, preferenceStore, viewer);
-            }
-        });
-    }
-
     public static ReconcilerViewer createViewerWithVariables(Composite composite, int styles, IExpressionDataBean dataBean) {
-        return createViewerWithVariables(composite, styles, dataBean, createDefaultSourceViewerConfigBuilder());
-    }
-
-    public static ReconcilerViewer createViewerWithVariables(Composite composite, int styles, IExpressionDataBean dataBean,
-            ISourceViewerConfigurationBuilder sourceViewerConfigBuilder) {
         IDocument document = new Document();
         StringBuffer buff = new StringBuffer();
         buff.append("\npackage internal;\n\n"); //$NON-NLS-1$
@@ -386,7 +349,7 @@ public class TalendJavaSourceViewer extends ReconcilerViewer {
 
         document.set(buff.toString());
 
-        return initializeViewer(composite, null, styles, true, document, length, sourceViewerConfigBuilder);
+        return initializeViewer(composite, null, styles, true, document, length);
     }
 
     public static ISourceViewer createViewerForComponent(Composite composite, int styles, Process process, CompilationUnitEditor editor,
@@ -478,25 +441,8 @@ public class TalendJavaSourceViewer extends ReconcilerViewer {
         return initializeViewer(composite, process, styles, checkCode, newDoc, documentOffset);
     }
 
-    private static ISourceViewerConfigurationBuilder createDefaultSourceViewerConfigBuilder() {
-        return new ISourceViewerConfigurationBuilder() {
-
-            @Override
-            public SourceViewerConfiguration build(IColorManager colorManager, IPreferenceStore preferenceStore,
-                    TalendJavaSourceViewer viewer) {
-                return new TalendJavaViewerConfiguration(colorManager, preferenceStore, viewer);
-            }
-        };
-    }
-
     private static ReconcilerViewer initializeViewer(Composite composite, Process process, int styles, boolean checkCode, IDocument document,
             int visibleOffset) {
-        return initializeViewer(composite, process, styles, checkCode, document, visibleOffset,
-                createDefaultSourceViewerConfigBuilder());
-    }
-
-    private static ReconcilerViewer initializeViewer(Composite composite, Process process, int styles, boolean checkCode,
-            IDocument document, int visibleOffset, ISourceViewerConfigurationBuilder builder) {
         IAnnotationAccess annotationAccess = new DefaultMarkerAnnotationAccess();
         ISharedTextColors sharedColors = JavaPlugin.getDefault().getJavaTextTools().getColorManager();
         IOverviewRuler overviewRuler = null;
@@ -513,7 +459,7 @@ public class TalendJavaSourceViewer extends ReconcilerViewer {
         }
         verticalRuler = new CompositeRuler(12);
         ReconcilerViewer viewer = new TalendJavaSourceViewer(composite, process, verticalRuler, overviewRuler, checkCode, styles,
-                annotationAccess, sharedColors, checkCode, document, builder);
+                annotationAccess, sharedColors, checkCode, document);
 
         if (visibleOffset != -1) {
             viewer.setVisibleRegion(visibleOffset, 0);
@@ -604,11 +550,7 @@ public class TalendJavaSourceViewer extends ReconcilerViewer {
         JavaTextTools tools = JavaPlugin.getDefault().getJavaTextTools();
         tools.setupJavaDocumentPartitioner(getDocument(), IJavaPartitions.JAVA_PARTITIONING);
         IPreferenceStore store = JavaPlugin.getDefault().getCombinedPreferenceStore();
-        configure(createSourceViewerConfiguration(store));
-    }
-
-    protected SourceViewerConfiguration createSourceViewerConfiguration(IPreferenceStore store) {
-        return sourceViewerConfigBuilder.build((IColorManager) sharedColors, store, this);
+        configure(new TalendJavaViewerConfiguration((IColorManager) sharedColors, store, this));
     }
 
     /*
@@ -731,12 +673,4 @@ public class TalendJavaSourceViewer extends ReconcilerViewer {
     public static String getClassName() {
         return className;
     }
-
-    public static interface ISourceViewerConfigurationBuilder {
-
-        SourceViewerConfiguration build(IColorManager colorManager, IPreferenceStore preferenceStore,
-                TalendJavaSourceViewer viewer);
-
-    }
-
 }

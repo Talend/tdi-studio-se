@@ -22,7 +22,6 @@ import org.talend.core.model.process.INode;
 import org.talend.core.runtime.services.IExpressionBuilderDialogService;
 import org.talend.expressionbuilder.ui.BatchExpressionBuilderDialog;
 import org.talend.expressionbuilder.ui.ExpressionBuilderDialog;
-import org.talend.expressionbuilder.ui.ExpressionBuilderDialogForElt;
 import org.talend.expressionbuilder.ui.PigExpressionBuilderDialog;
 
 /**
@@ -65,14 +64,4 @@ public class ExpressionBuilderService implements IExpressionBuilderDialogService
         return new BatchExpressionBuilderDialog(parent.getShell(), dataBean, component);
     }
 
-    @Override
-    public IExpressionBuilderDialogController getExpressionBuilderInstance(Composite parent, IExpressionDataBean dataBean,
-            INode component, int ExpressionBuilderType) {
-        switch (ExpressionBuilderType) {
-        case 1:
-            return new ExpressionBuilderDialogForElt(parent.getShell(), dataBean, component);
-        }
-
-        return null;
-    }
 }

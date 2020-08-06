@@ -109,6 +109,7 @@ import org.talend.designer.dbmap.model.tableentry.FilterTableEntry;
 import org.talend.designer.dbmap.model.tableentry.InputColumnTableEntry;
 import org.talend.designer.dbmap.ui.color.ColorInfo;
 import org.talend.designer.dbmap.ui.color.ColorProviderMapper;
+import org.talend.designer.dbmap.ui.dialog.ExpressionBuilderDialogForElt;
 import org.talend.designer.dbmap.ui.dnd.DragNDrop;
 import org.talend.designer.dbmap.ui.event.MousePositionAnalyser;
 import org.talend.designer.dbmap.ui.event.ResizeHelper;
@@ -1481,26 +1482,11 @@ public abstract class DataMapTableView extends Composite implements IDataMapTabl
 
             @Override
             public void activate() {
-
-                // UIManager uiManager = mapperManager.getUiManager();
-                //
-                // ITableEntry currentModifiedBean = (ITableEntry) tableViewerCreator.getModifiedObjectInfo()
-                // .getCurrentModifiedBean();
-                //
-                // ArrayList<ITableEntry> selectedTableEntry = new ArrayList<ITableEntry>(1);
-                // selectedTableEntry.add(currentModifiedBean);
-                //
-                // uiManager.selectLinks(DataMapTableView.this, selectedTableEntry, true, false);
-                //
-                // uiManager.applyActivatedCellEditorsForAllTables(tableViewerCreator);
-
                 super.activate();
             }
 
         };
-        dialog = ((IExpressionBuilderDialogService) expressionBuilderDialogService).getExpressionBuilderInstance(
-                tableViewerCreator.getCompositeParent(), cellEditor, mapperManager.getAbstractMapComponent(),
-                ExpressionBuilderForElt);
+        dialog = new ExpressionBuilderDialogForElt(tableViewerCreator.getCompositeParent().getShell(), cellEditor, mapperManager);
 
         behavior.setCellEditorDialog(dialog);
 

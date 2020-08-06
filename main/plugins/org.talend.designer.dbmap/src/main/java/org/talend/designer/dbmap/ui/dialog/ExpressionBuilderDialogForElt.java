@@ -10,7 +10,7 @@
 // 9 rue Pages 92150 Suresnes, France
 //
 // ============================================================================
-package org.talend.expressionbuilder.ui;
+package org.talend.designer.dbmap.ui.dialog;
 
 import java.io.File;
 import java.io.IOException;
@@ -52,9 +52,10 @@ import org.talend.core.context.Context;
 import org.talend.core.context.RepositoryContext;
 import org.talend.core.model.general.Project;
 import org.talend.core.model.process.INode;
+import org.talend.designer.dbmap.i18n.Messages;
+import org.talend.designer.dbmap.managers.MapperManager;
 import org.talend.expressionbuilder.ExpressionFileOperation;
 import org.talend.expressionbuilder.ExpressionPersistance;
-import org.talend.expressionbuilder.i18n.Messages;
 import org.talend.expressionbuilder.model.CategoryManager;
 import org.talend.repository.model.RepositoryConstants;
 import org.xml.sax.SAXException;
@@ -71,11 +72,7 @@ public class ExpressionBuilderDialogForElt extends TrayDialog implements IExpres
 
     private static final int IMPORT_ID = IDialogConstants.CLIENT_ID + 21;
 
-    protected static TestComposite testComposite;
-
     protected static ExpressionComposite expressionComposite;
-
-    protected static CategoryComposite categoryComposite;
 
     protected CategoryManager manager = new CategoryManager();
 
@@ -95,18 +92,21 @@ public class ExpressionBuilderDialogForElt extends TrayDialog implements IExpres
 
     protected static boolean isESCClose = true;
 
+    private MapperManager mapperManager;
+
     /**
      * Create the dialog
      *
      * @param parentShell
      */
-    public ExpressionBuilderDialogForElt(Shell parentShell, IExpressionDataBean dataBean, INode component) {
+    public ExpressionBuilderDialogForElt(Shell parentShell, IExpressionDataBean dataBean, MapperManager mapperManager) {
         super(parentShell);
         this.nodeStyle = parentShell.toString();
 
         setShellStyle(this.getShellStyle() | SWT.RESIZE | SWT.MAX);
         this.dataBean = dataBean;
-        this.component = component;
+        this.component = mapperManager.getComponent();
+        this.mapperManager = mapperManager;
     }
 
     /**
@@ -129,7 +129,7 @@ public class ExpressionBuilderDialogForElt extends TrayDialog implements IExpres
 
         final SashForm upperSashform = new SashForm(upperComposite, SWT.NONE);
 
-        expressionComposite = new EltExpressionComposite(this, upperSashform, SWT.NONE, dataBean);
+        expressionComposite = new EltExpressionComposite(this, upperSashform, SWT.NONE, dataBean, mapperManager);
         expressionComposite.setExpression(defaultExpression, true);
         //
         // testComposite = new TestComposite(upperSashform, SWT.NONE);
@@ -240,7 +240,7 @@ public class ExpressionBuilderDialogForElt extends TrayDialog implements IExpres
                 if (filePath != null) {
                     String expresionContent = expressionComposite.getExpression();
                     List<Variable> variables = new ArrayList<Variable>();
-                    variables = testComposite.getVariableList();
+                    // variables = testComposite.getVariableList();
                     File file = new File(filePath);
                     ExpressionFileOperation operation = new ExpressionFileOperation();
                     try {
@@ -279,7 +279,7 @@ public class ExpressionBuilderDialogForElt extends TrayDialog implements IExpres
                             expressionComposite.setExpression((String) list.get(0), false);
                             list.remove(0);
                             if (list.size() > 0) {
-                                testComposite.addVariables(list);
+                                // testComposite.addVariables(list);
                             }
                         }
                     } catch (IOException e1) {
@@ -313,15 +313,15 @@ public class ExpressionBuilderDialogForElt extends TrayDialog implements IExpres
      */
     @Override
     public boolean close() {
-        if (testComposite != null) {
-            testComposite.stopServerThread();
-        }
+        // if (testComposite != null) {
+        // testComposite.stopServerThread();
+        // }
         if (isESCClose) {
             if (defaultExpression != null && !defaultExpression.equals(newExpression())) {
                 boolean flag = MessageDialog.openConfirm(getParentShell(), Messages.getString("ExpressionBuilderDialog.message"),
                         Messages.getString("ExpressionBuilderDialog.Confirm"));
                 if (!flag) {
-                    categoryComposite.setFocus();
+                    // categoryComposite.setFocus();
                     return false;
                 }
             }
@@ -349,14 +349,6 @@ public class ExpressionBuilderDialogForElt extends TrayDialog implements IExpres
         return expression;
     }
 
-    /**
-     * Getter for testComposite.
-     *
-     * @return the testComposite
-     */
-    public static TestComposite getTestComposite() {
-        return testComposite;
-    }
 
     /**
      * Getter for expressionComposite.
@@ -365,15 +357,6 @@ public class ExpressionBuilderDialogForElt extends TrayDialog implements IExpres
      */
     public static ExpressionComposite getExpressionComposite() {
         return expressionComposite;
-    }
-
-    /**
-     * Getter for categoryComposite.
-     *
-     * @return the categoryComposite
-     */
-    public static CategoryComposite getCategoryComposite() {
-        return categoryComposite;
     }
 
     /*

@@ -10,13 +10,14 @@
 // 9 rue Pages 92150 Suresnes, France
 //
 // ============================================================================
-package org.talend.expressionbuilder.ui;
+package org.talend.designer.dbmap.ui.dialog;
 
 import java.util.List;
 
+import org.eclipse.jface.bindings.keys.KeyStroke;
 import org.eclipse.jface.dialogs.TrayDialog;
-import org.eclipse.jface.text.BadLocationException;
-import org.eclipse.jface.text.IRegion;
+import org.eclipse.jface.fieldassist.ContentProposalAdapter;
+import org.eclipse.jface.fieldassist.IControlContentAdapter;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
@@ -33,23 +34,34 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Group;
 import org.talend.commons.ui.runtime.exception.MessageBoxExceptionHandler;
 import org.talend.commons.ui.runtime.expressionbuilder.IExpressionDataBean;
-import org.talend.designer.core.ui.viewer.java.TalendJavaSourceViewer;
+import org.talend.commons.ui.swt.colorstyledtext.ColorStyledText;
+import org.talend.commons.ui.swt.preferences.HotKeyUtil;
+import org.talend.commons.ui.swt.proposal.ContentProposalAdapterExtended;
+import org.talend.commons.ui.swt.proposal.StyledTextContentAdapterExtended;
+import org.talend.core.CorePlugin;
+import org.talend.core.language.LanguageManager;
+import org.talend.designer.dbmap.i18n.Messages;
+import org.talend.designer.dbmap.managers.MapperManager;
+import org.talend.designer.dbmap.ui.proposal.expression.ExpressionProposalProvider;
+import org.talend.designer.dbmap.ui.visualmap.zone.Zone;
 import org.talend.designer.rowgenerator.data.Function;
 import org.talend.designer.rowgenerator.data.FunctionManager;
 import org.talend.designer.rowgenerator.data.Parameter;
-import org.talend.expressionbuilder.i18n.Messages;
+import org.talend.expressionbuilder.ui.ExpressionRecorder;
 
 /**
  * DOC hcyi class global comment. Detailled comment
  */
 public class EltExpressionComposite extends ExpressionComposite {
 
-    private IExpressionDataBean dataBean;
+    private MapperManager mapperManager;
 
-    public EltExpressionComposite(TrayDialog expressionBuilderDialog, Composite parent, int style, IExpressionDataBean dataBean) {
+    public EltExpressionComposite(TrayDialog expressionBuilderDialog, Composite parent, int style, IExpressionDataBean dataBean,
+            MapperManager mapperManager) {
         super(parent, style);
         setLayout(new FillLayout());
         this.trayDialog = expressionBuilderDialog;
+        this.mapperManager = mapperManager;
         final Group expressionGroup = new Group(this, SWT.NONE);
         GridLayout groupLayout = new GridLayout();
         expressionGroup.setLayout(groupLayout);
@@ -113,16 +125,16 @@ public class EltExpressionComposite extends ExpressionComposite {
              */
             @Override
             public void mouseUp(MouseEvent e) {
-                IRegion region = viewer.getViewerRegion();
+                // IRegion region = viewer.getViewerRegion();
                 try {
-                    document.replace(region.getOffset(), region.getLength(), ""); //$NON-NLS-1$
-                } catch (BadLocationException ex) {
+                    textControl.setText("");
+                    // document.replace(region.getOffset(), region.getLength(), ""); //$NON-NLS-1$
+                } catch (Exception ex) {
                     MessageBoxExceptionHandler.process(ex);
                 }
             }
         });
 
-        // ColorManager colorManager = new ColorManager(CorePlugin.getDefault().getPreferenceStore());
         Composite composite = new Composite(expressionGroup, SWT.BORDER);
         composite.setLayoutData(new GridData(GridData.FILL_BOTH));
         GridLayout layout = new GridLayout();
@@ -133,18 +145,8 @@ public class EltExpressionComposite extends ExpressionComposite {
         layout.marginHeight = 0;
         layout.marginWidth = 0;
         composite.setLayout(layout);
-        // text = new ColorStyledText(composite, SWT.BORDER | SWT.MULTI | SWT.WRAP | SWT.V_SCROLL, colorManager,
-        // LanguageManager.getCurrentLanguage().getName());
-        viewer = TalendJavaSourceViewer.createViewerWithVariables4Elt(composite,
-                SWT.BORDER | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL | SWT.WRAP, dataBean);
-
-        textControl = viewer.getTextWidget();
-        // int ops = DND.DROP_COPY | DND.DROP_MOVE;
-        // DropTargetListener dropLisenter = new SnippetDropTargetListener(viewer, null, null, null);
-        // viewer.addDropSupport(ops, new Transfer[] { LocalSelectionTransfer.getTransfer() }, dropLisenter);
-
-        document = viewer.getDocument();
-        textControl.setWordWrap(wrapButton.getSelection());
+        textControl = new ColorStyledText(composite, SWT.BORDER | SWT.MULTI | SWT.V_SCROLL,
+                CorePlugin.getDefault().getPreferenceStore(), LanguageManager.getCurrentLanguage().getName());
         textControl.setLayoutData(new GridData(GridData.FILL_BOTH));
         textControl.addModifyListener(new ModifyListener() {
 
@@ -158,8 +160,7 @@ public class EltExpressionComposite extends ExpressionComposite {
             }
 
         });
-
-
+        createEditorProposal();
     }
 
     @Override
@@ -205,4 +206,29 @@ public class EltExpressionComposite extends ExpressionComposite {
         return textControl.getText();
     }
 
+    /**
+     * Creates proposal for editor.
+     */
+    private void createEditorProposal() {
+        try {
+            // create KeyStroke use Ctrl+Space as default
+            KeyStroke keyStroke = HotKeyUtil.getHotKey(HotKeyUtil.contentAssist);
+            IControlContentAdapter controlContentAdapter = new StyledTextContentAdapterExtended();
+            ExpressionProposalProvider contentProposalProvider = new ExpressionProposalProvider(mapperManager, null);
+            contentProposalProvider.init(null, new Zone[] { Zone.INPUTS, Zone.OUTPUTS }, null);
+
+            ContentProposalAdapterExtended contentProposalAdapter = new ContentProposalAdapterExtended(textControl,
+                    controlContentAdapter,
+                    contentProposalProvider, keyStroke, null);
+            contentProposalAdapter.setPropagateKeys(true);
+            contentProposalAdapter.setFilterStyle(ContentProposalAdapterExtended.FILTER_CUMULATIVE_ALL_START_WORDS);
+            contentProposalAdapter.setProposalAcceptanceStyle(ContentProposalAdapter.PROPOSAL_INSERT);
+            contentProposalAdapter.setContentProposalProvider(contentProposalProvider);
+            contentProposalAdapter.setAutoActivationDelay(10);
+            contentProposalAdapter.setPopupSize(new Point(300, 200));
+
+        } catch (Exception e) {
+            //
+        }
+    }
 }

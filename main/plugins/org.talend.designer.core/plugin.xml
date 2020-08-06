@@ -914,15 +914,4 @@
                 class="org.talend.designer.core.ui.help.TalendHelpUI">
           </config>
        </extension>
-       <extension
-             id="eltmap_proposal"
-             name="eltmap proposal"
-             point="org.eclipse.jdt.ui.javaCompletionProposalComputer">
-          <javaCompletionProposalComputer
-                activate="true"
-                categoryId="org.talend.designer.core.eltmap_proposal"
-                class="org.talend.designer.core.ui.viewer.proposal.TalendCompletionProposalComputer4Elt"
-                needsSortingAfterFiltering="false">
-          </javaCompletionProposalComputer>
-       </extension>
 </plugin>
