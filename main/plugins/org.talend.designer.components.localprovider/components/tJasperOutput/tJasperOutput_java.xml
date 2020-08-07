@@ -139,7 +139,7 @@
 	  <IMPORT NAME="CommonsDigester" MODULE="commons-digester-2.1.jar" MVN="mvn:org.talend.libraries/commons-digester-2.1/6.0.0" UrlPath="platform:/plugin/org.talend.libraries.apache.common/lib/commons-digester-2.1.jar" REQUIRED="true" />
 	  <IMPORT NAME="CommonsCollections" MODULE="commons-collections-3.2.2.jar" MVN="mvn:commons-collections/commons-collections/3.2.2" UrlPath="platform:/plugin/org.talend.libraries.apache.common/lib/commons-collections-3.2.2.jar" REQUIRED="true" />
 	  <IMPORT NAME="CommonsLogging" MODULE="commons-logging-1.1.jar" MVN="mvn:org.talend.libraries/commons-logging-1.1/6.0.0" UrlPath="platform:/plugin/org.talend.libraries.apache.common/lib/commons-logging-1.1.jar" REQUIRED="true" />
-	  <IMPORT NAME="CommonsBeanutils" MODULE="commons-beanutils-1.8.3.jar" MVN="mvn:commons-beanutils/commons-beanutils/1.8.3" UrlPath="platform:/plugin/org.talend.libraries.apache.common/lib/commons-beanutils-1.8.3.jar" REQUIRED="true" />
+	  <IMPORT NAME="CommonsBeanutils" MODULE="commons-beanutils-1.9.4.jar" MVN="mvn:commons-beanutils/commons-beanutils/1.9.4" REQUIRED="true" />
 	  <IMPORT NAME="Poi" MODULE="poi-3.10.1.jar" MVN="mvn:org.talend.libraries/poi-3.10.1/6.0.0" UrlPath="platform:/plugin/org.talend.libraries.excel/lib/poi-3.10.1.jar" REQUIRED="true" />
 	  <IMPORT NAME="Jfreechart" MODULE="jfreechart-1.0.12.jar" MVN="mvn:org.talend.libraries/jfreechart-1.0.12/6.0.0" UrlPath="platform:/plugin/org.talend.libraries.jfreechart.jars/lib/jfreechart-1.0.12.jar" REQUIRED="true" />	
 	</IMPORTS>

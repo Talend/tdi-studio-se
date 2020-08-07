@@ -51,7 +51,8 @@ public abstract class AbstractJSONObjectStaticBuildersTestCase extends TestCase 
       jsonConfig.setIgnoreDefaultExcludes( true );
       JSONObject json = JSONObject.fromObject( getSource(), jsonConfig );
       assertJSONObject( json, getProperties() );
-      assertTrue( json.has( "class" ) );
+      //see : https://github.com/apache/commons-beanutils/compare/BEANUTILS_1_9_3...commons-beanutils-1.9.4#diff-dbeaa70d3a09169fb5a1e42e5b319037R34-R43
+      //assertTrue( json.has( "class" ) );
       assertTrue( !json.has( "pexcluded" ) );
    }
 

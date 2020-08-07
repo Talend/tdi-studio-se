@@ -1,40 +1,10 @@
 <%@ jet%>
 
 <%
-boolean isEnableType1 = ("true").equals(ElementParameterParser.getValue(node, "__USE_L1__"));
-List<Map<String, String>> type1Attributes = new ArrayList<Map<String, String>>();
-if(isEnableType1) {
-    type1Attributes = (List<Map<String, String>>)ElementParameterParser.getObjectValue(node, "__L1_FIELDS__");
-}
-
-boolean isEnableType2 = ("true").equals(ElementParameterParser.getValue(node, "__USE_L2__"));
-List<Map<String, String>> type2Attributes = new ArrayList<Map<String, String>>();
-if(isEnableType2) {
-    type2Attributes = (List<Map<String, String>>)ElementParameterParser.getObjectValue(node, "__L2_FIELDS__");
-}
-
-List<Map<String, String>> sourceKeys = (List<Map<String, String>>)ElementParameterParser.getObjectValue(node, "__SOURCE_KEYS__");
-
-boolean isEqualWithSK = false;
-for(Map<String, String> sk : sourceKeys) {
-    if(surrogateKey.equals(sk.get("NAME"))) {
-        isEqualWithSK = true;
-        break;
-    }
-}
-
-boolean isFieldValueIncNull = ("true").equals(ElementParameterParser.getValue(node, "__FIELD_VALUE_INC_NULL__"));
-
-List<String> joinClause = new ArrayList<String>();
 for(Map<String, String> sk : sourceKeys) {
     joinClause.add(" d." + text_util.wrap(sk.get("NAME")) + " = t." + text_util.wrap(sk.get("NAME")));
 }
 String joinClauseString = StringUtils.join(joinClause.toArray(), " AND ");
-
-String strFieldName = "";
-String selectColumnString = "";
-String columnNameString = "";
-
 if(isEnableType1) {
     List<String> columnNames = new ArrayList<String>();
     List<String> setColumns = new ArrayList<String>();
@@ -75,19 +45,6 @@ if(isEnableType1) {
         <%
     }
 }
-
-String startDateField = ElementParameterParser.getValue(node,"__L2_STARTDATE_FIELD__");
-String endDateField = ElementParameterParser.getValue(node,"__L2_ENDDATE_FIELD__");
-String l2EndDateFieldType = ElementParameterParser.getValue(node,"__L2_ENDDATE_FIELD_TYPE__");
-String l2EndDateFieldFixedDateValue = ElementParameterParser.getValue(node,"__FIXED_DATE_VALUE__");
-boolean isEnableActive = ("true").equals(ElementParameterParser.getValue(node,"__USE_L2_ACTIVE__"));
-String activeField = ElementParameterParser.getValue(node,"__L2_ACTIVE_FIELD__");
-boolean isEnableVersion = ("true").equals(ElementParameterParser.getValue(node,"__USE_L2_VERSION__"));
-String versionField = ElementParameterParser.getValue(node,"__L2_VERSION_FIELD__");
-
-boolean useSequence = "DB_SEQUENCE".equals(surrogateKeyType);
-String sequenceName = ElementParameterParser.getValue(node,"__SK_DB_SEQUENCE__");
-
 if(isEnableType2) {
     List<String> whereClause = new ArrayList<String>();
     for (Map<String, String> type2Attribute : type2Attributes) {

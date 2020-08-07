@@ -38,6 +38,7 @@ import org.talend.core.model.properties.ProcessItem;
 import org.talend.designer.maven.launch.MavenPomCommandLauncher;
 import org.talend.designer.maven.model.MavenSystemFolders;
 import org.talend.designer.maven.model.TalendMavenConstants;
+import org.talend.designer.maven.utils.PomIdsHelper;
 import org.talend.designer.runprocess.IProcessor;
 import org.talend.repository.documentation.ExportFileResource;
 import org.talend.repository.ui.wizards.exportjob.scriptsmanager.JobScriptsManager;
@@ -61,7 +62,17 @@ public class BuildOSGiBundleHandler extends BuildJobHandler {
                 IProcessor.NO_STATISTICS, IProcessor.NO_TRACES);
 
         osgiMavenManager.setJobVersion(version);
-        osgiMavenManager.setBundleVersion(version);
+                osgiMavenManager.setBundleVersion(getArtifactVersion(processItem));
+    }
+
+    protected String getArtifactVersion(ProcessItem processItem) {
+        if (processItem != null) {
+            String v = PomIdsHelper.getJobVersion(processItem.getProperty());
+            if (v != null) {
+                return v.replace("-", ".");
+            }
+        }
+        return null;
     }
 
     /*

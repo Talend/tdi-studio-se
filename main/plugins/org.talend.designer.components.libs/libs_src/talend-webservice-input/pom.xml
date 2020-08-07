@@ -4,7 +4,7 @@
 
   <groupId>org.talend.libraries</groupId>
   <artifactId>talend-webservice-input</artifactId>
-  <version>1.0.0-20170301</version>
+  <version>1.0.2</version>
   <packaging>jar</packaging>
 
   <name>talend-webservice-input</name>
@@ -51,6 +51,12 @@
 	    <groupId>commons-discovery</groupId>
 	    <artifactId>commons-discovery</artifactId>
     	<version>0.2</version>
+		<exclusions>
+			<exclusion>
+				<groupId>commons-logging</groupId>
+				<artifactId>commons-logging</artifactId>
+			</exclusion>
+		</exclusions>
 	</dependency>
 	<!-- https://mvnrepository.com/artifact/wsdl4j/wsdl4j -->
 	<dependency>
@@ -63,12 +69,6 @@
 	<dependency>
 	    <groupId>javax.xml</groupId>
 	    <artifactId>jaxrpc-api</artifactId>
-	    <version>1.1</version>
-	</dependency>
-		<!-- https://mvnrepository.com/artifact/commons-logging/commons-logging -->
-	<dependency>
-	    <groupId>commons-logging</groupId>
-	    <artifactId>commons-logging</artifactId>
 	    <version>1.1</version>
 	</dependency>
   </dependencies>
@@ -95,6 +95,7 @@
             </plugin>
 			<plugin>
 				<artifactId>maven-jar-plugin</artifactId>
+				<version>2.6</version>
 				<executions>
 					<execution>
 						<id>default-jar</id>

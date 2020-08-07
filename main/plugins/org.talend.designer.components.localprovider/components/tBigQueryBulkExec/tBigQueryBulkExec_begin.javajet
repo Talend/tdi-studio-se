@@ -222,40 +222,87 @@
 	String secretKey = ElementParameterParser.getValue(node, "__GS_SECRET_KEY__");
 	String localFilename = ElementParameterParser.getValue(node, "__GS_LOCAL_FILE__");
 	String bucketName = ElementParameterParser.getValue(node, "__BUCKET_NAME__");
+	String authType = ElementParameterParser.getValue(node, "__AUTH_TYPE__");
+	boolean useServiceAccountForConnection = "GS_SERVICE_ACCOUNT".equals(authType);
+
+
 	if(!bulkFileAlreadyExists) {
-	%>
-		/* ----START-UPLOADING-FILE---- */
-        <%
-        passwordFieldName = "__GS_SECRET_KEY__";
-        %>
-        
-        <%if (ElementParameterParser.canEncrypt(node, passwordFieldName)) {%> 
-        	final String decryptedPwd_<%=cid%> = routines.system.PasswordEncryptUtil.decryptPassword(<%=ElementParameterParser.getEncryptedValue(node, passwordFieldName)%>);
-        <%} else {%>
-        	final String decryptedPwd_<%=cid%> = <%= ElementParameterParser.getValue(node, passwordFieldName)%>; 
-        <%}%>
+		if (!useServiceAccountForConnection){
+			%>
+			/* ----START-UPLOADING-FILE WITH HMAC ACCOUNT---- */
+			<%
+			passwordFieldName = "__GS_SECRET_KEY__";
+			%>
+			
+			<%if (ElementParameterParser.canEncrypt(node, passwordFieldName)) {%> 
+				final String decryptedPwd_<%=cid%> = routines.system.PasswordEncryptUtil.decryptPassword(<%=ElementParameterParser.getEncryptedValue(node, passwordFieldName)%>);
+			<%} else {%>
+				final String decryptedPwd_<%=cid%> = <%= ElementParameterParser.getValue(node, passwordFieldName)%>; 
+			<%}%>
 
 
-		org.jets3t.service.security.GSCredentials gsCredentials_<%=cid%> = new org.jets3t.service.security.GSCredentials(<%=accessKey%>, decryptedPwd_<%=cid%>);
-		<%final String GoogleTracker = org.talend.core.utils.TrackerUtil.getGoogleTracker();%>
-		org.jets3t.service.impl.rest.httpclient.GoogleStorageService gsService_<%=cid%> = new org.jets3t.service.impl.rest.httpclient.GoogleStorageService(gsCredentials_<%=cid%>," <%=GoogleTracker%>",null);
+			org.jets3t.service.security.GSCredentials gsCredentials_<%=cid%> = new org.jets3t.service.security.GSCredentials(<%=accessKey%>, decryptedPwd_<%=cid%>);
+			<%final String GoogleTracker = org.talend.core.utils.TrackerUtil.getGoogleTracker();%>
+			org.jets3t.service.impl.rest.httpclient.GoogleStorageService gsService_<%=cid%> = new org.jets3t.service.impl.rest.httpclient.GoogleStorageService(gsCredentials_<%=cid%>," <%=GoogleTracker%>",null);
 
-		java.io.File fileData_<%=cid%> = new java.io.File(<%=localFilename%>);
-		org.jets3t.service.model.GSObject fileObject_<%=cid%> = new org.jets3t.service.model.GSObject(fileData_<%=cid%>);
-		<%
-		if(isLog4jEnabled){
-		%>
-			log.info("<%=cid%> - Upload "+<%=localFilename%> + " to Google Service Bucket: "+<%=bucketName%>);
-		<%
-		}
-		%>
-		gsService_<%=cid%>.putObject(<%=bucketName%>, fileObject_<%=cid%>);
-		/* ----END-UPLOADING-FILE---- */
-		<%
-		if(isLog4jEnabled){
-		%>
-			log.info("<%=cid%> - Upload Done.");
-		<%
+			java.io.File fileData_<%=cid%> = new java.io.File(<%=localFilename%>);
+			org.jets3t.service.model.GSObject fileObject_<%=cid%> = new org.jets3t.service.model.GSObject(fileData_<%=cid%>);
+			<%
+			if(isLog4jEnabled){
+			%>
+				log.info("<%=cid%> - Upload "+<%=localFilename%> + " to Google Service Bucket: "+<%=bucketName%>);
+			<%
+			}
+			%>
+			gsService_<%=cid%>.putObject(<%=bucketName%>, fileObject_<%=cid%>);
+			/* ----END-UPLOADING-FILE---- */
+			<%
+			if(isLog4jEnabled){
+			%>
+				log.info("<%=cid%> - Upload Done.");
+			<%
+			}
+		} else {
+			String pathToServerAccoutKeyFile = ElementParameterParser.getValue(node, "__GS_SERVICE_ACCOUNT_KEY__");
+			%>
+			/* ----START-UPLOADING-FILE WITH SERVICE ACCOUNT---- */
+			com.google.cloud.storage.Storage storage_<%=cid%> = null;
+			com.google.auth.Credentials credential_<%=cid%> = null;
+			try {
+				credential_<%=cid%> = com.google.auth.oauth2.GoogleCredentials
+						.fromStream(new java.io.FileInputStream(<%=pathToServerAccoutKeyFile%>));
+			} catch (IOException e_<%=cid%>) {
+				<%
+				if (("true").equals(dieOnError)) {
+				%>
+					throw(e_<%=cid%>);
+				<%
+				}
+				%>
+				<%
+				if(isLog4jEnabled){
+				%>
+					log.error("<%=cid%> - Exception in component <%=cid%>.", e_<%=cid%>);
+				<%
+				}
+				%>
+			}
+			com.google.cloud.storage.StorageOptions.Builder builder = com.google.cloud.storage.StorageOptions.newBuilder();
+			storage_<%=cid%> = builder.setCredentials(credential_<%=cid%>).build().getService();
+
+			java.io.File file_<%=cid%> = new java.io.File(<%=localFilename%>);
+
+			com.google.cloud.storage.BlobInfo blobInfo_<%=cid%> = com.google.cloud.storage.BlobInfo.
+							newBuilder(<%=bucketName%>, file_<%=cid%>.getName()).build();
+			storage_<%=cid%>.create(blobInfo_<%=cid%>, java.nio.file.Files.readAllBytes(file_<%=cid%>.toPath()));
+			<%
+			if(isLog4jEnabled){
+			%>
+				log.info("<%=cid%> - Upload Done.");
+			<%
+			}
+			%>
+			<%
 		}
 	}
 	%>

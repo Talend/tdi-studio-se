@@ -169,7 +169,7 @@ imports="
 		encrypt = "true".equals(ElementParameterParser.getValue(current_node, "__ENCRYPT__"));
 		encryptionKeyPropertyName = "__ENCRYPTED_KEY_BASE64__";
 	}
-	if(encrypt) {
+	if(!"PARQUET".equals(exportType) && encrypt) {
 %>
 		.append(";master_symmetric_key=")
 <%
@@ -186,7 +186,12 @@ imports="
 %>
 	.append("' ")
 <%
-	if(encrypt) {
+    if("PARQUET".equals(exportType)) {
+%>
+        .append("FORMAT PARQUET ")
+<%
+    }
+	if(!"PARQUET".equals(exportType) && encrypt) {
 %>
 		.append("ENCRYPTED ")
 <%
@@ -209,20 +214,20 @@ imports="
 	}
 	
 	boolean compressed = "true".equals(ElementParameterParser.getValue(node, "__COMPRESS__"));
-	if(compressed) {
+	if(!"PARQUET".equals(exportType) && compressed) {
 		String compression = ElementParameterParser.getValue(node, "__COMPRESSION__");
 %>
 		.append("<%=compression%> ")
 <%
 	}
-	
-	boolean escape = "true".equals(ElementParameterParser.getValue(node, "__ESCAPE__"));
-	if(escape) {
+	if(!"PARQUET".equals(exportType)) {
+        boolean escape = "true".equals(ElementParameterParser.getValue(node, "__ESCAPE__"));
+        if(escape) {
 %>
-		.append("ESCAPE ")
+            .append("ESCAPE ")
 <%
+        }
 	}
-	
 	boolean allowOverwrite = "true".equals(ElementParameterParser.getValue(node, "__ALLOWOVERWRITE__"));
 	if(allowOverwrite) {
 %>
@@ -236,14 +241,15 @@ imports="
 		.append("PARALLEL OFF ")
 <%
 	}
-	
-	boolean specifyNullString = "true".equals(ElementParameterParser.getValue(node, "__SPECIFY_NULL_STRING__"));
-	if(specifyNullString) {
-		String nullString = ElementParameterParser.getValue(node, "__NULL_STRING__");
+    if(!"PARQUET".equals(exportType)) {
+        boolean specifyNullString = "true".equals(ElementParameterParser.getValue(node, "__SPECIFY_NULL_STRING__"));
+        if(specifyNullString) {
+            String nullString = ElementParameterParser.getValue(node, "__NULL_STRING__");
 %>
-		.append("NULL '").append(<%=nullString%>).append("' ")
+            .append("NULL '").append(<%=nullString%>).append("' ")
 <%
-	}
+        }
+    }
 %>
 	;
 	
