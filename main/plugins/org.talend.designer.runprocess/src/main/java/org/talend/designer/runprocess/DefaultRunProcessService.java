@@ -752,6 +752,7 @@ public class DefaultRunProcessService implements IRunProcessService {
         };
         workUnit.setAvoidUnloadResources(true);
         ProxyRepositoryFactory.getInstance().executeRepositoryWorkUnit(workUnit);
+
     }
 
     @Override
@@ -995,6 +996,17 @@ public class DefaultRunProcessService implements IRunProcessService {
     @Override
     public boolean isExcludeDeletedItems(Property property) {
         return PomIdsHelper.getIfExcludeDeletedItems(property);
+    }
+
+    @Override
+    public void syncAllPoms() {
+        // https://jira.talendforge.org/browse/TUP-28204
+        try {
+            AggregatorPomsHelper helper = new AggregatorPomsHelper();
+            helper.syncAllPoms();
+        } catch (Exception e) {
+            ExceptionHandler.process(e);
+        }
     }
 
 }

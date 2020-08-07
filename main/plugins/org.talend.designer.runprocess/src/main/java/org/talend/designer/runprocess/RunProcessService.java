@@ -514,4 +514,8 @@ public class RunProcessService implements IRunProcessService {
         return delegateService.isExcludeDeletedItems(property);
     }
 
+    @Override
+    public void syncAllPoms() {
+        delegateService.syncAllPoms();
+    }
 }
