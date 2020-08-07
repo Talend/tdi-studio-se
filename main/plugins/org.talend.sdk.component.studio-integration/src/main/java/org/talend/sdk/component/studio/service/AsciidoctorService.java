@@ -24,6 +24,7 @@ import org.asciidoctor.Asciidoctor;
 import org.asciidoctor.AttributesBuilder;
 import org.asciidoctor.Options;
 import org.asciidoctor.OptionsBuilder;
+import org.asciidoctor.jruby.internal.JRubyAsciidoctor;
 import org.jruby.RubyInstanceConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -62,7 +63,7 @@ public class AsciidoctorService {
             final RubyInstanceConfig config = new RubyInstanceConfig();
             config.setLoader(Thread.currentThread().getContextClassLoader());
             try {
-                instance = Asciidoctor.Factory.create(singletonList("uri:classloader:/gems/asciidoctor-1.5.7.1/lib"));
+                instance = JRubyAsciidoctor.create(singletonList("uri:classloader:/gems/asciidoctor-2.0.10/lib"));
             } catch (final Throwable e) {
                 LOGGER.error("Can't load asciidoctor. Components documentation will not be available", e);
             } finally {
