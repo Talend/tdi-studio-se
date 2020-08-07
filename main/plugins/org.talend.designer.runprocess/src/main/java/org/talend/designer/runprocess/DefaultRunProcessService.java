@@ -1003,7 +1003,7 @@ public class DefaultRunProcessService implements IRunProcessService {
         // https://jira.talendforge.org/browse/TUP-28204
         try {
             AggregatorPomsHelper helper = new AggregatorPomsHelper();
-            helper.syncAllPoms();
+            helper.syncAllPomsWithoutProgress(new NullProgressMonitor());
         } catch (Exception e) {
             ExceptionHandler.process(e);
         }
