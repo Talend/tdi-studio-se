@@ -19,12 +19,14 @@ import org.eclipse.jface.dialogs.TrayDialog;
 import org.eclipse.jface.fieldassist.ContentProposalAdapter;
 import org.eclipse.jface.fieldassist.IControlContentAdapter;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.VerifyKeyListener;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.VerifyEvent;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
@@ -228,6 +230,18 @@ public class EltExpressionComposite extends ExpressionComposite {
             contentProposalAdapter.setAutoActivationDelay(10);
             contentProposalAdapter.setPopupSize(new Point(300, 200));
 
+            textControl.addVerifyKeyListener(new VerifyKeyListener() {
+
+                public void verifyKey(VerifyEvent verifyEvent) {
+                    if (verifyEvent.character == '\r' && contentProposalAdapter != null
+                            && contentProposalAdapter.isProposalOpened()) {
+                        verifyEvent.doit = false;
+                    } else {
+                        verifyEvent.doit = true;
+                    }
+                }
+
+            });
         } catch (Exception e) {
             ExceptionHandler.process(e);
         }
