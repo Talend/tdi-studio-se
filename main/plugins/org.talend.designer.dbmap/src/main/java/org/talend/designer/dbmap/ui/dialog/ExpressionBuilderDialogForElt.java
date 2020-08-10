@@ -63,12 +63,6 @@ import org.talend.expressionbuilder.model.CategoryManager;
 import org.talend.repository.model.RepositoryConstants;
 import org.xml.sax.SAXException;
 
-/**
- * yzhang class global comment. Detailled comment <br/>
- *
- * $Id: ExpressionBuilderDialog.java ä¸Šå�ˆ10:12:13 2007-7-24 +0000 (2007-7-24) yzhang $
- *
- */
 public class ExpressionBuilderDialogForElt extends TrayDialog implements IExpressionBuilderDialogController {
 
     private static final int EXPORT_ID = IDialogConstants.CLIENT_ID + 22;
@@ -142,19 +136,8 @@ public class ExpressionBuilderDialogForElt extends TrayDialog implements IExpres
 
         expressionComposite = new EltExpressionComposite(this, upperSashform, SWT.NONE, dataBean, mapperManager);
         expressionComposite.setExpression(defaultExpression, true);
-        //
-        // testComposite = new TestComposite(upperSashform, SWT.NONE);
-        // testComposite.addVariables(defaultVariables);
-        // upperSashform.setWeights(new int[] { 3, 2 });
-        //
-        // final Composite lowerComposite = new Composite(sashForm, SWT.NONE);
-        // lowerComposite.setLayout(new FillLayout());
-        //
-        // categoryComposite = new CategoryComposite(lowerComposite, SWT.NONE, manager);
-        //
         final GridData gridData = new GridData(SWT.FILL, SWT.FILL, true, true);
         sashForm.setLayoutData(gridData);
-        // sashForm.setWeights(new int[] { 3, 2 });
 
         return container;
     }
@@ -324,15 +307,11 @@ public class ExpressionBuilderDialogForElt extends TrayDialog implements IExpres
      */
     @Override
     public boolean close() {
-        // if (testComposite != null) {
-        // testComposite.stopServerThread();
-        // }
         if (isESCClose) {
             if (defaultExpression != null && !defaultExpression.equals(newExpression())) {
                 boolean flag = MessageDialog.openConfirm(getParentShell(), Messages.getString("ExpressionBuilderDialog.message"),
                         Messages.getString("ExpressionBuilderDialog.Confirm"));
                 if (!flag) {
-                    // categoryComposite.setFocus();
                     return false;
                 }
             }

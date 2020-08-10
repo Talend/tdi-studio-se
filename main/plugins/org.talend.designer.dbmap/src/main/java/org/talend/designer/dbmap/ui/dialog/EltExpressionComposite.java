@@ -52,9 +52,6 @@ import org.talend.designer.rowgenerator.data.FunctionManager;
 import org.talend.designer.rowgenerator.data.Parameter;
 import org.talend.expressionbuilder.ui.ExpressionRecorder;
 
-/**
- * DOC hcyi class global comment. Detailled comment
- */
 public class EltExpressionComposite extends ExpressionComposite {
 
     private MapperManager mapperManager;
@@ -113,8 +110,6 @@ public class EltExpressionComposite extends ExpressionComposite {
 
         });
 
-        // final Button wrapButton = new Button(upperOperationButtonBar, SWT.NONE);
-        // wrapButton.setText("Wrap");
 
         final Button clearButton = new Button(upperOperationButtonBar, SWT.NONE);
         clearButton.setText(Messages.getString("ExpressionComposite.clear")); //$NON-NLS-1$
@@ -220,6 +215,7 @@ public class EltExpressionComposite extends ExpressionComposite {
             ExpressionProposalProvider contentProposalProvider = new ExpressionProposalProvider(mapperManager, null);
             contentProposalProvider.init(null, new Zone[] { Zone.INPUTS, Zone.OUTPUTS }, null);
 
+            // create proposal page
             ContentProposalAdapterExtended contentProposalAdapter = new ContentProposalAdapterExtended(textControl,
                     controlContentAdapter,
                     contentProposalProvider, keyStroke, null);
@@ -230,6 +226,7 @@ public class EltExpressionComposite extends ExpressionComposite {
             contentProposalAdapter.setAutoActivationDelay(10);
             contentProposalAdapter.setPopupSize(new Point(300, 200));
 
+            // add listener to avoid input \r when try press enter to choose proposal
             textControl.addVerifyKeyListener(new VerifyKeyListener() {
 
                 public void verifyKey(VerifyEvent verifyEvent) {

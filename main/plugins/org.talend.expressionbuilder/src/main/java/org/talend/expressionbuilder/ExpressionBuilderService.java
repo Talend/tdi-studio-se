@@ -63,5 +63,4 @@ public class ExpressionBuilderService implements IExpressionBuilderDialogService
             INode component, boolean isBatch) {
         return new BatchExpressionBuilderDialog(parent.getShell(), dataBean, component);
     }
-
 }

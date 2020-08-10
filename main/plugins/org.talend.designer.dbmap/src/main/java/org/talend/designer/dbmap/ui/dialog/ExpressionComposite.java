@@ -78,10 +78,6 @@ public class ExpressionComposite extends Composite {
 
     protected TextTransfer textTransfer = TextTransfer.getInstance();
 
-    /**
-     * DOC yzhang ExpressionComposite class global comment. Detailled comment <br/>
-     *
-     */
     class ButtonListener extends MouseAdapter {
 
         /*
@@ -180,8 +176,6 @@ public class ExpressionComposite extends Composite {
 
         });
 
-        // final Button wrapButton = new Button(upperOperationButtonBar, SWT.NONE);
-        // wrapButton.setText("Wrap");
 
         final Button clearButton = new Button(upperOperationButtonBar, SWT.NONE);
         clearButton.setText(Messages.getString("ExpressionComposite.clear")); //$NON-NLS-1$
@@ -204,7 +198,6 @@ public class ExpressionComposite extends Composite {
             }
         });
 
-        // ColorManager colorManager = new ColorManager(CorePlugin.getDefault().getPreferenceStore());
         Composite composite = new Composite(expressionGroup, SWT.BORDER);
         composite.setLayoutData(new GridData(GridData.FILL_BOTH));
         GridLayout layout = new GridLayout();
@@ -215,15 +208,10 @@ public class ExpressionComposite extends Composite {
         layout.marginHeight = 0;
         layout.marginWidth = 0;
         composite.setLayout(layout);
-        // text = new ColorStyledText(composite, SWT.BORDER | SWT.MULTI | SWT.WRAP | SWT.V_SCROLL, colorManager,
-        // LanguageManager.getCurrentLanguage().getName());
         viewer = TalendJavaSourceViewer.createViewerWithVariables(composite, SWT.BORDER | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL
                 | SWT.WRAP, dataBean);
 
         textControl = viewer.getTextWidget();
-        // int ops = DND.DROP_COPY | DND.DROP_MOVE;
-        // DropTargetListener dropLisenter = new SnippetDropTargetListener(viewer, null, null, null);
-        // viewer.addDropSupport(ops, new Transfer[] { LocalSelectionTransfer.getTransfer() }, dropLisenter);
 
         document = viewer.getDocument();
         textControl.setWordWrap(wrapButton.getSelection());
@@ -241,54 +229,9 @@ public class ExpressionComposite extends Composite {
 
         });
 
-        // gcui create DND in Expression Editor.
-        // This is ExpressionComposite drop.
 
         DropTarget target = new DropTarget(textControl, DND.DROP_DEFAULT | DND.DROP_COPY);
         target.setTransfer(new Transfer[] { textTransfer });
-        // target.addDropListener(new DropTargetListener() {
-        //
-        // @Override
-        // public void dragEnter(DropTargetEvent event) {
-        //
-        // if (event.detail == DND.DROP_DEFAULT) {
-        // event.detail = DND.DROP_COPY;
-        // }
-        //
-        // }
-        //
-        // @Override
-        // public void dragOver(DropTargetEvent event) {
-        // // event.feedback = DND.FEEDBACK_NONE;
-        // }
-        //
-//            @Override
-        // public void dragOperationChanged(DropTargetEvent event) {
-//
-        // if (event.detail == DND.DROP_DEFAULT) {
-        // event.detail = DND.DROP_COPY;
-//                }
-//            }
-        //
-        // @Override
-        // public void dragLeave(DropTargetEvent event) {
-        // }
-        //
-        // @Override
-        // public void dropAccept(DropTargetEvent event) {
-        // }
-        //
-        //// @Override
-        //// public void drop(DropTargetEvent event) {
-        ////
-        //// if (textTransfer.isSupportedType(event.currentDataType)) {
-        //// String str = (String) event.data;
-        //// modificationRecord.pushRecored(textControl.getText() + str);
-        //// ExpressionComposite expressionComposite = ExpressionBuilderDialog.getExpressionComposite();
-        //// expressionComposite.setExpression(str, true);
-        //// }
-        //// }
-        // });
 
         final Composite lowerOperationButtonBar = new Composite(expressionGroup, SWT.NONE);
         final GridData gridData = new GridData(GridData.FILL_HORIZONTAL);
@@ -373,9 +316,6 @@ public class ExpressionComposite extends Composite {
 
     }
 
-    /**
-     * yzhang Comment method "undoOperation".
-     */
     public void undoOperation() {
 
         modificationRecord.undo();
@@ -432,11 +372,6 @@ public class ExpressionComposite extends Composite {
         }
     }
 
-    /**
-     * yzhang Comment method "getExpression".
-     *
-     * @return
-     */
     public String getReplaceExpression() {
         if (document != null) {
             IRegion region = viewer.getViewerRegion();
@@ -467,11 +402,6 @@ public class ExpressionComposite extends Composite {
         return null;
     }
 
-    /**
-     * yzhang Comment method "setExpression".
-     *
-     * @param expression
-     */
     public void setExpression(String expression, boolean append) {
         if (document != null) {
             if (append) {
@@ -492,21 +422,10 @@ public class ExpressionComposite extends Composite {
         }
     }
 
-    /**
-     * Sets the replacedText.
-     *
-     * @param replacedText the replacedText to set
-     */
     public void setReplacedText(String replacedText) {
         this.replacedText = replacedText;
     }
 
-    /**
-     * yzhang Comment method "replacedContent".
-     *
-     * @param content
-     * @param position
-     */
     public void replacedContent(String content, Point position) {
         if (replacedText.startsWith("*")) { //$NON-NLS-1$
             textControl.setSelection(position.x, position.x);
