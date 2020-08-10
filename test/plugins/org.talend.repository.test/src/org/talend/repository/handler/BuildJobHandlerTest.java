@@ -25,7 +25,6 @@ import org.eclipse.core.runtime.Platform;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.talend.commons.CommonsPlugin;
 import org.talend.commons.exception.PersistenceException;
 import org.talend.core.CorePlugin;
 import org.talend.core.GlobalServiceRegister;
@@ -147,7 +146,6 @@ public class BuildJobHandlerTest {
         initExportChoice();
 
         destinationPaths = new ArrayList<>();
-        CommonsPlugin.setMavenOfflineState(false);
     }
 
     @Test
@@ -401,7 +399,6 @@ public class BuildJobHandlerTest {
             }
             destinationPaths.clear();
         }
-        CommonsPlugin.setMavenOfflineState(true);
     }
 
 }
