@@ -87,10 +87,10 @@ if ((metadatas!=null)&&(metadatas.size()>0)) {
 			log.info("<%=cid%> - Authentication using an interactive action.");
 		<%}%>
 		
-		        client_<%=cid%>.setUserInteraction(new UserInteraction() {
+		        client_<%=cid%>.setUserInteraction(new org.apache.sshd.client.auth.keyboard.UserInteraction() {
 
             @Override
-            public String[] interactive(ClientSession clientSession, String name, String instruction, String lang, String[] prompt,
+            public String[] interactive(org.apache.sshd.client.session.ClientSession clientSession, String name, String instruction, String lang, String[] prompt,
                     boolean[] echo) {
 					
 					<% String passwordFieldName = "__PASSWORD__"; %>
@@ -102,7 +102,7 @@ if ((metadatas!=null)&&(metadatas.size()>0)) {
                 return reply;
             }
 
-            @Override public String getUpdatedPassword(ClientSession clientSession, String prompt, String lang) {
+            @Override public String getUpdatedPassword(org.apache.sshd.client.session.ClientSession clientSession, String prompt, String lang) {
                 throw new IllegalStateException("getUpdatedPassword(" + clientSession + ")[" + prompt + "] unexpected call");
             }
         });
