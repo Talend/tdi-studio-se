@@ -104,10 +104,10 @@ public class UpdateSeparatorAndEscapeForDatasetAPI extends AbstractJobMigrationT
         	String separator = ComponentUtilities.getNodePropertyValue(node, TEXTENCLOSURE);
         	if (isCSV) {
         		if ("\"\"\"".equals(escape)) {
-        			ComponentUtilities.setNodeValue(node, ESCAPE, "\"");
+        			ComponentUtilities.setNodeValue(node, ESCAPE, "\"\\\"\"");//"\"\\\"\"" is printed "\"" in UI
         		}
         		if ("\"\"\"".equals(separator)) {
-        			ComponentUtilities.setNodeValue(node, TEXTENCLOSURE, "\"");
+        			ComponentUtilities.setNodeValue(node, TEXTENCLOSURE, "\"\\\"\"");
         		}
         	}
         }
