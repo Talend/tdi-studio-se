@@ -47,6 +47,9 @@ import org.talend.commons.ui.runtime.expressionbuilder.IExpressionBuilderDialogC
 import org.talend.commons.ui.runtime.expressionbuilder.IExpressionDataBean;
 import org.talend.commons.ui.runtime.image.EImage;
 import org.talend.commons.ui.runtime.image.ImageProvider;
+import org.talend.commons.ui.swt.proposal.ExtendedTextCellEditorWithProposal;
+import org.talend.commons.ui.swt.tableviewer.TableViewerCreator;
+import org.talend.commons.ui.swt.tableviewer.TableViewerCreatorColumn;
 import org.talend.core.CorePlugin;
 import org.talend.core.context.Context;
 import org.talend.core.context.RepositoryContext;
@@ -76,7 +79,7 @@ public class ExpressionBuilderDialogForElt extends TrayDialog implements IExpres
 
     protected CategoryManager manager = new CategoryManager();
 
-    protected final IExpressionDataBean dataBean;
+    protected final ExtendedTextCellEditorWithProposal dataBean;
 
     protected String defaultExpression = ""; //$NON-NLS-1$
 
@@ -94,12 +97,18 @@ public class ExpressionBuilderDialogForElt extends TrayDialog implements IExpres
 
     private MapperManager mapperManager;
 
+    private TableViewerCreator tableViewerCreator;
+
+    private TableViewerCreatorColumn column;
+
     /**
      * Create the dialog
      *
      * @param parentShell
      */
-    public ExpressionBuilderDialogForElt(Shell parentShell, IExpressionDataBean dataBean, MapperManager mapperManager) {
+    public ExpressionBuilderDialogForElt(Shell parentShell, ExtendedTextCellEditorWithProposal dataBean,
+            MapperManager mapperManager,
+            TableViewerCreator tableViewerCreator, TableViewerCreatorColumn column) {
         super(parentShell);
         this.nodeStyle = parentShell.toString();
 
@@ -107,6 +116,8 @@ public class ExpressionBuilderDialogForElt extends TrayDialog implements IExpres
         this.dataBean = dataBean;
         this.component = mapperManager.getComponent();
         this.mapperManager = mapperManager;
+        this.tableViewerCreator = tableViewerCreator;
+        this.column = column;
     }
 
     /**
@@ -386,6 +397,11 @@ public class ExpressionBuilderDialogForElt extends TrayDialog implements IExpres
             dataBean.setConsumerExpression(expression + " "); //$NON-NLS-1$
         }
         isESCClose = false;
+        // to trigger refresh sql tab view
+        int previousActivatedIndex = dataBean.getCommonTextEditor().getPreviousActivatedIndex();
+        tableViewerCreator.getTableViewer()
+                .editElement(this.tableViewerCreator.getTableViewer().getElementAt(previousActivatedIndex),
+                column.getIndex());
         super.okPressed();
     }
 

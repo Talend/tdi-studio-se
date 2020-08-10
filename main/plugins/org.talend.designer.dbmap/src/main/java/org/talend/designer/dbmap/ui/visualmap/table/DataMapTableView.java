@@ -88,10 +88,7 @@ import org.talend.commons.utils.data.list.IListenableListListener;
 import org.talend.commons.utils.data.list.ListenableListEvent;
 import org.talend.commons.utils.data.list.ListenableListEvent.TYPE;
 import org.talend.commons.utils.threading.ExecutionLimiter;
-import org.talend.core.GlobalServiceRegister;
-import org.talend.core.IService;
 import org.talend.core.model.process.Problem;
-import org.talend.core.runtime.services.IExpressionBuilderDialogService;
 import org.talend.core.ui.metadata.editor.MetadataTableEditorView;
 import org.talend.designer.abstractmap.model.table.IDataMapTable;
 import org.talend.designer.abstractmap.model.tableentry.IColumnEntry;
@@ -1474,8 +1471,6 @@ public abstract class DataMapTableView extends Composite implements IDataMapTabl
 
     protected ExtendedTextCellEditorWithProposal createExpressionCellEditor(final TableViewerCreator tableViewerCreator,
             TableViewerCreatorColumn column, final Zone[] zones, boolean isConstraintExpressionCellEditor) {
-        IService expressionBuilderDialogService = GlobalServiceRegister.getDefault()
-                .getService(IExpressionBuilderDialogService.class);
         CellEditorDialogBehavior behavior = new CellEditorDialogBehavior();
         final ExtendedTextCellEditorWithProposal cellEditor = new ExtendedTextCellEditorWithProposal(
                 tableViewerCreator.getTable(), SWT.MULTI | SWT.BORDER, column, behavior) {
@@ -1486,7 +1481,8 @@ public abstract class DataMapTableView extends Composite implements IDataMapTabl
             }
 
         };
-        dialog = new ExpressionBuilderDialogForElt(tableViewerCreator.getCompositeParent().getShell(), cellEditor, mapperManager);
+        dialog = new ExpressionBuilderDialogForElt(tableViewerCreator.getCompositeParent().getShell(), cellEditor, mapperManager,
+                tableViewerCreator, column);
 
         behavior.setCellEditorDialog(dialog);
 
