@@ -42,6 +42,7 @@ import java.util.zip.ZipInputStream;
 
 import org.apache.commons.codec.binary.Base64InputStream;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IMarker;
@@ -218,6 +219,8 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
     private String jobId;
 
     private String jobVersion;
+
+    private static final Logger LOGGER = Logger.getLogger(JavaProcessor.class);
 
     /**
      * Set current status.
@@ -1715,13 +1718,21 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
                 }
             }
         }
-        // if not check or the value is empty, should use preference
-        if (string == null || "".equals(string)) { //$NON-NLS-1$
-            string = RunProcessPlugin.getDefault().getPreferenceStore().getString(RunProcessPrefsConstants.VMARGUMENTS);
+        // https://jira.talendforge.org/browse/TUP-27374
+        String[] vmargs = null;
+        try {
+            // if not check or the value is empty, should use preference
+            if (string == null || "".equals(string)) { //$NON-NLS-1$
+                string = RunProcessPlugin.getDefault().getPreferenceStore().getString(RunProcessPrefsConstants.VMARGUMENTS);
+            }
+            String replaceAll = string.trim();
+            List<String> vmList = new JobVMArgumentsUtil().readString(replaceAll);
+            vmargs = vmList.toArray(new String[0]);
+        } catch (Exception e) {
+            LOGGER.debug(e.getMessage(), e);
+            // UI can not be loaded, use default jvm args
+            vmargs = JobVMArgumentsUtil.DEFAULT_JVM_ARGS;
         }
-        String replaceAll = string.trim();
-        List<String> vmList = new JobVMArgumentsUtil().readString(replaceAll);
-        String[] vmargs = vmList.toArray(new String[0]);
         return vmargs;
     }
 
