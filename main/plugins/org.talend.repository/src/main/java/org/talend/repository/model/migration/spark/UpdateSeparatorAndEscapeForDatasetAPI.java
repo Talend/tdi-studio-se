@@ -96,18 +96,18 @@ public class UpdateSeparatorAndEscapeForDatasetAPI extends AbstractJobMigrationT
 
     	private String ISCSV = "CSV_OPTION"; //$NON-NLS-1$
         private String ESCAPE = "ESCAPE_CHAR"; //$NON-NLS-1$
-        private String SEPARATOR = "FIELDSEPARATOR"; //$NON-NLS-1$
+        private String TEXTENCLOSURE = "TEXT_ENCLOSURE"; //$NON-NLS-1$
         
         public void transform(NodeType node) {
         	boolean isCSV = "true".equals(ComponentUtilities.getNodePropertyValue(node, ISCSV));
         	String escape = ComponentUtilities.getNodePropertyValue(node, ESCAPE);
-        	String separator = ComponentUtilities.getNodePropertyValue(node, SEPARATOR);
+        	String separator = ComponentUtilities.getNodePropertyValue(node, TEXTENCLOSURE);
         	if (isCSV) {
         		if ("\"\"\"".equals(escape)) {
-        			ComponentUtilities.setNodeValue(node, ESCAPE, "\"");
+        			ComponentUtilities.setNodeValue(node, ESCAPE, "\"\\\"\"");//"\"\\\"\"" is printed "\"" in UI
         		}
         		if ("\"\"\"".equals(separator)) {
-        			ComponentUtilities.setNodeValue(node, SEPARATOR, "\"");
+        			ComponentUtilities.setNodeValue(node, TEXTENCLOSURE, "\"\\\"\"");
         		}
         	}
         }
