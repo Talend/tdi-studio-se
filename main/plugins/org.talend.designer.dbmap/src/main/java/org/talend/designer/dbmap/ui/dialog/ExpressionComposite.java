@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2020 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -53,7 +53,7 @@ import org.talend.expressionbuilder.ui.ExpressionBuilderDialog;
 import org.talend.expressionbuilder.ui.ExpressionRecorder;
 
 /**
- * DOC yzhang class global comment. Detailled comment <br/>
+ * DOC hzhao class global comment. Detailled comment <br/>
  *
  */
 public class ExpressionComposite extends Composite {
@@ -148,7 +148,7 @@ public class ExpressionComposite extends Composite {
         upperOperationButtonBar.setData("nsd", null); //$NON-NLS-1$
 
         final Button wrapButton = new Button(upperOperationButtonBar, SWT.CHECK);
-        wrapButton.setText("Wrap"); //$NON-NLS-1$
+        wrapButton.setText(Messages.getString("ExpressionComposite.Wrap")); //$NON-NLS-1$
         wrapButton.setSelection(true);
         wrapButton.addSelectionListener(new SelectionAdapter() {
 
@@ -159,7 +159,7 @@ public class ExpressionComposite extends Composite {
 
         });
         final Button undoButton = new Button(upperOperationButtonBar, SWT.NONE);
-        undoButton.setText("Undo(Ctrl + Z)"); //$NON-NLS-1$
+        undoButton.setText(Messages.getString("ExpressionComposite.undo") + "(Ctrl + Z)"); //$NON-NLS-1$
         undoButton.setEnabled(false);
         modificationRecord = new ExpressionRecorder(undoButton);
         undoButton.addMouseListener(new MouseAdapter() {

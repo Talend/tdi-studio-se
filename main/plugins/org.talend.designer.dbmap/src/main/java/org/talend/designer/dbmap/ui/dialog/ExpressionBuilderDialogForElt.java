@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2020 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -154,12 +154,6 @@ public class ExpressionBuilderDialogForElt extends TrayDialog implements IExpres
         isESCClose = true;
     }
 
-    /**
-     * yzhang ExpressionBuilderDialog class global comment. Detailled comment <br/>
-     *
-     * $Id: ExpressionBuilderDialog.java ä¸‹å�ˆ08:32:27 2007-9-13 +0000 (2007-9-13) yzhang $
-     *
-     */
     class UndoKeyListener extends KeyAdapter {
 
         /*
@@ -176,11 +170,6 @@ public class ExpressionBuilderDialogForElt extends TrayDialog implements IExpres
 
     }
 
-    /**
-     * yzhang Comment method "addUndoOperationListener".
-     *
-     * @param composite
-     */
     protected void addUndoOperationListener(Composite composite) {
         if (composite != null) {
             Control controls[] = composite.getChildren();
@@ -367,7 +356,7 @@ public class ExpressionBuilderDialogForElt extends TrayDialog implements IExpres
         }
         if (sub.equals("tRowGenerator")) { //$NON-NLS-1$
             expression = expressionComposite.getReplaceExpression().trim();
-            expressionForTable = expression; // hywang add for 9225
+            expressionForTable = expression;
         } else {
             expression = expressionComposite.getExpression().trim();
             expressionForTable = expression;
@@ -444,11 +433,6 @@ public class ExpressionBuilderDialogForElt extends TrayDialog implements IExpres
         defaultVariables = variables;
     }
 
-    /**
-     * yzhang Comment method "getExpressionStorePath".
-     *
-     * @return
-     */
     protected String getExpressionStorePath() {
         IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
         RepositoryContext repositoryContext = (RepositoryContext) CorePlugin.getContext().getProperty(

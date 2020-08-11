@@ -220,8 +220,6 @@ public abstract class DataMapTableView extends Composite implements IDataMapTabl
 
     private IExpressionBuilderDialogController dialog;
 
-    private static final int ExpressionBuilderForElt = 1;
-    // protected GridData tableForConstraintsGridData;
 
     /**
      *
