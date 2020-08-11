@@ -311,7 +311,7 @@
 	%>
 		boolean isHasSubnetId_<%=cid%> = <%=isHasSubnetId %>;
 		if(!isHasSubnetId_<%=cid%>) {
-			throw new RuntimeException("You must specify the subnet ID when you launch an EMR cluster with multiple master nodes.");
+			throw new RuntimeException("The subnet ID must be specified while using multiple master nodes.");
 		}
 		
 		if(property_json_validated_<%=cid%>) {
