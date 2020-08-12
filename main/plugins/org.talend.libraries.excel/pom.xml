@@ -75,18 +75,18 @@
 							<artifactItems>
 								<artifactItem>
                                     <groupId>${talend.groupid}</groupId>
-                                    <artifactId>simpleexcel-2.2-20190722</artifactId>
-                                    <version>${talend.version.600}</version>
+                                    <artifactId>simpleexcel</artifactId>
+                                    <version>2.3-20200806</version>
                                 </artifactItem>
                                 <artifactItem>
                                     <groupId>${talend.groupid}</groupId>
-                                    <artifactId>talendMsgMailUtil-1.1-20191012</artifactId>
-                                    <version>${talend.version.600}</version>
+                                    <artifactId>talendMsgMailUtil</artifactId>
+                                    <version>1.2-20200608</version>
                                 </artifactItem>
                                 <artifactItem>
                                     <groupId>${talend.groupid}</groupId>
-                                    <artifactId>talendExcel-1.5-20200825</artifactId>
-                                    <version>${talend.version.600}</version>
+                                    <artifactId>talendExcel</artifactId>
+                                    <version>1.6-20200728</version>
                                 </artifactItem>
 							</artifactItems>
 						</configuration>
