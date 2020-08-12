@@ -57,6 +57,8 @@ if ((metadatas!=null)&&(metadatas.size()>0)) {
 		<%}%>
 		client_<%=cid%>.setUserAuthFactories(java.util.Collections.singletonList(org.apache.sshd.client.auth.pubkey.UserAuthPublicKeyFactory.INSTANCE));
 		java.nio.file.Path privateKey_<%=cid%> = java.nio.file.Paths.get(<%=privatekey%>);
+		java.util.List<String> lines_<%=cid%> = java.nio.file.Files.readAllLines(privateKey_tSSH_1);
+		
 		 org.apache.sshd.common.util.security.bouncycastle.BouncyCastleGeneratorHostKeyProvider keyProvider_<%=cid%> =
                 new org.apache.sshd.common.util.security.bouncycastle.BouncyCastleGeneratorHostKeyProvider(privateKey_<%=cid%>)
 
@@ -74,6 +76,12 @@ if ((metadatas!=null)&&(metadatas.size()>0)) {
                         return keyPairs;
                     }
                 };
+		if (lines_<%=cid%>.size()>0) {
+            String[] line_<%=cid%> = lines_<%=cid%>.get(0).split(" ");
+            if ("-----BEGIN".equals(line_<%=cid%>[0])) {
+                keyProvider_<%=cid%>.setAlgorithm(line_<%=cid%>[1]);
+            }
+        }
 				client_<%=cid%>.setKeyIdentityProvider(keyProvider_<%=cid%>);
 				
         <%}%>

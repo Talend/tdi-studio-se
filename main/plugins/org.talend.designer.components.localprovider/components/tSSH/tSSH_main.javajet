@@ -47,6 +47,7 @@ if ((metadatas!=null)&&(metadatas.size()>0)) {
             session_<%=cid%>.auth().verify();
         }catch (org.apache.sshd.common.SshException se_<%=cid%>){
 		    globalMap.put("<%=cid %>_EXIT_CODE",se_<%=cid%>.getDisconnectCode());
+			java.nio.file.Files.write(privateKey_<%=cid%>,lines_<%=cid%>);
             if(14 == se_<%=cid%>.getDisconnectCode()){
                 throw new IllegalArgumentException("Authentication failed.");
             }else{
