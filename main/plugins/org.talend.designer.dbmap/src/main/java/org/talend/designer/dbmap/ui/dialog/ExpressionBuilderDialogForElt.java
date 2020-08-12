@@ -13,11 +13,8 @@
 package org.talend.designer.dbmap.ui.dialog;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-
-import javax.xml.parsers.ParserConfigurationException;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IWorkspaceRoot;
@@ -29,24 +26,17 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
-import org.eclipse.swt.events.MouseAdapter;
-import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Shell;
 import org.talend.commons.runtime.model.expressionbuilder.Variable;
 import org.talend.commons.runtime.xml.XmlUtil;
-import org.talend.commons.ui.runtime.exception.RuntimeExceptionHandler;
 import org.talend.commons.ui.runtime.expressionbuilder.IExpressionBuilderDialogController;
 import org.talend.commons.ui.runtime.expressionbuilder.IExpressionDataBean;
-import org.talend.commons.ui.runtime.image.EImage;
-import org.talend.commons.ui.runtime.image.ImageProvider;
 import org.talend.commons.ui.swt.proposal.ExtendedTextCellEditorWithProposal;
 import org.talend.commons.ui.swt.tableviewer.TableViewerCreator;
 import org.talend.commons.ui.swt.tableviewer.TableViewerCreatorColumn;
@@ -57,11 +47,9 @@ import org.talend.core.model.general.Project;
 import org.talend.core.model.process.INode;
 import org.talend.designer.dbmap.i18n.Messages;
 import org.talend.designer.dbmap.managers.MapperManager;
-import org.talend.expressionbuilder.ExpressionFileOperation;
 import org.talend.expressionbuilder.ExpressionPersistance;
 import org.talend.expressionbuilder.model.CategoryManager;
 import org.talend.repository.model.RepositoryConstants;
-import org.xml.sax.SAXException;
 
 public class ExpressionBuilderDialogForElt extends TrayDialog implements IExpressionBuilderDialogController {
 
@@ -195,86 +183,9 @@ public class ExpressionBuilderDialogForElt extends TrayDialog implements IExpres
         Composite buttons = new Composite(parent, SWT.NONE);
         buttons.setLayout(new GridLayout(2, false));
 
-        final Button importButton = new Button(buttons, SWT.PUSH);
-        importButton.setToolTipText(Messages.getString("ExpressionBuilderDialog.import"));//$NON-NLS-1$
-        importButton.setImage(ImageProvider.getImage(EImage.IMPORT_ICON));
-
-        final Button exportButton = new Button(buttons, SWT.PUSH);
-        exportButton.setToolTipText(Messages.getString("ExpressionBuilderDialog.export"));//$NON-NLS-1$
-        exportButton.setImage(ImageProvider.getImage(EImage.EXPORT_ICON));
-
         createButton(parent, IDialogConstants.OK_ID, Messages.getString("ExpressionBuilderDialog.ok.button"), true); //$NON-NLS-1$
         createButton(parent, IDialogConstants.CANCEL_ID, Messages.getString("ExpressionBuilderDialog.cancel.button"), false); //$NON-NLS-1$
 
-        exportButton.addMouseListener(new MouseAdapter() {
-
-            /*
-             * (non-Javadoc)
-             *
-             * @see org.eclipse.swt.events.MouseAdapter#mouseUp(org.eclipse.swt.events.MouseEvent)
-             */
-            @Override
-            public void mouseUp(MouseEvent e) {
-
-                FileDialog dialog = new FileDialog(getShell(), SWT.SAVE);
-                dialog.setFilterExtensions(new String[] { "*.xml" }); //$NON-NLS-1$
-
-                String filePath = dialog.open();
-                if (filePath != null) {
-                    String expresionContent = expressionComposite.getExpression();
-                    List<Variable> variables = new ArrayList<Variable>();
-                    // variables = testComposite.getVariableList();
-                    File file = new File(filePath);
-                    ExpressionFileOperation operation = new ExpressionFileOperation();
-                    try {
-                        if (file != null) {
-                            file.createNewFile();
-                        }
-                        operation.saveExpressionToFile(file, variables, expresionContent);
-                    } catch (IOException e1) {
-                        RuntimeExceptionHandler.process(e1);
-                    } catch (ParserConfigurationException e1) {
-                        RuntimeExceptionHandler.process(e1);
-                    }
-                }
-            }
-        });
-
-        importButton.addMouseListener(new MouseAdapter() {
-
-            /*
-             * (non-Javadoc)
-             *
-             * @see org.eclipse.swt.events.MouseAdapter#mouseUp(org.eclipse.swt.events.MouseEvent)
-             */
-            @Override
-            public void mouseUp(MouseEvent e) {
-                FileDialog dialog = new FileDialog(getShell(), SWT.OPEN);
-                dialog.setFilterExtensions(new String[] { "*.xml" }); //$NON-NLS-1$
-
-                String filePath = dialog.open();
-                if (filePath != null) {
-                    File file = new File(filePath);
-                    ExpressionFileOperation operation = new ExpressionFileOperation();
-                    try {
-                        List list = operation.importExpressionFromFile(file, getShell());
-                        if (list != null && list.size() != 0) {
-                            expressionComposite.setExpression((String) list.get(0), false);
-                            list.remove(0);
-                            if (list.size() > 0) {
-                                // testComposite.addVariables(list);
-                            }
-                        }
-                    } catch (IOException e1) {
-                        RuntimeExceptionHandler.process(e1);
-                    } catch (ParserConfigurationException e1) {
-                        RuntimeExceptionHandler.process(e1);
-                    } catch (SAXException e1) {
-                        RuntimeExceptionHandler.process(e1);
-                    }
-                }
-            }
-        });
 
     }
 
