@@ -92,7 +92,6 @@ int nb_line_copied_<%=cid%> = 0;
 int deletedCount_<%=cid%>=0;
 int updatedCount_<%=cid%>=0;
 int insertedCount_<%=cid%>=0;
-int rowsToCommitCount_<%=cid%>=0;
 int rejectedCount_<%=cid%>=0;
 int copiedCount_<%=cid%>=0;
 
