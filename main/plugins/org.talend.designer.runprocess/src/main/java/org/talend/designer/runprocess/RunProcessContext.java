@@ -596,6 +596,10 @@ public class RunProcessContext {
                         TimeMeasure.begin(generateCodeId);
                         try {
                             BuildCacheManager.getInstance().clearCurrentCache();
+                            //TESB-29071
+                            if (ProcessorUtilities.isRemoteProject()) {
+                                BuildCacheManager.getInstance().clearAllCodesCache();
+                            }
                             ProcessorUtilities.resetExportConfig();
                             ProcessorUtilities
                                     .generateCode(processor, process, context,
