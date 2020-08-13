@@ -23,6 +23,7 @@ imports="
 	boolean setAutoCommit = false;
 
 	boolean useExistingConnection = "true".equals(ElementParameterParser.getValue(node,"__USE_EXISTING_CONNECTION__"));
+
     boolean useBatch = "true".equals(ElementParameterParser.getValue(node, "__USE_BATCH__"));
     String batchSize = ElementParameterParser.getValue(node, "__BATCH_SIZE__");
     String dieOnError = ElementParameterParser.getValue(node, "__DIE_ON_ERROR__");
@@ -117,7 +118,6 @@ imports="
 
                             }
                             tmp_batchUpdateCount_<%=cid%> = tmp_batchUpdateCount_<%=cid%> > countSum_<%=cid%> ? tmp_batchUpdateCount_<%=cid%> : countSum_<%=cid%>;
-                            rowsToCommitCount_<%=cid%> += tmp_batchUpdateCount_<%=cid%>;
                             <%if (("INSERT").equals(dataAction)) {
                             %>
                                 insertedCount_<%=cid%> += tmp_batchUpdateCount_<%=cid%>;
@@ -151,12 +151,10 @@ imports="
                 <%
                 if(!("").equals(commitEvery) && !("0").equals(commitEvery)) {
                     %>
-                if (commitCounter_<%=cid%> > 0 && rowsToCommitCount_<%=cid%> != 0) {
-                    <%dbLog.commit().commitTry(null, dbLog.var("rowsToCommitCount"));%>
+                if (commitCounter_<%=cid%> > 0) {
+                    <%dbLog.commit().commitTry(null, dbLog.var("commitCounter"));%>
                     conn_<%=cid%>.commit();
                     <%dbLog.commit().commitDone(null);%>
-                    rowsToCommitCount_<%=cid%> = 0;
-                    commitCounter_<%=cid%> = 0;
                 }
                     <%
                 }

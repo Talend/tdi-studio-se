@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.talend.commons.exception.ExceptionHandler;
 
 import us.monoid.json.JSONArray;
@@ -27,7 +28,11 @@ import us.monoid.json.JSONObject;
  */
 public class JobVMArgumentsUtil {
 
+    private static final Logger LOGGER = Logger.getLogger(JobVMArgumentsUtil.class);
+
     private static final List<String> EMPTY_STRING_LIST = Collections.unmodifiableList(new ArrayList<String>());
+
+    public static final String[] DEFAULT_JVM_ARGS = new String[] { "-Xms256M", "-Xmx1024M" };
 
     public List<String> readString(String stringList) {
         if (stringList == null || "".equals(stringList)) { //$NON-NLS-1$
@@ -44,7 +49,10 @@ public class JobVMArgumentsUtil {
                 }
             }
         } catch (JSONException e) {
-            ExceptionHandler.process(e);
+            for (String arg : JobVMArgumentsUtil.DEFAULT_JVM_ARGS) {
+                result.add(arg);
+            }
+            LOGGER.debug(e.getMessage(), e);
         }
         return result;
     }
