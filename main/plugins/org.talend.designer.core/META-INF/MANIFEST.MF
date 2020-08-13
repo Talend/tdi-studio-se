@@ -228,6 +228,7 @@ Export-Package: org.talend.designer.core;
  org.talend.designer.core.ui.projectsetting,
  org.talend.designer.core.ui.viewer,
  org.talend.designer.core.ui.viewer.java,
+ org.talend.designer.core.ui.viewer.proposal,
  org.talend.designer.core.ui.views,
  org.talend.designer.core.ui.views.contexts,
  org.talend.designer.core.ui.views.jobsettings,

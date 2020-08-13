@@ -406,11 +406,10 @@ public class ProcessChangeListener implements PropertyChangeListener {
             return;
         }
         if (newValue instanceof IRepositoryViewObject) {
-            Property property = ((IRepositoryViewObject) newValue).getProperty();
-            if (property != null && property.getItem() != null) {
-                IFile itemPom = AggregatorPomsHelper.getItemPomFolder(property).getFile(TalendMavenConstants.POM_FILE_NAME);
+            IRepositoryViewObject object = (IRepositoryViewObject) newValue;
+            if (!ERepositoryObjectType.TEST_CONTAINER.equals(object.getRepositoryObjectType())) {
                 try {
-                    AggregatorPomsHelper.removeFromParentModules(itemPom);
+                    AggregatorPomsHelper.removeAllVersionsFromParentModules(object.getProperty());
                 } catch (Exception e) {
                     ExceptionHandler.process(e);
                 }
@@ -424,11 +423,10 @@ public class ProcessChangeListener implements PropertyChangeListener {
             return;
         }
         if (newValue instanceof IRepositoryViewObject) {
-            Property property = ((IRepositoryViewObject) newValue).getProperty();
-            if (property != null && property.getItem() != null) {
-                IFile itemPom = AggregatorPomsHelper.getItemPomFolder(property).getFile(TalendMavenConstants.POM_FILE_NAME);
+            IRepositoryViewObject object = (IRepositoryViewObject) newValue;
+            if (!ERepositoryObjectType.TEST_CONTAINER.equals(object.getRepositoryObjectType())) {
                 try {
-                    AggregatorPomsHelper.addToParentModules(itemPom, property);
+                    AggregatorPomsHelper.restoreAllVersionsFromParentModules(object.getProperty());
                 } catch (Exception e) {
                     ExceptionHandler.process(e);
                 }
