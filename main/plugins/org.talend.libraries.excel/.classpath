@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry exported="true" kind="lib" path="lib/commons-collections4-4.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/commons-compress-1.18.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/commons-math3-3.6.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/poi-3.10.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/poi-4.1.0-20190523141255_modified_talend.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/poi-ooxml-4.1.0-20190523141255_modified_talend.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/poi-ooxml-schemas-4.1.0-20190523141255_modified_talend.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/poi-scratchpad-4.1.0-20190523141255_modified_talend.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/simpleexcel-2.3-20200806.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/talendExcel-1.6-20200728.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/talendMsgMailUtil-1.2-20200608.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
+	<classpathentry kind="output" path="class"/>
+</classpath>
