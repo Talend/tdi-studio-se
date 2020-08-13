@@ -222,6 +222,8 @@ public class Node extends Element implements IGraphicalNode {
 
     private IComponent component;
 
+    private String unifiedComponentDisplayName;
+
     private String showHintText;
 
     private String connectionName;
@@ -5031,6 +5033,11 @@ public class Node extends Element implements IGraphicalNode {
                 }
             }
         }
+
+        if (UnifiedComponentUtil.isDelegateComponent(getDelegateComponent())) {
+            UnifiedComponentUtil.initComponentIfJDBC(this, getDelegateComponent());
+        }
+
         obj = parameters.get(INode.RELOAD_PARAMETER_METADATA_LIST);
         if (obj != null) {
             setMetadataList((List<IMetadataTable>) obj);
@@ -5647,6 +5654,14 @@ public class Node extends Element implements IGraphicalNode {
         return this.delegateComponent;
     }
 
+    public String getUnifiedComponentDisplayName() {
+        return unifiedComponentDisplayName;
+    }
+    
+    public void setUnifiedComponentDisplayName(String unifiedComponentDisplayName) {
+        this.unifiedComponentDisplayName = unifiedComponentDisplayName;
+    }
+    
     @Override
     public IReplaceNodeHandler getReplaceNodeHandler() {
         return replaceNodeHandler;

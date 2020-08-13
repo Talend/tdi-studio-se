@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang3.StringUtils;
 import org.talend.core.GlobalServiceRegister;
 import org.talend.core.model.components.IComponent;
 import org.talend.core.model.components.IComponentsFactory;
@@ -37,6 +38,7 @@ import org.talend.core.runtime.services.IGenericWizardService;
 import org.talend.core.ui.component.ComponentsFactoryProvider;
 import org.talend.designer.core.IUnifiedComponentService;
 import org.talend.designer.core.model.components.EParameterName;
+import org.talend.designer.core.ui.editor.nodes.Node;
 import org.talend.designer.unifiedcomponent.component.DelegateComponent;
 import org.talend.designer.unifiedcomponent.component.UnifiedObject;
 import org.talend.designer.unifiedcomponent.manager.UnifiedComponentsManager;
@@ -429,7 +431,14 @@ public class UnifiedComponentService implements IUnifiedComponentService {
             if (emfComp != dComp) {
                 listParams.addAll(dComp.createElementParameters(node, false));
                 IElementParameter unifiedParam = getUnifiedParameter(listParams);
-                unifiedParam.setValue(emfComp.getName());
+                String unifiedComponents = emfComp.getName();
+                if (node instanceof Node) {
+                    Node editorNode = (Node) node;
+                    if (StringUtils.isNoneBlank(editorNode.getUnifiedComponentDisplayName())) {
+                        unifiedComponents = editorNode.getUnifiedComponentDisplayName();
+                    }
+                }
+                unifiedParam.setValue(unifiedComponents);
             } else {
                 listParams.addAll(dComp.createElementParameters(node));
             }
@@ -459,6 +468,17 @@ public class UnifiedComponentService implements IUnifiedComponentService {
             UnifiedObject unifiedObjectByName = dcomp.getUnifiedObjectByName(emfComponent);
             if (unifiedObjectByName != null) {
                 return unifiedObjectByName.getDatabase();
+            }
+        }
+        return null;
+    }
+
+    public String getUnifiedCompRealComponentName(IComponent delegateComponent, String emfComponent) {
+        if (delegateComponent instanceof DelegateComponent) {
+            DelegateComponent dcomp = (DelegateComponent) delegateComponent;
+            UnifiedObject unifiedObjectByName = dcomp.getUnifiedObjectByName(emfComponent);
+            if (unifiedObjectByName != null) {
+                return unifiedObjectByName.getComponentName();
             }
         }
         return null;
@@ -559,6 +579,30 @@ public class UnifiedComponentService implements IUnifiedComponentService {
         boolean match = obj.getDatabase().equalsIgnoreCase(filter) || obj.getComponentName().equalsIgnoreCase(filter)
                 || obj.getComponentName().substring(1).equalsIgnoreCase(filter);
         return match;
+    }
+
+    public void initComponentIfJDBC(INode node, IComponent delegateComponent) {
+        if (!(delegateComponent instanceof DelegateComponent)) {
+            return;
+        }
+
+        DelegateComponent dComp = (DelegateComponent) delegateComponent;
+        IElementParameter newUnifiedParam = node.getElementParameterFromField(EParameterFieldType.UNIFIED_COMPONENTS);
+        String unifiedComp = String.valueOf(newUnifiedParam.getValue());
+        UnifiedObject unifiedObject = dComp.getUnifiedObjectByName(unifiedComp);
+        if (!unifiedObject.getComponentName().equals(unifiedObject.getDisplayComponent())) {
+            // database name is like delta lake
+            String database = unifiedObject.getDatabase();
+            // TODO load from json
+            if ("Delta Lake".equals(database)) {
+                // init the required param
+                node.getElementParameter("connection.jdbcUrl").setValue("jdbc:spark://");
+//                node.getElementParameter("connection.driverTable")
+//                        .setValue(new ArrayList<String>().add("mvn:Spark/SparkJDBC42/2.6.14.1018/jar"));
+                node.getElementParameter("connection.driverClass").setValue("com.simba.spark.jdbc.Driver");
+            }
+
+        }
     }
 
 }

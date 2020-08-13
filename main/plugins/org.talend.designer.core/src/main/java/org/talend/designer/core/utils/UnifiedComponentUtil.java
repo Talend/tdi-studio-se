@@ -15,6 +15,7 @@ package org.talend.designer.core.utils;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
@@ -48,6 +49,19 @@ public class UnifiedComponentUtil {
             IElementParameter elementParameter = node.getElementParameter(EParameterName.UNIFIED_COMPONENTS.name());
             if (elementParameter != null && elementParameter.getValue() != null) {
                 String emfCompName = String.valueOf(elementParameter.getValue());
+                if (GlobalServiceRegister.getDefault().isServiceRegistered(IUnifiedComponentService.class)) {
+                    IUnifiedComponentService service = GlobalServiceRegister.getDefault()
+                            .getService(IUnifiedComponentService.class);
+                    if (service != null) {
+                        String realName = service.getUnifiedCompRealComponentName(component, emfCompName);
+                        if (StringUtils.isNotBlank(realName)) {
+                            // correct display name, set display name
+                            node.setUnifiedComponentDisplayName(emfCompName);
+                            // real component used to get emf component
+                            emfCompName = realName;
+                        }
+                    }
+                }
                 String paletteType = component.getPaletteType();
                 IComponentsService compService = GlobalServiceRegister.getDefault().getService(IComponentsService.class);
                 IComponent emfComponent = compService.getComponentsFactory().get(emfCompName, paletteType);
@@ -196,6 +210,13 @@ public class UnifiedComponentUtil {
             return service.getUnifiedComponentByFilter(delegateComponent, filter);
         }
         return null;
+    }
+
+    public static void initComponentIfJDBC(INode node, IComponent delegateComponent) {
+        if (GlobalServiceRegister.getDefault().isServiceRegistered(IUnifiedComponentService.class)) {
+            IUnifiedComponentService service = GlobalServiceRegister.getDefault().getService(IUnifiedComponentService.class);
+            service.initComponentIfJDBC(node, delegateComponent);
+        }
     }
 
 }

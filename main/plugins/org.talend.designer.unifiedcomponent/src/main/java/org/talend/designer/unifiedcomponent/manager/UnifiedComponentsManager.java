@@ -35,6 +35,8 @@ import org.talend.designer.unifiedcomponent.component.DelegateComponent;
 import org.talend.designer.unifiedcomponent.component.UnifiedObject;
 import org.talend.designer.unifiedcomponent.delegate.service.IComponentDelegate;
 import org.talend.designer.unifiedcomponent.unifier.IComponentsUnifier;
+import org.talend.designer.unifiedcomponent.unifier.jdbc.IDynamicJDBCUnifier;
+import org.talend.designer.unifiedcomponent.unifier.jdbc.JDBCComponentsUnifier;
 
 /**
  *
@@ -90,6 +92,14 @@ public class UnifiedComponentsManager {
                     compUnifier.setDelegateComponent(delegateComp);
                     initDelegateComponent(compUnifier);
                 }
+            }
+         // init additional JDBC component
+            JDBCComponentsUnifier jdbcUnifier = new JDBCComponentsUnifier();
+            jdbcUnifier.setDisplayName("Delta Lake");
+            jdbcUnifier.setComponentKey("DeltaLake");
+            for (IComponentDelegate delegateComp : componentDelegates) {
+                jdbcUnifier.setDelegateComponent(delegateComp);
+                initDelegateComponent(jdbcUnifier);
             }
         }
 
@@ -148,6 +158,9 @@ public class UnifiedComponentsManager {
                 object.getConnectorMapping().putAll(unifier.getConnectorMapping());
                 object.getParamMappingExclude().addAll(unifier.getMappingExclude());
                 object.getHideFamilies().addAll(unifier.getFamilies());
+                if (unifier instanceof IDynamicJDBCUnifier) {
+                    object.setDisplayComponent(((IDynamicJDBCUnifier) unifier).getDispalyComponent());
+                }
                 component.getUnifiedObjects().add(object);
 
                 delegateComponents.put(key, component);
