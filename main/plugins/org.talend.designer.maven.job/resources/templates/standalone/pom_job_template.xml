@@ -270,6 +270,9 @@
 					<value>true</value>
 				</property>
 			</activation>
+			<properties>
+				<contexts.running.dir>${current.resources.dir}/</contexts.running.dir>
+			</properties>
 			<dependencies>
 				<dependency>
 					<groupId>io.micrometer</groupId>
