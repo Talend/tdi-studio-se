@@ -13,13 +13,16 @@
 package org.talend.designer.core.utils;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
+import org.talend.components.api.properties.ComponentProperties;
 import org.talend.core.GlobalServiceRegister;
 import org.talend.core.model.components.IComponent;
 import org.talend.core.model.components.IComponentsHandler;
@@ -31,8 +34,13 @@ import org.talend.core.model.process.INodeConnector;
 import org.talend.core.model.utils.IComponentName;
 import org.talend.core.repository.RepositoryComponentSetting;
 import org.talend.core.ui.component.ComponentsFactoryProvider;
+import org.talend.core.utils.TalendQuoteUtils;
+import org.talend.daikon.NamedThing;
+import org.talend.daikon.properties.Properties;
+import org.talend.daikon.properties.property.Property;
 import org.talend.designer.core.IUnifiedComponentService;
 import org.talend.designer.core.model.components.EParameterName;
+import org.talend.designer.core.model.components.UnifiedJDBCBean;
 import org.talend.designer.core.ui.editor.nodes.Node;
 import org.talend.designer.core.ui.views.properties.ComponentSettingsView;
 
@@ -212,11 +220,47 @@ public class UnifiedComponentUtil {
         return null;
     }
 
-    public static void initComponentIfJDBC(INode node, IComponent delegateComponent) {
+    public static void initComponentIfJDBC(Node node, IComponent delegateComponent) {
         if (GlobalServiceRegister.getDefault().isServiceRegistered(IUnifiedComponentService.class)) {
             IUnifiedComponentService service = GlobalServiceRegister.getDefault().getService(IUnifiedComponentService.class);
-            service.initComponentIfJDBC(node, delegateComponent);
+            UnifiedJDBCBean bean = service.getInitJDBCComponentProperties(node, delegateComponent);
+            if (bean == null) {
+                return;
+            }
+            node.getElementParameter("connection.jdbcUrl").setValue(TalendQuoteUtils.addQuotes(bean.getUrl()));
+            node.getElementParameter("connection.driverClass").setValue(TalendQuoteUtils.addQuotes(bean.getDriverClass()));
+            ComponentProperties componentProperties = node.getComponentProperties();
+            Map<String, Object> map = new HashMap<String, Object>();
+            map.put("jdbcUrl", TalendQuoteUtils.addQuotes(bean.getUrl()));
+            map.put("driverClass", TalendQuoteUtils.addQuotes(bean.getDriverClass()));
+            map.put("drivers", bean.getPaths());
+            setCompPropertiesForJDBC(componentProperties, map);
+
         }
     }
 
+    private static void setCompPropertiesForJDBC(ComponentProperties componentProperties, Map<String, Object> map) {
+        List<NamedThing> properties = componentProperties.getProperties();
+        Properties connection = null;
+        for (NamedThing namedThing : properties) {
+            if ("connection".equals(namedThing.getName()) && namedThing instanceof Properties) {
+                connection = (Properties) namedThing;
+            }
+        }
+        if (connection == null) {
+            return;
+        }
+        for (String key : map.keySet()) {
+            NamedThing thing = null;
+            if (connection.getProperty(key) != null) {
+                thing = connection.getProperty(key);
+            } else if ("drivers".equals(key)) {
+                thing = connection.getProperties("driverTable").getProperty(key);
+            }
+            if (thing != null && thing instanceof Property) {
+                Property property = (Property) thing;
+                property.setValue(map.get(key));
+            }
+        }
+    }
 }

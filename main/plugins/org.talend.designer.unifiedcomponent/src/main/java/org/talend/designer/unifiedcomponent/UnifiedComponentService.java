@@ -38,6 +38,7 @@ import org.talend.core.runtime.services.IGenericWizardService;
 import org.talend.core.ui.component.ComponentsFactoryProvider;
 import org.talend.designer.core.IUnifiedComponentService;
 import org.talend.designer.core.model.components.EParameterName;
+import org.talend.designer.core.model.components.UnifiedJDBCBean;
 import org.talend.designer.core.ui.editor.nodes.Node;
 import org.talend.designer.unifiedcomponent.component.DelegateComponent;
 import org.talend.designer.unifiedcomponent.component.UnifiedObject;
@@ -581,9 +582,9 @@ public class UnifiedComponentService implements IUnifiedComponentService {
         return match;
     }
 
-    public void initComponentIfJDBC(INode node, IComponent delegateComponent) {
+    public UnifiedJDBCBean getInitJDBCComponentProperties(Node node, IComponent delegateComponent) {
         if (!(delegateComponent instanceof DelegateComponent)) {
-            return;
+            return null;
         }
 
         DelegateComponent dComp = (DelegateComponent) delegateComponent;
@@ -591,18 +592,18 @@ public class UnifiedComponentService implements IUnifiedComponentService {
         String unifiedComp = String.valueOf(newUnifiedParam.getValue());
         UnifiedObject unifiedObject = dComp.getUnifiedObjectByName(unifiedComp);
         if (!unifiedObject.getComponentName().equals(unifiedObject.getDisplayComponent())) {
-            // database name is like delta lake
             String database = unifiedObject.getDatabase();
             // TODO load from json
             if ("Delta Lake".equals(database)) {
-                // init the required param
-                node.getElementParameter("connection.jdbcUrl").setValue("jdbc:spark://");
-//                node.getElementParameter("connection.driverTable")
-//                        .setValue(new ArrayList<String>().add("mvn:Spark/SparkJDBC42/2.6.14.1018/jar"));
-                node.getElementParameter("connection.driverClass").setValue("com.simba.spark.jdbc.Driver");
+                UnifiedJDBCBean bean = new UnifiedJDBCBean();
+                bean.setDatabaseId("DATABRICKS_DELTA_LAKE");
+                bean.setDriverClass("com.simba.spark.jdbc.Driver");
+                bean.setUrl("jdbc:spark://");
+                bean.getPaths().add("mvn:Spark/SparkJDBC42/2.6.14.1018/jar");
+                return bean;
             }
-
         }
+        return null;
     }
 
 }
