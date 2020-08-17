@@ -142,6 +142,7 @@
 	
 	List<? extends INode> jobCatcherNodes = node.getProcess().getNodesOfType("tJobStructureCatcher");
 	boolean enableLogStash = jobCatcherNodes != null && !jobCatcherNodes.isEmpty();
+	INode jobCatcherNode = enableLogStash ? jobCatcherNodes.get(0) : null;
 	String cid = node.getUniqueName();
 	boolean logstashCurrent = !cid.startsWith("tJobStructureCatcher") && !cid.startsWith("talend") && enableLogStash;
 	
@@ -333,6 +334,69 @@
 		log.logCompSetting();
 		
 		if(logstashCurrent) {
+			boolean enable_runtime_lineage_log = NodeUtil.isJobUsingRuntimeLineage(node.getProcess());
+			if(enable_runtime_lineage_log) {
+			%>
+			class ParameterUtil_<%=cid%>{
+			
+                public java.util.Map<String, String> getParameter() throws Exception{
+	                java.util.Map<String, String> component_parameters = new java.util.HashMap<>();
+	                <%
+	                java.util.Set<org.talend.core.model.process.EParameterFieldType> ignoredParamsTypes = new java.util.HashSet<org.talend.core.model.process.EParameterFieldType>(); 
+	                ignoredParamsTypes.addAll(
+	                    java.util.Arrays.asList(
+	                        org.talend.core.model.process.EParameterFieldType.SCHEMA_TYPE,
+	                        org.talend.core.model.process.EParameterFieldType.LABEL,
+	                        org.talend.core.model.process.EParameterFieldType.EXTERNAL,
+	                        org.talend.core.model.process.EParameterFieldType.MAPPING_TYPE,
+	                        org.talend.core.model.process.EParameterFieldType.IMAGE,
+	                        org.talend.core.model.process.EParameterFieldType.TNS_EDITOR,
+	                        org.talend.core.model.process.EParameterFieldType.WSDL2JAVA,
+	                        org.talend.core.model.process.EParameterFieldType.GENERATEGRAMMARCONTROLLER,
+	                        org.talend.core.model.process.EParameterFieldType.GENERATE_SURVIVORSHIP_RULES_CONTROLLER,
+	                        org.talend.core.model.process.EParameterFieldType.REFRESH_REPORTS,
+	                        org.talend.core.model.process.EParameterFieldType.BROWSE_REPORTS,
+	                        org.talend.core.model.process.EParameterFieldType.PALO_DIM_SELECTION,
+	                        org.talend.core.model.process.EParameterFieldType.GUESS_SCHEMA,
+	                        org.talend.core.model.process.EParameterFieldType.MATCH_RULE_IMEX_CONTROLLER,
+	                        org.talend.core.model.process.EParameterFieldType.MEMO_PERL,
+	                        org.talend.core.model.process.EParameterFieldType.DBTYPE_LIST,
+	                        org.talend.core.model.process.EParameterFieldType.VERSION,
+	                        org.talend.core.model.process.EParameterFieldType.TECHNICAL,
+	                        org.talend.core.model.process.EParameterFieldType.ICON_SELECTION,
+	                        org.talend.core.model.process.EParameterFieldType.JAVA_COMMAND,
+	                        org.talend.core.model.process.EParameterFieldType.TREE_TABLE,
+	                        org.talend.core.model.process.EParameterFieldType.VALIDATION_RULE_TYPE,
+	                        org.talend.core.model.process.EParameterFieldType.DCSCHEMA,
+	                        org.talend.core.model.process.EParameterFieldType.SURVIVOR_RELATION,
+	                        org.talend.core.model.process.EParameterFieldType.REST_RESPONSE_SCHEMA_TYPE
+	                        )
+	                );
+	                for(org.talend.core.model.process.IElementParameter ep : org.talend.core.model.utils.NodeUtil.getDisplayedParameters(node)){
+	                    if(!ep.isLog4JEnabled() || ignoredParamsTypes.contains(ep.getFieldType())){
+	                        continue;
+	                    }
+	                    String name = ep.getName();
+	                    if(org.talend.core.model.process.EParameterFieldType.PASSWORD.equals(ep.getFieldType())){
+	                        //not log password
+	                    }else{
+	                        String value = org.talend.core.model.utils.NodeUtil.getRuntimeParameterValue(node, ep);
+	                        %>
+	                        component_parameters.put("<%=name%>", String.valueOf(<%=value%>));
+	                    <%
+	                    }
+	                }
+	                %>
+	                return component_parameters;
+                }
+            }
+            
+            <%=jobCatcherNode.getUniqueName()%>.addComponentParameterMessage("<%=node.getUniqueName()%>", "<%=node.getComponent().getName()%>",
+              new ParameterUtil_<%=cid%>().getParameter());
+            <%=jobCatcherNode.getDesignSubjobStartNode().getUniqueName() %>Process(globalMap);
+			<%
+			}
+		
 			for (INode jobStructureCatcher : jobCatcherNodes) {
 				String label = ElementParameterParser.getValue(node, "__LABEL__");
 				String nodeLabel = ((label==null || "__UNIQUE_NAME__".equals(label) || label.contains("\"")) ? node.getUniqueName() : label);

@@ -518,8 +518,41 @@
 				break;
 			}
 		}
-    	if(jobCatcherNode!=null) {
-    		String location = ElementParameterParser.getValue(jobCatcherNode, "__LOCATION__");
+		
+		if(jobCatcherNode!=null) {
+			boolean enable_runtime_lineage_log = NodeUtil.isJobUsingRuntimeLineage(process);
+			if(enable_runtime_lineage_log) {
+			%>
+			java.util.Properties p_<%=jobCatcherNode.getUniqueName()%> = new java.util.Properties();
+			p_<%=jobCatcherNode.getUniqueName()%>.setProperty("root.logger", "runtime");
+			p_<%=jobCatcherNode.getUniqueName()%>.setProperty("encoding", "UTF-8");
+			p_<%=jobCatcherNode.getUniqueName()%>.setProperty("application.name", "Talend Studio");
+			p_<%=jobCatcherNode.getUniqueName()%>.setProperty("service.name", "Talend Studio Job");
+			p_<%=jobCatcherNode.getUniqueName()%>.setProperty("instance.name", "Talend Studio Job Instance");
+			p_<%=jobCatcherNode.getUniqueName()%>.setProperty("propagate.appender.exceptions", "none");
+			p_<%=jobCatcherNode.getUniqueName()%>.setProperty("log.appender", "file");
+			p_<%=jobCatcherNode.getUniqueName()%>.setProperty("appender.file.path", "runtime.json");
+			p_<%=jobCatcherNode.getUniqueName()%>.setProperty("appender.file.maxsize", "52428800");
+			p_<%=jobCatcherNode.getUniqueName()%>.setProperty("appender.file.maxbackup", "20");
+			p_<%=jobCatcherNode.getUniqueName()%>.setProperty("host", "false");
+			
+			System.getProperties().stringPropertyNames().stream()
+					.filter(it -> it.startsWith("audit.logger."))
+					.forEach(key -> p_<%=jobCatcherNode.getUniqueName()%>.setProperty(key.substring("audit.logger.".length()), System.getProperty(key)));
+			
+			<%if(isLog4j1Enabled) {%>
+			org.apache.log4j.Logger.getLogger(p_<%=jobCatcherNode.getUniqueName()%>.getProperty("root.logger")).setLevel(org.apache.log4j.Level.DEBUG);
+			<%}%>
+			
+			<%if(isLog4j2Enabled) {%>
+			org.apache.logging.log4j.core.config.Configurator.setLevel(p_<%=jobCatcherNode.getUniqueName()%>.getProperty("root.logger"), org.apache.logging.log4j.Level.DEBUG);
+			<%}%>
+			
+			runtime_lineage_logger_<%=jobCatcherNode.getUniqueName()%> = org.talend.job.audit.JobEventAuditLoggerFactory.createJobAuditLogger(p_<%=jobCatcherNode.getUniqueName()%>);
+			<%
+			}
+		
+			String location = ElementParameterParser.getValue(jobCatcherNode, "__LOCATION__");
 		%>
 			if(enableLogStash) {
 				java.util.Properties properties_<%=jobCatcherNode.getUniqueName()%> = new java.util.Properties();
@@ -550,7 +583,7 @@
 			}
 		<%
 		}
-    	%>
+		%>
 
         if(clientHost == null) {
             clientHost = defaultClientHost;

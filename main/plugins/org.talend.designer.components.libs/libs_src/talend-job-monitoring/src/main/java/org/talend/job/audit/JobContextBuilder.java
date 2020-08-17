@@ -161,4 +161,14 @@ public class JobContextBuilder {
 		return this;
 	}
 
+	public JobContextBuilder connectorParameters(String connector_parameters) {
+        builder.with("connector_parameters", connector_parameters);
+        return this;
+    }
+    
+    public JobContextBuilder schema(String schema) {
+        builder.with("schema", schema);
+        return this;
+	}
+	
 }

@@ -395,6 +395,15 @@ public <%=JavaTypesManager.getTypeToGenerate(ctxParam.getType(),true)%> get<%=Ch
 private final JobStructureCatcherUtils <%=jobCatcherNode.getUniqueName() %> = new JobStructureCatcherUtils(jobName, "<%=process.getId() %>", "<%=process.getVersion() %>");
 private org.talend.job.audit.JobAuditLogger auditLogger_<%=jobCatcherNode.getUniqueName()%> = null;
 
+<%
+		boolean enable_runtime_lineage_log = NodeUtil.isJobUsingRuntimeLineage(process);
+		if(enable_runtime_lineage_log) {
+%>
+		org.talend.job.audit.JobAuditLogger runtime_lineage_logger_<%=jobCatcherNode.getUniqueName()%> = null;
+<%
+		}
+%>
+
 private RunStat runStat = new RunStat(<%=jobCatcherNode.getUniqueName() %>);
 <%
 	} else if(stats) {

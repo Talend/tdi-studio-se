@@ -51,6 +51,7 @@ String cid = node.getUniqueName();
 
 List<? extends INode> jobCatcherNodes = process.getNodesOfType("tJobStructureCatcher");
 boolean enableLogStash = jobCatcherNodes != null && !jobCatcherNodes.isEmpty();
+INode jobCatcherNode = enableLogStash ? jobCatcherNodes.get(0) : null;
 boolean logstashCurrent = !cid.startsWith("tJobStructureCatcher") && !cid.startsWith("talend") && enableLogStash;
 
 if((codePart.equals(ECodePart.END))&&(stat || logstashCurrent)){
@@ -164,6 +165,7 @@ if((codePart.equals(ECodePart.END))&&(stat || logstashCurrent)){
     }
    }
   }
+  
   List<IMetadataTable> metadatas = node.getMetadataList();
   if ((!node.isSubProcessStart())&&(NodeUtil.isDataAutoPropagated(node))) {
    if (inputColName!=null) {
@@ -189,6 +191,117 @@ if((codePart.equals(ECodePart.END))&&(stat || logstashCurrent)){
     }
    }
   }
+  
+  //log runtime lineage
+  boolean enable_runtime_lineage_log = NodeUtil.isJobUsingRuntimeLineage(process);
+  if(enable_runtime_lineage_log && jobCatcherNode!=null) {//}
+  
+  List<? extends IConnection> outConns = node.getOutgoingConnections();
+  if(!outConns.isEmpty()) {
+  %>
+  if(tos_count_<%=node.getUniqueName() %> == 0) {
+  <%
+  //}
+  }
+  
+  for (IConnection conn : outConns) {
+      if(!conn.getLineStyle().equals(EConnectionType.FLOW_MAIN) && !conn.getLineStyle().equals(EConnectionType.FLOW_MERGE) && !conn.getLineStyle().equals(EConnectionType.FLOW_REF)) {
+          continue;
+      }
+      
+      IMetadataTable metadata = conn.getMetadataTable();
+      if (metadata==null) {
+          continue;
+      }
+      
+      List<IMetadataColumn> columns = metadata.getListColumns();
+      
+      if(columns == null || columns.isEmpty()) {
+          continue;
+      }
+      
+      %>
+      
+      class SchemaUtil_<%=conn.getUniqueName()%>_<%=conn.getMetadataTable().getTableName()%> {
+          
+          public java.util.List<java.util.Map<String, String>> getSchema(final <%=NodeUtil.getPrivateConnClassName(conn) %>Struct <%=conn.getName()%>) {
+              java.util.List<java.util.Map<String, String>> schema = new java.util.ArrayList<>();
+              if(<%=conn.getName()%> == null) {
+            	  return schema;
+              }
+              java.util.Map<String, String> field = null;
+          <%
+          for(IMetadataColumn column : columns){
+              if("id_Dynamic".equals(column.getTalendType())) {
+              %>
+              routines.system.Dynamic dynamic = <%=conn.getName()%>.<%=column.getLabel()%>;
+              if(dynamic != null) {
+                  for(routines.system.DynamicMetadata metadata :  dynamic.metadatas) {
+                      field = new java.util.HashMap<>();
+                      field.put("name", metadata.getName());
+                      field.put("origin_name", metadata.getDbName());
+                      field.put("iskey", "" + metadata.isKey());
+                      field.put("talend_type", metadata.getType());
+                      field.put("type", metadata.getDbType());
+                      field.put("nullable", "" + metadata.isNullable());
+                      field.put("pattern", metadata.getFormat());
+                      field.put("length", "" + metadata.getLength());
+                      field.put("precision", "" + metadata.getPrecision());
+                      schema.add(field);
+                  }
+              }
+              
+              <%
+                  continue;
+              }
+              
+              String pattern = column.getPattern();
+              if(pattern == null || pattern.isEmpty() || pattern.equals("\"\"")) {
+                  pattern = "\"\"";
+              }
+              %>
+              field = new java.util.HashMap<>();
+              field.put("name", "<%=column.getLabel()%>");
+              field.put("origin_name", "<%=column.getOriginalDbColumnName()%>");
+              field.put("iskey", "<%=column.isKey()%>");
+              field.put("talend_type", "<%=column.getTalendType()%>");
+              field.put("type", "<%=column.getType()%>");
+              field.put("nullable", "<%=column.isNullable()%>");
+              field.put("pattern", <%=pattern%>);
+              field.put("length", "<%=column.getLength()%>");
+              field.put("precision", "<%=column.getPrecision()%>");
+              schema.add(field);
+          <%
+          }
+          %>
+              return schema;
+          }
+          
+      }
+      
+      java.util.List<java.util.Map<String, String>> schema_<%=conn.getUniqueName()%>_<%=conn.getMetadataTable().getTableName()%> = new SchemaUtil_<%=conn.getUniqueName()%>_<%=conn.getMetadataTable().getTableName()%>.getSchema(<%=conn.getName()%>);
+      <%
+      INode target = conn.getTarget();
+      String targetNodeId = target.getUniqueName();
+      String targetNodeComponent = target.getComponent().getName();
+      
+      %>
+      <%=jobCatcherNode.getUniqueName()%>.addConnectionSchemaMessage("<%=node.getUniqueName()%>","<%=node.getComponent().getName()%>", 
+        "<%=targetNodeId%>","<%=targetNodeComponent%>", "<%=conn.getUniqueName()%>" + iterateId, schema_<%=conn.getUniqueName()%>_<%=conn.getMetadataTable().getTableName()%>);
+      <%=jobCatcherNode.getDesignSubjobStartNode().getUniqueName() %>Process(globalMap);
+      <%
+  }
+  
+  if(!outConns.isEmpty()) {
+  //{
+  %>
+  }
+  <%
+  }
+  
+  //{
+  }
+
 //======================================TDI-17183 end=====================================
   boolean traceCodeGenerated = false;     
   for (IConnection conn : node.getOutgoingConnections()) {
