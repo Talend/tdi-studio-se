@@ -170,8 +170,13 @@
     <CODEGENERATION>
     <IMPORTS>
       <IMPORT
-        NAME="Java_SHH2"
-        MODULE="ganymed-ssh2-261.jar" MVN="mvn:ch.ethz.ganymed/ganymed-ssh2/261"
+        NAME="SSHD_CORE"
+        MODULE="sshd-core-2.5.1.jar" MVN="mvn:org.apache.sshd/sshd-core/2.5.1"
+        REQUIRED="true"
+      />
+	  <IMPORT
+        NAME="SSHD_COMMON"
+        MODULE="sshd-common-2.5.1.jar" MVN="mvn:org.apache.sshd/sshd-common/2.5.1"
         REQUIRED="true"
       />
     </IMPORTS>

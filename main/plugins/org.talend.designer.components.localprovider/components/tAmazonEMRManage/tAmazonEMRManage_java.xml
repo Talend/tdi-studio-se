@@ -157,8 +157,13 @@
 		</PARAMETER>
 
 		<PARAMETER NAME="INSTANCE_COUNT" FIELD="TEXT" NUM_ROW="52"
-			SHOW_IF="ACTION=='START'" GROUP="INSTANCE_CONFIGURATION">
+			SHOW_IF="ACTION=='START' AND (USE_MULTIPLE_MASTER_NODES=='false')" GROUP="INSTANCE_CONFIGURATION">
 			<DEFAULT>3</DEFAULT>
+		</PARAMETER>
+		
+		<PARAMETER NAME="SLAVE_INSTANCE_COUNT" FIELD="TEXT" NUM_ROW="52"
+			SHOW_IF="ACTION=='START' AND (USE_MULTIPLE_MASTER_NODES=='true')" GROUP="INSTANCE_CONFIGURATION">
+			<DEFAULT>2</DEFAULT>
 		</PARAMETER>
 
 		<PARAMETER NAME="MASTER_INSTANCE_TYPE" FIELD="OPENED_LIST"
@@ -405,6 +410,16 @@
 			<DEFAULT>false</DEFAULT>
 		</PARAMETER>
 		
+		<PARAMETER NAME="USE_MULTIPLE_MASTER_NODES" FIELD="CHECK"
+			NUM_ROW="31" SHOW_IF="ACTION=='START'" GROUP="ADVANCED_CONFIGURATION">
+			<DEFAULT>false</DEFAULT>
+		</PARAMETER>
+		
+		<PARAMETER NAME="NOTE" FIELD="LABEL" 
+			NUM_ROW="31" SHOW_IF="isShow[USE_MULTIPLE_MASTER_NODES]" GROUP="ADVANCED_CONFIGURATION" >
+		    <DEFAULT>(supported by version 5.23.0 and later)</DEFAULT>
+		</PARAMETER>
+		
 		<PARAMETER NAME="CUSTOMIZE_VERSION" FIELD="TEXT"
 			NUM_ROW="35" SHOW_IF="(ACTION=='START') AND (USE_CUSTOMIZE_VERSION =='true')" GROUP="CUSTOMIZE_APPLICATION_GROUP">
 			<DEFAULT>"emr-5.29.0"</DEFAULT>
@@ -522,12 +537,19 @@
 		</PARAMETER>
 		
 		<PARAMETER NAME="PROPERTY_TABLE" FIELD="TABLE" NUM_ROW="95" NB_LINES="5" GROUP="PROPERTY_GROUP"
-			SHOW_IF="(ACTION=='START') AND (CLUSTER_VERSION!='AMI3_10_0') AND (CLUSTER_VERSION!='AMI3_9_0') AND (CLUSTER_VERSION!='AMI3_8_0') AND (CLUSTER_VERSION!='AMI2_4_11') AND (CLUSTER_VERSION!='AMI2_4_10')">
+			SHOW_IF="(ACTION=='START') AND (CLUSTER_VERSION!='AMI3_10_0') AND (CLUSTER_VERSION!='AMI3_9_0') AND (CLUSTER_VERSION!='AMI3_8_0') AND (CLUSTER_VERSION!='AMI2_4_11') AND (CLUSTER_VERSION!='AMI2_4_10')
+				AND (USE_MULTIPLE_MASTER_NODES=='false')">
 			<ITEMS>
 				<ITEM NAME="CLASSIFICATION" />
 				<ITEM NAME="KEY" />
 				<ITEM NAME="VALUE" />
 			</ITEMS>
+		</PARAMETER>
+		
+		<PARAMETER NAME="PROPERTY_JSON" FIELD="MEMO" NUM_ROW="95" NB_LINES="15" GROUP="PROPERTY_GROUP"
+			SHOW_IF="(ACTION=='START') AND (CLUSTER_VERSION!='AMI3_10_0') AND (CLUSTER_VERSION!='AMI3_9_0') AND (CLUSTER_VERSION!='AMI3_8_0') AND (CLUSTER_VERSION!='AMI2_4_11') AND (CLUSTER_VERSION!='AMI2_4_10')
+				AND (USE_MULTIPLE_MASTER_NODES=='true')">
+			<DEFAULT>""</DEFAULT>
 		</PARAMETER>
 	</ADVANCED_PARAMETERS>
 
@@ -545,11 +567,11 @@
 			<IMPORT NAME="jackson-annotations-2.10.1.jar" MODULE="jackson-annotations-2.10.1.jar"
 				MVN="mvn:com.fasterxml.jackson.core/jackson-annotations/2.10.1"
 				REQUIRED="true" />
-			<IMPORT NAME="httpcore-4.4.11.jar" MODULE="httpcore-4.4.11.jar"
-				MVN="mvn:org.apache.httpcomponents/httpcore/4.4.11"
+			<IMPORT NAME="httpcore-4.4.13.jar" MODULE="httpcore-4.4.13.jar"
+				MVN="mvn:org.apache.httpcomponents/httpcore/4.4.13"
 				REQUIRED="true" />
-			<IMPORT NAME="httpclient-4.5.9.jar" MODULE="httpclient-4.5.9.jar"
-				MVN="mvn:org.apache.httpcomponents/httpclient/4.5.9"
+			<IMPORT NAME="httpclient-4.5.12.jar" MODULE="httpclient-4.5.12.jar"
+				MVN="mvn:org.apache.httpcomponents/httpclient/4.5.12"
 				REQUIRED="true" />
 			<IMPORT NAME="joda-time-2.8.1.jar" MODULE="joda-time-2.8.1.jar"
 				MVN="mvn:joda-time/joda-time/2.8.1"
@@ -557,8 +579,8 @@
 			<IMPORT NAME="commons-logging-1.2.jar" MODULE="commons-logging-1.2.jar"
 				MVN="mvn:commons-logging/commons-logging/1.2"
 				REQUIRED="true" />
-			<IMPORT NAME="commons-codec-1.11.jar" MODULE="commons-codec-1.11.jar"
-				MVN="mvn:commons-codec/commons-codec/1.11"
+			<IMPORT NAME="commons-codec-1.14.jar" MODULE="commons-codec-1.14.jar"
+				MVN="mvn:commons-codec/commons-codec/1.14"
 				REQUIRED="true" />
 		</IMPORTS>
 	</CODEGENERATION>
