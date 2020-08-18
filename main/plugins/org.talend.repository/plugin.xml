@@ -3426,6 +3426,14 @@
               description="change separator and escape to work with dataset API"
               id="org.talend.repository.model.migration.spark.UpdateSeparatorAndEscapeForDatasetAPI"
               name="UpdateSeparatorAndEscapeForDatasetAPI"
+        </projecttask>
+        <projecttask
+              beforeLogon="true"
+              breaks="7.3.1"
+              class="org.talend.repository.model.migration.spark.RefactoDeltaMergeOption"
+              description="refacto for deltalake output xml"
+              id="org.talend.repository.model.migration.spark.RefactoDeltaMergeOption"
+              name="RefactoDeltaMergeOption"
               version="7.3.1">                     
        </projecttask>
    </extension>
