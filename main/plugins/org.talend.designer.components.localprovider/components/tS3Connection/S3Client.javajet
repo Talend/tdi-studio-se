@@ -30,6 +30,7 @@
 	boolean set_signingRegion = (signingRegion!=null && !signingRegion.isEmpty() && !"DEFAULT".equalsIgnoreCase(signingRegion));
 	
 	boolean enableAccelerateMode = "true".equals(ElementParameterParser.getValue(node,"__ENABLE_ACCELERATE__"));
+	boolean enablePathStyleAccess = "true".equals(ElementParameterParser.getValue(node,"__PATHSTYLEACCESS__"));
 	
 	String sessionDuration = ElementParameterParser.getValue(node,"__SESSION_DURATION__");
 	if(sessionDuration == null || sessionDuration.isEmpty()) {
@@ -378,6 +379,9 @@
                     <%if("KMS_CMK".equals(key_type) && set_region) {%>
                     .withCryptoConfiguration(new com.amazonaws.services.s3.model.CryptoConfiguration().withAwsKmsRegion(com.amazonaws.regions.RegionUtils.getRegion(<%=region%>)))
 					<%}%>
+					<%if(useRegionEndpoint && enablePathStyleAccess) {%>
+					.enablePathStyleAccess()
+					<%}%>
                     .build();
 			<%
 			} else {
@@ -408,6 +412,9 @@
                     <%}%>
                     .withCredentials(credentialsProvider_<%=cid%>)
                     .withClientConfiguration(cc_<%=cid%>)
+					<%if(useRegionEndpoint && enablePathStyleAccess) {%>
+					.enablePathStyleAccess()
+					<%}%>
                     .build();
 			<%
 			}

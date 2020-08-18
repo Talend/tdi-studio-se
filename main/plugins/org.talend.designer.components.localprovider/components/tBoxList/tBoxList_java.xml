@@ -115,10 +115,10 @@
                     MODULE="jackson-annotations-2.10.1.jar" MVN="mvn:com.fasterxml.jackson.core/jackson-annotations/2.10.1" 
                     REQUIRED_IF="USE_EXISTING_CONNECTION == 'false'" />
                <IMPORT NAME="apache-http-client"
-                	MODULE="httpclient-4.5.9.jar" MVN="mvn:org.apache.httpcomponents/httpclient/4.5.9"
+                	MODULE="httpclient-4.5.12.jar" MVN="mvn:org.apache.httpcomponents/httpclient/4.5.12"
                		REQUIRED_IF="USE_EXISTING_CONNECTION == 'false'" />
                <IMPORT NAME="apache-http-core"
-                	MODULE="httpcore-4.4.11.jar" MVN="mvn:org.apache.httpcomponents/httpcore/4.4.11"
+                	MODULE="httpcore-4.4.13.jar" MVN="mvn:org.apache.httpcomponents/httpcore/4.4.13"
                		REQUIRED_IF="USE_EXISTING_CONNECTION == 'false'" />
                <IMPORT NAME="apache-http-mime"
                 	MODULE="httpmime-4.1.2.jar" MVN="mvn:org.talend.libraries/httpmime-4.1.2/6.0.0" 
@@ -128,7 +128,7 @@
                 	MODULE="commons-logging-1.2.jar" MVN="mvn:commons-logging/commons-logging/1.2" 
                		REQUIRED_IF="USE_EXISTING_CONNECTION == 'false'" BundleID="" />
                	<IMPORT NAME="apache-commons-codec"
-	                MODULE="commons-codec-1.11.jar" MVN="mvn:commons-codec/commons-codec/1.11" 
+	                MODULE="commons-codec-1.14.jar" MVN="mvn:commons-codec/commons-codec/1.14" 
 	            	REQUIRED_IF="USE_EXISTING_CONNECTION == 'false'" />
                <IMPORT NAME="apache-commons-lang"
                     MODULE="commons-lang-2.6.jar" MVN="mvn:commons-lang/commons-lang/2.6" 
