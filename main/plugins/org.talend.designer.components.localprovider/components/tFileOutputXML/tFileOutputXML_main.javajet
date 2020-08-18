@@ -23,6 +23,7 @@ String cid = node.getUniqueName();
 boolean inputIsDocument = "true".equals(ElementParameterParser.getValue(node, "__INPUT_IS_DOCUMENT__"));
 String colDoc = ElementParameterParser.getValue(node, "__DOCUMENT_COL__");
 boolean isLog4jEnabled = ("true").equals(ElementParameterParser.getValue(node.getProcess(), "__LOG4J_ACTIVATE__"));
+boolean isDeleteEmptyFile = ("true").equals(ElementParameterParser.getValue(node, "__DELETE_EMPTYFILE__"));
 
 if(!inputIsDocument) {
 List<IMetadataTable> metadatas = node.getMetadataList();
@@ -398,6 +399,11 @@ out_<%=cid %>.newLine();
 	}
 %>
 nb_line_<%=cid %>++;
+
+<%if(isDeleteEmptyFile) {%>
+resourceMap.put("nb_line_<%=cid%>", nb_line_<%=cid%>);
+<%}%>
+
 <%log4jFileUtil.debugWriteData(node);%>
 <%
     if(("true").equals(split)){
@@ -466,6 +472,9 @@ out_<%=cid%>.newLine();
 				IConnection conn = conns.get(0);
 %>
 					nb_line_<%=cid %>++;
+					<%if(isDeleteEmptyFile) {%>
+					resourceMap.put("nb_line_<%=cid%>", nb_line_<%=cid%>);
+					<%}%>
 					writer_<%=cid%>.write(<%=conn.getName()%>.<%=colDoc%>.getDocument());
 					<%log4jFileUtil.debugWriteData(node);%>
 <%
