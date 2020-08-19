@@ -15,6 +15,11 @@ public class JobContextBuilder {
 		return new JobContextBuilder(ContextBuilder.create());
 	}
 
+	public JobContextBuilder custom(String key, String value) {
+		builder.with(key, value);
+		return this;
+	}
+	
 	public JobContextBuilder jobName(String job_name) {
 		builder.with("job_name", job_name);
 		return this;
