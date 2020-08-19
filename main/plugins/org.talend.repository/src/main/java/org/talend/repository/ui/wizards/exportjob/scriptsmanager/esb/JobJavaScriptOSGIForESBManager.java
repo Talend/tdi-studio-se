@@ -604,7 +604,7 @@ public class JobJavaScriptOSGIForESBManager extends JobJavaScriptsManager {
             endpointInfo.put("useContextBean", true); //$NON-NLS-1$
             endpointInfo.put("defaultContext", processItem.getProcess().getDefaultContext()); //$NON-NLS-1$
         } else if (!endpointUri.contains("://") && !endpointUri.startsWith("/")) { //$NON-NLS-1$ //$NON-NLS-2$
-            endpointUri = '/' + endpointUri;
+            endpointUri = '/' + (endpointUri.isEmpty() ? processItem.getProperty().getLabel() : endpointUri);
         }
 
         endpointInfo.put("originalAddress", endpointUri); //$NON-NLS-1$  Needed by Swagger
