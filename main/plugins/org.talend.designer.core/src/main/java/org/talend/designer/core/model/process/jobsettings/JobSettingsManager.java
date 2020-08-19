@@ -1293,6 +1293,10 @@ public class JobSettingsManager {
                 return TalendQuoteUtils.addQuotes("");
             }
 
+            if (("\"+\"").equals(separators) || "+".equals(separators)) {
+                return doAddMark4SpecialChar(separators);
+            }
+
             String[] splits = separators.split("\\+");
             String[] seqs = new String[splits.length];
             int posit = 0;
@@ -1307,13 +1311,16 @@ public class JobSettingsManager {
                         seqs[posit] = split;
                     } else {
                         String original = seqs[posit];
-                        seqs[posit] = original + split;
+                        seqs[posit] = original + "+" + split;
                     }
                 }
             }
 
             StringBuffer seqBuffer = new StringBuffer();
             for (int i = 0; i < seqs.length; i++) {
+                if (seqs[i] == null) {
+                    continue;
+                }
                 if (i != 0) {
                     seqBuffer.append("+");
                 }
