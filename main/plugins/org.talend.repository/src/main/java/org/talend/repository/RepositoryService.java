@@ -58,7 +58,6 @@ import org.talend.commons.ui.gmf.util.DisplayUtils;
 import org.talend.commons.ui.runtime.exception.MessageBoxExceptionHandler;
 import org.talend.commons.utils.PasswordHelper;
 import org.talend.commons.utils.system.EclipseCommandLine;
-import org.talend.configurator.common.utils.Utils;
 import org.talend.core.CorePlugin;
 import org.talend.core.GlobalServiceRegister;
 import org.talend.core.IRepositoryContextService;

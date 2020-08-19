@@ -51,8 +51,7 @@ Require-Bundle: javax.xml.rpc,
  org.talend.commons.runtime,
  org.talend.designer.maven,
  org.talend.components.api,
- org.eclipse.text,
- org.talend.configurator.common
+ org.eclipse.text
 Export-Package: org.talend.repository,
  org.talend.repository.constants,
  org.talend.repository.i18n,
