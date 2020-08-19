@@ -176,7 +176,7 @@ public abstract class DbGenerationManager {
     }
 
     public String getQueryColumnsName() {
-        return this.queryColumnsName;
+        return this.queryColumnsName.replaceAll("[\r\n]", " ");
     }
 
     /**

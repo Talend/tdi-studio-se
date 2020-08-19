@@ -275,7 +275,7 @@
     }
 %>
 
-    private PropertiesWithType context_param = new PropertiesWithType();
+    protected PropertiesWithType context_param = new PropertiesWithType();
     public java.util.Map<String, Object> parentContextMap = new java.util.HashMap<String, Object>();
 
     public String status= "";

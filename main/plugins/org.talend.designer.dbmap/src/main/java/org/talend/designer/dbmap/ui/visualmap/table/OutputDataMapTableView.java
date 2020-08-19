@@ -18,7 +18,6 @@ import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TableViewer;
-import org.eclipse.jface.viewers.TextCellEditor;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -32,7 +31,6 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Table;
-import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.ToolItem;
 import org.talend.commons.ui.runtime.image.EImage;
 import org.talend.commons.ui.runtime.image.ImageProvider;
@@ -46,6 +44,7 @@ import org.talend.commons.ui.runtime.ws.WindowSystem;
 import org.talend.commons.ui.swt.advanced.dataeditor.commands.ExtendedTableRemoveCommand;
 import org.talend.commons.ui.swt.extended.table.AbstractExtendedTableViewer;
 import org.talend.commons.ui.swt.extended.table.ExtendedTableModel;
+import org.talend.commons.ui.swt.proposal.ExtendedTextCellEditorWithProposal;
 import org.talend.commons.ui.swt.tableviewer.ModifiedBeanEvent;
 import org.talend.commons.ui.swt.tableviewer.TableViewerCreator;
 import org.talend.commons.ui.swt.tableviewer.TableViewerCreatorColumn;
@@ -156,9 +155,9 @@ public class OutputDataMapTableView extends DataMapTableView {
             }
 
             @Override
-            protected void setTextCellEditor(TextCellEditor textEditor) {
+            protected void setTextCellEditor(ExtendedTextCellEditorWithProposal textEditor) {
                 if (textEditor != null) {
-                    whereConstraintExpressionTextEditor = (Text) textEditor.getControl();
+                    whereConstraintExpressionTextEditor = textEditor.getTextControl();
                 }
             }
         };
@@ -198,9 +197,9 @@ public class OutputDataMapTableView extends DataMapTableView {
             }
 
             @Override
-            protected void setTextCellEditor(TextCellEditor textEditor) {
+            protected void setTextCellEditor(ExtendedTextCellEditorWithProposal textEditor) {
                 if (textEditor != null) {
-                    otherConstraintExpressionTextEditor = (Text) textEditor.getControl();
+                    otherConstraintExpressionTextEditor = textEditor.getTextControl();
                 }
             }
         };
@@ -360,7 +359,7 @@ public class OutputDataMapTableView extends DataMapTableView {
 
         protected abstract int getTableConstraintSize();
 
-        protected abstract void setTextCellEditor(TextCellEditor textEditor);
+        protected abstract void setTextCellEditor(ExtendedTextCellEditorWithProposal textEditor);
 
         /*
          * (non-Javadoc)
