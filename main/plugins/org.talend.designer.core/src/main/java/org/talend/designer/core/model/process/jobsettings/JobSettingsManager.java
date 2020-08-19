@@ -1323,8 +1323,6 @@ public class JobSettingsManager {
                     seqBuffer.append(doAddMark4SpecialChar(seqs[i]));
                 }
             }
-            for (String seq : seqs) {
-            }
 
             return seqBuffer.toString();
         }
