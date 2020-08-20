@@ -1293,17 +1293,13 @@ public class JobSettingsManager {
                 return TalendQuoteUtils.addQuotes("");
             }
 
-            if (("\"+\"").equals(separators) || "+".equals(separators)) {
-                return doAddMark4SpecialChar(separators);
-            }
-
             String[] splits = separators.split("\\+");
             String[] seqs = new String[splits.length];
             int posit = 0;
             for (String split : splits) {
                 String seq = split.trim();
                 // don't use seq, might trim space value
-                if ((seq.startsWith("\"") && seq.endsWith("\"")) || seq.startsWith("context.")) {
+                if (seq.length() > 1 && (seq.startsWith("\"") && seq.endsWith("\"")) || seq.startsWith("context.")) {
                     seqs[posit] = split;
                     posit++;
                 } else {
