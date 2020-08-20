@@ -272,40 +272,46 @@ bw_<%=cid%>.write("!set showHeader false\n");
         }
 
         // We have the Hive table dump on google storage, we now need to retrieve it and transmit it to the tFileInputDelimtied
-        <%
-        String accessKey = ElementParameterParser.getValue(node,"__ACCESS_KEY__");
-        String passwordFieldName = "__SECRET_KEY__";
-        final String GoogleTracker = org.talend.core.utils.TrackerUtil.getGoogleTracker();
-        %>
         org.jets3t.service.impl.rest.httpclient.GoogleStorageService service_<%=cid%> = null;
         java.util.List<java.io.InputStream> inputStreamList_<%=cid%> = new java.util.ArrayList<>();
+        java.util.regex.Matcher gsUriMatcher = org.talend.bigdata.launcher.google.dataproc.DataprocJobUtil.GS_URI_PATTERN.matcher(<%=gsTempDir%>);
         try {
-            <%@ include file="@{org.talend.designer.components.localprovider}/components/templates/password.javajet" %>
+            if (gsUriMatcher.find()) {
+                String bucketName_<%=cid%> = gsUriMatcher.group(1);
+                String objectKey_<%=cid%> = gsUriMatcher.group(2);
+                <%
+                boolean useStorageCreds = "USER_ACCOUNT_HMAC".equals(ElementParameterParser.getValue(node, "AUTH_TYPE"));
+                if (useStorageCreds) {
+                    String accessKey = ElementParameterParser.getValue(node, "__ACCESS_KEY__");
+                    String passwordFieldName = "__SECRET_KEY__";
+                    String googleTracker = org.talend.core.utils.TrackerUtil.getGoogleTracker();
+                %>
+                    <%@ include file="@{org.talend.designer.components.localprovider}/components/templates/password.javajet" %>
+                    org.jets3t.service.security.GSCredentials credentials_<%=cid%> = new org.jets3t.service.security.GSCredentials(<%=accessKey%>, decryptedPassword_<%=cid%>);
+                    service_<%=cid%> = new org.jets3t.service.impl.rest.httpclient.GoogleStorageService(credentials_<%=cid%>, " <%=googleTracker%>", null);
 
-            org.jets3t.service.security.GSCredentials credentials_<%=cid%> = new org.jets3t.service.security.GSCredentials(<%=accessKey%>,decryptedPassword_<%=cid%>);
+                    org.jets3t.service.model.GSObject[] objects_<%=cid%> = 
+                        service_<%=cid%>.listObjects(bucketName_<%=cid%>, objectKey_<%=cid%>, null);
 
-            service_<%=cid%> = new org.jets3t.service.impl.rest.httpclient.GoogleStorageService(credentials_<%=cid%>," <%=GoogleTracker%>",null);
-
-            java.util.regex.Matcher m = org.talend.bigdata.launcher.google.dataproc.DataprocJobUtil.GS_URI_PATTERN.matcher(<%=gsTempDir%>);
-            if (m.find()) {
-                String bucketName_<%=cid%> = m.group(1);
-                String objectKey_<%=cid%> = m.group(2);
-
-                org.jets3t.service.model.GSObject[] objects_<%=cid%> = service_<%=cid%>.listObjects(
-                    bucketName_<%=cid%>,
-                    objectKey_<%=cid%>,
-                    null
-                    );
-                for (org.jets3t.service.model.GSObject objectSummary_<%=cid%> : objects_<%=cid%>) {
-                    String objkey_<%=cid%> = objectSummary_<%=cid%>.getKey();
-                    org.jets3t.service.model.GSObject obj_<%=cid%> = service_<%=cid%>.getObject(bucketName_<%=cid%>, objkey_<%=cid%>);
-                    System.out.println(obj_<%=cid%>);
-                    if (obj_<%=cid%> != null) {
-                        if (!obj_<%=cid%>.isDirectoryPlaceholder()) {
-                            inputStreamList_<%=cid%>.add(obj_<%=cid%>.getDataInputStream());
+                    for (org.jets3t.service.model.GSObject objectSummary_<%=cid%> : objects_<%=cid%>) {
+                        String objkey_<%=cid%> = objectSummary_<%=cid%>.getKey();
+                        org.jets3t.service.model.GSObject obj_<%=cid%> = service_<%=cid%>.getObject(bucketName_<%=cid%>, objkey_<%=cid%>);
+                        System.out.println(obj_<%=cid%>);
+                        if (obj_<%=cid%> != null) {
+                            if (!obj_<%=cid%>.isDirectoryPlaceholder()) {
+                                inputStreamList_<%=cid%>.add(obj_<%=cid%>.getDataInputStream());
+                            }
                         }
                     }
-                }
+                <%  } else { %>
+                    com.google.cloud.storage.Bucket bucket = instance_<%=cid%>.getStorage().get(bucketName_<%=cid%>);
+                    Iterable<com.google.cloud.storage.Blob> blobs = 
+                    bucket.list(com.google.cloud.storage.Storage.BlobListOption.prefix(objectKey_<%=cid%>)).iterateAll();
+                    for (com.google.cloud.storage.Blob blob : blobs) {
+                        java.io.InputStream is = java.nio.channels.Channels.newInputStream(blob.reader());
+                        inputStreamList_<%=cid%>.add(is);
+                    }
+                <% } %>
             }
         } catch (java.lang.Exception e_<%=cid%>) {
             <%
