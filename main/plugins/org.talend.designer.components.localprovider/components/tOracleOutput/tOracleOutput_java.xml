@@ -530,11 +530,11 @@
                    UrlPath="platform:/plugin/org.talend.libraries.custom/lib/talend-oracle-timestamptz.jar"
                    REQUIRED_IF="(DB_VERSION=='ORACLE_10') OR (DB_VERSION=='ORACLE_11') OR (DB_VERSION=='ORACLE_12') OR (DB_VERSION=='ORACLE_18')" />
            <IMPORT NAME="ORACLE_18" MODULE="ojdbc8-19.3.0.0.jar" MVN="mvn:com.oracle.ojdbc/ojdbc8/19.3.0.0" REQUIRED_IF="(DB_VERSION == 'ORACLE_18') AND (USE_EXISTING_CONNECTION == 'false')" />
-           <IMPORT NAME="ORACLE_12"  MODULE="ojdbc7.jar" MVN="mvn:org.talend.libraries/ojdbc7/6.0.0"  BundleID="" REQUIRED_IF="(DB_VERSION == 'ORACLE_12') AND (USE_EXISTING_CONNECTION == 'false') AND (SPECIFY_DATASOURCE_ALIAS == 'false')" />
-           <IMPORT NAME="ORACLE_11"  MODULE="ojdbc6.jar" MVN="mvn:org.talend.libraries/ojdbc6/6.0.0"  BundleID="" REQUIRED_IF="(DB_VERSION == 'ORACLE_11') AND (USE_EXISTING_CONNECTION == 'false') AND (SPECIFY_DATASOURCE_ALIAS == 'false')" />
-           <IMPORT NAME="ORACLE_10"  MODULE="ojdbc14.jar" MVN="mvn:org.talend.libraries/ojdbc14/6.0.0"  BundleID="" REQUIRED_IF="(DB_VERSION == 'ORACLE_10') AND (USE_EXISTING_CONNECTION == 'false') AND (SPECIFY_DATASOURCE_ALIAS == 'false')" />
-           <IMPORT NAME="ORACLE_9"  MODULE="ojdbc14-9i.jar" MVN="mvn:org.talend.libraries/ojdbc14-9i/6.0.0"  BundleID="" REQUIRED_IF="(DB_VERSION == 'ORACLE_9') AND (USE_EXISTING_CONNECTION == 'false') AND (SPECIFY_DATASOURCE_ALIAS == 'false')" />
-           <IMPORT NAME="ORACLE_8"  MODULE="ojdbc12.jar" MVN="mvn:org.talend.libraries/ojdbc12/6.0.0"  BundleID="" REQUIRED_IF="(DB_VERSION == 'ORACLE_8') AND (USE_EXISTING_CONNECTION == 'false') AND (SPECIFY_DATASOURCE_ALIAS == 'false')" />
+           <IMPORT NAME="ORACLE_12"  MODULE="ojdbc7.jar" MVN="mvn:org.talend.libraries/ojdbc7/6.0.0"  BundleID="" REQUIRED_IF="(DB_VERSION == 'ORACLE_12') AND (USE_EXISTING_CONNECTION == 'false')" />
+           <IMPORT NAME="ORACLE_11"  MODULE="ojdbc6.jar" MVN="mvn:org.talend.libraries/ojdbc6/6.0.0"  BundleID="" REQUIRED_IF="(DB_VERSION == 'ORACLE_11') AND (USE_EXISTING_CONNECTION == 'false')" />
+           <IMPORT NAME="ORACLE_10"  MODULE="ojdbc14.jar" MVN="mvn:org.talend.libraries/ojdbc14/6.0.0"  BundleID="" REQUIRED_IF="(DB_VERSION == 'ORACLE_10') AND (USE_EXISTING_CONNECTION == 'false')" />
+           <IMPORT NAME="ORACLE_9"  MODULE="ojdbc14-9i.jar" MVN="mvn:org.talend.libraries/ojdbc14-9i/6.0.0"  BundleID="" REQUIRED_IF="(DB_VERSION == 'ORACLE_9') AND (USE_EXISTING_CONNECTION == 'false')" />
+           <IMPORT NAME="ORACLE_8"  MODULE="ojdbc12.jar" MVN="mvn:org.talend.libraries/ojdbc12/6.0.0"  BundleID="" REQUIRED_IF="(DB_VERSION == 'ORACLE_8') AND (USE_EXISTING_CONNECTION == 'false')" />
      </IMPORTS>
   </CODEGENERATION>
 
