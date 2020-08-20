@@ -3436,6 +3436,15 @@
               name="RefactoDeltaMergeOption"
               version="7.3.1">                     
        </projecttask>
+       <projecttask
+               beforeLogon="false"
+               breaks="6.4.0"
+               class="org.talend.repository.model.migration.CheckAzureBlobStorageKeepRemoteDirJavajetToTCOMPv0"
+               description="Add checkbox with not default value for Javajet component to be migrated for TCOMPv0"
+               id="org.talend.repository.model.migration.CheckAzureBlobStorageKeepRemoteDirJavajetToTCOMPv0"
+               name="CheckAzureBlobStorageKeepRemoteDirJavajetToTCOMPv0"
+               version="7.3.1">
+       </projecttask>
    </extension>
 
    <extension
