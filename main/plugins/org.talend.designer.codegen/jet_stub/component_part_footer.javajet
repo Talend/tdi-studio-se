@@ -195,7 +195,7 @@ if((codePart.equals(ECodePart.END))&&(stat || logstashCurrent)){
   }
   
   //log runtime lineage
-  boolean enable_runtime_lineage_log = NodeUtil.isJobUsingRuntimeLineage(process) && jobCatcherExists;
+  boolean enable_runtime_lineage_log = NodeUtil.isJobUsingRuntimeLineage(process) && jobCatcherExists && !cid.startsWith("tJobStructureCatcher") && !cid.startsWith("talend");
   if(enable_runtime_lineage_log) {//}
   
   List<? extends IConnection> outConns = node.getOutgoingConnections();
@@ -281,7 +281,7 @@ if((codePart.equals(ECodePart.END))&&(stat || logstashCurrent)){
           
       }
       
-      java.util.List<java.util.Map<String, String>> schema_<%=conn.getUniqueName()%>_<%=conn.getMetadataTable().getTableName()%> = new SchemaUtil_<%=conn.getUniqueName()%>_<%=conn.getMetadataTable().getTableName()%>.getSchema(<%=conn.getName()%>);
+      java.util.List<java.util.Map<String, String>> schema_<%=conn.getUniqueName()%>_<%=conn.getMetadataTable().getTableName()%> = new SchemaUtil_<%=conn.getUniqueName()%>_<%=conn.getMetadataTable().getTableName()%>().getSchema(<%=conn.getName()%>);
       <%
       INode target = conn.getTarget();
       String targetNodeId = target.getUniqueName();

@@ -24,6 +24,7 @@
         org.talend.core.model.process.ProcessUtils
         org.talend.core.model.components.IComponent
         org.talend.core.model.components.EComponentType
+        org.talend.core.model.utils.NodeUtil
     "
     class="Footer"
     skeleton="footer_java.skeleton"
@@ -535,6 +536,10 @@
 			p_<%=jobCatcherNode.getUniqueName()%>.setProperty("appender.file.maxsize", "52428800");
 			p_<%=jobCatcherNode.getUniqueName()%>.setProperty("appender.file.maxbackup", "20");
 			p_<%=jobCatcherNode.getUniqueName()%>.setProperty("host", "false");
+			
+			System.getProperties().stringPropertyNames().stream()
+					.filter(it -> it.startsWith("runtime.lineage."))
+					.forEach(key -> p_<%=jobCatcherNode.getUniqueName()%>.setProperty(key.substring("runtime.lineage.".length()), System.getProperty(key)));
 			
 			<%if(isLog4j1Enabled) {%>
 			org.apache.log4j.Logger.getLogger(p_<%=jobCatcherNode.getUniqueName()%>.getProperty("root.logger")).setLevel(org.apache.log4j.Level.DEBUG);

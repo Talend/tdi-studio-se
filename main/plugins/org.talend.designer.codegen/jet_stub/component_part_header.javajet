@@ -335,7 +335,7 @@
 		<%
 		log.startWork();
 		log.logCompSetting();
-		boolean enable_runtime_lineage_log = NodeUtil.isJobUsingRuntimeLineage(node.getProcess()) && jobCatcherExists;
+		boolean enable_runtime_lineage_log = NodeUtil.isJobUsingRuntimeLineage(node.getProcess()) && jobCatcherExists && !cid.startsWith("tJobStructureCatcher") && !cid.startsWith("talend");
 		if(enable_runtime_lineage_log) {
 		%>
 		class ParameterUtil_<%=cid%>{
