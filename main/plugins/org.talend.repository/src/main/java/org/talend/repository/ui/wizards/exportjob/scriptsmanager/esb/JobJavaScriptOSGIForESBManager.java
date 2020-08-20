@@ -924,11 +924,11 @@ public class JobJavaScriptOSGIForESBManager extends JobJavaScriptsManager {
             Set<URL> resources = libResource.getResourcesByRelativePath(path);
             for (URL url : resources) {
                 // TESB-21804:Fail to deploy cMessagingEndpoint with quartz component in runtime for ClassCastException
-                if (url.getPath().matches("(.*)camel-(.*)-alldep-(.*)$") 
-                        || url.getPath().matches("(.*)activemq-all-[\\d\\.]*.jar$")
-                        || url.getPath().matches("(.*)jms[\\d\\.-]*.jar$")
-                        || url.getPath().matches("(.*)tdm-lib-di-[\\d\\.-]*.jar$")
-                        || url.getPath().matches("(.*)dom4j-[\\d\\.-]*.jar$")) {
+                String urlStr = url.getPath().replace("\\", "/");
+                if (urlStr.matches("(.*)camel-(.*)-alldep-(.*)$") 
+                        || urlStr.matches("(.*)activemq-all-[\\d\\.]*.jar$")
+                        || urlStr.matches("(.*)/jms[\\d\\.-]*.jar$")
+                        || urlStr.matches("(.*)tdm-lib-di-[\\d\\.-]*.jar$")) {
                     continue;
                 }
                 File dependencyFile = new File(FilesUtils.getFileRealPath(url.getPath()));
