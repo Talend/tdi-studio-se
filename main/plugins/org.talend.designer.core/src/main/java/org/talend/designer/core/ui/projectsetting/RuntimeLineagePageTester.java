@@ -14,6 +14,7 @@ package org.talend.designer.core.ui.projectsetting;
 
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.jface.preference.IPreferenceNode;
+import org.talend.core.PluginChecker;
 import org.talend.core.runtime.preference.IProjectSettingPageTester;
 
 /**
@@ -25,6 +26,6 @@ public class RuntimeLineagePageTester implements IProjectSettingPageTester {
 
     @Override
     public boolean valid(IConfigurationElement element, IPreferenceNode node) {
-        return Boolean.valueOf(System.getProperty("runtime.lineage", Boolean.FALSE.toString())); //$NON-NLS-1$
+        return PluginChecker.isTIS() && Boolean.valueOf(System.getProperty("runtime.lineage", Boolean.FALSE.toString())); //$NON-NLS-1$
     }
 }
