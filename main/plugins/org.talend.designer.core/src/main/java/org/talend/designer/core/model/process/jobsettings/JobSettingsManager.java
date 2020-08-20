@@ -1293,13 +1293,13 @@ public class JobSettingsManager {
                 return TalendQuoteUtils.addQuotes("");
             }
 
-            String[] splits = separators.split("\\+");
+            String[] splits = separators.split("\\+"); //$NON-NLS-1$
             String[] seqs = new String[splits.length];
             int posit = 0;
             for (String split : splits) {
                 String seq = split.trim();
                 // don't use seq, might trim space value
-                if (seq.length() > 1 && (seq.startsWith("\"") && seq.endsWith("\"")) || seq.startsWith("context.")) {
+                if (seq.length() > 1 && (seq.startsWith("\"") && seq.endsWith("\"")) || seq.startsWith("context.")) { //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
                     if (seqs[posit] != null) {
                         posit++;
                     }
@@ -1310,7 +1310,7 @@ public class JobSettingsManager {
                         seqs[posit] = split;
                     } else {
                         String original = seqs[posit];
-                        seqs[posit] = original + "+" + split;
+                        seqs[posit] = original + "+" + split; //$NON-NLS-1$
                     }
                 }
             }
@@ -1321,9 +1321,9 @@ public class JobSettingsManager {
                     continue;
                 }
                 if (i != 0) {
-                    seqBuffer.append("+");
+                    seqBuffer.append("+"); //$NON-NLS-1$
                 }
-                if (seqs[i].contains("context.")) {
+                if (seqs[i].contains("context.")) { //$NON-NLS-1$
                     seqBuffer.append(seqs[i]);
                 } else {
                     seqBuffer.append(doAddMark4SpecialChar(seqs[i]));
