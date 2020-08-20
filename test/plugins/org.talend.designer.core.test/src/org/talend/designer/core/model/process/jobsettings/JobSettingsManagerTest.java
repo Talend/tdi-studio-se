@@ -15,7 +15,9 @@ package org.talend.designer.core.model.process.jobsettings;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -370,6 +372,33 @@ public class JobSettingsManagerTest {
         Assert.assertEquals(key, matcher.group(1));
         Assert.assertEquals(value, matcher.group(2));
 
+    }
+
+    @Test
+    public void testSpecificCharacterWithContextInRegex() {
+        Map<String, String> separatorhm = new HashMap<String, String>();
+        separatorhm.put("context.mark", "context.mark");
+        separatorhm.put("context.mark+context.mark", "context.mark+context.mark");
+        // "~~#\\*#~~"+context.mark+"~~#\\*#~~"
+        separatorhm.put("\"~~#*#~~\"+context.mark+\"~~#*#~~\"", "\"~~#\\\\*#~~\"+context.mark+\"~~#\\\\*#~~\"");
+        // context.mark+"~~#\\*#~~+context.mark"
+        separatorhm.put("context.mark+\"~~#*#~~\"+context.mark", "context.mark+\"~~#\\\\*#~~\"+context.mark");
+        // "\\+"
+        separatorhm.put("\"+\"", "\"\\\\+\"");
+        // "\\+\\+\\+\\+\\+"
+        separatorhm.put("\"+++++\"", "\"\\\\+\\\\+\\\\+\\\\+\\\\+\"");
+        // "#\\*\\+\\$\\?"+context.mark
+        separatorhm.put("\"#*+$?\"+context.mark", "\"#\\\\*\\\\+\\\\$\\\\?\"+context.mark");
+        // context.mark+"#\\*\\+\\$\\?"+context.mark
+        separatorhm.put("context.mark+\"#*+$?\"+context.mark", "context.mark+\"#\\\\*\\\\+\\\\$\\\\?\"+context.mark");
+        // "#\\*\\+\\$\\?"+context.mark+"#\\*\\+\\$\\?"
+        separatorhm.put("\"#*+$?\"+context.mark+\"#*+$?\"", "\"#\\\\*\\\\+\\\\$\\\\?\"+context.mark+\"#\\\\*\\\\+\\\\$\\\\?\"");
+
+        for (String separator : separatorhm.keySet()) {
+            String expect = "\"^([^\"+" + separatorhm.get(separator) + "+\"]*)\"+" + separatorhm.get(separator) + "+\"(.*)$\"";
+            String regex = JobSettingsManager.FileSeparator.getSeparatorsRegexp(separator);
+            Assert.assertEquals("Resolve separator => " + separator + " <= not as expect", expect, regex);
+        }
     }
 
     @Test

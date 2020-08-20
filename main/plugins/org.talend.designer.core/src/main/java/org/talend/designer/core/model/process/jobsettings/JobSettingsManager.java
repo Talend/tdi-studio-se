@@ -1300,6 +1300,9 @@ public class JobSettingsManager {
                 String seq = split.trim();
                 // don't use seq, might trim space value
                 if (seq.length() > 1 && (seq.startsWith("\"") && seq.endsWith("\"")) || seq.startsWith("context.")) {
+                    if (seqs[posit] != null) {
+                        posit++;
+                    }
                     seqs[posit] = split;
                     posit++;
                 } else {
