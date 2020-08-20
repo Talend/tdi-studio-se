@@ -220,6 +220,7 @@ public abstract class JobScriptsManager {
         esbServiceName,
         esbCategory,
         esbExportType,
+        esbMetrics,
         properties,
         needAssembly,
         buildImage,
@@ -231,7 +232,8 @@ public abstract class JobScriptsManager {
         registryUsername,
         registryPassword,
         avoidBranchName,
-        mainJobOnly
+        mainJobOnly,
+        clearPasswordContextParameters
     }
 
     /**

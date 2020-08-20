@@ -109,6 +109,8 @@ public class BuildJobHandler extends AbstractBuildJobHandler {
         argumentsMap.put(TalendProcessArgumentConstant.ARG_ENABLE_STATS, isOptionChoosed(ExportChoice.addStatistics));
         argumentsMap.put(TalendProcessArgumentConstant.ARG_ENABLE_TRACS, isOptionChoosed(ExportChoice.addTracs));
         argumentsMap.put(TalendProcessArgumentConstant.ARG_AVOID_BRANCH_NAME, isOptionChoosed(ExportChoice.avoidBranchName));
+        argumentsMap.put(TalendProcessArgumentConstant.ARG_CLEAR_PASSWORD_CONTEXT_PARAMETERS, 
+        		isOptionChoosed(ExportChoice.clearPasswordContextParameters));
         Properties prop = (Properties) exportChoice.get(ExportChoice.properties);
         if (prop != null) { // add all properties for arugment map.
             Enumeration<Object> keys = prop.keys();

@@ -110,6 +110,7 @@
 	String key_pair = ElementParameterParser.getValue(node, "__KEY_PAIR__");
 	
 	String instance_count = ElementParameterParser.getValue(node, "__INSTANCE_COUNT__");
+	String slave_instance_count = ElementParameterParser.getValue(node, "__SLAVE_INSTANCE_COUNT__");
 	
 	String master_instance_type = ElementParameterParser.getValue(node, "__MASTER_INSTANCE_TYPE__");
 	String slave_instance_type = ElementParameterParser.getValue(node, "__SLAVE_INSTANCE_TYPE__");
@@ -139,6 +140,8 @@
 	boolean use_customize_version = "true".equals(ElementParameterParser.getValue(node, "__USE_CUSTOMIZE_VERSION__"));
 	String cluster_version = use_customize_version?ElementParameterParser.getValue(node, "__CUSTOMIZE_VERSION__").trim().replace(' ', '-'):ElementParameterParser.getValue(node, "__CLUSTER_VERSION__");
 	cluster_version = cluster_version.toLowerCase();
+	
+	boolean use_multiple_master = "true".equals(ElementParameterParser.getValue(node, "__USE_MULTIPLE_MASTER_NODES__"));
 %>
 	        
 	<%@ include file="@{org.talend.designer.components.localprovider}/components/templates/Amazon/EMRClient.javajet"%>
@@ -246,59 +249,81 @@
 	if(setApps) {
 	%>
 	<%@ include file="./app_mapping.javajet"%>
-	<%
-	}
+	<%}%>
 	
+	java.util.List<com.amazonaws.services.elasticmapreduce.model.Configuration> configs_<%=cid%> = new java.util.ArrayList<com.amazonaws.services.elasticmapreduce.model.Configuration>();
+	<%
 	Map<String, List<Map<String,String>>> classification2Properties = new HashMap<String, List<Map<String,String>>>();
-	if(newApi) {
-		List<Map<String, String>> property_table = (List<Map<String, String>>)ElementParameterParser.getObjectValue(node, "__PROPERTY_TABLE__");
-		if(property_table!=null) {
-			for (int i=0; i<property_table.size(); i++) {
-				Map<String, String> property = property_table.get(i);
-				String classification = property.get("CLASSIFICATION");
-				
-				List<Map<String,String>> properties = classification2Properties.get(classification);
-				if(properties == null) {
-					properties = new ArrayList<Map<String,String>>();
-					classification2Properties.put(classification, properties);
+	String property_json = ElementParameterParser.getValue(node, "__PROPERTY_JSON__");
+	boolean property_json_validated = property_json != null && !property_json.equals("\"\"") && property_json.length() > 0;
+	%>
+	boolean property_json_validated_<%=cid%> = <%=property_json_validated %>;
+	<%
+	if(!use_multiple_master) {
+		if(newApi) {
+			List<Map<String, String>> property_table = (List<Map<String, String>>)ElementParameterParser.getObjectValue(node, "__PROPERTY_TABLE__");
+			if(property_table!=null) {
+				for (int i=0; i<property_table.size(); i++) {
+					Map<String, String> property = property_table.get(i);
+					String classification = property.get("CLASSIFICATION");
+					
+					List<Map<String,String>> properties = classification2Properties.get(classification);
+					if(properties == null) {
+						properties = new ArrayList<Map<String,String>>();
+						classification2Properties.put(classification, properties);
+					}
+					
+					properties.add(property);
 				}
 				
-				properties.add(property);
-			}
-			
-			if(!classification2Properties.isEmpty()) {
-			%>
-				java.util.List<com.amazonaws.services.elasticmapreduce.model.Configuration> configs_<%=cid%> = new java.util.ArrayList<com.amazonaws.services.elasticmapreduce.model.Configuration>();
-				java.util.Map<String,String> properties_<%=cid%> = null;
-				com.amazonaws.services.elasticmapreduce.model.Configuration config_<%=cid%> = null;
-			<%
-			}
-			
-			for(java.util.Map.Entry<String, List<Map<String,String>>> entry : classification2Properties.entrySet()) {
-				String classification = entry.getKey();
-				List<Map<String,String>> properties = entry.getValue();
+				if(!classification2Properties.isEmpty()) {
 				%>
-    			properties_<%=cid%> = new java.util.HashMap<String,String>();
-    			
-    			<%
-    			for(Map<String,String> property : properties) {
-    			%>
-    				properties_<%=cid%>.put(<%=property.get("KEY")%>, <%=property.get("VALUE")%>);
-    			<%
-    			}
-    			%>
-    			
-            	config_<%=cid%> = new com.amazonaws.services.elasticmapreduce.model.Configuration()
-                    .withClassification(<%=classification%>)
-                    .withProperties(properties_<%=cid%>);
-                    
-                configs_<%=cid%>.add(config_<%=cid%>);
-			<%
+					java.util.Map<String,String> properties_<%=cid%> = null;
+					com.amazonaws.services.elasticmapreduce.model.Configuration config_<%=cid%> = null;
+				<%
+				}
+				
+				for(java.util.Map.Entry<String, List<Map<String,String>>> entry : classification2Properties.entrySet()) {
+					String classification = entry.getKey();
+					List<Map<String,String>> properties = entry.getValue();
+					%>
+	    			properties_<%=cid%> = new java.util.HashMap<String,String>();
+	    			
+	    			<%
+	    			for(Map<String,String> property : properties) {
+	    			%>
+	    				properties_<%=cid%>.put(<%=property.get("KEY")%>, <%=property.get("VALUE")%>);
+	    			<%
+	    			}
+	    			%>
+	    			
+	            	config_<%=cid%> = new com.amazonaws.services.elasticmapreduce.model.Configuration()
+	                    .withClassification(<%=classification%>)
+	                    .withProperties(properties_<%=cid%>);
+	                    
+	                configs_<%=cid%>.add(config_<%=cid%>);
+				<%
+				}
 			}
 		}
-	}
+	}else{
+		boolean isHasSubnetId = subnet_id != null && !subnet_id.equals("\"\"") && subnet_id.length() > 0;
 	%>
-	
+		boolean isHasSubnetId_<%=cid%> = <%=isHasSubnetId %>;
+		if(!isHasSubnetId_<%=cid%>) {
+			throw new RuntimeException("The subnet ID must be specified while using multiple master nodes.");
+		}
+		
+		if(property_json_validated_<%=cid%>) {
+			com.fasterxml.jackson.databind.ObjectMapper mapper_<%=cid%> = new com.fasterxml.jackson.databind.ObjectMapper();
+			mapper_<%=cid%>.configure(com.fasterxml.jackson.databind.MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES, true);
+			try {
+				configs_<%=cid%> = java.util.Arrays.asList(mapper_<%=cid%>.readValue(<%=property_json%>, com.amazonaws.services.elasticmapreduce.model.Configuration[].class));
+			} catch (com.fasterxml.jackson.core.JsonProcessingException e) {
+				e.printStackTrace();
+			}
+		}
+	<%}%>
 	com.amazonaws.services.elasticmapreduce.model.RunJobFlowRequest request_<%=cid%> = new com.amazonaws.services.elasticmapreduce.model.RunJobFlowRequest()
     	.withName(<%=cluster_name%>)
     	<%if(enable_log){%>
@@ -342,18 +367,32 @@
     	.withBootstrapActions(actions_<%=cid %>)
     	<%}%>
     	
-    	<%if(!classification2Properties.isEmpty()){%>
-    	.withConfigurations(configs_<%=cid%>)
-    	<%}%>
+		<%if(!classification2Properties.isEmpty() || (use_multiple_master && property_json_validated)){%>
+			.withConfigurations(configs_<%=cid%>)
+		<%}%>
     	
     	.withInstances(
     		new com.amazonaws.services.elasticmapreduce.model.JobFlowInstancesConfig()
-    			.withInstanceCount(<%=instance_count%>)
     			<%if(enable_key_pair){%>
     			.withEc2KeyName(<%=key_pair%>)
     			<%}%>
+    			
+    			<%if(use_multiple_master){%>
+				.withInstanceGroups(
+					new com.amazonaws.services.elasticmapreduce.model.InstanceGroupConfig()
+					.withInstanceRole(com.amazonaws.services.elasticmapreduce.model.InstanceRoleType.MASTER)
+					.withInstanceCount(3)
+					.withInstanceType(<%=master_instance_type%>),
+					new com.amazonaws.services.elasticmapreduce.model.InstanceGroupConfig()
+					.withInstanceRole(com.amazonaws.services.elasticmapreduce.model.InstanceRoleType.CORE)
+					.withInstanceCount(<%=slave_instance_count%>)
+					.withInstanceType(<%=slave_instance_type%>)
+				)    			
+    			<%}else{%>
+    			.withInstanceCount(<%=instance_count%>)
     			.withMasterInstanceType(<%=master_instance_type%>)
     			.withSlaveInstanceType(<%=slave_instance_type%>)
+    			<%}%>
     			
     			<%if(parameterUtil.isValid(subnet_id)){%>
     			.withEc2SubnetId(<%=subnet_id%>)
@@ -403,7 +442,7 @@
 	if(wait_for_cluster_ready) {
 	%>
 		boolean clusterIsAlive_<%=cid%> = false;
-        System.out.println("Wating for cluster to become available.");
+        System.out.println("Waiting for cluster to become available.");
         while (true) {
             com.amazonaws.services.elasticmapreduce.model.DescribeClusterResult result2_<%=cid%> = emr_<%=cid%>.describeCluster(
             	new com.amazonaws.services.elasticmapreduce.model.DescribeClusterRequest()
@@ -433,7 +472,7 @@
 		boolean waitForStep_<%=cid%> = clusterIsAlive_<%=cid%> && (steps_<%=cid %>.size() > 1);
 		
 		if(waitForStep_<%=cid%>) {
-        	System.out.println("Wating for steps to complete.");
+        	System.out.println("Waiting for steps to complete.");
         }
         
         while (waitForStep_<%=cid%>) {

@@ -315,7 +315,7 @@ public class ChangeComponentCommandTest {
                 ComponentCategory.CATEGORY_4_DI.getName());
         IComponent tRedshiftInput = compService.getComponentsFactory().get("tRedshiftInput",
                 ComponentCategory.CATEGORY_4_DI.getName());
-        IComponent tEXAInput = compService.getComponentsFactory().get("tEXAInput",
+        IComponent tExasolInput = compService.getComponentsFactory().get("tExasolInput",
                 ComponentCategory.CATEGORY_4_DI.getName());
         IComponent tFirebirdInput = compService.getComponentsFactory().get("tFirebirdInput",
                 ComponentCategory.CATEGORY_4_DI.getName());
@@ -368,7 +368,7 @@ public class ChangeComponentCommandTest {
         tDBInputs.add(tAmazonMysqlInput);
         tDBInputs.add(tAmazonOracleInput);
         tDBInputs.add(tRedshiftInput);
-        tDBInputs.add(tEXAInput);
+        tDBInputs.add(tExasolInput);
         tDBInputs.add(tFirebirdInput);
         tDBInputs.add(tGreenplumInput);
         tDBInputs.add(tDB2Input);

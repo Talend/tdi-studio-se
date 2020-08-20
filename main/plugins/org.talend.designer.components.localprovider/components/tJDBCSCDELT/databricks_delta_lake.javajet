@@ -1,0 +1,180 @@
+<%@ jet%>
+
+<%
+for(Map<String, String> sk : sourceKeys) {
+    joinClause.add(" d." + text_util.wrap(sk.get("NAME")) + " = t." + text_util.wrap(sk.get("NAME")));
+}
+String joinClauseString = StringUtils.join(joinClause.toArray(), " AND ");
+String l2StartDateFieldType = ElementParameterParser.getValue(node,"__L2_STARTDATE_FIELD_TYPE__");
+String l2StartDateFieldInputFieldName =  ElementParameterParser.getValue(node,"__INPUT_FIELD_NAME__");
+
+//three cases :
+//type 1 only
+//type 2 only
+//type 1&2
+
+if(isEnableType2) {
+%>
+    final String changeDateTime_<%=cid %> = "\"" + (new java.sql.Timestamp((Long)start_Hash.get("<%=cid %>"))).toString() + "\"";
+    
+    <%if("INPUT_FIELD".equals(l2StartDateFieldType)) {%>
+    
+    <%} else {%>
+    final String startDateTime_<%=cid%> = changeDateTime_<%=cid%>;
+    <%}%>
+    
+    <% if("FIXED_DATE_VALUE".equals(l2EndDateFieldType)) {%>
+    String customEndDate_<%=cid%> = "to_date('" + <%=l2EndDateFieldFixedDateValue%> + "', 'yyyy-MM-dd')";
+    <%}
+}
+
+if(isEnableType1) {
+    List<String> columnNames = new ArrayList<String>();
+    List<String> setColumns = new ArrayList<String>();
+    List<String> whereClause = new ArrayList<String>();
+    for(Map<String, String> sk : sourceKeys) {
+        columnNames.add(text_util.wrap(sk.get("NAME")));
+    }
+    for(Map<String, String> type1Attribute : type1Attributes) {
+    	strFieldName = text_util.wrap(type1Attribute.get("NAME"));
+        columnNames.add(strFieldName);
+        setColumns.add(" " + strFieldName + " = t." + strFieldName);
+        if(isFieldValueIncNull){
+            whereClause.add("( d." + strFieldName + " is null AND t." + strFieldName + " is not null )");
+        	whereClause.add("( d." + strFieldName + " is not null AND t." + strFieldName + " is null )");
+       	}
+        whereClause.add("( d." + strFieldName + " <> t." + strFieldName+")");
+    }
+    for(Map<String, String> type2Attribute : type2Attributes) {
+        columnNames.add(text_util.wrap(type2Attribute.get("NAME")));
+    }
+    selectColumnString = StringUtils.join(columnNames.toArray(), ", t.");
+    
+    if(isEnableType2) {
+        columnNames.add(text_util.wrap(startDateField));
+        columnNames.add(text_util.wrap(endDateField));
+        if(isEnableActive) {
+            columnNames.add(text_util.wrap(activeField));
+        }
+        if(isEnableVersion) {
+            columnNames.add(text_util.wrap(versionField));
+        }
+    }
+    columnNameString = StringUtils.join(columnNames.toArray(), ", ");
+    String setColumnsString = StringUtils.join(setColumns.toArray(), ", ");
+    String whereClauseString = StringUtils.join(whereClause.toArray(), " OR ");
+    %>
+    StringBuilder sb_type1_<%=cid%> = new StringBuilder();
+    sb_type1_<%=cid%>.append("MERGE INTO <%=text_util.wrap("tableName", cid)%> AS d ")
+               .append("USING <%=text_util.wrap("sourceTable", cid)%> AS t ")
+               .append("ON <%=joinClauseString%> ")
+               .append("WHEN MATCHED AND (<%=whereClauseString%>) THEN ")
+               .append("UPDATE SET <%=setColumnsString%> ")
+               .append("WHEN NOT MATCHED <%if(isEnableType2){%>AND 1!=1 <%}%>THEN ")
+               <%if(isEnableType2) {%>
+               .append("INSERT (<%=columnNameString%>) VALUES (t.<%=selectColumnString%>, " + <%if("INPUT_FIELD".equals(l2StartDateFieldType)) {%>"t.<%=l2StartDateFieldInputFieldName%>"<%} else {%>startDateTime_<%=cid%><%}%> + ", " + <%if("NULL".equals(l2EndDateFieldType)) { %>"NULL"<% } else {%>customEndDate_<%=cid%><%}%>
+<%if(isEnableActive) {%>+ ", 1"<%}%><%if(isEnableVersion) {%>+", 1"<%}%> + ")");
+               <%} else {%>
+               .append("INSERT (<%=columnNameString%>) VALUES (t.<%=selectColumnString%>)");
+               <%}%>
+    
+    String mergeForType1_<%=cid%> = sb_type1_<%=cid%>.toString();
+    
+    <%if(isEnableDebug) {%>
+    System.out.println("[<%=cid%>] type1 action sql\n" + mergeForType1_<%=cid%> + "\nstart");
+    <%}%>
+    
+    java.sql.Statement stmtType1Merge_<%=cid%> = conn_<%=cid%>.createStatement();
+    stmtType1Merge_<%=cid%>.executeUpdate(mergeForType1_<%=cid%>);
+    stmtType1Merge_<%=cid%>.close();
+    
+    <%
+    if(isEnableDebug) {
+        %>
+        System.out.println("[<%=cid%>] type1 action sql done");
+        <%
+    }
+}
+
+if(isEnableType2) {
+    List<String> whereClause = new ArrayList<String>();
+    for (Map<String, String> type2Attribute : type2Attributes) {
+        strFieldName = text_util.wrap(type2Attribute.get("NAME"));
+    	if(isFieldValueIncNull){
+        	whereClause.add("( d." + strFieldName + " is null AND t." + strFieldName + " is not null )");
+        	whereClause.add("( d." + strFieldName + " is not null AND t." + strFieldName + " is null )");
+     	}
+        whereClause.add("( d." + strFieldName + " <> t." + strFieldName+")");
+    }
+    String whereClauseString = StringUtils.join(whereClause.toArray(), " OR ");
+    
+    List<String> columnNames = new ArrayList<String>();
+    for(Map<String, String> sourceKey : sourceKeys) {
+        columnNames.add(text_util.wrap(sourceKey.get("NAME")));
+    }
+    for(Map<String, String> type1Attribute : type1Attributes) {
+        columnNames.add(text_util.wrap(type1Attribute.get("NAME")));
+    }
+    for(Map<String, String> type2Attribute : type2Attributes) {
+        columnNames.add(text_util.wrap(type2Attribute.get("NAME")));
+    }
+    selectColumnString = StringUtils.join(columnNames.toArray(), ", t.");
+    columnNames.add(text_util.wrap(startDateField));
+    columnNames.add(text_util.wrap(endDateField));
+    if(isEnableActive) {
+        columnNames.add(text_util.wrap(activeField));
+    }
+    if(isEnableVersion) {
+        columnNames.add(text_util.wrap(versionField));
+    }
+    columnNameString = StringUtils.join(columnNames.toArray(), ", ");
+    %>
+    StringBuilder sb_type2_merge_<%=cid%> = new StringBuilder();
+    sb_type2_merge_<%=cid%>.append("MERGE INTO <%=text_util.wrap("tableName", cid)%> AS d ")
+               .append("USING <%=text_util.wrap("sourceTable", cid)%> AS t ")
+               .append("ON <%=joinClauseString%> ")
+               .append("WHEN MATCHED AND (<%=whereClauseString%>) AND d.<%=text_util.wrap(endDateField)%>" + <%if("NULL".equals(l2EndDateFieldType)) { %>" IS NULL "<% } else { %>" = " + customEndDate_<%=cid%><%}%> + " THEN ")
+               .append("UPDATE SET <%=text_util.wrap(endDateField)%> = " + changeDateTime_<%=cid%> + " "<%if(isEnableActive) {%> + ", <%=text_util.wrap(activeField)%> = 0 "<%}%>)
+               .append("WHEN NOT MATCHED THEN ")
+               .append("INSERT (<%=columnNameString%>) VALUES (t.<%=selectColumnString%>, " + <%if("INPUT_FIELD".equals(l2StartDateFieldType)) {%>"t.<%=l2StartDateFieldInputFieldName%>"<%} else {%>startDateTime_<%=cid%><%}%> + ", " + <%if("NULL".equals(l2EndDateFieldType)) { %>"NULL"<% } else {%>customEndDate_<%=cid%><%}%>
+<%if(isEnableActive) {%>+ ", 1"<%}%><%if(isEnableVersion) {%>+", 1"<%}%> + ")");
+
+    String mergeForType2_<%=cid%> = sb_type2_merge_<%=cid%>.toString();
+    
+    <%if(isEnableDebug) {%>
+    System.out.println("[<%=cid%>] type2 merge sql\n" + mergeForType2_<%=cid %> + "\nstart");
+    <%}%>
+               
+    java.sql.Statement stmtType2Merge_<%=cid%> = conn_<%=cid%>.createStatement();
+    stmtType2Merge_<%=cid%>.executeUpdate(mergeForType2_<%=cid%>);
+    stmtType2Merge_<%=cid%>.close();
+    
+    <%if(isEnableDebug) {%>
+    System.out.println("[<%=cid%>] type2 merge sql done");
+    <%}%>
+    
+    StringBuilder sb_type2_active_<%=cid%> = new StringBuilder();
+    sb_type2_active_<%=cid%>.append("MERGE INTO <%=text_util.wrap("tableName", cid)%> AS d ")
+               .append("USING (SELECT NULL as mergeKey, <%if(isEnableVersion) {%><%=text_util.wrap("tableName", cid)%>.<%=text_util.wrap(versionField)%>, <%}%>t.* FROM <%=text_util.wrap("sourceTable", cid)%> AS t JOIN <%=text_util.wrap("tableName", cid)%> ON " + "<%=joinClauseString%>".replace(" d."," "+tableName_<%=cid%>+".") + " WHERE (" + "<%=whereClauseString%>".replace(" d."," "+tableName_<%=cid%>+".") + ") AND " + tableName_<%=cid%> + ".<%=text_util.wrap(endDateField)%> = " + changeDateTime_<%=cid%> + ") AS staged_updates ")
+               .append("ON d.<%=columnNames.get(0)%> = mergeKey ")//expect not match always as null value for mergeKey, then go to the insert action, never go to update 
+               .append("WHEN MATCHED AND 1!=1 THEN ")
+               .append("UPDATE SET <%=text_util.wrap(endDateField)%> = " + changeDateTime_<%=cid%> + " ")//should never happen
+               .append("WHEN NOT MATCHED THEN ")
+               .append("INSERT (<%=columnNameString%>) VALUES (staged_updates.<%=selectColumnString.replace(" t."," staged_updates.")%>, " + <%if("INPUT_FIELD".equals(l2StartDateFieldType)) {%>"staged_updates.<%=l2StartDateFieldInputFieldName%>"<%} else {%>startDateTime_<%=cid%><%}%> 
+     + ", " + <% if("NULL".equals(l2EndDateFieldType)) { %>"NULL "<% } else {%>customEndDate_<%=cid%><%} if(isEnableActive) {%> + ", 1"<%}%><%if(isEnableVersion) {%> + ", staged_updates.<%=text_util.wrap(versionField)%> + 1"<%}%> + ")");
+     
+    String activeForType2_<%=cid%> = sb_type2_active_<%=cid%>.toString();
+    
+    <%if(isEnableDebug) {%>
+    System.out.println("[<%=cid%>] type2 new active row sql\n" + activeForType2_<%=cid %> + "\nstart");
+    <%}%>
+    
+    java.sql.Statement stmtType2Active_<%=cid%> = conn_<%=cid%>.createStatement();
+    stmtType2Active_<%=cid%>.executeUpdate(activeForType2_<%=cid%>);
+    stmtType2Active_<%=cid%>.close();
+    
+    <%if(isEnableDebug) {%>
+    System.out.println("[<%=cid%>] type2 new active row sql done");
+    <%}
+}
+%>

@@ -516,6 +516,7 @@ public class DataProcess implements IGeneratingProcess {
                 ((IExternalNode) dataNode).setInternalMapperModel(externalNode.getInternalMapperModel());
             }
         }
+        dataNode.setReplaceNodeHandler(graphicalNode.getReplaceNodeHandler());
         dataNode.setActivate(graphicalNode.isActivate());
         dataNode.setStart(graphicalNode.isStart());
 

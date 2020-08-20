@@ -927,7 +927,8 @@ public class JobJavaScriptOSGIForESBManager extends JobJavaScriptsManager {
                 if (url.getPath().matches("(.*)camel-(.*)-alldep-(.*)$") 
                         || url.getPath().matches("(.*)activemq-all-[\\d\\.]*.jar$")
                         || url.getPath().matches("(.*)jms[\\d\\.-]*.jar$")
-                        || url.getPath().matches("(.*)tdm-lib-di-[\\d\\.-]*.jar$")) {
+                        || url.getPath().matches("(.*)tdm-lib-di-[\\d\\.-]*.jar$")
+                        || url.getPath().matches("(.*)dom4j-[\\d\\.-]*.jar$")) {
                     continue;
                 }
                 File dependencyFile = new File(FilesUtils.getFileRealPath(url.getPath()));

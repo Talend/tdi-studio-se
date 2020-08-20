@@ -318,9 +318,8 @@
             />
             <IMPORT
                 NAME="commons-beanutils"
-                MODULE="commons-beanutils-1.8.3.jar"
-                MVN="mvn:commons-beanutils/commons-beanutils/1.8.3"
-                UrlPath="platform:/plugin/org.talend.libraries.apache.common/lib/commons-beanutils-1.8.3.jar"
+                MODULE="commons-beanutils-1.9.4.jar"
+                MVN="mvn:commons-beanutils/commons-beanutils/1.9.4"
                 REQUIRED="true"
             />
             <IMPORT

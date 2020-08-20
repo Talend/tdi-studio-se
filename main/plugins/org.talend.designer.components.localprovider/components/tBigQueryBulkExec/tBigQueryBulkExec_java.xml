@@ -124,19 +124,63 @@
 		<ITEM NAME="EMPTY" VALUE="EMPTY" />
 	</ITEMS>
     </PARAMETER>
-    <PARAMETER NAME="BULK_FILE_ALREADY_EXIST" FIELD="CHECK" NUM_ROW="59" REQUIRED="true" GROUP="GS_CONF">
-	<DEFAULT>false</DEFAULT>
+
+    <PARAMETER 
+      NAME="BULK_FILE_ALREADY_EXIST" 
+      FIELD="CHECK" 
+      NUM_ROW="58" 
+      REQUIRED="true" 
+      GROUP="GS_CONF">
+      <DEFAULT>false</DEFAULT>
     </PARAMETER>
-    <PARAMETER NAME="GS_ACCESS_KEY" FIELD="TEXT" NUM_ROW="60" REQUIRED="true" GROUP="GS_CONF" SHOW_IF="BULK_FILE_ALREADY_EXIST=='false'">
+
+    <PARAMETER
+      NAME="AUTH_TYPE"
+      FIELD="CLOSED_LIST"
+      NUM_ROW="59"
+      GROUP="GS_CONF"
+      SHOW_IF="(BULK_FILE_ALREADY_EXIST=='false')"
+      >
+      <ITEMS DEFAULT="GS_SERVICE_ACCOUNT">
+        <ITEM NAME="USER_ACCOUNT_HMAC" VALUE="USER_ACCOUNT_HMAC"/>
+        <ITEM NAME="GS_SERVICE_ACCOUNT" VALUE="GS_SERVICE_ACCOUNT"/>
+      </ITEMS>
+    </PARAMETER>
+
+    <PARAMETER 
+      NAME="GS_ACCESS_KEY" 
+      FIELD="TEXT" 
+      NUM_ROW="60" 
+      REQUIRED="true" 
+      GROUP="GS_CONF" 
+      SHOW_IF="(BULK_FILE_ALREADY_EXIST=='false') AND (AUTH_TYPE == 'USER_ACCOUNT_HMAC')">
       <DEFAULT>""</DEFAULT>
     </PARAMETER>
-    <PARAMETER NAME="GS_SECRET_KEY" FIELD="PASSWORD" NUM_ROW="61" REQUIRED="true" GROUP="GS_CONF" SHOW_IF="BULK_FILE_ALREADY_EXIST=='false'">
+
+    <PARAMETER 
+      NAME="GS_SECRET_KEY" 
+      FIELD="PASSWORD" 
+      NUM_ROW="61" 
+      REQUIRED="true" 
+      GROUP="GS_CONF" 
+      SHOW_IF="(BULK_FILE_ALREADY_EXIST=='false') AND (AUTH_TYPE == 'USER_ACCOUNT_HMAC')">
       <DEFAULT>""</DEFAULT>
     </PARAMETER>
-    <PARAMETER NAME="GS_LOCAL_FILE" FIELD="FILE" NUM_ROW="62" REQUIRED="true" GROUP="GS_CONF" SHOW_IF="BULK_FILE_ALREADY_EXIST=='false'">
+
+    <PARAMETER
+      NAME="GS_SERVICE_ACCOUNT_KEY"
+      FIELD="FILE"
+      NUM_ROW="62"
+      REQUIRED_IF="(BULK_FILE_ALREADY_EXIST=='false') AND (AUTH_TYPE == 'GS_SERVICE_ACCOUNT')"
+      SHOW_IF="(BULK_FILE_ALREADY_EXIST=='false') AND (AUTH_TYPE == 'GS_SERVICE_ACCOUNT')"
+      GROUP="GS_CONF">
+      <DEFAULT>"__COMP_DEFAULT_FILE_DIR__/key.json"</DEFAULT>
+    </PARAMETER>
+
+    <PARAMETER NAME="GS_LOCAL_FILE" FIELD="FILE" NUM_ROW="63" REQUIRED="true" GROUP="GS_CONF" SHOW_IF="BULK_FILE_ALREADY_EXIST=='false'">
       <DEFAULT>""</DEFAULT>
     </PARAMETER>
-    <PARAMETER NAME="BUCKET_NAME" FIELD="TEXT" NUM_ROW="63" REQUIRED="true" GROUP="GS_CONF" SHOW_IF="BULK_FILE_ALREADY_EXIST=='false'">
+    <PARAMETER NAME="BUCKET_NAME" FIELD="TEXT" NUM_ROW="64" REQUIRED="true" GROUP="GS_CONF" SHOW_IF="BULK_FILE_ALREADY_EXIST=='false'">
       <DEFAULT>""</DEFAULT>
     </PARAMETER>
     <PARAMETER
@@ -200,22 +244,37 @@
 		<!-- REQUIRED FOR GOOGLE STORAGE -->
 		<IMPORT NAME="jets3t-0.9.1" MODULE="jets3t-0.9.1.jar" MVN="mvn:org.talend.libraries/jets3t-0.9.1/6.0.0"  REQUIRED="true" />
 		<IMPORT NAME="commons-logging-1.2" MODULE="commons-logging-1.2.jar" MVN="mvn:commons-logging/commons-logging/1.2" REQUIRED="true" />
-		<IMPORT NAME="httpclient-4.5.9" MODULE="httpclient-4.5.9.jar" MVN="mvn:org.apache.httpcomponents/httpclient/4.5.9" REQUIRED="true" />
-		<IMPORT NAME="httpcore-4.4.11" MODULE="httpcore-4.4.11.jar" MVN="mvn:org.apache.httpcomponents/httpcore/4.4.11" REQUIRED="true" />
-		<IMPORT NAME="commons-codec-1.11" MODULE="commons-codec-1.11.jar" MVN="mvn:commons-codec/commons-codec/1.11" REQUIRED="true" />
-		<IMPORT NAME="google-cloud-bigquery-1.32.0.jar" MODULE="google-cloud-bigquery-1.32.0.jar" MVN="mvn:com.google.cloud/google-cloud-bigquery/1.32.0" REQUIRED_IF="AUTH_MODE == 'SERVICEACCOUNT'" />
+		<IMPORT NAME="httpclient-4.5.12" MODULE="httpclient-4.5.12.jar" MVN="mvn:org.apache.httpcomponents/httpclient/4.5.12" REQUIRED="true" />
+		<IMPORT NAME="httpcore-4.4.13" MODULE="httpcore-4.4.13.jar" MVN="mvn:org.apache.httpcomponents/httpcore/4.4.13" REQUIRED="true" />
+		<IMPORT NAME="commons-codec-1.14" MODULE="commons-codec-1.14.jar" MVN="mvn:commons-codec/commons-codec/1.14" REQUIRED="true" />
+        <IMPORT NAME="google-cloud-bigquery-1.60.0.jar" MODULE="google-cloud-bigquery-1.60.0.jar" MVN="mvn:com.google.cloud/google-cloud-bigquery/1.60.0" REQUIRED_IF="AUTH_MODE == 'SERVICEACCOUNT'" />
 		<IMPORT NAME="google-http-client-jackson-1.25.0.jar" MODULE="google-http-client-jackson-1.25.0.jar" MVN="mvn:com.google.http-client/google-http-client-jackson/1.25.0" REQUIRED_IF="AUTH_MODE == 'SERVICEACCOUNT'" />
 		<IMPORT NAME="threetenbp-1.3.3.jar" MODULE="threetenbp-1.3.3.jar" MVN="mvn:org.threeten/threetenbp/1.3.3" REQUIRED_IF="AUTH_MODE == 'SERVICEACCOUNT'" />
-		<IMPORT NAME="google-auth-library-credentials-0.9.1.jar" MODULE="google-auth-library-credentials-0.9.1.jar" MVN="mvn:com.google.auth/google-auth-library-credentials/0.9.1" REQUIRED_IF="AUTH_MODE == 'SERVICEACCOUNT'" />
+		<IMPORT NAME="google-auth-library-credentials-0.20.0.jar" MODULE="google-auth-library-credentials-0.20.0.jar" MVN="mvn:com.google.auth/google-auth-library-credentials/0.20.0" REQUIRED_IF="AUTH_MODE == 'SERVICEACCOUNT'" />
 		<IMPORT NAME="gax-httpjson-0.44.0.jar" MODULE="gax-httpjson-0.44.0.jar" MVN="mvn:com.google.api/gax-httpjson/0.44.0" REQUIRED_IF="AUTH_MODE == 'SERVICEACCOUNT'" />
 		<IMPORT NAME="jackson-core-asl-1.9.13.jar" MODULE="jackson-core-asl-1.9.13.jar" MVN="mvn:org.codehaus.jackson/jackson-core-asl/1.9.13" REQUIRED_IF="AUTH_MODE == 'SERVICEACCOUNT'" />
-		<IMPORT NAME="google-auth-library-oauth2-http-0.9.1.jar" MODULE="google-auth-library-oauth2-http-0.9.1.jar" MVN="mvn:com.google.auth/google-auth-library-oauth2-http/0.9.1" REQUIRED_IF="AUTH_MODE == 'SERVICEACCOUNT'" />
-		<IMPORT NAME="google-cloud-core-1.32.0.jar" MODULE="google-cloud-core-1.32.0.jar" MVN="mvn:com.google.cloud/google-cloud-core/1.32.0" REQUIRED_IF="AUTH_MODE == 'SERVICEACCOUNT'" />
+		<IMPORT NAME="google-auth-library-oauth2-http-0.20.0.jar" MODULE="google-auth-library-oauth2-http-0.20.0.jar" MVN="mvn:com.google.auth/google-auth-library-oauth2-http/0.20.0" REQUIRED_IF="AUTH_MODE == 'SERVICEACCOUNT'" />
+		<IMPORT NAME="google-cloud-core-1.93.4.jar" MODULE="google-cloud-core-1.93.4.jar" MVN="mvn:com.google.cloud/google-cloud-core/1.93.4" REQUIRED_IF="AUTH_MODE == 'SERVICEACCOUNT'" />
 		<IMPORT NAME="google-cloud-core-http-1.32.0.jar" MODULE="google-cloud-core-http-1.32.0.jar" MVN="mvn:com.google.cloud/google-cloud-core-http/1.32.0" REQUIRED_IF="AUTH_MODE == 'SERVICEACCOUNT'" />
 		<IMPORT NAME="guava-20.0.jar" MODULE="guava-20.0.jar" MVN="mvn:com.google.guava/guava/20.0" REQUIRED_IF="AUTH_MODE == 'SERVICEACCOUNT'" />
-		<IMPORT NAME="gax-1.27.0.jar" MODULE="gax-1.27.0.jar" MVN="mvn:com.google.api/gax/1.27.0" REQUIRED_IF="AUTH_MODE == 'SERVICEACCOUNT'" />
-		<IMPORT NAME="google-http-client-appengine-1.25.0.jar" MODULE="google-http-client-appengine-1.25.0.jar" MVN="mvn:com.google.http-client/google-http-client-appengine/1.25.0" REQUIRED_IF="AUTH_MODE == 'SERVICEACCOUNT'" />
-		<IMPORT NAME="api-common-1.6.0.jar" MODULE="api-common-1.6.0.jar" MVN="mvn:com.google.api/api-common/1.6.0" REQUIRED_IF="AUTH_MODE == 'SERVICEACCOUNT'" />
+		<IMPORT NAME="gax-1.27.0.jar" MODULE="gax-1.27.0.jar" MVN="mvn:com.google.api/gax/1.27.0" REQUIRED_IF="(AUTH_MODE == 'SERVICEACCOUNT') OR (AUTH_TYPE == 'GS_SERVICE_ACCOUNT')" />
+		<IMPORT NAME="google-http-client-appengine-1.25.0.jar" MODULE="google-http-client-appengine-1.25.0.jar" MVN="mvn:com.google.http-client/google-http-client-appengine/1.25.0" REQUIRED_IF="(AUTH_MODE == 'SERVICEACCOUNT') OR (AUTH_TYPE == 'GS_SERVICE_ACCOUNT')" />
+		<IMPORT NAME="api-common-1.6.0.jar" MODULE="api-common-1.6.0.jar" MVN="mvn:com.google.api/api-common/1.6.0" REQUIRED_IF="(AUTH_MODE == 'SERVICEACCOUNT') OR (AUTH_TYPE == 'GS_SERVICE_ACCOUNT')" />
+
+    <IMPORT NAME="google-cloud-storage-1.104.0" MODULE="google-cloud-storage-1.104.0.jar" MVN="mvn:com.google.cloud/google-cloud-storage/1.104.0" REQUIRED_IF="(AUTH_TYPE == 'GS_SERVICE_ACCOUNT')" />
+      <!-- Transitive dependencies of google-cloud-storage -->
+      <IMPORT NAME="google-api-services-storage-v1-rev20191011-1.30.3" MODULE="google-api-services-storage-v1-rev20191011-1.30.3.jar" MVN="mvn:com.google.apis/google-api-services-storage/v1-rev20191011-1.30.3" REQUIRED_IF="(AUTH_TYPE == 'GS_SERVICE_ACCOUNT')" />
+      <IMPORT NAME="gson-2.8.6" MODULE="gson-2.8.6.jar" MVN="mvn:com.google.code.gson/gson/2.8.6" REQUIRED_IF="(AUTH_TYPE == 'GS_SERVICE_ACCOUNT')" />
+      <IMPORT NAME="javax.annotation-api" MODULE="javax.annotation-api-1.3.jar" MVN="mvn:javax.annotation/javax.annotation-api/1.3" REQUIRED_IF="(AUTH_TYPE == 'GS_SERVICE_ACCOUNT')" />
+      <IMPORT NAME="protobuf-java-2.5.0" MODULE="protobuf-java-2.5.0.jar" MVN="mvn:com.google.protobuf/protobuf-java/2.5.0" REQUIRED_IF="(AUTH_TYPE == 'GS_SERVICE_ACCOUNT')" />
+      <IMPORT NAME="error_prone_annotation-2.1.3" MODULE="error_prone_annotation-2.1.3.jar" MVN="mvn:com.google.errorprone/error_prone_annotations/2.1.3" REQUIRED_IF="(AUTH_TYPE == 'GS_SERVICE_ACCOUNT')" />
+      <IMPORT NAME="opencensus-api-0.21.0" MODULE="opencensus-api-0.21.0.jar" MVN="mvn:io.opencensus/opencensus-api/0.21.0" REQUIRED_IF="(AUTH_TYPE == 'GS_SERVICE_ACCOUNT')" />
+      <IMPORT NAME="opencensus-contrib-http-util-0.21.0" MODULE="opencensus-contrib-http-util-0.21.0.jar" MVN="mvn:io.opencensus/opencensus-contrib-http-util/0.21.0" REQUIRED_IF="(AUTH_TYPE == 'GS_SERVICE_ACCOUNT')" />
+      <IMPORT NAME="grpc-context-1.19.0" MODULE="grpc-context-1.19.0.jar" MVN="mvn:io.grpc/grpc-context/1.19.0" REQUIRED_IF="(AUTH_TYPE == 'GS_SERVICE_ACCOUNT')" />
+      <IMPORT NAME="proto-google-common-protos-1.17.0" MODULE="proto-google-common-protos-1.17.0.jar" MVN="mvn:com.google.api.grpc/proto-google-common-protos/1.17.0" REQUIRED_IF="(AUTH_TYPE == 'GS_SERVICE_ACCOUNT')" />
+      <IMPORT NAME="proto-google-iam-v1-0.13.0" MODULE="proto-google-iam-v1-0.13.0.jar" MVN="mvn:com.google.api.grpc/proto-google-iam-v1/0.13.0" REQUIRED_IF="(AUTH_TYPE == 'GS_SERVICE_ACCOUNT')" />
+      <IMPORT NAME="protobuf-java-util-3.11.4" MODULE="protobuf-java-util-3.11.4.jar" MVN="mvn:com.google.protobuf/protobuf-java-util/3.11.4" REQUIRED_IF="(AUTH_TYPE == 'GS_SERVICE_ACCOUNT')" />
+      <IMPORT NAME="annotation-1.1.0" MODULE="annotation-1.1.0.jar" MVN="mvn:androidx.annotation/annotation/1.1.0" REQUIRED_IF="(AUTH_TYPE == 'GS_SERVICE_ACCOUNT')" />
      </IMPORTS>
    </CODEGENERATION>
    <RETURNS>

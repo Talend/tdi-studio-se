@@ -16,6 +16,23 @@ imports="
 	List<Map<String, String>> buckets = (List<Map<String,String>>)ElementParameterParser.getObjectValue(node, "__BUCKETS__");
 	String useExistingConn = ElementParameterParser.getValue(node,"__USE_EXISTING_CONNECTION__");
 	boolean isLog4jEnabled = ("true").equals(ElementParameterParser.getValue(node.getProcess(), "__LOG4J_ACTIVATE__"));
+
+	String connection = ElementParameterParser.getValue(node,"__CONNECTION__");
+	String authType = ElementParameterParser.getValue(node, "__AUTH_TYPE__");
+	boolean useServiceAccountForConnection = false;
+
+	//Define if connection use Service account for connection
+	if(("true").equals(useExistingConn)) {
+		List< ? extends INode> nodes =  node.getProcess().getNodesOfType("tGSConnection");
+		for (INode ne : nodes) {
+			if (connection.equals(ne.getUniqueName())) {
+				String authTypeInConnectionComponent = ElementParameterParser.getValue(ne, "__AUTH_TYPE__");
+				useServiceAccountForConnection = "SERVICE_ACCOUNT".equals(authTypeInConnectionComponent);
+			}
+		}
+	} else {
+		useServiceAccountForConnection = "SERVICE_ACCOUNT".equals(authType);
+	}
 	
 	if(!queryDelObjInListBuckets || buckets.size()>0){
 	%>
@@ -24,6 +41,8 @@ imports="
 		    }
 	<%
 	}
+
+if (!useServiceAccountForConnection){
 	%>
 	}catch(java.lang.Exception e_<%=cid%>){
 		<%
@@ -88,5 +107,12 @@ imports="
 		}
 		%>
 	}
+<%
+} else {
+%>
+	//For service account
+<%
+}
+%>
 	globalMap.put("<%=cid%>_NB_LINE", nb_line_<%=cid%>);
 	

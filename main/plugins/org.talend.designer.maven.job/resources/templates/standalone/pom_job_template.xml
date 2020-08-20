@@ -261,6 +261,60 @@
 				<microservice.running.configs.dir>${current.int-resources.dir}/</microservice.running.configs.dir>
 			</properties>
 		</profile>
-
+		
+		<profile>
+			<id>include-microservice-em-dependencies</id>
+			<activation>
+				<property>
+					<name>studio.prometheus.metrics</name>
+					<value>true</value>
+				</property>
+			</activation>
+			<properties>
+				<contexts.running.dir>${current.resources.dir}/</contexts.running.dir>
+				<microservice.configs.dir>${current.resources.dir}/</microservice.configs.dir>
+				<microservice.running.configs.dir>${current.int-resources.dir}/</microservice.running.configs.dir>
+			</properties>
+			<dependencies>
+				<dependency>
+					<groupId>io.micrometer</groupId>
+					<artifactId>micrometer-registry-prometheus</artifactId>
+					<version>1.1.1</version>
+				</dependency>
+				<dependency>
+					<groupId>io.prometheus.jmx</groupId>
+					<artifactId>collector</artifactId>
+					<version>0.13.0</version>
+				</dependency>
+				<dependency>
+					<groupId>org.springframework.boot</groupId>
+					<artifactId>spring-boot-starter-security</artifactId>
+					<version>2.1.2.RELEASE</version>
+				</dependency>
+			</dependencies>
+			<build>
+			    <plugins>
+			        <plugin>
+			            <artifactId>maven-assembly-plugin</artifactId>
+			            <executions>
+			                <execution>
+			                    <phase>package</phase>
+			                    <goals>
+			                        <goal>single</goal>
+			                    </goals>
+			                    <configuration>
+			                        <descriptors>
+			                            <descriptor>${basedir}/src/main/assemblies/assembly.xml</descriptor>
+			                        </descriptors>
+			                        <tarLongFileMode>gnu</tarLongFileMode>
+			                        <appendAssemblyId>false</appendAssemblyId>
+			                        <finalName>${talend.job.finalName}</finalName>
+			                    </configuration>
+			                </execution>
+			            </executions>
+			        </plugin>
+			    </plugins>
+			</build>
+		</profile>
 	</profiles>
 </project>
