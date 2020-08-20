@@ -3419,7 +3419,7 @@
                name="BigQuerySetDefaultAuthTypeForGSMigrationTask"
                version="7.3.1">
        </projecttask>
-       <projecttask
+       <projecttask>
               beforeLogon="false"
               breaks="7.3.0"
               class="org.talend.repository.model.migration.spark.UpdateSeparatorAndEscapeForDatasetAPI"
