@@ -387,6 +387,7 @@ public class JobSettingsManagerTest {
         separatorhm.put("\"+\"", "\"\\\\+\"");
         // "\\+\\+\\+\\+\\+"
         separatorhm.put("\"+++++\"", "\"\\\\+\\\\+\\\\+\\\\+\\\\+\"");
+        separatorhm.put("\" + + +\"", "\" \\\\+ \\\\+ \\\\+\"");
         // "#\\*\\+\\$\\?"+context.mark
         separatorhm.put("\"#*+$?\"+context.mark", "\"#\\\\*\\\\+\\\\$\\\\?\"+context.mark");
         // context.mark+"#\\*\\+\\$\\?"+context.mark
