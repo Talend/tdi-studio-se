@@ -377,7 +377,7 @@ public class TalendProcessJavaProject implements ITalendProcessJavaProject {
                 project.refreshLocal(IResource.DEPTH_INFINITE, monitor);
             }
             project.build(IncrementalProjectBuilder.FULL_BUILD, monitor);
-            // project.build(IncrementalProjectBuilder.INCREMENTAL_BUILD, monitor);
+            project.build(IncrementalProjectBuilder.INCREMENTAL_BUILD, monitor);
         } catch (CoreException e) {
             ExceptionHandler.process(e);
         }
