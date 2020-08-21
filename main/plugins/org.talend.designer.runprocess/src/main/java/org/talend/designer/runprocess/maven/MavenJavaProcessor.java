@@ -20,6 +20,7 @@ import java.util.Set;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IResource;
@@ -72,6 +73,8 @@ import org.talend.repository.model.IProxyRepositoryFactory;
  *
  */
 public class MavenJavaProcessor extends JavaProcessor {
+
+    private static final Logger LOGGER = Logger.getLogger(MavenJavaProcessor.class);
 
     protected String windowsClasspath, unixClasspath;
 
@@ -408,9 +411,10 @@ public class MavenJavaProcessor extends JavaProcessor {
             return;
         }
         if (isMainJob) {
+            String threadParam = this.getThreadParam();
             final Map<String, Object> argumentsMap = new HashMap<String, Object>();
             argumentsMap.put(TalendProcessArgumentConstant.ARG_GOAL, TalendMavenConstants.GOAL_INSTALL);
-            argumentsMap.put(TalendProcessArgumentConstant.ARG_PROGRAM_ARGUMENTS, "-T 1C -f " // $NON-NLS-1$
+            argumentsMap.put(TalendProcessArgumentConstant.ARG_PROGRAM_ARGUMENTS, threadParam + " -f " // $NON-NLS-1$
                     + BuildCacheManager.BUILD_AGGREGATOR_POM_NAME + " -P " + (packagingAndAssembly() ? "" : "!")
                     + TalendMavenConstants.PROFILE_PACKAGING_AND_ASSEMBLY + ",!" + TalendMavenConstants.PROFILE_SIGNATURE); // $NON-NLS-1$  //$NON-NLS-2$
             // install all subjobs
@@ -494,5 +498,16 @@ public class MavenJavaProcessor extends JavaProcessor {
             return (String) property.getAdditionalProperties().get(TalendProcessArgumentConstant.ARG_BUILD_TYPE);
         }
         return null;
+    }
+
+    private String getThreadParam() {
+        boolean multiVersion = new AggregatorPomsHelper().containsMultipleVersionJoblet();
+        if (LOGGER.isInfoEnabled()) {
+            LOGGER.info("getThreadParam, containsMultipleVersionJoblets: " + multiVersion);
+        }
+        if (multiVersion) {
+            return "-T 1";
+        }
+        return "-T 1C";
     }
 }
