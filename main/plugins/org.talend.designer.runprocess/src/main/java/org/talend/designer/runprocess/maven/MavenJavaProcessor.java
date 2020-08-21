@@ -411,7 +411,13 @@ public class MavenJavaProcessor extends JavaProcessor {
             return;
         }
         if (isMainJob) {
-            String threadParam = this.getThreadParam();
+            String threadParam = "-T 1C";
+            if (buildCacheManager.containsMultipleVersionModules()) {
+                threadParam = "-T 1";
+            }
+            if (LOGGER.isInfoEnabled()) {
+                LOGGER.info("build, threadParam: " + threadParam);
+            }
             final Map<String, Object> argumentsMap = new HashMap<String, Object>();
             argumentsMap.put(TalendProcessArgumentConstant.ARG_GOAL, TalendMavenConstants.GOAL_INSTALL);
             argumentsMap.put(TalendProcessArgumentConstant.ARG_PROGRAM_ARGUMENTS, threadParam + " -f " // $NON-NLS-1$
@@ -498,16 +504,5 @@ public class MavenJavaProcessor extends JavaProcessor {
             return (String) property.getAdditionalProperties().get(TalendProcessArgumentConstant.ARG_BUILD_TYPE);
         }
         return null;
-    }
-
-    private String getThreadParam() {
-        boolean multiVersion = new AggregatorPomsHelper().containsMultipleVersionJoblet();
-        if (LOGGER.isInfoEnabled()) {
-            LOGGER.info("getThreadParam, containsMultipleVersionJoblets: " + multiVersion);
-        }
-        if (multiVersion) {
-            return "-T 1";
-        }
-        return "-T 1C";
     }
 }
