@@ -140,7 +140,7 @@
 		<IMPORTS>
 			<IMPORT NAME="Java_DOM4J2" MODULE="dom4j-2.1.3.jar" MVN="mvn:org.dom4j/dom4j/2.1.3" BundleID="org.apache.servicemix.bundles.dom4j" REQUIRED_IF="GENERATION_MODE == 'DOM4J'" />
 			<IMPORT NAME="Java_JAXEN_1.1.6" MODULE="jaxen-1.1.6.jar" MVN="mvn:jaxen/jaxen/1.1.6" BundleID="org.apache.servicemix.bundles.jaxen" REQUIRED_IF="GENERATION_MODE == 'DOM4J'" />
-			<IMPORT NAME="Java_xercesImpl" MODULE="xercesImpl.jar" MVN="mvn:org.talend.libraries/xercesImpl/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.apache.xml/lib/xercesImpl.jar"
+			<IMPORT NAME="xercesImpl-2.12.0" MODULE="xercesImpl-2.12.0.jar" MVN="mvn:xerces/xercesImpl/2.12.0"
 				REQUIRED_IF="(GENERATION_MODE == 'XERCES') OR (GENERATION_MODE == 'SAX')" BundleID="" />
 			<IMPORT NAME="Java_xalan" MODULE="xalan-2.7.2.jar" MVN="mvn:xalan/xalan/2.7.2" REQUIRED_IF="GENERATION_MODE == 'XERCES'" BundleID="" />
 			<IMPORT NAME="Java_talendSAX" MODULE="TalendSAX-1.0.1-20190326.jar" MVN="mvn:org.talend.libraries/TalendSAX/1.0.1-20190326"  UrlPath="platform:/plugin/org.talend.libraries.xml/lib/TalendSAX-1.0.1-20190326.jar"
