@@ -856,7 +856,7 @@ public class NodesPasteCommand extends Command {
 		} catch (PersistenceException e) {
 			ExceptionHandler.process(e);
 		}
-    
+
     }
     
 
