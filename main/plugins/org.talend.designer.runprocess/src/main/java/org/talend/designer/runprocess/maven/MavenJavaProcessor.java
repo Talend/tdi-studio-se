@@ -500,7 +500,7 @@ public class MavenJavaProcessor extends JavaProcessor {
     }
 
     private String getThreadParam() {
-        boolean multiVersion = PomUtil.containsMultipleVersionJoblet(getTalendJavaProject());
+        boolean multiVersion = new AggregatorPomsHelper().containsMultipleVersionJoblet();
         if (LOGGER.isInfoEnabled()) {
             LOGGER.info("getThreadParam, containsMultipleVersionJoblets: " + multiVersion);
         }
