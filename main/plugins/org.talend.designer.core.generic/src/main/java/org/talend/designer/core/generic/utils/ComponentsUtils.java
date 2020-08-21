@@ -346,10 +346,13 @@ public class ComponentsUtils {
             } else if (widgetProperty instanceof Property) {
                 Property property = (Property) widgetProperty;
                 param.setRequired(property.isRequired());
-                param.setValue(getParameterValue(element, property, fieldType, parameterName));
+                Object storedValue = getParameterValue(element, property, fieldType, parameterName);
+                param.setValue(storedValue);
                 boolean isNameProperty = IGenericConstants.NAME_PROPERTY.equals(param.getParameterName());
+                boolean isEnumProperty = EParameterFieldType.CLOSED_LIST.equals(fieldType) && storedValue != null
+                        && storedValue instanceof Enum;
                 if (EParameterFieldType.NAME_SELECTION_AREA.equals(fieldType) || EParameterFieldType.JSON_TABLE.equals(fieldType)
-                        || EParameterFieldType.CHECK.equals(fieldType) || isNameProperty) {
+                        || EParameterFieldType.CHECK.equals(fieldType) || isNameProperty || isEnumProperty) {
                     // Disable context support for those filed types and name parameter.
                     param.setSupportContext(false);
                 } else {

@@ -89,7 +89,7 @@ public class ComponentContextPropertyValueEvaluator extends AbstractPropertyValu
         } else if (storedValue instanceof List) {
             return storedValue;
         }
-        return getTypedValue(property, stringStoredValue);
+        return getTypedValue(property, storedValue, stringStoredValue);
     }
 
 }
