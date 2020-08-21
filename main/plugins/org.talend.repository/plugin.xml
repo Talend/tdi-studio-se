@@ -1260,11 +1260,11 @@
        </projecttask>
         <projecttask
              beforeLogon="true"
-             breaks="7.3.1"
+             breaks="7.4.1"
              class="org.talend.repository.model.migration.RemoveMetadataInPomsFolder"
              id="org.talend.repository.model.migration.RemoveMetadataInPomsFolder"
              name="Clean all metadata in poms folder"
-             version="7.3.1">
+             version="7.4.1">
        </projecttask>
        <projecttask
              beforeLogon="true"
