@@ -236,13 +236,24 @@ try {
 					String[] tmp = new String[tmpSize];
 					System.arraycopy(commandLine, 2, tmp, 0, tmpSize);
 					commandLine = tmp;
-			    }
-			    for (int j = 0; j < commandLine.length; j++) {
-				  // commandLine[j] = commandLine[j].replace("\n", "");
-				  if (j == 0){
-				    %>
-				    childJob_commandLine_<%=cid%>.add("<%=commandLine[j]%>");
-				    <%
+				}
+				for (int j = 0; j < commandLine.length; j++) {
+					// commandLine[j] = commandLine[j].replace("\n", "");
+					if (j == 0){
+					%>
+					childJob_commandLine_<%=cid%>.add("<%=commandLine[j]%>");
+					
+					final java.util.List<String> cc_<%=cid%>_<%=i%> = childJob_commandLine_<%=cid%>;
+					if(enableLogStash){
+						System.getProperties().stringPropertyNames().stream()
+							.filter(it -> it.startsWith("audit.logger."))
+							.forEach(key -> cc_<%=cid%>_<%=i%>.add("-D" + key + "=" + System.getProperty(key)));
+					}
+							
+					System.getProperties().stringPropertyNames().stream()
+						.filter(it -> it.startsWith("runtime.lineage."))
+						.forEach(key -> cc_<%=cid%>_<%=i%>.add("-D" + key + "=" + System.getProperty(key)));
+					<%
 				  } else if (j > 0){
 				    if (commandLine[j].indexOf("\"") >= 0){
 				    	if(commandLine[j].indexOf(".jar")>=0){
