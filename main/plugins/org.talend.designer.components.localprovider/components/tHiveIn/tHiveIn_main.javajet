@@ -280,7 +280,7 @@ bw_<%=cid%>.write("!set showHeader false\n");
                 String bucketName_<%=cid%> = gsUriMatcher.group(1);
                 String objectKey_<%=cid%> = gsUriMatcher.group(2);
                 <%
-                boolean useStorageCreds = "USER_ACCOUNT_HMAC".equals(ElementParameterParser.getValue(node, "AUTH_TYPE"));
+                boolean useStorageCreds = "USER_ACCOUNT_HMAC".equals(ElementParameterParser.getValue(node, "__AUTH_TYPE__"));
                 if (useStorageCreds) {
                     String accessKey = ElementParameterParser.getValue(node, "__ACCESS_KEY__");
                     String passwordFieldName = "__SECRET_KEY__";
@@ -290,7 +290,7 @@ bw_<%=cid%>.write("!set showHeader false\n");
                     org.jets3t.service.security.GSCredentials credentials_<%=cid%> = new org.jets3t.service.security.GSCredentials(<%=accessKey%>, decryptedPassword_<%=cid%>);
                     service_<%=cid%> = new org.jets3t.service.impl.rest.httpclient.GoogleStorageService(credentials_<%=cid%>, " <%=googleTracker%>", null);
 
-                    org.jets3t.service.model.GSObject[] objects_<%=cid%> = 
+                    org.jets3t.service.model.GSObject[] objects_<%=cid%> =
                         service_<%=cid%>.listObjects(bucketName_<%=cid%>, objectKey_<%=cid%>, null);
 
                     for (org.jets3t.service.model.GSObject objectSummary_<%=cid%> : objects_<%=cid%>) {
@@ -305,7 +305,7 @@ bw_<%=cid%>.write("!set showHeader false\n");
                     }
                 <%  } else { %>
                     com.google.cloud.storage.Bucket bucket = instance_<%=cid%>.getStorage().get(bucketName_<%=cid%>);
-                    Iterable<com.google.cloud.storage.Blob> blobs = 
+                    Iterable<com.google.cloud.storage.Blob> blobs =
                     bucket.list(com.google.cloud.storage.Storage.BlobListOption.prefix(objectKey_<%=cid%>)).iterateAll();
                     for (com.google.cloud.storage.Blob blob : blobs) {
                         java.io.InputStream is = java.nio.channels.Channels.newInputStream(blob.reader());
