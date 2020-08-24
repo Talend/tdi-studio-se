@@ -33,7 +33,6 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Enumeration;
@@ -114,18 +113,9 @@ public class JobJavaScriptOSGIForESBManager extends JobJavaScriptsManager {
 
     protected static final String OSGI_EXCLUDE_PROP_FILENAME = "osgi-exclude.properties"; ////$NON-NLS-1$
 
-    private static String complianceLevel = null;
-    
     @SuppressWarnings("serial")
     private static final Collection<String> EXCLUDED_MODULES = new ArrayList<String>() {
         {
-            String javaVersion = System.getProperty(JAVA_VERSION);
-            if (javaVersion != null) {
-                if (javaVersion.startsWith("1.8")) {
-                    complianceLevel = "1.8";
-                }
-            }
-            
             File propFile = null;
             File esbConfigurationLocation = EsbConfigUtils.getEclipseEsbFolder();
             
@@ -149,9 +139,6 @@ public class JobJavaScriptOSGIForESBManager extends JobJavaScriptsManager {
                     p.load(is);
                     for (Enumeration<?> e = p.propertyNames(); e.hasMoreElements();) {
                         add((String) e.nextElement());
-                    }
-                    if (complianceLevel != null && "1.8".equals(complianceLevel) && null != p.getProperty("java8.excludes")) {
-                        addAll(Arrays.asList(p.getProperty("java8.excludes").split(",")));
                     }
                 }
             } catch (IOException e) {
@@ -354,7 +341,7 @@ public class JobJavaScriptOSGIForESBManager extends JobJavaScriptsManager {
 
     private List<ExportFileResource> cleanupResources(Stream<IComponent> components, List<ExportFileResource> resources, ITaCoKitDependencyService service) {
         Set<String> tckOnly = service.getTaCoKitOnlyDependencies(components);
-        final List<ExportFileResource> rmResources = new ArrayList<>();
+        //final List<ExportFileResource> rmResources = new ArrayList<>();
         //This code is nicer but have to reiterate after, so not so efficient
 //        List<URL> rmDeps = resources.stream()
 //                .filter(rf -> "lib".equals(rf.getDirectoryName()))
