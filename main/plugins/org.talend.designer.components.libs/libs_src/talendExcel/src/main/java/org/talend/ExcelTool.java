@@ -207,7 +207,7 @@ public class ExcelTool {
         EncryptionInfo info = new EncryptionInfo(fs);
         Decryptor decryptor = Decryptor.getInstance(info);
         if (!decryptor.verifyPassword(password)) {
-            throw new GeneralSecurityException("Error: Wrong password provided!");
+            throw new GeneralSecurityException("Error: Incorrect password!");
         }
         InputStream dataStream = decryptor.getDataStream(fs);
         return WorkbookFactory.create(dataStream);
