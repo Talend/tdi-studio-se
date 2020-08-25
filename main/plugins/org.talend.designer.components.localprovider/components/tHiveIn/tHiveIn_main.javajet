@@ -304,12 +304,12 @@ bw_<%=cid%>.write("!set showHeader false\n");
                         }
                     }
                 <%  } else { %>
-                    com.google.cloud.storage.Bucket bucket = instance_<%=cid%>.getStorage().get(bucketName_<%=cid%>);
-                    Iterable<com.google.cloud.storage.Blob> blobs =
-                    bucket.list(com.google.cloud.storage.Storage.BlobListOption.prefix(objectKey_<%=cid%>)).iterateAll();
-                    for (com.google.cloud.storage.Blob blob : blobs) {
-                        java.io.InputStream is = java.nio.channels.Channels.newInputStream(blob.reader());
-                        inputStreamList_<%=cid%>.add(is);
+                    com.google.cloud.storage.Bucket bucket_<%=cid%> = instance_<%=cid%>.getStorage().get(bucketName_<%=cid%>);
+                    Iterable<com.google.cloud.storage.Blob> blobs_<%=cid%> =
+                    bucket_<%=cid%>.list(com.google.cloud.storage.Storage.BlobListOption.prefix(objectKey_<%=cid%>)).iterateAll();
+                    for (com.google.cloud.storage.Blob blob_<%=cid%> : blobs_<%=cid%>) {
+                        java.io.InputStream is_<%=cid%> = java.nio.channels.Channels.newInputStream(blob_<%=cid%>.reader());
+                        inputStreamList_<%=cid%>.add(is_<%=cid%>);
                     }
                 <% } %>
             }
