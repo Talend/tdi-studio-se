@@ -95,9 +95,9 @@
 						<configuration>
 							<artifactItems>
 								<artifactItem>
-									<groupId>org.talend.libraries</groupId>
+									<groupId>org.talend.components</groupId>
 									<artifactId>talend-soap</artifactId>
-									<version>2.1-20190716</version>
+									<version>2.1-20200824</version>
 									<type>jar</type>
 									<overWrite>true</overWrite>
 									<outputDirectory>${soap.dir}</outputDirectory>
@@ -111,9 +111,9 @@
 									<outputDirectory>${webservice.dir}</outputDirectory>
 								</artifactItem>
 								<artifactItem>
-									<groupId>org.talend.libraries</groupId>
+									<groupId>org.talend.components</groupId>
 									<artifactId>talend-ws</artifactId>
-									<version>1.0.1-20191112</version>
+									<version>1.0.1-20200824</version>
 									<type>jar</type>
 									<overWrite>true</overWrite>
 									<outputDirectory>${webservicecore.dir}</outputDirectory>

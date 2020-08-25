@@ -1,9 +1,9 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>org.talend.libraries</groupId>
+	<groupId>org.talend.components</groupId>
 	<artifactId>talend-mscrm</artifactId>
-	<version>3.4-20200330</version>
+	<version>3.4-20200824</version>
 	<packaging>jar</packaging>
 	
 	<name>talend-mscrm</name>
@@ -110,7 +110,7 @@
         <dependency>
 	    <groupId>com.microsoft.azure</groupId>
             <artifactId>adal4j</artifactId>
-            <version>1.6.4-20200211</version>
+            <version>1.6.4-20200824</version>
         </dependency>
 	</dependencies>
 	<build>
