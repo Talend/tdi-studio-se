@@ -296,10 +296,9 @@
                 REQUIRED="true"
             />
             <IMPORT
-                NAME="commons-codec"
-                MODULE="commons-codec-1.10.jar"
-                MVN="mvn:commons-codec/commons-codec/1.10"
-                UrlPath="platform:/plugin/org.talend.libraries.apache.cxf/lib/commons-codec-1.10.jar"
+                NAME="commons-codec-1.14"
+                MODULE="commons-codec-1.14.jar"
+                MVN="mvn:commons-codec/commons-codec/1.14"
                 REQUIRED="true"
             />
             <IMPORT
