@@ -22,6 +22,10 @@ public class UnifiedJDBCBean {
 
     private String databaseId;
 
+    private String componentKey;
+
+    private String displayName;
+
     private String driverClass;
 
     private String url;
@@ -44,6 +48,42 @@ public class UnifiedJDBCBean {
      */
     public void setDatabaseId(String databaseId) {
         this.databaseId = databaseId;
+    }
+
+    /**
+     * Getter for componentKey.
+     * 
+     * @return the componentKey
+     */
+    public String getComponentKey() {
+        return componentKey;
+    }
+
+    /**
+     * Sets the componentKey.
+     * 
+     * @param componentKey the componentKey to set
+     */
+    public void setComponentKey(String componentKey) {
+        this.componentKey = componentKey;
+    }
+
+    /**
+     * Getter for displayName.
+     * 
+     * @return the displayName
+     */
+    public String getDisplayName() {
+        return displayName;
+    }
+
+    /**
+     * Sets the displayName.
+     * 
+     * @param displayName the displayName to set
+     */
+    public void setDisplayName(String displayName) {
+        this.displayName = displayName;
     }
 
     /**

@@ -133,6 +133,8 @@ public class Component extends AbstractBasicComponent {
 
     private Map<String, String> translatedMap = new HashMap<>();
 
+    private String displayName;
+
     private static String ERROR_MESSAGE = "ERROR_MESSAGE"; //$NON-NLS-1$
 
     public Component(ComponentDefinition componentDefinition) throws BusinessException {
@@ -142,6 +144,12 @@ public class Component extends AbstractBasicComponent {
     public Component(ComponentDefinition componentDefinition, String paletteType) throws BusinessException {
         this.componentDefinition = componentDefinition;
         this.setPaletteType(paletteType);
+    }
+
+    public Component(ComponentDefinition componentDefinition, String paletteType, String displayName) throws BusinessException {
+        this.componentDefinition = componentDefinition;
+        this.setPaletteType(paletteType);
+        this.displayName = displayName;
     }
 
     public ComponentDefinition getComponentDefinition() {
@@ -156,6 +164,15 @@ public class Component extends AbstractBasicComponent {
     @Override
     public String getLongName() {
         return componentDefinition.getTitle();
+    }
+
+    @Override
+    public String getDisplayName() {
+        String name = componentDefinition.getName();
+        if (StringUtils.isNotBlank(displayName)) {
+            name = displayName;
+        }
+        return name;
     }
 
     @Override
@@ -1515,6 +1532,7 @@ public class Component extends AbstractBasicComponent {
         final int prime = 31;
         int result = super.hashCode();
         result = prime * result + ((getName() == null) ? 0 : getName().hashCode());
+        result = prime * result + ((getDisplayName() == null) ? 0 : getDisplayName().hashCode());
         result = prime * result + ((this.getPaletteType() == null) ? 0 : this.getPaletteType().hashCode());
         return result;
     }
@@ -1541,6 +1559,13 @@ public class Component extends AbstractBasicComponent {
                 return false;
             }
         } else if (!getName().equals(other.getName())) {
+            return false;
+        }
+        if (getDisplayName() == null) {
+            if (other.getDisplayName() != null) {
+                return false;
+            }
+        } else if (!getDisplayName().equals(other.getDisplayName())) {
             return false;
         }
         if (this.getPaletteType() == null) {

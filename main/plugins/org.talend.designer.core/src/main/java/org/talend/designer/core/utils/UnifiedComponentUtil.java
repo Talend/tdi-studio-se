@@ -12,6 +12,9 @@
 // ============================================================================
 package org.talend.designer.core.utils;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -44,6 +47,9 @@ import org.talend.designer.core.model.components.UnifiedJDBCBean;
 import org.talend.designer.core.ui.editor.nodes.Node;
 import org.talend.designer.core.ui.views.properties.ComponentSettingsView;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 /**
  * created by wchen on Dec 11, 2017 Detailled comment
  *
@@ -51,6 +57,8 @@ import org.talend.designer.core.ui.views.properties.ComponentSettingsView;
 public class UnifiedComponentUtil {
 
     private static Logger log = Logger.getLogger(UnifiedComponentUtil.class);
+
+    private static Map<String, UnifiedJDBCBean> additionalJDBCCache = new HashMap<String, UnifiedJDBCBean>();
 
     public static IComponent getEmfComponent(Node node, IComponent component) {
         if (isDelegateComponent(component)) {
@@ -263,4 +271,42 @@ public class UnifiedComponentUtil {
             }
         }
     }
+
+    public static Map<String, UnifiedJDBCBean> getAdditionalJDBC() {
+        return additionalJDBCCache;
+    }
+
+    public static Map<String, UnifiedJDBCBean> loadAdditionalJDBC(InputStream inputStream) {
+        ObjectMapper objectMapper = new ObjectMapper();
+        JsonNode jsonNode = null;
+        try {
+            jsonNode = objectMapper.readTree(new InputStreamReader(inputStream));
+            for (JsonNode jo : jsonNode) {
+                UnifiedJDBCBean bean = new UnifiedJDBCBean();
+                bean.setDatabaseId(jo.get("id").asText());
+                bean.setDisplayName(jo.get("displayName").asText());
+                bean.setComponentKey(jo.get("componentKey").asText());
+                bean.setDriverClass(jo.get("class").asText());
+                bean.setUrl(jo.get("url").asText());
+                JsonNode paths = jo.get("paths");
+                for (JsonNode path : paths) {
+                    JsonNode jo_path = (JsonNode) path;
+                    bean.getPaths().add(jo_path.get("path").asText());
+                }
+                additionalJDBCCache.put(bean.getDatabaseId(), bean);
+            }
+        } catch (Exception e) {
+            log.error("failed to parse file to get additional databases : ", e);
+        } finally {
+            if (inputStream != null) {
+                try {
+                    inputStream.close();
+                } catch (IOException e) {
+                    log.error("failed to close JDBC config file", e);
+                }
+            }
+        }
+        return additionalJDBCCache;
+    }
+
 }

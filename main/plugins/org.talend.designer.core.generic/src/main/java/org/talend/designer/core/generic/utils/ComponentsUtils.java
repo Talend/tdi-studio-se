@@ -12,11 +12,13 @@
 // ============================================================================
 package org.talend.designer.core.generic.utils;
 
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -39,6 +41,7 @@ import org.talend.components.api.component.PropertyPathConnector;
 import org.talend.components.api.properties.ComponentProperties;
 import org.talend.components.api.properties.ComponentReferenceProperties;
 import org.talend.components.api.service.ComponentService;
+import org.talend.core.model.components.ComponentCategory;
 import org.talend.core.model.components.IComponent;
 import org.talend.core.model.components.IComponentsFactory;
 import org.talend.core.model.components.filters.ComponentsFactoryProviderManager;
@@ -80,6 +83,8 @@ import org.talend.designer.core.model.components.AbstractBasicComponent;
 import org.talend.designer.core.model.components.EParameterName;
 import org.talend.designer.core.model.components.ElementParameter;
 import org.talend.designer.core.model.components.ElementParameterDefaultValue;
+import org.talend.designer.core.model.components.UnifiedJDBCBean;
+import org.talend.designer.core.utils.UnifiedComponentUtil;
 import org.talend.metadata.managment.ui.wizard.context.MetadataContextPropertyValueEvaluator;
 
 /**
@@ -134,11 +139,22 @@ public class ComponentsUtils {
             components.clear();
         }
 
+        // for additional JDBC components
+        Set<ComponentDefinition> jdbcDefinitions = new HashSet<ComponentDefinition>();
         // Load components from service
         Set<ComponentDefinition> componentDefinitions = service.getAllComponents();
         for (ComponentDefinition componentDefinition : componentDefinitions) {
+            if (componentDefinition.getFamilies() != null && componentDefinition.getFamilies().length > 0
+                    && componentDefinition.getFamilies()[0] != null
+                    && componentDefinition.getFamilies()[0].contains("JDBC")) {
+                jdbcDefinitions.add(componentDefinition);
+            }
             loadComponents(components, componentDefinition);
         }
+
+        // load additional jdbc component
+        loadAdditionalJDBCComponents(components, jdbcDefinitions);
+
         componentsList.addAll(components);
     }
 
@@ -153,14 +169,15 @@ public class ComponentsUtils {
                 continue;
             }
             for (String paletteType : paletteTypes) {
-                loadComponent(componentsList, componentDefinition, paletteType);
+                loadComponent(componentsList, componentDefinition, paletteType, null);
             }
         }
     }
 
-    private static void loadComponent(Set<IComponent> componentsList, ComponentDefinition componentDefinition, String paletteType) {
+    private static void loadComponent(Set<IComponent> componentsList, ComponentDefinition componentDefinition, String paletteType,
+            String displayName) {
         try {
-            Component currentComponent = new Component(componentDefinition, paletteType);
+            Component currentComponent = new Component(componentDefinition, paletteType, displayName);
 
             Collection<IComponentFactoryFilter> filters = ComponentsFactoryProviderManager.getInstance().getProviders();
             boolean hiddenComponent = false;
@@ -192,6 +209,26 @@ public class ComponentsUtils {
         } catch (BusinessException e) {
             ExceptionHandler.process(e);
         }
+    }
+
+    private static void loadAdditionalJDBCComponents(Set<IComponent> componentsList, Set<ComponentDefinition> compDefinitions) {
+        boolean beanLoad = false;
+        Map<String, UnifiedJDBCBean> additionalJDBCMap = null;
+        for (ComponentDefinition definition : compDefinitions) {
+            if (!beanLoad) {
+                InputStream inputStream = definition.getClass().getClassLoader().getResourceAsStream("support_extra_db.json");
+                additionalJDBCMap = UnifiedComponentUtil.loadAdditionalJDBC(inputStream);
+                if (additionalJDBCMap.keySet().size() == 0) {
+                    return;
+                }
+                beanLoad = true;
+            }
+            for (UnifiedJDBCBean bean : additionalJDBCMap.values()) {
+                loadComponent(componentsList, definition, ComponentCategory.CATEGORY_4_DI.getName(),
+                        definition.getName().replace("JDBC", bean.getComponentKey()));
+            }
+        }
+
     }
 
     public static List<ElementParameter> getParametersFromForm(IElement element, Form form) {
