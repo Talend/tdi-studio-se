@@ -31,6 +31,8 @@ import org.talend.core.GlobalServiceRegister;
 import org.talend.core.model.components.ComponentCategory;
 import org.talend.core.model.components.IComponent;
 import org.talend.core.model.components.IComponentsService;
+import org.talend.designer.core.model.components.UnifiedJDBCBean;
+import org.talend.designer.core.utils.UnifiedComponentUtil;
 import org.talend.designer.unifiedcomponent.component.DelegateComponent;
 import org.talend.designer.unifiedcomponent.component.UnifiedObject;
 import org.talend.designer.unifiedcomponent.delegate.service.IComponentDelegate;
@@ -93,13 +95,16 @@ public class UnifiedComponentsManager {
                     initDelegateComponent(compUnifier);
                 }
             }
-         // init additional JDBC component
-            JDBCComponentsUnifier jdbcUnifier = new JDBCComponentsUnifier();
-            jdbcUnifier.setDisplayName("Delta Lake");
-            jdbcUnifier.setComponentKey("DeltaLake");
-            for (IComponentDelegate delegateComp : componentDelegates) {
-                jdbcUnifier.setDelegateComponent(delegateComp);
-                initDelegateComponent(jdbcUnifier);
+            // init additional JDBC component
+            Map<String, UnifiedJDBCBean> additionalJDBC = UnifiedComponentUtil.getAdditionalJDBC();
+            for (UnifiedJDBCBean bean : additionalJDBC.values()) {
+                JDBCComponentsUnifier jdbcUnifier = new JDBCComponentsUnifier();
+                jdbcUnifier.setDisplayName(bean.getDisplayName());
+                jdbcUnifier.setComponentKey(bean.getComponentKey());
+                for (IComponentDelegate delegateComp : componentDelegates) {
+                    jdbcUnifier.setDelegateComponent(delegateComp);
+                    initDelegateComponent(jdbcUnifier);
+                }
             }
         }
 

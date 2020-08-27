@@ -40,6 +40,7 @@ import org.talend.designer.core.IUnifiedComponentService;
 import org.talend.designer.core.model.components.EParameterName;
 import org.talend.designer.core.model.components.UnifiedJDBCBean;
 import org.talend.designer.core.ui.editor.nodes.Node;
+import org.talend.designer.core.utils.UnifiedComponentUtil;
 import org.talend.designer.unifiedcomponent.component.DelegateComponent;
 import org.talend.designer.unifiedcomponent.component.UnifiedObject;
 import org.talend.designer.unifiedcomponent.manager.UnifiedComponentsManager;
@@ -155,7 +156,7 @@ public class UnifiedComponentService implements IUnifiedComponentService {
             DelegateComponent dComp = (DelegateComponent) comp;
             Set<UnifiedObject> unifiedObjects = dComp.getUnifiedObjectsByPalette(dComp.getPaletteType());
             for (UnifiedObject obj : unifiedObjects) {
-                if (obj.getComponentName().equals(component.getName())) {
+                if (obj.getDisplayComponent().equals(component.getDisplayName())) {
                     return dComp;
                 }
             }
@@ -586,24 +587,16 @@ public class UnifiedComponentService implements IUnifiedComponentService {
         if (!(delegateComponent instanceof DelegateComponent)) {
             return null;
         }
-
         DelegateComponent dComp = (DelegateComponent) delegateComponent;
-        IElementParameter newUnifiedParam = node.getElementParameterFromField(EParameterFieldType.UNIFIED_COMPONENTS);
-        String unifiedComp = String.valueOf(newUnifiedParam.getValue());
-        UnifiedObject unifiedObject = dComp.getUnifiedObjectByName(unifiedComp);
-        if (!unifiedObject.getComponentName().equals(unifiedObject.getDisplayComponent())) {
-            String database = unifiedObject.getDatabase();
-            // TODO load from json
-            if ("Delta Lake".equals(database)) {
-                UnifiedJDBCBean bean = new UnifiedJDBCBean();
-                bean.setDatabaseId("DATABRICKS_DELTA_LAKE");
-                bean.setDriverClass("com.simba.spark.jdbc.Driver");
-                bean.setUrl("jdbc:spark://");
-                bean.getPaths().add("mvn:Spark/SparkJDBC42/2.6.14.1018/jar");
-                return bean;
-            }
+        String unifiedComp = node.getUnifiedComponentDisplayName();
+        if (org.apache.commons.lang.StringUtils.isBlank(unifiedComp)) {
+            return null;
         }
-        return null;
+        UnifiedObject unifiedObject = dComp.getUnifiedObjectByName(unifiedComp);
+        if (unifiedObject == null) {
+            return null;
+        }
+        return UnifiedComponentUtil.getAdditionalJDBC().get(unifiedObject.getDatabase());
     }
 
 }

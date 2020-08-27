@@ -20,7 +20,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
@@ -65,28 +64,31 @@ public class UnifiedComponentUtil {
             IElementParameter elementParameter = node.getElementParameter(EParameterName.UNIFIED_COMPONENTS.name());
             if (elementParameter != null && elementParameter.getValue() != null) {
                 String emfCompName = String.valueOf(elementParameter.getValue());
-                if (GlobalServiceRegister.getDefault().isServiceRegistered(IUnifiedComponentService.class)) {
-                    IUnifiedComponentService service = GlobalServiceRegister.getDefault()
-                            .getService(IUnifiedComponentService.class);
-                    if (service != null) {
-                        String realName = service.getUnifiedCompRealComponentName(component, emfCompName);
-                        if (StringUtils.isNotBlank(realName)) {
-                            // correct display name, set display name
-                            node.setUnifiedComponentDisplayName(emfCompName);
-                            // real component used to get emf component
-                            emfCompName = realName;
-                        }
-                    }
-                }
+//                if (GlobalServiceRegister.getDefault().isServiceRegistered(IUnifiedComponentService.class)) {
+//                    IUnifiedComponentService service = GlobalServiceRegister.getDefault()
+//                            .getService(IUnifiedComponentService.class);
+//                    if (service != null) {
+//                        String realName = service.getUnifiedCompRealComponentName(component, emfCompName);
+//                        if (StringUtils.isNotBlank(realName)) {
+//                            // correct display name, set display name
+//                            node.setUnifiedComponentDisplayName(emfCompName);
+//                            // real component used to get emf component
+//                            emfCompName = realName;
+//                        }
+//                    }
+//                }
+                node.setUnifiedComponentDisplayName(emfCompName);
                 String paletteType = component.getPaletteType();
                 IComponentsService compService = GlobalServiceRegister.getDefault().getService(IComponentsService.class);
-                IComponent emfComponent = compService.getComponentsFactory().get(emfCompName, paletteType);
+                IComponent emfComponent = compService.getComponentsFactory().getComponentByDisplayName(emfCompName, paletteType);
                 if (emfComponent != null) {
                     return emfComponent;
                 } else {
                     log.error("Can't find component " + emfCompName);
                 }
             }
+        } else if (!component.getName().equals(component.getDisplayName())) {
+            node.setUnifiedComponentDisplayName(component.getDisplayName());
         }
         return component;
     }
@@ -293,7 +295,7 @@ public class UnifiedComponentUtil {
                     JsonNode jo_path = (JsonNode) path;
                     bean.getPaths().add(jo_path.get("path").asText());
                 }
-                additionalJDBCCache.put(bean.getDatabaseId(), bean);
+                additionalJDBCCache.put(bean.getDisplayName(), bean);
             }
         } catch (Exception e) {
             log.error("failed to parse file to get additional databases : ", e);

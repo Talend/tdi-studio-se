@@ -724,6 +724,10 @@ public class Node extends Element implements IGraphicalNode {
             createElementParameters.addAll(component.createElementParameters(this));
         }
         setElementParameters(createElementParameters);
+        // for additional jdbc init default value
+        if (UnifiedComponentUtil.isDelegateComponent(getDelegateComponent())) {
+            UnifiedComponentUtil.initComponentIfJDBC(this, getDelegateComponent());
+        }
     }
 
     @Override
@@ -5034,9 +5038,9 @@ public class Node extends Element implements IGraphicalNode {
             }
         }
 
-        if (UnifiedComponentUtil.isDelegateComponent(getDelegateComponent())) {
-            UnifiedComponentUtil.initComponentIfJDBC(this, getDelegateComponent());
-        }
+//        if (UnifiedComponentUtil.isDelegateComponent(getDelegateComponent())) {
+//            UnifiedComponentUtil.initComponentIfJDBC(this, getDelegateComponent());
+//        }
 
         obj = parameters.get(INode.RELOAD_PARAMETER_METADATA_LIST);
         if (obj != null) {
