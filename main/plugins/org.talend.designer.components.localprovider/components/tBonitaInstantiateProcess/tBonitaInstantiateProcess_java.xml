@@ -320,7 +320,7 @@
 			<IMPORT NAME="commons-io-2.1.jar" MODULE="commons-io-2.1.jar" MVN="mvn:org.talend.libraries/commons-io-2.1/6.0.0" UrlPath="platform:/plugin/org.talend.libraries.apache.common/lib/commons-io-2.1.jar" REQUIRED_IF="(DB_VERSION=='BONITA_724') AND (CLIENT_MODE=='JAVA_CLIENT')" />
 			
 			<!-- Bonita Http Client -->
-			<IMPORT NAME="apache_commons_codec_1_7" MODULE="commons-codec-1.7.jar" MVN="mvn:org.talend.libraries/commons-codec-1.7/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.apache.common/lib/commons-codec-1.7.jar" REQUIRED_IF="CLIENT_MODE=='HTTP_CLIENT'" />
+		   <IMPORT NAME="commons-codec-1.14" MODULE="commons-codec-1.14.jar" MVN="mvn:commons-codec/commons-codec/1.14" REQUIRED_IF="CLIENT_MODE=='HTTP_CLIENT'" />
 	     </IMPORTS>
 	</CODEGENERATION>
 

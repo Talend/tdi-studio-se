@@ -49,3 +49,5 @@ please @see org\talend\ws\helper\ServiceInvokerHelper.java
 			org\talend\ws\mapper\MapperFactory.java
 			
 10.(2019-01-18 modified by dchmyga) fixed TDI-41647
+
+11.(2020-08-24 modified by ozhelezniak) updated commons-codec to 1.14 in scope of TDI-44145

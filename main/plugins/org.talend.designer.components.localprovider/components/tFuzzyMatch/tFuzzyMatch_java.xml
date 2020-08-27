@@ -129,7 +129,7 @@
 
    <CODEGENERATION>
      <IMPORTS>
-       <IMPORT NAME="Commons-Codec" MODULE="commons-codec-1.6.jar" MVN="mvn:org.talend.libraries/commons-codec-1.6/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.apache.common/lib/commons-codec-1.6.jar" REQUIRED="true" />
+       <IMPORT NAME="commons-codec-1.14" MODULE="commons-codec-1.14.jar" MVN="mvn:commons-codec/commons-codec/1.14" REQUIRED="true" />
        <IMPORT NAME="Commons-Lang" MODULE="commons-lang-2.6.jar" MVN="mvn:commons-lang/commons-lang/2.6"  UrlPath="platform:/base/plugins/org.apache.commons.lang_2.6.0.v201404270220.jar" REQUIRED="true" />
      </IMPORTS>
    </CODEGENERATION>
