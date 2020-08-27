@@ -71,6 +71,8 @@
 				<ITEM NAME="CREATE_CLUSTER" VALUE="CREATE_CLUSTER" />
 				<ITEM NAME="DELETE_CLUSTER" VALUE="DELETE_CLUSTER" />
 				<ITEM NAME="RESIZE_CLUSTER" VALUE="RESIZE_CLUSTER" />
+				<ITEM NAME="PAUSE_CLUSTER" VALUE="PAUSE_CLUSTER" />
+				<ITEM NAME="RESUME_CLUSTER" VALUE="RESUME_CLUSTER" />
 				<ITEM NAME="RESTORE_FROM_SNAPSHOT" VALUE="RESTORE_FROM_SNAPSHOT" />
 				<ITEM NAME="DELETE_SNAPSHOT" VALUE="DELETE_SNAPSHOT" />
 			</ITEMS>
@@ -142,6 +144,8 @@
 				<ITEM NAME="ds2.8xlarge" VALUE="&quot;ds2.8xlarge&quot;" />
 				<ITEM NAME="ds1.xlarge" VALUE="&quot;ds1.xlarge&quot;" />
 				<ITEM NAME="ds1.8xlarge" VALUE="&quot;ds1.8xlarge&quot;" />
+				<ITEM NAME="ra3.4xlarge" VALUE="&quot;ra3.4xlarge&quot;" />
+				<ITEM NAME="ra3.16xlarge" VALUE="&quot;ra3.16xlarge&quot;" />
 			</ITEMS>
 		</PARAMETER>
 
@@ -341,8 +345,8 @@
 
 	<CODEGENERATION>
 		<IMPORTS>
-			<IMPORT NAME="aws-java-sdk-1.11.729.jar" MODULE="aws-java-sdk-1.11.729.jar"
-				MVN="mvn:com.amazonaws/aws-java-sdk/1.11.729"
+			<IMPORT NAME="aws-java-sdk-1.11.848.jar" MODULE="aws-java-sdk-1.11.848.jar"
+				MVN="mvn:com.amazonaws/aws-java-sdk/1.11.848"
 				REQUIRED="true" />
 			<IMPORT NAME="jackson-core-2.10.1.jar" MODULE="jackson-core-2.10.1.jar"
 				MVN="mvn:com.fasterxml.jackson.core/jackson-core/2.10.1"
