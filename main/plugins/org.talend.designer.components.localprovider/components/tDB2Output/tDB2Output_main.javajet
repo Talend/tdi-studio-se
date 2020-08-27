@@ -1372,6 +1372,7 @@ skeleton="../templates/db_output_bulk.skeleton"
                 	rowsToCommitCount_<%=cid%> = 0;
                 }
                 commitCounter_<%=cid%>=0;
+                }
                 <%
     		}
     	}
