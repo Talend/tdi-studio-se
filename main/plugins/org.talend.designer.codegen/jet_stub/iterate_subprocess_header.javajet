@@ -165,7 +165,7 @@ for (IConnection iterateConn : iterateConnSet) { //1
 						synchronized (globalMap) {
 							this.globalMap = java.util.Collections.synchronizedMap(new ThreadedMap(globalMap));
 					<%}else{%>
-						synchronized (<%=process.getName()%>.this.obj) {
+						synchronized (<%className%>.this.obj) {
 							this.globalMap = new ThreadedMap(globalMap);
 					<%}%>
 						}
