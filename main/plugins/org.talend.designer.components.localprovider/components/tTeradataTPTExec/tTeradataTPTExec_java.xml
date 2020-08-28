@@ -240,7 +240,7 @@
       FIELD="CHECK"
       NUM_ROW="20"
       REQUIRED="true"
-      SHOW_IF="ACTION != 'INSERTER' AND CUSTOM_SCRIPT=='false'">
+      SHOW_IF="(ACTION != 'INSERTER') AND (CUSTOM_SCRIPT=='false')">
       <DEFAULT>false</DEFAULT>
     </PARAMETER>
     
