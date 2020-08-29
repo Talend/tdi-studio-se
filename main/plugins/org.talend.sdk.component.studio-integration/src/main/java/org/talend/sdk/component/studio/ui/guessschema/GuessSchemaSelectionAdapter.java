@@ -21,7 +21,6 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
 
 import javax.json.bind.Jsonb;
@@ -200,7 +199,7 @@ public class GuessSchemaSelectionAdapter extends SelectionAdapter {
         if (schema == null || schema.trim().isEmpty()) {
             return null;
         }
-        Collection<MetadataColumn> jsonColumns = new HashSet<>();
+        Collection<MetadataColumn> jsonColumns = new ArrayList<>();
         final String[] lines = schema.split("\n"); //$NON-NLS-1$
         for (String line : lines) {
             try (final Jsonb jsonb = JsonbBuilder.create()) {
