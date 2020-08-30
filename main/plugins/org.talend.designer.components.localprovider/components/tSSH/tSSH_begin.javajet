@@ -57,7 +57,7 @@ if ((metadatas!=null)&&(metadatas.size()>0)) {
 		<%}%>
 		client_<%=cid%>.setUserAuthFactories(java.util.Collections.singletonList(org.apache.sshd.client.auth.pubkey.UserAuthPublicKeyFactory.INSTANCE));
 		java.nio.file.Path privateKey_<%=cid%> = java.nio.file.Paths.get(<%=privatekey%>);
-		java.util.List<String> lines_<%=cid%> = java.nio.file.Files.readAllLines(privateKey_tSSH_1);
+		java.util.List<String> lines_<%=cid%> = java.nio.file.Files.readAllLines(privateKey_<%=cid%>);
 		
 		 org.apache.sshd.common.util.security.bouncycastle.BouncyCastleGeneratorHostKeyProvider keyProvider_<%=cid%> =
                 new org.apache.sshd.common.util.security.bouncycastle.BouncyCastleGeneratorHostKeyProvider(privateKey_<%=cid%>)

@@ -1292,10 +1292,49 @@ public class JobSettingsManager {
             if (StringUtils.isEmpty(separators)) {
                 return TalendQuoteUtils.addQuotes("");
             }
-            boolean needAddQuote = separators.startsWith(TalendQuoteUtils.QUOTATION_MARK)
-                    || separators.endsWith(TalendQuoteUtils.QUOTATION_MARK);
-            String filedSeparator = TalendQuoteUtils.removeQuotes(separators);
 
+            String[] splits = separators.split("\\+"); //$NON-NLS-1$
+            String[] seqs = new String[splits.length];
+            int posit = 0;
+            for (String split : splits) {
+                String seq = split.trim();
+                // don't use seq, might trim space value
+                if (seq.length() > 1 && (seq.startsWith("\"") && seq.endsWith("\"")) || seq.startsWith("context.")) { //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+                    if (seqs[posit] != null) {
+                        posit++;
+                    }
+                    seqs[posit] = split;
+                    posit++;
+                } else {
+                    if (StringUtils.isBlank(seqs[posit])) {
+                        seqs[posit] = split;
+                    } else {
+                        String original = seqs[posit];
+                        seqs[posit] = original + "+" + split; //$NON-NLS-1$
+                    }
+                }
+            }
+
+            StringBuffer seqBuffer = new StringBuffer();
+            for (int i = 0; i < seqs.length; i++) {
+                if (seqs[i] == null) {
+                    continue;
+                }
+                if (i != 0) {
+                    seqBuffer.append("+"); //$NON-NLS-1$
+                }
+                if (seqs[i].contains("context.")) { //$NON-NLS-1$
+                    seqBuffer.append(seqs[i]);
+                } else {
+                    seqBuffer.append(doAddMark4SpecialChar(seqs[i]));
+                }
+            }
+
+            return seqBuffer.toString();
+        }
+
+        static String doAddMark4SpecialChar(String sequence) {
+            String filedSeparator = TalendQuoteUtils.removeQuotes(sequence);
             for (String charStr : METADATA_CHAR) {
                 if (!filedSeparator.contains(charStr)) {
                     continue;
@@ -1306,13 +1345,8 @@ public class JobSettingsManager {
                     filedSeparator = addMarkWithChar(filedSeparator, charStr, "\\\\", true); //$NON-NLS-1$
                 }
             }
-            if (needAddQuote) {
-                filedSeparator = TalendQuoteUtils.addQuotes(filedSeparator);
-            }
-            if (!separators.equals(filedSeparator)) {
-                separators = filedSeparator;
-            }
-            return separators;
+            filedSeparator = TalendQuoteUtils.addQuotes(filedSeparator);
+            return filedSeparator;
         }
 
         static String getSeparatorsRegexp(String fileSeparator) {

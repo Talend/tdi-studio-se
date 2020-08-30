@@ -272,6 +272,8 @@
 			</activation>
 			<properties>
 				<contexts.running.dir>${current.resources.dir}/</contexts.running.dir>
+				<microservice.configs.dir>${current.resources.dir}/</microservice.configs.dir>
+				<microservice.running.configs.dir>${current.int-resources.dir}/</microservice.running.configs.dir>
 			</properties>
 			<dependencies>
 				<dependency>

@@ -116,6 +116,7 @@ imports="
 
                             }
                             tmp_batchUpdateCount_<%=cid%> = tmp_batchUpdateCount_<%=cid%> > countSum_<%=cid%> ? tmp_batchUpdateCount_<%=cid%> : countSum_<%=cid%>;
+                            rowsToCommitCount_<%=cid%> += tmp_batchUpdateCount_<%=cid%>;
                             <%if (("INSERT").equals(dataAction)) {
                             %>
                                 insertedCount_<%=cid%> += tmp_batchUpdateCount_<%=cid%>;
@@ -147,12 +148,16 @@ imports="
     if(!useExistingConnection){
         if(!("").equals(commitEvery)&&!("0").equals(commitEvery)){
             %>
-        if (commitCounter_<%=cid%> > 0) {
-            <%dbLog.commit().commitTry(null, dbLog.var("commitCounter"));%>
-            conn_<%=cid%>.commit();
-            <%dbLog.commit().commitDone(null);%>
+        if (commitCounter_<%=cid%> > 0 && rowsToCommitCount_<%=cid%> != 0) {
+            <%dbLog.commit().commitTry(null, dbLog.var("rowsToCommitCount"));%>
         }
-            <%
+        conn_<%=cid%>.commit();
+        if (commitCounter_<%=cid%> > 0 && rowsToCommitCount_<%=cid%> != 0) {
+            <%dbLog.commit().commitDone(null);%>
+            rowsToCommitCount_<%=cid%> = 0;
+        }
+        commitCounter_<%=cid%> = 0;
+        <%
         }
         %>
         <%dbLog.conn().closeTry(null);%>
