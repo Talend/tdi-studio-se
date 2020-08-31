@@ -6,7 +6,7 @@
 
 	<groupId>org.talend.components.lib</groupId>
 	<artifactId>job-audit</artifactId>
-	<version>1.3</version>
+	<version>1.4</version>
 
 	<properties>
 		<talend.nexus.url>https://artifacts-oss.talend.com</talend.nexus.url>
