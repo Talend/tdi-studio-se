@@ -537,8 +537,29 @@
 			p_<%=jobCatcherNode.getUniqueName()%>.setProperty("appender.file.maxbackup", "20");
 			p_<%=jobCatcherNode.getUniqueName()%>.setProperty("host", "false");
 			
+			final String runtime_dir_<%=jobCatcherNode.getUniqueName()%> = System.getProperty("runtime.lineage.outputpath");
+			final String runtime_path_<%=jobCatcherNode.getUniqueName()%> = System.getProperty("runtime.lineage.appender.file.path");
+			if(runtime_path_<%=jobCatcherNode.getUniqueName()%>==null || runtime_path_<%=jobCatcherNode.getUniqueName()%>.isEmpty()) {
+				if(runtime_dir_<%=jobCatcherNode.getUniqueName()%>!=null && !runtime_dir_<%=jobCatcherNode.getUniqueName()%>.isEmpty()) {
+					System.setProperty("runtime.lineage.appender.file.path", 
+						new StringBuilder().append(runtime_dir_<%=jobCatcherNode.getUniqueName()%>)
+						.append((runtime_dir_<%=jobCatcherNode.getUniqueName()%>.endsWith("/") || runtime_dir_<%=jobCatcherNode.getUniqueName()%>.endsWith("\\")) ? "" : java.io.File.separator)
+						.append(projectName)
+						.append(java.io.File.separatorChar)
+						.append(jobName)
+						.append(java.io.File.separatorChar)
+						.append(jobVersion)
+						.append(java.io.File.separatorChar)
+						.append("runtime_log_")
+						.append(new java.text.SimpleDateFormat("yyyyMMddHHmmss").format(new java.util.Date()))
+						.append(".json")
+						.toString()
+					);
+				}
+			}
+			
 			System.getProperties().stringPropertyNames().stream()
-					.filter(it -> it.startsWith("runtime.lineage."))
+					.filter(it -> it.startsWith("runtime.lineage.") && !"runtime.lineage.outputpath".equals(it))
 					.forEach(key -> p_<%=jobCatcherNode.getUniqueName()%>.setProperty(key.substring("runtime.lineage.".length()), System.getProperty(key)));
 			
 			<%if(isLog4j1Enabled) {%>

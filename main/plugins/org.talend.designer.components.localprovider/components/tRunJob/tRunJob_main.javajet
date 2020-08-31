@@ -193,7 +193,7 @@ String inputConnName = null;
 						
 						if(enableLogStash){
 							System.getProperties().stringPropertyNames().stream()
-								.filter(it -> it.startsWith("audit.logger."))
+								.filter(it -> it.startsWith("audit."))
 								.forEach(key -> paraList_<%=cid %>.add("-D" + key + "=" + System.getProperty(key)));
 						}
 							
@@ -239,7 +239,7 @@ String inputConnName = null;
 						
 						if(enableLogStash){
 							System.getProperties().stringPropertyNames().stream()
-								.filter(it -> it.startsWith("audit.logger."))
+								.filter(it -> it.startsWith("audit."))
 								.forEach(key -> paraList_<%=cid %>.add("-D" + key + "=" + System.getProperty(key)));
 						}
 							

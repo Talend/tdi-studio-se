@@ -246,7 +246,7 @@ try {
 					final java.util.List<String> cc_<%=cid%>_<%=i%> = childJob_commandLine_<%=cid%>;
 					if(enableLogStash){
 						System.getProperties().stringPropertyNames().stream()
-							.filter(it -> it.startsWith("audit.logger."))
+							.filter(it -> it.startsWith("audit."))
 							.forEach(key -> cc_<%=cid%>_<%=i%>.add("-D" + key + "=" + System.getProperty(key)));
 					}
 							
