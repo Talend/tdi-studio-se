@@ -25,7 +25,6 @@ import org.eclipse.core.runtime.Platform;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.talend.commons.CommonsPlugin;
 import org.talend.commons.exception.PersistenceException;
 import org.talend.core.CorePlugin;
 import org.talend.core.GlobalServiceRegister;
@@ -147,7 +146,6 @@ public class BuildJobHandlerTest {
         initExportChoice();
 
         destinationPaths = new ArrayList<>();
-        CommonsPlugin.setMavenOfflineState(false);
     }
 
     @Test
@@ -265,7 +263,7 @@ public class BuildJobHandlerTest {
                 assertNotNull("No child job dependency in lib folder", dependencyEntry);
             }
             if (jobItem == jobWithJobletItem) {
-                String dependencyFromJoblet = "commons-beanutils-1.9.2.jar";
+                String dependencyFromJoblet = "commons-beanutils-1.9.4.jar";
                 ZipEntry dependencyEntry = zip.getEntry("lib/" + dependencyFromJoblet);
                 assertNotNull("No joblet dependency in lib folder", dependencyEntry);
             }
@@ -401,7 +399,6 @@ public class BuildJobHandlerTest {
             }
             destinationPaths.clear();
         }
-        CommonsPlugin.setMavenOfflineState(true);
     }
 
 }

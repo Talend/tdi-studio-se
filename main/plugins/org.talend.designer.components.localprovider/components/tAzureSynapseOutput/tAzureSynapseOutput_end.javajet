@@ -77,7 +77,7 @@ skeleton="../templates/db_output_bulk.skeleton"
 
     String connection = ElementParameterParser.getValue(node,"__CONNECTION__");
     if(useExistingConnection) {
-        List<? extends INode> nodes = process.getNodesOfType("tAzureSynapseConnection");
+        List<? extends INode> nodes = process.getNodesOfType("tInformixConnection");
         for (INode ne:nodes) {
             if (connection.equals(ne.getUniqueName())) {
                 setAutoCommit = "true".equals(ElementParameterParser.getValue(ne, "__AUTO_COMMIT__"));
@@ -479,13 +479,15 @@ if(identityInsert){
         if(!("").equals(commitEvery) && !("0").equals(commitEvery))
         {
             %>
-            if(rowsToCommitCount_<%=cid%> != 0){
+            if((commitCounter_<%=cid%> > 0 && rowsToCommitCount_<%=cid%> != 0){
             	<%dbLog.commit().commitTry(null, dbLog.var("rowsToCommitCount"));%>
-            	conn_<%=cid%>.commit();
+            }
+            conn_<%=cid%>.commit();
+            if((commitCounter_<%=cid%> > 0 && rowsToCommitCount_<%=cid%> != 0){
             	<%dbLog.commit().commitDone(null);%>
             	rowsToCommitCount_<%=cid%> = 0;
-            	commitCounter_<%=cid%> = 0;
             }
+            commitCounter_<%=cid%> = 0;
             <%
         }
 

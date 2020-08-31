@@ -46,7 +46,7 @@ skeleton="../templates/db_output_bulk.skeleton"
 	
     boolean setAutoCommit = false;
     
-    boolean useExistingConnection = "true".equals(ElementParameterParser.getValue(node,"__USE_EXISTING_CONNECTION__"));
+    boolean useExistingConnection = "true".equals(ElementParameterParser.getValue(node,"__USE_EXISTING_CONNECTION__"));;
 
 	boolean extendedInsert = false;
 
@@ -536,12 +536,14 @@ skeleton="../templates/db_output_bulk.skeleton"
     		%>
     	if (commitCounter_<%=cid%> > 0 && rowsToCommitCount_<%=cid%> != 0) {
     		<%dbLog.commit().commitTry(null, dbLog.var("rowsToCommitCount"));%>
-    		conn_<%=cid%>.commit();
+    	}
+    	conn_<%=cid%>.commit();
+    	if (commitCounter_<%=cid%> > 0 && rowsToCommitCount_<%=cid%> != 0) {
     		<%dbLog.commit().commitDone(null);%>
 			rowsToCommitCount_<%=cid%> = 0;
-			commitCounter_<%=cid%> = 0;
     	}
-    		<%
+		commitCounter_<%=cid%> = 0;
+    	<%
 		}
 
 		commitEvery = "0";

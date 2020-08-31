@@ -335,7 +335,7 @@ public class ComponentRefController extends AbstractElementPropertySectionContro
         for (int i = 0; i < itemValueList.size(); i++) {
             String iValue = itemValueList.get(i);
             if ((selectedValue == null && (((INode) elem).getUniqueName()).equals(iValue))
-                    || isRefernceNode(currentNode, itemsValue.get(iValue), selectedValue)) {
+                    || isRefernceNode(currentNode, itemsValue.get(iValue), selectedValue, props)) {
                 iLabel = itemsLabel.get(i);
                 break;
             }
@@ -348,17 +348,28 @@ public class ComponentRefController extends AbstractElementPropertySectionContro
 
     }
 
-    private boolean isRefernceNode(INode selectedNode, INode checkingNode, String selectedUniqueName) {
-        if (selectedNode == checkingNode) {
-            return false;
-        }
+    private boolean isRefernceNode(INode selectedNode, INode checkingNode, String selectedUniqueName, ComponentReferenceProperties props) {
         IReplaceNodeHandler selectedHandler = selectedNode.getReplaceNodeHandler();
         IReplaceNodeHandler checkingHandler = checkingNode.getReplaceNodeHandler();
 
         String selectedPrefix = Optional.ofNullable(selectedHandler).map(h -> h.getPrefix()).orElse("");
         String checkingPrefix = Optional.ofNullable(checkingHandler).map(h -> h.getPrefix()).orElse("");
         if (checkingPrefix.startsWith(selectedPrefix)) {
-            return StringUtils.equals(selectedUniqueName, checkingNode.getUniqueName().substring(selectedPrefix.length()));
+            String selectedNameWithoutPrefix = selectedUniqueName;
+            String checkingUniqueNameWithoutPrefix = checkingNode.getUniqueName();
+            if (selectedNameWithoutPrefix.startsWith(selectedPrefix)) {
+                selectedNameWithoutPrefix = selectedNameWithoutPrefix.substring(selectedPrefix.length());
+            }
+            if (checkingUniqueNameWithoutPrefix.startsWith(selectedPrefix)) {
+                checkingUniqueNameWithoutPrefix = checkingUniqueNameWithoutPrefix.substring(selectedPrefix.length());
+            }
+            boolean isReferenceNode = StringUtils.equals(selectedNameWithoutPrefix, checkingUniqueNameWithoutPrefix);
+            if (isReferenceNode && selectedNode != checkingNode) {
+                props.componentInstanceId.setValue(selectedNameWithoutPrefix);
+                props.setReference(checkingNode.getComponentProperties());
+            }
+            
+            return isReferenceNode;
         } else {
             return false;
         }

@@ -37,7 +37,14 @@ public class JobVMArgumentsUtilTest {
         vm = "";
         Assert.assertTrue(jobVM.readString(vm).isEmpty());
         vm = "hhh jjjj kkkk";
-        Assert.assertTrue(jobVM.readString(vm).isEmpty());
+        List<String> vmargs = jobVM.readString(vm);
+
+        Assert.assertEquals(jobVM.DEFAULT_JVM_ARGS.length, vmargs.size());
+
+        for (String vmarg : jobVM.DEFAULT_JVM_ARGS) {
+            Assert.assertTrue(vmargs.contains(vmarg));
+        }
+
         String value = "{\"JOB_RUN_VM_ARGUMENTS\":[\"{[<,>]};:' \\\"/\\\\+\\\\t+\\\\b+\\\\f+\\\\n=\\\\r|\",\"String a = \\\\\\\\ + [array];\"]}";
         List<String> list = jobVM.readString(value);
         Assert.assertTrue(list.get(0).equals("{[<,>]};:' \"/\\+\\t+\\b+\\f+\\n=\\r|"));

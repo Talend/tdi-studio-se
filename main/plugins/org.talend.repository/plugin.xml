@@ -1258,6 +1258,14 @@
              name="Clean all folders from project"
              version="5.1.2">
        </projecttask>
+        <projecttask
+             beforeLogon="true"
+             breaks="7.4.1"
+             class="org.talend.repository.model.migration.RemoveMetadataInPomsFolder"
+             id="org.talend.repository.model.migration.RemoveMetadataInPomsFolder"
+             name="Clean all metadata in poms folder"
+             version="7.4.1">
+       </projecttask>
        <projecttask
              beforeLogon="true"
              breaks="5.1.1"
@@ -3418,6 +3426,24 @@
                id="org.talend.repository.model.migration.BigQuerySetDefaultAuthTypeForGSMigrationTask"
                name="BigQuerySetDefaultAuthTypeForGSMigrationTask"
                version="7.3.1">
+       </projecttask>
+       <projecttask
+              beforeLogon="false"
+              breaks="7.3.0"
+              class="org.talend.repository.model.migration.spark.UpdateSeparatorAndEscapeForDatasetAPI"
+              description="change separator and escape to work with dataset API"
+              id="org.talend.repository.model.migration.spark.UpdateSeparatorAndEscapeForDatasetAPI"
+              name="UpdateSeparatorAndEscapeForDatasetAPI"
+              version="7.3.1">
+        </projecttask>
+        <projecttask
+              beforeLogon="true"
+              breaks="7.3.1"
+              class="org.talend.repository.model.migration.spark.RefactoDeltaMergeOption"
+              description="refacto for deltalake output xml"
+              id="org.talend.repository.model.migration.spark.RefactoDeltaMergeOption"
+              name="RefactoDeltaMergeOption"
+              version="7.3.1">                     
        </projecttask>
    </extension>
 

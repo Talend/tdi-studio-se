@@ -150,12 +150,14 @@ imports="
             %>
         if (commitCounter_<%=cid%> > 0 && rowsToCommitCount_<%=cid%> != 0) {
             <%dbLog.commit().commitTry(null, dbLog.var("rowsToCommitCount"));%>
-            conn_<%=cid%>.commit();
+        }
+        conn_<%=cid%>.commit();
+        if (commitCounter_<%=cid%> > 0 && rowsToCommitCount_<%=cid%> != 0) {
             <%dbLog.commit().commitDone(null);%>
             rowsToCommitCount_<%=cid%> = 0;
-            commitCounter_<%=cid%> = 0;
         }
-            <%
+        commitCounter_<%=cid%> = 0;
+        <%
         }
         %>
         <%dbLog.conn().closeTry(null);%>

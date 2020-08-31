@@ -95,9 +95,9 @@
 						<configuration>
 							<artifactItems>
 								<artifactItem>
-									<groupId>org.talend.libraries</groupId>
-									<artifactId>talend-soap</artifactId>
-									<version>2.1-20190716</version>
+									<groupId>org.talend.components</groupId>
+									<artifactId>components-soap</artifactId>
+									<version>2.2-20200730</version>
 									<type>jar</type>
 									<overWrite>true</overWrite>
 									<outputDirectory>${soap.dir}</outputDirectory>

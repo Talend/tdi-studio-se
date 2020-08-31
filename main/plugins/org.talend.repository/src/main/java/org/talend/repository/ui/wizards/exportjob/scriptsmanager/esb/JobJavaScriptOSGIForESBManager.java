@@ -604,7 +604,7 @@ public class JobJavaScriptOSGIForESBManager extends JobJavaScriptsManager {
             endpointInfo.put("useContextBean", true); //$NON-NLS-1$
             endpointInfo.put("defaultContext", processItem.getProcess().getDefaultContext()); //$NON-NLS-1$
         } else if (!endpointUri.contains("://") && !endpointUri.startsWith("/")) { //$NON-NLS-1$ //$NON-NLS-2$
-            endpointUri = '/' + endpointUri;
+            endpointUri = '/' + (endpointUri.isEmpty() ? processItem.getProperty().getLabel() : endpointUri);
         }
 
         endpointInfo.put("originalAddress", endpointUri); //$NON-NLS-1$  Needed by Swagger
@@ -944,11 +944,12 @@ public class JobJavaScriptOSGIForESBManager extends JobJavaScriptsManager {
             Set<URL> resources = libResource.getResourcesByRelativePath(path);
             for (URL url : resources) {
                 // TESB-21804:Fail to deploy cMessagingEndpoint with quartz component in runtime for ClassCastException
-                if (url.getPath().matches("(.*)camel-(.*)-alldep-(.*)$") 
-                        || url.getPath().matches("(.*)activemq-all-[\\d\\.]*.jar$")
-                        || url.getPath().matches("(.*)jms[\\d\\.-]*.jar$")
-                        || url.getPath().matches("(.*)tdm-lib-di-[\\d\\.-]*.jar$")
-                        || url.getPath().matches("(.*)dom4j-[\\d\\.-]*.jar$")) {
+                String urlStr = url.getPath().replace("\\", "/");
+                if (urlStr.matches("(.*)camel-(.*)-alldep-(.*)$") 
+                        || urlStr.matches("(.*)activemq-all-[\\d\\.]*.jar$")
+                        || urlStr.matches("(.*)/jms[\\d\\.-]*.jar$")
+                        || urlStr.matches("(.*)tdm-lib-di-[\\d\\.-]*.jar$")
+                        || urlStr.matches("(.*)dom4j-[\\d\\.-]*.jar$")) {
                     continue;
                 }
                 File dependencyFile = new File(FilesUtils.getFileRealPath(url.getPath()));

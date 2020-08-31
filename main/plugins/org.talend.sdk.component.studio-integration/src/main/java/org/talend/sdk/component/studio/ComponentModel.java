@@ -15,9 +15,11 @@
  */
 package org.talend.sdk.component.studio;
 
-import static java.util.Collections.*;
-import static java.util.stream.Collectors.*;
-import static org.talend.sdk.component.studio.model.ReturnVariables.*;
+import static java.util.Collections.emptyList;
+import static java.util.stream.Collectors.toList;
+import static org.talend.sdk.component.studio.model.ReturnVariables.AFTER;
+import static org.talend.sdk.component.studio.model.ReturnVariables.RETURN_ERROR_MESSAGE;
+import static org.talend.sdk.component.studio.model.ReturnVariables.RETURN_TOTAL_RECORD_COUNT;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -695,5 +697,10 @@ public class ComponentModel extends AbstractBasicComponent implements IAdditiona
     @Override
     public boolean isMadeByTalend() {
         return TaCoKitUtil.isTaCoKitComponentMadeByTalend(this.index);
+    }
+
+    @Override
+    public boolean isVisibleInComponentDefinition() {
+        return true;
     }
 }
