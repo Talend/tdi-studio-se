@@ -218,6 +218,7 @@ imports="
 <%
 				}
 			} else {
+				boolean isDeleteEmptyFile = ("true").equals(ElementParameterParser.getValue(node, "__DELETE_EMPTYFILE__"));
 %>
 	int nb_line_<%=cid%> = 0;
 	org.dom4j.io.OutputFormat format_<%=cid%> = org.dom4j.io.OutputFormat.createPrettyPrint();
@@ -231,6 +232,11 @@ imports="
 	resourceMap.put("file_<%=cid%>", file_<%=cid%>);
 	<%}%>
 	org.dom4j.io.XMLWriter writer_<%=cid%> = new org.dom4j.io.XMLWriter(new java.io.OutputStreamWriter(new java.io.FileOutputStream(file_<%=cid %>), <%=encoding%>), format_<%=cid%>);
+	
+	<%if(isDeleteEmptyFile) {%>
+	boolean isEmpty_<%=cid%> = true;
+	<%}%>
+	
 <%
 			}
 		}

@@ -463,6 +463,8 @@ out_<%=cid%>.newLine();
 	}
 }
 } else {
+	boolean isDeleteEmptyFile = ("true").equals(ElementParameterParser.getValue(node, "__DELETE_EMPTYFILE__"));
+	
 	List<IMetadataTable> metadatas = node.getMetadataList();
 	if ((metadatas!=null)&&(metadatas.size()>0)) {
 		IMetadataTable metadata = metadatas.get(0);
@@ -472,10 +474,14 @@ out_<%=cid%>.newLine();
 				IConnection conn = conns.get(0);
 %>
 					nb_line_<%=cid %>++;
+					org.dom4j.Document doc_<%=cid%> = <%=conn.getName()%>.<%=colDoc%>.getDocument();
 					<%if(isDeleteEmptyFile) {%>
 					resourceMap.put("nb_line_<%=cid%>", nb_line_<%=cid%>);
+					if((doc_<%=cid%> != null) && (doc_<%=cid%>.getRootElement() != null)) {
+						isEmpty_<%=cid%> = false;
+					}
 					<%}%>
-					writer_<%=cid%>.write(<%=conn.getName()%>.<%=colDoc%>.getDocument());
+					writer_<%=cid%>.write(doc_<%=cid%>);
 					<%log4jFileUtil.debugWriteData(node);%>
 <%
 			}
