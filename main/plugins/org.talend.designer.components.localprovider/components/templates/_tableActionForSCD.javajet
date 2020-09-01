@@ -37,21 +37,26 @@
 <%
             } else if (MYSQL.equalsIgnoreCase(dbType)) {
                 boolean useExistMySQLConn = "true".equalsIgnoreCase(ElementParameterParser.getValue(node,"__USE_EXISTING_CONNECTION__"));
-                String dbnameMySQL = "";
+                String dbnameMySQL = null;
                 if (useExistMySQLConn) {
                     List< ? extends INode> nodes =  node.getProcess().getNodesOfType("tMysqlConnection");
                     String connectionMySQL = ElementParameterParser.getValue(node,"__CONNECTION__");
                     for (INode ne : nodes) {
                         if (connectionMySQL.equals(ne.getUniqueName())) {
                             dbnameMySQL = ElementParameterParser.getValue(ne, "__DBNAME__");
+                            break;
                         }
                     }
                 } else {
                     dbnameMySQL = ElementParameterParser.getValue(node, "__DBNAME__");
                 }
-                if (dbnameMySQL == null || dbnameMySQL.isEmpty()) dbnameMySQL = "\"\"";
+                dbnameMySQL = ("".equals(dbnameMySQL)) ? null : dbnameMySQL;
 %>
-                java.sql.ResultSet rsTable_<%=cid%> = dbMetaData_<%=cid%>.getTables(<%=dbnameMySQL%>, null, null, new String[]{"TABLE"});
+                <%if (dbnameMySQL != null) { %>
+                    java.sql.ResultSet rsTable_<%=cid%> = dbMetaData_<%=cid%>.getTables(<%=dbnameMySQL%>, null, null, new String[]{"TABLE"});
+                <%} else { %>
+                    java.sql.ResultSet rsTable_<%=cid%> = dbMetaData_<%=cid%>.getTables(connection_<%=cid%>.getCatalog(), null, null, new String[]{"TABLE"});
+                <% } %>
                 boolean whetherExist_<%=cid%> = false;
                 while(rsTable_<%=cid%>.next()) {
                     String table_<%=cid%> = rsTable_<%=cid%>.getString("TABLE_NAME");
