@@ -112,7 +112,8 @@ while ((data_<%=cid%> = input_<%=cid%>.next()) != null) {
             () -> jsonBuilderFactory_<%=cid%>,
             () -> jsonProvider_<%=cid%>,
             () -> jsonb_<%=cid%>,
-            () -> recordBuilderMapper_<%=cid%>));
+            () -> recordBuilderMapper_<%=cid%>,
+            registry_metadata_<%=cid%>));
     } else {
         <%=output%> = jsonb_<%=cid%>.fromJson(jsonb_<%=cid%>.toJson(data_<%=cid%>), <%=output%>.getClass());
     }
