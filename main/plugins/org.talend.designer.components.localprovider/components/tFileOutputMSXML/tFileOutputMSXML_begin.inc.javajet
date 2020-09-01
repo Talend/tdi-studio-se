@@ -409,7 +409,7 @@ class GenerateToolByDom4j{
 %>
 		}
 			
-		<%touchXMLNode.getXMLElement(parentName);%>.elements().add(order_<%=cid%>,<%touchXMLNode.getXMLNode(currEleName);%>);
+		<%touchXMLNode.getXMLElement(parentName);%>.elements().add(order_<%=cid%>,<%touchXMLNode.getXMLElement(currEleName);%>);
 
 <%
 		}else{
