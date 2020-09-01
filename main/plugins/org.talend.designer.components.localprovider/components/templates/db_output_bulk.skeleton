@@ -2058,7 +2058,7 @@ public class CLASS {
                 if ("TIME".equals(dbType)) {
                     setStmt.append(prefix + cid + ".setNull(" + index + dynamic + ", java.sql.Types.TIME);\r\n");
                 } else {
-                    setStmt.append(prefix + cid + ".setNull(" + index + dynamic + ", java.sql.Types.DATE);\r\n");
+                    setStmt.append(prefix + cid + ".setNull(" + index + dynamic + ", java.sql.Types.TIMESTAMP);\r\n");
                 }
                 setStmt.append("}\r\n");
             } else if("String".equals(typeToGenerate)) {
