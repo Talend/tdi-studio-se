@@ -435,7 +435,10 @@ out_<%=cid%>.newLine();
     fileName_<%=cid %> = sb_<%=cid %>.toString();
     file_<%=cid %> = new java.io.File(fileName_<%=cid %>);
     
-	out_<%=cid%> = new java.io.BufferedWriter(new java.io.OutputStreamWriter(new java.io.FileOutputStream(file_<%=cid %>), <%=encoding%>));    
+	out_<%=cid%> = new java.io.BufferedWriter(new java.io.OutputStreamWriter(new java.io.FileOutputStream(file_<%=cid %>), <%=encoding%>));
+	<%if(isDeleteEmptyFile) {%>
+	resourceMap.put("stream_<%=cid%>", out_<%=cid%>);
+	<%}%>
 
 <%
 	if(groupby.length > 0){
@@ -463,8 +466,6 @@ out_<%=cid%>.newLine();
 	}
 }
 } else {
-	boolean isDeleteEmptyFile = ("true").equals(ElementParameterParser.getValue(node, "__DELETE_EMPTYFILE__"));
-	
 	List<IMetadataTable> metadatas = node.getMetadataList();
 	if ((metadatas!=null)&&(metadatas.size()>0)) {
 		IMetadataTable metadata = metadatas.get(0);
