@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.talend.components.lib</groupId>
     <artifactId>commons-net-ftps-proxy</artifactId>
-    <version>3.6.1-talend-20200811</version>
+    <version>3.6.1-talend-20200902</version>
 
     <name>commons-net-talend</name>
 

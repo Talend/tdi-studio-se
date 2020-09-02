@@ -28,7 +28,7 @@ public class SSLSessionReuseFTPSClient extends FTPSClient {
             final SSLSessionContext context = session.getSessionContext();
             if (context == null) {
                 // TDI-44654 (may be reproduced with Syncplify server)
-                log.info("SSL Session Context is null. SSL Session were re-initialized.");
+                log.info("SSL Session Context is null. SSL Session was re-initialized.");
                 return;
             }
 
