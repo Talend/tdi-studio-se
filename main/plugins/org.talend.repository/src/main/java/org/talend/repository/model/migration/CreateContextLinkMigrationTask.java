@@ -25,37 +25,35 @@ import org.talend.repository.items.importexport.handlers.imports.ImportCacheHelp
 
 public class CreateContextLinkMigrationTask extends AbstractItemMigrationTask {
 
-	protected ProxyRepositoryFactory factory = ProxyRepositoryFactory.getInstance();
+    protected ProxyRepositoryFactory factory = ProxyRepositoryFactory.getInstance();
 
-	@Override
-	public List<ERepositoryObjectType> getTypes() {
-		return ContextUtils.getAllSupportContextLinkTypes();
-	}
+    @Override
+    public List<ERepositoryObjectType> getTypes() {
+        return ContextUtils.getAllSupportContextLinkTypes();
+    }
 
-	/*
-	 * (non-Javadoc)
-	 *
-	 * @see org.talend.core.model.migration.AbstractItemMigrationTask#execute(org
-	 * .talend.core.model.properties.Item)
-	 */
-	@Override
-	public ExecutionResult execute(Item item) {
-		if (factory.isFullLogonFinished()) { // For import into opening project, we will create context link later.
-												// Please refer to ImportBasicHandler-->afterImportingItems
-			return ExecutionResult.NOTHING_TO_DO;
-		}
-		return ContextUtils.createContextLinkForItem(item,
-				ImportCacheHelper.getInstance().getCachedContextIdToItemMap());
-	}
+    /*
+     * (non-Javadoc)
+     *
+     * @see org.talend.core.model.migration.AbstractItemMigrationTask#execute(org .talend.core.model.properties.Item)
+     */
+    @Override
+    public ExecutionResult execute(Item item) {
+        if (factory.isFullLogonFinished()) { // For import into opening project, we will create context link later.
+                                             // Please refer to ImportBasicHandler-->afterImportingItems
+            return ExecutionResult.NOTHING_TO_DO;
+        }
+        return ContextUtils.createContextLinkForItem(item, ImportCacheHelper.getInstance().getCachedContextIdToItemMap());
+    }
 
-	/*
-	 * (non-Javadoc)
-	 *
-	 * @see org.talend.core.model.migration.IProjectMigrationTask#getOrder()
-	 */
-	@Override
-	public Date getOrder() {
-		GregorianCalendar gc = new GregorianCalendar(2020, 04, 02, 12, 0, 0);
-		return gc.getTime();
-	}
+    /*
+     * (non-Javadoc)
+     *
+     * @see org.talend.core.model.migration.IProjectMigrationTask#getOrder()
+     */
+    @Override
+    public Date getOrder() {
+        GregorianCalendar gc = new GregorianCalendar(2020, 04, 02, 12, 0, 0);
+        return gc.getTime();
+    }
 }
