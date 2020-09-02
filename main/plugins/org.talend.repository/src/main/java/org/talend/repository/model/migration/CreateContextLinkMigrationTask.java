@@ -43,7 +43,7 @@ public class CreateContextLinkMigrationTask extends AbstractItemMigrationTask {
                                              // Please refer to ImportBasicHandler-->afterImportingItems
             return ExecutionResult.NOTHING_TO_DO;
         }
-        return ContextUtils.createContextLinkForItem(item, ImportCacheHelper.getInstance().getCachedContextIdToItemMap());
+        return ContextUtils.doCreateContextLinkMigration(item, ImportCacheHelper.getInstance().getCachedContextIdToItemMap());
     }
 
     /*
