@@ -249,7 +249,7 @@ public class UnifiedComponentUtil {
         }
     }
 
-    private static void setCompPropertiesForJDBC(ComponentProperties componentProperties, Map<String, Object> map) {
+    public static void setCompPropertiesForJDBC(Properties componentProperties, Map<String, Object> map) {
         List<NamedThing> properties = componentProperties.getProperties();
         Properties connection = null;
         for (NamedThing namedThing : properties) {

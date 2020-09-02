@@ -41,6 +41,7 @@ import org.talend.components.api.component.PropertyPathConnector;
 import org.talend.components.api.properties.ComponentProperties;
 import org.talend.components.api.properties.ComponentReferenceProperties;
 import org.talend.components.api.service.ComponentService;
+import org.talend.core.GlobalServiceRegister;
 import org.talend.core.model.components.ComponentCategory;
 import org.talend.core.model.components.IComponent;
 import org.talend.core.model.components.IComponentsFactory;
@@ -58,6 +59,7 @@ import org.talend.core.model.process.IElementParameterDefaultValue;
 import org.talend.core.model.process.INode;
 import org.talend.core.model.process.INodeConnector;
 import org.talend.core.model.utils.ContextParameterUtils;
+import org.talend.core.runtime.services.IGenericWizardService;
 import org.talend.core.runtime.util.GenericTypeUtils;
 import org.talend.core.ui.component.ComponentsFactoryProvider;
 import org.talend.core.utils.TalendQuoteUtils;
@@ -214,16 +216,24 @@ public class ComponentsUtils {
     private static void loadAdditionalJDBCComponents(Set<IComponent> componentsList, Set<ComponentDefinition> compDefinitions) {
         boolean beanLoad = false;
         Map<String, UnifiedJDBCBean> additionalJDBCMap = null;
+        Map<String, UnifiedJDBCBean> jdbcMap = UnifiedComponentUtil.getAdditionalJDBC();
         for (ComponentDefinition definition : compDefinitions) {
-            if (!beanLoad) {
+            if (!beanLoad && jdbcMap.isEmpty()) {
                 InputStream inputStream = definition.getClass().getClassLoader().getResourceAsStream("support_extra_db.json");
                 additionalJDBCMap = UnifiedComponentUtil.loadAdditionalJDBC(inputStream);
                 if (additionalJDBCMap.keySet().size() == 0) {
                     return;
                 }
+                if (GlobalServiceRegister.getDefault().isServiceRegistered(IGenericWizardService.class)) {
+                    IGenericWizardService service = GlobalServiceRegister.getDefault().getService(IGenericWizardService.class);
+                    if (service != null) {
+                        service.initAdditionalJDBCRepositoryObjType();
+                    }
+                }
+
                 beanLoad = true;
             }
-            for (UnifiedJDBCBean bean : additionalJDBCMap.values()) {
+            for (UnifiedJDBCBean bean : jdbcMap.values()) {
                 loadComponent(componentsList, definition, ComponentCategory.CATEGORY_4_DI.getName(),
                         definition.getName().replace("JDBC", bean.getComponentKey()));
             }
