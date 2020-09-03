@@ -6,11 +6,13 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.security.GeneralSecurityException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.poi.poifs.crypt.Decryptor;
 import org.apache.poi.poifs.crypt.EncryptionInfo;
 import org.apache.poi.poifs.crypt.EncryptionMode;
 import org.apache.poi.poifs.crypt.Encryptor;
@@ -158,9 +160,13 @@ public class ExcelTool {
         }
     }
 
-    private void appendActionForFile(String fileName) throws IOException {
-        InputStream inp = new FileInputStream(fileName);
-        wb = WorkbookFactory.create(inp);
+    private void appendActionForFile(String fileName) throws Exception {
+        if (password == null) {
+            InputStream inp = new FileInputStream(fileName);
+            wb = WorkbookFactory.create(inp);
+        } else {
+           wb = readEncryptedFile(fileName);
+        }
         sheet = wb.getSheet(sheetName);
         if (sheet != null) {
             if (appendSheet) {
@@ -185,9 +191,26 @@ public class ExcelTool {
     }
 
     private void initPreXlsx(String fileName) throws Exception {
-        InputStream preIns = new FileInputStream(fileName);
-        preWb = WorkbookFactory.create(preIns);
+        if(password == null) {
+            InputStream preIns = new FileInputStream(fileName);
+            preWb = WorkbookFactory.create(preIns);
+        } else {
+            preWb = readEncryptedFile(fileName);
+        }
         preSheet = preWb.getSheet(sheetName);
+    }
+    
+    private Workbook readEncryptedFile(String fileName)
+            throws IOException, GeneralSecurityException {
+        InputStream inp = new FileInputStream(fileName);
+        POIFSFileSystem fs = new POIFSFileSystem(inp);
+        EncryptionInfo info = new EncryptionInfo(fs);
+        Decryptor decryptor = Decryptor.getInstance(info);
+        if (!decryptor.verifyPassword(password)) {
+            throw new GeneralSecurityException("Error: Incorrect password!");
+        }
+        InputStream dataStream = decryptor.getDataStream(fs);
+        return WorkbookFactory.create(dataStream);
     }
 
     public void setFont(String fontName) {
