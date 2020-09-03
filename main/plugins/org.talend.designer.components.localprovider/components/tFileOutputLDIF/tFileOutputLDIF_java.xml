@@ -124,7 +124,7 @@
 
 	<CODEGENERATION>
 		<IMPORTS>
-			<IMPORT NAME="COMMON_CODEC" MODULE="commons-codec-1.5.jar" MVN="mvn:org.talend.libraries/commons-codec-1.5/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.apache.common/lib/commons-codec-1.5.jar" REQUIRED="true" />
+			<IMPORT NAME="commons-codec-1.14" MODULE="commons-codec-1.14.jar" MVN="mvn:commons-codec/commons-codec/1.14" REQUIRED="true" />
 			<IMPORT NAME="LDIFFILE" MODULE="ldapjdk.jar" MVN="mvn:org.talend.libraries/ldapjdk/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.mozilla/lib/ldapjdk.jar" REQUIRED="true" />
 		</IMPORTS>
 	</CODEGENERATION>

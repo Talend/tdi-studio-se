@@ -215,7 +215,7 @@
 	</ADVANCED_PARAMETERS>
 	<CODEGENERATION>
      <IMPORTS>
-       <IMPORT NAME="Driver-Oracle8i" MODULE="ojdbc12.jar" MVN="mvn:org.talend.libraries/ojdbc12/6.0.0"  BundleID="" REQUIRED_IF="(DB_VERSION == 'ORACLE_8') AND (USE_EXISTING_CONNECTION == 'false') AND (SPECIFY_DATASOURCE_ALIAS == 'false')" />
+       <IMPORT NAME="Driver-Oracle8i" MODULE="ojdbc12.jar" MVN="mvn:org.talend.libraries/ojdbc12/6.0.0"  BundleID="" REQUIRED_IF="(DB_VERSION == 'ORACLE_8') AND (USE_EXISTING_CONNECTION == 'false')" />
        <IMPORT NAME="Driver-Oracle9i" MODULE="ojdbc14-9i.jar" MVN="mvn:org.talend.libraries/ojdbc14-9i/6.0.0"  BundleID="" REQUIRED_IF="(DB_VERSION == 'ORACLE_9') AND (USE_EXISTING_CONNECTION == 'false')" />
        <IMPORT NAME="Driver-Oracle10g" MODULE="ojdbc14.jar" MVN="mvn:org.talend.libraries/ojdbc14/6.0.0"  BundleID="" REQUIRED_IF="(DB_VERSION == 'ORACLE_10') AND (USE_EXISTING_CONNECTION == 'false')" />
        <IMPORT NAME="Driver-Oracle11g" MODULE="ojdbc6.jar" MVN="mvn:org.talend.libraries/ojdbc6/6.0.0"  BundleID="" REQUIRED_IF="(DB_VERSION == 'ORACLE_11') AND (USE_EXISTING_CONNECTION == 'false')" />
