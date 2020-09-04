@@ -349,8 +349,8 @@
 
    <CODEGENERATION>
     <IMPORTS>
-       <IMPORT NAME="aws-java-sdk-1.11.729.jar" MODULE="aws-java-sdk-1.11.729.jar"
-			MVN="mvn:com.amazonaws/aws-java-sdk/1.11.729"
+       <IMPORT NAME="aws-java-sdk-1.11.848.jar" MODULE="aws-java-sdk-1.11.848.jar"
+			MVN="mvn:com.amazonaws/aws-java-sdk/1.11.848"
 			REQUIRED_IF="USE_EXISTING_CONNECTION == 'false'" />
 		<IMPORT NAME="jackson-core-2.10.1.jar" MODULE="jackson-core-2.10.1.jar"
 			MVN="mvn:com.fasterxml.jackson.core/jackson-core/2.10.1"
