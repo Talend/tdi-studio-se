@@ -1,0 +1,113 @@
+<%
+//copy from configuration.javajet for tacokit
+%>
+
+<%
+            //TODO: modify this part for Maps and nested lists.
+            if (p.getFieldType() == EParameterFieldType.TABLE || p.getFieldType() == EParameterFieldType.TACOKIT_SUGGESTABLE_TABLE) {
+                java.util.List<java.util.Map<String, String>> tableValues = ElementParameterParser.createTableValues((java.util.List<java.util.Map<String, Object>>) p.getValue(), p);
+                String[] items = p.getListItemsDisplayCodeName();
+                String tableName = p.getName().replace('$', '.');
+                boolean primitiveTable = items.length == 1 && items[0].equals(tableName + "[]");
+                String tableNamePrefix = tableName + "[]";
+                for (int i = 0; i < tableValues.size(); i++) {
+                    java.util.Map<String, String> lineValues = tableValues.get(i);
+                    for (int j = 0; j < items.length; j++) {
+                        String key = tableName + "[" + i + "]";
+                        if (!primitiveTable) {
+                            final String columnName = items[j].substring(tableNamePrefix.length(), items[j].length());
+                            key = key + columnName;
+                        }
+                        String value = lineValues.get(items[j]);
+                        if (!org.talend.core.model.utils.ContextParameterUtils.isDynamic(value)) {
+                            value = org.talend.core.model.utils.TalendTextUtils.removeQuotes(value);
+                            value = org.talend.core.model.utils.TalendTextUtils.addQuotes(value);
+                        }
+%>
+                        component_parameters.put("<%=key%>",String.valueOf(<%=value%>));
+<%
+                    }
+                }
+            } else if(p.getFieldType() == EParameterFieldType.SCHEMA_TYPE) {
+                final String parameterName = p.getName();
+                IConnection connection = null;
+                final List<? extends IConnection> connections = NodeUtil.getOutgoingConnections(node, p.getContext());
+                if(connections != null && !connections.isEmpty()) {
+                    connection = connections.get(0);
+                }
+                if(connection != null) {
+                    IMetadataTable metaTable = connection.getMetadataTable();
+                    List<IMetadataColumn> columns = metaTable.getListColumns();
+                    for(int i = 0; i < columns.size(); i++) {
+                        IMetadataColumn column = columns.get(i);
+                    %>
+                        component_parameters.put("<%=parameterName%>[<%=i%>]", "<%=column.getLabel()%>");
+                    <%
+                    }
+                }
+            } else if (p.getFieldType() == EParameterFieldType.TACOKIT_INPUT_SCHEMA) {
+                final String parameterName = p.getName();
+                IConnection connection = null;
+                final List<? extends IConnection> connections = NodeUtil.getIncomingConnections(node, p.getContext());
+                if(connections != null && !connections.isEmpty()) {
+                    connection = connections.get(0);
+                }
+                if(connection != null) {
+                    IMetadataTable metaTable = connection.getMetadataTable();
+                    List<IMetadataColumn> columns = metaTable.getListColumns();
+                    for(int i = 0; i < columns.size(); i++) {
+                        IMetadataColumn column = columns.get(i);
+                    %>
+                        component_parameters.put("<%=parameterName%>[<%=i%>]", "<%=column.getLabel()%>");
+                    <%
+                    }
+                }
+            } else {
+                final String key;
+                if(!p.getName().contains("$")){
+                    key = p.getName();
+                }else{
+                    final StringBuilder keyBuilder = new StringBuilder();
+                    for (String part : p.getName().split("\\.")) {
+                        if (keyBuilder.length() != 0) {
+                            keyBuilder.append(".");
+                        }
+                        if (part.contains("$") && !part.startsWith("$")) {
+                            keyBuilder.append(part.replace("$", "."));
+                        } else {
+                            keyBuilder.append(part);
+                        }
+                    }
+                    key = keyBuilder.toString();
+                }
+                String value = null;
+                if(p.getFieldType() == EParameterFieldType.PASSWORD) {
+                    continue;
+                } else {
+                    value = ElementParameterParser.getStringElementParameterValue(p);
+                    if (!org.talend.core.model.utils.ContextParameterUtils.isDynamic(value)) {
+                        value = org.talend.core.model.utils.TalendTextUtils.removeQuotes(value);
+                        value = org.talend.core.model.utils.TalendTextUtils.addQuotes(value);
+                    }
+                }
+                if (value != null) {
+                 if(key.endsWith("$maxBatchSize")){
+                  %>
+                  
+                  <%
+                 } else if(p.getFieldType() == EParameterFieldType.CLOSED_LIST) {
+                   String valueTemp = org.talend.core.model.utils.TalendTextUtils.removeQuotes(value);
+                    if ("".equals(valueTemp)) {
+                       String[] listItemsDisplayCodeValue = p.getListItemsDisplayCodeName();
+                       if(listItemsDisplayCodeValue != null && listItemsDisplayCodeValue.length > 0){
+                          valueTemp = listItemsDisplayCodeValue[0];
+                          value = org.talend.core.model.utils.TalendTextUtils.addQuotes(valueTemp);
+                       }
+                    }
+                }
+%>
+                    component_parameters.put("<%=key%>", String.valueOf(<%=value%>));
+<%
+                } // else do not put value in configuration
+            }
+%>
