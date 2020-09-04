@@ -299,7 +299,6 @@ public class UnifiedComponentUtil {
                 UnifiedJDBCBean bean = new UnifiedJDBCBean();
                 bean.setDatabaseId(jo.get("id").asText());
                 bean.setDisplayName(jo.get("displayName").asText());
-                bean.setComponentKey(jo.get("componentKey").asText());
                 bean.setDriverClass(jo.get("class").asText());
                 bean.setUrl(jo.get("url").asText());
                 JsonNode paths = jo.get("paths");

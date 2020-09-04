@@ -15,14 +15,14 @@ package org.talend.designer.core.model.components;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
+
 /**
  * DOC jding  class global comment. Detailled comment
  */
 public class UnifiedJDBCBean {
 
     private String databaseId;
-
-    private String componentKey;
 
     private String displayName;
 
@@ -56,16 +56,7 @@ public class UnifiedJDBCBean {
      * @return the componentKey
      */
     public String getComponentKey() {
-        return componentKey;
-    }
-
-    /**
-     * Sets the componentKey.
-     * 
-     * @param componentKey the componentKey to set
-     */
-    public void setComponentKey(String componentKey) {
-        this.componentKey = componentKey;
+        return StringUtils.deleteWhitespace(displayName);
     }
 
     /**

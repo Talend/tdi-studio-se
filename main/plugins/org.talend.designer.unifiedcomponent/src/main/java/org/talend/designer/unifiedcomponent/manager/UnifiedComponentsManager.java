@@ -100,7 +100,6 @@ public class UnifiedComponentsManager {
             for (UnifiedJDBCBean bean : additionalJDBC.values()) {
                 JDBCComponentsUnifier jdbcUnifier = new JDBCComponentsUnifier();
                 jdbcUnifier.setDisplayName(bean.getDisplayName());
-                jdbcUnifier.setComponentKey(bean.getComponentKey());
                 for (IComponentDelegate delegateComp : componentDelegates) {
                     jdbcUnifier.setDelegateComponent(delegateComp);
                     initDelegateComponent(jdbcUnifier);

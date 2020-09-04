@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2016 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2020 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -17,10 +17,6 @@ package org.talend.designer.unifiedcomponent.unifier.jdbc;
  * DOC jding  class global comment. Detailled comment
  */
 public interface IDynamicJDBCUnifier {
-
-    public String getComponentKey();
-
-    public void setComponentKey(String componentKey);
 
     public String getDispalyComponentName();
 }

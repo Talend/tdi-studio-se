@@ -12,6 +12,7 @@
 // ============================================================================
 package org.talend.designer.unifiedcomponent.unifier.jdbc;
 
+import org.apache.commons.lang.StringUtils;
 import org.talend.designer.unifiedcomponent.unifier.AbstractComponentsUnifier;
 
 /**
@@ -21,8 +22,6 @@ import org.talend.designer.unifiedcomponent.unifier.AbstractComponentsUnifier;
 public class JDBCComponentsUnifier extends AbstractComponentsUnifier implements IDynamicJDBCUnifier {
 
     private String displayName = "JDBC";
-
-    private String componentKey = "JDBC";
     /*
      * (non-Javadoc)
      *
@@ -46,18 +45,10 @@ public class JDBCComponentsUnifier extends AbstractComponentsUnifier implements 
 
     }
 
-    public String getComponentKey() {
-        return componentKey;
-    }
-
-    public void setComponentKey(String componentKey) {
-        this.componentKey = componentKey;
-    }
-
     // the real component like tDeltaLakeInput
     public String getDispalyComponentName() {
         // tJDBCInput ==> tDeltaLakeInput
-        String componentName = super.getComponentName().replaceFirst("JDBC", getComponentKey());
+        String componentName = super.getComponentName().replaceFirst("JDBC", StringUtils.deleteWhitespace(displayName));
         return componentName;
     }
 
