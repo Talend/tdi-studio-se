@@ -137,12 +137,30 @@ public class UnifiedComponentUtil {
 
     }
 
-    public static List<IComponent> filterUnifiedComponent(RepositoryComponentSetting setting, List<IComponent> componentList) {
+    public static List<IComponent> filterUnifiedComponent(RepositoryComponentSetting setting, List<IComponent> componentList,
+            String dbTypeName) {
         if (GlobalServiceRegister.getDefault().isServiceRegistered(IUnifiedComponentService.class)) {
             List<IComponent> filtedList = new ArrayList<IComponent>();
             IUnifiedComponentService service = GlobalServiceRegister.getDefault().getService(IUnifiedComponentService.class);
             IComponentsHandler componentsHandler = ComponentsFactoryProvider.getInstance().getComponentsHandler();
-            filtedList.addAll(componentList);
+            // filter for additional JDBC
+            Map<String, IComponent> componentMap = new HashMap<String, IComponent>();
+            for (IComponent component : componentList) {
+                String key = component.getName() + component.getPaletteType();
+                if (componentMap.get(key) == null) {
+                    componentMap.put(key, component);
+                } else {
+                    IComponent original = componentMap.get(key);
+                    String databaseName = service.getUnifiedCompDisplayName(service.getDelegateComponent(component),
+                            component.getDisplayName());
+                    if (dbTypeName.equals(databaseName)) {
+                        componentMap.put(key, component);
+                    }
+                }
+
+            }
+
+            filtedList.addAll(componentMap.values());
             for (IComponent component : componentList) {
                 if (componentsHandler != null && componentsHandler.extractComponentsCategory() != null) {
                     if (!component.getPaletteType().equals(componentsHandler.extractComponentsCategory().getName())) {
@@ -276,6 +294,13 @@ public class UnifiedComponentUtil {
 
     public static Map<String, UnifiedJDBCBean> getAdditionalJDBC() {
         return additionalJDBCCache;
+    }
+
+    public static boolean isAdditionalJDBC(String dbType) {
+        if (additionalJDBCCache.get(dbType) != null) {
+            return true;
+        }
+        return false;
     }
 
     public static Map<String, UnifiedJDBCBean> loadAdditionalJDBC(InputStream inputStream) {

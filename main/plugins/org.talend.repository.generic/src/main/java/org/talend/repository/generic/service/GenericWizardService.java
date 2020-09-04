@@ -385,6 +385,12 @@ public class GenericWizardService implements IGenericWizardService {
         }
         DBDynamicComposite dynamicFormComposite = (DBDynamicComposite) dynamicForm;
         Map<String, UnifiedJDBCBean> additionalJDBC = UnifiedComponentUtil.getAdditionalJDBC();
+        // set new form first, otherwise would keep before value
+        ComponentWizard componentWizard = internalService.getComponentWizard("JDBC", propertyId);
+        if (componentWizard != null) {
+            dynamicFormComposite.setForm(componentWizard.getForms().get(0));
+        }
+
         if (additionalJDBC.get(dbType) != null) {
             // additional jdbc
             Properties componentProperties = dynamicFormComposite.getForm().getProperties();
@@ -407,10 +413,6 @@ public class GenericWizardService implements IGenericWizardService {
             connection.setURL(null);
             connection.setDriverClass(null);
             connection.setDriverJarPath(null);
-            ComponentWizard componentWizard = internalService.getComponentWizard(dbType, propertyId);
-            if (componentWizard != null) {
-                dynamicFormComposite.setForm(componentWizard.getForms().get(0));
-            }
         }
         dynamicFormComposite.resetParameters(true);
         dynamicFormComposite.refresh();

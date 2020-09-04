@@ -2005,13 +2005,21 @@ public class TalendEditorDropTargetListener extends TemplateTransferDropTargetLi
         settingCopy.setOutputComponent(rcSetting.getOutPutComponentName());
         settingCopy.setDefaultComponent(rcSetting.getDefaultComponentName());
 
-        neededComponents = UnifiedComponentUtil.filterUnifiedComponent(settingCopy, neededComponents);
 
         String typeName = null;
         if (item instanceof ConnectionItem) {
-            typeName = ((ConnectionItem) item).getTypeName();
+            ConnectionItem connectionItem = (ConnectionItem) item;
+            typeName = connectionItem.getTypeName();
+            Connection connection = connectionItem.getConnection();
+            if (connection instanceof DatabaseConnection) {
+                DatabaseConnection dbconn = (DatabaseConnection) connection;
+                if (UnifiedComponentUtil.isAdditionalJDBC(dbconn.getProductId())) {
+                    typeName = dbconn.getProductId();
+                }
+            }
         }
 
+        neededComponents = UnifiedComponentUtil.filterUnifiedComponent(settingCopy, neededComponents, typeName);
         // Check if the components in the list neededComponents have the same category that is required by Process.
         IComponent component = chooseOneComponent(extractComponents(neededComponents), settingCopy, quickCreateInput,
                 quickCreateOutput, typeName);

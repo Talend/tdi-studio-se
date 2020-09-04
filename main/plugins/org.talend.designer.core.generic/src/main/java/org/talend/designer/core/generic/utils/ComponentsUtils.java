@@ -42,7 +42,6 @@ import org.talend.components.api.properties.ComponentProperties;
 import org.talend.components.api.properties.ComponentReferenceProperties;
 import org.talend.components.api.service.ComponentService;
 import org.talend.core.GlobalServiceRegister;
-import org.talend.core.model.components.ComponentCategory;
 import org.talend.core.model.components.IComponent;
 import org.talend.core.model.components.IComponentsFactory;
 import org.talend.core.model.components.filters.ComponentsFactoryProviderManager;
@@ -218,6 +217,7 @@ public class ComponentsUtils {
         Map<String, UnifiedJDBCBean> additionalJDBCMap = null;
         Map<String, UnifiedJDBCBean> jdbcMap = UnifiedComponentUtil.getAdditionalJDBC();
         for (ComponentDefinition definition : compDefinitions) {
+            // load additional JDBC configuration json
             if (!beanLoad && jdbcMap.isEmpty()) {
                 InputStream inputStream = definition.getClass().getClassLoader().getResourceAsStream("support_extra_db.json");
                 additionalJDBCMap = UnifiedComponentUtil.loadAdditionalJDBC(inputStream);
@@ -233,10 +233,24 @@ public class ComponentsUtils {
 
                 beanLoad = true;
             }
-            for (UnifiedJDBCBean bean : jdbcMap.values()) {
-                loadComponent(componentsList, definition, ComponentCategory.CATEGORY_4_DI.getName(),
-                        definition.getName().replace("JDBC", bean.getComponentKey()));
+
+            List<String> supportedProducts = definition.getSupportedProducts();
+            if (supportedProducts == null) {
+                return;
             }
+            for (String productType : supportedProducts) {
+                List<String> paletteTypes = GenericComponentCategoryFactory.getPaletteTypes(productType);
+                if (paletteTypes == null) {
+                    continue;
+                }
+                for (String paletteType : paletteTypes) {
+                    for (UnifiedJDBCBean bean : jdbcMap.values()) {
+                        loadComponent(componentsList, definition, paletteType,
+                                definition.getName().replace("JDBC", bean.getComponentKey()));
+                    }
+                }
+            }
+
         }
 
     }
