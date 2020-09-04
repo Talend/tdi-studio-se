@@ -85,7 +85,7 @@
                                 </artifactItem>
                                 <artifactItem>
                                     <groupId>${talend.groupid}</groupId>
-                                    <artifactId>talendExcel-1.5-20190731</artifactId>
+                                    <artifactId>talendExcel-1.5-20200825</artifactId>
                                     <version>${talend.version.600}</version>
                                 </artifactItem>
 							</artifactItems>
