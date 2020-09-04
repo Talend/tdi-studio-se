@@ -406,6 +406,7 @@
                     ignoredParamsNames.add("SQLPATTERN_VALUE");
                     ignoredParamsNames.add("ADDITIONAL_INSERT_COLUMNS");
                     ignoredParamsNames.add("ADDITIONAL_UPDATE_COLUMNS");
+                    ignoredParamsNames.add("SELECTION_TABLE");
                     
                     if(ignoredParamsNames.contains(name)) {
                         //do nothing
