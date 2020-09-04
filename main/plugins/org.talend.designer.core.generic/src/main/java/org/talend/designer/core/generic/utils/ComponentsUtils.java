@@ -42,6 +42,7 @@ import org.talend.components.api.properties.ComponentProperties;
 import org.talend.components.api.properties.ComponentReferenceProperties;
 import org.talend.components.api.service.ComponentService;
 import org.talend.core.GlobalServiceRegister;
+import org.talend.core.PluginChecker;
 import org.talend.core.model.components.IComponent;
 import org.talend.core.model.components.IComponentsFactory;
 import org.talend.core.model.components.filters.ComponentsFactoryProviderManager;
@@ -213,6 +214,10 @@ public class ComponentsUtils {
     }
 
     private static void loadAdditionalJDBCComponents(Set<IComponent> componentsList, Set<ComponentDefinition> compDefinitions) {
+        // restrict additional JDBC for EE
+        if (!PluginChecker.isTIS()) {
+            return;
+        }
         boolean beanLoad = false;
         Map<String, UnifiedJDBCBean> additionalJDBCMap = null;
         Map<String, UnifiedJDBCBean> jdbcMap = UnifiedComponentUtil.getAdditionalJDBC();
