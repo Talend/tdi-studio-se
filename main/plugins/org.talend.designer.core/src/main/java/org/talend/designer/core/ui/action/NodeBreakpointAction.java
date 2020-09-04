@@ -82,7 +82,7 @@ public class NodeBreakpointAction extends SelectionAction {
             return false;
         }
         if (PluginUtil.isMediation()) {
-            return false;
+//            return false;
         }
         List parts = getSelectedObjects();
         if (parts.size() == 1) {

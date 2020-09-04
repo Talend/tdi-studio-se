@@ -33,4 +33,9 @@ public class DefaultDebugviewHelper implements IDebugViewHelper {
         return new DebugProcessTosComposite(container, SWT.NONE);
     }
 
+    @Override
+    public String getDebugType() {
+        return "DI";
+    }
+
 }

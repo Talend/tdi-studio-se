@@ -21,4 +21,6 @@ import org.talend.designer.runprocess.ui.TraceDebugProcessComposite;
 public interface IDebugViewHelper {
 
     public TraceDebugProcessComposite getDebugComposite(final Composite container);
+    
+    public String getDebugType();
 }

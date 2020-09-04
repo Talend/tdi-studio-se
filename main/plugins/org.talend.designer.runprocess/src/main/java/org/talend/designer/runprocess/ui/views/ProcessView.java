@@ -15,8 +15,10 @@ package org.talend.designer.runprocess.ui.views;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.log4j.Logger;
@@ -147,7 +149,7 @@ public class ProcessView extends ViewPart implements PropertyChangeListener {
 
     private static RunProcessContext processContext;
 
-    private IDebugViewHelper debugViewHelper;
+    private Map<String, IDebugViewHelper> debugViewHelpers;
 
     private boolean canRun = true;
 
@@ -185,7 +187,14 @@ public class ProcessView extends ViewPart implements PropertyChangeListener {
                 "org.talend.designer.runprocess.runprocess_view_helper", "runprocess_view_helper"); //$NON-NLS-1$ //$NON-NLS-2$
         IExtensionPointLimiter debugextensionPointLimiter = new ExtensionPointLimiterImpl(
                 "org.talend.designer.runprocess.debugprocess_view_helper", "debugprocess_view_helper");
-        IDebugViewHelper debugViewHelperPrm = ExtensionImplementationProvider.getSingleInstance(debugextensionPointLimiter, null);
+        debugViewHelpers = new HashMap<String, IDebugViewHelper>();
+        ExtensionImplementationProvider.getInstance(debugextensionPointLimiter, null).forEach(e -> {
+            if (e instanceof IDebugViewHelper) {
+                IDebugViewHelper helper = (IDebugViewHelper) e;
+                debugViewHelpers.put(helper.getDebugType(), helper);
+            }
+        });
+        
         IProcessViewHelper processViewHelperPrm = ExtensionImplementationProvider.getSingleInstance(extensionPointLimiter, null);
 
         if (processViewHelperPrm == null) {
@@ -193,11 +202,10 @@ public class ProcessView extends ViewPart implements PropertyChangeListener {
         }
         tabFactory = new HorizontalTabFactory();
         setProcessViewHelper(processViewHelperPrm);
-
-        if (debugViewHelperPrm != null) {
-            debugViewHelper = debugViewHelperPrm;
-        } else {
-            debugViewHelper = new DefaultDebugviewHelper();
+        if(debugViewHelpers.size() == 0) {
+            // TOS Debug helper
+            DefaultDebugviewHelper defaultDebugViewHelper = new DefaultDebugviewHelper();
+            debugViewHelpers.put(defaultDebugViewHelper.getDebugType(), defaultDebugViewHelper);
         }
         rubjobManager = ProcessManager.getInstance();
         ProxyRepositoryFactory.getInstance().addPropertyChangeListener(this);
@@ -393,7 +401,13 @@ public class ProcessView extends ViewPart implements PropertyChangeListener {
             processComposite = new ProcessComposite(parent, SWT.H_SCROLL | SWT.V_SCROLL | SWT.NO_FOCUS);
             dc = processComposite;
         } else if (category == EComponentCategory.DEBUGRUN) {
-            debugTisProcessComposite = this.debugViewHelper.getDebugComposite(parent);
+            debugViewHelpers.values().forEach(helper -> {
+                helper.getDebugComposite(parent).setVisible(false);
+            });
+            debugTisProcessComposite = oldJobType != null && debugViewHelpers.get(oldJobType) != null
+                    ? debugViewHelpers.get(oldJobType).getDebugComposite(parent)
+                    : debugViewHelpers.get("DI").getDebugComposite(parent);
+            debugTisProcessComposite.setVisible(true);
             // CSS
             CoreUIPlugin.setCSSClass(debugTisProcessComposite, TraceDebugProcessComposite.class.getSimpleName());
             dc = debugTisProcessComposite;
@@ -431,7 +445,7 @@ public class ProcessView extends ViewPart implements PropertyChangeListener {
     }
 
     public IDebugViewHelper getDebugViewHelper() {
-        return this.debugViewHelper;
+        return this.debugViewHelpers.get(oldJobType);
     }
 
     public ProcessComposite getProcessComposite() {
@@ -617,9 +631,21 @@ public class ProcessView extends ViewPart implements PropertyChangeListener {
         }
         if (dc != null && dc == processComposite) {
             processComposite.setProcessContext(activeContext);
-        } else if (dc != null && dc == debugTisProcessComposite) {
-            debugTisProcessComposite.setProcessContext(activeContext);
-            debugTisProcessComposite.setContextComposite(this.contextComposite);
+        } else if (dc != null && dc instanceof TraceDebugProcessComposite) {
+            if (this.oldJobType != null) {
+                System.out.println(oldJobType);
+                if (!debugViewHelpers.get(oldJobType).getDebugComposite(parent).isVisible()) {
+                    debugViewHelpers.values().forEach(helper -> {
+                        if(!helper.getDebugType().equals(oldJobType)) {
+                            helper.getDebugComposite(parent).setVisible(false);
+                        }
+                    });
+                    debugViewHelpers.get(oldJobType).getDebugComposite(parent).setVisible(true);
+                }
+                debugTisProcessComposite.setProcessContext(activeContext);
+                debugTisProcessComposite.setContextComposite(this.contextComposite);
+            }
+
         } else if (dc != null && dc == advanceComposite) {
             advanceComposite.setProcessContext(activeContext);
         } else if (dc != null && dc == targetComposite) {
