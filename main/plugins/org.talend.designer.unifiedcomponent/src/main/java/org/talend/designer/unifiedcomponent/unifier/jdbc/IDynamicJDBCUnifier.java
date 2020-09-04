@@ -22,5 +22,5 @@ public interface IDynamicJDBCUnifier {
 
     public void setComponentKey(String componentKey);
 
-    public String getDispalyComponent();
+    public String getDispalyComponentName();
 }

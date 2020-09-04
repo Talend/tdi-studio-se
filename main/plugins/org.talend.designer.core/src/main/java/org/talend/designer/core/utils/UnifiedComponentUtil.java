@@ -64,19 +64,6 @@ public class UnifiedComponentUtil {
             IElementParameter elementParameter = node.getElementParameter(EParameterName.UNIFIED_COMPONENTS.name());
             if (elementParameter != null && elementParameter.getValue() != null) {
                 String emfCompName = String.valueOf(elementParameter.getValue());
-//                if (GlobalServiceRegister.getDefault().isServiceRegistered(IUnifiedComponentService.class)) {
-//                    IUnifiedComponentService service = GlobalServiceRegister.getDefault()
-//                            .getService(IUnifiedComponentService.class);
-//                    if (service != null) {
-//                        String realName = service.getUnifiedCompRealComponentName(component, emfCompName);
-//                        if (StringUtils.isNotBlank(realName)) {
-//                            // correct display name, set display name
-//                            node.setUnifiedComponentDisplayName(emfCompName);
-//                            // real component used to get emf component
-//                            emfCompName = realName;
-//                        }
-//                    }
-//                }
                 node.setUnifiedComponentDisplayName(emfCompName);
                 String paletteType = component.getPaletteType();
                 IComponentsService compService = GlobalServiceRegister.getDefault().getService(IComponentsService.class);

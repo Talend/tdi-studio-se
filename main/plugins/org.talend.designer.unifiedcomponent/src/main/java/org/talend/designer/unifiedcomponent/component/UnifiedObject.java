@@ -27,7 +27,7 @@ public class UnifiedObject {
 
     private String componentName;
 
-    private String displayComponent;
+    private String displayComponentName;
 
     private Set<String> supportedCategories = new HashSet<String>();
 
@@ -120,15 +120,15 @@ public class UnifiedObject {
         return this.hideFamilies;
     }
 
-    public String getDisplayComponent() {
-        if (displayComponent != null) {
-            return displayComponent;
+    public String getDisplayComponentName() {
+        if (displayComponentName != null) {
+            return displayComponentName;
         }
         return componentName;
     }
 
-    public void setDisplayComponent(String jdbcComponent) {
-        this.displayComponent = jdbcComponent;
+    public void setDisplayComponentName(String jdbcComponent) {
+        this.displayComponentName = jdbcComponent;
     }
 
 }

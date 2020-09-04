@@ -55,7 +55,7 @@ public class JDBCComponentsUnifier extends AbstractComponentsUnifier implements 
     }
 
     // the real component like tDeltaLakeInput
-    public String getDispalyComponent() {
+    public String getDispalyComponentName() {
         // tJDBCInput ==> tDeltaLakeInput
         String componentName = super.getComponentName().replaceFirst("JDBC", getComponentKey());
         return componentName;

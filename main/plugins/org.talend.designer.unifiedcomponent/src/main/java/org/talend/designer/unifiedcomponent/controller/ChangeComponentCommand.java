@@ -57,7 +57,7 @@ public class ChangeComponentCommand extends Command {
             delegateComponent = (DelegateComponent) node.getDelegateComponent();
             UnifiedObject object = delegateComponent.getUnifiedObjectByDatabase(database);
             if (object != null) {
-                this.newComponent = object.getDisplayComponent();
+                this.newComponent = object.getDisplayComponentName();
             }
             this.oldComponent = param.getValue();
             IElementParameter propertyType = node.getElementParameterFromField(EParameterFieldType.PROPERTY_TYPE);

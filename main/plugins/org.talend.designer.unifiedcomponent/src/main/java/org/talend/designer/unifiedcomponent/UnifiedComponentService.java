@@ -156,7 +156,7 @@ public class UnifiedComponentService implements IUnifiedComponentService {
             DelegateComponent dComp = (DelegateComponent) comp;
             Set<UnifiedObject> unifiedObjects = dComp.getUnifiedObjectsByPalette(dComp.getPaletteType());
             for (UnifiedObject obj : unifiedObjects) {
-                if (obj.getDisplayComponent().equals(component.getDisplayName())) {
+                if (obj.getDisplayComponentName().equals(component.getDisplayName())) {
                     return dComp;
                 }
             }

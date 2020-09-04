@@ -824,7 +824,7 @@ public class DelegateComponent extends AbstractBasicComponent {
 
     public UnifiedObject getUnifiedObjectByName(String componentName) {
         for (UnifiedObject obj : getUnifiedObjects()) {
-            if (obj.getDisplayComponent().equals(componentName)) {
+            if (obj.getDisplayComponentName().equals(componentName)) {
                 return obj;
             }
         }
