@@ -23,6 +23,10 @@
                             value = org.talend.core.model.utils.TalendTextUtils.removeQuotes(value);
                             value = org.talend.core.model.utils.TalendTextUtils.addQuotes(value);
                         }
+                        
+                        if(value==null || "null".equals(value.trim())) {
+                            value = "(Object)null";
+                        }
 %>
                         component_parameters.put("<%=key%>",String.valueOf(<%=value%>));
 <%
@@ -104,6 +108,10 @@
                           value = org.talend.core.model.utils.TalendTextUtils.addQuotes(valueTemp);
                        }
                     }
+                }
+                
+                if(value==null || "null".equals(value.trim())) {
+                    value = "(Object)null";
                 }
 %>
                     component_parameters.put("<%=key%>", String.valueOf(<%=value%>));
