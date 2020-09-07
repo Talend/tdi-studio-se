@@ -1,0 +1,26 @@
+<%@ jet 
+imports="
+    org.talend.core.model.process.INode 
+    org.talend.designer.codegen.config.CodeGeneratorArgument
+    org.talend.core.model.process.ElementParameterParser
+"
+%>
+
+<%
+CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
+INode node = (INode)codeGenArgument.getArgument();
+String cid = node.getUniqueName();
+
+boolean isDeleteEmptyFile = ("true").equals(ElementParameterParser.getValue(node, "__DELETE_EMPTYFILE__"));
+boolean inputIsDocument = "true".equals(ElementParameterParser.getValue(node, "__INPUT_IS_DOCUMENT__"));
+
+if(isDeleteEmptyFile){%>
+	if(Boolean.valueOf(String.valueOf(resourceMap.remove("isFileGenerated_<%=cid%>"))) && Integer.valueOf(String.valueOf(resourceMap.remove("nb_line_<%=cid%>"))) == 0){
+		<%if(!inputIsDocument) {%>
+		((java.io.BufferedWriter)resourceMap.remove("stream_<%=cid%>")).close();
+		<%} else {%>
+		((org.dom4j.io.XMLWriter)resourceMap.remove("stream_<%=cid%>")).close();
+		<%}%>
+		((java.io.File)resourceMap.remove("file_<%=cid%>")).delete();
+	}		
+<%}%>	

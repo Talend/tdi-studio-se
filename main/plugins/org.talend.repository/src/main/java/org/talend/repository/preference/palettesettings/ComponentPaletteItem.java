@@ -28,7 +28,7 @@ public class ComponentPaletteItem extends AbstractPaletteItem implements IPalett
 
     public ComponentPaletteItem(IComponent component, String origFamily) {
         this.component = component;
-        setLabel(component.getName());
+        setLabel(component.getDisplayName());
         setImageDesc(component.getIcon16());
         setCategory(ComponentCategory.getComponentCategoryFromName(component.getPaletteType()));
         this.family = origFamily;

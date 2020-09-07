@@ -110,6 +110,13 @@ log4jFileUtil.writeDataFinishInfo(node);
 %>
 	writer_<%=cid%>.close();
 <%
+	if(isDeleteEmptyFile) {
+%>
+	if(isEmpty_<%=cid%>){
+		file_<%=cid %>.delete();
+	} else 
+<%
+	}
 }
 	%>
 	
