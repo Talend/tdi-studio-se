@@ -27,7 +27,6 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableItem;
 import org.talend.commons.ui.swt.tableviewer.TableViewerCreator;
 import org.talend.core.model.metadata.IMetadataColumn;
-import org.talend.core.model.metadata.IMetadataTable;
 import org.talend.core.model.metadata.MetadataTable;
 import org.talend.core.model.process.IElementParameter;
 import org.talend.core.model.process.IProcess;
@@ -454,6 +453,10 @@ public class MapperManager extends AbstractMapperManager {
         metadataTable.setTableName(uniqueName);
         // metadataTable.setId(uniqueName);
         metadataTable.setLabel(tableName);
+        Object dbmsValue = getElementParameterValue(EParameterName.MAPPING.getName());
+        if (dbmsValue != null && dbmsValue instanceof String) {
+            metadataTable.setDbms((String) dbmsValue);
+        }
 
         List<DataMapTableView> outputsTablesView = getUiManager().getOutputsTablesView();
         int sizeOutputsView = outputsTablesView.size();

@@ -51,6 +51,7 @@ import org.talend.designer.abstractmap.ui.dnd.DraggingInfosPopup;
 import org.talend.designer.abstractmap.ui.listener.DropTargetOperationListener;
 import org.talend.designer.abstractmap.ui.listener.MouseScrolledListener;
 import org.talend.designer.abstractmap.ui.visualmap.link.IMapperLink;
+import org.talend.designer.core.model.components.EParameterName;
 import org.talend.designer.dbmap.external.data.ExternalDbMapUiProperties;
 import org.talend.designer.dbmap.managers.MapperManager;
 import org.talend.designer.dbmap.managers.UIManager;
@@ -242,6 +243,12 @@ public class MapperUI {
             IConnection conn = mapperManager.getAbstractMapComponent().getIncomingConnections().get(0);
             if(conn.getMetadataTable() != null) {
                 dbmsId = conn.getMetadataTable().getDbms();
+            }
+        }
+        if (dbmsId == null) {
+            Object dbmsValue = mapperManager.getElementParameterValue(EParameterName.MAPPING.getName());
+            if (dbmsValue != null && dbmsValue instanceof String) {
+                dbmsId = (String) dbmsValue;
             }
         }
         
