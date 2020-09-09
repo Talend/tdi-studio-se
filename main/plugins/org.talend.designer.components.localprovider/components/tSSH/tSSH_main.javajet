@@ -42,7 +42,7 @@ if ((metadatas!=null)&&(metadatas.size()>0)) {
 			    log.info("<%=cid%> - Authentication using a password.");
 		    <%}%>
 		
-			session_<%=cid%> = client_<%=cid%>.connect(username_<%=cid%>, hostname_<%=cid%>, <%=("").equals(port)?"22":port%>).verify(<%=("true").equals(useTimeout)?timeout+"L  * 1000":""%>).getClientSession();
+			session_<%=cid%> = client_<%=cid%>.connect(username_<%=cid%>, hostname_<%=cid%>, Integer.parseInt(<%=port %>+"")).verify(<%=("true").equals(useTimeout)?timeout+"L  * 1000":""%>).getClientSession();
 	    try {
             session_<%=cid%>.auth().verify();
         }catch (org.apache.sshd.common.SshException se_<%=cid%>){
