@@ -12,10 +12,12 @@
 // ============================================================================
 package org.talend.designer.core.ui.projectsetting;
 
+import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
@@ -24,21 +26,28 @@ import org.eclipse.jface.viewers.ICheckStateListener;
 import org.eclipse.jface.viewers.ITreeViewerListener;
 import org.eclipse.jface.viewers.TreeExpansionEvent;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.CLabel;
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.ui.IViewSite;
 import org.talend.commons.ui.runtime.exception.ExceptionHandler;
 import org.talend.commons.ui.runtime.image.ECoreImage;
+import org.talend.commons.ui.runtime.image.EImage;
 import org.talend.commons.ui.runtime.image.ImageProvider;
+import org.talend.commons.ui.swt.formtools.LabelledDirectoryField;
 import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.core.model.repository.RepositoryManager;
 import org.talend.core.repository.model.ProjectRepositoryNode;
@@ -76,7 +85,10 @@ public class RuntimeLineageTreeViewPage extends ProjectSettingPage {
 
     private Button useRuntimeLineageAllButton;
 
+    private LabelledDirectoryField directoryField;
+
     private RuntimeLineageManager runtimeLineageManager = null;
+
 
     public RuntimeLineageTreeViewPage() {
         super();
@@ -92,15 +104,29 @@ public class RuntimeLineageTreeViewPage extends ProjectSettingPage {
         layout.numColumns = 1;
         composite.setLayout(layout);
 
-        Composite useAllComposite = new Composite(composite, SWT.NONE);
-        useAllComposite.setLayout(new GridLayout());
-        useAllComposite.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+        Composite topComposite = new Composite(composite, SWT.NONE);
+        topComposite.setLayout(new GridLayout());
+        topComposite.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 
-        useRuntimeLineageAllButton = new Button(useAllComposite, SWT.CHECK);
+        CLabel noteLabel = new CLabel(topComposite, SWT.NONE);
+        noteLabel.setText(Messages.getString("ExtraComposite.RuntimeLineageSettings.note"));//$NON-NLS-1$
+        Font erFont = new Font(Display.getDefault(), "Arial", 11, SWT.BOLD); //$NON-NLS-1$
+        noteLabel.setFont(erFont);
+        noteLabel.setImage(ImageProvider.getImage(EImage.WARNING_ICON));
+
+        useRuntimeLineageAllButton = new Button(topComposite, SWT.CHECK);
         useRuntimeLineageAllButton.setText(Messages.getString("ExtraComposite.RuntimeLineageSettings.all")); //$NON-NLS-1$
 
         repositoryView = RepositoryManager.getRepositoryView();
         createRuntimeLineageTree(composite);
+
+        Composite outputPathComposite = new Composite(composite, SWT.NONE);
+        GridLayout outputPathLayout = new GridLayout();
+        outputPathLayout.numColumns = 3;
+        outputPathComposite.setLayout(outputPathLayout);
+        outputPathComposite.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+        directoryField = new LabelledDirectoryField(outputPathComposite,
+                Messages.getString("ExtraComposite.RuntimeLineageSettings.outputPath")); //$NON-NLS-1$
 
         IProxyRepositoryFactory facto = ProxyRepositoryFactory.getInstance();
         if (facto.isUserReadOnlyOnCurrentProject()) {
@@ -109,6 +135,7 @@ public class RuntimeLineageTreeViewPage extends ProjectSettingPage {
 
         //
         useRuntimeLineageAllButton.setSelection(runtimeLineageManager.isUseRuntimeLineageAll());
+        directoryField.setText(runtimeLineageManager.getOutputPath());
         hideTreeViewer(runtimeLineageManager.isUseRuntimeLineageAll());
         addListeners();
         return composite;
@@ -276,6 +303,22 @@ public class RuntimeLineageTreeViewPage extends ProjectSettingPage {
             }
 
         });
+
+        directoryField.addModifyListener(new ModifyListener() {
+
+            @Override
+            public void modifyText(final ModifyEvent e) {
+                String text = directoryField.getText();
+                File file = new File(text);
+                if (StringUtils.isNotBlank(text) && !file.exists()) {
+                    setErrorMessage(Messages.getString("ExtraComposite.RuntimeLineageSettings.checkPath.errorMessage"));//$NON-NLS-1$
+                    setValid(false);
+                } else {
+                    setErrorMessage(null);
+                    setValid(true);
+                }
+            }
+        });
     }
 
     private void save() {
@@ -283,6 +326,7 @@ public class RuntimeLineageTreeViewPage extends ProjectSettingPage {
             return;
         }
         boolean useALL = useRuntimeLineageAllButton.getSelection();
+        runtimeLineageManager.setOutputPath(directoryField.getText());
 
         final IRunnableWithProgress runnable = new IRunnableWithProgress() {
 

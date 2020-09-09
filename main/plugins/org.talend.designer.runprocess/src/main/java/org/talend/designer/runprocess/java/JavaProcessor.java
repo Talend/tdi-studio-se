@@ -120,6 +120,7 @@ import org.talend.core.model.properties.Property;
 import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.core.model.runprocess.IJavaProcessorStates;
 import org.talend.core.model.utils.JavaResourcesHelper;
+import org.talend.core.model.utils.NodeUtil;
 import org.talend.core.prefs.ITalendCorePrefConstants;
 import org.talend.core.runtime.CoreRuntimePlugin;
 import org.talend.core.runtime.maven.MavenArtifact;
@@ -128,6 +129,7 @@ import org.talend.core.runtime.process.ITalendProcessJavaProject;
 import org.talend.core.runtime.process.LastGenerationInfo;
 import org.talend.core.runtime.process.TalendProcessArgumentConstant;
 import org.talend.core.runtime.process.TalendProcessOptionConstants;
+import org.talend.core.runtime.projectsetting.RuntimeLineageManager;
 import org.talend.core.ui.services.IRulesProviderService;
 import org.talend.core.utils.BitwiseOptionUtils;
 import org.talend.designer.codegen.ICodeGenerator;
@@ -222,6 +224,8 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
 
     private static final Logger LOGGER = Logger.getLogger(JavaProcessor.class);
 
+    private boolean usePrefJVMArguments = false;
+
     /**
      * Set current status.
      *
@@ -253,7 +257,7 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
                 // for shadow process/data preview
                 this.talendJavaProject = TalendJavaProjectManager.getTempJavaProject();
                 if (GlobalServiceRegister.getDefault().isServiceRegistered(IRunProcessService.class)) {
-                    IRunProcessService service = (IRunProcessService) GlobalServiceRegister.getDefault()
+                    IRunProcessService service = GlobalServiceRegister.getDefault()
                             .getService(IRunProcessService.class);
                     if (service != null) {
                         service.updateLogFiles(talendJavaProject, true);
@@ -1676,6 +1680,15 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
         String[] vmargs = ignoreCustomJVMSetting ? new String[0] : getSettingsJVMArguments();
         /* check parameter won't happened on exportingJob */
         List<String> asList = convertArgsToList(vmargs);
+        //
+        String outputpath = getRuntimeLineageOutputpath();
+        if (outputpath != null) {
+            if (usePrefJVMArguments) {
+                asList.add(outputpath);
+            } else {
+                asList.add(0, outputpath);
+            }
+        }
         if (!isExportConfig() && !isRunAsExport()) {
             String fileEncoding = System.getProperty("file.encoding"); //$NON-NLS-1$
             String encodingFromIni = "-Dfile.encoding=" + fileEncoding; //$NON-NLS-1$
@@ -1709,6 +1722,7 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
     
     protected String[] getSettingsJVMArguments() {
         String string = "";//$NON-NLS-1$
+        usePrefJVMArguments = false;
         if (this.process != null) {
             IElementParameter param = this.process.getElementParameter(EParameterName.JOB_RUN_VM_ARGUMENTS_OPTION.getName());
             if (param != null && param.getValue() instanceof Boolean && (Boolean) param.getValue()) { // checked
@@ -1724,6 +1738,7 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
             // if not check or the value is empty, should use preference
             if (string == null || "".equals(string)) { //$NON-NLS-1$
                 string = RunProcessPlugin.getDefault().getPreferenceStore().getString(RunProcessPrefsConstants.VMARGUMENTS);
+                usePrefJVMArguments = true;
             }
             String replaceAll = string.trim();
             List<String> vmList = new JobVMArgumentsUtil().readString(replaceAll);
@@ -1734,6 +1749,22 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
             vmargs = JobVMArgumentsUtil.DEFAULT_JVM_ARGS;
         }
         return vmargs;
+    }
+
+    public String getRuntimeLineageOutputpath() {
+        if (NodeUtil.isJobUsingRuntimeLineage(process)) {
+            RuntimeLineageManager runtimeLineageManager = new RuntimeLineageManager();
+            String outputpath = "-Druntime.lineage.outputpath=";//$NON-NLS-1$
+            String value = runtimeLineageManager.getOutputPath();
+            if (StringUtils.isNotBlank(value)) {
+                if (EnvironmentUtils.isWindowsSystem()) {
+                    return outputpath = outputpath + value.replaceAll("%20", " "); //$NON-NLS-1$ //$NON-NLS-2$
+                } else {
+                    return outputpath = outputpath + value;
+                }
+            }
+        }
+        return null;
     }
 
     private List<String> convertArgsToList(String[] args) {
