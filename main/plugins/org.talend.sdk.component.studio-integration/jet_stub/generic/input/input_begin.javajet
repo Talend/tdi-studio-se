@@ -103,20 +103,17 @@ while ((data_<%=cid%> = input_<%=cid%>.next()) != null) {
     globalMap.put("<%=cid %>_NB_LINE", nbLineInput_<%=cid%>);
     final String jsonValueMapper_<%=cid%>;
     if (javax.json.JsonValue.class.isInstance(data_<%=cid%>)) {
-        jsonValueMapper_<%=cid%> = javax.json.JsonValue.class.cast(data_<%=cid%>).toString();
+        <%=output%> = jsonb_<%=cid%>.fromJson(javax.json.JsonValue.class.cast(data_<%=cid%>).toString(), <%=output%>.getClass());
     } else if (org.talend.sdk.component.api.record.Record.class.isInstance(data_<%=cid%>)) {
-        jsonValueMapper_<%=cid%> = converters_<%=cid%>.toType(registry_<%=cid%>, converters_<%=cid%>.toRecord(
+        <%=output%> = <%=output%>.getClass().cast(converters_<%=cid%>.toType(
             registry_<%=cid%>,
             data_<%=cid%>,
-            () -> jsonb_<%=cid%>,
-            () -> recordBuilderMapper_<%=cid%>),
-            javax.json.JsonObject.class,
+            <%=output%>.getClass(),
             () -> jsonBuilderFactory_<%=cid%>,
             () -> jsonProvider_<%=cid%>,
             () -> jsonb_<%=cid%>,
-            () -> recordBuilderMapper_<%=cid%>)
-            .toString();
+            () -> recordBuilderMapper_<%=cid%>,
+            registry_metadata_<%=cid%>));
     } else {
-        jsonValueMapper_<%=cid%> = jsonb_<%=cid%>.toJson(data_<%=cid%>);
+        <%=output%> = jsonb_<%=cid%>.fromJson(jsonb_<%=cid%>.toJson(data_<%=cid%>), <%=output%>.getClass());
     }
-    <%=output%> = jsonb_<%=cid%>.fromJson(jsonValueMapper_<%=cid%>, <%=output%>.getClass());

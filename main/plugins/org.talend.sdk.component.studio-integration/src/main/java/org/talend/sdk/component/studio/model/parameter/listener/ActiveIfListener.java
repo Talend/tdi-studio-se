@@ -78,6 +78,8 @@ public class ActiveIfListener implements PropertyChangeListener {
         sourceParameter.setShow(show);
         sourceParameter.redraw(); // request source parameter redraw
         sourceParameter.firePropertyChange("show", null, show);
+        //need to revalidate to either show or hide the validation label
+        sourceParameter.firePropertyChange("value", null, sourceParameter.getValue());
     }
 
     private boolean evaluateCondition(final PropertyDefinitionDecorator.Condition cond) {
