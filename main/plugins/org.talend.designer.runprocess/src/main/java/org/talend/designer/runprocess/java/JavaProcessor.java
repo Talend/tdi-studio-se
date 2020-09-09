@@ -224,8 +224,6 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
 
     private static final Logger LOGGER = Logger.getLogger(JavaProcessor.class);
 
-    private boolean usePrefJVMArguments = false;
-
     /**
      * Set current status.
      *
@@ -1680,15 +1678,6 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
         String[] vmargs = ignoreCustomJVMSetting ? new String[0] : getSettingsJVMArguments();
         /* check parameter won't happened on exportingJob */
         List<String> asList = convertArgsToList(vmargs);
-        //
-        String outputpath = getRuntimeLineageOutputpath();
-        if (outputpath != null) {
-            if (usePrefJVMArguments) {
-                asList.add(outputpath);
-            } else {
-                asList.add(0, outputpath);
-            }
-        }
         if (!isExportConfig() && !isRunAsExport()) {
             String fileEncoding = System.getProperty("file.encoding"); //$NON-NLS-1$
             String encodingFromIni = "-Dfile.encoding=" + fileEncoding; //$NON-NLS-1$
@@ -1722,7 +1711,6 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
     
     protected String[] getSettingsJVMArguments() {
         String string = "";//$NON-NLS-1$
-        usePrefJVMArguments = false;
         if (this.process != null) {
             IElementParameter param = this.process.getElementParameter(EParameterName.JOB_RUN_VM_ARGUMENTS_OPTION.getName());
             if (param != null && param.getValue() instanceof Boolean && (Boolean) param.getValue()) { // checked
@@ -1736,12 +1724,32 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
         String[] vmargs = null;
         try {
             // if not check or the value is empty, should use preference
+            boolean usePrefJVMArguments = false;
             if (string == null || "".equals(string)) { //$NON-NLS-1$
                 string = RunProcessPlugin.getDefault().getPreferenceStore().getString(RunProcessPrefsConstants.VMARGUMENTS);
                 usePrefJVMArguments = true;
             }
             String replaceAll = string.trim();
             List<String> vmList = new JobVMArgumentsUtil().readString(replaceAll);
+            //
+            String outputpath = getRuntimeLineageOutputpath();
+            if (outputpath != null) {
+                int usedPosition = -1;
+                for (int i = 0; i < vmList.size(); i++) {
+                    String vm = vmList.get(i);
+                    if (vm.startsWith(RuntimeLineageManager.RUNTIMELINEAGE_OUTPUT_PATH)) {
+                        usedPosition = i;
+                        break;
+                    }
+                }
+                if (usedPosition > -1) {
+                    if (usePrefJVMArguments) {
+                        vmList.set(usedPosition, outputpath);
+                    }
+                } else {
+                    vmList.add(outputpath);
+                }
+            }
             vmargs = vmList.toArray(new String[0]);
         } catch (Exception e) {
             LOGGER.debug(e.getMessage(), e);
@@ -1754,7 +1762,7 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
     public String getRuntimeLineageOutputpath() {
         if (NodeUtil.isJobUsingRuntimeLineage(process)) {
             RuntimeLineageManager runtimeLineageManager = new RuntimeLineageManager();
-            String outputpath = "-Druntime.lineage.outputpath=";//$NON-NLS-1$
+            String outputpath = RuntimeLineageManager.RUNTIMELINEAGE_OUTPUT_PATH;
             String value = runtimeLineageManager.getOutputPath();
             if (StringUtils.isNotBlank(value)) {
                 if (EnvironmentUtils.isWindowsSystem()) {
