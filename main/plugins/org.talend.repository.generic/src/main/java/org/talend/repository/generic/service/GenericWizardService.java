@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.ImageData;
@@ -51,6 +52,7 @@ import org.talend.core.utils.TalendQuoteUtils;
 import org.talend.daikon.properties.Properties;
 import org.talend.daikon.properties.presentation.Form;
 import org.talend.designer.core.generic.model.GenericElementParameter;
+import org.talend.designer.core.generic.model.GenericTableUtils;
 import org.talend.designer.core.generic.utils.ComponentsUtils;
 import org.talend.designer.core.generic.utils.SchemaUtils;
 import org.talend.designer.core.model.components.ElementParameter;
@@ -400,7 +402,10 @@ public class GenericWizardService implements IGenericWizardService {
             connection.setPassword(null);
             connection.setURL(bean.getUrl());
             connection.setDriverClass(bean.getDriverClass());
-            connection.setDriverJarPath(bean.getPaths().get(0));
+            String driverJarPaths = GenericTableUtils.getDriverJarPaths(bean.getPaths());
+            if (StringUtils.isNotBlank(driverJarPaths)) {
+                connection.setDriverJarPath(driverJarPaths);
+            }
             Map<String, Object> map = new HashMap<String, Object>();
             map.put("jdbcUrl", TalendQuoteUtils.addQuotes(bean.getUrl()));
             map.put("driverClass", TalendQuoteUtils.addQuotes(bean.getDriverClass()));
