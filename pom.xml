@@ -100,7 +100,6 @@
 		<module>main/plugins/org.talend.designer.webservice</module>
 		<module>main/plugins/org.talend.designer.xmlmap</module>
 		<module>main/plugins/org.talend.expressionbuilder</module>
-		<module>main/plugins/org.talend.libraries.asm</module>
 		<module>main/plugins/org.talend.libraries.crm</module>
 		<module>main/plugins/org.talend.libraries.css</module>
 		<module>main/plugins/org.talend.libraries.custom</module>
