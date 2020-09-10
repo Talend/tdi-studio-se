@@ -24,6 +24,8 @@ import org.eclipse.draw2d.Figure;
 import org.eclipse.draw2d.Graphics;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.ImageFigure;
+import org.eclipse.draw2d.LineBorder;
+import org.eclipse.draw2d.MarginBorder;
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Insets;
 import org.eclipse.draw2d.geometry.Point;
@@ -223,6 +225,8 @@ public class NodeFigure extends Figure {
         if (fig.getImage() == null || fig.getImage().isDisposed()) {
             fig.setImage(CoreImageProvider.getComponentIcon(node.getComponent(), ICON_SIZE.ICON_32));
         }
+//        fig.setImage(CoreImageProvider.getComponentIcon(node.getComponent(), ICON_SIZE.ICON_32));
+//        fig.setBorder(new LineBorder(new Color(Display.getDefault(), new RGB(204, 153, 255))));
         super.paint(graphics);
     }
 

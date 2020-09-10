@@ -14,11 +14,13 @@ package org.talend.designer.core.ui.editor.nodecontainer;
 
 import java.util.List;
 
+import org.eclipse.draw2d.ButtonBorder;
 import org.eclipse.draw2d.Figure;
 import org.eclipse.draw2d.FreeformLayout;
 import org.eclipse.draw2d.Graphics;
 import org.eclipse.draw2d.ImageFigure;
 import org.eclipse.draw2d.Label;
+import org.eclipse.draw2d.LineBorder;
 import org.eclipse.draw2d.RoundedRectangle;
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Point;
@@ -28,6 +30,7 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.Display;
+import org.talend.commons.ui.runtime.image.ECoreImage;
 import org.talend.commons.ui.runtime.image.EImage;
 import org.talend.commons.ui.runtime.image.ImageProvider;
 import org.talend.commons.ui.utils.workbench.gef.SimpleHtmlFigure;
@@ -116,6 +119,8 @@ public class NodeContainerFigure extends Figure {
         this.add(breakpointFigure);
 
         errorFigure = new ImageFigure();
+        Image image = ImageProvider.getImage(CoreUIPlugin.getImageDescriptor(BREAKPOINT_IMAGE));
+        errorFigure.setImage(image);
         errorFigure.setImage(ImageProvider.getImage(EImage.ERROR_SMALL));
         errorFigure.setVisible(false);
         errorFigure.setSize(errorFigure.getPreferredSize());
@@ -374,6 +379,7 @@ public class NodeContainerFigure extends Figure {
         }
         if (errorFigure.isVisible()) {
             errorFigure.setLocation(nodeContainer.getErrorLocation());
+//errorFigure.setBorder(new LineBorder(new Color(Display.getDefault(), new RGB(255,255,0)), 2));
         }
         if (infoFigure.isVisible()) {
             infoFigure.setLocation(nodeContainer.getInfoLocation());

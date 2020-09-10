@@ -21,7 +21,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang.ArrayUtils;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -707,6 +707,11 @@ public class ComponentSettingsView extends ViewPart implements IComponentSetting
                 String paletteType = ((Node) elem).getComponent().getPaletteType();
                 if (ComponentCategory.CATEGORY_4_CAMEL.getName().equals(paletteType)) {
                     categories = EElementType.NODE.getCategories();
+                    //camel
+//                    if(((Node) elem).getStatus() == Process.BREAKPOINT_STATUS) {
+                        categories = (EComponentCategory[]) ArrayUtils.add(categories, EComponentCategory.BREAKPOINT_CAMEL);
+//                    }
+                    //
                 }
             }
 

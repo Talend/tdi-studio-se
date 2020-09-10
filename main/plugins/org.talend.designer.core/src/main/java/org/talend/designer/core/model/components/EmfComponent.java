@@ -134,6 +134,8 @@ import org.talend.designer.core.model.utils.emf.component.TEMPLATEType;
 import org.talend.designer.core.model.utils.emf.component.impl.PLUGINDEPENDENCYTypeImpl;
 import org.talend.designer.core.model.utils.emf.component.util.ComponentResourceFactoryImpl;
 import org.talend.designer.core.ui.editor.nodes.Node;
+import org.talend.designer.core.ui.editor.process.Process;
+import org.talend.designer.core.ui.editor.properties.controllers.ColumnListController;
 import org.talend.designer.core.ui.preferences.TalendDesignerPrefConstants;
 import org.talend.designer.runprocess.ItemCacheManager;
 import org.talend.hadoop.distribution.ComponentType;
@@ -431,6 +433,7 @@ public class EmfComponent extends AbstractBasicComponent {
         initializePropertyParameters(listParam);
         checkSchemaParameter(listParam, node);
         addViewParameters(listParam, node);
+        addViewParameters2(listParam, node);
         addDocParameters(listParam, node);
         addSqlPatternParameters(listParam, node);
         addValidationRulesParameters(listParam, node);
@@ -1000,6 +1003,161 @@ public class EmfComponent extends AbstractBasicComponent {
         }
         param.setDefaultValue(param.getValue());
         listParam.add(param);
+    }
+    
+    public void addViewParameters2(final List<ElementParameter> listParam, INode node) {
+        if (compType == null) {
+            isLoaded = false;
+            try {
+                load();
+            } catch (BusinessException e) {
+                // TODO Auto-generated catch block
+                ExceptionHandler.process(e);
+            }
+        }
+        ElementParameter param;
+        IPreferenceStore localComponentProviderStore = null;
+        if (GlobalServiceRegister.getDefault().isServiceRegistered(IComponentsLocalProviderService.class)) {
+            IComponentsLocalProviderService service = (IComponentsLocalProviderService) GlobalServiceRegister.getDefault()
+                    .getService(IComponentsLocalProviderService.class);
+            if (service != null) {
+                localComponentProviderStore = service.getPreferenceStore();
+            }
+        }
+
+        
+        
+        
+        param = new ElementParameter(node);
+        param.setName(EParameterName.ACTIVEBREAKPOINT.getName());
+        param.setDisplayName(EParameterName.ACTIVEBREAKPOINT.getDisplayName());
+        param.setFieldType(EParameterFieldType.CHECK);
+        param.setCategory(EComponentCategory.BREAKPOINT_CAMEL);
+        param.setNumRow(13);
+        param.setValue(false);
+        param.setContextMode(false);
+        param.setDefaultValue(param.getValue());
+        param.setShow(true);
+
+        listParam.add(param);
+        
+        param = new ElementParameter(node);
+        param.setName("LANGUAGES");
+        param.setDisplayName("Languages");
+        param.setFieldType(EParameterFieldType.CLOSED_LIST);
+        param.setCategory(EComponentCategory.BREAKPOINT_CAMEL);
+        param.setNumRow(14);
+        
+        String[] displayNames = {
+                "None",
+                "Bean",
+                "Constant",
+                "CorrelationID",
+                "EL",
+                "Groovy",
+                "Header",
+                "JavaScript",
+                "JoSQL",
+                "JSonPath",
+                "JXPath",
+                "MVEL",
+                "OGNL",
+                "PHP",
+                "Property",
+                "Python",
+                "Ruby",
+                "Simple",
+                "SpEl",
+                "SQL",
+                "XPath",
+                "XQuery"
+              };
+        
+        String[] itemValues = {
+                "none",
+                "bean",
+                "constant",
+                "correlation",
+                "el",
+                "groovy",
+                "header",
+                "javaScript",
+                "josql",
+                "jsonpath",
+                "jxpath",
+                "mvel",
+                "ognl",
+                "php",
+                "property",
+                "python",
+                "ruby",
+                "simple",
+                "spel",
+                "sql",
+                "xpath",
+                "xquery"
+              };
+        
+        String[] displayCodeNames = {
+                "NONE",
+                "BEAN",
+                "CONSTANT",
+                "CORRELATIONID",
+                "EL",
+                "GROOVY",
+                "HEADER",
+                "JAVASCRIPT",
+                "JOSQL",
+                "JSONPATH",
+                "JXPATH",
+                "MVEL",
+                "OGNL",
+                "PHP",
+                "PROPERTY",
+                "PYTHON",
+                "RUBY",
+                "SIMPLE",
+                "SPEL",
+                "SQL",
+                "XPATH",
+                "XQUERY"
+              };
+
+        param.setListItemsValue(itemValues);
+        param.setListItemsDisplayCodeName(displayCodeNames);
+        param.setListItemsDisplayName(displayNames);
+        param.setListRepositoryItems(new String[itemValues.length]);
+        param.setListItemsShowIf(new String[itemValues.length]);
+        param.setListItemsNotShowIf(new String[itemValues.length]);
+        param.setListItemsReadOnlyIf(new String[itemValues.length]);
+        param.setListItemsNotReadOnlyIf(new String[itemValues.length]);
+        param.setValue(false);
+        for (int i = 0; i < displayNames.length; i++) {
+            if (displayNames[i].equals(param.getValue())) {
+                param.setDisplayName(displayNames[i]);
+            }
+        }
+        
+        param.setContextMode(false);
+        param.setDefaultValue("simple");
+        param.setShow(true);
+
+        listParam.add(param);
+
+        
+        param = new ElementParameter(node);
+        param.setName("Expression");
+        param.setDisplayName("Expression");
+        param.setFieldType(EParameterFieldType.TEXT);
+        param.setCategory(EComponentCategory.BREAKPOINT_CAMEL);
+        param.setNumRow(15);
+        param.setReadOnly(false);
+        param.setRequired(false);
+        param.setShow(true);
+param.setValue("");
+        param.setDefaultValue(param.getValue());
+        listParam.add(param);
+        
     }
 
     public void addMainParameters(final List<ElementParameter> listParam, INode node) {
