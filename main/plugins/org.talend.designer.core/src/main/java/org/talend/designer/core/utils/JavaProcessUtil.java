@@ -450,7 +450,7 @@ public class JavaProcessUtil {
 
     public static void addJunitNeededModules(Collection<ModuleNeeded> modulesNeeded) {
         ModuleNeeded junitModule = new ModuleNeeded("junit", "junit.jar", null, true); //$NON-NLS-1$ //$NON-NLS-2$
-        junitModule.setMavenUri("mvn:junit/junit/4.13/junit-4.13.jar");
+        junitModule.setMavenUri("mvn:junit/junit/4.13/jar");
         modulesNeeded.add(junitModule);
     }
 
