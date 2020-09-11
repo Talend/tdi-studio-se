@@ -407,6 +407,8 @@
                     ignoredParamsNames.add("ADDITIONAL_INSERT_COLUMNS");
                     ignoredParamsNames.add("ADDITIONAL_UPDATE_COLUMNS");
                     ignoredParamsNames.add("SELECTION_TABLE");
+                    ignoredParamsNames.add("DIFFER_MESSAGE");
+                    ignoredParamsNames.add("NO_DIFFER_MESSAGE");
                     
                     if(ignoredParamsNames.contains(name)) {
                         //do nothing
