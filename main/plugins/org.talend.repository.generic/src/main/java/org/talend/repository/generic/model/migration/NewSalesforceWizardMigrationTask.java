@@ -153,7 +153,7 @@ public class NewSalesforceWizardMigrationTask extends NewGenericWizardMigrationT
                 try {
                     ProxyRepositoryFactory factory = ProxyRepositoryFactory.getInstance();
                     IRepositoryViewObject object = factory.getLastVersion(item.getProperty().getId(),
-                            ERepositoryObjectType.METADATA_SALESFORCE_SCHEMA.getFolder(),
+                            "",
                             ERepositoryObjectType.METADATA_SALESFORCE_SCHEMA);
                     if (object != null) {
                         factory.deleteObjectPhysical(object);
