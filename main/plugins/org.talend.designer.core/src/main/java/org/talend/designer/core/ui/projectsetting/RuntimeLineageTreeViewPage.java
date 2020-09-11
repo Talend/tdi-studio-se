@@ -12,12 +12,10 @@
 // ============================================================================
 package org.talend.designer.core.ui.projectsetting;
 
-import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
@@ -27,8 +25,6 @@ import org.eclipse.jface.viewers.ITreeViewerListener;
 import org.eclipse.jface.viewers.TreeExpansionEvent;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CLabel;
-import org.eclipse.swt.events.ModifyEvent;
-import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Font;
@@ -302,22 +298,6 @@ public class RuntimeLineageTreeViewPage extends ProjectSettingPage {
                 hideTreeViewer(!useRuntimeLineageAllButton.getSelection());
             }
 
-        });
-
-        directoryField.addModifyListener(new ModifyListener() {
-
-            @Override
-            public void modifyText(final ModifyEvent e) {
-                String text = directoryField.getText();
-                File file = new File(text);
-                if (StringUtils.isNotBlank(text) && !file.exists()) {
-                    setErrorMessage(Messages.getString("ExtraComposite.RuntimeLineageSettings.checkPath.errorMessage"));//$NON-NLS-1$
-                    setValid(false);
-                } else {
-                    setErrorMessage(null);
-                    setValid(true);
-                }
-            }
         });
     }
 
