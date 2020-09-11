@@ -3328,15 +3328,6 @@
               version="7.3.1">
         </projecttask>
         <projecttask
-              beforeLogon="false"
-              breaks="7.3.0"
-              class="org.talend.repository.model.migration.spark.UpdateDatesPatternAccordingToDeletedTimestampOption"
-              description="change schema pattern according to deleted option"
-              id="org.talend.repository.model.migration.spark.UpdateDatesPatternAccordingToDeletedTimestampOption"
-              name="UpdateDatesPatternAccordingToDeletedTimestampOption"
-              version="7.3.1">                     
-       </projecttask>
-       <projecttask
               beforeLogon="true"
               breaks="7.3.0"
               class="org.talend.repository.model.migration.RemovePigudfModulesMigrationTask"
@@ -3435,6 +3426,15 @@
                id="org.talend.repository.model.migration.CheckAzureBlobStorageKeepRemoteDirJavajetToTCOMPv0"
                name="CheckAzureBlobStorageKeepRemoteDirJavajetToTCOMPv0"
                version="7.3.1">
+       </projecttask>
+       <projecttask
+              beforeLogon="false"
+              breaks="7.2.0"
+              class="org.talend.repository.model.migration.spark.SetGlobalTimestampOptionForPreviousVersions"
+              description="set global timestamp option to true for older studio"
+              id="org.talend.repository.model.migration.spark.SetGlobalTimestampOptionForPreviousVersions"
+              name="SetGlobalTimestampOptionForPreviousVersions"
+              version="7.2.1">                     
        </projecttask>
    </extension>
 
