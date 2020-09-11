@@ -395,7 +395,7 @@ public <%=JavaTypesManager.getTypeToGenerate(ctxParam.getType(),true)%> get<%=Ch
 private final JobStructureCatcherUtils <%=jobCatcherNode.getUniqueName() %> = new JobStructureCatcherUtils(jobName, "<%=process.getId() %>", "<%=process.getVersion() %>");
 private org.talend.job.audit.JobAuditLogger auditLogger_<%=jobCatcherNode.getUniqueName()%> = null;
 
-private RunStat runStat = new RunStat(<%=jobCatcherNode.getUniqueName() %>);
+private RunStat runStat = new RunStat(<%=jobCatcherNode.getUniqueName() %>, System.getProperty("audit.logger.interval"));
 <%
 	} else if(stats) {
 %>
