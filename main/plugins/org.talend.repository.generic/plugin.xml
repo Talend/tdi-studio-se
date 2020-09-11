@@ -171,14 +171,5 @@
               name="NewGenericWizardMigrationTask"
               version="6.2.0">
         </projecttask>
-        <!--<projecttask
-              beforeLogon="false"
-              breaks="6.3.0"
-              class="org.talend.repository.generic.model.migration.NewDelimitedFileWizardMigrationTask"
-              description="New delimited file connection migration task"
-              id="org.talend.repository.generic.model.migration.NewDelimitedFileWizardMigrationTask"
-              name="NewDelimitedFileWizardMigrationTask"
-              version="6.3.0">
-        </projecttask>-->
    </extension>
 </plugin>
