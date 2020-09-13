@@ -242,8 +242,12 @@ public class UnifiedComponentUtil {
             if (bean == null) {
                 return;
             }
-            node.getElementParameter("connection.jdbcUrl").setValue(TalendQuoteUtils.addQuotes(bean.getUrl()));
-            node.getElementParameter("connection.driverClass").setValue(TalendQuoteUtils.addQuotes(bean.getDriverClass()));
+            if (node.getElementParameter("connection.jdbcUrl") != null) {
+                node.getElementParameter("connection.jdbcUrl").setValue(TalendQuoteUtils.addQuotes(bean.getUrl()));
+            }
+            if (node.getElementParameter("connection.driverClass") != null) {
+                node.getElementParameter("connection.driverClass").setValue(TalendQuoteUtils.addQuotes(bean.getDriverClass()));
+            }
             ComponentProperties componentProperties = node.getComponentProperties();
             Map<String, Object> map = new HashMap<String, Object>();
             map.put("jdbcUrl", TalendQuoteUtils.addQuotes(bean.getUrl()));
