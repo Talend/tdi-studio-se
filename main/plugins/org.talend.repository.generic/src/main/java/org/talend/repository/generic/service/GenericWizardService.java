@@ -57,6 +57,7 @@ import org.talend.designer.core.generic.utils.ComponentsUtils;
 import org.talend.designer.core.generic.utils.SchemaUtils;
 import org.talend.designer.core.model.components.ElementParameter;
 import org.talend.designer.core.model.components.UnifiedJDBCBean;
+import org.talend.designer.core.ui.editor.nodes.Node;
 import org.talend.designer.core.utils.UnifiedComponentUtil;
 import org.talend.repository.generic.action.GenericAction;
 import org.talend.repository.generic.internal.IGenericWizardInternalService;
@@ -421,6 +422,18 @@ public class GenericWizardService implements IGenericWizardService {
         }
         dynamicFormComposite.resetParameters(true);
         dynamicFormComposite.refresh();
+    }
+
+    @Override
+    public String getDatabseNameByNode(INode node) {
+        if (node instanceof Node) {
+            Node editorNode = (Node) node;
+            if (editorNode.getDelegateComponent() != null) {
+                return UnifiedComponentUtil.getUnifiedComponentDisplayName(editorNode.getDelegateComponent(),
+                        editorNode.getComponent().getDisplayName());
+            }
+        }
+        return null;
     }
 
 }
