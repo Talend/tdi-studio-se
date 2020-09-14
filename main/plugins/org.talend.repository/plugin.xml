@@ -1258,6 +1258,14 @@
              name="Clean all folders from project"
              version="5.1.2">
        </projecttask>
+        <projecttask
+             beforeLogon="true"
+             breaks="7.4.1"
+             class="org.talend.repository.model.migration.RemoveMetadataInPomsFolder"
+             id="org.talend.repository.model.migration.RemoveMetadataInPomsFolder"
+             name="Clean all metadata in poms folder"
+             version="7.4.1">
+       </projecttask>
        <projecttask
              beforeLogon="true"
              breaks="5.1.1"
@@ -3320,15 +3328,6 @@
               version="7.3.1">
         </projecttask>
         <projecttask
-              beforeLogon="false"
-              breaks="7.3.0"
-              class="org.talend.repository.model.migration.spark.UpdateDatesPatternAccordingToDeletedTimestampOption"
-              description="change schema pattern according to deleted option"
-              id="org.talend.repository.model.migration.spark.UpdateDatesPatternAccordingToDeletedTimestampOption"
-              name="UpdateDatesPatternAccordingToDeletedTimestampOption"
-              version="7.3.1">                     
-       </projecttask>
-       <projecttask
               beforeLogon="true"
               breaks="7.3.0"
               class="org.talend.repository.model.migration.RemovePigudfModulesMigrationTask"
@@ -3425,7 +3424,8 @@
               class="org.talend.repository.model.migration.spark.UpdateSeparatorAndEscapeForDatasetAPI"
               description="change separator and escape to work with dataset API"
               id="org.talend.repository.model.migration.spark.UpdateSeparatorAndEscapeForDatasetAPI"
-              name="UpdateSeparatorAndEscapeForDatasetAPI">
+              name="UpdateSeparatorAndEscapeForDatasetAPI"
+              version="7.3.1">
         </projecttask>
         <projecttask
               beforeLogon="true"
@@ -3437,13 +3437,22 @@
               version="7.3.1">                     
        </projecttask>
        <projecttask
-               beforeLogon="false"
-               breaks="6.4.0"
-               class="org.talend.repository.model.migration.CheckAzureBlobStorageKeepRemoteDirJavajetToTCOMPv0"
-               description="Add checkbox with not default value for Javajet component to be migrated for TCOMPv0"
-               id="org.talend.repository.model.migration.CheckAzureBlobStorageKeepRemoteDirJavajetToTCOMPv0"
-               name="CheckAzureBlobStorageKeepRemoteDirJavajetToTCOMPv0"
-               version="7.3.1">
+              beforeLogon="false"
+              breaks="6.4.0"
+              class="org.talend.repository.model.migration.CheckAzureBlobStorageKeepRemoteDirJavajetToTCOMPv0"
+              description="Add checkbox with not default value for Javajet component to be migrated for TCOMPv0"
+              id="org.talend.repository.model.migration.CheckAzureBlobStorageKeepRemoteDirJavajetToTCOMPv0"
+              name="CheckAzureBlobStorageKeepRemoteDirJavajetToTCOMPv0"
+              version="7.3.1">
+       </projecttask>
+       <projecttask
+              beforeLogon="false"
+              breaks="7.2.0"
+              class="org.talend.repository.model.migration.spark.SetGlobalTimestampOptionForPreviousVersions"
+              description="set global timestamp option to true for older studio"
+              id="org.talend.repository.model.migration.spark.SetGlobalTimestampOptionForPreviousVersions"
+              name="SetGlobalTimestampOptionForPreviousVersions"
+              version="7.2.1">
        </projecttask>
    </extension>
 
