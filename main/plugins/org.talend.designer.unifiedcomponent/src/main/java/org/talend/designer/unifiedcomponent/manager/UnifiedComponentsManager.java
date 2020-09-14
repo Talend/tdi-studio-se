@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang.StringUtils;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.InvalidSyntaxException;
@@ -102,6 +103,10 @@ public class UnifiedComponentsManager {
                 jdbcUnifier.setDisplayName(bean.getDisplayName());
                 for (IComponentDelegate delegateComp : componentDelegates) {
                     jdbcUnifier.setDelegateComponent(delegateComp);
+                    if (StringUtils.isNotBlank(jdbcUnifier.getComponentName())
+                            && UnifiedComponentUtil.FILTER_DEFINITION.contains(jdbcUnifier.getComponentName())) {
+                        continue;
+                    }
                     initDelegateComponent(jdbcUnifier);
                 }
             }

@@ -222,6 +222,10 @@ public class ComponentsUtils {
         Map<String, UnifiedJDBCBean> additionalJDBCMap = null;
         Map<String, UnifiedJDBCBean> jdbcMap = UnifiedComponentUtil.getAdditionalJDBC();
         for (ComponentDefinition definition : compDefinitions) {
+            // filter unsupported components
+            if (UnifiedComponentUtil.FILTER_DEFINITION.contains(definition.getName())) {
+                continue;
+            }
             // load additional JDBC configuration json
             if (!beanLoad && jdbcMap.isEmpty()) {
                 InputStream inputStream = definition.getClass().getClassLoader().getResourceAsStream("support_extra_db.json");

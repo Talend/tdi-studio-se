@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -58,6 +59,9 @@ public class UnifiedComponentUtil {
     private static Logger log = Logger.getLogger(UnifiedComponentUtil.class);
 
     private static Map<String, UnifiedJDBCBean> additionalJDBCCache = new HashMap<String, UnifiedJDBCBean>();
+
+    public static final List<String> FILTER_DEFINITION = Arrays
+            .asList(new String[] { "tJDBCClose", "tJDBCCommit", "tJDBCSP", "tJDBCRollback" });
 
     public static IComponent getEmfComponent(Node node, IComponent component) {
         if (isDelegateComponent(component)) {
@@ -133,6 +137,9 @@ public class UnifiedComponentUtil {
             // filter for additional JDBC
             Map<String, IComponent> componentMap = new HashMap<String, IComponent>();
             for (IComponent component : componentList) {
+                if (isAdditionalJDBC(dbTypeName) && FILTER_DEFINITION.contains(component.getName())) {
+                    continue;
+                }
                 String key = component.getName() + component.getPaletteType();
                 if (componentMap.get(key) == null) {
                     componentMap.put(key, component);
@@ -153,6 +160,9 @@ public class UnifiedComponentUtil {
                     if (!component.getPaletteType().equals(componentsHandler.extractComponentsCategory().getName())) {
                         continue;
                     }
+                }
+                if (isAdditionalJDBC(dbTypeName) && FILTER_DEFINITION.contains(component.getName())) {
+                    continue;
                 }
                 IComponent delegateComponent = service.getDelegateComponent(component);
                 if (delegateComponent != null) {
@@ -241,6 +251,14 @@ public class UnifiedComponentUtil {
             UnifiedJDBCBean bean = service.getInitJDBCComponentProperties(node, delegateComponent);
             if (bean == null) {
                 return;
+            }
+            if (node.getElementParameter("useAutoCommit") != null) {
+                // TODO hard code for now, next step get from json
+                node.getElementParameter("useAutoCommit").setValue(true);
+            }
+            if (node.getElementParameter("autocommit") != null) {
+                // TODO hard code for now, next step get from json
+                node.getElementParameter("autocommit").setValue(true);
             }
             if (node.getElementParameter("connection.jdbcUrl") != null) {
                 node.getElementParameter("connection.jdbcUrl").setValue(TalendQuoteUtils.addQuotes(bean.getUrl()));
