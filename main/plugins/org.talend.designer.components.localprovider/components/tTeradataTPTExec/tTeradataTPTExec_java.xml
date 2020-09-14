@@ -236,11 +236,11 @@
     </PARAMETER>
 
     <PARAMETER
-            NAME="ENFORCE_MAIN_DATABASE"
-            FIELD="CHECK"
-            NUM_ROW="15"
-            REQUIRED="true"
-            SHOW_IF="(ACTION != 'INSERTER') AND (CUSTOM_SCRIPT=='false')">
+      NAME="ENFORCE_MAIN_DATABASE"
+      FIELD="CHECK"
+      NUM_ROW="15"
+      REQUIRED="true"
+      SHOW_IF="(ACTION != 'INSERTER') AND (CUSTOM_SCRIPT=='false')">
       <DEFAULT>false</DEFAULT>
     </PARAMETER>
     
