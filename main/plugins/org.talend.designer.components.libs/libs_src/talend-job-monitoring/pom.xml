@@ -10,7 +10,7 @@
 
 	<properties>
 		<talend.nexus.url>https://artifacts-oss.talend.com</talend.nexus.url>
-		<daikon.audit.version>1.16.0</daikon.audit.version>
+		<daikon.audit.version>3.1.2</daikon.audit.version>
 	</properties>
 
 	<repositories>
