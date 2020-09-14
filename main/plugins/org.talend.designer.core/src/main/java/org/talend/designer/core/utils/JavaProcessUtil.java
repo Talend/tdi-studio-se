@@ -451,7 +451,13 @@ public class JavaProcessUtil {
     public static void addJunitNeededModules(Collection<ModuleNeeded> modulesNeeded) {
         ModuleNeeded junitModule = new ModuleNeeded("junit", "junit.jar", null, true); //$NON-NLS-1$ //$NON-NLS-2$
         junitModule.setMavenUri("mvn:junit/junit/4.13/jar");
+        ModuleNeeded surefireApiModule = new ModuleNeeded("surefire-api", "surefire-api.jar", null, true); //$NON-NLS-1$ //$NON-NLS-2$
+        surefireApiModule.setMavenUri("mvn:org.apache.maven.surefire/surefire-api/2.20.1/jar");
+        ModuleNeeded surefireModule = new ModuleNeeded("surefire-junit4", "surefire-junit4.jar", null, true); //$NON-NLS-1$ //$NON-NLS-2$
+        surefireModule.setMavenUri("mvn:org.apache.maven.surefire/surefire-junit4/2.20.1/jar");
         modulesNeeded.add(junitModule);
+        modulesNeeded.add(surefireApiModule);
+        modulesNeeded.add(surefireModule);
     }
 
     /**
