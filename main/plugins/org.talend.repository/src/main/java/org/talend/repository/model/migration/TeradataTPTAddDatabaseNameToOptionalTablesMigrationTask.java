@@ -32,7 +32,7 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 
-public class TeradataTPTAddMainDatabaseToOptionalTablesMigrationTask extends AbstractJobMigrationTask {
+public class TeradataTPTAddDatabaseNameToOptionalTablesMigrationTask extends AbstractJobMigrationTask {
 
     public static final String QUOTATION_MARK = "\"";
 
@@ -58,8 +58,8 @@ public class TeradataTPTAddMainDatabaseToOptionalTablesMigrationTask extends Abs
 
             @Override
             public void transform(NodeType node) {
-                ElementParameterType enforceMainDatabase = ComponentUtilities.getNodeProperty(node, "ENFORCE_MAIN_DATABASE");
-                if (enforceMainDatabase == null) {
+                ElementParameterType enforceDatabaseName = ComponentUtilities.getNodeProperty(node, "ENFORCE_DATABASE_NAME");
+                if (enforceDatabaseName == null) {
                     String databaseName = ComponentUtilities.getNodePropertyValue(node, "DBNAME");
                     boolean specifyLogTable = "true".equals(ComponentUtilities.getNodePropertyValue(node, "SPECIFY_LOG_TABLE"));
                     if (specifyLogTable) {
