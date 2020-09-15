@@ -43,6 +43,7 @@ import org.eclipse.swt.widgets.Text;
 import org.talend.commons.CommonsPlugin;
 import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.utils.time.TimeMeasure;
+import org.talend.core.GlobalServiceRegister;
 import org.talend.core.database.EDatabaseTypeName;
 import org.talend.core.hadoop.IHadoopClusterService;
 import org.talend.core.hadoop.repository.HadoopRepositoryUtil;
@@ -60,6 +61,7 @@ import org.talend.core.model.repository.IRepositoryTypeProcessor;
 import org.talend.core.model.repository.IRepositoryViewObject;
 import org.talend.core.model.repository.RepositoryContentManager;
 import org.talend.core.model.utils.RepositoryManagerHelper;
+import org.talend.core.runtime.services.IGenericWizardService;
 import org.talend.repository.ProjectManager;
 import org.talend.repository.i18n.Messages;
 import org.talend.repository.model.IRepositoryNode;
@@ -776,6 +778,17 @@ class DatabaseTypeFilter extends ViewerFilter {
                         databaseType = EDatabaseTypeName.ORACLE_OCI.getXmlName();
                     } else if (databaseType.equals(EDatabaseTypeName.MSSQL.getDisplayName())) {
                         databaseType = EDatabaseTypeName.MSSQL.getXmlName(); // for component
+                    } else if (databaseType.equals(EDatabaseTypeName.GENERAL_JDBC.getProduct())
+                            && !databaseType.equals(connection.getProductId())) {
+                        if (GlobalServiceRegister.getDefault().isServiceRegistered(IGenericWizardService.class)) {
+                            IGenericWizardService service = GlobalServiceRegister.getDefault()
+                                    .getService(IGenericWizardService.class);
+                            if (service != null && service.getIfAdditionalJDBCDBType(connection.getProductId())) {
+                                databaseType = connection.getProductId();
+                            } else {
+                                databaseType = EDatabaseTypeName.getTypeFromDbType(databaseType).getProduct();
+                            }
+                        }
                     } else {
                         databaseType = EDatabaseTypeName.getTypeFromDbType(databaseType).getProduct();
                     }
