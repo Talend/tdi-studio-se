@@ -170,7 +170,7 @@
       <dependency>
          <groupId>commons-beanutils</groupId>
          <artifactId>commons-beanutils</artifactId>
-         <version>1.8.0</version>
+         <version>1.9.4</version>
          <scope>compile</scope>
       </dependency>
       <dependency>
@@ -310,7 +310,7 @@
                   <link>http://java.sun.com/j2se/1.5.0/docs/api/</link>
                   <link>http://www.junit.org/junit/javadoc/</link>
                   <link>
-                     http://jakarta.apache.org/commons/beanutils/commons-beanutils-1.7.0/docs/api/
+                     http://jakarta.apache.org/commons/beanutils/commons-beanutils-1.9.4/docs/api/
                   </link>
                   <link>
                      http://jakarta.apache.org/commons/lang/api-2.2/

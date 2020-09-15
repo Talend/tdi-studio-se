@@ -351,9 +351,9 @@
             REQUIRED_IF="USE_EXISTING_CONNECTION == 'false'"
         />
         <IMPORT
-            NAME="commons-beanutils-1.9.3"
-            MODULE="commons-beanutils-1.9.3.jar"
-            MVN="mvn:commons-beanutils/commons-beanutils/1.9.3"
+            NAME="commons-beanutils-1.9.4"
+            MODULE="commons-beanutils-1.9.4.jar"
+            MVN="mvn:commons-beanutils/commons-beanutils/1.9.4"
             REQUIRED_IF="USE_EXISTING_CONNECTION == 'false'"
         />
         <IMPORT

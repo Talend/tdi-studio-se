@@ -199,7 +199,8 @@ public class TestJSONObject extends TestCase {
       jsonConfig.setIgnoreDefaultExcludes( true );
       jsonObject.element( "bean", new ObjectBean(), jsonConfig );
       JSONObject actual = jsonObject.getJSONObject( "bean" );
-      Assertions.assertTrue( actual.has( "class" ) );
+      //see : https://github.com/apache/commons-beanutils/compare/BEANUTILS_1_9_3...commons-beanutils-1.9.4#diff-dbeaa70d3a09169fb5a1e42e5b319037R34-R43
+      //Assertions.assertTrue( actual.has( "class" ) );
       Assertions.assertTrue( !actual.has( "pexcluded" ) );
    }
 
@@ -258,7 +259,8 @@ public class TestJSONObject extends TestCase {
       jsonObject.element( "list", list, jsonConfig );
       JSONObject actual = jsonObject.getJSONArray( "list" )
             .getJSONObject( 0 );
-      Assertions.assertTrue( actual.has( "class" ) );
+      //see : https://github.com/apache/commons-beanutils/compare/BEANUTILS_1_9_3...commons-beanutils-1.9.4#diff-dbeaa70d3a09169fb5a1e42e5b319037R34-R43
+      //Assertions.assertTrue( actual.has( "class" ) );
       Assertions.assertTrue( !actual.has( "pexcluded" ) );
    }
 

@@ -1723,7 +1723,9 @@ if((cid.equals("talendLogs_DB") || cid.equals("talendStats_DB") || cid.equals("t
         %>
                 	if(rowsToCommitCount_<%=cid%> != 0){
                 		<%dbLog.commit().commitTry(null, dbLog.var("rowsToCommitCount"));%>
-                		conn_<%=cid%>.commit();
+                	}
+                	conn_<%=cid%>.commit();
+                	if(rowsToCommitCount_<%=cid%> != 0){
                 		<%dbLog.commit().commitDone(null);%>
                 		rowsToCommitCount_<%=cid%> = 0;
                 	}

@@ -43,6 +43,7 @@ import org.talend.core.ui.ITestContainerProviderService;
 import org.talend.designer.maven.model.TalendMavenConstants;
 import org.talend.designer.maven.tools.AggregatorPomsHelper;
 import org.talend.designer.maven.tools.BuildCacheManager;
+import org.talend.designer.maven.utils.PomIdsHelper;
 import org.talend.designer.runprocess.java.TalendJavaProjectManager;
 import org.talend.repository.ProjectManager;
 import org.talend.repository.RepositoryWorkUnit;
@@ -95,6 +96,10 @@ public class ProcessChangeListener implements PropertyChangeListener {
                         }
                     } else if (propertyName.equals(ERepositoryActionName.IMPORT.getName())) {
                         caseImport(propertyName, newValue);
+                    } else if (propertyName.equals(ERepositoryActionName.DELETE_TO_RECYCLE_BIN.getName())) {
+                        caseDeleteToRecycleBin(newValue);
+                    } else if (propertyName.equals(ERepositoryActionName.RESTORE.getName())) {
+                        caseRestore(newValue);
                     }
                 }
             };
@@ -390,6 +395,40 @@ public class ProcessChangeListener implements PropertyChangeListener {
                     TalendJavaProjectManager.generatePom(item, TalendProcessOptionConstants.GENERATE_NO_CODEGEN);
                 } else if (item instanceof RoutineItem) {
                     updateCodesChange((RoutineItem) item);
+                }
+            }
+        }
+    }
+
+    private void caseDeleteToRecycleBin(Object newValue) {
+        if (!PomIdsHelper.getIfExcludeDeletedItems()) {
+            // if not checked Exclude deleted items then no need remove module from root pom
+            return;
+        }
+        if (newValue instanceof IRepositoryViewObject) {
+            IRepositoryViewObject object = (IRepositoryViewObject) newValue;
+            if (!ERepositoryObjectType.TEST_CONTAINER.equals(object.getRepositoryObjectType())) {
+                try {
+                    AggregatorPomsHelper.removeAllVersionsFromParentModules(object.getProperty());
+                } catch (Exception e) {
+                    ExceptionHandler.process(e);
+                }
+            }
+        }
+    }
+
+    private void caseRestore(Object newValue) {
+        if (!PomIdsHelper.getIfExcludeDeletedItems()) {
+            // if not checked Exclude deleted items then no need add back the module to root pom
+            return;
+        }
+        if (newValue instanceof IRepositoryViewObject) {
+            IRepositoryViewObject object = (IRepositoryViewObject) newValue;
+            if (!ERepositoryObjectType.TEST_CONTAINER.equals(object.getRepositoryObjectType())) {
+                try {
+                    AggregatorPomsHelper.restoreAllVersionsFromParentModules(object.getProperty());
+                } catch (Exception e) {
+                    ExceptionHandler.process(e);
                 }
             }
         }

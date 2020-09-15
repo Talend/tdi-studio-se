@@ -341,7 +341,7 @@ public class JobJavaScriptOSGIForESBManager extends JobJavaScriptsManager {
 
     private List<ExportFileResource> cleanupResources(Stream<IComponent> components, List<ExportFileResource> resources, ITaCoKitDependencyService service) {
         Set<String> tckOnly = service.getTaCoKitOnlyDependencies(components);
-        final List<ExportFileResource> rmResources = new ArrayList<>();
+        //final List<ExportFileResource> rmResources = new ArrayList<>();
         //This code is nicer but have to reiterate after, so not so efficient
 //        List<URL> rmDeps = resources.stream()
 //                .filter(rf -> "lib".equals(rf.getDirectoryName()))
@@ -927,7 +927,8 @@ public class JobJavaScriptOSGIForESBManager extends JobJavaScriptsManager {
                 if (url.getPath().matches("(.*)camel-(.*)-alldep-(.*)$") 
                         || url.getPath().matches("(.*)activemq-all-[\\d\\.]*.jar$")
                         || url.getPath().matches("(.*)jms[\\d\\.-]*.jar$")
-                        || url.getPath().matches("(.*)tdm-lib-di-[\\d\\.-]*.jar$")) {
+                        || url.getPath().matches("(.*)tdm-lib-di-[\\d\\.-]*.jar$")
+                        || url.getPath().matches("(.*)dom4j-[\\d\\.-]*.jar$")) {
                     continue;
                 }
                 File dependencyFile = new File(FilesUtils.getFileRealPath(url.getPath()));

@@ -18,7 +18,7 @@
 		<pathelement location="${component.plugin.home}/tMicrosoftCrmInput/commons-logging-1.1.1.jar" />
 		<pathelement location="${component.plugin.home}/tWriteJSONFieldIn/commons-lang-2.6.jar" />
 		<pathelement location="${component.plugin.home}/tWebService/commons-collections-3.2.1.jar" />
-		<pathelement location="${component.plugin.home}/tWebService/commons-beanutils-1.7.0.jar" />
+		<pathelement location="${component.plugin.home}/tWebService/commons-beanutils-1.9.4.jar" />
 		<pathelement location="${component.plugin.home}/tWebService/cxf-2.6.0-modified.jar" />
 		<pathelement location="${component.plugin.home}/tWebService/jaxb-xjc-2.2.5-modified.jar" />
 		<pathelement location="${component.plugin.home}/tWebService/jaxb-impl-2.2.5-modified.jar" />

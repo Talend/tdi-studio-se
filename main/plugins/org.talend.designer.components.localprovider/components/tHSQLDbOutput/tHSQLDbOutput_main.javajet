@@ -616,7 +616,9 @@ skeleton="../templates/db_output_bulk.skeleton"
             if(commitEvery_<%=cid%> <= commitCounter_<%=cid%>) {
             	if(rowsToCommitCount_<%=cid%> != 0){
             		<%dbLog.commit().commitTry(null, dbLog.var("rowsToCommitCount"));%>
-            		conn_<%=cid%>.commit();
+            	}
+            	conn_<%=cid%>.commit();
+            	if(rowsToCommitCount_<%=cid%> != 0){
             		<%dbLog.commit().commitDone(null);%>
             		rowsToCommitCount_<%=cid%> = 0;
             	}
