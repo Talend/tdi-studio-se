@@ -408,7 +408,7 @@ private org.talend.job.audit.JobAuditLogger runtime_lineage_logger_<%=jobCatcher
 %>
 private org.talend.job.audit.JobAuditLogger auditLogger_<%=jobCatcherNode.getUniqueName()%> = null;
 
-private RunStat runStat = new RunStat(<%=jobCatcherNode.getUniqueName() %>);
+private RunStat runStat = new RunStat(<%=jobCatcherNode.getUniqueName() %>, System.getProperty("audit.interval"));
 <%
 	} else if(stats) {
 %>
