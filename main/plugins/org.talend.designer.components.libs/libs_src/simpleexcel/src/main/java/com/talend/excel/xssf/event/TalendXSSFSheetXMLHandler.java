@@ -13,12 +13,9 @@
 package com.talend.excel.xssf.event;
 
 import org.apache.poi.ss.usermodel.DataFormatter;
-import org.apache.poi.ss.usermodel.DateUtil;
 import org.apache.poi.xssf.eventusermodel.ReadOnlySharedStringsTable;
 import org.apache.poi.xssf.eventusermodel.XSSFSheetXMLHandler;
 import org.apache.poi.xssf.model.StylesTable;
-import org.apache.poi.xssf.usermodel.XSSFCellStyle;
-import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 
 /**
@@ -27,39 +24,18 @@ import org.xml.sax.SAXException;
  */
 public class TalendXSSFSheetXMLHandler extends XSSFSheetXMLHandler {
 
-    private DefaultTalendSheetContentsHandler output = null;
-    private final StylesTable styles;
+    private TalendSheetContentsHandler output = null;
 
     public TalendXSSFSheetXMLHandler(StylesTable styles, ReadOnlySharedStringsTable strings,
             TalendSheetContentsHandler sheetContentsHandler, DataFormatter dataFormatter, boolean formulasNotResults) {
         super(styles, strings, sheetContentsHandler, dataFormatter, formulasNotResults);
-        this.output = (DefaultTalendSheetContentsHandler) sheetContentsHandler;
-        this.styles = styles;
+        this.output = sheetContentsHandler;
     }
 
     public interface TalendSheetContentsHandler extends SheetContentsHandler {
 
         public void endSheet();
 
-    }
-
-    @Override
-    public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
-
-        // Update Date Format value
-        if ("c".equals(localName) && "n".equals(attributes.getValue("t"))) {
-            String cellStyleStr = attributes.getValue("s");
-            // Number, but almost certainly with a special style or format
-            XSSFCellStyle style = styles.getStyleAt(Integer.parseInt(cellStyleStr));
-
-            if (style != null) {
-                if (DateUtil.isADateFormat(style.getDataFormat(), style.getDataFormatString())) {
-                    output.setCellDateType(true);
-                    output.setExcelDateFormat(style.getDataFormatString());
-                }
-            }
-        }
-        super.startElement(uri, localName, qName, attributes);
     }
 
     @Override
