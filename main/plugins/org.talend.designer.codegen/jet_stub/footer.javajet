@@ -592,7 +592,7 @@
 				properties_<%=jobCatcherNode.getUniqueName()%>.setProperty("host", "false");
 
 				System.getProperties().stringPropertyNames().stream()
-					.filter(it -> it.startsWith("audit.logger.") && !"audit.logger.interval".equals(it))
+					.filter(it -> it.startsWith("audit.logger."))
 					.forEach(key -> properties_<%=jobCatcherNode.getUniqueName()%>.setProperty(key.substring("audit.logger.".length()), System.getProperty(key)));
 
 				<%if(isLog4j1Enabled) {%>
