@@ -1,37 +1,11 @@
-<%/*
-  Copyright (C) 2006-2019 Talend Inc. - www.talend.com
-   Licensed under the Apache License, Version 2.0 (the "License");
-  you may not use this file except in compliance with the License.
-  You may obtain a copy of the License at
-
-      http://www.apache.org/licenses/LICENSE-2.0
-
-  Unless required by applicable law or agreed to in writing, software
-  distributed under the License is distributed on an "AS IS" BASIS,
-  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  See the License for the specific language governing permissions and
-  limitations under the License.
-*/%>
-final java.util.Map<String, String> configuration_<%=cid%> = new java.util.HashMap<>();
-final java.util.Map<String, String> registry_metadata_<%=cid%> = new java.util.HashMap<>();
 <%
-    final List<ElementParameter> params = List.class.cast(node.getElementParametersWithChildrens());
-    if (params != null && !params.isEmpty()) {
-        for (final ElementParameter p : params) {
-            Object pluginValue = p.getTaggedValue("org.talend.sdk.component.source");
-            if(pluginValue == null || !String.class.cast(pluginValue).equalsIgnoreCase("tacokit")) {
-                continue;
-            }
-            try {
-                if (!(Boolean) org.talend.core.runtime.IAdditionalInfo.class.cast(p).func("isPersisted")) {
-                    continue;
-                }
-            } catch (Exception ex) {
-                throw new RuntimeException(ex);
-            }
+//copy from configuration.javajet for tacokit
+%>
+
+<%
             //TODO: modify this part for Maps and nested lists.
             if (p.getFieldType() == EParameterFieldType.TABLE || p.getFieldType() == EParameterFieldType.TACOKIT_SUGGESTABLE_TABLE) {
-				java.util.List<java.util.Map<String, String>> tableValues = ElementParameterParser.createTableValues((java.util.List<java.util.Map<String, Object>>) p.getValue(), p);
+                java.util.List<java.util.Map<String, String>> tableValues = ElementParameterParser.createTableValues((java.util.List<java.util.Map<String, Object>>) p.getValue(), p);
                 String[] items = p.getListItemsDisplayCodeName();
                 String tableName = p.getName().replace('$', '.');
                 boolean primitiveTable = items.length == 1 && items[0].equals(tableName + "[]");
@@ -49,8 +23,12 @@ final java.util.Map<String, String> registry_metadata_<%=cid%> = new java.util.H
                             value = org.talend.core.model.utils.TalendTextUtils.removeQuotes(value);
                             value = org.talend.core.model.utils.TalendTextUtils.addQuotes(value);
                         }
+                        
+                        if(value==null || "null".equals(value.trim())) {
+                            value = "(Object)null";
+                        }
 %>
-                        configuration_<%=cid%>.put("<%=key%>",<%=value%>);
+                        component_parameters.put("<%=key%>",String.valueOf(<%=value%>));
 <%
                     }
                 }
@@ -64,29 +42,11 @@ final java.util.Map<String, String> registry_metadata_<%=cid%> = new java.util.H
                 if(connection != null) {
                     IMetadataTable metaTable = connection.getMetadataTable();
                     List<IMetadataColumn> columns = metaTable.getListColumns();
-                    boolean hasDynamic = false;
-                    for (int i = 0; i < columns.size(); i++) {
-                        IMetadataColumn col = columns.get(i);
-                        if ("id_Dynamic".equals(col.getTalendType())) {
-                            hasDynamic = true;
-                            int length = col.getLength() == null ? -1 : col.getLength();
-                            int precision = col.getPrecision() == null ? -1 : col.getPrecision();
-                            String pattern = col.getPattern() == null ? "" : col.getPattern();
-                        %>
-                        // getIncomingConnections
-                        registry_metadata_<%=cid%>.put("length", "<%=length%>");
-                        registry_metadata_<%=cid%>.put("precision", "<%=precision%>");
-                        registry_metadata_<%=cid%>.put("pattern", "<%=org.talend.core.model.utils.TalendTextUtils.removeQuotes(pattern)%>");
-                        <%
-                        }
-                    }
-                    if (!hasDynamic){
-                        for(int i = 0; i < columns.size(); i++) {
-                            IMetadataColumn column = columns.get(i);
-                        %>
-                        configuration_<%=cid%>.put("<%=parameterName%>[<%=i%>]", "<%=column.getLabel()%>");
-                        <%
-                        }
+                    for(int i = 0; i < columns.size(); i++) {
+                        IMetadataColumn column = columns.get(i);
+                    %>
+                        component_parameters.put("<%=parameterName%>[<%=i%>]", "<%=column.getLabel()%>");
+                    <%
                     }
                 }
             } else if (p.getFieldType() == EParameterFieldType.TACOKIT_INPUT_SCHEMA) {
@@ -99,29 +59,11 @@ final java.util.Map<String, String> registry_metadata_<%=cid%> = new java.util.H
                 if(connection != null) {
                     IMetadataTable metaTable = connection.getMetadataTable();
                     List<IMetadataColumn> columns = metaTable.getListColumns();
-                    boolean hasDynamic = false;
-                    for (int i = 0; i < columns.size(); i++) {
+                    for(int i = 0; i < columns.size(); i++) {
                         IMetadataColumn column = columns.get(i);
-                        if ("id_Dynamic".equals(column.getTalendType())) {
-                            hasDynamic = true;
-                            int length = column.getLength() == null ? -1 : column.getLength();
-                            int precision = column.getPrecision() == null ? -1 : column.getPrecision();
-                            String pattern = column.getPattern() == null ? "" : column.getPattern();
-                        %>
-                        // getIncomingConnections
-                        registry_metadata_<%=cid%>.put("length", "<%=length%>");
-                        registry_metadata_<%=cid%>.put("precision", "<%=precision%>");
-                        registry_metadata_<%=cid%>.put("pattern", "<%=org.talend.core.model.utils.TalendTextUtils.removeQuotes(pattern)%>");
-                        <%
-                        }
-                    }
-                    if (!hasDynamic){
-                        for(int i = 0; i < columns.size(); i++) {
-                            IMetadataColumn column = columns.get(i);
-                        %>
-                        configuration_<%=cid%>.put("<%=parameterName%>[<%=i%>]", "<%=column.getLabel()%>");
-                        <%
-                        }
+                    %>
+                        component_parameters.put("<%=parameterName%>[<%=i%>]", "<%=column.getLabel()%>");
+                    <%
                     }
                 }
             } else {
@@ -144,10 +86,7 @@ final java.util.Map<String, String> registry_metadata_<%=cid%> = new java.util.H
                 }
                 String value = null;
                 if(p.getFieldType() == EParameterFieldType.PASSWORD) {
-                    value = ElementParameterParser.getPasswordValue(node, p.getVariableName());
-                    if (value == null || value.trim().isEmpty()) {
-                        value = null;
-                    }
+                    continue;
                 } else {
                     value = ElementParameterParser.getStringElementParameterValue(p);
                     if (!org.talend.core.model.utils.ContextParameterUtils.isDynamic(value)) {
@@ -158,7 +97,7 @@ final java.util.Map<String, String> registry_metadata_<%=cid%> = new java.util.H
                 if (value != null) {
                  if(key.endsWith("$maxBatchSize")){
                   %>
-                    globalMap.putIfAbsent("MAX_BATCH_SIZE_<%=cid%>", Integer.parseInt(<%=value%>));
+                  
                   <%
                  } else if(p.getFieldType() == EParameterFieldType.CLOSED_LIST) {
                    String valueTemp = org.talend.core.model.utils.TalendTextUtils.removeQuotes(value);
@@ -170,11 +109,13 @@ final java.util.Map<String, String> registry_metadata_<%=cid%> = new java.util.H
                        }
                     }
                 }
+                
+                if(value==null || "null".equals(value.trim())) {
+                    value = "(Object)null";
+                }
 %>
-                    configuration_<%=cid%>.put("<%=key%>", <%=value%>);
+                    component_parameters.put("<%=key%>", String.valueOf(<%=value%>));
 <%
                 } // else do not put value in configuration
             }
-        }
-    }
 %>

@@ -17,8 +17,10 @@ package org.talend.sdk.component.studio.model.parameter.listener;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.util.Collections;
 import java.util.regex.Pattern;
 
+import org.talend.sdk.component.studio.model.parameter.TaCoKitElementParameter;
 import org.talend.sdk.component.studio.model.parameter.ValidationLabel;
 
 /**
@@ -49,7 +51,7 @@ public abstract class PropertyValidator implements PropertyChangeListener {
             return;
         }
 
-        if (isContextualValue(event.getNewValue())) {
+        if (isContextualValue(event.getNewValue()) || hideValidation(event.getSource())) {
             label.hideConstraint(validationMessage);
         } else if (!validate(event.getNewValue())) {
             label.showConstraint(validationMessage);
@@ -57,6 +59,20 @@ public abstract class PropertyValidator implements PropertyChangeListener {
             label.hideConstraint(validationMessage);
         }
     }
+    
+    /**
+     * Check if the source parameter is hidden. 
+     * If it is hidden we need to disable validation for it.
+     * @param source element parameter to check
+     * @return
+     */
+    private boolean hideValidation(Object source) {
+		if(source instanceof TaCoKitElementParameter) {
+			TaCoKitElementParameter parameter = (TaCoKitElementParameter)source;
+			return !parameter.isShow(Collections.emptyList());
+		}
+		return false;
+	}
 
     /**
      * Checks whether {@code value} is raw data or contains {@code context} variable.
