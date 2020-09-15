@@ -389,10 +389,23 @@ public <%=JavaTypesManager.getTypeToGenerate(ctxParam.getType(),true)%> get<%=Ch
 			break;
 		}
 	}
-	boolean enableLogStash = jobCatcherNode != null;
-	if (enableLogStash) {
+	
+	boolean enableLogStash = !Boolean.getBoolean("deactivate_extended_component_log") && (jobCatcherNode!=null);
+	boolean enable_runtime_lineage_log = NodeUtil.isJobUsingRuntimeLineage(process) && (jobCatcherNode!=null);
+	
+	if(jobCatcherNode!=null) {
 %>
 private final JobStructureCatcherUtils <%=jobCatcherNode.getUniqueName() %> = new JobStructureCatcherUtils(jobName, "<%=process.getId() %>", "<%=process.getVersion() %>");
+<%
+	}
+	if(enable_runtime_lineage_log) {
+%>
+private org.talend.job.audit.JobAuditLogger runtime_lineage_logger_<%=jobCatcherNode.getUniqueName()%> = null;
+<%
+	}
+	
+	if (enableLogStash) {
+%>
 private org.talend.job.audit.JobAuditLogger auditLogger_<%=jobCatcherNode.getUniqueName()%> = null;
 
 private RunStat runStat = new RunStat(<%=jobCatcherNode.getUniqueName() %>);
