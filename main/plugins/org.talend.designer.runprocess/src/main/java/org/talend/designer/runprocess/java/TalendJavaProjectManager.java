@@ -200,7 +200,10 @@ public class TalendJavaProjectManager {
                 if (!javaProject.isOpen()) {
                     javaProject.open(monitor);
                 }
-                helper.updateCodeProjectPom(monitor, type, codeProject.getFile(TalendMavenConstants.POM_FILE_NAME));
+                // only update code pom for main project.
+                if (ProjectManager.getInstance().getCurrentProject().getTechnicalLabel().equals(projectTechName)) {
+                    helper.updateCodeProjectPom(monitor, type, codeProject.getFile(TalendMavenConstants.POM_FILE_NAME));
+                }
                 talendCodeJavaProject = new TalendProcessJavaProject(javaProject);
                 BuildCacheManager.getInstance().clearCodesCache(type);
                 talendCodeJavaProjects.put(codeProjectId, talendCodeJavaProject);
