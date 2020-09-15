@@ -35,7 +35,10 @@ import org.talend.components.api.wizard.ComponentWizard;
 import org.talend.components.api.wizard.ComponentWizardDefinition;
 import org.talend.components.api.wizard.WizardImageType;
 import org.talend.core.GlobalServiceRegister;
+import org.talend.core.database.EDatabaseTypeName;
+import org.talend.core.model.metadata.Dbms;
 import org.talend.core.model.metadata.IMetadataTable;
+import org.talend.core.model.metadata.MetadataTalendType;
 import org.talend.core.model.metadata.builder.connection.Connection;
 import org.talend.core.model.metadata.builder.connection.DatabaseConnection;
 import org.talend.core.model.metadata.builder.connection.MetadataTable;
@@ -49,8 +52,10 @@ import org.talend.core.runtime.services.IGenericDBService;
 import org.talend.core.runtime.services.IGenericWizardService;
 import org.talend.core.utils.ReflectionUtils;
 import org.talend.core.utils.TalendQuoteUtils;
+import org.talend.daikon.NamedThing;
 import org.talend.daikon.properties.Properties;
 import org.talend.daikon.properties.presentation.Form;
+import org.talend.daikon.properties.property.Property;
 import org.talend.designer.core.generic.model.GenericElementParameter;
 import org.talend.designer.core.generic.model.GenericTableUtils;
 import org.talend.designer.core.generic.utils.ComponentsUtils;
@@ -407,6 +412,16 @@ public class GenericWizardService implements IGenericWizardService {
             if (StringUtils.isNotBlank(driverJarPaths)) {
                 connection.setDriverJarPath(driverJarPaths);
             }
+            UnifiedJDBCBean unifiedJDBCBean = additionalJDBC.get(dbType);
+            Dbms dbms = MetadataTalendType.getDefaultDbmsFromProduct(unifiedJDBCBean.getDatabaseId());
+            if (dbms != null && StringUtils.isNotBlank(dbms.getId())) {
+                connection.setDbmsId(dbms.getId());
+                NamedThing thing = componentProperties.getProperty("mappingFile");
+                if (thing != null) {
+                    Property property = (Property) thing;
+                    property.setValue(dbms.getId());
+                }
+            }
             Map<String, Object> map = new HashMap<String, Object>();
             map.put("jdbcUrl", TalendQuoteUtils.addQuotes(bean.getUrl()));
             map.put("driverClass", TalendQuoteUtils.addQuotes(bean.getDriverClass()));
@@ -419,6 +434,15 @@ public class GenericWizardService implements IGenericWizardService {
             connection.setURL(null);
             connection.setDriverClass(null);
             connection.setDriverJarPath(null);
+            Dbms dbms = MetadataTalendType.getDefaultDbmsFromProduct(EDatabaseTypeName.MYSQL.getProduct().toUpperCase());
+            if (dbms != null && StringUtils.isNotBlank(dbms.getId())) {
+                connection.setDbmsId(dbms.getId());
+                NamedThing thing = dynamicFormComposite.getForm().getProperties().getProperty("mappingFile");
+                if (thing != null) {
+                    Property property = (Property) thing;
+                    property.setValue(dbms.getId());
+                }
+            }
         }
         dynamicFormComposite.resetParameters(true);
         dynamicFormComposite.refresh();
