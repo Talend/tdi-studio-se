@@ -8,7 +8,7 @@
 	<classpathentry exported="true" kind="lib" path="lib/poi-ooxml-4.1.2-20200903124306_modified_talend.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/poi-ooxml-schemas-4.1.2-20200903124306_modified_talend.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/poi-scratchpad-4.1.2-20200903124306_modified_talend.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/simpleexcel-2.4-20200903.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/simpleexcel-2.4-20200915.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/talendExcel-1.6-20200903.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/talendMsgMailUtil-1.2-20200608.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
