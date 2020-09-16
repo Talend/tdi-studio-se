@@ -126,7 +126,7 @@ if ((metadatas!=null)&&(metadatas.size()>0)) {
 		stringStdout_<%=cid%>.append(stdout_<%=cid%>.toString());
 		stringStderr_<%=cid%>.append(stderr_<%=cid%>.toString());
 		
-		if(stringStdout_<%=cid%>.charAt(stringStdout_<%=cid%>.length()-1) == '\n'){
+		if(stringStdout_<%=cid%>.length() >0 && stringStdout_<%=cid%>.charAt(stringStdout_<%=cid%>.length()-1) == '\n'){
 		    stringStdout_<%=cid%>.deleteCharAt(stringStdout_<%=cid%>.length()-1);
 		}
 		out_content_<%=cid%> = stringStdout_<%=cid%>.toString();
