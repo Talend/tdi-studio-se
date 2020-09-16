@@ -306,7 +306,7 @@ public class RuntimeLineageTreeViewPage extends ProjectSettingPage {
             return;
         }
         boolean useALL = useRuntimeLineageAllButton.getSelection();
-        runtimeLineageManager.setOutputPath(directoryField.getText());
+        runtimeLineageManager.setOutputPath(directoryField.getTextControl().getText());
 
         final IRunnableWithProgress runnable = new IRunnableWithProgress() {
 
