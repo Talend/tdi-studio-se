@@ -90,4 +90,5 @@ public interface IUnifiedComponentService extends IService {
 
     public IComponent getUnifiedComponentByFilter(IComponent delegateComponent, String filter);
 
+    public void initComponentIfJDBC(INode node, IComponent delegateComponent, IComponent emfcomponent);
 }

@@ -198,4 +198,11 @@ public class UnifiedComponentUtil {
         return null;
     }
 
+    public static void initComponentIfJDBC(INode node, IComponent delegateComponent, IComponent emfcomponent) {
+        if (GlobalServiceRegister.getDefault().isServiceRegistered(IUnifiedComponentService.class)) {
+            IUnifiedComponentService service = GlobalServiceRegister.getDefault().getService(IUnifiedComponentService.class);
+            service.initComponentIfJDBC(node, delegateComponent, emfcomponent);
+        }
+    }
+
 }

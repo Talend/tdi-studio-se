@@ -290,6 +290,8 @@ public class UnifiedComponentService implements IUnifiedComponentService {
 
     }
 
+
+
     private Map<String, Object> storeValue(Object obj) {
         Map<String, Object> map = new HashMap<String, Object>();
         if (obj == null) {
@@ -559,6 +561,28 @@ public class UnifiedComponentService implements IUnifiedComponentService {
         boolean match = obj.getDatabase().equalsIgnoreCase(filter) || obj.getComponentName().equalsIgnoreCase(filter)
                 || obj.getComponentName().substring(1).equalsIgnoreCase(filter);
         return match;
+    }
+
+    public void initComponentIfJDBC(INode node, IComponent delegateComponent, IComponent emfcomponent) {
+        if (!(delegateComponent instanceof DelegateComponent)) {
+            return;
+        }
+
+        DelegateComponent dComp = (DelegateComponent) delegateComponent;
+        IElementParameter newUnifiedParam = node.getElementParameterFromField(EParameterFieldType.UNIFIED_COMPONENTS);
+        String unifiedComp = String.valueOf(newUnifiedParam.getValue());
+        UnifiedObject unifiedObject = dComp.getUnifiedObjectByName(unifiedComp);
+        if (unifiedObject.getComponentName().equals(unifiedObject.getDisplayComonent())) {
+            // database name is like delta lake
+            String database = unifiedObject.getDatabase();
+            if ("Delta Lake".equals(database)) {
+                // init the required param
+                node.getElementParameter("url").setValue("url from the component json");
+                node.getElementParameter("driver").setValue("driver from the component json");
+                node.getElementParameter("driver class").setValue("driver class from the component json");
+            }
+
+        }
     }
 
 }
