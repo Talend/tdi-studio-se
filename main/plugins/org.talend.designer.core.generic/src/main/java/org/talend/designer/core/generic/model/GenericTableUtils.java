@@ -17,6 +17,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.talend.core.GlobalServiceRegister;
 import org.talend.core.model.param.EConnectionParameterName;
 import org.talend.core.model.process.EParameterFieldType;
@@ -27,6 +28,8 @@ import org.talend.core.runtime.services.IGenericDBService;
 import org.talend.core.utils.TalendQuoteUtils;
 import org.talend.daikon.properties.Properties;
 import org.talend.daikon.properties.property.Property;
+import org.talend.designer.core.model.components.UnifiedJDBCBean;
+import org.talend.designer.core.utils.UnifiedComponentUtil;
 import org.talend.librariesmanager.model.service.CustomUriManager;
 
 /**
@@ -62,6 +65,12 @@ public class GenericTableUtils {
                 if(dbService != null){
                     for(String v:values){
                         if(param.getName().equals(EConnectionParameterName.GENERIC_DRIVER_JAR.getDisplayName())){
+                            String additionalJDBCMVN = getIfAdditionalJDBCMVN(v);
+                            if (StringUtils.isNotBlank(additionalJDBCMVN)) {
+                                // as configured additional jdbc mvn, should igore the default
+                                // mvn:org.talend.libraries...
+                                v = additionalJDBCMVN;
+                            }
                             v = dbService.getMVNPath(v);
                         }
                         valueList.add(v);
@@ -70,6 +79,18 @@ public class GenericTableUtils {
                 }
             }
         }
+    }
+
+    private static String getIfAdditionalJDBCMVN(String jarName) {
+        for (UnifiedJDBCBean unifiedJDBCBean : UnifiedComponentUtil.getAdditionalJDBC().values()) {
+            for (String path : unifiedJDBCBean.getPaths()) {
+                String moudleName = getDriverJarPath(path);
+                if (jarName.equals(moudleName)) {
+                    return path;
+                }
+            }
+        }
+        return null;
     }
 
     public static List<Map<String, Object>> getTableValues(Properties tableProperties, IElementParameter param) {
