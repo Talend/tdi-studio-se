@@ -12,6 +12,7 @@
   org.talend.designer.codegen.config.CodeGeneratorArgument
   org.talend.designer.codegen.config.NodesSubTree
   org.talend.core.model.process.IProcess
+  org.talend.core.model.process.ProcessUtils
   org.talend.core.model.utils.NodeUtil
   org.talend.core.model.process.IContextParameter  
   java.util.List
@@ -28,7 +29,13 @@ INode node = (INode)codeGenArgument.getArgument();
 boolean containsTPartitioner = node.getProcess().getNodesOfType("tPartitioner").size() > 0 ? true : false;
 boolean isRunJob = "tRunJob".equals(node.getComponent().getName());
 IProcess process = node.getProcess();
- 
+
+boolean isTestContainer=ProcessUtils.isTestContainer(process);
+String className = process.getName();
+if (isTestContainer) {
+	className = className + "Test";
+}
+
 NodesSubTree subTree = (NodesSubTree) codeGenArgument.getSubTree();
 ECodePart codePart = codeGenArgument.getCodePart();
 //boolean trace = codeGenArgument.isTrace();
@@ -78,10 +85,10 @@ for (IConnection iterateConn : iterateConnSet) { //1
 					@Override
 					public Object put(String key, Object value) {
 						<%if(!isRunInMultiThread){%>
-						synchronized (<%=process.getName()%>.this.obj) {
+						synchronized (<%=className%>.this.obj) {
 						<%}%>
 							super.put(key, value);
-							return <%=process.getName()%>.this.globalMap.put(key, value);
+							return <%=className%>.this.globalMap.put(key, value);
 						<%if(!isRunInMultiThread){%>
 						}
 						<%}%>
@@ -158,7 +165,7 @@ for (IConnection iterateConn : iterateConnSet) { //1
 						synchronized (globalMap) {
 							this.globalMap = java.util.Collections.synchronizedMap(new ThreadedMap(globalMap));
 					<%}else{%>
-						synchronized (<%=process.getName()%>.this.obj) {
+						synchronized (<%=className%>.this.obj) {
 							this.globalMap = new ThreadedMap(globalMap);
 					<%}%>
 						}

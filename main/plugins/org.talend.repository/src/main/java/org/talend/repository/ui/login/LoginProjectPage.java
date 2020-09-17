@@ -1129,8 +1129,20 @@ public class LoginProjectPage extends AbstractLoginActionPage {
                         ICoreTisService.class);
                 afterUpdate = false;
                 if (tisService != null) {
-                    tisService.downLoadAndInstallUpdates(getConnection().getUser(), getConnection().getPassword(),
-                            loginFetchLicenseHelper.getAdminURL());
+                    if (tisService.isDefaultLicenseAndProjectType()) {
+                        tisService.downLoadAndInstallUpdates(getConnection().getUser(), getConnection().getPassword(),
+                                loginFetchLicenseHelper.getAdminURL());
+                    } else {
+                        EclipseCommandLine.updateOrCreateExitDataPropertyWithCommand(EclipseCommandLine.LOGIN_ONLINE_UPDATE, null,
+                                false, true);
+                        EclipseCommandLine.updateOrCreateExitDataPropertyWithCommand(EclipseCommandLine.CLEAN, null, false, true);
+                        EclipseCommandLine.updateOrCreateExitDataPropertyWithCommand(EclipseCommandLine.TALEND_RELOAD_COMMAND,
+                                Boolean.TRUE.toString(), false);
+                        EclipseCommandLine.updateOrCreateExitDataPropertyWithCommand(
+                                EclipseCommandLine.TALEND_PROJECT_TYPE_COMMAND, "", true);
+                        EclipseCommandLine.updateOrCreateExitDataPropertyWithCommand(EclipseCommandLine.ARG_TALEND_LICENCE_PATH,
+                                "", true);
+                    }
                     afterUpdate = true;
                     tisService.setNeedResartAfterUpdate(afterUpdate);
                 }

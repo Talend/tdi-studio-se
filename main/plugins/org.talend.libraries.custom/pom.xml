@@ -63,6 +63,11 @@
                   <artifactId>talend_DB_mssqlUtil</artifactId>
                   <version>1.4</version>
                 </artifactItem>
+                <artifactItem>
+                  <groupId>org.talend.components.lib</groupId>
+                  <artifactId>talend_file_enhanced</artifactId>
+                  <version>1.0</version>
+                </artifactItem>
               </artifactItems>
             </configuration>
           </execution>

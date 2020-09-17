@@ -42,7 +42,7 @@ if ((metadatas!=null)&&(metadatas.size()>0)) {
 			    log.info("<%=cid%> - Authentication using a password.");
 		    <%}%>
 		
-			session_<%=cid%> = client_<%=cid%>.connect(username_<%=cid%>, hostname_<%=cid%>, <%=("").equals(port)?"22":port%>).verify(<%=("true").equals(useTimeout)?timeout+"L  * 1000":""%>).getClientSession();
+			session_<%=cid%> = client_<%=cid%>.connect(username_<%=cid%>, hostname_<%=cid%>, Integer.parseInt(<%=port %>+"")).verify(<%=("true").equals(useTimeout)?timeout+"L  * 1000":""%>).getClientSession();
 	    try {
             session_<%=cid%>.auth().verify();
         }catch (org.apache.sshd.common.SshException se_<%=cid%>){
@@ -126,6 +126,9 @@ if ((metadatas!=null)&&(metadatas.size()>0)) {
 		stringStdout_<%=cid%>.append(stdout_<%=cid%>.toString());
 		stringStderr_<%=cid%>.append(stderr_<%=cid%>.toString());
 		
+		if(stringStdout_<%=cid%>.length() >0 && stringStdout_<%=cid%>.charAt(stringStdout_<%=cid%>.length()-1) == '\n'){
+		    stringStdout_<%=cid%>.deleteCharAt(stringStdout_<%=cid%>.length()-1);
+		}
 		out_content_<%=cid%> = stringStdout_<%=cid%>.toString();
 		err_content_<%=cid%> = stringStderr_<%=cid%>.toString();
 		

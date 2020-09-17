@@ -19,6 +19,7 @@ imports="
 
 	boolean inputIsDocument = "true".equals(ElementParameterParser.getValue(node, "__INPUT_IS_DOCUMENT__"));
 	boolean isLog4jEnabled = ("true").equals(ElementParameterParser.getValue(node.getProcess(), "__LOG4J_ACTIVATE__"));
+	boolean isDeleteEmptyFile = ("true").equals(ElementParameterParser.getValue(node, "__DELETE_EMPTYFILE__"));
 	List<IMetadataTable> metadatas = node.getMetadataList();
 	if ((metadatas!=null)&&(metadatas.size()>0)) {
 		IMetadataTable metadata = metadatas.get(0);
@@ -201,8 +202,13 @@ imports="
 <%
 				}
 %>
-
 	java.io.BufferedWriter out_<%=cid%> = new java.io.BufferedWriter(new java.io.OutputStreamWriter(new java.io.FileOutputStream(file_<%=cid %>), <%=encoding%>));
+	<%if(isDeleteEmptyFile) {%>
+	resourceMap.put("nb_line_<%=cid%>", nb_line_<%=cid%>);
+	resourceMap.put("isFileGenerated_<%=cid%>", true);
+	resourceMap.put("file_<%=cid%>", file_<%=cid%>);
+	resourceMap.put("stream_<%=cid%>", out_<%=cid%>);
+	<%}%>
 
 <%	
 				for(int i = 0; i < headers;i++){
@@ -218,7 +224,16 @@ imports="
 	format_<%=cid%>.setEncoding(<%=encoding%>);
 	format_<%=cid%>.setNewLineAfterDeclaration(false);
 	format_<%=cid%>.setTrimText(<%=trim%>);
+	
 	org.dom4j.io.XMLWriter writer_<%=cid%> = new org.dom4j.io.XMLWriter(new java.io.OutputStreamWriter(new java.io.FileOutputStream(file_<%=cid %>), <%=encoding%>), format_<%=cid%>);
+	<%if(isDeleteEmptyFile) {%>
+	resourceMap.put("nb_line_<%=cid%>", nb_line_<%=cid%>);
+	resourceMap.put("isFileGenerated_<%=cid%>", true);
+	resourceMap.put("file_<%=cid%>", file_<%=cid%>);
+	resourceMap.put("stream_<%=cid%>", writer_<%=cid%>);
+	
+	boolean isEmpty_<%=cid%> = true;
+	<%}%>
 <%
 			}
 		}

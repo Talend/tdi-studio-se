@@ -212,7 +212,7 @@
                 void saveAttachment(javax.mail.Part mpart) throws IOException, javax.mail.MessagingException {
                     if (mpart.getFileName() != null && (
                             mpart.getDisposition() == null ||
-                            (mpart.getDisposition().equals(javax.mail.Part.ATTACHMENT) || mpart.getDisposition().equals(javax.mail.Part.INLINE))
+                            (mpart.getDisposition().equalsIgnoreCase(javax.mail.Part.ATTACHMENT) || mpart.getDisposition().equalsIgnoreCase(javax.mail.Part.INLINE))
                     )) {
                         String attachFileName = javax.mail.internet.MimeUtility.decodeText(mpart.getFileName());
 

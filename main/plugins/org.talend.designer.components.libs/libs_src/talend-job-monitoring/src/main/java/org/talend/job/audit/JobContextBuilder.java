@@ -15,6 +15,11 @@ public class JobContextBuilder {
 		return new JobContextBuilder(ContextBuilder.create());
 	}
 
+	public JobContextBuilder custom(String key, String value) {
+		builder.with(key, value);
+		return this;
+	}
+	
 	public JobContextBuilder jobName(String job_name) {
 		builder.with("job_name", job_name);
 		return this;
@@ -161,4 +166,14 @@ public class JobContextBuilder {
 		return this;
 	}
 
+	public JobContextBuilder connectorParameters(String connector_parameters) {
+        builder.with("connector_parameters", connector_parameters);
+        return this;
+    }
+    
+    public JobContextBuilder schema(String schema) {
+        builder.with("schema", schema);
+        return this;
+	}
+	
 }

@@ -181,16 +181,26 @@ String inputConnName = null;
 	  	%>
 			String osName_<%=cid %> = System.getProperty("os.name");
 			if (osName_<%=cid %> != null && osName_<%=cid %>.toLowerCase().startsWith("win")){
-	      		<%
+				<%
 				for (int i = 0; i < commandLineWindows.length; i++) {
 					if (i == 0){
-		     	 	%>
-                        paraList_<%=cid %>.add("<%=commandLineWindows[i]%>");
-                        String m2 = System.getProperty("talend.component.manager.m2.repository");
-                        if (m2 != null){
-                            paraList_<%=cid %>.add("-Dtalend.component.manager.m2.repository=" + m2);
-                        }
-		      		<%
+					%>
+						paraList_<%=cid %>.add("<%=commandLineWindows[i]%>");
+						String m2 = System.getProperty("talend.component.manager.m2.repository");
+						if (m2 != null){
+							paraList_<%=cid %>.add("-Dtalend.component.manager.m2.repository=" + m2);
+						}
+						
+						if(enableLogStash){
+							System.getProperties().stringPropertyNames().stream()
+								.filter(it -> it.startsWith("audit."))
+								.forEach(key -> paraList_<%=cid %>.add("-D" + key + "=" + System.getProperty(key)));
+						}
+							
+						System.getProperties().stringPropertyNames().stream()
+							.filter(it -> it.startsWith("runtime.lineage."))
+							.forEach(key -> paraList_<%=cid %>.add("-D" + key + "=" + System.getProperty(key)));
+					<%
 					} else if (i > 0){
 		      			if (commandLineWindows[i].indexOf("\"") >= 0){
 							if(commandLineWindows[i].indexOf(".jar")>=0){
@@ -220,15 +230,25 @@ String inputConnName = null;
 	      		<%
 				for (int i = 0; i < commandLineUnix.length; i++) {
 					if (i == 0){
-		      		%>
-                        paraList_<%=cid %>.add("<%=commandLineUnix[i]%>");
-                        String m2 = System.getProperty("talend.component.manager.m2.repository");
-                        if (m2 != null){
-                            paraList_<%=cid %>.add("-Dtalend.component.manager.m2.repository=" + m2);
-                        }
-		      		<%
-		    		} else if (i > 0){
-		      			String param;
+					%>
+						paraList_<%=cid %>.add("<%=commandLineUnix[i]%>");
+						String m2 = System.getProperty("talend.component.manager.m2.repository");
+						if (m2 != null){
+							paraList_<%=cid %>.add("-Dtalend.component.manager.m2.repository=" + m2);
+						}
+						
+						if(enableLogStash){
+							System.getProperties().stringPropertyNames().stream()
+								.filter(it -> it.startsWith("audit."))
+								.forEach(key -> paraList_<%=cid %>.add("-D" + key + "=" + System.getProperty(key)));
+						}
+							
+						System.getProperties().stringPropertyNames().stream()
+							.filter(it -> it.startsWith("runtime.lineage."))
+							.forEach(key -> paraList_<%=cid %>.add("-D" + key + "=" + System.getProperty(key)));
+					<%
+					} else if (i > 0){
+						String param;
 						if (commandLineUnix[i].indexOf("\"") >= 0){
 							param = commandLineUnix[i];
 						} else {

@@ -134,7 +134,9 @@ class="MomInput"
 		    throw new RuntimeException("<%=connectionComponentName%> still not initialized. Try to redesign job.");
 		}
 		
-		javax.jms.MessageProducer producer_<%=cid %> = (javax.jms.MessageProducer)globalMap.get("producer_<%=cid %>");
+		final String pk_<%=cid%> = "producer_<%=cid %>" + (<%=to %>);
+		
+		javax.jms.MessageProducer producer_<%=cid %> = (javax.jms.MessageProducer)globalMap.get(pk_<%=cid%>);
 		
 		if(producer_<%=cid %> == null) {
 		
@@ -164,6 +166,8 @@ class="MomInput"
 			<%
 			}
 			%>
+			
+			globalMap.put(pk_<%=cid%>,producer_<%=cid %>);
 		}
 
 		<%
