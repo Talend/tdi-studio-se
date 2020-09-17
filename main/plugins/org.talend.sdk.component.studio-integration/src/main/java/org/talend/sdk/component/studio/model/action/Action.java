@@ -20,7 +20,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 
+import org.talend.core.model.process.IContextManager;
 import org.talend.sdk.component.studio.Lookups;
 import org.talend.sdk.component.studio.websocket.WebSocketClient.V1Action;
 
@@ -46,6 +48,8 @@ public class Action<T> {
      * Action parameters map. Key is an ElementParameter path. Value is a list of action parameters associated with the ElementParameter
      */
     private final Map<String, List<IActionParameter>> parameters = new HashMap<>();
+
+    private IContextManager contextManager;
 
     public Action(final String actionName, final String family, final Type type) {
         this.actionName = actionName;
@@ -93,9 +97,24 @@ public class Action<T> {
                 .flatMap(List::stream)
                 .flatMap(actionParam -> actionParam.parameters().stream())
                 .forEach(param -> {
-                    payload.put(param.getFirst(), param.getSecond());
-                 });
+                    final String initialValue = param.getSecond();
+                    String value = Optional.ofNullable(contextManager)
+                            .map(cx -> Optional.ofNullable(
+                                    cx.getDefaultContext().getContextParameter(initialValue.replace("context.", "")))
+                                                 .map(cxp -> cxp.getValue())
+                                                 .orElse(initialValue)
+                            ).orElse(initialValue);
+                    payload.put(param.getFirst(), value);
+                });
         return payload;
+    }
+
+    public IContextManager getContextManager() {
+        return contextManager;
+    }
+
+    public void setContextManager(final IContextManager contextManager) {
+        this.contextManager = contextManager;
     }
 
     public enum Type {
