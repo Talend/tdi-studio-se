@@ -44,6 +44,7 @@ import org.talend.core.model.metadata.builder.connection.DatabaseConnection;
 import org.talend.core.model.metadata.builder.connection.MetadataTable;
 import org.talend.core.model.process.EComponentCategory;
 import org.talend.core.model.process.Element;
+import org.talend.core.model.process.IElement;
 import org.talend.core.model.process.INode;
 import org.talend.core.model.properties.ConnectionItem;
 import org.talend.core.model.properties.Item;
@@ -449,8 +450,8 @@ public class GenericWizardService implements IGenericWizardService {
     }
 
     @Override
-    public String getDatabseNameByNode(INode node) {
-        if (node instanceof Node) {
+    public String getDatabseNameByNode(IElement node) {
+        if (node != null && node instanceof Node) {
             Node editorNode = (Node) node;
             if (editorNode.getDelegateComponent() != null) {
                 return UnifiedComponentUtil.getUnifiedComponentDisplayName(editorNode.getDelegateComponent(),
