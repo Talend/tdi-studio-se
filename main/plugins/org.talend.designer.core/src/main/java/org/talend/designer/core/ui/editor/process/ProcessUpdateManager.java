@@ -2490,8 +2490,8 @@ public class ProcessUpdateManager extends AbstractUpdateManager {
                         contextData);
                 if (neededVars != null && !neededVars.isEmpty()) {
                     ContextItem contextItem = ContextUtils.getContextItemById2(connection.getContextId());
-                    EcoreUtil.resolveAll(contextItem);
                     if (contextItem != null) {
+                        EcoreUtil.resolveAll(contextItem);
                         // find added variables
                         // change back the old context name in neededVars , the renamed context should not be treated as
                         // new added

@@ -13,6 +13,7 @@
 package org.talend.repository;
 
 import java.beans.PropertyChangeEvent;
+import java.nio.charset.StandardCharsets;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -81,6 +82,7 @@ import org.talend.core.model.process.IElementParameter;
 import org.talend.core.model.process.INode;
 import org.talend.core.model.properties.ContextItem;
 import org.talend.core.model.properties.Item;
+import org.talend.core.model.properties.PropertiesFactory;
 import org.talend.core.model.properties.RulesItem;
 import org.talend.core.model.properties.SAPConnectionItem;
 import org.talend.core.model.properties.SQLPatternItem;
@@ -102,6 +104,7 @@ import org.talend.core.repository.model.RepositoryFactoryProvider;
 import org.talend.core.repository.model.repositoryObject.SalesforceModuleRepositoryObject;
 import org.talend.core.repository.utils.ProjectHelper;
 import org.talend.core.repository.utils.RepositoryPathProvider;
+import org.talend.core.services.ICoreTisService;
 import org.talend.core.services.IGITProviderService;
 import org.talend.core.services.ISVNProviderService;
 import org.talend.core.ui.branding.IBrandingService;
@@ -318,6 +321,28 @@ public class RepositoryService implements IRepositoryService, IRepositoryContext
             logged = LoginHelper.getInstance().loginAuto();
         }
         if (!logged) {
+            if (ArrayUtils.contains(Platform.getApplicationArgs(), EclipseCommandLine.LOGIN_ONLINE_UPDATE)) {
+                ICoreTisService tisService = ICoreTisService.get();
+                if (tisService != null) {
+                    LoginHelper loginHelper = LoginHelper.getInstance();
+                    ConnectionBean connBean = loginHelper.getCurrentSelectedConnBean();
+                    try {
+                        User user = PropertiesFactory.eINSTANCE.createUser();
+                        user.setLogin(connBean.getUser());
+                        user.setPassword(connBean.getPassword().getBytes(StandardCharsets.UTF_8));
+                        LoginHelper.setRepositoryContextInContext(connBean, user, null, null);
+                        tisService.downLoadAndInstallUpdates(connBean.getUser(), connBean.getPassword(),
+                                LoginHelper.getAdminURL(connBean));
+                        tisService.setNeedResartAfterUpdate(true);
+                        LoginHelper.isRestart = true;
+                        EclipseCommandLine.updateOrCreateExitDataPropertyWithCommand(EclipseCommandLine.LOGIN_ONLINE_UPDATE, null,
+                                true, true);
+                        return true;
+                    } catch (Throwable e) {
+                        ExceptionHandler.process(e);
+                    }
+                }
+            }
             LoginDialogV2 loginDialog = new LoginDialogV2(shell);
             logged = (loginDialog.open() == LoginDialogV2.OK);
         }

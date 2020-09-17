@@ -561,7 +561,17 @@ public class TOSDelimitedReader {
                 System.out.println(streamBuffer);
             }
 
+            setStreamEnd(readCount, maxReadLength);
+
+            if (readCount > -1) {
+                count += readCount;
+                lastIndexToRead = count - maxLimit;
+            }
+        }
+
+        private void setStreamEnd(int readCount, int maxReadLength) throws IOException {
             /* @see bug:http://talendforge.org/bugs/view.php?id=4554 */
+            //https://jira.talendforge.org/browse/TDI-44745
             if (readCount < maxReadLength) {
                 if (readCount == -1) {
                     streamEndMeet = true;
@@ -574,11 +584,6 @@ public class TOSDelimitedReader {
                         inputStream.reset();
                     }
                 }
-            }
-
-            if (readCount > -1) {
-                count += readCount;
-                lastIndexToRead = count - maxLimit;
             }
         }
 
@@ -652,7 +657,7 @@ public class TOSDelimitedReader {
             currentPosition = 0;
             columnStart = 0;
             lastIndexToRead = count - maxLimit;
-            streamEndMeet = (count < buffer.length);
+            setStreamEnd(count, buffer.length);
         }
 
         public boolean isStartFieldDelimited() {
