@@ -319,6 +319,17 @@ if ((metadatas!=null)&&(metadatas.size()>0)) {
         //for the number format
         java.text.DecimalFormat df_<%=cid %> = new java.text.DecimalFormat("#.####################################");
 		char separatorChar_<%=cid %> = df_<%=cid %>.getDecimalFormatSymbols().getDecimalSeparator();
+<%
+//TDI-44894
+        if(advancedSeparator) {
+%>
+		java.text.DecimalFormatSymbols dfs_<%=cid %> = new java.text.DecimalFormatSymbols();
+		dfs_<%=cid %>.setDecimalSeparator( <%= decimalSeparator %>  );
+		dfs_<%=cid %>.setGroupingSeparator(<%= thousandsSeparator %>);
+		df_<%=cid %>.setDecimalFormatSymbols(dfs_<%=cid %>);
+<%
+        }
+%>	
 		<%
 		if(hasDynamic){
 		%>
@@ -769,6 +780,17 @@ if ((metadatas!=null)&&(metadatas.size()>0)) {
 		//for the number format
         java.text.DecimalFormat df_<%=cid %> = new java.text.DecimalFormat("#.####################################");
         char decimalChar_<%=cid %> = df_<%=cid %>.getDecimalFormatSymbols().getDecimalSeparator();
+<%
+//TDI-44894
+        if(advancedSeparator) {
+%>
+		java.text.DecimalFormatSymbols dfs_<%=cid %> = new java.text.DecimalFormatSymbols();
+		dfs_<%=cid %>.setDecimalSeparator( <%= decimalSeparator %>  );
+		dfs_<%=cid %>.setGroupingSeparator(<%= thousandsSeparator %>);
+		df_<%=cid %>.setDecimalFormatSymbols(dfs_<%=cid %>);
+<%
+        }
+%>	
         <%
 		if(hasDynamic){
 		%>
@@ -1293,6 +1315,17 @@ if ((metadatas!=null)&&(metadatas.size()>0)) {
 		//for the number format
         java.text.DecimalFormat df_<%=cid %> = new java.text.DecimalFormat("#.####################################");
         char decimalChar_<%=cid %> = df_<%=cid %>.getDecimalFormatSymbols().getDecimalSeparator();
+<%
+//TDI-44894
+        if(advancedSeparator) {
+%>
+		java.text.DecimalFormatSymbols dfs_<%=cid %> = new java.text.DecimalFormatSymbols();
+		dfs_<%=cid %>.setDecimalSeparator( <%= decimalSeparator %>  );
+		dfs_<%=cid %>.setGroupingSeparator(<%= thousandsSeparator %>);
+		df_<%=cid %>.setDecimalFormatSymbols(dfs_<%=cid %>);
+<%
+        }
+%>	
 
 		if(source_<%=cid %> instanceof String){
 			excelReader_<%=cid%>.parse((String)source_<%=cid %>,<%=encoding %>, password_<%=cid%>);
