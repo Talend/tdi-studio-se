@@ -32,8 +32,7 @@ import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
 import org.apache.commons.codec.binary.Base64;
-import org.jdom.input.DOMBuilder;
-import org.jdom.output.XMLOutputter;
+import org.dom4j.io.DOMReader;
 import org.talend.soap.sun.SunNtlmAuthenticationUpdater;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -44,8 +43,6 @@ import com.sun.xml.messaging.saaj.soap.SOAPPartImpl;
 public class SOAPUtil {
 
     private static final String vmVendor = System.getProperty("java.vendor.url");
-
-    private static final String ibmVmVendor = "http://www.ibm.com/";
 
     private static final String sunVmVendor = "http://java.sun.com/";
 
@@ -140,12 +137,7 @@ public class SOAPUtil {
         StreamSource preppedMsgSrc = new StreamSource(stream);
         soapPart.setContent(preppedMsgSrc);
 
-        // InputStream stream = new FileInputStream(new File("d://soap.txt"));
-        // StreamSource preppedMsgSrc = new StreamSource(stream);
-        // soapPart.setContent(preppedMsgSrc);
-
         message.saveChanges();
-        // Send the message
 
         SOAPMessage reply = connection.call(message, destination);
 
@@ -226,7 +218,7 @@ public class SOAPUtil {
         Node content;
         Element headerRootElem = document.createElement("Header");
 
-        Iterator childElements = header.getChildElements();
+        Iterator<javax.xml.soap.Node> childElements = header.getChildElements();
         org.w3c.dom.Node domNode = null;
         while (childElements.hasNext()) {
             domNode = (org.w3c.dom.Node) childElements.next();
@@ -246,10 +238,9 @@ public class SOAPUtil {
     }
 
     private String Doc2StringWithoutDeclare(Document doc) {
-        DOMBuilder builder = new DOMBuilder();
-        org.jdom.Document jdomDoc = builder.build(doc);
-        XMLOutputter outputter = new XMLOutputter();
-        return outputter.outputString(jdomDoc.getRootElement());
+        DOMReader reader = new DOMReader();
+        org.dom4j.Document document = reader.read(doc);
+        return document.getRootElement().asXML();
     }
 
 	/**
