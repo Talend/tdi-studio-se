@@ -1083,4 +1083,24 @@ public class ComponentsFactory implements IComponentsFactory {
         this.componentsHandler = componentsHandler;
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.talend.core.model.components.IComponentsFactory#getComponentByDisplayName(java.lang.String,
+     * java.lang.String)
+     */
+    @Override
+    public IComponent getComponentByDisplayName(String displayName, String paletteType) {
+        wait4InitialiseFinish();
+        if (componentList == null) {
+            init(false);
+        }
+
+        for (IComponent comp : componentList) {
+            if (comp != null && comp.getDisplayName().equals(displayName) && paletteType.equals(comp.getPaletteType())) {
+                return comp;
+            } // else keep looking
+        }
+        return null;
+    }
 }

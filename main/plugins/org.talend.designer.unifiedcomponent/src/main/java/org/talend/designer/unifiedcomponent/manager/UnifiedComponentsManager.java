@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang.StringUtils;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.InvalidSyntaxException;
@@ -31,10 +32,14 @@ import org.talend.core.GlobalServiceRegister;
 import org.talend.core.model.components.ComponentCategory;
 import org.talend.core.model.components.IComponent;
 import org.talend.core.model.components.IComponentsService;
+import org.talend.designer.core.model.components.UnifiedJDBCBean;
+import org.talend.designer.core.utils.UnifiedComponentUtil;
 import org.talend.designer.unifiedcomponent.component.DelegateComponent;
 import org.talend.designer.unifiedcomponent.component.UnifiedObject;
 import org.talend.designer.unifiedcomponent.delegate.service.IComponentDelegate;
 import org.talend.designer.unifiedcomponent.unifier.IComponentsUnifier;
+import org.talend.designer.unifiedcomponent.unifier.jdbc.IDynamicJDBCUnifier;
+import org.talend.designer.unifiedcomponent.unifier.jdbc.JDBCComponentsUnifier;
 
 /**
  *
@@ -89,6 +94,20 @@ public class UnifiedComponentsManager {
                 for (IComponentDelegate delegateComp : componentDelegates) {
                     compUnifier.setDelegateComponent(delegateComp);
                     initDelegateComponent(compUnifier);
+                }
+            }
+            // init additional JDBC component
+            Map<String, UnifiedJDBCBean> additionalJDBC = UnifiedComponentUtil.getAdditionalJDBC();
+            for (UnifiedJDBCBean bean : additionalJDBC.values()) {
+                JDBCComponentsUnifier jdbcUnifier = new JDBCComponentsUnifier();
+                jdbcUnifier.setDisplayName(bean.getDisplayName());
+                for (IComponentDelegate delegateComp : componentDelegates) {
+                    jdbcUnifier.setDelegateComponent(delegateComp);
+                    if (StringUtils.isNotBlank(jdbcUnifier.getComponentName())
+                            && UnifiedComponentUtil.FILTER_DEFINITION.contains(jdbcUnifier.getComponentName())) {
+                        continue;
+                    }
+                    initDelegateComponent(jdbcUnifier);
                 }
             }
         }
@@ -148,6 +167,9 @@ public class UnifiedComponentsManager {
                 object.getConnectorMapping().putAll(unifier.getConnectorMapping());
                 object.getParamMappingExclude().addAll(unifier.getMappingExclude());
                 object.getHideFamilies().addAll(unifier.getFamilies());
+                if (unifier instanceof IDynamicJDBCUnifier) {
+                    object.setDisplayComponentName(((IDynamicJDBCUnifier) unifier).getDispalyComponentName());
+                }
                 component.getUnifiedObjects().add(object);
 
                 delegateComponents.put(key, component);

@@ -21,6 +21,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -557,8 +558,12 @@ public class ComponentSettingsView extends ViewPart implements IComponentSetting
                 label = label + "(" + uniqueName + ")"; //$NON-NLS-1$ //$NON-NLS-2$
             }
             if (node.getComponent() != node.getDelegateComponent()) {
-                String dispalyName = UnifiedComponentUtil.getUnifiedComponentDisplayName(node.getDelegateComponent(), node
-                        .getComponent().getName());
+                String componentName = node.getComponent().getName();
+                if (StringUtils.isNoneBlank(node.getUnifiedComponentDisplayName())) {
+                    componentName = node.getUnifiedComponentDisplayName();
+                }
+                String dispalyName = UnifiedComponentUtil.getUnifiedComponentDisplayName(node.getDelegateComponent(),
+                        componentName);
                 if (dispalyName != null) {
                     label = label + "(" + dispalyName + ")";
                 }

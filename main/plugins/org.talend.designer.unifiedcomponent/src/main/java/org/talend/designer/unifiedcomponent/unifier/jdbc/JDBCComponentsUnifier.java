@@ -12,14 +12,16 @@
 // ============================================================================
 package org.talend.designer.unifiedcomponent.unifier.jdbc;
 
+import org.apache.commons.lang.StringUtils;
 import org.talend.designer.unifiedcomponent.unifier.AbstractComponentsUnifier;
 
 /**
  * created by wchen on Dec 1, 2017 Detailled comment
  *
  */
-public class JDBCComponentsUnifier extends AbstractComponentsUnifier {
+public class JDBCComponentsUnifier extends AbstractComponentsUnifier implements IDynamicJDBCUnifier {
 
+    private String displayName = "JDBC";
     /*
      * (non-Javadoc)
      *
@@ -27,7 +29,27 @@ public class JDBCComponentsUnifier extends AbstractComponentsUnifier {
      */
     @Override
     public String getDisplayName() {
-        return "JDBC";
+        return displayName;
+    }
+
+    public void setDisplayName(String displayName) {
+        this.displayName = displayName;
+    }
+
+    /**
+     * the fake component name like tJDBCInput
+     */
+    @Override
+    public String getComponentName() {
+        return super.getComponentName();
+
+    }
+
+    // the real component like tDeltaLakeInput
+    public String getDispalyComponentName() {
+        // tJDBCInput ==> tDeltaLakeInput
+        String componentName = super.getComponentName().replaceFirst("JDBC", StringUtils.deleteWhitespace(displayName));
+        return componentName;
     }
 
 }

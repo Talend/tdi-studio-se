@@ -97,4 +97,9 @@ public class DBDynamicComposite extends DynamicComposite{
         }
 
     }
+
+    public void setForm(Form form) {
+        // set a new form must reset parameter later
+        super.form = form;
+    }
 }

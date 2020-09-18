@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang3.StringUtils;
 import org.talend.core.GlobalServiceRegister;
 import org.talend.core.model.components.IComponent;
 import org.talend.core.model.components.IComponentsFactory;
@@ -37,6 +38,9 @@ import org.talend.core.runtime.services.IGenericWizardService;
 import org.talend.core.ui.component.ComponentsFactoryProvider;
 import org.talend.designer.core.IUnifiedComponentService;
 import org.talend.designer.core.model.components.EParameterName;
+import org.talend.designer.core.model.components.UnifiedJDBCBean;
+import org.talend.designer.core.ui.editor.nodes.Node;
+import org.talend.designer.core.utils.UnifiedComponentUtil;
 import org.talend.designer.unifiedcomponent.component.DelegateComponent;
 import org.talend.designer.unifiedcomponent.component.UnifiedObject;
 import org.talend.designer.unifiedcomponent.manager.UnifiedComponentsManager;
@@ -152,7 +156,7 @@ public class UnifiedComponentService implements IUnifiedComponentService {
             DelegateComponent dComp = (DelegateComponent) comp;
             Set<UnifiedObject> unifiedObjects = dComp.getUnifiedObjectsByPalette(dComp.getPaletteType());
             for (UnifiedObject obj : unifiedObjects) {
-                if (obj.getComponentName().equals(component.getName())) {
+                if (obj.getDisplayComponentName().equals(component.getDisplayName())) {
                     return dComp;
                 }
             }
@@ -429,7 +433,14 @@ public class UnifiedComponentService implements IUnifiedComponentService {
             if (emfComp != dComp) {
                 listParams.addAll(dComp.createElementParameters(node, false));
                 IElementParameter unifiedParam = getUnifiedParameter(listParams);
-                unifiedParam.setValue(emfComp.getName());
+                String unifiedComponents = emfComp.getName();
+                if (node instanceof Node) {
+                    Node editorNode = (Node) node;
+                    if (StringUtils.isNoneBlank(editorNode.getUnifiedComponentDisplayName())) {
+                        unifiedComponents = editorNode.getUnifiedComponentDisplayName();
+                    }
+                }
+                unifiedParam.setValue(unifiedComponents);
             } else {
                 listParams.addAll(dComp.createElementParameters(node));
             }
@@ -459,6 +470,17 @@ public class UnifiedComponentService implements IUnifiedComponentService {
             UnifiedObject unifiedObjectByName = dcomp.getUnifiedObjectByName(emfComponent);
             if (unifiedObjectByName != null) {
                 return unifiedObjectByName.getDatabase();
+            }
+        }
+        return null;
+    }
+
+    public String getUnifiedCompRealComponentName(IComponent delegateComponent, String emfComponent) {
+        if (delegateComponent instanceof DelegateComponent) {
+            DelegateComponent dcomp = (DelegateComponent) delegateComponent;
+            UnifiedObject unifiedObjectByName = dcomp.getUnifiedObjectByName(emfComponent);
+            if (unifiedObjectByName != null) {
+                return unifiedObjectByName.getComponentName();
             }
         }
         return null;
@@ -559,6 +581,22 @@ public class UnifiedComponentService implements IUnifiedComponentService {
         boolean match = obj.getDatabase().equalsIgnoreCase(filter) || obj.getComponentName().equalsIgnoreCase(filter)
                 || obj.getComponentName().substring(1).equalsIgnoreCase(filter);
         return match;
+    }
+
+    public UnifiedJDBCBean getInitJDBCComponentProperties(Node node, IComponent delegateComponent) {
+        if (!(delegateComponent instanceof DelegateComponent)) {
+            return null;
+        }
+        DelegateComponent dComp = (DelegateComponent) delegateComponent;
+        String unifiedComp = node.getUnifiedComponentDisplayName();
+        if (org.apache.commons.lang.StringUtils.isBlank(unifiedComp)) {
+            return null;
+        }
+        UnifiedObject unifiedObject = dComp.getUnifiedObjectByName(unifiedComp);
+        if (unifiedObject == null) {
+            return null;
+        }
+        return UnifiedComponentUtil.getAdditionalJDBC().get(unifiedObject.getDatabase());
     }
 
 }
