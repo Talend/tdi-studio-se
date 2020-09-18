@@ -82,18 +82,7 @@ public class TeradataTPTAddDatabaseNameToOptionalTablesMigrationTask extends Abs
             }
 
             private String concatenateDatabaseAndTableName(String databaseName, String tableName) {
-                String extendedTableName = "";
-                if (databaseName.startsWith(QUOTATION_MARK)) {
-                    extendedTableName += databaseName.substring(0, databaseName.length() - 1);
-                } else {
-                    extendedTableName += databaseName + " + \"";
-                }
-                if (tableName.endsWith(QUOTATION_MARK)) {
-                    extendedTableName += "." + tableName.substring(1);
-                } else {
-                    extendedTableName += ".\" + " + tableName;
-                }
-                return extendedTableName;
+                return databaseName + " + \".\" + " + tableName;
             }
 
             private ElementValueType extractItemFromProperty(NodeType node, String propertyName, String itemName) {
