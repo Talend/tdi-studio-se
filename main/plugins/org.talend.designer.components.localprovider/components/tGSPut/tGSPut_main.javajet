@@ -28,6 +28,7 @@
 	String connection = ElementParameterParser.getValue(node,"__CONNECTION__");
 	String authType = ElementParameterParser.getValue(node, "__AUTH_TYPE__");
 	boolean useServiceAccountForConnection = false;
+	String partSizeMb = ElementParameterParser.getValue(node, "__PART_SIZE__");
 
 	//Define if connection use Service account for connection
 	if(("true").equals(useExistingConn)) {
@@ -172,6 +173,14 @@ if (!useServiceAccountForConnection){
 <%
 } else {
 %>
+	int partSizeInBytes_<%=cid%> = <%=partSizeMb%> * 1024 * 1024;
+	<%
+	// We check if it is bigger than the max value allowed by Files.readAllBytes() method
+	// and set the max value if it is bigger
+	%>
+	if(partSizeInBytes_<%=cid%> > Integer.MAX_VALUE - 8) {
+		partSizeInBytes_<%=cid%> = Integer.MAX_VALUE - 8;
+	}
 	com.google.cloud.storage.Storage storage_<%=cid%> = null;
 	<%
 	if(("true").equals(useExistingConn)) {
@@ -241,17 +250,45 @@ if (!useServiceAccountForConnection){
 	for (java.util.Map.Entry<String, java.io.File> currentFile_<%=cid%> : fileMap_<%=cid%>.entrySet()){
 		com.google.cloud.storage.BlobInfo blobInfo_<%=cid%> = com.google.cloud.storage.BlobInfo.
 				newBuilder(<%=bucketName%>, currentFile_<%=cid%>.getKey()).build();
-		try {
-			storage_<%=cid%>.create(blobInfo_<%=cid%>, java.nio.file.Files.readAllBytes(currentFile_<%=cid%>.getValue().toPath()));
-			nb_line_<%=cid%> ++;
-		} catch (IOException e_<%=cid%>) {
-			<%
-			if(isLog4jEnabled){
-			%>
-				log.error("<%=cid%> - Exception in component <%=cid%>:" + e_<%=cid%>.getMessage());
-			<%
+		if (partSizeInBytes_<%=cid%> > 0 && java.nio.file.Files.size(currentFile_<%=cid%>.getValue().toPath()) > partSizeInBytes_<%=cid%>) {
+			byte[] buffer = new byte[partSizeInBytes_<%=cid%>];
+			try (com.google.cloud.WriteChannel writer_<%=cid%> = storage_<%=cid%>.writer(blobInfo_<%=cid%>); java.io.InputStream inputStreamForUpload_<%=cid%> = java.nio.file.Files.newInputStream(currentFile_<%=cid%>.getValue().toPath())) {
+				int curFileLimit_<%=cid%>;
+				while ((curFileLimit_<%=cid%> = inputStreamForUpload_<%=cid%>.read(buffer)) >= 0) {
+					writer_<%=cid%>.write(java.nio.ByteBuffer.wrap(buffer, 0, curFileLimit_<%=cid%>));
+				}
+			} catch (IOException e_<%=cid%>) {
+				<%
+				if(isLog4jEnabled){
+				%>
+					log.error("<%=cid%> - Exception in component <%=cid%>:" + e_<%=cid%>.getMessage());
+				<%
+				}
+				if (("true").equals(dieOnError)) {
+				%>
+					throw e_<%=cid%>;
+				<%
+				}
+				%>
 			}
-			%>
+		} else {
+			try {
+				storage_<%=cid%>.create(blobInfo_<%=cid%>, java.nio.file.Files.readAllBytes(currentFile_<%=cid%>.getValue().toPath()));
+				nb_line_<%=cid%> ++;
+			} catch (IOException e_<%=cid%>) {
+				<%
+				if(isLog4jEnabled){
+				%>
+					log.error("<%=cid%> - Exception in component <%=cid%>:" + e_<%=cid%>.getMessage());
+				<%
+				}
+				if (("true").equals(dieOnError)) {
+				%>
+					throw e_<%=cid%>;
+				<%
+				}
+				%>
+			}
 		}
 	}
 <%
