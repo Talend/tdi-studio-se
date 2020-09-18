@@ -203,6 +203,8 @@ class DealChildJobLibrary_<%=cid%> {
 	}
 	
 	JVMArgumentHelper_<%=cid%> jvm_argument_helper_<%=cid%> = new JVMArgumentHelper_<%=cid%>();
+	
+	String audit_jar_path_<%=cid%> = System.getProperty("audit.jar.path");
 	<%
 }
 try {
@@ -237,6 +239,9 @@ try {
 					System.arraycopy(commandLine, 2, tmp, 0, tmpSize);
 					commandLine = tmp;
 				}
+				
+				boolean isCP = false;
+				
 				for (int j = 0; j < commandLine.length; j++) {
 					// commandLine[j] = commandLine[j].replace("\n", "");
 					if (j == 0){
@@ -258,23 +263,47 @@ try {
 				    if (commandLine[j].indexOf("\"") >= 0){
 				    	if(commandLine[j].indexOf(".jar")>=0){
 				    %>
-				      		jvm_argument_helper_<%=cid%>.addArgumentsTo(childJob_commandLine_<%=cid%>, dealChildJobLibrary_<%=cid %>.replaceJarPathsFromCrcMap(<%=commandLine[j] %>).replaceAll(";",classpathSeparator_<%=cid%>));
+				    		String classpath_<%=cid %>_<%=i %>_<%=j %> = <%=commandLine[j] %>;
+				    		<%if(isCP) {%>
+				    		if(audit_jar_path_<%=cid %>!=null && !audit_jar_path_<%=cid %>.isEmpty()) {
+				      			classpath_<%=cid %>_<%=i %>_<%=j %> += audit_jar_path_<%=cid %>;
+				      		}
+				      		<%}%>
+				      		jvm_argument_helper_<%=cid%>.addArgumentsTo(childJob_commandLine_<%=cid%>, dealChildJobLibrary_<%=cid %>.replaceJarPathsFromCrcMap(classpath_<%=cid %>_<%=i %>_<%=j %>).replaceAll(";",classpathSeparator_<%=cid%>));
 				    <%
 				    	}else{
 				    %>
 				    		jvm_argument_helper_<%=cid%>.addArgumentsTo(childJob_commandLine_<%=cid%>, <%=commandLine[j] %>.replaceAll(";",classpathSeparator_<%=cid%>));
 				    <%
 				    	}
+				    	
+				    	if("\"-cp\"".equals(commandLine[j]) || "\"-classpath\"".equals(commandLine[j])) {
+			    			isCP = true;
+			    		} else {
+			    			isCP = false;
+			    		}
 				    }else{
 				    	if(commandLine[j].indexOf(".jar")>=0){
 				    %>
-				    		jvm_argument_helper_<%=cid%>.addArgumentsTo(childJob_commandLine_<%=cid%>, dealChildJobLibrary_<%=cid %>.replaceJarPathsFromCrcMap("<%=commandLine[j] %>").replaceAll(";",classpathSeparator_<%=cid%>));
+				    		String classpath_<%=cid %>_<%=i %>_<%=j %> = "<%=commandLine[j] %>";
+				    		<%if(isCP) {%>
+				    		if(audit_jar_path_<%=cid %>!=null && !audit_jar_path_<%=cid %>.isEmpty()) {
+				      			classpath_<%=cid %>_<%=i %>_<%=j %> += audit_jar_path_<%=cid %>;
+				      		}
+				      		<%}%>
+				    		jvm_argument_helper_<%=cid%>.addArgumentsTo(childJob_commandLine_<%=cid%>, dealChildJobLibrary_<%=cid %>.replaceJarPathsFromCrcMap(classpath_<%=cid %>_<%=i %>_<%=j %>).replaceAll(";",classpathSeparator_<%=cid%>));
 				    <%
 				    	}else{
 				    %>
 				    		jvm_argument_helper_<%=cid%>.addArgumentsTo(childJob_commandLine_<%=cid%>, "<%=commandLine[j] %>".replaceAll(";",classpathSeparator_<%=cid%>));
 				    <%
 				    	}
+				    	
+				    	if("-cp".equals(commandLine[j]) || "-classpath".equals(commandLine[j])) {
+			    			isCP = true;
+			    		} else {
+			    			isCP = false;
+			    		}
 				    }
 				  }
 				}
