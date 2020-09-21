@@ -310,7 +310,7 @@ String inputConnName = null;
 		      				}
 		      			}
 		      			
-		      			if("\"-cp\"".equals(commandLineWindows[i]) || "\"-classpath\"".equals(param)) {
+		      			if("\"-cp\"".equals(param) || "\"-classpath\"".equals(param)) {
 		      				isCP = true;
 		      			} else {
 		      				isCP = false;
