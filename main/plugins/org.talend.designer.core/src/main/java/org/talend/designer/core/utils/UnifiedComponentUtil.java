@@ -61,7 +61,7 @@ public class UnifiedComponentUtil {
     private static Map<String, UnifiedJDBCBean> additionalJDBCCache = new HashMap<String, UnifiedJDBCBean>();
 
     public static final List<String> FILTER_DEFINITION = Arrays
-            .asList(new String[] { "tJDBCClose", "tJDBCCommit", "tJDBCSP", "tJDBCRollback" });
+            .asList(new String[] { "tJDBCCommit", "tJDBCSP", "tJDBCRollback" });
 
     public static IComponent getEmfComponent(Node node, IComponent component) {
         if (isDelegateComponent(component)) {
