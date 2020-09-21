@@ -11,7 +11,8 @@
 			<attribute name="test" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry exported="true" kind="lib" path="lib/commons-cli.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/backport9.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/javax.annotation-api.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/component-server-model.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/geronimo-json_1.1_spec.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/geronimo-jsonb_1.0_spec.jar"/>
@@ -28,7 +29,6 @@
 	<classpathentry exported="true" kind="lib" path="lib/component-form-core.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/asciidoctorj-api.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/asciidoctorj.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/bytelist.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/dirgra.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/invokebinder.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/jcodings.jar"/>
@@ -40,14 +40,12 @@
 	<classpathentry exported="true" kind="lib" path="lib/jnr-netdb.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/jnr-posix.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/jnr-unixsocket.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/jnr-x86asm.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/joda-time.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/joni.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/jruby-core.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/jruby-stdlib.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/jruby.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/jzlib.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/modulator.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/nailgun-server.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/options.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8">

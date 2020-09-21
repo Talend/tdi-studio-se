@@ -42,6 +42,7 @@ import java.util.zip.ZipInputStream;
 
 import org.apache.commons.codec.binary.Base64InputStream;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IMarker;
@@ -119,6 +120,7 @@ import org.talend.core.model.properties.Property;
 import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.core.model.runprocess.IJavaProcessorStates;
 import org.talend.core.model.utils.JavaResourcesHelper;
+import org.talend.core.model.utils.NodeUtil;
 import org.talend.core.prefs.ITalendCorePrefConstants;
 import org.talend.core.runtime.CoreRuntimePlugin;
 import org.talend.core.runtime.maven.MavenArtifact;
@@ -127,6 +129,7 @@ import org.talend.core.runtime.process.ITalendProcessJavaProject;
 import org.talend.core.runtime.process.LastGenerationInfo;
 import org.talend.core.runtime.process.TalendProcessArgumentConstant;
 import org.talend.core.runtime.process.TalendProcessOptionConstants;
+import org.talend.core.runtime.projectsetting.RuntimeLineageManager;
 import org.talend.core.ui.services.IRulesProviderService;
 import org.talend.core.utils.BitwiseOptionUtils;
 import org.talend.designer.codegen.ICodeGenerator;
@@ -219,6 +222,8 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
 
     private String jobVersion;
 
+    private static final Logger LOGGER = Logger.getLogger(JavaProcessor.class);
+
     /**
      * Set current status.
      *
@@ -250,7 +255,7 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
                 // for shadow process/data preview
                 this.talendJavaProject = TalendJavaProjectManager.getTempJavaProject();
                 if (GlobalServiceRegister.getDefault().isServiceRegistered(IRunProcessService.class)) {
-                    IRunProcessService service = (IRunProcessService) GlobalServiceRegister.getDefault()
+                    IRunProcessService service = GlobalServiceRegister.getDefault()
                             .getService(IRunProcessService.class);
                     if (service != null) {
                         service.updateLogFiles(talendJavaProject, true);
@@ -1746,14 +1751,59 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
                 }
             }
         }
-        // if not check or the value is empty, should use preference
-        if (string == null || "".equals(string)) { //$NON-NLS-1$
-            string = RunProcessPlugin.getDefault().getPreferenceStore().getString(RunProcessPrefsConstants.VMARGUMENTS);
+        // https://jira.talendforge.org/browse/TUP-27374
+        String[] vmargs = null;
+        try {
+            // if not check or the value is empty, should use preference
+            boolean usePrefJVMArguments = false;
+            if (string == null || "".equals(string)) { //$NON-NLS-1$
+                string = RunProcessPlugin.getDefault().getPreferenceStore().getString(RunProcessPrefsConstants.VMARGUMENTS);
+                usePrefJVMArguments = true;
+            }
+            String replaceAll = string.trim();
+            List<String> vmList = new JobVMArgumentsUtil().readString(replaceAll);
+            //
+            String outputpath = getRuntimeLineageOutputpath();
+            if (outputpath != null) {
+                int usedPosition = -1;
+                for (int i = 0; i < vmList.size(); i++) {
+                    String vm = vmList.get(i);
+                    if (vm.startsWith(RuntimeLineageManager.RUNTIMELINEAGE_OUTPUT_PATH)) {
+                        usedPosition = i;
+                        break;
+                    }
+                }
+                if (usedPosition > -1) {
+                    if (usePrefJVMArguments) {
+                        vmList.set(usedPosition, outputpath);
+                    }
+                } else {
+                    vmList.add(outputpath);
+                }
+            }
+            vmargs = vmList.toArray(new String[0]);
+        } catch (Exception e) {
+            LOGGER.debug(e.getMessage(), e);
+            // UI can not be loaded, use default jvm args
+            vmargs = JobVMArgumentsUtil.DEFAULT_JVM_ARGS;
         }
-        String replaceAll = string.trim();
-        List<String> vmList = new JobVMArgumentsUtil().readString(replaceAll);
-        String[] vmargs = vmList.toArray(new String[0]);
         return vmargs;
+    }
+
+    public String getRuntimeLineageOutputpath() {
+        if (NodeUtil.isJobUsingRuntimeLineage(process)) {
+            RuntimeLineageManager runtimeLineageManager = new RuntimeLineageManager();
+            String outputpath = RuntimeLineageManager.RUNTIMELINEAGE_OUTPUT_PATH;
+            String value = runtimeLineageManager.getOutputPath();
+            if (StringUtils.isNotBlank(value)) {
+                if (EnvironmentUtils.isWindowsSystem()) {
+                    return outputpath = outputpath + value.replaceAll("%20", " "); //$NON-NLS-1$ //$NON-NLS-2$
+                } else {
+                    return outputpath = outputpath + value;
+                }
+            }
+        }
+        return null;
     }
 
     private List<String> convertArgsToList(String[] args) {

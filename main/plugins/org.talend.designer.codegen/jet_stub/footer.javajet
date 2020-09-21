@@ -24,6 +24,7 @@
         org.talend.core.model.process.ProcessUtils
         org.talend.core.model.components.IComponent
         org.talend.core.model.components.EComponentType
+        org.talend.core.model.utils.NodeUtil
     "
     class="Footer"
     skeleton="footer_java.skeleton"
@@ -275,7 +276,7 @@
     }
 %>
 
-    private PropertiesWithType context_param = new PropertiesWithType();
+    protected PropertiesWithType context_param = new PropertiesWithType();
     public java.util.Map<String, Object> parentContextMap = new java.util.HashMap<String, Object>();
 
     public String status= "";
@@ -518,8 +519,63 @@
 				break;
 			}
 		}
-    	if(jobCatcherNode!=null) {
-    		String location = ElementParameterParser.getValue(jobCatcherNode, "__LOCATION__");
+		
+		boolean enableLogStash = !Boolean.getBoolean("deactivate_extended_component_log") && (jobCatcherNode!=null);
+		boolean enable_runtime_lineage_log = NodeUtil.isJobUsingRuntimeLineage(process) && (jobCatcherNode!=null);
+		if(enable_runtime_lineage_log) {
+		%>
+			java.util.Properties p_<%=jobCatcherNode.getUniqueName()%> = new java.util.Properties();
+			p_<%=jobCatcherNode.getUniqueName()%>.setProperty("root.logger", "runtime");
+			p_<%=jobCatcherNode.getUniqueName()%>.setProperty("encoding", "UTF-8");
+			p_<%=jobCatcherNode.getUniqueName()%>.setProperty("application.name", "Talend Studio");
+			p_<%=jobCatcherNode.getUniqueName()%>.setProperty("service.name", "Talend Studio Job");
+			p_<%=jobCatcherNode.getUniqueName()%>.setProperty("instance.name", "Talend Studio Job Instance");
+			p_<%=jobCatcherNode.getUniqueName()%>.setProperty("propagate.appender.exceptions", "none");
+			p_<%=jobCatcherNode.getUniqueName()%>.setProperty("log.appender", "file");
+			p_<%=jobCatcherNode.getUniqueName()%>.setProperty("appender.file.path", "runtime.json");
+			p_<%=jobCatcherNode.getUniqueName()%>.setProperty("appender.file.maxsize", "52428800");
+			p_<%=jobCatcherNode.getUniqueName()%>.setProperty("appender.file.maxbackup", "20");
+			p_<%=jobCatcherNode.getUniqueName()%>.setProperty("host", "false");
+			
+			final String runtime_dir_<%=jobCatcherNode.getUniqueName()%> = System.getProperty("runtime.lineage.outputpath");
+			final String runtime_path_<%=jobCatcherNode.getUniqueName()%> = System.getProperty("runtime.lineage.appender.file.path");
+			if(runtime_path_<%=jobCatcherNode.getUniqueName()%>==null || runtime_path_<%=jobCatcherNode.getUniqueName()%>.isEmpty()) {
+				if(runtime_dir_<%=jobCatcherNode.getUniqueName()%>!=null && !runtime_dir_<%=jobCatcherNode.getUniqueName()%>.isEmpty()) {
+					System.setProperty("runtime.lineage.appender.file.path", 
+						new StringBuilder().append(runtime_dir_<%=jobCatcherNode.getUniqueName()%>)
+						.append((runtime_dir_<%=jobCatcherNode.getUniqueName()%>.endsWith("/") || runtime_dir_<%=jobCatcherNode.getUniqueName()%>.endsWith("\\")) ? "" : java.io.File.separator)
+						.append(projectName)
+						.append(java.io.File.separatorChar)
+						.append(jobName)
+						.append(java.io.File.separatorChar)
+						.append(jobVersion)
+						.append(java.io.File.separatorChar)
+						.append("runtime_log_")
+						.append(new java.text.SimpleDateFormat("yyyyMMddHHmmss").format(new java.util.Date()))
+						.append(".json")
+						.toString()
+					);
+				}
+			}
+			
+			System.getProperties().stringPropertyNames().stream()
+					.filter(it -> it.startsWith("runtime.lineage.") && !"runtime.lineage.outputpath".equals(it))
+					.forEach(key -> p_<%=jobCatcherNode.getUniqueName()%>.setProperty(key.substring("runtime.lineage.".length()), System.getProperty(key)));
+			
+			<%if(isLog4j1Enabled) {%>
+			org.apache.log4j.Logger.getLogger(p_<%=jobCatcherNode.getUniqueName()%>.getProperty("root.logger")).setLevel(org.apache.log4j.Level.DEBUG);
+			<%}%>
+			
+			<%if(isLog4j2Enabled) {%>
+			org.apache.logging.log4j.core.config.Configurator.setLevel(p_<%=jobCatcherNode.getUniqueName()%>.getProperty("root.logger"), org.apache.logging.log4j.Level.DEBUG);
+			<%}%>
+			
+			runtime_lineage_logger_<%=jobCatcherNode.getUniqueName()%> = org.talend.job.audit.JobEventAuditLoggerFactory.createJobAuditLogger(p_<%=jobCatcherNode.getUniqueName()%>);
+		<%
+		}
+		
+		if(enableLogStash) {
+			String location = ElementParameterParser.getValue(jobCatcherNode, "__LOCATION__");
 		%>
 			if(enableLogStash) {
 				java.util.Properties properties_<%=jobCatcherNode.getUniqueName()%> = new java.util.Properties();
@@ -550,7 +606,7 @@
 			}
 		<%
 		}
-    	%>
+		%>
 
         if(clientHost == null) {
             clientHost = defaultClientHost;
@@ -954,7 +1010,7 @@ this.globalResumeTicket = true;//to run tPreJob
 <%
         }
         
-        if(jobCatcherNode!=null) {
+        if(enableLogStash) {
 %>
 		if(enableLogStash) {
 	        <%=jobCatcherNode.getUniqueName() %>.addJobStartMessage();
@@ -1107,7 +1163,7 @@ this.globalResumeTicket = true;//to run tPostJob
 <%
     }
     
-    if(jobCatcherNode!=null) {
+    if(enableLogStash) {
 %>
 		if(enableLogStash) {
 	        <%=jobCatcherNode.getUniqueName() %>.addJobEndMessage(startTime, end, status);

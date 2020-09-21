@@ -2,7 +2,6 @@
 <project name="org.talend.designer.components.libs" default="buildall" basedir=".">
 
 	<target name="buildall">
-		<ant antfile="talend_file_enhanced_20070724/build.xml" target="process" inheritall="no" />
 		<ant antfile="sugarCRMManagement/build.xml" target="process" inheritall="no" />
 		<ant antfile="TalendSAX/build.xml" target="process" inheritall="no" />
 	</target>

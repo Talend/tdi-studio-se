@@ -151,9 +151,10 @@
 			<IMPORT NAME="saajapi" MODULE="saaj-api-1.3.jar" MVN="mvn:org.talend.libraries/saaj-api-1.3/6.0.0" REQUIRED="true" BundleID="" />
 			<IMPORT NAME="saajimpl" MODULE="saaj-impl-1.3.2.jar" MVN="mvn:org.talend.libraries/saaj-impl-1.3.2/6.0.0" REQUIRED="true" BundleID="" />
 			<IMPORT NAME="jdom" MODULE="jdom-1.1.jar" MVN="mvn:org.talend.libraries/jdom-1.1/6.0.0" UrlPath="platform:/plugin/org.talend.libraries.jdom/lib/jdom-1.1.jar" REQUIRED="true" BundleID="org.apache.servicemix.bundles.jdom" />
-			<IMPORT NAME="talendsoap" MODULE="talend-soap-2.1-20190716.jar" MVN="mvn:org.talend.libraries/talend-soap-2.1-20190716/6.0.0" REQUIRED="true" />
+			<IMPORT NAME="componentns-soap" MODULE="components-soap-2.2-20200824.jar" MVN="mvn:org.talend.components/components-soap/2.2-20200824" REQUIRED="true" />
 			<IMPORT NAME="xercesImpl-2.12.0" MODULE="xercesImpl-2.12.0.jar" MVN="mvn:xerces/xercesImpl/2.12.0" REQUIRED="true"/>
-			<IMPORT NAME="commons-codec" MODULE="commons-codec-1.9.jar" MVN="mvn:org.talend.libraries/commons-codec-1.9/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.apache.common/lib/commons-codec-1.9.jar" REQUIRED="true" BundleID="" />
+			<IMPORT NAME="xml-apis-1.4.01" MODULE="xml-apis-1.4.01.jar" MVN="mvn:xml-apis/xml-apis/1.4.01" REQUIRED="true" />
+			<IMPORT NAME="commons-codec-1.14" MODULE="commons-codec-1.14.jar" MVN="mvn:commons-codec/commons-codec/1.14" REQUIRED="true" BundleID="" />
 		</IMPORTS>
 	</CODEGENERATION>
 

@@ -45,9 +45,9 @@
                     <configuration>
                         <artifactItems>
                             <artifactItem>
-                                <groupId>org.talend.libraries</groupId>
+                                <groupId>org.talend.components</groupId>
                                 <artifactId>talend-mscrm</artifactId>
-                                <version>3.4-20200303</version>
+                                <version>3.4-20200824</version>
                                 <type>jar</type>
                                 <overWrite>true</overWrite>
                                 <outputDirectory>${libs.dir}</outputDirectory>

@@ -64,7 +64,6 @@ import org.talend.repository.items.importexport.ui.managers.TalendZipLeveledStru
 import org.talend.repository.model.migration.ChangeProjectTechinicalNameMigrationTask;
 import org.talend.repository.ui.actions.importproject.ImportProjectBean;
 import org.talend.repository.ui.actions.importproject.ImportProjectHelper;
-import org.talend.repository.ui.exception.ImportInvalidObjectException;
 import org.talend.repository.ui.utils.AfterImportProjectUtil;
 import org.talend.repository.utils.ZipFileUtils;
 import org.talend.utils.files.FileUtils;
@@ -557,7 +556,7 @@ public class TalendWizardProjectsImportPage extends AbstractWizardProjectsImport
         try {
             EmfResourcesFactoryReader.INSTANCE.addOption(importOption, false);
             final ImportProjectHelper importHelper = new ImportProjectHelper();
-
+            List<ImportProjectBean> projectBeanList = new ArrayList<ImportProjectBean>();
             for (Object element : selected) {
                 final ProjectRecord record = (ProjectRecord) element;
                 String projectName = record.getProjectName();
@@ -582,18 +581,25 @@ public class TalendWizardProjectsImportPage extends AbstractWizardProjectsImport
                     importHelper.checkProjectItems(new org.talend.core.model.general.Project(loadProject));
 
                     try {
-                        AfterImportProjectUtil.runAfterImportProjectActions(
-                                new ImportProjectBean(new org.talend.core.model.general.Project(loadProject), null));
+                        ImportProjectBean bean = new ImportProjectBean(new org.talend.core.model.general.Project(loadProject),
+                                null);
+                        projectBeanList.add(bean);
+                        AfterImportProjectUtil.runAfterImportProjectActions(bean);
                     } catch (Exception ex) {
-                        if (ex instanceof ImportInvalidObjectException) {
-                            // Ignore here
-                        } else {
-                            ExceptionHandler.process(ex);
-                        }
+                        ExceptionHandler.process(ex);
                     }
                 } catch (PersistenceException e) {
                     ExceptionHandler.process(e);
                 }
+            }
+            List<String> invalidProjectLableList = new ArrayList<String>();
+            for (ImportProjectBean projectBean : projectBeanList) {
+                if (projectBean.getInvalidViewObjectList().size() > 0) {
+                    invalidProjectLableList.add(projectBean.newProject.getTechnicalLabel());
+                }
+            }
+            if (invalidProjectLableList.size() > 0) {
+                AfterImportProjectUtil.deleteImprotedInvalidProject(invalidProjectLableList);
             }
         } finally {
             xmiManager.unloadResources();

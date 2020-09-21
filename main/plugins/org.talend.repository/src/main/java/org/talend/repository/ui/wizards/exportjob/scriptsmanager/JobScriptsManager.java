@@ -220,6 +220,7 @@ public abstract class JobScriptsManager {
         esbServiceName,
         esbCategory,
         esbExportType,
+        esbMetrics,
         properties,
         needAssembly,
         buildImage,

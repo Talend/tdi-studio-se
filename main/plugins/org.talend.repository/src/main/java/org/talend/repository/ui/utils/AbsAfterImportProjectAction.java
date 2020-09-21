@@ -21,4 +21,14 @@ public abstract class AbsAfterImportProjectAction implements IAfterImportProject
 
     protected ImportProjectBean projectBean;
 
+    private boolean isImportProjectAs = false;
+
+    public boolean isImportProjectAs() {
+        return isImportProjectAs;
+    }
+
+    public void setImportProjectAs(boolean isImportProjectAs) {
+        this.isImportProjectAs = isImportProjectAs;
+    }
+
 }

@@ -6,11 +6,11 @@
 
 	<groupId>org.talend.components.lib</groupId>
 	<artifactId>job-audit</artifactId>
-	<version>1.2</version>
+	<version>1.4</version>
 
 	<properties>
 		<talend.nexus.url>https://artifacts-oss.talend.com</talend.nexus.url>
-		<daikon.audit.version>1.16.0</daikon.audit.version>
+		<daikon.audit.version>1.16.1</daikon.audit.version>
 	</properties>
 
 	<repositories>

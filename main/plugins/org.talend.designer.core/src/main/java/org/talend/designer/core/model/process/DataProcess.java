@@ -516,6 +516,7 @@ public class DataProcess implements IGeneratingProcess {
                 ((IExternalNode) dataNode).setInternalMapperModel(externalNode.getInternalMapperModel());
             }
         }
+        dataNode.setReplaceNodeHandler(graphicalNode.getReplaceNodeHandler());
         dataNode.setActivate(graphicalNode.isActivate());
         dataNode.setStart(graphicalNode.isStart());
 
@@ -1962,7 +1963,7 @@ public class DataProcess implements IGeneratingProcess {
         }
         
         if (duplicatedProcess.getComponentsType().equals(ComponentCategory.CATEGORY_4_DI.getName()) 
-        		&& PluginChecker.isTIS() && !Boolean.getBoolean("deactivate_extended_component_log") && !isJoblet) {
+        		&& PluginChecker.isTIS() && !isJoblet) {
         	final String talendJobLogComponent = "tJobStructureCatcher";
             final String uid4TalendJobLogComponent = "talendJobLog";
         	IComponent jobStructComponent = ComponentsFactoryProvider.getInstance().get(talendJobLogComponent, ComponentCategory.CATEGORY_4_DI.getName());
