@@ -1991,20 +1991,26 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
 
             IFolder extResourcePath = externalResourcesFolder.getFolder(jobContextFolderPath);
             IFolder resourcesPath = resourcesFolder.getFolder(jobContextFolderPath);
-            
+
             if(!resourcesPath.exists()) {
                 tProcessJvaProject.createSubFolder(null, resourcesFolder, jobContextFolderPath.toString());
             }
 
             resourcesPath.refreshLocal(IResource.DEPTH_INFINITE, null);
 
-            for (IResource resource : extResourcePath.members()) {
-                IFile context = resourcesPath.getFile(resource.getName());
+            try {
+	            for (IResource resource : extResourcePath.members()) {
+	                IFile context = resourcesPath.getFile(resource.getName());
 
-                if (context.exists()) {
-                    context.delete(true, null);
-                }
-                resource.copy(context.getFullPath(), true, null);
+	                if (context.exists()) {
+	                    context.delete(true, null);
+	                }
+	                resource.copy(context.getFullPath(), true, null);
+	            }
+            } catch(Exception e) {
+            	RunProcessPlugin.getDefault().getLog()
+                .log(new Status(IStatus.WARNING, RunProcessPlugin.getDefault().getBundle().getSymbolicName(),
+                        e.getMessage()));
             }
 
             resourcesPath.refreshLocal(IResource.DEPTH_INFINITE, null);
