@@ -264,7 +264,7 @@ try {
 				    	if(commandLine[j].indexOf(".jar")>=0){
 				    %>
 				    		String classpath_<%=cid %>_<%=i %>_<%=j %> = <%=commandLine[j] %>;
-				    		<%if(isCP) {%>
+				    		<%if(isCP && (commandLine[j].endsWith(":\"") || commandLine[j].endsWith(";\""))) {%>
 				    		if(audit_jar_path_<%=cid %>!=null && !audit_jar_path_<%=cid %>.isEmpty()) {
 				      			classpath_<%=cid %>_<%=i %>_<%=j %> += audit_jar_path_<%=cid %>;
 				      		}
@@ -286,7 +286,7 @@ try {
 				    	if(commandLine[j].indexOf(".jar")>=0){
 				    %>
 				    		String classpath_<%=cid %>_<%=i %>_<%=j %> = "<%=commandLine[j] %>";
-				    		<%if(isCP) {%>
+				    		<%if(isCP && (commandLine[j].endsWith(":") || commandLine[j].endsWith(";"))) {%>
 				    		if(audit_jar_path_<%=cid %>!=null && !audit_jar_path_<%=cid %>.isEmpty()) {
 				      			classpath_<%=cid %>_<%=i %>_<%=j %> += audit_jar_path_<%=cid %>;
 				      		}
