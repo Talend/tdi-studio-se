@@ -127,7 +127,7 @@ public class UnifiedComponentService implements IUnifiedComponentService {
                     String database = object.getDatabase();
                     UnifiedObject unifiedObjectByDatabase = selectedDcomp.getUnifiedObjectByDatabase(database);
                     if (unifiedObjectByDatabase != null) {
-                        return unifiedObjectByDatabase.getComponentName();
+                        return unifiedObjectByDatabase.getDisplayComponentName();
                     }
                 }
 
@@ -169,7 +169,7 @@ public class UnifiedComponentService implements IUnifiedComponentService {
             DelegateComponent dComp = (DelegateComponent) comp;
             Set<UnifiedObject> unifiedObjects = dComp.getUnifiedObjectsByPalette(dComp.getPaletteType());
             for (UnifiedObject obj : unifiedObjects) {
-                if (obj.getComponentName().equals(emfCompName)) {
+                if (obj.getDisplayComponentName().equals(emfCompName)) {
                     return dComp;
                 }
             }

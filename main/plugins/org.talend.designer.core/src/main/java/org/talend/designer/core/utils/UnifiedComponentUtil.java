@@ -193,7 +193,7 @@ public class UnifiedComponentUtil {
             String paletteType = selectedComponent.getPaletteType();
             String emfCompName = service.getUnifiedComponetName4DndFromRepository(setting, selectedComponent);
             IComponentsService compService = GlobalServiceRegister.getDefault().getService(IComponentsService.class);
-            IComponent emfComponent = compService.getComponentsFactory().get(emfCompName, paletteType);
+            IComponent emfComponent = compService.getComponentsFactory().getComponentByDisplayName(emfCompName, paletteType);
             if (emfComponent != null) {
                 return emfComponent;
             } else {

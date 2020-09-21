@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.draw2d.IFigure;
@@ -2028,6 +2029,7 @@ public class TalendEditorDropTargetListener extends TemplateTransferDropTargetLi
         settingCopy.setDefaultComponent(rcSetting.getDefaultComponentName());
 
 
+        RepositoryComponentSetting compsetting = null;
         String typeName = null;
         if (item instanceof ConnectionItem) {
             ConnectionItem connectionItem = (ConnectionItem) item;
@@ -2037,6 +2039,13 @@ public class TalendEditorDropTargetListener extends TemplateTransferDropTargetLi
                 DatabaseConnection dbconn = (DatabaseConnection) connection;
                 if (UnifiedComponentUtil.isAdditionalJDBC(dbconn.getProductId())) {
                     typeName = dbconn.getProductId();
+                    compsetting = new RepositoryComponentSetting();
+                    compsetting.setInputComponent(
+                            rcSetting.getInputComponentName().replaceFirst("JDBC", StringUtils.deleteWhitespace(typeName)));
+                    compsetting.setOutputComponent(
+                            rcSetting.getOutPutComponentName().replaceFirst("JDBC", StringUtils.deleteWhitespace(typeName)));
+                    compsetting.setDefaultComponent(
+                            rcSetting.getDefaultComponentName().replaceFirst("JDBC", StringUtils.deleteWhitespace(typeName)));
                 }
             }
         }
@@ -2045,7 +2054,7 @@ public class TalendEditorDropTargetListener extends TemplateTransferDropTargetLi
         // Check if the components in the list neededComponents have the same category that is required by Process.
         IComponent component = chooseOneComponent(extractComponents(neededComponents), settingCopy, quickCreateInput,
                 quickCreateOutput, typeName);
-        store.component = UnifiedComponentUtil.getEmfComponent(rcSetting, component);
+        store.component = UnifiedComponentUtil.getEmfComponent(compsetting == null ? rcSetting : compsetting, component);
         store.componentName = rcSetting;
     }
 

@@ -36,6 +36,7 @@ import org.talend.components.api.wizard.ComponentWizardDefinition;
 import org.talend.components.api.wizard.WizardImageType;
 import org.talend.core.GlobalServiceRegister;
 import org.talend.core.database.EDatabaseTypeName;
+import org.talend.core.model.components.IComponent;
 import org.talend.core.model.metadata.Dbms;
 import org.talend.core.model.metadata.IMetadataTable;
 import org.talend.core.model.metadata.MetadataTalendType;
@@ -57,6 +58,7 @@ import org.talend.daikon.NamedThing;
 import org.talend.daikon.properties.Properties;
 import org.talend.daikon.properties.presentation.Form;
 import org.talend.daikon.properties.property.Property;
+import org.talend.designer.core.IUnifiedComponentService;
 import org.talend.designer.core.generic.model.GenericElementParameter;
 import org.talend.designer.core.generic.model.GenericTableUtils;
 import org.talend.designer.core.generic.utils.ComponentsUtils;
@@ -454,8 +456,14 @@ public class GenericWizardService implements IGenericWizardService {
         if (node != null && node instanceof Node) {
             Node editorNode = (Node) node;
             if (editorNode.getDelegateComponent() != null) {
-                return UnifiedComponentUtil.getUnifiedComponentDisplayName(editorNode.getDelegateComponent(),
-                        editorNode.getComponent().getDisplayName());
+                // get database
+                IComponent delegateComponent = editorNode.getDelegateComponent();
+                String emfComponent = editorNode.getComponent().getDisplayName();
+                if (UnifiedComponentUtil.isDelegateComponent(delegateComponent)) {
+                    IUnifiedComponentService service = GlobalServiceRegister.getDefault()
+                            .getService(IUnifiedComponentService.class);
+                    return service.getUnifiedCompDisplayName(delegateComponent, emfComponent);
+                }
             }
         }
         return null;
