@@ -200,7 +200,7 @@ String inputConnName = null;
 						}
 							
 						System.getProperties().stringPropertyNames().stream()
-							.filter(it -> it.startsWith("runtime.lineage."))
+							.filter(it -> it.startsWith("runtime.lineage.") || "classpath.extended".equals(it))
 							.forEach(key -> paraList_<%=cid %>.add("-D" + key + "=" + System.getProperty(key)));
 					<%
 					} else if (i > 0){
@@ -270,7 +270,7 @@ String inputConnName = null;
 						}
 							
 						System.getProperties().stringPropertyNames().stream()
-							.filter(it -> it.startsWith("runtime.lineage."))
+							.filter(it -> it.startsWith("runtime.lineage.") || "classpath.extended".equals(it))
 							.forEach(key -> paraList_<%=cid %>.add("-D" + key + "=" + System.getProperty(key)));
 					<%
 					} else if (i > 0){
