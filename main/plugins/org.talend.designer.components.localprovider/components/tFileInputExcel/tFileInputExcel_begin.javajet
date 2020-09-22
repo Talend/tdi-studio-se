@@ -113,7 +113,7 @@ if ((metadatas!=null)&&(metadatas.size()>0)) {
 		    			}
 		    			%>
 		    			dynamic_column_count_<%=cid%> = colsLen_<%=cid %>-<%=colLen-1%>;
-		    			for (int i = <%=dynamic_index-1%>; i < colsLen_<%=cid %>-<%=colLen-dynamic_index%>; i++) {
+		    			for (int i = <%=dynamic_index-1%> + start_column_<%= cid %>; i < colsLen_<%=cid %>-<%=colLen-dynamic_index%> + start_column_<%= cid %>; i++) {
 					    	routines.system.DynamicMetadata dynamicMetadata_<%=cid%> = new routines.system.DynamicMetadata();
 							<%
 							if(!version07){
