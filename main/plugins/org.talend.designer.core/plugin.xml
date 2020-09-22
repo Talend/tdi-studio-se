@@ -813,6 +813,15 @@
                 class="org.talend.designer.core.ui.projectsetting.UsingProjectSettingPageTester">
           </tester>
        </page>
+       <page
+             category="jobsettings"
+             class="org.talend.designer.core.ui.projectsetting.RuntimeLineageTreeViewPage"
+             id="jobsettings.runtimeLineage"
+             title="%runtimeLineage">
+          <tester
+                class="org.talend.designer.core.ui.projectsetting.RuntimeLineagePageTester">
+          </tester>
+       </page>
     </extension>
     <extension
           point="org.talend.core.runtime.repositoryComponent_provider">

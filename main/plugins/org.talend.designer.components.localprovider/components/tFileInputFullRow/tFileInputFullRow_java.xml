@@ -131,7 +131,7 @@
 
   <CODEGENERATION>
   <IMPORTS>
-	<IMPORT NAME="Talend File Enhanced" MODULE="talend_file_enhanced_20070724.jar" MVN="mvn:org.talend.libraries/talend_file_enhanced_20070724/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.custom/lib/talend_file_enhanced_20070724.jar" REQUIRED="true" />
+	<IMPORT NAME="Talend File Enhanced" MODULE="talend_file_enhanced-1.0.jar" MVN="mvn:org.talend.components.lib/talend_file_enhanced/1.0"  UrlPath="platform:/plugin/org.talend.libraries.custom/lib/talend_file_enhanced-1.0.jar" REQUIRED="true" />
   </IMPORTS>
   </CODEGENERATION>
 
