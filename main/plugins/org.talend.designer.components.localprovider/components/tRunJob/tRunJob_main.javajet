@@ -179,9 +179,11 @@ String inputConnName = null;
 	  		}
 		} else {
 	  	%>
+			
 			String osName_<%=cid %> = System.getProperty("os.name");
 			if (osName_<%=cid %> != null && osName_<%=cid %>.toLowerCase().startsWith("win")){
 				<%
+				boolean isCP = false;
 				for (int i = 0; i < commandLineWindows.length; i++) {
 					if (i == 0){
 					%>
@@ -198,29 +200,53 @@ String inputConnName = null;
 						}
 							
 						System.getProperties().stringPropertyNames().stream()
-							.filter(it -> it.startsWith("runtime.lineage."))
+							.filter(it -> it.startsWith("runtime.lineage.") || "classpath.extended".equals(it))
 							.forEach(key -> paraList_<%=cid %>.add("-D" + key + "=" + System.getProperty(key)));
 					<%
 					} else if (i > 0){
 		      			if (commandLineWindows[i].indexOf("\"") >= 0){
 							if(commandLineWindows[i].indexOf(".jar")>=0){
 		      				%>
-								jvm_argument_helper_<%=cid%>.addArgumentsTo(paraList_<%=cid %>, dealChildJobLibrary_<%=cid %>.replaceJarPathsFromCrcMap(<%=commandLineWindows[i] %>));
+		      					String classpath_<%=cid %>_<%=i %> = <%=commandLineWindows[i] %>;
+		      					<%if(isCP && (commandLineWindows[i].endsWith(":\"") || commandLineWindows[i].endsWith(";\""))) {%>
+		      					if(audit_jar_path_<%=cid %>!=null && !audit_jar_path_<%=cid %>.isEmpty()) {
+		      						classpath_<%=cid %>_<%=i %> += audit_jar_path_<%=cid %>;
+		      					}
+		      					<%}%>
+								jvm_argument_helper_<%=cid%>.addArgumentsTo(paraList_<%=cid %>, dealChildJobLibrary_<%=cid %>.replaceJarPathsFromCrcMap(classpath_<%=cid %>_<%=i %>));
 		      				<%
 							}else{
 		      				%>
 		      					jvm_argument_helper_<%=cid%>.addArgumentsTo(paraList_<%=cid %>, <%=commandLineWindows[i] %>);
 		      				<%
 		          			}
+		          			
+		          			if("\"-cp\"".equals(commandLineWindows[i]) || "\"-classpath\"".equals(commandLineWindows[i])) {
+		          				isCP = true;
+		          			} else {
+		          				isCP = false;
+		          			}
 		      			}else{
 		          			if(commandLineWindows[i].indexOf(".jar")>=0){
               				%>
-		        				jvm_argument_helper_<%=cid%>.addArgumentsTo(paraList_<%=cid %>, dealChildJobLibrary_<%=cid %>.replaceJarPathsFromCrcMap("<%=commandLineWindows[i] %>"));
+              					String classpath_<%=cid %>_<%=i %> = "<%=commandLineWindows[i] %>";
+              					<%if(isCP && (commandLineWindows[i].endsWith(":") || commandLineWindows[i].endsWith(";"))) {%>
+              					if(audit_jar_path_<%=cid %>!=null && !audit_jar_path_<%=cid %>.isEmpty()) {
+		      						classpath_<%=cid %>_<%=i %> += audit_jar_path_<%=cid %>;
+		      					}
+		      					<%}%>
+	        					jvm_argument_helper_<%=cid%>.addArgumentsTo(paraList_<%=cid %>, dealChildJobLibrary_<%=cid %>.replaceJarPathsFromCrcMap(classpath_<%=cid %>_<%=i %>));
 		      				<%
 		          			}else{
               				%>
 		      					jvm_argument_helper_<%=cid%>.addArgumentsTo(paraList_<%=cid %>, "<%=commandLineWindows[i] %>");
 		      				<%
+		          			}
+		          			
+		          			if("-cp".equals(commandLineWindows[i]) || "-classpath".equals(commandLineWindows[i])) {
+		          				isCP = true;
+		          			} else {
+		          				isCP = false;
 		          			}
 		      			}	
 		    		}
@@ -244,7 +270,7 @@ String inputConnName = null;
 						}
 							
 						System.getProperties().stringPropertyNames().stream()
-							.filter(it -> it.startsWith("runtime.lineage."))
+							.filter(it -> it.startsWith("runtime.lineage.") || "classpath.extended".equals(it))
 							.forEach(key -> paraList_<%=cid %>.add("-D" + key + "=" + System.getProperty(key)));
 					<%
 					} else if (i > 0){
@@ -257,7 +283,13 @@ String inputConnName = null;
 						if (param.contains("$ROOT_PATH")) {
 							if(param.indexOf(".jar") >= 0){
 		      				%>
-								jvm_argument_helper_<%=cid%>.addArgumentsTo(paraList_<%=cid %>, dealChildJobLibrary_<%=cid %>.replaceJarPathsFromCrcMap(<%=param %>).replace("$ROOT_PATH",System.getProperty("user.dir")));
+		      					String classpath_<%=cid %>_<%=i %> = <%=param %>;
+		      					<%if(isCP && (param.endsWith(":\"") || param.endsWith(";\""))) {%>
+		      					if(audit_jar_path_<%=cid %>!=null && !audit_jar_path_<%=cid %>.isEmpty()) {
+		      						classpath_<%=cid %>_<%=i %> += audit_jar_path_<%=cid %>;
+		      					}
+		      					<%}%>
+								jvm_argument_helper_<%=cid%>.addArgumentsTo(paraList_<%=cid %>, dealChildJobLibrary_<%=cid %>.replaceJarPathsFromCrcMap(classpath_<%=cid %>_<%=i %>).replace("$ROOT_PATH",System.getProperty("user.dir")));
 		      				<%}else{%>
 		        				jvm_argument_helper_<%=cid%>.addArgumentsTo(paraList_<%=cid %>, <%=param %>.replace("$ROOT_PATH",System.getProperty("user.dir")));
 		     	 			<%
@@ -265,12 +297,24 @@ String inputConnName = null;
 		      			}else{
 							if(param.indexOf(".jar") >= 0){
 		      				%>
-		      					jvm_argument_helper_<%=cid%>.addArgumentsTo(paraList_<%=cid %>, dealChildJobLibrary_<%=cid %>.replaceJarPathsFromCrcMap(<%=param %>).replace("$ROOT_PATH",System.getProperty("user.dir")));
+		      					String classpath_<%=cid %>_<%=i %> = <%=param %>;
+		      					<%if(isCP && (param.endsWith(":\"") || param.endsWith(";\""))) {%>
+		      					if(audit_jar_path_<%=cid %>!=null && !audit_jar_path_<%=cid %>.isEmpty()) {
+		      						classpath_<%=cid %>_<%=i %> += audit_jar_path_<%=cid %>;
+		      					}
+		      					<%}%>
+	      						jvm_argument_helper_<%=cid%>.addArgumentsTo(paraList_<%=cid %>, dealChildJobLibrary_<%=cid %>.replaceJarPathsFromCrcMap(classpath_<%=cid %>_<%=i %>).replace("$ROOT_PATH",System.getProperty("user.dir")));
 		      				<%}else{%>
 								jvm_argument_helper_<%=cid%>.addArgumentsTo(paraList_<%=cid %>, <%=param %>);
 		      				<%
 		      				}
-		      			}	
+		      			}
+		      			
+		      			if("\"-cp\"".equals(param) || "\"-classpath\"".equals(param)) {
+		      				isCP = true;
+		      			} else {
+		      				isCP = false;
+		      			}
 	    			}
 		  		}
 		  		%>
