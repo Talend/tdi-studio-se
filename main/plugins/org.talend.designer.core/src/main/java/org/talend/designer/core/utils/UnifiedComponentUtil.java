@@ -136,7 +136,7 @@ public class UnifiedComponentUtil {
             Map<String, IComponent> componentMap = new HashMap<String, IComponent>();
             for (IComponent component : componentList) {
                 String databaseName = service.getUnifiedCompDisplayName(service.getDelegateComponent(component),
-                        component.getDisplayName());
+                        component.getName());
                 if (StringUtils.isNotBlank(databaseName) && !databaseName.equals(dbTypeName)) {
                     continue;
                 }

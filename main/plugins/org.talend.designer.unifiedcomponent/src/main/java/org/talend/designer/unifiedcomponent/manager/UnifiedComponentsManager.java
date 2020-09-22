@@ -166,9 +166,6 @@ public class UnifiedComponentsManager {
                 object.getConnectorMapping().putAll(unifier.getConnectorMapping());
                 object.getParamMappingExclude().addAll(unifier.getMappingExclude());
                 object.getHideFamilies().addAll(unifier.getFamilies());
-//                if (unifier instanceof IDynamicJDBCUnifier) {
-//                    object.setDisplayComponentName(((IDynamicJDBCUnifier) unifier).getDispalyComponentName());
-//                }
                 component.getUnifiedObjects().add(object);
 
                 delegateComponents.put(key, component);
