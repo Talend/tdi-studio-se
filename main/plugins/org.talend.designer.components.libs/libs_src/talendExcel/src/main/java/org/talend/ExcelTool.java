@@ -35,12 +35,12 @@ public class ExcelTool {
 
     private Workbook wb = null;
 
+    private Workbook preWb = null;
+
     private String sheetName = null;
 
     private Sheet sheet = null;
 
-    private Workbook preWb = null;
-    
     private Sheet preSheet = null;
 
     private Row curRow = null;
@@ -222,7 +222,11 @@ public class ExcelTool {
 
     public void addRow() {
         if (isAbsY && keepCellFormat) {
-            preRow = (preSheet != null) ? preSheet.getRow(curY) : null;
+            if (preSheet != null) {
+                preRow = preSheet.getRow(curY);
+            } else {
+                preRow = null;
+            }
         }
         curRow = sheet.getRow(curY);
         if (curRow == null) {
@@ -240,7 +244,11 @@ public class ExcelTool {
 
     private void addCell() {
         if (isAbsY && keepCellFormat) {
-            preCell = (preRow != null) ? preRow.getCell(startX + xOffset) : null;
+            if (preRow != null) {
+                preCell = preRow.getCell(startX + xOffset);
+            } else {
+                preCell = null;
+            }
         }
         curCell = curRow.createCell(startX + xOffset);
         xOffset++;
@@ -259,8 +267,10 @@ public class ExcelTool {
                 cellStylesMapping.put("normal", style);
                 return style;
             }
+        } else {
+            return preCellStyle;
         }
-        return preCellStyle;
+
     }
 
     private CellStyle getDateCellStyle(String pattern) {
@@ -279,8 +289,9 @@ public class ExcelTool {
                 cellStylesMapping.put(pattern, style);
                 return style;
             }
+        } else {
+            return preCellStyle;
         }
-        return preCellStyle;
     }
 
     private CellStyle getPreCellStyle() {
@@ -297,8 +308,9 @@ public class ExcelTool {
 
             return targetCellStyle;
 
+        } else {
+            return null;
         }
-        return null;
     }
 
     public void addCellValue(boolean booleanValue) {
@@ -370,11 +382,13 @@ public class ExcelTool {
         if (appendWorkbook && appendSheet && recalculateFormula) {
             evaluateFormulaCell();
         }
-        try (FileOutputStream fileOutput = new FileOutputStream(fileName); 
-             POIFSFileSystem fs = new POIFSFileSystem()) {
+        FileOutputStream fileOutput = new FileOutputStream(fileName);
+        POIFSFileSystem fs = null;
+        try {
             if (password == null) {
                 wb.write(fileOutput);
             } else {
+                fs = new POIFSFileSystem();
                 Encryptor encryptor = new EncryptionInfo(EncryptionMode.agile).getEncryptor();
                 encryptor.confirmPassword(password);
                 OutputStream encryptedDataStream = encryptor.getDataStream(fs);
@@ -384,6 +398,10 @@ public class ExcelTool {
             }
         } finally {
             wb.close();
+            fileOutput.close();
+            if (fs != null) {
+                fs.close();
+            }
         }
     }
 
@@ -393,8 +411,8 @@ public class ExcelTool {
             sheet = wb.getSheetAt(sheetNum);
             for (Row r : sheet) {
                 for (Cell c : r) {
-                    if (c.getCellType() == CellType.FORMULA) {
-                        evaluator.evaluateFormulaCell(c);
+                    if (c.getCellTypeEnum() == CellType.FORMULA) {
+                        evaluator.evaluateFormulaCellEnum(c);
                     }
                 }
             }
