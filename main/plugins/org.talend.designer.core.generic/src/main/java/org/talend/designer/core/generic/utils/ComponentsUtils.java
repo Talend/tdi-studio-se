@@ -75,6 +75,7 @@ import org.talend.daikon.serialize.PostDeserializeSetup;
 import org.talend.daikon.serialize.SerializerDeserializer;
 import org.talend.designer.core.generic.constants.IGenericConstants;
 import org.talend.designer.core.generic.model.Component;
+import org.talend.designer.core.generic.model.GenericComponent;
 import org.talend.designer.core.generic.model.GenericElementParameter;
 import org.talend.designer.core.generic.model.GenericNodeConnector;
 import org.talend.designer.core.generic.model.GenericTableUtils;
@@ -171,46 +172,51 @@ public class ComponentsUtils {
                 continue;
             }
             for (String paletteType : paletteTypes) {
-                loadComponent(componentsList, componentDefinition, paletteType, null);
+                loadComponent(componentsList, componentDefinition, paletteType);
             }
         }
     }
 
-    private static void loadComponent(Set<IComponent> componentsList, ComponentDefinition componentDefinition, String paletteType,
-            String displayName) {
+    private static void loadComponent(Set<IComponent> componentsList, ComponentDefinition componentDefinition,
+            String paletteType) {
         try {
-            Component currentComponent = new Component(componentDefinition, paletteType, displayName);
-
-            Collection<IComponentFactoryFilter> filters = ComponentsFactoryProviderManager.getInstance().getProviders();
-            boolean hiddenComponent = false;
-            for (IComponentFactoryFilter filter : filters) {
-                if (!filter.isAvailable(currentComponent.getName())) {
-                    hiddenComponent = true;
-                    break;
-                }
-            }
-
-            // if the component is not needed in the current branding,
-            // and that this one IS NOT a specific component for code generation
-            // just don't load it
-            if (hiddenComponent
-                    && !(currentComponent.getOriginalFamilyName().contains("Technical") || currentComponent.isTechnical())) {
-                return;
-            }
-
-            // if the component is not needed in the current branding,
-            // and that this one IS a specific component for code generation,
-            // hide it
-            if (hiddenComponent
-                    && (currentComponent.getOriginalFamilyName().contains("Technical") || currentComponent.isTechnical())) {
-                currentComponent.setVisible(false);
-                currentComponent.setTechnical(true);
-            }
-
-            componentsList.add(currentComponent);
+            Component currentComponent = new Component(componentDefinition, paletteType);
+            afterCreateComponent(componentsList, currentComponent);
         } catch (BusinessException e) {
             ExceptionHandler.process(e);
         }
+    }
+
+    private static void afterCreateComponent(Set<IComponent> componentsList, Component currentComponent) {
+
+        Collection<IComponentFactoryFilter> filters = ComponentsFactoryProviderManager.getInstance().getProviders();
+        boolean hiddenComponent = false;
+        for (IComponentFactoryFilter filter : filters) {
+            if (!filter.isAvailable(currentComponent.getName())) {
+                hiddenComponent = true;
+                break;
+            }
+        }
+
+        // if the component is not needed in the current branding,
+        // and that this one IS NOT a specific component for code generation
+        // just don't load it
+        if (hiddenComponent
+                && !(currentComponent.getOriginalFamilyName().contains("Technical") || currentComponent.isTechnical())) {
+            return;
+        }
+
+        // if the component is not needed in the current branding,
+        // and that this one IS a specific component for code generation,
+        // hide it
+        if (hiddenComponent
+                && (currentComponent.getOriginalFamilyName().contains("Technical") || currentComponent.isTechnical())) {
+            currentComponent.setVisible(false);
+            currentComponent.setTechnical(true);
+        }
+
+        componentsList.add(currentComponent);
+
     }
 
     private static void loadAdditionalJDBCComponents(Set<IComponent> componentsList, Set<ComponentDefinition> compDefinitions) {
@@ -254,8 +260,13 @@ public class ComponentsUtils {
                 }
                 for (String paletteType : paletteTypes) {
                     for (UnifiedJDBCBean bean : jdbcMap.values()) {
-                        loadComponent(componentsList, definition, paletteType,
-                                definition.getName().replace("JDBC", bean.getComponentKey()));
+                        try {
+                            GenericComponent currentComponent = new GenericComponent(definition, paletteType,
+                                    definition.getName().replace("JDBC", bean.getComponentKey()));
+                            afterCreateComponent(componentsList, currentComponent);
+                        } catch (BusinessException e) {
+                            ExceptionHandler.process(e);
+                        }
                     }
                 }
             }

@@ -19,7 +19,7 @@ import org.talend.designer.unifiedcomponent.unifier.AbstractComponentsUnifier;
  * created by wchen on Dec 1, 2017 Detailled comment
  *
  */
-public class JDBCComponentsUnifier extends AbstractComponentsUnifier implements IDynamicJDBCUnifier {
+public class JDBCComponentsUnifier extends AbstractComponentsUnifier {
 
     private String displayName = "JDBC";
     /*
@@ -41,15 +41,11 @@ public class JDBCComponentsUnifier extends AbstractComponentsUnifier implements 
      */
     @Override
     public String getComponentName() {
-        return super.getComponentName();
-
-    }
-
-    // the real component like tDeltaLakeInput
-    public String getDispalyComponentName() {
-        // tJDBCInput ==> tDeltaLakeInput
-        String componentName = super.getComponentName().replaceFirst("JDBC", StringUtils.deleteWhitespace(displayName));
+        String componentName = super.getComponentName();
+        if (StringUtils.isNotBlank(componentName)) {
+            componentName = componentName.replaceFirst("JDBC", StringUtils.deleteWhitespace(displayName));
+        }
         return componentName;
-    }
 
+    }
 }
