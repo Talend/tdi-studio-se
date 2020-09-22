@@ -53,7 +53,7 @@ boolean customScript = ("true").equals(ElementParameterParser.getValue(node, "__
 String customScriptPath = ElementParameterParser.getValue(node, "__CUSTOM_SCRIPT_FILE__");
 boolean defineDataCharset = ("true").equals(ElementParameterParser.getValue(node, "__DEFINE_DATA_CHARSET__"));
 String dataCharset = ElementParameterParser.getValue(node, "__DATA_CHARSET__");
-
+boolean enforceDatabaseName = ("true").equals(ElementParameterParser.getValue(node, "__ENFORCE_DATABASE_NAME__"));
 String passwordFieldName="__PASS__";
 
 //New Feature TDI-29325 begin
@@ -95,7 +95,7 @@ if(applyOptionalAttributes){
 		"VIGILMAXFILES","VIGILWAITTIME"
 		);
     arrayAttrisList = Arrays.asList("TRACELEVEL");
-    tableNameAttrisList = Arrays.asList("TARGETTABLE","ERRORTABLE1","ERRORTABLE2","WORKTABLE");
+    tableNameAttrisList = Arrays.asList("TARGETTABLE","ERRORTABLE1","ERRORTABLE2","ERRORTABLE","WORKTABLE");
 }
 //end
 
@@ -141,7 +141,11 @@ try{
 		String tableFullName_<%=cid%> = <%=dbname%> + "." + <%=table%>;
 
 		<% if(specifyLogTable){ %>
-			   String logTable_<%= cid %> = <%=dbname%> + "." +<%= logTable %>;
+			<% if(enforceDatabaseName){ %>
+				String logTable_<%= cid %> = <%=dbname%> + "." +<%= logTable %>;
+			<% } else {%>
+			   String logTable_<%= cid %> = <%= logTable %>;
+			<% } %>
 		<% } %>
 		<%//build script---------------------------------------------------------%>
 
@@ -507,7 +511,7 @@ try{
 							isArrType = arrayAttrisList.contains(key);
 							if(!isArrType){//Varchar or table name
 								boolean isTableType = tableNameAttrisList.contains(key);
-								if("ERRORTABLE".equalsIgnoreCase(key) || (isTableType && operatorType.equalsIgnoreCase("LOAD"))){
+								if(isTableType && enforceDatabaseName){
 								%>
 								   fw_<%=cid %>.write("            ,<%= key %> = '"+<%= dbname %>+"."+<%= value %>+"'<%=lineSeparator%>");
 								<%
