@@ -204,7 +204,7 @@ class DealChildJobLibrary_<%=cid%> {
 	
 	JVMArgumentHelper_<%=cid%> jvm_argument_helper_<%=cid%> = new JVMArgumentHelper_<%=cid%>();
 	
-	String audit_jar_path_<%=cid%> = System.getProperty("audit.jar.path");
+	String audit_jar_path_<%=cid%> = System.getProperty("classpath.extended");
 	<%
 }
 try {
@@ -251,7 +251,7 @@ try {
 					final java.util.List<String> cc_<%=cid%>_<%=i%> = childJob_commandLine_<%=cid%>;
 					if(enableLogStash){
 						System.getProperties().stringPropertyNames().stream()
-							.filter(it -> it.startsWith("audit."))
+							.filter(it -> it.startsWith("audit.") || "classpath.extended".equals(it))
 							.forEach(key -> cc_<%=cid%>_<%=i%>.add("-D" + key + "=" + System.getProperty(key)));
 					}
 							
