@@ -27800,7 +27800,6 @@
                 NAME="gson-2.3.1"
                 MODULE="gson-2.3.1.jar"
                 MVN="mvn:org.talend.libraries/gson-2.3.1/6.1.0"
-                UrlPath="platform:/plugin/org.talend.libraries.apache.google/lib/gson-2.3.1.jar"
                 REQUIRED_IF="(((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA' OR API_VERSION=='API_2018_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016' OR MS_CRM_VERSION == 'CRM_2018')))" />
             <IMPORT
                 NAME="commons-logging"
