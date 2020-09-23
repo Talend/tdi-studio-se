@@ -1047,21 +1047,24 @@ public class ExportItemWizardPage extends WizardPage {
     private void registerRelatedBeans(Collection<Item> items) {
         RepositoryNode codeRepositoryNode = ProjectRepositoryNode.getInstance().getRootRepositoryNode(
                 ERepositoryObjectType.valueOf("BEANS"));
-        List<IRepositoryNode> checkedNodesBeans = codeRepositoryNode.getChildren();
         
-        for (Item item : items) {
-        	Set<String> beanNames = getCBeanRegisterComponentDependency(item);
-        	
-        	if (beanNames != null && beanNames.size() > 0) {
-        		Set<IRepositoryNode> beanDependencies = new HashSet<IRepositoryNode>();
-	        	findBeanObjectByNamesFromRoot(checkedNodesBeans, beanNames, beanDependencies);
-	        	
-	        	for (IRepositoryNode node : beanDependencies) {
-	        		RelationshipItemBuilder instance = RelationshipItemBuilder.getInstance();
-	        		
-	        		instance.addRelationShip(item, node.getId(), node.getObject().getVersion(), node.getContentType().toString());
-	        	}
-        	}
+        if(codeRepositoryNode != null) {
+            List<IRepositoryNode> checkedNodesBeans = codeRepositoryNode.getChildren();
+            
+            for (Item item : items) {
+                Set<String> beanNames = getCBeanRegisterComponentDependency(item);
+                
+                if (beanNames != null && beanNames.size() > 0) {
+                    Set<IRepositoryNode> beanDependencies = new HashSet<IRepositoryNode>();
+                    findBeanObjectByNamesFromRoot(checkedNodesBeans, beanNames, beanDependencies);
+                    
+                    for (IRepositoryNode node : beanDependencies) {
+                        RelationshipItemBuilder instance = RelationshipItemBuilder.getInstance();
+                        
+                        instance.addRelationShip(item, node.getId(), node.getObject().getVersion(), node.getContentType().toString());
+                    }
+                }
+            }
         }
 	}
 
