@@ -21,6 +21,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
@@ -68,18 +69,15 @@ public class UnifiedComponentUtil {
             IElementParameter elementParameter = node.getElementParameter(EParameterName.UNIFIED_COMPONENTS.name());
             if (elementParameter != null && elementParameter.getValue() != null) {
                 String emfCompName = String.valueOf(elementParameter.getValue());
-                node.setUnifiedComponentDisplayName(emfCompName);
                 String paletteType = component.getPaletteType();
                 IComponentsService compService = GlobalServiceRegister.getDefault().getService(IComponentsService.class);
-                IComponent emfComponent = compService.getComponentsFactory().getComponentByDisplayName(emfCompName, paletteType);
+                IComponent emfComponent = compService.getComponentsFactory().get(emfCompName, paletteType);
                 if (emfComponent != null) {
                     return emfComponent;
                 } else {
                     log.error("Can't find component " + emfCompName);
                 }
             }
-        } else if (!component.getName().equals(component.getDisplayName())) {
-            node.setUnifiedComponentDisplayName(component.getDisplayName());
         }
         return component;
     }
@@ -137,24 +135,25 @@ public class UnifiedComponentUtil {
             // filter for additional JDBC
             Map<String, IComponent> componentMap = new HashMap<String, IComponent>();
             for (IComponent component : componentList) {
-                if (isAdditionalJDBC(dbTypeName) && FILTER_DEFINITION.contains(component.getName())) {
+                String databaseName = service.getUnifiedCompDisplayName(service.getDelegateComponent(component),
+                        component.getName());
+                if (StringUtils.isNotBlank(databaseName) && !databaseName.equals(dbTypeName)) {
                     continue;
                 }
-                String key = component.getName() + component.getPaletteType();
-                if (componentMap.get(key) == null) {
-                    componentMap.put(key, component);
-                } else {
-                    IComponent original = componentMap.get(key);
-                    String databaseName = service.getUnifiedCompDisplayName(service.getDelegateComponent(component),
-                            component.getDisplayName());
-                    if (dbTypeName.equals(databaseName)) {
-                        componentMap.put(key, component);
+                if (isAdditionalJDBC(databaseName)) {
+                    String compKey = StringUtils.deleteWhitespace(databaseName);
+                    if (component.getName().contains(compKey)
+                            && FILTER_DEFINITION.contains(component.getName().replaceFirst(compKey, "JDBC"))) {
+                        continue;
                     }
                 }
 
+                filtedList.add(component);
             }
 
-            filtedList.addAll(componentMap.values());
+            // filtedList.addAll(componentMap.values());
+
+            // filtedList.addAll(componentList);
             for (IComponent component : componentList) {
                 if (componentsHandler != null && componentsHandler.extractComponentsCategory() != null) {
                     if (!component.getPaletteType().equals(componentsHandler.extractComponentsCategory().getName())) {
@@ -193,7 +192,7 @@ public class UnifiedComponentUtil {
             String paletteType = selectedComponent.getPaletteType();
             String emfCompName = service.getUnifiedComponetName4DndFromRepository(setting, selectedComponent);
             IComponentsService compService = GlobalServiceRegister.getDefault().getService(IComponentsService.class);
-            IComponent emfComponent = compService.getComponentsFactory().getComponentByDisplayName(emfCompName, paletteType);
+            IComponent emfComponent = compService.getComponentsFactory().get(emfCompName, paletteType);
             if (emfComponent != null) {
                 return emfComponent;
             } else {

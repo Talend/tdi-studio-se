@@ -20,7 +20,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.lang3.StringUtils;
 import org.talend.core.GlobalServiceRegister;
 import org.talend.core.model.components.IComponent;
 import org.talend.core.model.components.IComponentsFactory;
@@ -433,14 +432,7 @@ public class UnifiedComponentService implements IUnifiedComponentService {
             if (emfComp != dComp) {
                 listParams.addAll(dComp.createElementParameters(node, false));
                 IElementParameter unifiedParam = getUnifiedParameter(listParams);
-                String unifiedComponents = emfComp.getName();
-                if (node instanceof Node) {
-                    Node editorNode = (Node) node;
-                    if (StringUtils.isNoneBlank(editorNode.getUnifiedComponentDisplayName())) {
-                        unifiedComponents = editorNode.getUnifiedComponentDisplayName();
-                    }
-                }
-                unifiedParam.setValue(unifiedComponents);
+                unifiedParam.setValue(emfComp.getName());
             } else {
                 listParams.addAll(dComp.createElementParameters(node));
             }
@@ -588,11 +580,7 @@ public class UnifiedComponentService implements IUnifiedComponentService {
             return null;
         }
         DelegateComponent dComp = (DelegateComponent) delegateComponent;
-        String unifiedComp = node.getUnifiedComponentDisplayName();
-        if (org.apache.commons.lang.StringUtils.isBlank(unifiedComp)) {
-            return null;
-        }
-        UnifiedObject unifiedObject = dComp.getUnifiedObjectByName(unifiedComp);
+        UnifiedObject unifiedObject = dComp.getUnifiedObjectByName(node.getComponent().getName());
         if (unifiedObject == null) {
             return null;
         }

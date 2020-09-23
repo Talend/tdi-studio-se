@@ -5653,14 +5653,6 @@ public class Node extends Element implements IGraphicalNode {
         return this.delegateComponent;
     }
 
-    public String getUnifiedComponentDisplayName() {
-        return unifiedComponentDisplayName;
-    }
-    
-    public void setUnifiedComponentDisplayName(String unifiedComponentDisplayName) {
-        this.unifiedComponentDisplayName = unifiedComponentDisplayName;
-    }
-    
     @Override
     public IReplaceNodeHandler getReplaceNodeHandler() {
         return replaceNodeHandler;
