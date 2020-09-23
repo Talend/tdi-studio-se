@@ -133,8 +133,6 @@ public class Component extends AbstractBasicComponent {
 
     private Map<String, String> translatedMap = new HashMap<>();
 
-    private String displayName;
-
     private static String ERROR_MESSAGE = "ERROR_MESSAGE"; //$NON-NLS-1$
 
     public Component(ComponentDefinition componentDefinition) throws BusinessException {
@@ -144,12 +142,6 @@ public class Component extends AbstractBasicComponent {
     public Component(ComponentDefinition componentDefinition, String paletteType) throws BusinessException {
         this.componentDefinition = componentDefinition;
         this.setPaletteType(paletteType);
-    }
-
-    public Component(ComponentDefinition componentDefinition, String paletteType, String displayName) throws BusinessException {
-        this.componentDefinition = componentDefinition;
-        this.setPaletteType(paletteType);
-        this.displayName = displayName;
     }
 
     public ComponentDefinition getComponentDefinition() {
@@ -164,15 +156,6 @@ public class Component extends AbstractBasicComponent {
     @Override
     public String getLongName() {
         return componentDefinition.getTitle();
-    }
-
-    @Override
-    public String getDisplayName() {
-        String name = componentDefinition.getName();
-        if (StringUtils.isNotBlank(displayName)) {
-            name = displayName;
-        }
-        return name;
     }
 
     @Override
@@ -208,7 +191,7 @@ public class Component extends AbstractBasicComponent {
     @Override
     public List<ElementParameter> createElementParameters(INode node) {
         if (node.getComponentProperties() == null) {
-            node.setComponentProperties(ComponentsUtils.getComponentProperties(getName()));
+            node.setComponentProperties(ComponentsUtils.getComponentProperties(componentDefinition.getName()));
         }
         List<ElementParameter> listParam = new ArrayList<>();
         addMainParameters(listParam, node);
@@ -229,7 +212,7 @@ public class Component extends AbstractBasicComponent {
 
         ComponentProperties componentProperties = parentNode.getComponentProperties();
         if (componentProperties == null) {
-            parentNode.setComponentProperties(ComponentsUtils.getComponentProperties(getName()));
+            parentNode.setComponentProperties(ComponentsUtils.getComponentProperties(componentDefinition.getName()));
             componentProperties = parentNode.getComponentProperties();
         }
         if (!(componentProperties instanceof ComponentPropertiesImpl)) {
@@ -263,7 +246,7 @@ public class Component extends AbstractBasicComponent {
         return listReturn;
     }
 
-    private void addDocParameters(final List<ElementParameter> listParam, INode node) {
+    protected void addDocParameters(final List<ElementParameter> listParam, INode node) {
         ElementParameter param = new ElementParameter(node);
         param.setName(EParameterName.INFORMATION.getName());
         param.setValue(new Boolean(false));
@@ -292,7 +275,7 @@ public class Component extends AbstractBasicComponent {
         listParam.add(param);
     }
 
-    private void addValidationRulesParameters(final List<ElementParameter> listParam, INode node) {
+    protected void addValidationRulesParameters(final List<ElementParameter> listParam, INode node) {
         ElementParameter param;
 
         param = new ElementParameter(node);
@@ -834,7 +817,7 @@ public class Component extends AbstractBasicComponent {
         return null;
     }
 
-    private void addPropertyParameters(final List<ElementParameter> listParam, final INode node, String formName,
+    protected void addPropertyParameters(final List<ElementParameter> listParam, final INode node, String formName,
             EComponentCategory category) {
         ComponentProperties props = node.getComponentProperties();
         Form form = props.getForm(formName);
@@ -856,7 +839,7 @@ public class Component extends AbstractBasicComponent {
      * schema. So there need to initialize the schema's again.
      *
      */
-    private void initializeParametersForSchema(List<ElementParameter> listParam, final INode node) {
+    protected void initializeParametersForSchema(List<ElementParameter> listParam, final INode node) {
         ComponentProperties rootProperty = node.getComponentProperties();
         Map<String, SchemaProperty> listSchemaProperties = new HashMap<>();
         findSchemaProperties(rootProperty, listParam, listSchemaProperties, null);
@@ -1035,7 +1018,7 @@ public class Component extends AbstractBasicComponent {
 
         ComponentProperties componentProperties = parentNode.getComponentProperties();
         if (componentProperties == null) {
-            parentNode.setComponentProperties(ComponentsUtils.getComponentProperties(getName()));
+            parentNode.setComponentProperties(ComponentsUtils.getComponentProperties(componentDefinition.getName()));
             componentProperties = parentNode.getComponentProperties();
         }
         Set<? extends Connector> inputConnectors = componentProperties.getPossibleConnectors(false);
@@ -1292,7 +1275,7 @@ public class Component extends AbstractBasicComponent {
 
     @Override
     public ImageDescriptor getIcon16() {
-        InputStream imageStream = ComponentsUtils.getComponentService().getComponentPngImage(getName(),
+        InputStream imageStream = ComponentsUtils.getComponentService().getComponentPngImage(componentDefinition.getName(),
                 ComponentImageType.PALLETE_ICON_32X32);
         if (imageStream != null) {
             ImageData imageData = new ImageData(imageStream);
@@ -1303,7 +1286,7 @@ public class Component extends AbstractBasicComponent {
 
     @Override
     public ImageDescriptor getIcon24() {
-        InputStream imageStream = ComponentsUtils.getComponentService().getComponentPngImage(getName(),
+        InputStream imageStream = ComponentsUtils.getComponentService().getComponentPngImage(componentDefinition.getName(),
                 ComponentImageType.PALLETE_ICON_32X32);
         if (imageStream != null) {
             ImageData imageData = new ImageData(imageStream);
@@ -1314,7 +1297,7 @@ public class Component extends AbstractBasicComponent {
 
     @Override
     public ImageDescriptor getIcon32() {
-        InputStream imageStream = ComponentsUtils.getComponentService().getComponentPngImage(getName(),
+        InputStream imageStream = ComponentsUtils.getComponentService().getComponentPngImage(componentDefinition.getName(),
                 ComponentImageType.PALLETE_ICON_32X32);
         if (imageStream != null) {
             ImageData imageData = new ImageData(imageStream);
@@ -1532,7 +1515,6 @@ public class Component extends AbstractBasicComponent {
         final int prime = 31;
         int result = super.hashCode();
         result = prime * result + ((getName() == null) ? 0 : getName().hashCode());
-        result = prime * result + ((getDisplayName() == null) ? 0 : getDisplayName().hashCode());
         result = prime * result + ((this.getPaletteType() == null) ? 0 : this.getPaletteType().hashCode());
         return result;
     }
@@ -1559,13 +1541,6 @@ public class Component extends AbstractBasicComponent {
                 return false;
             }
         } else if (!getName().equals(other.getName())) {
-            return false;
-        }
-        if (getDisplayName() == null) {
-            if (other.getDisplayName() != null) {
-                return false;
-            }
-        } else if (!getDisplayName().equals(other.getDisplayName())) {
             return false;
         }
         if (this.getPaletteType() == null) {
@@ -1606,7 +1581,7 @@ public class Component extends AbstractBasicComponent {
             ComponentProperties properties = node.getComponentProperties();
             return properties.toSerialized();
         } else {
-            ComponentProperties componentProperties = ComponentsUtils.getComponentProperties(getName());
+            ComponentProperties componentProperties = ComponentsUtils.getComponentProperties(componentDefinition.getName());
             return componentProperties.toSerialized();
         }
     }

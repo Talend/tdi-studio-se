@@ -41,11 +41,13 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.ui.views.properties.tabbed.ITabbedPropertyConstants;
 import org.talend.components.api.properties.ComponentReferenceProperties;
+import org.talend.core.GlobalServiceRegister;
 import org.talend.core.model.process.EParameterFieldType;
 import org.talend.core.model.process.IElementParameter;
 import org.talend.core.model.process.INode;
 import org.talend.core.model.process.IReplaceNodeHandler;
 import org.talend.core.model.utils.TalendTextUtils;
+import org.talend.core.runtime.services.IGenericWizardService;
 import org.talend.core.ui.properties.tab.IDynamicProperty;
 import org.talend.designer.core.generic.constants.IGenericConstants;
 import org.talend.designer.core.generic.model.GenericElementParameter;
@@ -55,6 +57,7 @@ import org.talend.designer.core.model.components.ElementParameter;
 import org.talend.designer.core.ui.editor.cmd.PropertyChangeCommand;
 import org.talend.designer.core.ui.editor.nodes.Node;
 import org.talend.designer.core.ui.editor.properties.controllers.AbstractElementPropertySectionController;
+import org.talend.designer.core.utils.UnifiedComponentUtil;
 
 /**
  *
@@ -382,7 +385,19 @@ public class ComponentRefController extends AbstractElementPropertySectionContro
             GenericElementParameter gParameter = (GenericElementParameter) param;
             if (gParameter != null && gParameter.getElement() != null && gParameter.getElement() instanceof Node) {
                 Node node = (Node) gParameter.getElement();
-                refNodes = (List<INode>) node.getProcess().getNodesOfType(props.referenceDefinitionName.getStringValue());
+                String referenceComponentName = props.referenceDefinitionName.getStringValue();
+                if (GlobalServiceRegister.getDefault().isServiceRegistered(IGenericWizardService.class)) {
+                    IGenericWizardService service = GlobalServiceRegister.getDefault().getService(IGenericWizardService.class);
+                    if (service != null) {
+                        String databaseName = service.getDatabseNameByNode(node);
+                        if (UnifiedComponentUtil.isAdditionalJDBC(databaseName)) {
+                            referenceComponentName = referenceComponentName.replaceFirst("JDBC",
+                                    StringUtils.deleteWhitespace(databaseName));
+                        }
+                    }
+                }
+
+                refNodes = (List<INode>) node.getProcess().getNodesOfType(referenceComponentName);
             }
         }
         return refNodes;

@@ -10,13 +10,26 @@
 // 9 rue Pages 92150 Suresnes, France
 //
 // ============================================================================
-package org.talend.designer.unifiedcomponent.unifier.jdbc;
+package org.talend.designer.core.generic.model;
 
+import org.talend.commons.exception.BusinessException;
+import org.talend.components.api.component.ComponentDefinition;
 
 /**
  * DOC jding  class global comment. Detailled comment
  */
-public interface IDynamicJDBCUnifier {
+public class GenericComponent extends Component {
 
-    public String getDispalyComponentName();
+    private String name;
+
+    public GenericComponent(ComponentDefinition componentDefinition, String paletteType, String name) throws BusinessException {
+        super(componentDefinition, paletteType);
+        this.name = name;
+    }
+
+    @Override
+    public String getName() {
+        return this.name;
+    }
+
 }
