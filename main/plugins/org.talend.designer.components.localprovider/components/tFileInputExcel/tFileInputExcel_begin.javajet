@@ -433,7 +433,7 @@ if ((metadatas!=null)&&(metadatas.size()>0)) {
                             if(temp_row_<%=cid%>[i]!=null) {
                                 temp_row_<%=cid%>[i] = df_<%=cid %>.format(doubleCell_<%=cid%>);
                             }
-                          } else
+                          }
 <%
                     }
 %>
