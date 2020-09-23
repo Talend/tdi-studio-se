@@ -234,6 +234,15 @@
       SHOW_IF="CUSTOM_SCRIPT=='false'">
       <DEFAULT>";"</DEFAULT>
     </PARAMETER>
+
+    <PARAMETER
+      NAME="ENFORCE_DATABASE_NAME"
+      FIELD="CHECK"
+      NUM_ROW="15"
+      REQUIRED="true"
+      SHOW_IF="(ACTION != 'INSERTER') AND (CUSTOM_SCRIPT=='false')">
+      <DEFAULT>false</DEFAULT>
+    </PARAMETER>
     
     <PARAMETER
       NAME="SPECIFY_LOG_TABLE"

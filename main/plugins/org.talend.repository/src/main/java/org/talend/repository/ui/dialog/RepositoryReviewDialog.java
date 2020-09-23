@@ -18,6 +18,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.viewers.DoubleClickEvent;
@@ -43,6 +44,7 @@ import org.eclipse.swt.widgets.Text;
 import org.talend.commons.CommonsPlugin;
 import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.utils.time.TimeMeasure;
+import org.talend.core.GlobalServiceRegister;
 import org.talend.core.database.EDatabaseTypeName;
 import org.talend.core.hadoop.IHadoopClusterService;
 import org.talend.core.hadoop.repository.HadoopRepositoryUtil;
@@ -60,6 +62,7 @@ import org.talend.core.model.repository.IRepositoryTypeProcessor;
 import org.talend.core.model.repository.IRepositoryViewObject;
 import org.talend.core.model.repository.RepositoryContentManager;
 import org.talend.core.model.utils.RepositoryManagerHelper;
+import org.talend.core.runtime.services.IGenericWizardService;
 import org.talend.repository.ProjectManager;
 import org.talend.repository.i18n.Messages;
 import org.talend.repository.model.IRepositoryNode;
@@ -116,6 +119,8 @@ public class RepositoryReviewDialog extends Dialog {
     private DatabaseTypeFilter dbSupportFilter;
 
     ViewerTextFilter textFilter = new ViewerTextFilter();
+
+    DatabaseJDBCFilter jdbcFilter = new DatabaseJDBCFilter();
 
     private TreeViewer repositoryTreeViewer;
 
@@ -462,6 +467,9 @@ public class RepositoryReviewDialog extends Dialog {
         }
         ViewerFilter filter = typeProcessor.makeFilter();
         addFilter(filter);
+        // filter in case multiple jdbc
+        jdbcFilter.setElem(elem);
+        addFilter(jdbcFilter);
         TimeMeasure.step(RepositoryReviewDialog.class.getSimpleName(), "finshed add Filters"); //$NON-NLS-1$
 
         TimeMeasure.step(RepositoryReviewDialog.class.getSimpleName(), "set input"); //$NON-NLS-1$
@@ -776,6 +784,17 @@ class DatabaseTypeFilter extends ViewerFilter {
                         databaseType = EDatabaseTypeName.ORACLE_OCI.getXmlName();
                     } else if (databaseType.equals(EDatabaseTypeName.MSSQL.getDisplayName())) {
                         databaseType = EDatabaseTypeName.MSSQL.getXmlName(); // for component
+                    } else if (databaseType.equals(EDatabaseTypeName.GENERAL_JDBC.getProduct())
+                            && !databaseType.equals(connection.getProductId())) {
+                        if (GlobalServiceRegister.getDefault().isServiceRegistered(IGenericWizardService.class)) {
+                            IGenericWizardService service = GlobalServiceRegister.getDefault()
+                                    .getService(IGenericWizardService.class);
+                            if (service != null && service.getIfAdditionalJDBCDBType(connection.getProductId())) {
+                                databaseType = connection.getProductId();
+                            } else {
+                                databaseType = EDatabaseTypeName.getTypeFromDbType(databaseType).getProduct();
+                            }
+                        }
                     } else {
                         databaseType = EDatabaseTypeName.getTypeFromDbType(databaseType).getProduct();
                     }
@@ -789,5 +808,48 @@ class DatabaseTypeFilter extends ViewerFilter {
             }
         }
         return false;
+    }
+}
+
+/**
+ * filter for JDBC type, separate JDBC/ additional jdbc (Delta Lake) DOC jding class global comment. Detailled comment
+ */
+class DatabaseJDBCFilter extends ViewerFilter {
+
+    private IElement elem;
+
+    public void setElem(IElement elem) {
+        this.elem = elem;
+    }
+
+    @Override
+    public boolean select(Viewer viewer, Object parentElement, Object element) {
+        RepositoryNode node = (RepositoryNode) element;
+        if (elem == null || node.getObject() == null || node.getObject().getProperty() == null
+                || node.getObject().getProperty().getItem() == null) {
+            return true;
+        }
+        Item item = node.getObject().getProperty().getItem();
+        if (item instanceof DatabaseConnectionItem) {
+            DatabaseConnectionItem connItem = (DatabaseConnectionItem) item;
+            DatabaseConnection connection = (DatabaseConnection) connItem.getConnection();
+            String databaseType = connection.getDatabaseType();
+            if (!databaseType.equals(EDatabaseTypeName.GENERAL_JDBC.getProduct())) {
+                return true;
+            }
+
+            if (GlobalServiceRegister.getDefault().isServiceRegistered(IGenericWizardService.class)) {
+                IGenericWizardService service = GlobalServiceRegister.getDefault().getService(IGenericWizardService.class);
+                if (service != null) {
+                    String databseNameByNode = service.getDatabseNameByNode(elem);
+                    if (StringUtils.isNotBlank(databseNameByNode) && !databseNameByNode.equals(connection.getProductId())) {
+                        return false;
+                    }
+                }
+            }
+
+        }
+
+        return true;
     }
 }

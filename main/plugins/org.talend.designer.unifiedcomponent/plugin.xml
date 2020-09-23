@@ -16,5 +16,14 @@
             serviceId="IUnifiedComponentService">
       </Service>
    </extension>
+   <extension
+         point="org.talend.core.runtime.librariesNeeded">
+      <libraryNeeded
+            context="Delta Lake"
+            mvn_uri="mvn:Spark/SparkJDBC42/2.6.14.1018/jar"
+            name="SparkJDBC42-2.6.14.1018.jar"
+            required="true">
+      </libraryNeeded>
+   </extension>
 
 </plugin>

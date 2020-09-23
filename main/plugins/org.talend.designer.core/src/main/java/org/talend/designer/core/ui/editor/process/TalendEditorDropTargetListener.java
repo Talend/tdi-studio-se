@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.draw2d.IFigure;
@@ -2005,17 +2006,33 @@ public class TalendEditorDropTargetListener extends TemplateTransferDropTargetLi
         settingCopy.setOutputComponent(rcSetting.getOutPutComponentName());
         settingCopy.setDefaultComponent(rcSetting.getDefaultComponentName());
 
-        neededComponents = UnifiedComponentUtil.filterUnifiedComponent(settingCopy, neededComponents);
 
+        RepositoryComponentSetting compsetting = null;
         String typeName = null;
         if (item instanceof ConnectionItem) {
-            typeName = ((ConnectionItem) item).getTypeName();
+            ConnectionItem connectionItem = (ConnectionItem) item;
+            typeName = connectionItem.getTypeName();
+            Connection connection = connectionItem.getConnection();
+            if (connection instanceof DatabaseConnection) {
+                DatabaseConnection dbconn = (DatabaseConnection) connection;
+                if (UnifiedComponentUtil.isAdditionalJDBC(dbconn.getProductId())) {
+                    typeName = dbconn.getProductId();
+                    compsetting = new RepositoryComponentSetting();
+                    compsetting.setInputComponent(
+                            rcSetting.getInputComponentName().replaceFirst("JDBC", StringUtils.deleteWhitespace(typeName)));
+                    compsetting.setOutputComponent(
+                            rcSetting.getOutPutComponentName().replaceFirst("JDBC", StringUtils.deleteWhitespace(typeName)));
+                    compsetting.setDefaultComponent(
+                            rcSetting.getDefaultComponentName().replaceFirst("JDBC", StringUtils.deleteWhitespace(typeName)));
+                }
+            }
         }
 
+        neededComponents = UnifiedComponentUtil.filterUnifiedComponent(settingCopy, neededComponents, typeName);
         // Check if the components in the list neededComponents have the same category that is required by Process.
         IComponent component = chooseOneComponent(extractComponents(neededComponents), settingCopy, quickCreateInput,
                 quickCreateOutput, typeName);
-        store.component = UnifiedComponentUtil.getEmfComponent(rcSetting, component);
+        store.component = UnifiedComponentUtil.getEmfComponent(compsetting == null ? rcSetting : compsetting, component);
         store.componentName = rcSetting;
     }
 

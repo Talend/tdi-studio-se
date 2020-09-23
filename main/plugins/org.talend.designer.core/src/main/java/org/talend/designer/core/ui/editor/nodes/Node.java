@@ -222,6 +222,8 @@ public class Node extends Element implements IGraphicalNode {
 
     private IComponent component;
 
+    private String unifiedComponentDisplayName;
+
     private String showHintText;
 
     private String connectionName;
@@ -722,6 +724,10 @@ public class Node extends Element implements IGraphicalNode {
             createElementParameters.addAll(component.createElementParameters(this));
         }
         setElementParameters(createElementParameters);
+        // for additional jdbc init default value
+        if (UnifiedComponentUtil.isDelegateComponent(getDelegateComponent())) {
+            UnifiedComponentUtil.initComponentIfJDBC(this, getDelegateComponent());
+        }
     }
 
     @Override

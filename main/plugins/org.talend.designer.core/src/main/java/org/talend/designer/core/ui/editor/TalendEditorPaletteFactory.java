@@ -670,7 +670,7 @@ public final class TalendEditorPaletteFactory {
                 LinkedHashSet<IComponent> delegateCompSet = new LinkedHashSet<IComponent>();
                 List<IComponent> delegateComponents = new ArrayList<IComponent>(service.getDelegateComponents(paletteType));
                 addComponentsByNameFilter(compFac, delegateCompSet, delegateComponents, lowerCasedKeyword);
-                componentSet.addAll(delegateComponents);
+                componentSet.addAll(delegateCompSet);
             }
 
         }
