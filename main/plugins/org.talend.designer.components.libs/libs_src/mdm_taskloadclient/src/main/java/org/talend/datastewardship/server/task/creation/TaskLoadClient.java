@@ -21,8 +21,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
-
-import org.apache.commons.codec.binary.Base64;
+import java.util.Base64;
 
 /**
  * DOC Starkey class global comment. Detailled comment
@@ -96,7 +95,7 @@ public class TaskLoadClient {
 			String str;
 			try {
 			  byte[] arrayOfByte1 = localStringBuilder.toString().getBytes("UTF-8");
-			  byte[] arrayOfByte2 = Base64.encodeBase64(arrayOfByte1);
+			  byte[] arrayOfByte2 = Base64.getEncoder().encode(arrayOfByte1);
 			  str = new String(arrayOfByte2, "UTF-8");
 			}
 			catch (UnsupportedEncodingException localUnsupportedEncodingException) {
