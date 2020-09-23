@@ -10,7 +10,7 @@
 	<artifactId>org.talend.libraries.excel</artifactId>
 	<packaging>eclipse-plugin</packaging>
 	<properties>
-		<talend.groupid>org.talend.libraries</talend.groupid>
+		<talend.groupid>org.talend.components</talend.groupid>
 		<talend.version.610>6.1.0</talend.version.610>
 		<talend.version.600>6.0.0</talend.version.600>
 	</properties>
@@ -76,17 +76,17 @@
 								<artifactItem>
                                     <groupId>${talend.groupid}</groupId>
                                     <artifactId>simpleexcel</artifactId>
-                                    <version>2.4-20200915</version>
+                                    <version>2.4-20200923</version>
                                 </artifactItem>
                                 <artifactItem>
                                     <groupId>${talend.groupid}</groupId>
                                     <artifactId>talendMsgMailUtil</artifactId>
-                                    <version>1.2-20200608</version>
+                                    <version>1.2-20200923</version>
                                 </artifactItem>
                                 <artifactItem>
                                     <groupId>${talend.groupid}</groupId>
                                     <artifactId>talendExcel</artifactId>
-                                    <version>1.6-20200903</version>
+                                    <version>1.6-20200923</version>
                                 </artifactItem>
 							</artifactItems>
 						</configuration>
