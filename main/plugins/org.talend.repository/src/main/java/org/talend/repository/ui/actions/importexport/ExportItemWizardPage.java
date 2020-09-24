@@ -31,13 +31,11 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
-import org.eclipse.emf.common.util.EList;
 import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.MessageDialogWithToggle;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.layout.GridDataFactory;
-import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.viewers.CheckStateChangedEvent;
 import org.eclipse.jface.viewers.CheckboxTreeViewer;
@@ -99,7 +97,6 @@ import org.talend.core.ui.advanced.composite.FilteredCheckboxTree;
 import org.talend.designer.core.model.utils.emf.talendfile.ElementParameterType;
 import org.talend.designer.core.model.utils.emf.talendfile.NodeType;
 import org.talend.designer.core.model.utils.emf.talendfile.ProcessType;
-import org.talend.designer.runprocess.ProcessorException;
 import org.talend.repository.ProjectManager;
 import org.talend.repository.i18n.Messages;
 import org.talend.repository.local.ExportItemUtil;
@@ -312,10 +309,12 @@ public class ExportItemWizardPage extends WizardPage {
 	private Set<IRepositoryNode> getBeansWithIds(Set<String> ids) {
 		RepositoryNode codeRepositoryNode = ProjectRepositoryNode.getInstance().getRootRepositoryNode(
                 ERepositoryObjectType.valueOf("BEANS"));
-        List<IRepositoryNode> checkedNodesCode = codeRepositoryNode.getChildren();
-        
         Set<IRepositoryNode> repositoryNodes = new HashSet<IRepositoryNode>();
-        getBeansWithIdsHelper(checkedNodesCode, ids, repositoryNodes);
+
+        if (codeRepositoryNode != null) {
+            List<IRepositoryNode> checkedNodesCode = codeRepositoryNode.getChildren();
+            getBeansWithIdsHelper(checkedNodesCode, ids, repositoryNodes);
+        }
         
         return repositoryNodes;
 	}
