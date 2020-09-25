@@ -170,8 +170,7 @@ public class GenericTableUtils {
                     break;
                 }
             }
-            return MavenUrlHelper.generateModuleNameByMavenURI(mvnUrl);
         }
-        return mvnPath;
+        return mvnUrl;
     }
 }
