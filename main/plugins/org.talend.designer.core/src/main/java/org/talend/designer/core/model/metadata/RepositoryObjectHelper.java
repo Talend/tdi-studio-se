@@ -20,6 +20,7 @@ import org.talend.core.model.metadata.designerproperties.RepositoryToComponentPr
 import org.talend.core.model.properties.ConnectionItem;
 import org.talend.core.model.properties.Item;
 import org.talend.core.model.repository.ERepositoryObjectType;
+import org.talend.designer.core.utils.UnifiedComponentUtil;
 
 /**
  * ggu class global comment. Detailled comment
@@ -43,6 +44,10 @@ public final class RepositoryObjectHelper {
                 Connection connection = connectionItem.getConnection();
                 if (connection instanceof DatabaseConnection) {
                     String currentDbType = (String) RepositoryToComponentProperty.getValue(connection, "TYPE", null); //$NON-NLS-1$
+                    String productId = ((DatabaseConnection) connection).getProductId();
+                    if (UnifiedComponentUtil.isAdditionalJDBC(productId)) {
+                        currentDbType = productId;
+                    }
                     aliasName += " (" + currentDbType + ")"; //$NON-NLS-1$ //$NON-NLS-2$
                 }
             }
