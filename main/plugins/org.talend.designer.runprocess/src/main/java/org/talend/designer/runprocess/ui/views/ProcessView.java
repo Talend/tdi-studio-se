@@ -633,7 +633,6 @@ public class ProcessView extends ViewPart implements PropertyChangeListener {
             processComposite.setProcessContext(activeContext);
         } else if (dc != null && dc instanceof TraceDebugProcessComposite) {
             if (this.oldJobType != null) {
-                System.out.println(oldJobType);
                 if (!debugViewHelpers.get(oldJobType).getDebugComposite(parent).isVisible()) {
                     debugViewHelpers.values().forEach(helper -> {
                         if(!helper.getDebugType().equals(oldJobType)) {
