@@ -280,7 +280,9 @@ public class ExternalNodeChangeCommand extends Command {
         // bug 0020749
         if (!oldMetaDataList.isEmpty() && !newMetaDataList.isEmpty()
                 && !oldMetaDataList.get(0).sameMetadataAs(newMetaDataList.get(0))) {
-            node.setPropertyValue(EParameterName.SCHEMA_TYPE.getName(), EmfComponent.BUILTIN);
+            if (!"tDBSCD".equals(node.getDelegateComponent().getName())) {
+                node.setPropertyValue(EParameterName.SCHEMA_TYPE.getName(), EmfComponent.BUILTIN);
+            }
         }
         metadataOutputChanges.clear();
         List<IConnection> initTraceList = new ArrayList<IConnection>();
