@@ -59,7 +59,8 @@ public class DataSourceConfig {
 
         List<? extends INode> generatingNodes = processItem.getGeneratingNodes();
         for (INode node : generatingNodes) {
-            getDatasourceAliasesFrom(node, aliases);
+        	getDatasourceAliasesFrom(node, aliases, "SPECIFY_DATASOURCE_ALIAS", "DATASOURCE_ALIAS");
+        	getDatasourceAliasesFrom(node, aliases, "useDataSource", "dataSource");
         }
         return aliases;
     }
@@ -87,7 +88,8 @@ public class DataSourceConfig {
     }
 
     // TESB-17238:Include sub jobs datasource alias
-    private static void getDatasourceAliasesFrom(INode node, Collection<String> ds) {
+    private static void getDatasourceAliasesFrom(INode node, Collection<String> ds, 
+    		String specifyDataSourceAlias, String dataSourceAlias) {
         if (!node.isActivate()) {
             return;
         }
@@ -101,22 +103,25 @@ public class DataSourceConfig {
             List<? extends INode> subNodes = getSubProcessNodesFromTRunjob(node);
             if (subNodes != null) {
                 for (INode n : subNodes) {
-                    getDatasourceAliasesFrom(n, ds);
+                    getDatasourceAliasesFrom(n, ds, specifyDataSourceAlias, dataSourceAlias);
                 }
             }
         }
-        IElementParameter isSpecifyAlias = node.getElementParameter("SPECIFY_DATASOURCE_ALIAS"); //$NON-NLS-1$
+        IElementParameter isSpecifyAlias = node.getElementParameter(specifyDataSourceAlias); //$NON-NLS-1$
         if (isSpecifyAlias == null || Boolean.FALSE.equals(isSpecifyAlias.getValue())) {
             return;
         }
-        IElementParameter aliasParam = node.getElementParameter("DATASOURCE_ALIAS"); //$NON-NLS-1$
+        IElementParameter aliasParam = node.getElementParameter(dataSourceAlias); //$NON-NLS-1$
         if (aliasParam == null) {
             return;
         }
         IDesignerCoreService designerCoreService = CorePlugin.getDefault().getDesignerCoreService();
-        boolean evaluate = designerCoreService.evaluate(isSpecifyAlias.getShowIf(), node.getElementParameters());
-        if (!evaluate) {
-            return;
+        
+        if (isSpecifyAlias.getShowIf() != null) {
+	        boolean evaluate = designerCoreService.evaluate(isSpecifyAlias.getShowIf(), node.getElementParameters());
+	        if (!evaluate) {
+	            return;
+	        }
         }
         String result = aliasParam.getValue() == null ? null : aliasParam.getValue().toString();
 
