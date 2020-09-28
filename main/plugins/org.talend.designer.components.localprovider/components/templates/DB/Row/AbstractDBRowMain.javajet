@@ -25,8 +25,6 @@ String propagateRecordset = ElementParameterParser.getValue(node,"__PROPAGATE_RE
 String recordsetColumn = ElementParameterParser.getValue(node,"__RECORD_SET_COLUMN__");
 boolean useTransaction = !("false").equals(ElementParameterParser.getValue(node,"__USE_TRANSACTION__"));
 boolean usePrepareStatement = "true".equals(ElementParameterParser.getValue(node,"__USE_PREPAREDSTATEMENT__"));
-String dbquery= ElementParameterParser.getValue(node, "__QUERY__");
-dbquery = org.talend.core.model.utils.NodeUtil.replaceCRLFInMEMO_SQL(dbquery);
 List<Map<String, String>> prepareStatementParameters = (List<Map<String,String>>)ElementParameterParser.getObjectValue(node, "__SET_PREPAREDSTATEMENT_PARAMETERS__");
 String use_NB_Line = ElementParameterParser.getValue(node, "__USE_NB_LINE__");
 String incomingConnName = null;
@@ -55,11 +53,10 @@ for(IConnection conn : outgoingConns) {
 		<%
 	}
 }
-log4jCodeGenerateUtil.query(node);
 %>
-query_<%=cid %> = <%=dbquery%>;
 whetherReject_<%=cid%> = false;
 <%
+log4jCodeGenerateUtil.query(node, "query_" + cid);
 List<IMetadataTable> metadatas = node.getMetadataList();
 if ((metadatas!=null)&&(metadatas.size()>0)) {
 	IMetadataTable metadata = metadatas.get(0);
@@ -128,7 +125,7 @@ try {
 		<%
 		}
 	}
-	log4jCodeGenerateUtil.logInfo(node,"debug",cid+" - Execute the query: '\" + "+dbquery +" + \"' has finished.");
+	log4jCodeGenerateUtil.logInfo(node,"debug",cid+" - Execute the query: '\" + query_" + cid  + " + \"' has finished.");
 %>
 <%
 	if(usePrepareStatement){

@@ -24,7 +24,7 @@ imports="
 	log4jCodeGenerateUtil = dbRowBeginUtil.log4jCodeGenerateUtil;
 %>
 	java.sql.Connection conn_<%=cid%> = null;
-	String query_<%=cid %> = "";
+	String query_<%=cid %> = <%=dbRowBeginUtil.getQueryString(node)%>;
 	boolean whetherReject_<%=cid%> = false;
 <%
     dbRowBeginUtil.createConnection(node);
@@ -35,7 +35,7 @@ imports="
 
     if (usePrepareStatement ) {
 %>
-        java.sql.PreparedStatement pstmt_<%=cid %> = conn_<%=cid%>.prepareStatement(<%=dbRowBeginUtil.getQueryString(node)%>);
+        java.sql.PreparedStatement pstmt_<%=cid %> = conn_<%=cid%>.prepareStatement(query_<%=cid %>);
         resourceMap.put("pstmt_<%=cid %>", pstmt_<%=cid %>);
 <%
     } else {
