@@ -179,7 +179,7 @@ imports="
 		}
 
 		/**
-		* @deprecated please use another method instead: query(INode node, String dbQueryVariableName) because execution of the query expression for debug purposes can be not idempotent
+		* @deprecated please use another method instead: query(INode node, String dbQueryVariableName) because execution of the query expression can be not idempotent
 		*/
 		@Deprecated
 		public void query(INode node){
