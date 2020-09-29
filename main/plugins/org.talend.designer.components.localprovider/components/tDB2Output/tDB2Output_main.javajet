@@ -348,7 +348,9 @@ skeleton="../templates/db_output_bulk.skeleton"
             try {
                 nb_line_<%=cid%>++;
                 <%if(isEnableDebug){dbLog.data().sqlDebugPrint("globalMap.get(\""+cid+"_QUERY\")");}%>
-                insertedCount_<%=cid%> = insertedCount_<%=cid%> + pstmt_<%=cid %>.executeUpdate();
+                int processedCount_<%=cid%> = pstmt_<%=cid %>.executeUpdate();
+                insertedCount_<%=cid%> += processedCount_<%=cid%>;
+                rowsToCommitCount_<%=cid%> += processedCount_<%=cid%>;
                 <%dbLog.data().inserting(dbLog.var("nb_line"));%>
             } catch(java.lang.Exception e) {
                 whetherReject_<%=cid%> = true;
@@ -505,7 +507,9 @@ skeleton="../templates/db_output_bulk.skeleton"
             try {
                 nb_line_<%=cid%>++;
                 <%if(isEnableDebug){dbLog.data().sqlDebugPrint("globalMap.get(\""+cid+"_QUERY\")");}%>
-                updatedCount_<%=cid%> = updatedCount_<%=cid%> + pstmt_<%=cid %>.executeUpdate();
+                int processedCount_<%=cid%> = pstmt_<%=cid %>.executeUpdate();
+                updatedCount_<%=cid%> += processedCount_<%=cid%>;
+                rowsToCommitCount_<%=cid%> += processedCount_<%=cid%>;
                 <%dbLog.data().updating(dbLog.var("nb_line"));%>
             } catch(java.lang.Exception e) {
                 whetherReject_<%=cid%> = true;
@@ -680,7 +684,9 @@ skeleton="../templates/db_output_bulk.skeleton"
     			%>
                 try {
                     <%if(isEnableDebug){dbLog.data().sqlDebugPrint("globalMap.get(\""+cid+"_QUERY\")");}%>
-                    updatedCount_<%=cid%> = updatedCount_<%=cid%> + pstmtUpdate_<%=cid %>.executeUpdate();
+                    int processedCount_<%=cid%> = pstmtUpdate_<%=cid %>.executeUpdate();
+                    updatedCount_<%=cid%> += processedCount_<%=cid%>;
+                    rowsToCommitCount_<%=cid%> += processedCount_<%=cid%>;
                     nb_line_<%=cid%>++;
         			<%dbLog.data().updating(dbLog.var("nb_line"));%>
                 } catch(java.lang.Exception e) {
@@ -779,7 +785,9 @@ skeleton="../templates/db_output_bulk.skeleton"
     			%>
                 try {
                     <%if(isEnableDebug){dbLog.data().sqlDebugPrint("globalMap.get(\""+cid+"_QUERY\")");}%>
-                    insertedCount_<%=cid%> = insertedCount_<%=cid%> + pstmtInsert_<%=cid %>.executeUpdate();
+                    int processedCount_<%=cid%> = pstmtInsert_<%=cid %>.executeUpdate();
+                    insertedCount_<%=cid%> += processedCount_<%=cid%>;
+                    rowsToCommitCount_<%=cid%> += processedCount_<%=cid%>;
                     nb_line_<%=cid%>++;
                     <%dbLog.data().inserting(dbLog.var("nb_line"));%>
                 } catch(java.lang.Exception e) {
@@ -932,6 +940,7 @@ skeleton="../templates/db_output_bulk.skeleton"
             try {
                 updateFlag_<%=cid%>=pstmtUpdate_<%=cid %>.executeUpdate();
                 updatedCount_<%=cid%> = updatedCount_<%=cid%> + updateFlag_<%=cid%>;
+                rowsToCommitCount_<%=cid%> += updateFlag_<%=cid%>;
             if(updateFlag_<%=cid%> == 0) {
             	<%
             	if(isEnableDebug) {
@@ -987,7 +996,9 @@ skeleton="../templates/db_output_bulk.skeleton"
                 }
         		%>
 					<%if(isEnableDebug){dbLog.data().sqlDebugPrint("globalMap.get(\""+cid+"_QUERY\")");}%>
-                    insertedCount_<%=cid%> = insertedCount_<%=cid%> + pstmtInsert_<%=cid %>.executeUpdate();
+                    int processedCount_<%=cid%> = pstmtInsert_<%=cid %>.executeUpdate();
+                    insertedCount_<%=cid%> += processedCount_<%=cid%>;
+                    rowsToCommitCount_<%=cid%> += processedCount_<%=cid%>;
 					nb_line_<%=cid%>++;
                     <%dbLog.data().inserting(dbLog.var("nb_line"));%>
     			}else{
@@ -1093,7 +1104,9 @@ skeleton="../templates/db_output_bulk.skeleton"
     		%>
             try {
             	<%if(isEnableDebug){dbLog.data().sqlDebugPrint("globalMap.get(\""+cid+"_QUERY\")");}%>
-            	deletedCount_<%=cid%> = deletedCount_<%=cid%> + pstmt_<%=cid %>.executeUpdate();
+            	int processedCount_<%=cid%> = pstmt_<%=cid %>.executeUpdate();
+            	deletedCount_<%=cid%> += processedCount_<%=cid%>;
+            	rowsToCommitCount_<%=cid%> += processedCount_<%=cid%>;
             	nb_line_<%=cid%>++;
                 <%dbLog.data().deleting(dbLog.var("nb_line"));%>
             } catch(java.lang.Exception e) {
@@ -1194,6 +1207,7 @@ skeleton="../templates/db_output_bulk.skeleton"
         						countSum_<%=cid%> += (countEach_<%=cid%> < 0 ? 0 : countEach_<%=cid%>);
         					}
 						}
+						rowsToCommitCount_<%=cid%> += countSum_<%=cid%>;
 						<%dbLog.batch().executeDone(dbLog.str(dataAction));%>
             	    	<%if (("INSERT").equals(dataAction)) {
             	    	%>
@@ -1240,6 +1254,7 @@ skeleton="../templates/db_output_bulk.skeleton"
 						countSum_<%=cid%> += (countEach_<%=cid%> < 0 ? 0 : countEach_<%=cid%>);
 					}
 				}
+				rowsToCommitCount_<%=cid%> += countSum_<%=cid%>;
 				<%if (("INSERT").equals(dataAction)) {
 				%>
 					insertedCount_<%=cid%> += countSum_<%=cid%>;
@@ -1281,6 +1296,7 @@ skeleton="../templates/db_output_bulk.skeleton"
         						countSum_<%=cid%> += (countEach_<%=cid%> < 0 ? 0 : countEach_<%=cid%>);
         					}
 						}
+						rowsToCommitCount_<%=cid%> += countSum_<%=cid%>;
 						<%dbLog.batch().executeDone(dbLog.str(dataAction));%>
             	    	<%if (("INSERT").equals(dataAction)) {
             	    	%>
@@ -1326,6 +1342,7 @@ skeleton="../templates/db_output_bulk.skeleton"
 						countSum_<%=cid%> += (countEach_<%=cid%> < 0 ? 0 : countEach_<%=cid%>);
 					}
 				}
+				rowsToCommitCount_<%=cid%> += countSum_<%=cid%>;
 				<%if (("INSERT").equals(dataAction)) {
 				%>
 					insertedCount_<%=cid%> += countSum_<%=cid%>;
@@ -1346,10 +1363,15 @@ skeleton="../templates/db_output_bulk.skeleton"
                 <%
                 }
                 %>
-                	<%dbLog.commit().commitTry(null, dbLog.var("commitCounter"));%>
-                	conn_<%=cid%>.commit();
+                if(rowsToCommitCount_<%=cid%> != 0){
+                	<%dbLog.commit().commitTry(null, dbLog.var("rowsToCommitCount"));%>
+                }
+                conn_<%=cid%>.commit();
+                if(rowsToCommitCount_<%=cid%> != 0){
                 	<%dbLog.commit().commitDone(null);%>
-                	commitCounter_<%=cid%>=0;
+                	rowsToCommitCount_<%=cid%> = 0;
+                }
+                commitCounter_<%=cid%>=0;
                 }
                 <%
     		}
