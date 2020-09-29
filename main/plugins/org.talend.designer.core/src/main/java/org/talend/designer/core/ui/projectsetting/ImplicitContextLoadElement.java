@@ -14,7 +14,6 @@ package org.talend.designer.core.ui.projectsetting;
 
 
 import org.talend.core.model.process.Element;
-import org.talend.designer.core.utils.ConnectionUtil;
 
 /**
  * this class is only used in projectsetting to contains project's ImplicitContextLoadSettings
@@ -54,11 +53,4 @@ public class ImplicitContextLoadElement extends Element {
 
     }
 
-    @Override
-    public void setPropertyValue(String id, Object value) {
-        super.setPropertyValue(id, value);
-        if(id.equals("DRIVER_JAR_IMPLICIT_CONTEXT")){
-            ConnectionUtil.getDriverJar(value);
-        }
-    }
 }
