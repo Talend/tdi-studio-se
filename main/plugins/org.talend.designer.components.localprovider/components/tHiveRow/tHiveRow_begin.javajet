@@ -253,14 +253,11 @@ imports="
 	        <%
 	    }
 	}
-%>
-	String query_<%=cid %> = <%=dbquery%>;
-	boolean whetherReject_<%=cid%> = false;
-<%
+
 	if(!hiveDistrib.useCloudLauncher()) {
 		if (usePrepareStatement) {
 		%>
-			java.sql.PreparedStatement pstmt_<%=cid %> = conn_<%=cid%>.prepareStatement(query_<%=cid %>);
+			java.sql.PreparedStatement pstmt_<%=cid %> = conn_<%=cid%>.prepareStatement(<%=dbquery%>);
 		<%
 		}
 		%>
@@ -268,3 +265,5 @@ imports="
 		<%
 	}
 %>
+	String query_<%=cid %> = "";
+	boolean whetherReject_<%=cid%> = false;
