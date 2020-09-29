@@ -15,7 +15,6 @@ package org.talend.repository.generic.service;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -35,6 +34,7 @@ import org.talend.components.api.wizard.ComponentWizard;
 import org.talend.components.api.wizard.ComponentWizardDefinition;
 import org.talend.components.api.wizard.WizardImageType;
 import org.talend.core.GlobalServiceRegister;
+import org.talend.core.PluginChecker;
 import org.talend.core.database.EDatabaseTypeName;
 import org.talend.core.model.components.IComponent;
 import org.talend.core.model.metadata.Dbms;
@@ -363,25 +363,27 @@ public class GenericWizardService implements IGenericWizardService {
     }
 
     @Override
-    public void initAdditionalJDBCRepositoryObjType() {
-        List<ERepositoryObjectType> types = new ArrayList<ERepositoryObjectType>();
-        Map<String, UnifiedJDBCBean> additionalJDBC = UnifiedComponentUtil.getAdditionalJDBC();
-        if (additionalJDBC.keySet().isEmpty()) {
+    public void loadAdditionalJDBC() {
+        // restrict additional JDBC for EE
+        if (!PluginChecker.isTIS()) {
             return;
         }
-        Collection<UnifiedJDBCBean> beans = additionalJDBC.values();
-        for (UnifiedJDBCBean bean : beans) {
-            ERepositoryObjectType type = internalService.createRepositoryType(bean.getDisplayName(), bean.getDisplayName(),
-                    bean.getComponentKey(), "metadata/connections", 100);
-            types.add(type);
+        // load additional JDBC configuration json
+        ComponentWizardDefinition jdbcDefinition = null;
+        Set<ComponentWizardDefinition> wizardDefinitions = internalService.getComponentService().getTopLevelComponentWizards();
+        jdbcDefinition = wizardDefinitions.stream().filter(definition -> "JDBC".equals(definition.getName())).findFirst().get();
+        if (jdbcDefinition == null) {
+            return;
         }
-        IGenericDBService dbService = null;
-        if (GlobalServiceRegister.getDefault().isServiceRegistered(IGenericDBService.class)) {
-            dbService = (IGenericDBService) GlobalServiceRegister.getDefault().getService(IGenericDBService.class);
-        }
-        if (dbService != null && !types.isEmpty()) {
-            dbService.getExtraTypes().addAll(types);
-        }
+
+        InputStream inputStream = jdbcDefinition.getClass().getClassLoader().getResourceAsStream("support_extra_db.json");
+        UnifiedComponentUtil.loadAdditionalJDBC(inputStream);
+
+    }
+
+    @Override
+    public List<String> getAllAdditionalJDBCTypes() {
+        return new ArrayList<String>(UnifiedComponentUtil.getAdditionalJDBC().keySet());
     }
 
     @Override
