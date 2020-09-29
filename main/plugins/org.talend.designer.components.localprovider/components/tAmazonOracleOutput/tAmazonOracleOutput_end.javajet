@@ -235,7 +235,6 @@ imports="
     		    rowsToCommitCount_<%=cid%> = 0;
     		}
     		commitCounter_<%=cid%> = 0;
-		<%
 		}
 		%>
 		<%dbLog.conn().closeTry(null);%>
