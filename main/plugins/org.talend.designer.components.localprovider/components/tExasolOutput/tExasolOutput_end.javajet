@@ -42,7 +42,7 @@ imports="
 
     String connection = ElementParameterParser.getValue(node,"__CONNECTION__");
     if(useExistingConnection) {
-        List<? extends INode> nodes = process.getNodesOfType("tDBConnection");
+        List<? extends INode> nodes = process.getNodesOfType("tExasolConnection");
         for (INode ne:nodes) {
             if (connection.equals(ne.getUniqueName())) {
                 setAutoCommit = "true".equals(ElementParameterParser.getValue(ne, "__AUTO_COMMIT__"));
