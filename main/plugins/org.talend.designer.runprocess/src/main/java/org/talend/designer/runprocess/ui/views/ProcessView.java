@@ -446,7 +446,10 @@ public class ProcessView extends ViewPart implements PropertyChangeListener {
     }
 
     public IDebugViewHelper getDebugViewHelper() {
-        return this.debugViewHelpers.get(lastDebugType);
+        if(lastDebugType != null) {
+            return this.debugViewHelpers.get(lastDebugType);
+        }
+        return this.debugViewHelpers.get(EDebugProcessType.DI);
     }
 
     public ProcessComposite getProcessComposite() {
@@ -635,18 +638,17 @@ public class ProcessView extends ViewPart implements PropertyChangeListener {
         if (dc != null && dc == processComposite) {
             processComposite.setProcessContext(activeContext);
         } else if (dc != null && dc instanceof TraceDebugProcessComposite) {
-            if (this.lastDebugType != null) {
-                if (!debugViewHelpers.get(lastDebugType).getDebugComposite(parent).isVisible()) {
-                    debugViewHelpers.values().forEach(helper -> {
-                        if(!helper.getDebugType().equals(lastDebugType)) {
-                            helper.getDebugComposite(parent).setVisible(false);
-                        }
-                    });
-                    debugViewHelpers.get(lastDebugType).getDebugComposite(parent).setVisible(true);
-                }
-                debugTisProcessComposite.setProcessContext(activeContext);
-                debugTisProcessComposite.setContextComposite(this.contextComposite);
+            EDebugProcessType type = lastDebugType == null ? EDebugProcessType.DI : lastDebugType;
+            if (!debugViewHelpers.get(type).getDebugComposite(parent).isVisible()) {
+                debugViewHelpers.values().forEach(helper -> {
+                    if (!helper.getDebugType().equals(type)) {
+                        helper.getDebugComposite(parent).setVisible(false);
+                    }
+                });
+                debugViewHelpers.get(type).getDebugComposite(parent).setVisible(true);
             }
+            debugTisProcessComposite.setProcessContext(activeContext);
+            debugTisProcessComposite.setContextComposite(this.contextComposite);
 
         } else if (dc != null && dc == advanceComposite) {
             advanceComposite.setProcessContext(activeContext);
