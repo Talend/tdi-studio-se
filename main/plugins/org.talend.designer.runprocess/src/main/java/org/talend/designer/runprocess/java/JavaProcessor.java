@@ -141,6 +141,7 @@ import org.talend.designer.core.IDesignerCoreService;
 import org.talend.designer.core.ISyntaxCheckableEditor;
 import org.talend.designer.core.model.components.EParameterName;
 import org.talend.designer.core.model.utils.emf.talendfile.ProcessType;
+import org.talend.designer.core.runprocess.Processor;
 import org.talend.designer.core.ui.editor.CodeEditorFactory;
 import org.talend.designer.core.ui.editor.nodes.Node;
 import org.talend.designer.core.ui.editor.process.Process;
@@ -1870,10 +1871,11 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
                     launchManager.generateUniqueLaunchConfigurationNameFrom(this.getCodePath().lastSegment()));
             wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_PROJECT_NAME, projectName);
             wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_MAIN_TYPE_NAME, this.getMainClass());
-//            wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_STOP_IN_MAIN, true);
             wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_PROGRAM_ARGUMENTS, CTX_ARG + context.getName() + parameterStr);
             if (isRouteDebugging()) {
-                wc.setAttribute("DEBUG_JOB_ID", this.getProperty().getId());
+                wc.setAttribute(Processor.DEBUG_ROUTE_ID_ARG, this.getProperty().getId());
+            } else {
+                wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_STOP_IN_MAIN, true);
             }
             setupEncryptionFilePathParameter(wc);
             

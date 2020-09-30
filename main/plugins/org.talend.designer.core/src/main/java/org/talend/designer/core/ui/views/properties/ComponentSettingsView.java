@@ -708,10 +708,9 @@ public class ComponentSettingsView extends ViewPart implements IComponentSetting
                 if (ComponentCategory.CATEGORY_4_CAMEL.getName().equals(paletteType)) {
                     categories = EElementType.NODE.getCategories();
                     //camel
-//                    if(((Node) elem).getStatus() == Process.BREAKPOINT_STATUS) {
+                    if(((Node) elem).getStatus() == 1) {
                         categories = (EComponentCategory[]) ArrayUtils.add(categories, EComponentCategory.BREAKPOINT_CAMEL);
-//                    }
-                    //
+                    }
                 }
             }
 

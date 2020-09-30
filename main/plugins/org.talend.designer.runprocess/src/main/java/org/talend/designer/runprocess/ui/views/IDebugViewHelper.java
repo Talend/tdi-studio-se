@@ -13,6 +13,7 @@
 package org.talend.designer.runprocess.ui.views;
 
 import org.eclipse.swt.widgets.Composite;
+import org.talend.designer.runprocess.EDebugProcessType;
 import org.talend.designer.runprocess.ui.TraceDebugProcessComposite;
 
 /**
@@ -22,5 +23,5 @@ public interface IDebugViewHelper {
 
     public TraceDebugProcessComposite getDebugComposite(final Composite container);
     
-    public String getDebugType();
+    public EDebugProcessType getDebugType();
 }

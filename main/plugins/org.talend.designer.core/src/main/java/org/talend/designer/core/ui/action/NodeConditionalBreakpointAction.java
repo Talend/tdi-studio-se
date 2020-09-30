@@ -15,27 +15,19 @@ package org.talend.designer.core.ui.action;
 import java.util.List;
 
 import org.eclipse.gef.EditPart;
-import org.eclipse.gef.ui.actions.SelectionAction;
-import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.talend.commons.ui.runtime.exception.ExceptionHandler;
-import org.talend.core.CorePlugin;
-import org.talend.core.GlobalServiceRegister;
-import org.talend.core.context.Context;
 import org.talend.core.model.process.EComponentCategory;
 import org.talend.core.model.process.INode;
-import org.talend.core.model.process.IProcess;
-import org.talend.core.ui.branding.IBrandingService;
 import org.talend.core.ui.utils.PluginUtil;
 import org.talend.designer.core.DesignerPlugin;
 import org.talend.designer.core.i18n.Messages;
 import org.talend.designer.core.ui.editor.nodes.Node;
 import org.talend.designer.core.ui.editor.nodes.NodePart;
-import org.talend.designer.core.ui.editor.process.Process;
 import org.talend.designer.core.ui.editor.process.ProcessPart;
 import org.talend.designer.core.ui.views.properties.ComponentSettingsView;
 
@@ -49,8 +41,6 @@ public class NodeConditionalBreakpointAction extends ShowComponentSettingViewerA
 
     public static final String ID = "org.talend.designer.core.ui.editor.action.NodeConditionalBreakpointAction"; //$NON-NLS-1$
 
-    private IProcess process;
-
     private Node node;
 
     /**
@@ -62,8 +52,7 @@ public class NodeConditionalBreakpointAction extends ShowComponentSettingViewerA
         super(part);
         setId(ID);
         setImageDescriptor(DesignerPlugin.getImageDescriptor("icons/breakpoint.png")); //$NON-NLS-1$
-//        setText(Messages.getString("Conditional Breakpoint")); //$NON-NLS-1$
-        setText("Conditional breakpoint"); //$NON-NLS-1$
+        setText(Messages.getString("NodeConditionalBreakpointAction.conditionalBreakpoint")); //$NON-NLS-1$
     }
 
     /*
@@ -92,7 +81,7 @@ public class NodeConditionalBreakpointAction extends ShowComponentSettingViewerA
             NodePart part = (NodePart) o;
             if (part.getModel() instanceof INode) {
                 INode n = (INode) part.getModel();
-                if (0 == n.getOutgoingConnections().size() && 0 == n.getIncomingConnections().size()) {
+                if (0 == n.getIncomingConnections().size()) {
                     return false;
                 }
             } else {
@@ -100,6 +89,9 @@ public class NodeConditionalBreakpointAction extends ShowComponentSettingViewerA
             }
             node = (Node) part.getModel();
             if (node.getJobletNode() != null) {
+                return false;
+            }
+            if (node.getStatus() != org.talend.designer.core.ui.editor.process.Process.BREAKPOINT_STATUS) {
                 return false;
             }
             EditPart parentPart = part.getParent();
@@ -126,15 +118,12 @@ public class NodeConditionalBreakpointAction extends ShowComponentSettingViewerA
             ComponentSettingsView view = (ComponentSettingsView) page.showView(getViewId());
             view.selectTab(EComponentCategory.BREAKPOINT_CAMEL);
         } catch (PartInitException e) {
-            // TODO Auto-generated catch block
-            // e.printStackTrace();
             ExceptionHandler.process(e);
         }
 
     }
 
     public String getViewId() {
-        // return "org.eclipse.ui.views.PropertySheet"; //$NON-NLS-1$
         return ComponentSettingsView.ID;
     }
 }

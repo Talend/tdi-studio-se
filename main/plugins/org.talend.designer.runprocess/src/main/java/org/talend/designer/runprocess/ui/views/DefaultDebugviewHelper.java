@@ -14,6 +14,7 @@ package org.talend.designer.runprocess.ui.views;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
+import org.talend.designer.runprocess.EDebugProcessType;
 import org.talend.designer.runprocess.ui.DebugProcessTosComposite;
 import org.talend.designer.runprocess.ui.TraceDebugProcessComposite;
 
@@ -34,8 +35,8 @@ public class DefaultDebugviewHelper implements IDebugViewHelper {
     }
 
     @Override
-    public String getDebugType() {
-        return "DI";
+    public EDebugProcessType getDebugType() {
+        return EDebugProcessType.DI;
     }
 
 }

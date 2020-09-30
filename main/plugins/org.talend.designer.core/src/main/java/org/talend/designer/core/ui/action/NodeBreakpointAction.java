@@ -22,6 +22,7 @@ import org.talend.core.GlobalServiceRegister;
 import org.talend.core.context.Context;
 import org.talend.core.model.process.INode;
 import org.talend.core.model.process.IProcess;
+import org.talend.core.repository.model.ProxyRepositoryFactory;
 import org.talend.core.ui.branding.IBrandingService;
 import org.talend.core.ui.utils.PluginUtil;
 import org.talend.designer.core.DesignerPlugin;
@@ -92,7 +93,7 @@ public class NodeBreakpointAction extends SelectionAction {
                 NodePart part = (NodePart) o;
                 if (part.getModel() instanceof INode) {
                     INode n = (INode) part.getModel();
-                    if (0 == n.getOutgoingConnections().size() && 0 == n.getIncomingConnections().size()) {
+                    if (0 == n.getIncomingConnections().size()) {
                         return false;
                     }
                 }

@@ -123,12 +123,10 @@ public class NodeContainerFigure extends Figure {
         this.add(breakpointFigure);
 
         breakpointLineBorder = new LineBorder(new Color(Display.getDefault(), new RGB(255, 255, 0)), 2);
-        breakpointBottomLineBorder = new OneLineBorder(new Color(Display.getDefault(), new RGB(113, 113, 225)), 2,
+        breakpointBottomLineBorder = new OneLineBorder(new Color(Display.getDefault(), new RGB(113, 113, 225)), 3,
                 PositionConstants.BOTTOM);
         
         errorFigure = new ImageFigure();
-        Image image = ImageProvider.getImage(CoreUIPlugin.getImageDescriptor(BREAKPOINT_IMAGE));
-        errorFigure.setImage(image);
         errorFigure.setImage(ImageProvider.getImage(EImage.ERROR_SMALL));
         errorFigure.setVisible(false);
         errorFigure.setSize(errorFigure.getPreferredSize());
