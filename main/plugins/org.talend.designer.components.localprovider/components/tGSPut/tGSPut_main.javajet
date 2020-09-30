@@ -173,7 +173,7 @@ if (!useServiceAccountForConnection){
 <%
 } else {
 %>
-	long partSizeInBytes_<%=cid%> = <%=partSizeMb%> * 1024 * 1024;
+	long partSizeInBytes_<%=cid%> = (long)<%=partSizeMb%> * 1024 * 1024;
 	<%
 	// We check if it is bigger than the max value allowed by Files.readAllBytes() method
 	// and set the max value if it is bigger
