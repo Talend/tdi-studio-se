@@ -17,7 +17,7 @@ public final class ClientConfiguration {
     /*
      * Implemented authentication strategies for OData/MS CRM.
      */
-    public static enum AuthStrategyEnum {NTLM, OAUTH};
+    public static enum AuthStrategyEnum {NTLM, OAUTH, OAUTH_PREMISE};
 
     /*
      * Kind of registered app on azure
@@ -68,6 +68,16 @@ public final class ClientConfiguration {
      * The URL of the authenticating authority
      */
     private String authoryEndpoint;
+
+    /*
+     * The redirect URL
+     */
+    private String redirectURL;
+
+    /*
+     * The service API to retrieve the resource we ask for with oauth on-premise
+     */
+    private String serviceAPI;
 
     private int maxRetryTimes = 5;
 
@@ -217,4 +227,19 @@ public final class ClientConfiguration {
         this.domain = domain;
     }
 
+    public String getRedirectURL() {
+        return redirectURL;
+    }
+
+    public void setRedirectURL(String redirectURL) {
+        this.redirectURL = redirectURL;
+    }
+
+    public String getServiceAPI() {
+        return serviceAPI;
+    }
+
+    public void setServiceAPI(String serviceAPI) {
+        this.serviceAPI = serviceAPI;
+    }
 }
