@@ -446,10 +446,10 @@ public class ProcessView extends ViewPart implements PropertyChangeListener {
     }
 
     public IDebugViewHelper getDebugViewHelper() {
-        if(lastDebugType != null) {
-            return this.debugViewHelpers.get(lastDebugType);
-        }
-        return this.debugViewHelpers.get(EDebugProcessType.DI);
+
+        return lastDebugType != null && debugViewHelpers.get(lastDebugType) != null
+                ? debugViewHelpers.get(lastDebugType)
+                : debugViewHelpers.get(EDebugProcessType.DI);
     }
 
     public ProcessComposite getProcessComposite() {

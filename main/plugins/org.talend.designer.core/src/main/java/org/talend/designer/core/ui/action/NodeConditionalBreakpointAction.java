@@ -21,6 +21,7 @@ import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.talend.commons.ui.runtime.exception.ExceptionHandler;
+import org.talend.core.PluginChecker;
 import org.talend.core.model.process.EComponentCategory;
 import org.talend.core.model.process.INode;
 import org.talend.core.ui.utils.PluginUtil;
@@ -62,7 +63,7 @@ public class NodeConditionalBreakpointAction extends ShowComponentSettingViewerA
      */
     @Override
     protected boolean calculateEnabled() {
-        if (!PluginUtil.isMediation()) {
+        if (!PluginUtil.isMediation() || !PluginChecker.isRouteletLoaded()) {
             return false;
         }
         List objects = getSelectedObjects();
