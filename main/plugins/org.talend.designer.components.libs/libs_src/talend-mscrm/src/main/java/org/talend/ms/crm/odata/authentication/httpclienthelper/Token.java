@@ -7,10 +7,8 @@ public final class Token {
     private String access_token;
     private String token_type;
     private Long expires_in;
-    private Long created_at;
 
     public Token(){
-        created_at = System.currentTimeMillis();
     }
 
     public String getAccess_token() {

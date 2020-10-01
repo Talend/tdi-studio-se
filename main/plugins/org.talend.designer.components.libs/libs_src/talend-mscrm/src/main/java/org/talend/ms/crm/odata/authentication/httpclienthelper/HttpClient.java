@@ -17,10 +17,10 @@ import java.util.stream.Collectors;
 
 public final class HttpClient {
 
-    public final static int TEMPORARY_REDIRECT = 307;
-    public final static int PERMANENT_REDIRECT = 308;
+    private final static int TEMPORARY_REDIRECT = 307;
+    private final static int PERMANENT_REDIRECT = 308;
 
-    private RequestHttpContext requestHttpContext;
+    private final RequestHttpContext requestHttpContext;
 
     public HttpClient(RequestHttpContext requestHttpContext) {
         this.requestHttpContext = requestHttpContext;
@@ -73,7 +73,7 @@ public final class HttpClient {
 
         final List<String> cookie = response.getAllValuesHeader("Set-Cookie").orElse(Collections.emptyList());
         if (cookie.size() > 0) {
-            final String collect = cookie.stream().collect(Collectors.joining("; "));
+            final String collect = String.join("; ", cookie); //cookie.stream().collect(Collectors.joining("; "));
             queryContext.getHeaders().put("Cookie", collect);
         }
 

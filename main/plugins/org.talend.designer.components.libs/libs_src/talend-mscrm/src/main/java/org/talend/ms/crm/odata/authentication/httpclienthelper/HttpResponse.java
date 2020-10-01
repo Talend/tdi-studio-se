@@ -4,9 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -17,7 +15,7 @@ public final class HttpResponse {
     private Map<String, List<String>> headers;
     private String body;
 
-    private Optional<String> code = null;
+    private Optional<String> code = null;//Optional.empty();
 
     public static HttpResponse fromHttpUrlConnection(HttpURLConnection conn) throws IOException {
         final int status = conn.getResponseCode();
@@ -34,7 +32,7 @@ public final class HttpResponse {
         return context;
     }
 
-    public HttpResponse(int status) {
+    private HttpResponse(int status) {
         this.status = status;
     }
 
@@ -110,7 +108,7 @@ public final class HttpResponse {
             return Optional.empty();
         }
         final String[] split = optLocation.get().split("&|\\?");
-        final Optional<String> optCode = Arrays.asList(split).stream().filter(e -> e.startsWith("code=")).findFirst();
+        final Optional<String> optCode = Arrays.stream(split).filter(e -> e.startsWith("code=")).findFirst();
 
         if (optCode.isPresent()) {
             String code = optCode.get().substring(5);

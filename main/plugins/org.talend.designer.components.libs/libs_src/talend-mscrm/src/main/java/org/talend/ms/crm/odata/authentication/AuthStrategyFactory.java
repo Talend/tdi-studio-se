@@ -12,8 +12,6 @@
 // ============================================================================
 package org.talend.ms.crm.odata.authentication;
 
-import javax.naming.AuthenticationException;
-
 import org.talend.ms.crm.odata.ClientConfiguration;
 
 /**
@@ -26,7 +24,7 @@ public final class AuthStrategyFactory {
     private AuthStrategyFactory() {
     }
 
-    public final static IAuthStrategy createAuthStrategy(ClientConfiguration conf) {
+    public static IAuthStrategy createAuthStrategy(ClientConfiguration conf) {
         IAuthStrategy authStrategy = null;
         switch (conf.getAuthStrategy()) {
             case OAUTH:

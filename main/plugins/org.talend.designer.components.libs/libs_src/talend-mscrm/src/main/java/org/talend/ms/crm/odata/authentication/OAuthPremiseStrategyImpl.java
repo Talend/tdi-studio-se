@@ -18,12 +18,10 @@ import org.talend.ms.crm.odata.httpclientfactory.OAuthHttpClientFactory;
 import javax.naming.AuthenticationException;
 import java.io.IOException;
 import java.io.StringReader;
-import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.IllegalFormatException;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -120,13 +118,13 @@ public class OAuthPremiseStrategyImpl implements IAuthStrategy {
         final int port = url.getPort();
         StringBuilder sp = new StringBuilder();
         if (port > -1) {
-            sp = sp.append(":").append(port);
+            sp.append(":").append(port);
         }
         return url.getProtocol() + "://" + url.getHost() + sp.toString();
     }
 
     /**
-     * To compute toekn url, change last segment by token.
+     * To compute token url, change last segment by token.
      * @return
      */
     private String computeTokenUrl(String url){
@@ -157,12 +155,9 @@ public class OAuthPremiseStrategyImpl implements IAuthStrategy {
         HttpClient client = new HttpClient(queryContext);
 
         // Redirect are followed by the java http client
-        final HttpResponse call = client.call(new AtomicInteger(-1), e -> {
-            return true;
-        });
+        final HttpResponse call = client.call(new AtomicInteger(-1), e -> true);
 
         Token token = null;
-
         try {
             token = json2Token(call.getBody());
         }
@@ -198,9 +193,7 @@ public class OAuthPremiseStrategyImpl implements IAuthStrategy {
         HttpClient client = new HttpClient(queryContext);
 
         // We stop to follow redirect url once we have the code
-        final HttpResponse call = client.call(new AtomicInteger(MAX_REDIRECT_AUTH_CODE), e -> {
-            return !e.extractCode().isPresent();
-        });
+        final HttpResponse call = client.call(new AtomicInteger(MAX_REDIRECT_AUTH_CODE), e -> !e.extractCode().isPresent());
 
         return call.extractCode();
     }
