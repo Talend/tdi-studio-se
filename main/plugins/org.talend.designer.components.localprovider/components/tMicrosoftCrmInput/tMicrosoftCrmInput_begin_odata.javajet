@@ -37,6 +37,10 @@ if ((metadatas != null) && (metadatas.size() > 0)) {
 			String authority = ElementParameterParser.getValue(node, "__AUTHORITY__");
 			String timeout = ElementParameterParser.getValue(node, "__TIMEOUT__");
 			boolean reuseHttpClient = ("true").equals(ElementParameterParser.getValue(node,"__REUSE_HTTP_CLIENT__"));
+
+		    String redirectUrl = ElementParameterParser.getValue(node, "__REDIRECT_URL__");
+		    String premiseAuth = ElementParameterParser.getValue(node, "__PREMISE_AUTH__");
+
 			// TODO Because of current retrieve would close httpclient automatically
         	// Need to recreated httpclient for every page query
 			reuseHttpClient =false;
@@ -78,10 +82,18 @@ if ((metadatas != null) && (metadatas.size() > 0)) {
 
 			<%
 			    if(isMsCrm2016OnPremise) {
+				if("NTLM".equals(premiseAuth)){
 			%>
 			    org.talend.ms.crm.odata.ClientConfiguration clientConfig_<%=cid%> = org.talend.ms.crm.odata.ClientConfigurationFactory
                         .buildNtlmClientConfiguration(<%=userName%>, decryptedPassword_<%=cid%>, <%=host%>, <%=domain%>);
 			<%
+				}
+				else{
+			%>
+			    org.talend.ms.crm.odata.ClientConfiguration clientConfig_<%=cid%> = org.talend.ms.crm.odata.ClientConfigurationFactory
+                        .buildOAuthPremiseClientConfiguration(<%=userName%>, decryptedPassword_<%=cid%>, <%=authority%>, <%=serviceURL%>,<%=applicationId%>, <%=redirectUrl%>);
+			<%
+				}
 			    } else {
 			    	if("NATIVE".equals(onlineRegisterApp)){
 					%>
