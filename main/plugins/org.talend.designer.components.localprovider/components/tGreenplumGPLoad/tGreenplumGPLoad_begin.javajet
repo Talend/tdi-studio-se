@@ -632,7 +632,7 @@ skeleton="../templates/db_output_bulk.skeleton"
 <%
 				if (isLog4jEnabled) {
 %>
-					log.warn("Can't getNBLine for <%=cid%>: " + parseException.getMessage());
+					log.warn("Failed to get affected number of lines for <%=cid%>, assuming as 0: " + parseException.getMessage());
 <%
 				}
 %>
