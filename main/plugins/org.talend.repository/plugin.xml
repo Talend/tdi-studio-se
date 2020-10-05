@@ -3445,6 +3445,15 @@
                name="TeradataTPTAddDatabaseNameToOptionalTablesMigrationTask"
                version="7.3.1">
        </projecttask>
+       <projecttask
+              beforeLogon="true"
+              breaks="7.3.1"
+              class="org.talend.repository.model.migration.spark.UpdateRemovedHadoopVersion"
+              description="update version to avoid compile errors from removed distribs"
+              id="org.talend.repository.model.migration.spark.UpdateRemovedHadoopVersion"
+              name="UpdateRemovedHadoopVersion"
+              version="7.3.1">                     
+       </projecttask>
    </extension>
 
    <extension
