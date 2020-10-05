@@ -220,6 +220,7 @@ boolean isLog4jEnabled = ("true").equals(ElementParameterParser.getValue(node.ge
 				log.error("<%=cid%> - " + e.toString());
 			<%}%>
   			System.err.println(e.toString());
+  			globalMap.put("<%=cid %>_ERROR_MESSAGE", e.getMessage());
 		<%}%>
 	}finally{
 		props_<%=cid %>.remove("mail.smtp.host");
