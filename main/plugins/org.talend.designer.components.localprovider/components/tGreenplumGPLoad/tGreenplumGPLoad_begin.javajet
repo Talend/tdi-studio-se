@@ -567,6 +567,7 @@ skeleton="../templates/db_output_bulk.skeleton"
 	final StringBuilder gploadOutput_<%=cid%> = new StringBuilder(200);
 	Thread gploadThread_<%=cid%> = new Thread() {
 		public void run() {
+			int nbLine_<%=cid %> = 0;
 			try {
 				String[] cmds = new String[] {
 						<%if (!"".equals(pythonPathForCMD)){%>
@@ -581,17 +582,61 @@ skeleton="../templates/db_output_bulk.skeleton"
 				%>
 				};
 				final Process ps = Runtime.getRuntime().exec(cmds);
-				
+
+				ps.waitFor();
+
 				java.io.BufferedReader reader = new java.io.BufferedReader(new java.io.InputStreamReader(ps.getInputStream()));
+				java.io.BufferedReader errorReader = new java.io.BufferedReader(new java.io.InputStreamReader(ps.getErrorStream()));
 				String line = "";
 				while ((line = reader.readLine()) != null) {
 					gploadOutput_<%=cid%>.append(line);
 					System.out.println(line);
+					if (line.contains("rows Inserted")) {
+						nbLine_<%=cid %> = getNBLine(line);
+					}
+
+					if (line.contains("rows Updated")) {
+<%
+						if ("UPDATE".equals(dataAction)) {
+%>
+							nbLine_<%=cid %> = getNBLine(line);
+<%
+						}
+						if ("MERGE".equals(dataAction)) {
+%>
+							nbLine_<%=cid %> += getNBLine(line);
+<%
+						}
+%>
+					}
+				}
+
+				globalMap.put("<%=cid%>_NB_LINE", nbLine_<%=cid %>);
+
+				String errorLine = "";
+				while ((errorLine = errorReader.readLine()) != null) {
+					gploadOutput_<%=cid%>.append(errorLine);
+					System.err.println(errorLine);
 				}
 			}
 			catch (java.lang.Exception e) {
 				globalMap.put("<%=cid%>_GPLOAD_ERROR",e.getMessage());
 				throw new RuntimeException(e.getMessage(),e.getCause());
+			}
+		}
+
+		private int getNBLine(String logLine) {
+			try {
+				return Integer.parseInt(logLine.substring(logLine.lastIndexOf("=") + 1).trim());
+			} catch (Exception parseException) {
+<%
+				if (isLog4jEnabled) {
+%>
+					log.warn("Can't getNBLine for <%=cid%>: " + parseException.getMessage());
+<%
+				}
+%>
+				return 0;
 			}
 		}
 	};
@@ -635,7 +680,6 @@ skeleton="../templates/db_output_bulk.skeleton"
 	gploadThread_<%=cid%>.start();
 	gploadThread_<%=cid%>.join(0);
 	globalMap.put("<%=cid%>_GPLOAD_OUTPUT", gploadOutput_<%=cid%>.toString());
-	globalMap.put("<%=cid%>_NB_LINE", insertedCount_<%=cid%>);
 		<%if(isLog4jEnabled){%>
 			log.info("<%=cid%> - Execute '"+command_<%=cid %>.toString()+"' has finished.");
 			log.info("<%=cid%> - Loaded records count:" + insertedCount_<%=cid%> + ".");
