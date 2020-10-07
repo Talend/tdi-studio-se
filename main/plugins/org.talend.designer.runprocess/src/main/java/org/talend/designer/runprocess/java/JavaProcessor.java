@@ -76,6 +76,7 @@ import org.eclipse.jdt.debug.core.JDIDebugModel;
 import org.eclipse.jdt.internal.ui.JavaPlugin;
 import org.eclipse.jdt.internal.ui.text.java.JavaFormattingStrategy;
 import org.eclipse.jdt.launching.IJavaLaunchConfigurationConstants;
+import org.eclipse.jdt.launching.sourcelookup.advanced.AdvancedJavaLaunchDelegate;
 import org.eclipse.jdt.ui.text.IJavaPartitions;
 import org.eclipse.jdt.ui.text.JavaTextTools;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -104,6 +105,7 @@ import org.talend.core.PluginChecker;
 import org.talend.core.context.Context;
 import org.talend.core.context.RepositoryContext;
 import org.talend.core.hadoop.HadoopConstants;
+import org.talend.core.model.components.ComponentCategory;
 import org.talend.core.model.components.EComponentType;
 import org.talend.core.model.general.ModuleNeeded;
 import org.talend.core.model.process.IContext;
@@ -139,6 +141,7 @@ import org.talend.designer.core.IDesignerCoreService;
 import org.talend.designer.core.ISyntaxCheckableEditor;
 import org.talend.designer.core.model.components.EParameterName;
 import org.talend.designer.core.model.utils.emf.talendfile.ProcessType;
+import org.talend.designer.core.runprocess.Processor;
 import org.talend.designer.core.ui.editor.CodeEditorFactory;
 import org.talend.designer.core.ui.editor.nodes.Node;
 import org.talend.designer.core.ui.editor.process.Process;
@@ -1899,14 +1902,35 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
                     launchManager.generateUniqueLaunchConfigurationNameFrom(this.getCodePath().lastSegment()));
             wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_PROJECT_NAME, projectName);
             wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_MAIN_TYPE_NAME, this.getMainClass());
-            wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_STOP_IN_MAIN, true);
             wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_PROGRAM_ARGUMENTS, CTX_ARG + context.getName() + parameterStr);
+            if (isRouteDebugging()) {
+                wc.setAttribute(Processor.DEBUG_ROUTE_ID_ARG, this.getProperty().getId());
+            } else {
+                wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_STOP_IN_MAIN, true);
+            }
             setupEncryptionFilePathParameter(wc);
+            
+            if (isRouteDebugging()) {
+                StringBuilder jmxArguments = new StringBuilder();
+                jmxArguments.append(wc.getAttribute(IJavaLaunchConfigurationConstants.ATTR_VM_ARGUMENTS, ""));
+                jmxArguments.append("\n-Dorg.apache.camel.jmx.createRmiConnector=True");
+                jmxArguments.append("\n-Dorg.apache.camel.jmx.rmiConnector.registryPort=1099");
+                jmxArguments.append("\n-Dorg.apache.camel.jmx.serviceUrlPath=/jmxrmi/camel/" + process.getName());
+                jmxArguments.append("\n-Dorg.apache.camel.jmx.mbeanObjectDomainName=org.apache.camel");
+                jmxArguments.append("\n-Dorg.apache.camel.jmx.usePlatformMBeanServer=True");
+                jmxArguments.append("\n-Dcom.sun.management.jmxremote.ssl=False");
+                jmxArguments.append("\n-Dcom.sun.management.jmxremote.authenticate=False");
+                wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_VM_ARGUMENTS, jmxArguments.toString());
+            }
             config = wc.doSave();
         }
         return config;
     }
 
+    private boolean isRouteDebugging() {
+        return ProcessorUtilities.isdebug() && ComponentCategory.CATEGORY_4_CAMEL.getName().equals(process.getComponentsType());
+    }
+    
     private void setupEncryptionFilePathParameter(ILaunchConfigurationWorkingCopy wc) throws CoreException {
         StringBuilder vmArguments = new StringBuilder();
         vmArguments.append(wc.getAttribute(IJavaLaunchConfigurationConstants.ATTR_VM_ARGUMENTS, ""));

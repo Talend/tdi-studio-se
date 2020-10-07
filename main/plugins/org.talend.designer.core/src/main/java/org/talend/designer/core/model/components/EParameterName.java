@@ -336,6 +336,11 @@ public enum EParameterName {
     // Route Component Type
     ROUTE_COMPONENT_TYPE("ROUTE_COMPONENT_TYPE"), //$NON-NLS-1$
 
+    // Route Breakpoint Type
+    ROUTE_BREAKPOINT_LANGUAGES("Languages"), //$NON-NLS-1$
+    ROUTE_BREAKPOINT_EXPRESSION("Expression"), //$NON-NLS-1$
+    ROUTE_BREAKPOINT_EXAMPLE("Example"), //$NON-NLS-1$
+    
     // Automatic Parlization
     PARTITIONER(Messages.getString("Connection.paral_partitioner")), //$NON-NLS-1$
     DEPARTITIONER(Messages.getString("Connection.paral_departitioner")), //$NON-NLS-1$
