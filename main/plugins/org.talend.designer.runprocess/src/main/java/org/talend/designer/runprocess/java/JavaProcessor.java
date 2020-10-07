@@ -1897,7 +1897,7 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
     }
 
     private boolean isRouteDebugging() {
-        return ProcessorUtilities.isdebug() && process.getComponentsType().equals(ComponentCategory.CATEGORY_4_CAMEL.getName());
+        return ProcessorUtilities.isdebug() && ComponentCategory.CATEGORY_4_CAMEL.getName().equals(process.getComponentsType());
     }
     
     private void setupEncryptionFilePathParameter(ILaunchConfigurationWorkingCopy wc) throws CoreException {

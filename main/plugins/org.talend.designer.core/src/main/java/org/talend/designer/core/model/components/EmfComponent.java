@@ -103,6 +103,7 @@ import org.talend.core.ui.branding.IBrandingService;
 import org.talend.core.ui.component.ComponentsFactoryProvider;
 import org.talend.core.ui.component.settings.ComponentsSettingsHelper;
 import org.talend.core.ui.services.IComponentsLocalProviderService;
+import org.talend.core.ui.utils.PluginUtil;
 import org.talend.designer.core.DesignerPlugin;
 import org.talend.designer.core.ITisLocalProviderService;
 import org.talend.designer.core.i18n.Messages;
@@ -1040,7 +1041,7 @@ public class EmfComponent extends AbstractBasicComponent {
     
     //rename for route break points
     public void addRouteExpressionParameters(final List<ElementParameter> listParam, INode node) {
-        if (PluginChecker.isTeamEdition() && !ComponentCategory.CATEGORY_4_CAMEL.getName().equals(getPaletteType())) {
+        if (!PluginUtil.isMediation() || !PluginChecker.isRouteletLoaded()) {
             return;
         }
         

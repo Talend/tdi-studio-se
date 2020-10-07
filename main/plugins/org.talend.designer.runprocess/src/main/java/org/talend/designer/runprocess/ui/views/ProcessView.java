@@ -203,10 +203,11 @@ public class ProcessView extends ViewPart implements PropertyChangeListener {
         }
         tabFactory = new HorizontalTabFactory();
         setProcessViewHelper(processViewHelperPrm);
-        if(debugViewHelpers.size() == 0) {
-            // TOS Debug helper
+        
+        if(!debugViewHelpers.containsKey(EDebugProcessType.DI)) {
+         // TOS Debug helper
             DefaultDebugviewHelper defaultDebugViewHelper = new DefaultDebugviewHelper();
-            debugViewHelpers.put(defaultDebugViewHelper.getDebugType(), defaultDebugViewHelper);
+            debugViewHelpers.put(EDebugProcessType.DI, defaultDebugViewHelper);
         }
         rubjobManager = ProcessManager.getInstance();
         ProxyRepositoryFactory.getInstance().addPropertyChangeListener(this);
@@ -647,8 +648,10 @@ public class ProcessView extends ViewPart implements PropertyChangeListener {
                 });
                 debugViewHelpers.get(type).getDebugComposite(parent).setVisible(true);
             }
-            debugTisProcessComposite.setProcessContext(activeContext);
-            debugTisProcessComposite.setContextComposite(this.contextComposite);
+            if (debugTisProcessComposite != null) {
+                debugTisProcessComposite.setProcessContext(activeContext);
+                debugTisProcessComposite.setContextComposite(this.contextComposite);
+            }
 
         } else if (dc != null && dc == advanceComposite) {
             advanceComposite.setProcessContext(activeContext);
