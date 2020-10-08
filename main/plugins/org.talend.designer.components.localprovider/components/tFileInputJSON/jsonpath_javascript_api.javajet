@@ -166,6 +166,7 @@ if (jsEngine_<%=cid%> == null) {
 					log.error("<%=cid%> - " + e_<%=cid%>.getMessage());
 				<%}%>
 	            System.err.println(e_<%=cid%>.getMessage());
+	            globalMap.put("<%=cid %>_ERROR_MESSAGE", e_<%=cid%>.getMessage());
 <%
 			}
 %>
@@ -203,6 +204,7 @@ if (jsEngine_<%=cid%> == null) {
 			log.error("<%=cid%> - " + e_<%=cid%>.getMessage());
 		<%}%>
  		System.err.println(e_<%=cid%>.getMessage());
+ 		globalMap.put("<%=cid %>_ERROR_MESSAGE", e_<%=cid%>.getMessage());
 	<%}%>
 	} finally {
 		if(fr_<%=cid%> != null ) {
@@ -316,7 +318,9 @@ if ((metadatas!=null)&&(metadatas.size()>0)) {
 %>
 				                <%=rejectConnName%>.errorMessage = e.getMessage() + " - Line: " + tos_count_<%=node.getUniqueName() %>;
 <%
-                            }
+                            } %>
+                            globalMap.put("<%=cid %>_ERROR_MESSAGE", e.getMessage());
+<%
                         }
 %>
                     }
