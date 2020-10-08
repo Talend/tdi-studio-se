@@ -55,6 +55,7 @@ if ((metadatas!=null)&&(metadatas.size()>0)) {
 				java.util.concurrent.TimeUnit.SECONDS.toMillis(java.lang.Long.valueOf(<%=timeout%>) + 15L));
 		<%} else {%>
 			client_<%=cid%>.getProperties().putIfAbsent(org.apache.sshd.common.FactoryManager.IDLE_TIMEOUT, 0L);
+			client_<%=cid%>.getProperties().putIfAbsent(org.apache.sshd.common.FactoryManager.NIO2_READ_TIMEOUT, 0L);
 		<%}%>
 		<%
         if (("PUBLICKEY").equals(authMethod)) {
