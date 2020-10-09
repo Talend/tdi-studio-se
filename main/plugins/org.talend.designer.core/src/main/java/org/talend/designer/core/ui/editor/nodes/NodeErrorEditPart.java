@@ -17,6 +17,7 @@ import java.beans.PropertyChangeListener;
 import java.util.List;
 
 import org.eclipse.draw2d.IFigure;
+import org.eclipse.draw2d.ImageFigure;
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.Rectangle;
@@ -26,7 +27,10 @@ import org.eclipse.gef.EditPolicy;
 import org.eclipse.gef.GraphicalEditPart;
 import org.eclipse.gef.Request;
 import org.eclipse.gef.editparts.AbstractGraphicalEditPart;
+import org.eclipse.swt.graphics.Image;
 import org.talend.commons.ui.gmf.util.DisplayUtils;
+import org.talend.commons.ui.runtime.image.ECoreImage;
+import org.talend.commons.ui.runtime.image.ImageProvider;
 import org.talend.designer.core.model.components.EParameterName;
 import org.talend.designer.core.ui.dialog.mergeorder.ErrorMessageDialog;
 import org.talend.designer.core.ui.editor.nodecontainer.NodeContainer;
@@ -89,8 +93,15 @@ public class NodeErrorEditPart extends AbstractGraphicalEditPart implements Prop
         } else {
             (errorFig).setAlpha(NodeError.ALPHA_VALUE);
         }
+//        errorFig.setSize(100, 100);
         ((NodeError) getModel()).setErrorSize(errorFig.getSize());
-
+//mike        Image image = ImageProvider.getImage(ECoreImage.JOBLET_STANDARD_ICON);
+//        ImageFigure otherFig = new ImageFigure(image);
+//        otherFig.setVisible(true);
+//        otherFig.setBounds(new Rectangle(image.getBounds()));
+//        this.figure = otherFig;
+//        errorFig.add(otherFig, 0);
+//        errorFig.setVisible(true);
         return errorFig;
     }
 
