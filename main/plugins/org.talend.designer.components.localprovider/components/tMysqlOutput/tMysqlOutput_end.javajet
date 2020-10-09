@@ -362,9 +362,7 @@ skeleton="../templates/db_output_bulk.skeleton"
                 %>
 	        }
 	        try{
-	        	int processedCount_<%=cid%> = pstmt_<%=cid %>.executeUpdate();
-	        	insertedCount_<%=cid%> += processedCount_<%=cid%>;
-	        	rowsToCommitCount_<%=cid%> += processedCount_<%=cid%>;
+	        	insertedCount_<%=cid%> = insertedCount_<%=cid%> + pstmt_<%=cid %>.executeUpdate();
 	        }catch(java.lang.Exception e){
 	        	<% if(onErrDie){%>
 	       		throw e;
@@ -389,7 +387,6 @@ skeleton="../templates/db_output_bulk.skeleton"
 							for(int countEach_<%=cid%>: pstmt_<%=cid %>.executeBatch()) {
 								countSum_<%=cid%> += (countEach_<%=cid%> == java.sql.Statement.EXECUTE_FAILED ? 0 : 1);
 							}
-							rowsToCommitCount_<%=cid%> += countSum_<%=cid%>;
 							<%dbLog.batch().executeDone(dbLog.str(dataAction));%>
 	            	    	<%if (("INSERT").equals(dataAction)) {
 	            	    	%>
@@ -410,7 +407,6 @@ skeleton="../templates/db_output_bulk.skeleton"
 					for(int countEach_<%=cid%>: e.getUpdateCounts()) {
 						countSum_<%=cid%> += (countEach_<%=cid%> < 0 ? 0 : countEach_<%=cid%>);
 					}
-					rowsToCommitCount_<%=cid%> += countSum_<%=cid%>;
 					<%if (("INSERT").equals(dataAction)) {
             	    %>
             	    insertedCount_<%=cid%> += countSum_<%=cid%>;
@@ -469,7 +465,6 @@ skeleton="../templates/db_output_bulk.skeleton"
 			for(int countEach_<%=cid%>: pstmt_<%=cid %>.executeBatch()) {
 				countSum_<%=cid%> += (countEach_<%=cid%> < 0 ? 0 : countEach_<%=cid%>);
 			}
-			rowsToCommitCount_<%=cid%> += countSum_<%=cid%>;
 			<%dbLog.batch().executeDone(dbLog.str(dataAction));%>
 	    	<%if (("UPDATE").equals(dataAction)) {
 	    	%>
@@ -492,7 +487,6 @@ skeleton="../templates/db_output_bulk.skeleton"
 		for(int countEach_<%=cid%>: e.getUpdateCounts()) {
 			countSum_<%=cid%> += (countEach_<%=cid%> < 0 ? 0 : countEach_<%=cid%>);
 		}
-		rowsToCommitCount_<%=cid%> += countSum_<%=cid%>;
 		<%if (("UPDATE").equals(dataAction)) {
     	%>
     	updatedCount_<%=cid%> += countSum_<%=cid%>;
@@ -534,16 +528,12 @@ skeleton="../templates/db_output_bulk.skeleton"
 		if(!("").equals(commitEvery) && !("0").equals(commitEvery))
 		{
     		%>
-    	if (commitCounter_<%=cid%> > 0 && rowsToCommitCount_<%=cid%> != 0) {
-    		<%dbLog.commit().commitTry(null, dbLog.var("rowsToCommitCount"));%>
-    	}
-    	conn_<%=cid%>.commit();
-    	if (commitCounter_<%=cid%> > 0 && rowsToCommitCount_<%=cid%> != 0) {
+    	if (commitCounter_<%=cid%> > 0) {
+    		<%dbLog.commit().commitTry(null, dbLog.var("commitCounter"));%>
+    		conn_<%=cid%>.commit();
     		<%dbLog.commit().commitDone(null);%>
-			rowsToCommitCount_<%=cid%> = 0;
     	}
-		commitCounter_<%=cid%> = 0;
-    	<%
+    		<%
 		}
 
 		commitEvery = "0";

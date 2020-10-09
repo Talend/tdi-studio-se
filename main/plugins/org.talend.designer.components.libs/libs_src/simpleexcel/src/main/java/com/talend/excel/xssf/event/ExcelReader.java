@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2020 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -63,12 +63,6 @@ public class ExcelReader implements Callable {
 
     private boolean includePhoneticRuns;
 
-    private String dynamicDatePattern;
-
-    private int startDynamicIndex = Integer.MIN_VALUE;
-
-    private int endDynamicIndex = Integer.MAX_VALUE;
-
     public ExcelReader() {
         cache = DataBufferCache.getInstance();
         futureTask = new FutureTask(this);
@@ -111,18 +105,6 @@ public class ExcelReader implements Callable {
 
     public void stopRead() {
         sheetContentsHandler.stop();
-    }
-
-    public void setDynamicDatePattern(String dynamicDatePattern) {
-        this.dynamicDatePattern = dynamicDatePattern;
-    }
-
-    public void setStartDynamicIndex(int startDynamicIndex) {
-        this.startDynamicIndex = startDynamicIndex;
-    }
-
-    public void setEndDynamicIndex(int endDynamicIndex) {
-        this.endDynamicIndex = endDynamicIndex;
     }
 
     public boolean isIncludePhoneticRuns() {
@@ -169,8 +151,7 @@ public class ExcelReader implements Callable {
 
             StylesTable styles = r.getStylesTable();
             ReadOnlySharedStringsTable strings = new ReadOnlySharedStringsTable(pkg, includePhoneticRuns);
-            sheetContentsHandler = new DefaultTalendSheetContentsHandler(cache, dynamicDatePattern, startDynamicIndex,
-                    endDynamicIndex);
+            sheetContentsHandler = new DefaultTalendSheetContentsHandler(cache);
             DataFormatter formatter = new DataFormatter();
             boolean formulasNotResults = false;
 

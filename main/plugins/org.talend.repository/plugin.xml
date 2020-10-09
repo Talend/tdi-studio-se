@@ -3447,6 +3447,15 @@
        </projecttask>
        <projecttask
               beforeLogon="false"
+              breaks="7.3.0"
+              class="org.talend.repository.model.migration.SetDefaultPartSizeForTGSPutMigrationTask"
+              description="Set default value of part size for Google Storage Put component to 0"
+              id="org.talend.repository.model.migration.SetDefaultPartSizeForTGSPutMigrationTask"
+              name="SetDefaultPartSizeForTGSPutMigrationTask"
+              version="7.3.1">
+       </projecttask>
+       <projecttask
+              beforeLogon="false"
               breaks="7.2.0"
               class="org.talend.repository.model.migration.spark.SetGlobalTimestampOptionForPreviousVersions"
               description="set global timestamp option to true for older studio"
