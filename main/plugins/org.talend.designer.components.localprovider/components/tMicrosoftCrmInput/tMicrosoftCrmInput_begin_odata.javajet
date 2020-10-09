@@ -41,6 +41,10 @@ if ((metadatas != null) && (metadatas.size() > 0)) {
 		    String redirectUrl = ElementParameterParser.getValue(node, "__REDIRECT_URL__");
 		    String premiseAuth = ElementParameterParser.getValue(node, "__PREMISE_AUTH__");
 
+		    boolean force_oauth_resource = ("true").equals(ElementParameterParser.getValue(node, "__FORCE_OAUTH_RESOURCE__"));
+		    String oauth_resource = ElementParameterParser.getValue(node, "__OAUTH_RESOURCE__");
+		    oauth_resource = force_oauth_resource ? oauth_resource : null;
+
 		    // TODO Because of current retrieve would close httpclient automatically
         	    // Need to recreated httpclient for every page query
 			reuseHttpClient =false;
@@ -91,7 +95,7 @@ if ((metadatas != null) && (metadatas.size() > 0)) {
 				else{
 			%>
 			    org.talend.ms.crm.odata.ClientConfiguration clientConfig_<%=cid%> = org.talend.ms.crm.odata.ClientConfigurationFactory
-                        .buildOAuthPremiseClientConfiguration(<%=userName%>, decryptedPassword_<%=cid%>, <%=authority%>, <%=serviceURL%>,<%=applicationId%>, <%=redirectUrl%>);
+                        .buildOAuthPremiseClientConfiguration(<%=userName%>, decryptedPassword_<%=cid%>, <%=authority%>, <%=serviceURL%>,<%=applicationId%>, <%=redirectUrl%>, <%=oauth_resource%>);
 			<%
 				}
 			    } else {

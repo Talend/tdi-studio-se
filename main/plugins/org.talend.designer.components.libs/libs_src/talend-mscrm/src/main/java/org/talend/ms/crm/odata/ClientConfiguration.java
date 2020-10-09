@@ -97,6 +97,11 @@ public final class ClientConfiguration {
     private AppRegisteredType appRegisteredType = AppRegisteredType.NATIVE_APP;
     private WebAppPermission webAppPermission = WebAppPermission.DELEGATED;
 
+    /**
+     * The oauth resource is deduced from the "Service root URL" if this value is null.
+     */
+    private String forceResource;
+
 
     ClientConfiguration(AuthStrategyEnum authStrategy) {
         this.authStrategy = authStrategy;
@@ -241,5 +246,13 @@ public final class ClientConfiguration {
 
     public void setServiceAPI(String serviceAPI) {
         this.serviceAPI = serviceAPI;
+    }
+
+    public String getForceResource() {
+        return forceResource;
+    }
+
+    public void setForceResource(String forceResource) {
+        this.forceResource = forceResource;
     }
 }

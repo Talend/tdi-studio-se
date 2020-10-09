@@ -114,6 +114,10 @@ public class OAuthPremiseStrategyImpl implements IAuthStrategy {
     }
 
     private String getResource() throws MalformedURLException {
+        if(conf.getForceResource() != null && !"".equals(conf.getForceResource().trim())){
+            return conf.getForceResource();
+        }
+
         URL url = new URL(conf.getServiceAPI());
         final int port = url.getPort();
         StringBuilder sp = new StringBuilder();

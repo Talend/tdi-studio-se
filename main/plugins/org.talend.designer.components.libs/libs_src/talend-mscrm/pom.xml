@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.talend.components</groupId>
 	<artifactId>talend-mscrm</artifactId>
-	<version>3.4-20201001</version>
+	<version>3.4-20201009</version>
 	<packaging>jar</packaging>
 	
 	<name>talend-mscrm</name>
