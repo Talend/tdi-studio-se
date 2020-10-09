@@ -47,21 +47,36 @@ public class UpdateRemovedHadoopVersion extends AbstractJobMigrationTask {
     private final List<String> IMPACTED_COMPONENT_TYPES =
             Arrays.asList("HDFS", "HBASE", "HIVE");
     
+    private final String DEFAULT_DISTRIBUTION;
+    private final String DEFAULT_VERSION;
     
-    private ComponentType componentType = ComponentType.getComponentType("HDFS");
-    private DistributionsManager distributionsHelper = new DistributionsManager(componentType);
-    private List<DistributionBean> distros = Arrays.asList( distributionsHelper.getDistributions() );
-   
-    private List<DistributionVersion> versions = distros.stream().map( d -> Arrays.asList( d.getVersions() ) )
-                                                        .flatMap(List::stream)
-                                                        .collect(Collectors.toList());
-   
-    private List<String> versionsLabel = versions.stream().map( v -> v.version ).collect(Collectors.toList());
+    private ComponentType componentType;
+    private DistributionsManager distributionsHelper;
+    private List<DistributionBean> distros;
+    private List<DistributionVersion> versions;
+    private List<String> versionsLabel;    
+    
+    public UpdateRemovedHadoopVersion() {
+
+        componentType = ComponentType.getComponentType("HDFS");
+        distributionsHelper = new DistributionsManager(componentType);
+        distros = Arrays.asList( distributionsHelper.getDistributions() );
+        
+        versions = distros.stream().map( d -> Arrays.asList( d.getVersions() ) )
+                .flatMap(List::stream)
+                .collect(Collectors.toList());
+        
+        versionsLabel = versions.stream().map( v -> v.version ).collect(Collectors.toList());
+        
+        DEFAULT_DISTRIBUTION = "AMAZON_EMR";
+        DEFAULT_VERSION = versionsLabel.get(0);
+        
+    }
     
     
     @Override
     public List<ERepositoryObjectType> getTypes() {
-        List<ERepositoryObjectType> toReturn = new ArrayList<ERepositoryObjectType>();
+        List<ERepositoryObjectType> toReturn = new ArrayList<>();
         toReturn.add(ERepositoryObjectType.PROCESS);//METADATA_CONNECTIONS
         return toReturn;
     }
@@ -108,9 +123,7 @@ public class UpdateRemovedHadoopVersion extends AbstractJobMigrationTask {
     
     private class HadoopVersionCoverter implements IComponentConversion {
 
-        String DEFAULT_DISTRIBUTION = "AMAZON_EMR";
-        String DEFAULT_VERSION = versionsLabel.get(0);
-        
+        @Override
         public void transform(NodeType node) {
             
             String versionLabel =  componentType.getVersionParameter();
