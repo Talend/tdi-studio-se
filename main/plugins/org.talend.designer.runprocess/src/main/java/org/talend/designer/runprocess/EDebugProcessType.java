@@ -29,7 +29,7 @@ public enum EDebugProcessType {
     private String debugType;
 
     private EDebugProcessType(String debugType) {
-
+        this.debugType = debugType;
     }
 
     public String getDebugType() {
@@ -37,11 +37,15 @@ public enum EDebugProcessType {
     }
     
     public static EDebugProcessType findDebugType(String typeName) {
-        for(EDebugProcessType e: values()){
-            if(e.debugType.equals(typeName)) {
-                return e;
+        EDebugProcessType type = DI;
+        if (typeName != null) {
+            for (EDebugProcessType e : values()) {
+                if (typeName.equals(e.debugType)) {
+                    type = e;
+                    break;
+                }
             }
         }
-        return DI;
+        return type;
     }
 }
