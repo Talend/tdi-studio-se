@@ -1041,7 +1041,8 @@ public class EmfComponent extends AbstractBasicComponent {
     
     //rename for route break points
     public void addRouteExpressionParameters(final List<ElementParameter> listParam, INode node) {
-        if (!PluginUtil.isMediation() || !PluginChecker.isRouteletLoaded()) {
+        // fix for headless issue
+        if (!ComponentCategory.CATEGORY_4_CAMEL.getName().equals(getPaletteType()) || !PluginChecker.isRouteletLoaded()) {
             return;
         }
         
