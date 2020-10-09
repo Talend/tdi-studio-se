@@ -37,6 +37,11 @@ public enum EDebugProcessType {
     }
     
     public static EDebugProcessType findDebugType(String typeName) {
-        return EDebugProcessType.valueOf(typeName);
+        for(EDebugProcessType e: values()){
+            if(e.debugType.equals(typeName)) {
+                return e;
+            }
+        }
+        return DI;
     }
 }
