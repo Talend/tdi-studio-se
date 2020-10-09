@@ -49,7 +49,7 @@ public class UpdateRemovedHadoopVersion extends AbstractJobMigrationTask {
     
     private static final String DEFAULT_DISTRIBUTION = "AMAZON_EMR";;
     
-    private final String defaultDistribution;
+    private final String defaultVersion;
     
     private final DistributionsManager distributionsHelper;
     private final List<DistributionBean> distros;
@@ -71,7 +71,7 @@ public class UpdateRemovedHadoopVersion extends AbstractJobMigrationTask {
         versionsLabel = versions.stream().map( v -> v.version ).collect(Collectors.toList());
         
         
-        defaultDistribution = versionsLabel.get(0);
+        defaultVersion = versionsLabel.get(0);
         
     }
     
@@ -132,8 +132,19 @@ public class UpdateRemovedHadoopVersion extends AbstractJobMigrationTask {
             String distributionLabel =  componentType.getDistributionParameter();
             
             if (!versionsLabel.contains(ComponentUtilities.getNodePropertyValue(node, versionLabel))) {
-                ComponentUtilities.setNodeValue(node, distributionLabel, DEFAULT_DISTRIBUTION);
-                ComponentUtilities.setNodeValue(node, versionLabel, defaultDistribution);
+                
+                try {
+                    ComponentUtilities.setNodeValue(node, distributionLabel, DEFAULT_DISTRIBUTION);
+                }catch(IllegalArgumentException distException) {
+                    distException.printStackTrace();
+                }
+                
+                try {
+                    ComponentUtilities.setNodeValue(node, versionLabel, defaultVersion);
+                }catch(IllegalArgumentException versionException) {
+                    versionException.printStackTrace();
+                }
+                
             }
         }
     }
