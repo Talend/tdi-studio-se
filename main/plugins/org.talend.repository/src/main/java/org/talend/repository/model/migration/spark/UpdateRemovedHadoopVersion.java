@@ -44,17 +44,19 @@ import org.talend.designer.core.model.utils.emf.talendfile.ElementParameterType;
  */
 public class UpdateRemovedHadoopVersion extends AbstractJobMigrationTask {
     
-    private final List<String> IMPACTED_COMPONENT_TYPES =
+    private static final List<String> IMPACTED_COMPONENT_TYPES =
             Arrays.asList("HDFS", "HBASE", "HIVE");
     
-    private final String DEFAULT_DISTRIBUTION;
-    private final String DEFAULT_VERSION;
+    private static final String DEFAULT_DISTRIBUTION = "AMAZON_EMR";;
+    
+    private final String defaultDistribution;
+    
+    private final DistributionsManager distributionsHelper;
+    private final List<DistributionBean> distros;
+    private final List<DistributionVersion> versions;
+    private final List<String> versionsLabel;    
     
     private ComponentType componentType;
-    private DistributionsManager distributionsHelper;
-    private List<DistributionBean> distros;
-    private List<DistributionVersion> versions;
-    private List<String> versionsLabel;    
     
     public UpdateRemovedHadoopVersion() {
 
@@ -68,8 +70,8 @@ public class UpdateRemovedHadoopVersion extends AbstractJobMigrationTask {
         
         versionsLabel = versions.stream().map( v -> v.version ).collect(Collectors.toList());
         
-        DEFAULT_DISTRIBUTION = "AMAZON_EMR";
-        DEFAULT_VERSION = versionsLabel.get(0);
+        
+        defaultDistribution = versionsLabel.get(0);
         
     }
     
@@ -131,7 +133,7 @@ public class UpdateRemovedHadoopVersion extends AbstractJobMigrationTask {
             
             if (!versionsLabel.contains(ComponentUtilities.getNodePropertyValue(node, versionLabel))) {
                 ComponentUtilities.setNodeValue(node, distributionLabel, DEFAULT_DISTRIBUTION);
-                ComponentUtilities.setNodeValue(node, versionLabel, DEFAULT_VERSION);
+                ComponentUtilities.setNodeValue(node, versionLabel, defaultDistribution);
             }
         }
     }
