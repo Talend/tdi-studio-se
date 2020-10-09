@@ -139,7 +139,7 @@
 
    <CODEGENERATION>
      <IMPORTS>
-       <IMPORT NAME="Driver-Ingres" MODULE="iijdbc.jar" MVN="mvn:org.talend.libraries/iijdbc/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.jdbc.ingres/lib/iijdbc.jar" REQUIRED="true" />
+       <IMPORT NAME="Driver-Ingres" MODULE="iijdbc.jar" MVN="mvn:org.talend.libraries/iijdbc/6.0.0" REQUIRED="true" />
        <IMPORT NAME="slf4j-api-1.7.25.jar" MODULE="slf4j-api-1.7.25.jar" MVN="mvn:org.slf4j/slf4j-api/1.7.25" REQUIRED_IF="USE_SHARED_CONNECTION =='true'" />
        <IMPORT NAME="slf4j-log4j12-1.7.25.jar" MODULE="slf4j-log4j12-1.7.25.jar" MVN="mvn:org.slf4j/slf4j-log4j12/1.7.25" REQUIRED_IF="USE_SHARED_CONNECTION =='true'" />
      </IMPORTS>

@@ -90,7 +90,6 @@ imports="
 					}
 					<%dbLog.batch().executeDone(dbLog.str(dataAction));%>
 				}
-				rowsToCommitCount_<%=cid%> += countSum_<%=cid%>;
 	    		insertedCount_<%=cid%> += countSum_<%=cid%>;
             }catch (java.sql.BatchUpdateException e){
             	<%if(("true").equals(dieOnError)) {
@@ -103,7 +102,7 @@ imports="
 				for(int countEach_<%=cid%>: e.getUpdateCounts()) {
 					countSum_<%=cid%> += (countEach_<%=cid%> < 0 ? 0 : countEach_<%=cid%>);
 				}
-				rowsToCommitCount_<%=cid%> += countSum_<%=cid%>;
+
 	    		insertedCount_<%=cid%> += countSum_<%=cid%>;
 	    		<%dbLog.logPrintedException("e.getMessage()");%>
             	System.err.println(e.getMessage());
@@ -124,15 +123,11 @@ imports="
 	if(!useExistingConnection) {
 		if(!("").equals(commitEvery)&&!("0").equals(commitEvery)){
 %>
-	    if (commitCounter_<%=cid%> > 0 && rowsToCommitCount_<%=cid%> != 0) {
-	        <%dbLog.commit().commitTry(null, dbLog.var("rowsToCommitCount"));%>
-	    }
-	    conn_<%=cid%>.commit();
-	    if (commitCounter_<%=cid%> > 0 && rowsToCommitCount_<%=cid%> != 0) {
+	    if (commitCounter_<%=cid%> > 0) {
+	        <%dbLog.commit().commitTry(null, dbLog.var("commitCounter"));%>
+	        conn_<%=cid%>.commit();
 	        <%dbLog.commit().commitDone(null);%>
-	        rowsToCommitCount_<%=cid%> = 0;
 	    }
-	    commitCounter_<%=cid%> = 0;
 <%
 	    }
 %>

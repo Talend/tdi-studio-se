@@ -67,7 +67,7 @@ if ((metadatas!=null)&&(metadatas.size()>0)) {
         }
 
 		boolean isLog4jEnabled = ("true").equals(ElementParameterParser.getValue(node.getProcess(), "__LOG4J_ACTIVATE__"));
-
+		
 		int dynamic_index = -1;
 		boolean hasDynamic = false;
 		List<IMetadataColumn> columnList = metadata.getListColumns();
@@ -80,14 +80,14 @@ if ((metadatas!=null)&&(metadatas.size()>0)) {
 	            break;
 	        }
 		}
-
+		
 		class GenerateCodeUtil{
 			public void generateCode(int dynamic_index,int colLen,boolean hasDynamic){
 				if(hasDynamic){
 				%>
 					int dynamic_column_count_<%=cid%>=1;
 					if(isFirstCheckDyn_<%=cid %>){// for the header line
-						if(row_<%= cid %>==null
+						if(row_<%= cid %>==null 
 						<%if(!version07){%>
 							|| row_<%= cid %>.length == 0
 						<%}else if(!eventMode){%>
@@ -145,7 +145,7 @@ if ((metadatas!=null)&&(metadatas.size()>0)) {
 					    	dynamic_<%=cid%>.metadatas.add(dynamicMetadata_<%=cid%>);
 					    }
 		    			isFirstCheckDyn_<%=cid %> = false;
-
+		    			
 		    			continue;
 					}
 					int tempRowLength_<%=cid%> = <%=colLen%>+dynamic_<%=cid %>.getColumnCount()-1;
@@ -330,7 +330,7 @@ if ((metadatas!=null)&&(metadatas.size()>0)) {
 		}
 		%>
 		<%log4jFileUtil.startRetriveDataInfo();%>
-
+		
         for(int i_<%= cid %> = begin_line_<%= cid %>; i_<%= cid %> < end_line_<%= cid %>; i_<%= cid %>++){
 
         	int emptyColumnCount_<%= cid %> = 0;
@@ -410,14 +410,14 @@ if ((metadatas!=null)&&(metadatas.size()>0)) {
 					%>
 //
 //end%>
-
+			
 			String[] temp_row_<%= cid %> = new String[tempRowLength_<%=cid%>];
 			int actual_end_column_<%= cid %> = end_column_<%= cid %> >	row_<%= cid %>.length ? row_<%= cid %>.length : end_column_<%= cid %>;
 
 				java.util.TimeZone zone_<%= cid %> = java.util.TimeZone.getTimeZone("GMT");
                 java.text.SimpleDateFormat sdf_<%= cid %> = new java.text.SimpleDateFormat(<%=datePattern%>);
                 sdf_<%= cid %>.setTimeZone(zone_<%= cid %>);
-
+                
 
 			for(int i=0;i<tempRowLength_<%=cid%>;i++){
 
@@ -433,18 +433,22 @@ if ((metadatas!=null)&&(metadatas.size()>0)) {
                             if(temp_row_<%=cid%>[i]!=null) {
                                 temp_row_<%=cid%>[i] = df_<%=cid %>.format(doubleCell_<%=cid%>);
                             }
-                          } else
+                    	} else if(jxl.CellType.DATE== cell_<%=cid%>.getType()||jxl.CellType.DATE_FORMULA== cell_<%=cid%>.getType()){
+
+	                            		  	jxl.DateCell dc_<%= cid %> = (jxl.DateCell)cell_<%=cid%>;
+                            				java.util.Date date_<%= cid %> = dc_<%= cid %>.getDate();
+                        					temp_row_<%= cid %>[i] = sdf_<%= cid %>.format(date_<%= cid %>);
+                        					
+                        } else{
+                            temp_row_<%= cid %>[i] = cell_<%=cid%>.getContents();
+                        }
+<%
+                    }else{
+%>
+                        temp_row_<%= cid %>[i] = cell_<%=cid%>.getContents();
 <%
                     }
 %>
-                        if(jxl.CellType.DATE== cell_<%=cid%>.getType()||jxl.CellType.DATE_FORMULA== cell_<%=cid%>.getType()){
-
-                            jxl.DateCell dc_<%= cid %> = (jxl.DateCell)cell_<%=cid%>;
-                            java.util.Date date_<%= cid %> = dc_<%= cid %>.getDate();
-                            temp_row_<%= cid %>[i] = sdf_<%= cid %>.format(date_<%= cid %>);
-                        } else {
-                            temp_row_<%= cid %>[i] = cell_<%=cid%>.getContents();
-                        }
 
 				}else{
 					temp_row_<%= cid %>[i]="";
@@ -1216,28 +1220,6 @@ if ((metadatas!=null)&&(metadatas.size()>0)) {
 		if(source_<%=cid %> instanceof java.io.InputStream || source_<%=cid %> instanceof String){
 			excelReader_<%=cid%> = new com.talend.excel.xssf.event.ExcelReader();
 			excelReader_<%=cid%>.setIncludePhoneticRuns(<%=includePhoneticRuns%>);
-<%
-      if(hasDynamic) {
-        int listSize = metadata.getListColumns().size();
-        for (int i = 0; i < listSize; i++){
-            IMetadataColumn column = metadata.getListColumns().get(i);
-            if (column.getTalendType().equals("id_Dynamic")) {
-                String columnPattern = column.getPattern() == null || column.getPattern().trim().length() == 0 ? null : column.getPattern();
-                if (columnPattern != null) {
-%>
-            excelReader_<%=cid%>.setDynamicDatePattern(<%=columnPattern%>);
-            excelReader_<%=cid%>.setStartDynamicIndex(<%=i%>);
-<%
-                  int endDynamicIndex = listSize - i - 1;
-%>
-            excelReader_<%=cid%>.setEndDynamicIndex(<%=endDynamicIndex%>);
-<%
-                  }
-                  break;
-                }
-            }
-        }
-%>
 		}else{
 			throw new java.lang.Exception("The data source should be specified as Inputstream or File Path!");
 		}
@@ -1362,7 +1344,7 @@ if ((metadatas!=null)&&(metadatas.size()>0)) {
     				if (conn.getLineStyle().hasConnectionCategory(IConnectionCategory.DATA)) {//TD256
 						generateCodeUtil.generateCode(dynamic_index,size,hasDynamic);
 						%>
-
+					
 		String[] temp_row_<%= cid %> = new String[tempRowLength_<%=cid%>];
 		<%
 		if(hasDynamic && ("").equals(lastColumn.trim())){
@@ -1426,7 +1408,13 @@ if ((metadatas!=null)&&(metadatas.size()>0)) {
 <%
 						} else if(javaType == JavaTypesManager.DATE) {
 %>
-				<%=firstConnName %>.<%=column.getLabel() %> = new java.util.Date(Long.valueOf(temp_row_<%=cid %>[columnIndex_<%=cid%>]));
+				try{
+					<%=firstConnName %>.<%=column.getLabel() %> = ParserUtils.parseTo_Date(temp_row_<%=cid %>[columnIndex_<%=cid%>]<%=(isTrimAll || (!trimSelects.isEmpty() && ("true").equals(trimSelects.get(i).get("TRIM"))))?".trim()":"" %>, <%= patternValue %>);
+				}catch(java.lang.Exception e){
+					<% // for bug TDI-19404 %>
+					throw new RuntimeException("The cell format is not Date in ( Row. "+(nb_line_<%= cid %>+1)+ " and ColumnNum. " + curColNum_<%=cid %> + " )");
+				}
+
 <%
 						}else if(JavaTypesManager.isNumberType(javaType)) {
 							if(advancedSeparator) {

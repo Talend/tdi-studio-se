@@ -1202,6 +1202,24 @@ if (execStat) {
     }
 %>
     int returnCode = 0;
+
+<%
+    if (isRunInMultiThread) {
+%>
+        Integer localErrorCode = (Integer)(((java.util.Map)threadLocal.get()).get("errorCode"));
+        String localStatus = (String)(((java.util.Map)threadLocal.get()).get("status"));
+        if (localErrorCode != null) {
+            if (errorCode == null || localErrorCode.compareTo(errorCode) > 0) {
+                   errorCode = localErrorCode;
+            }
+        }
+        if (localStatus != null && !status.equals("failure")){
+            status = localStatus;
+        }
+<%
+    }
+%>
+
     if(errorCode == null) {
          returnCode = status != null && status.equals("failure") ? 1 : 0;
     } else {

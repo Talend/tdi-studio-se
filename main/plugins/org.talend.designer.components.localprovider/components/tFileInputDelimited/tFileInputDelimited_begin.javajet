@@ -464,6 +464,7 @@
 									log.error("<%=cid%> - " +e.getMessage());
 								<%}%>
 								System.err.println(e.getMessage());
+								globalMap.put("<%=cid %>_ERROR_MESSAGE", e.getMessage());
 							<% } %>
 						}
 						java.util.zip.ZipEntry entry_<%=cid %> = null;
@@ -479,6 +480,7 @@
 										log.error("<%=cid%> - " +e.getMessage());
 									<%}%>
 									System.err.println(e.getMessage());
+									globalMap.put("<%=cid %>_ERROR_MESSAGE", e.getMessage());
 									break;
 								<% } %>
 							}
@@ -503,6 +505,7 @@
 										log.error("<%=cid%> - " +e.getMessage());
 									<%}%>
 									System.err.println(e.getMessage());
+									globalMap.put("<%=cid %>_ERROR_MESSAGE", e.getMessage());
 								<% } %>
 							}
 					<%
@@ -528,6 +531,7 @@
 									log.error("<%=cid%> - " +e.getMessage());
 								<%}%>
 								System.err.println(e.getMessage());
+								globalMap.put("<%=cid %>_ERROR_MESSAGE", e.getMessage());
 							<% } %>
 						}
 					<%
@@ -606,7 +610,9 @@
 			            					} else if(rejectConnName.equals(firstConnName)){%>
 			            						<%=rejectConnName%>.errorMessage = e.getMessage() + " - Line: " + tos_count_<%=node.getUniqueName() %>;
 			            					<%
-									}
+			            			} %>
+			            			globalMap.put("<%=cid %>_ERROR_MESSAGE", e.getMessage());
+										<%
 			        					} 
 			        					%>
 			    					}
@@ -1076,6 +1082,7 @@
 									log.error("<%=cid%> - " + e.getMessage());
 								<%}%>
 								System.err.println(e.getMessage());
+								globalMap.put("<%=cid %>_ERROR_MESSAGE", e.getMessage());
 							<% } %>
 	        			}
 	        			java.util.zip.ZipEntry entry_<%=cid %> = null;
@@ -1091,6 +1098,7 @@
 										log.error("<%=cid%> - " + e.getMessage());
 									<%}%>
 									System.err.println(e.getMessage());
+									globalMap.put("<%=cid %>_ERROR_MESSAGE", e.getMessage());
 									break;
 								<% } %>
 	        				}
@@ -1283,6 +1291,7 @@
 							log.error("<%=cid%> - " +e.getMessage());
 						<%}%>
 						System.err.println(e.getMessage());
+						globalMap.put("<%=cid %>_ERROR_MESSAGE", e.getMessage());
 					<% } %>
 	    		}//TD110 end
 	        
@@ -1386,7 +1395,9 @@
             							%>
             								<%=rejectConnName%>.errorMessage = e.getMessage() + " - Line: " + tos_count_<%=node.getUniqueName() %>;
             							<%
-            							}
+            							} %>
+            							globalMap.put("<%=cid %>_ERROR_MESSAGE", e.getMessage());
+            							<%
         							} 
         							%>
 	    						}

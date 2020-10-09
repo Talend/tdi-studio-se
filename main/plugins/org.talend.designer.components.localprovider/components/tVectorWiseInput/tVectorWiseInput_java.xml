@@ -200,7 +200,7 @@
 
    <CODEGENERATION>
      <IMPORTS>
-       <IMPORT NAME="Driver-Ingres" MODULE="iijdbc.jar" MVN="mvn:org.talend.libraries/iijdbc/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.jdbc.ingres/lib/iijdbc.jar" REQUIRED="true" />
+       <IMPORT NAME="Driver-Ingres" MODULE="iijdbc.jar" MVN="mvn:org.talend.libraries/iijdbc/6.0.0" REQUIRED="true" />
      </IMPORTS>
    </CODEGENERATION>
 
