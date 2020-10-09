@@ -129,7 +129,7 @@ public class UpdateRemovedHadoopVersion extends AbstractJobMigrationTask {
         public void transform(NodeType node) {
             
             String versionLabel =  componentType.getVersionParameter();
-            String distributionLabel =  componentType.getDistributionParameter();
+            String distributionLabel =  componentType.name();
             
             if (!versionsLabel.contains(ComponentUtilities.getNodePropertyValue(node, versionLabel))) {
                 
