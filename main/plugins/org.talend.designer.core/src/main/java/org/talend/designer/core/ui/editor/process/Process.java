@@ -249,6 +249,8 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
     public static final int PARALLEL_STATUS = 8;
 
     public static final int WINDOW_STATUS = 64;
+    
+    public static final int BREAKPOINT_ACTIVE_STATUS = 128; //for route debugging
 
     private Property property;
 
