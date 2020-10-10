@@ -338,20 +338,39 @@ public class UnifiedComponentUtil {
                     JsonNode jo_path = (JsonNode) path;
                     bean.getPaths().add(jo_path.get("path").asText());
                 }
+                // optional setting excludes
                 JsonNode excludes = jo.get("excludes");
-                for (JsonNode exclude : excludes) {
-                    bean.getExcludeDefinitions().add(exclude.get("component").asText());
-                }
-                JsonNode configuration = jo.get("configuration");
-                for (JsonNode jo_config : configuration) {
-                    UnifiedJDBCConfigurationBean configBean = new UnifiedJDBCConfigurationBean();
-                    configBean.setComponentName(jo_config.get("component").asText());
-                    Map<String, Object> parameters = configBean.getParameters();
-                    JsonNode jo_parameters = jo_config.get("parameters");
-                    for (JsonNode jo_param : jo_parameters) {
-                        parameters.put(jo_param.get("name").asText(), jo_param.get("value").asText());
+                if (excludes != null) {
+                    for (JsonNode exclude : excludes) {
+                        JsonNode component = exclude.get("component");
+                        if (component != null) {
+                            bean.getExcludeDefinitions().add(component.asText());
+                        }
                     }
-                    bean.getParameterConfigurations().add(configBean);
+                }
+                // optional setting configuration
+                JsonNode configuration = jo.get("configuration");
+                if (configuration != null) {
+                    for (JsonNode jo_config : configuration) {
+                        UnifiedJDBCConfigurationBean configBean = new UnifiedJDBCConfigurationBean();
+                        JsonNode component = jo_config.get("component");
+                        if (component == null) {
+                            continue;
+                        }
+                        configBean.setComponentName(component.asText());
+                        Map<String, Object> parameters = configBean.getParameters();
+                        JsonNode jo_parameters = jo_config.get("parameters");
+                        if (jo_parameters != null) {
+                            for (JsonNode jo_param : jo_parameters) {
+                                JsonNode name = jo_param.get("name");
+                                JsonNode value = jo_param.get("value");
+                                if (name != null && value != null) {
+                                    parameters.put(name.asText(), value.asText());
+                                }
+                            }
+                        }
+                        bean.getParameterConfigurations().add(configBean);
+                    }
                 }
                 additionalJDBCCache.put(bean.getDisplayName(), bean);
             }
