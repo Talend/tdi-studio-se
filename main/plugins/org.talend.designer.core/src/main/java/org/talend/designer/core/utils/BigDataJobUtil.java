@@ -151,7 +151,12 @@ public class BigDataJobUtil {
 
             for (IElementParameter pt : parameters) {
                 if (pt.getName().equals("DISTRIBUTION")) { //$NON-NLS-1$
-                    return true;
+                    String value = String.valueOf(pt.getValue());
+                    if ("MICROSOFT_HD_INSIGHT".equals(value) //$NON-NLS-1$
+                            || "GOOGLE_CLOUD_DATAPROC".equals(value) //$NON-NLS-1$
+                            || "CLOUDERA_ALTUS".equals(value) || "DATABRICKS".equals(value) || "QUBOLE".equals(value)) { //$NON-NLS-1$
+                        return true;
+                    }
                 }
             }
             if (isSparkWithYarnClusterMode()) {

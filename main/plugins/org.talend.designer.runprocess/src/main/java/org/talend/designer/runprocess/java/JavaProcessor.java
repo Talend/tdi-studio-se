@@ -150,6 +150,7 @@ import org.talend.designer.runprocess.i18n.Messages;
 import org.talend.designer.runprocess.prefs.RunProcessPrefsConstants;
 import org.talend.designer.runprocess.utils.JobVMArgumentsUtil;
 import org.talend.repository.ProjectManager;
+import org.talend.repository.utils.EmfModelUtils;
 import org.talend.repository.utils.EsbConfigUtils;
 import org.talend.utils.io.FilesUtils;
 
@@ -353,16 +354,39 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
             outputFolder = tProcessJavaProject.getTestOutputFolder();
         } else {
             srcFolder = tProcessJavaProject.getSrcFolder();
-            boolean needsToHaveContextInsideJar = true;
-
-            if (property != null && property.getItem() instanceof ProcessItem) {
-                needsToHaveContextInsideJar = !new BigDataJobUtil(process).needsToHaveContextInsideJar();
+            boolean needContextInJar = false;
+            if (process != null) {
+                needContextInJar = new BigDataJobUtil(process).needsToHaveContextInsideJar();
+                if (ProcessorUtilities.getMainJobInfo() != null) {
+                    if (ProcessorUtilities.getMainJobInfo().getProcess() != null) {
+                        if (ProcessorUtilities.isEsbJob(ProcessorUtilities.getMainJobInfo().getProcess(), true)
+                                || "CAMEL".equals(ProcessorUtilities.getMainJobInfo().getProcess().getComponentsType())) {
+                            if (property.getItem() instanceof ProcessItem) {
+                                if (!needContextInJar) {
+                                    if (null != EmfModelUtils.getComponentByName((ProcessItem) property.getItem(), "tRunJob",
+                                            "cTalendJob")) {
+                                        needContextInJar = false;
+                                    } else {
+                                        if (ProcessorUtilities.isEsbJob(process, true)) {
+                                            needContextInJar = false;
+                                        } else {
+                                            needContextInJar = true;
+                                        }
+                                    }
+                                }
+                            } else if (property.getItem().eClass().getClassifierID() == 4) {
+                                // CamelPropertiesPackage Line 516 int ROUTELET_PROCESS_ITEM = 4;
+                                needContextInJar = true;
+                            }
+                        }
+                    }
+                }
             }
 
-            if (ProcessorUtilities.isExportConfig() && property != null && needsToHaveContextInsideJar) {
-                resourcesFolder = tProcessJavaProject.getExternalResourcesFolder();
-            } else {
+            if (needContextInJar) {
                 resourcesFolder = tProcessJavaProject.getResourcesFolder();
+            } else {
+                resourcesFolder = tProcessJavaProject.getExternalResourcesFolder();
             }
             outputFolder = tProcessJavaProject.getOutputFolder();
         }
