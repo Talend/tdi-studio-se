@@ -66,6 +66,8 @@ public abstract class Processor implements IProcessor, IEclipseProcessor, Talend
 
     public static final String CTX_ARG = TalendProcessArgumentConstant.CMD_ARG_CONTEXT_NAME;
 
+    public static final String DEBUG_ROUTE_ID_ARG = "DEBUG_ROUTE_ID_ARG"; //$NON-NLS-1$
+
     private static final String STAT_PORT_ARG = TalendProcessArgumentConstant.CMD_ARG_STATS_PORT;
 
     private static final String TRACE_PORT_ARG = TalendProcessArgumentConstant.CMD_ARG_TRACE_PORT;

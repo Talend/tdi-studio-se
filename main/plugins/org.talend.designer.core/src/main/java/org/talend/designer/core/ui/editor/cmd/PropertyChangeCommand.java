@@ -238,6 +238,15 @@ public class PropertyChangeCommand extends Command {
                 Object value = elem.getPropertyValue(propName);
                 if (value == null || (!value.toString().endsWith("xsd") && !value.toString().endsWith("xsd\""))) {
                     elem.setPropertyValue(propertyTypeName, EmfComponent.BUILTIN);
+
+                    /**
+                     * For tCreateTable, DbType changed need to clean repository connection id stored, or it will get
+                     * original DbType repository connection when click to Repository property type from built-in
+                     */
+                    if ("tCreateTable".equals(elem.getPropertyValue(EParameterName.COMPONENT_NAME.getName()))
+                            && "DBTYPE".equals(propName)) {
+                        elem.setPropertyValue(EParameterName.REPOSITORY_PROPERTY_TYPE.getName(), "");
+                    }
                 }
                 for (IElementParameter param : elem.getElementParameters()) {
                     if (param.getRepositoryProperty() == null || param.getRepositoryProperty().equals(currentParam.getName())) {
@@ -254,6 +263,15 @@ public class PropertyChangeCommand extends Command {
                 elem.getElementParameter("module.moduleName").setRepositoryValueUsed(false);
             }
             repositoryValueWasUsed = false;
+
+            /**
+             * For tCreateTable, DbType changed need to clean repository connection id stored, or it will get original
+             * DbType repository connection when click to Repository property type from built-in
+             */
+            if ("tCreateTable".equals(elem.getPropertyValue(EParameterName.COMPONENT_NAME.getName()))
+                    && "DBTYPE".equals(propName)) {
+                elem.setPropertyValue(EParameterName.REPOSITORY_PROPERTY_TYPE.getName(), "");
+            }
         }
 
         oldValue = elem.getPropertyValue(propName);

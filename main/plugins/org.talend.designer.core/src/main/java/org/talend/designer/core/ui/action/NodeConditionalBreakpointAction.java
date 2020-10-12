@@ -15,46 +15,45 @@ package org.talend.designer.core.ui.action;
 import java.util.List;
 
 import org.eclipse.gef.EditPart;
-import org.eclipse.gef.ui.actions.SelectionAction;
+import org.eclipse.ui.IWorkbench;
+import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchPart;
-import org.talend.core.CorePlugin;
-import org.talend.core.GlobalServiceRegister;
-import org.talend.core.context.Context;
+import org.eclipse.ui.PartInitException;
+import org.eclipse.ui.PlatformUI;
+import org.talend.commons.ui.runtime.exception.ExceptionHandler;
+import org.talend.core.PluginChecker;
+import org.talend.core.model.process.EComponentCategory;
 import org.talend.core.model.process.INode;
-import org.talend.core.model.process.IProcess;
-import org.talend.core.repository.model.ProxyRepositoryFactory;
-import org.talend.core.ui.branding.IBrandingService;
 import org.talend.core.ui.utils.PluginUtil;
 import org.talend.designer.core.DesignerPlugin;
 import org.talend.designer.core.i18n.Messages;
 import org.talend.designer.core.ui.editor.nodes.Node;
 import org.talend.designer.core.ui.editor.nodes.NodePart;
-import org.talend.designer.core.ui.editor.process.Process;
 import org.talend.designer.core.ui.editor.process.ProcessPart;
+import org.talend.designer.core.ui.views.properties.ComponentSettingsView;
 
 /**
- * Action to toggle a breakpoint on a node. <br/>
+ * Action to toggle a conditional breakpoint on a camel route node, for ESB only. <br/>
  *
  * $Id$
  *
  */
-public class NodeBreakpointAction extends SelectionAction {
+public class NodeConditionalBreakpointAction extends ShowComponentSettingViewerAction {
 
-    public static final String ID = "org.talend.designer.core.ui.editor.action.NodeBreakpointAction"; //$NON-NLS-1$
-
-    private IProcess process;
+    public static final String ID = "org.talend.designer.core.ui.editor.action.NodeConditionalBreakpointAction"; //$NON-NLS-1$
 
     private Node node;
 
     /**
-     * Constructs a new NodeBreakpointAction.
+     * Constructs a new PropertiesContextAction.
      *
      * @param part
      */
-    public NodeBreakpointAction(IWorkbenchPart part) {
+    public NodeConditionalBreakpointAction(IWorkbenchPart part) {
         super(part);
         setId(ID);
         setImageDescriptor(DesignerPlugin.getImageDescriptor("icons/breakpoint.png")); //$NON-NLS-1$
+        setText(Messages.getString("NodeConditionalBreakpointAction.conditionalBreakpoint")); //$NON-NLS-1$
     }
 
     /*
@@ -64,46 +63,36 @@ public class NodeBreakpointAction extends SelectionAction {
      */
     @Override
     protected boolean calculateEnabled() {
-        return canPerformAction();
-    }
-
-    /**
-     * Test if the selected item is a node.
-     *
-     * @return true / false
-     */
-    private boolean canPerformAction() {
-        IBrandingService brandingService = (IBrandingService) GlobalServiceRegister.getDefault().getService(
-                IBrandingService.class);
-        if (!brandingService.getBrandingConfiguration().isAllowDebugMode()) {
+        if (!PluginUtil.isMediation() || !PluginChecker.isRouteletLoaded()) {
             return false;
         }
-
-        if (getSelectedObjects().isEmpty()) {
+        List objects = getSelectedObjects();
+        if (objects.isEmpty()) {
             return false;
         }
-
+        if (!(objects.get(0) instanceof EditPart)) {
+            return false;
+        }
         List parts = getSelectedObjects();
         if (parts.size() == 1) {
             Object o = parts.get(0);
             if (!(o instanceof NodePart)) {
                 return false;
             }
-            if (PluginUtil.isMediation()) {
-                NodePart part = (NodePart) o;
-                if (part.getModel() instanceof INode) {
-                    INode n = (INode) part.getModel();
-                    if (0 == n.getIncomingConnections().size()) {
-                        return false;
-                    }
-                }
-            }
             NodePart part = (NodePart) o;
-            if (!(part.getModel() instanceof INode)) {
+            if (part.getModel() instanceof INode) {
+                INode n = (INode) part.getModel();
+                if (0 == n.getIncomingConnections().size()) {
+                    return false;
+                }
+            } else {
                 return false;
             }
             node = (Node) part.getModel();
             if (node.getJobletNode() != null) {
+                return false;
+            }
+            if (node.getStatus() != org.talend.designer.core.ui.editor.process.Process.BREAKPOINT_STATUS) {
                 return false;
             }
             EditPart parentPart = part.getParent();
@@ -113,16 +102,8 @@ public class NodeBreakpointAction extends SelectionAction {
             if (!(parentPart instanceof ProcessPart)) {
                 return false;
             }
-            process = (IProcess) ((ProcessPart) parentPart).getModel();
-
-            if (CorePlugin.getContext().getBreakpointNodes(process).contains(node)) {
-                setText(Messages.getString("NodeBreakpointAction.removeBreakpoint")); //$NON-NLS-1$
-            } else {
-                setText(Messages.getString("NodeBreakpointAction.addBreakPoint")); //$NON-NLS-1$
-            }
             return true;
         }
-
         return false;
     }
 
@@ -132,14 +113,18 @@ public class NodeBreakpointAction extends SelectionAction {
      * @see org.eclipse.jface.action.Action#run()
      */
     public void run() {
-        Context context = CorePlugin.getContext();
-        if (context.getBreakpointNodes(process).contains(node)) {
-            context.removeBreakpoint(process, node);
-            node.removeStatus(Process.BREAKPOINT_STATUS);
-        } else {
-            context.addBreakpoint(process, node);
-            node.addStatus(Process.BREAKPOINT_STATUS);
+        IWorkbench workbench = PlatformUI.getWorkbench();
+        IWorkbenchPage page = workbench.getActiveWorkbenchWindow().getActivePage();
+        try {
+            ComponentSettingsView view = (ComponentSettingsView) page.showView(getViewId());
+            view.selectTab(EComponentCategory.BREAKPOINT_CAMEL);
+        } catch (PartInitException e) {
+            ExceptionHandler.process(e);
         }
+
     }
 
+    public String getViewId() {
+        return ComponentSettingsView.ID;
+    }
 }

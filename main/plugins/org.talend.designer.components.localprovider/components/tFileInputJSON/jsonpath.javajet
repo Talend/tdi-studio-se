@@ -46,6 +46,7 @@ Object filenameOrStream_<%=cid %> = null;
 				<%if(isLog4jEnabled){%>
 					log.error("<%=cid%> - " + e_<%=cid%>.getMessage());
 				<%}%>
+	            globalMap.put("<%=cid %>_ERROR_MESSAGE", e_<%=cid%>.getMessage());
 	            System.err.println(e_<%=cid%>.getMessage());
 <%
 			}
@@ -85,6 +86,7 @@ if(dieOnError){
 	if(isLog4jEnabled){%>
 	log.error("<%=cid%> - " + e_<%=cid%>.getMessage());
 	<%}%>
+	globalMap.put("<%=cid %>_ERROR_MESSAGE", e_<%=cid%>.getMessage());
 	System.err.println(e_<%=cid%>.getMessage());
 <%
 }
@@ -275,7 +277,9 @@ for(Object row_<%=cid%> : resultset_<%=cid%>) {
 %>
                 <%=rejectConnName%>.errorMessage = e_<%=cid%>.getMessage() + " - Line: " + tos_count_<%=node.getUniqueName() %>;
 <%
-            }
+            } %>
+            globalMap.put("<%=cid %>_ERROR_MESSAGE", e_<%=cid%>.getMessage());
+<%
         }
 %>
     }
