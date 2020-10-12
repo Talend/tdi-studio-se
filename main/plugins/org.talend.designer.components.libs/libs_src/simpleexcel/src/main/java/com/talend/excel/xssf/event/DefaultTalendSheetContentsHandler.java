@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2020 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -12,8 +12,12 @@
 // ============================================================================
 package com.talend.excel.xssf.event;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.poi.xssf.usermodel.XSSFComment;
 
@@ -33,8 +37,33 @@ public class DefaultTalendSheetContentsHandler implements TalendXSSFSheetXMLHand
 
     private int lastColumnIndex = -1;
 
+    private int endColumnIndex = 0;
+
+    private boolean isCellDateType = false;
+
+    //Cache Formatters
+    private Map<Integer, SimpleDateFormat> formatters = new HashMap<Integer, SimpleDateFormat>();
+
+    private SimpleDateFormat currentExcelFormatter;
+
+    private SimpleDateFormat dynamicDateFormatter;
+
+    private final int startDynamicIndex;
+
+    private final int endDynamicIndex;
+
     public DefaultTalendSheetContentsHandler(DataBufferCache cache) {
+        this(cache,null,0,0);
+    }
+
+    public DefaultTalendSheetContentsHandler(DataBufferCache cache, String dynamicDatePattern, int startDynamicIndex,
+            int endDynamicIndex) {
         this.cache = cache;
+        if (dynamicDatePattern != null) {
+            this.dynamicDateFormatter = new SimpleDateFormat(dynamicDatePattern);
+        }
+        this.startDynamicIndex = startDynamicIndex;
+        this.endDynamicIndex = endDynamicIndex;
     }
 
     @Override
@@ -46,6 +75,11 @@ public class DefaultTalendSheetContentsHandler implements TalendXSSFSheetXMLHand
     public void endRow(int rowNum) {
         cache.writeData(row);
         row = null;
+        //Store count of columns to determine date pattern in case of dynamic value.
+        //It can be applied since in XLSX file has to be a header, so we can count total number of columns
+        if (startDynamicIndex != Integer.MIN_VALUE && endColumnIndex == 0) {
+            endColumnIndex = lastColumnIndex;
+        }
         // when each row end ,reset lastColumnIndex
         lastColumnIndex = -1;
         if (stop) {
@@ -54,9 +88,25 @@ public class DefaultTalendSheetContentsHandler implements TalendXSSFSheetXMLHand
     }
 
     @Override
-    public void cell(String cellReference, String formattedValue,XSSFComment comment) {
+    public void cell(String cellReference, String formattedValue, XSSFComment comment) {
         checkHasNullValue(cellReference);
-        row.add(formattedValue);
+        String dataField;
+        if (isCellDateType && formattedValue != null) {
+            try {
+                dataField = currentColumnIndex >= startDynamicIndex
+                        && currentColumnIndex <= endColumnIndex - endDynamicIndex
+                                ? dynamicDateFormatter != null
+                                        ? dynamicDateFormatter.format(currentExcelFormatter.parse(formattedValue))
+                                        : formattedValue
+                                : String.valueOf(currentExcelFormatter.parse(formattedValue).getTime());
+            } catch (ParseException e) {
+                dataField = null;
+            }
+            isCellDateType = false;
+        } else {
+            dataField = formattedValue;
+        }
+        row.add(dataField);
     }
 
     @Override
@@ -65,7 +115,7 @@ public class DefaultTalendSheetContentsHandler implements TalendXSSFSheetXMLHand
 
     @Override
     public void endSheet() {
-
+        formatters.clear();
     }
 
     public void stop() {
@@ -108,4 +158,13 @@ public class DefaultTalendSheetContentsHandler implements TalendXSSFSheetXMLHand
         }
         return columnIndex;
     }
+
+    public void setExcelDateFormat(String excelDateFormat) {
+        currentExcelFormatter = formatters.computeIfAbsent(currentColumnIndex, v -> new SimpleDateFormat(excelDateFormat));
+    }
+
+    public void setCellDateType(boolean isCellDateType) {
+        this.isCellDateType = isCellDateType;
+    }
+
 }

@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>org.talend.libraries</groupId>
-  <artifactId>simpleexcel-2.2-20190722</artifactId>
+  <artifactId>simpleexcel-2.3-20201001</artifactId>
   <version>6.0.0</version>
   <packaging>jar</packaging>
 
@@ -13,7 +13,7 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<talend.nexus.url>https://artifacts-oss.talend.com</talend.nexus.url>
-		<java.source.version>1.6</java.source.version>
+		<java.source.version>1.8</java.source.version>
 	</properties>
 
 	<distributionManagement>
