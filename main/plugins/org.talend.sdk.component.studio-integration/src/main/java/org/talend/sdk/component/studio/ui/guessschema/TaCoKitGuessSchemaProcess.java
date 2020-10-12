@@ -41,6 +41,7 @@ import org.talend.designer.runprocess.ProcessorUtilities;
 import org.talend.sdk.component.server.front.model.ActionReference;
 import org.talend.sdk.component.studio.ComponentModel;
 import org.talend.sdk.component.studio.Lookups;
+import org.talend.sdk.component.studio.enums.ETaCoKitComponentType;
 import org.talend.sdk.component.studio.i18n.Messages;
 import org.talend.sdk.component.studio.metadata.model.ComponentModelSpy;
 import org.talend.sdk.component.studio.util.TaCoKitConst;
@@ -153,12 +154,34 @@ public class TaCoKitGuessSchemaProcess {
             IProcess originalProcess;
             originalProcess = new Process(property);
 
+            List<? extends IConnection> incomingConnections = new ArrayList<>(node.getIncomingConnections());
             List<? extends IConnection> outgoingConnections = new ArrayList<>(node.getOutgoingConnections());
             try {
                 node.setOutgoingConnections(new ArrayList<>());
 
                 List<INode> nodes = new ArrayList<>();
-                retrieveNodes(nodes, new HashSet<>(), node);
+                IComponent nodeComp = node.getComponent();
+
+                /**
+                 * If it is an input component and guess schema action is provided, calling the action is enough
+                 */
+                if (ComponentModel.class.isInstance(nodeComp)) {
+                    ComponentModel compModel = (ComponentModel) nodeComp;
+                    if (ETaCoKitComponentType.input.equals(compModel.getTaCoKitComponentType())) {
+                        final List<ActionReference> actions = compModel.getDiscoverSchemaActions();
+                        if (actions != null && !actions.isEmpty() && actionName != null
+                                && actions.stream().anyMatch(a -> a.getName().equals(actionName))) {
+                            node.setIncomingConnections(new ArrayList<>());
+                            nodes.add(node);
+                        }
+                    }
+                }
+                /**
+                 * Else, still need to build the sub job
+                 */
+                if (nodes.isEmpty()) {
+                    retrieveNodes(nodes, new HashSet<>(), node);
+                }
 
                 DataProcess dataProcess = new DataProcess(originalProcess);
                 dataProcess.buildFromGraphicalProcess(nodes);
@@ -212,6 +235,7 @@ public class TaCoKitGuessSchemaProcess {
                 }
 
             } finally {
+                node.setIncomingConnections(incomingConnections);
                 node.setOutgoingConnections(outgoingConnections);
             }
         }
