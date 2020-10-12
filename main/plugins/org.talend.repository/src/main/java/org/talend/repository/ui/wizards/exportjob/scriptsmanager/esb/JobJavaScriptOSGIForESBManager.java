@@ -932,14 +932,7 @@ public class JobJavaScriptOSGIForESBManager extends JobJavaScriptsManager {
         }
         analyzer.setProperty(Analyzer.BUNDLE_NAME, bundleName);
         analyzer.setProperty(Analyzer.BUNDLE_SYMBOLICNAME, symbolicName);
-        String bundleVersion = null;
-        if (processItem.getProperty().getAdditionalProperties() != null &&
-            processItem.getProperty().getAdditionalProperties().containsKey("USER_VERSION")) {
-            bundleVersion = (String) processItem.getProperty().getAdditionalProperties().get("USER_VERSION");
-        } else {
-            bundleVersion = getBundleVersion();
-        }
-        analyzer.setProperty(Analyzer.BUNDLE_VERSION, bundleVersion);
+        analyzer.setProperty(Analyzer.BUNDLE_VERSION, getBundleVersion());
         IBrandingService brandingService = (IBrandingService) GlobalServiceRegister.getDefault().getService(
                 IBrandingService.class);
         analyzer.setProperty(Analyzer.BUNDLE_VENDOR, brandingService.getFullProductName() + " (" //$NON-NLS-1$
