@@ -98,6 +98,10 @@ public class NodeBreakpointAction extends SelectionAction {
                     }
                 }
             }
+            // disable for routelet and route test case
+            if (PluginUtil.isRouteletEditor() || PluginUtil.isRouteTestEditor()) {
+                return false;
+            }
             NodePart part = (NodePart) o;
             if (!(part.getModel() instanceof INode)) {
                 return false;
