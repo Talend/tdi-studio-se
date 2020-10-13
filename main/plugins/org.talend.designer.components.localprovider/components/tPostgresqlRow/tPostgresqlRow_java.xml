@@ -327,7 +327,7 @@
 
 	<CODEGENERATION>
 		<IMPORTS>
-			<IMPORT NAME="Driver-Postgres9" MODULE="postgresql-42.2.9.jar" MVN="mvn:org.postgresql/postgresql/42.2.9" REQUIRED_IF="(DB_VERSION =='V9_X') AND (USE_EXISTING_CONNECTION == 'false')" />
+			<IMPORT NAME="Driver-Postgres9" MODULE="postgresql-42.2.14.jar" MVN="mvn:org.postgresql/postgresql/42.2.14" REQUIRED_IF="(DB_VERSION =='V9_X') AND (USE_EXISTING_CONNECTION == 'false')" />
 			<IMPORT NAME="Driver-Postgres" MODULE="postgresql-8.4-703.jdbc4.jar" MVN="mvn:postgresql/postgresql/8.4-703.jdbc4" REQUIRED_IF="(DB_VERSION =='PRIOR_TO_V9') AND (USE_EXISTING_CONNECTION == 'false')" />
 		</IMPORTS>
 	</CODEGENERATION>
