@@ -53,7 +53,7 @@ imports="
 		public String getQueryString(INode node) {
 
 			String trackerString = "\""+ org.talend.core.utils.TrackerUtil.getRedshiftTracker() + "\\n\" + ";
-			return trackerString + super.getQueryString(node);
+			return trackerString + "(" + super.getQueryString(node) + ")";
 		}
 	}
 	dbRowBeginUtil = new DBRowBeginUtil();

@@ -58,7 +58,7 @@ for(IConnection conn : outgoingConns) {
 }
 log4jCodeGenerateUtil.query(node);
 %>
-query_<%=cid %> ="<%=redshiftTracker%> \n " +  <%=dbquery%>;
+query_<%=cid %> ="<%=redshiftTracker%> \n " +  (<%=dbquery%>);
 whetherReject_<%=cid%> = false;
 <%
 List<IMetadataTable> metadatas = node.getMetadataList();
