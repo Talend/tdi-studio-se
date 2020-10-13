@@ -30,10 +30,10 @@ public class EnabletPersonatorAddressBasicSettingTask extends AbstractJobMigrati
         ProcessType processType = getProcessType(item);
         try {
             // tPersonator
-            IComponentFilter filter_tAddressRowCloud = new NameComponentFilter("tPersonator");
+            IComponentFilter filter_tPersonator = new NameComponentFilter("tPersonator");
             IComponentConversion update_tPersonator = new Update_tPersonator();
             ModifyComponentsAction
-                    .searchAndModify(item, processType, filter_tAddressRowCloud,
+                    .searchAndModify(item, processType, filter_tPersonator,
                             Arrays.<IComponentConversion> asList(update_tPersonator));
 
             return ExecutionResult.SUCCESS_NO_ALERT;
