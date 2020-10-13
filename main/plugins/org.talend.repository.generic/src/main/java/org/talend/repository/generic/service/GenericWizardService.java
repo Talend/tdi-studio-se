@@ -15,7 +15,6 @@ package org.talend.repository.generic.service;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -35,6 +34,7 @@ import org.talend.components.api.wizard.ComponentWizard;
 import org.talend.components.api.wizard.ComponentWizardDefinition;
 import org.talend.components.api.wizard.WizardImageType;
 import org.talend.core.GlobalServiceRegister;
+import org.talend.core.PluginChecker;
 import org.talend.core.database.EDatabaseTypeName;
 import org.talend.core.model.components.IComponent;
 import org.talend.core.model.metadata.Dbms;
@@ -59,6 +59,7 @@ import org.talend.daikon.properties.Properties;
 import org.talend.daikon.properties.presentation.Form;
 import org.talend.daikon.properties.property.Property;
 import org.talend.designer.core.IUnifiedComponentService;
+import org.talend.designer.core.generic.model.GenericComponent;
 import org.talend.designer.core.generic.model.GenericElementParameter;
 import org.talend.designer.core.generic.model.GenericTableUtils;
 import org.talend.designer.core.generic.utils.ComponentsUtils;
@@ -362,25 +363,27 @@ public class GenericWizardService implements IGenericWizardService {
     }
 
     @Override
-    public void initAdditionalJDBCRepositoryObjType() {
-        List<ERepositoryObjectType> types = new ArrayList<ERepositoryObjectType>();
-        Map<String, UnifiedJDBCBean> additionalJDBC = UnifiedComponentUtil.getAdditionalJDBC();
-        if (additionalJDBC.keySet().isEmpty()) {
+    public void loadAdditionalJDBC() {
+        // restrict additional JDBC for EE
+        if (!PluginChecker.isTIS()) {
             return;
         }
-        Collection<UnifiedJDBCBean> beans = additionalJDBC.values();
-        for (UnifiedJDBCBean bean : beans) {
-            ERepositoryObjectType type = internalService.createRepositoryType(bean.getDisplayName(), bean.getDisplayName(),
-                    bean.getComponentKey(), "metadata/connections", 100);
-            types.add(type);
+        // load additional JDBC configuration json
+        ComponentWizardDefinition jdbcDefinition = null;
+        Set<ComponentWizardDefinition> wizardDefinitions = internalService.getComponentService().getTopLevelComponentWizards();
+        jdbcDefinition = wizardDefinitions.stream().filter(definition -> "JDBC".equals(definition.getName())).findFirst().get();
+        if (jdbcDefinition == null) {
+            return;
         }
-        IGenericDBService dbService = null;
-        if (GlobalServiceRegister.getDefault().isServiceRegistered(IGenericDBService.class)) {
-            dbService = (IGenericDBService) GlobalServiceRegister.getDefault().getService(IGenericDBService.class);
-        }
-        if (dbService != null && !types.isEmpty()) {
-            dbService.getExtraTypes().addAll(types);
-        }
+
+        InputStream inputStream = jdbcDefinition.getClass().getClassLoader().getResourceAsStream("support_extra_db.json");
+        UnifiedComponentUtil.loadAdditionalJDBC(inputStream);
+
+    }
+
+    @Override
+    public List<String> getAllAdditionalJDBCTypes() {
+        return new ArrayList<String>(UnifiedComponentUtil.getAdditionalJDBC().keySet());
     }
 
     @Override
@@ -402,6 +405,7 @@ public class GenericWizardService implements IGenericWizardService {
             dynamicFormComposite.setForm(componentWizard.getForms().get(0));
         }
 
+        Dbms mysqlDbms = MetadataTalendType.getDefaultDbmsFromProduct(EDatabaseTypeName.MYSQL.getProduct().toUpperCase());
         if (additionalJDBC.get(dbType) != null) {
             // additional jdbc
             Properties componentProperties = dynamicFormComposite.getForm().getProperties();
@@ -417,12 +421,19 @@ public class GenericWizardService implements IGenericWizardService {
             }
             UnifiedJDBCBean unifiedJDBCBean = additionalJDBC.get(dbType);
             Dbms dbms = MetadataTalendType.getDefaultDbmsFromProduct(unifiedJDBCBean.getDatabaseId());
-            if (dbms != null && StringUtils.isNotBlank(dbms.getId())) {
-                connection.setDbmsId(dbms.getId());
+            String dbmsId = null;
+            if (dbms.getProduct().equals(unifiedJDBCBean.getDatabaseId())) {
+                dbmsId = dbms.getId();
+            } else {
+                // avoid not found return default one
+                dbmsId = mysqlDbms.getId();
+            }
+            if (StringUtils.isNotBlank(dbmsId)) {
+                connection.setDbmsId(dbmsId);
                 NamedThing thing = componentProperties.getProperty("mappingFile");
                 if (thing != null) {
                     Property property = (Property) thing;
-                    property.setValue(dbms.getId());
+                    property.setValue(dbmsId);
                 }
             }
             Map<String, Object> map = new HashMap<String, Object>();
@@ -437,13 +448,12 @@ public class GenericWizardService implements IGenericWizardService {
             connection.setURL(null);
             connection.setDriverClass(null);
             connection.setDriverJarPath(null);
-            Dbms dbms = MetadataTalendType.getDefaultDbmsFromProduct(EDatabaseTypeName.MYSQL.getProduct().toUpperCase());
-            if (dbms != null && StringUtils.isNotBlank(dbms.getId())) {
-                connection.setDbmsId(dbms.getId());
+            if (mysqlDbms != null && StringUtils.isNotBlank(mysqlDbms.getId())) {
+                connection.setDbmsId(mysqlDbms.getId());
                 NamedThing thing = dynamicFormComposite.getForm().getProperties().getProperty("mappingFile");
                 if (thing != null) {
                     Property property = (Property) thing;
-                    property.setValue(dbms.getId());
+                    property.setValue(mysqlDbms.getId());
                 }
             }
         }
@@ -464,6 +474,40 @@ public class GenericWizardService implements IGenericWizardService {
                             .getService(IUnifiedComponentService.class);
                     return service.getUnifiedCompDisplayName(delegateComponent, emfComponent);
                 }
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public String getDefinitionName4AdditionalJDBC(IElement element) {
+        if (!(element instanceof Node)) {
+            return null;
+        }
+        Node node = (Node) element;
+        String databaseName = this.getDatabseNameByNode(node);
+        if (StringUtils.isNotBlank(databaseName) && UnifiedComponentUtil.isAdditionalJDBC(databaseName)) {
+            IComponent component = node.getComponent();
+            if (component instanceof GenericComponent) {
+                GenericComponent genericComp = (GenericComponent) component;
+                return genericComp.getComponentDefinition().getName();
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public Dbms getDbms4AdditionalJDBC(String typeName) {
+        if (!UnifiedComponentUtil.isAdditionalJDBC(typeName)) {
+            return null;
+        }
+        UnifiedJDBCBean unifiedJDBCBean = UnifiedComponentUtil.getAdditionalJDBC().get(typeName);
+        if (unifiedJDBCBean != null) {
+            String databaseId = unifiedJDBCBean.getDatabaseId();
+            Dbms dbms = MetadataTalendType.getDefaultDbmsFromProduct(databaseId);
+            if (databaseId.equals(dbms.getProduct())) {
+                // avoid not found return default one
+                return dbms;
             }
         }
         return null;

@@ -32,10 +32,12 @@ import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.URIUtil;
 import org.eclipse.equinox.p2.metadata.Version;
+import org.eclipse.m2e.core.MavenPlugin;
 import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.runtime.service.ITaCoKitService;
 import org.talend.commons.utils.resource.FileExtensions;
 import org.talend.core.runtime.maven.MavenUrlHelper;
+import org.talend.core.runtime.projectsetting.IProjectSettingTemplateConstants;
 import org.talend.sdk.component.studio.i18n.Messages;
 import org.talend.sdk.component.studio.util.TaCoKitConst;
 import org.talend.sdk.component.studio.util.TaCoKitUtil;
@@ -63,6 +65,8 @@ public class TaCoKitCarFeature extends AbstractExtraFeature implements ITaCoKitC
     private TaCoKitCar car;
 
     private Object carLock = new Object();
+    
+    private boolean isDeployCommand = false;
 
     public TaCoKitCarFeature(ComponentIndexBean indexBean) {
         super(indexBean.getBundleId(), indexBean.getName(), indexBean.getVersion(), indexBean.getDescription(),
@@ -154,11 +158,16 @@ public class TaCoKitCarFeature extends AbstractExtraFeature implements ITaCoKitC
     public boolean install(IProgressMonitor progress) throws Exception {
         String tckCarPath = getCar(progress).getCarFile().getAbsolutePath();
         String installationPath = URIUtil.toFile(URIUtil.toURI(Platform.getInstallLocation().getURL())).getAbsolutePath();
-
+        String commandType = " studio-deploy ";
         StringBuilder commandBuilder = new StringBuilder();
         commandBuilder.append("java -jar "); //$NON-NLS-1$
         commandBuilder.append(StringUtils.wrap(tckCarPath, "\"")); //$NON-NLS-1$
-        commandBuilder.append(" studio-deploy "); //$NON-NLS-1$
+        if (isDeployCommand) {
+            File m2Folder =this.getM2RepositoryPath();
+            installationPath = m2Folder.getAbsolutePath();
+            commandType = " maven-deploy ";
+        }
+        commandBuilder.append(commandType); //$NON-NLS-1$
         commandBuilder.append(StringUtils.wrap(installationPath, "\"")); //$NON-NLS-1$
         String command = commandBuilder.toString();
 
@@ -212,6 +221,24 @@ public class TaCoKitCarFeature extends AbstractExtraFeature implements ITaCoKitC
             throw new Exception(getErrorMessage(exec));
         }
         return true;
+    }
+    
+    private File getM2RepositoryPath() {
+        String configFolder = Platform.getConfigurationLocation().getURL().getPath();
+        File mavenUserSettingFile = new File(configFolder,
+                IProjectSettingTemplateConstants.MAVEN_USER_SETTING_TEMPLATE_FILE_NAME);
+        File m2Repo= null;
+        if (mavenUserSettingFile.exists()) {
+            m2Repo = new File(MavenPlugin.getMaven().getLocalRepositoryPath());
+        }
+        if (m2Repo == null) {
+            File m2Folder = new File(configFolder, ".m2");
+            m2Repo = new File (m2Folder, "repository");
+        }
+        if (!m2Repo.exists()) {
+            m2Repo.mkdirs();
+        }
+        return m2Repo;
     }
 
     private String getErrorMessage(Process exec) {
@@ -452,5 +479,10 @@ public class TaCoKitCarFeature extends AbstractExtraFeature implements ITaCoKitC
             workFolder.mkdirs();
         }
         ((AbstractFeatureStorage) getStorage()).setFeatDownloadFolder(workFolder);
+    }
+
+    @Override
+    public void setDeployCommand(boolean isDeployCommand){
+        this.isDeployCommand = isDeployCommand;     
     }
 }
