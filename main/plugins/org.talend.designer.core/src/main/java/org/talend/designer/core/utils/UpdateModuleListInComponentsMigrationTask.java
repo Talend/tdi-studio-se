@@ -21,6 +21,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.eclipse.emf.common.util.EList;
 import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.runtime.model.emf.EmfHelper;
+import org.talend.core.CorePlugin;
 import org.talend.core.model.components.ComponentCategory;
 import org.talend.core.model.components.IComponent;
 import org.talend.core.model.general.ModuleNeeded;
@@ -43,6 +44,7 @@ import org.talend.designer.core.model.utils.emf.talendfile.ElementValueType;
 import org.talend.designer.core.model.utils.emf.talendfile.NodeType;
 import org.talend.designer.core.model.utils.emf.talendfile.ParametersType;
 import org.talend.designer.core.model.utils.emf.talendfile.ProcessType;
+import org.talend.migration.IMigrationTask.ExecutionResult;
 import org.talend.repository.model.migration.EncryptPasswordInComponentsMigrationTask.FakeNode;
 
 /**
@@ -90,6 +92,8 @@ public class UpdateModuleListInComponentsMigrationTask extends AbstractItemMigra
         if (modified) {
             try {
                 factory.save(item, true);
+                // regenerate poms for affected job
+                CorePlugin.getDefault().getRunProcessService().generatePom(item);
                 return ExecutionResult.SUCCESS_NO_ALERT;
             } catch (Exception ex) {
                 ExceptionHandler.process(ex);
