@@ -255,7 +255,7 @@ public class BuildJobHandlerTest {
             ZipEntry libEntry = zip.getEntry("lib");
             assertNotNull("No lib folder", libEntry);
             if (jobItem == jobWithChildrenItem) {
-                String dependencyFromParent = "commons-lang-2.5.jar";
+                String dependencyFromParent = "commons-beanutils-1.9.4.jar";
                 ZipEntry dependencyEntry = zip.getEntry("lib/" + dependencyFromParent);
                 assertNotNull("No parent job dependency in lib folder", dependencyEntry);
                 String dependencyFromChild = "commons-lang-2.6.jar";

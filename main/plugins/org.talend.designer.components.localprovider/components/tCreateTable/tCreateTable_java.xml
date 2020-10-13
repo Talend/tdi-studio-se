@@ -606,11 +606,12 @@
       SHOW_IF="(DBTYPE=='SYBASE') and (USE_EXISTING_CONNECTION == 'true')"
     />
     
-    <PARAMETER NAME="DB_SYBASE_VERSION" FIELD="CLOSED_LIST" NUM_ROW="50"
+    <PARAMETER NAME="DB_SYBASE_VERSION" FIELD="CLOSED_LIST" NUM_ROW="50" REPOSITORY_VALUE="DB_VERSION"
 		SHOW_IF="(USE_EXISTING_CONNECTION == 'false')AND(DBTYPE=='SYBASE')">
 		<ITEMS DEFAULT="SYBSEIQ_16">
 			<ITEM NAME="SYBSEIQ_12_15" VALUE="SYBSEIQ_12_15" />
 			<ITEM NAME="SYBSEIQ_16" VALUE="SYBSEIQ_16" />
+			<ITEM NAME="SYBSEIQ_16_SA" VALUE="SYBSEIQ_16_SA" />
 		</ITEMS>
 	</PARAMETER>
 	<!--Sybase configuration end-->
@@ -877,7 +878,7 @@
         <IMPORT NAME="Driver-Oracle12c" MODULE="ojdbc7.jar" MVN="mvn:org.talend.libraries/ojdbc7/6.0.0"  REQUIRED_IF="(DBTYPE=='DBORACLE') AND (DB_VERSION == 'ORACLE_12') AND (USE_EXISTING_CONNECTION == 'false')" />
         <IMPORT NAME="ORACLE_18"        MODULE="ojdbc8-19.3.0.0.jar" MVN="mvn:com.oracle.ojdbc/ojdbc8/19.3.0.0" REQUIRED_IF="(DBTYPE=='DBORACLE') AND (DB_VERSION == 'ORACLE_18') AND (USE_EXISTING_CONNECTION == 'false')" />
 		<IMPORT NAME="Driver-POSTGRESQL" MODULE="postgresql-8.4-703.jdbc4.jar" MVN="mvn:postgresql/postgresql/8.4-703.jdbc4" REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false') AND ((((DBTYPE=='POSTGRE') or (DBTYPE=='POSTGREPLUS')) AND (DB_POSTGRE_VERSION =='PRIOR_TO_V9')) or (DBTYPE=='GREENPLUM'))" />
-		<IMPORT NAME="Driver-Postgres9" MODULE="postgresql-42.2.9.jar" MVN="mvn:org.postgresql/postgresql/42.2.9" REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false') AND (((DBTYPE=='POSTGRE') or (DBTYPE=='POSTGREPLUS')) AND (DB_POSTGRE_VERSION =='V9_X'))" />
+		<IMPORT NAME="Driver-Postgres9" MODULE="postgresql-42.2.14.jar" MVN="mvn:org.postgresql/postgresql/42.2.14" REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false') AND (((DBTYPE=='POSTGRE') or (DBTYPE=='POSTGREPLUS')) AND (DB_POSTGRE_VERSION =='V9_X'))" />
 		<IMPORT NAME="Driver-FIREBIRD" MODULE="jaybird-full-2.1.1.jar" MVN="mvn:org.talend.libraries/jaybird-full-2.1.1/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.jdbc.firebird/lib/jaybird-full-2.1.1.jar" REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false') AND (DBTYPE=='FIREBIRD')" />
 		<IMPORT NAME="Driver-HSQLDb" MODULE="hsqldb.jar" MVN="mvn:org.talend.libraries/hsqldb/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.jdbc.hsql/lib/hsqldb.jar" REQUIRED_IF="DBTYPE=='HSQLDB'"/>
 		<IMPORT NAME="Driver-INFORMIX-JDBC" MODULE="ifxjdbc.jar" MVN="mvn:org.talend.libraries/ifxjdbc/6.0.0"  REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false') AND (DBTYPE=='INFORMIX')" />
@@ -894,6 +895,7 @@
 		<IMPORT NAME="Driver-SQLITE-JDBC-NESTED" MODULE="sqlitejdbc-v056.jar" MVN="mvn:org.talend.libraries/sqlitejdbc-v056/6.0.0" REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false') AND (DBTYPE=='SQLITE')" />
 		<IMPORT NAME="Driver-SYBASE-JCONN3" MODULE="jconn3.jar" MVN="mvn:org.talend.libraries/jconn3/6.0.0" BundleID="" REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false') AND (DBTYPE=='SYBASE') AND (DB_SYBASE_VERSION == 'SYBSEIQ_12_15')" />
 		<IMPORT NAME="Driver-SYBASE-JCONN4" MODULE="jconn4.jar" MVN="mvn:org.talend.libraries/jconn4/6.0.0" BundleID="" REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false') AND (DBTYPE=='SYBASE') AND (DB_SYBASE_VERSION == 'SYBSEIQ_16')" />
+		<IMPORT NAME="Driver-SqlAnywhere" MODULE="sajdbc4.jar" MVN="mvn:sap.jdbc4.sqlanywhere/sajdbc4/17.0.0"  BundleID="" REQUIRED_IF = "(DB_VERSION == 'SYBSEIQ_16_SA') AND (USE_EXISTING_CONNECTION == 'false')" />
 		<IMPORT NAME="Driver-Teradata_jdbc" MODULE="terajdbc4-16.20.00.02.jar" MVN="mvn:com.teradata/terajdbc4/16.20.00.02"   REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false') AND (DBTYPE=='TERADATA')" />
 		<IMPORT NAME="Driver-Teradata_config" MODULE="tdgssconfig-16.20.00.02.jar" MVN="mvn:com.teradata/tdgssconfig/16.20.00.02"   REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false') AND (DBTYPE=='TERADATA')" />
 		<IMPORT NAME="Driver-Netezza" MODULE="nzjdbc.jar" MVN="mvn:org.talend.libraries/nzjdbc/6.0.0"  REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false') AND (DBTYPE=='NETEZZA')" />

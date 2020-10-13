@@ -1,6 +1,0 @@
-Manifest-Version: 1.0
-Bundle-ManifestVersion: 2
-Bundle-Name: Asm
-Bundle-SymbolicName: org.talend.libraries.asm;singleton:=true
-Bundle-Version: 7.4.1.qualifier
-Eclipse-BundleShape: dir

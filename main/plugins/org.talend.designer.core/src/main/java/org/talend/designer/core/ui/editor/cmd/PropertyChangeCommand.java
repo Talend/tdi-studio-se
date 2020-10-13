@@ -263,6 +263,15 @@ public class PropertyChangeCommand extends Command {
                 elem.getElementParameter("module.moduleName").setRepositoryValueUsed(false);
             }
             repositoryValueWasUsed = false;
+
+            /**
+             * For tCreateTable, DbType changed need to clean repository connection id stored, or it will get original
+             * DbType repository connection when click to Repository property type from built-in
+             */
+            if ("tCreateTable".equals(elem.getPropertyValue(EParameterName.COMPONENT_NAME.getName()))
+                    && "DBTYPE".equals(propName)) {
+                elem.setPropertyValue(EParameterName.REPOSITORY_PROPERTY_TYPE.getName(), "");
+            }
         }
 
         oldValue = elem.getPropertyValue(propName);

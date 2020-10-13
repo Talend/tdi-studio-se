@@ -56,6 +56,7 @@ import org.apache.commons.collections.map.MultiKeyMap;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Status;
 import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.exception.PersistenceException;
@@ -124,6 +125,10 @@ public class JobJavaScriptOSGIForESBManager extends JobJavaScriptsManager {
     private static final String JAVA = "java"; //$NON-NLS-1$
 
     private static final String JAVA_VERSION = "java.version";
+
+    private static File routineClassRootFolder = null;
+
+    private static File beanClassRootFolder = null;
 
     private MultiKeyMap requireBundleModules = new MultiKeyMap();
 
@@ -386,16 +391,21 @@ public class JobJavaScriptOSGIForESBManager extends JobJavaScriptsManager {
     protected void addRoutinesResources(ExportFileResource[] processes, ExportFileResource libResource) {
         File jarFile = new File(getTmpFolder() + File.separatorChar + JavaUtils.ROUTINES_JAR);
 
+        if (routineClassRootFolder == null) {
+            routineClassRootFolder = getCodeClassRootFileLocation(ERepositoryObjectType.ROUTINES);
+            if (routineClassRootFolder == null) {
+                return;
+            }
+            beanClassRootFolder = getCodeClassRootFileLocation(ERepositoryObjectType.BEANS);
+            RepositoryPlugin.getDefault().getRunProcessService().buildCodesJavaProject(new NullProgressMonitor());
+            if (beanClassRootFolder != null) {
+                FileCopyUtils.copyFolder(beanClassRootFolder, routineClassRootFolder);
+            }
+        }
+
         // make a jar file of system routine classes
-        File classRootFileLocation = getCodeClassRootFileLocation(ERepositoryObjectType.ROUTINES);
-        if (classRootFileLocation == null) {
-            return;
-        }
-        if (ERepositoryObjectType.valueOf("BEANS") != null) {
-            FileCopyUtils.copyFolder(getCodeClassRootFileLocation(ERepositoryObjectType.valueOf("BEANS")), classRootFileLocation);
-        }
         try {
-            JarBuilder jarbuilder = new JarBuilder(classRootFileLocation, jarFile);
+            JarBuilder jarbuilder = new JarBuilder(routineClassRootFolder, jarFile);
             jarbuilder.setIncludeDir(getRoutinesPaths());
             Collection<File> includeRoutines = new ArrayList<File>(getRoutineDependince(processes, true, USER_ROUTINES_PATH));
             includeRoutines.addAll(getRoutineDependince(processes, false, getIncludeRoutinesPath()));
@@ -922,14 +932,7 @@ public class JobJavaScriptOSGIForESBManager extends JobJavaScriptsManager {
         }
         analyzer.setProperty(Analyzer.BUNDLE_NAME, bundleName);
         analyzer.setProperty(Analyzer.BUNDLE_SYMBOLICNAME, symbolicName);
-        String bundleVersion = null;
-        if (processItem.getProperty().getAdditionalProperties() != null &&
-            processItem.getProperty().getAdditionalProperties().containsKey("USER_VERSION")) {
-            bundleVersion = (String) processItem.getProperty().getAdditionalProperties().get("USER_VERSION");
-        } else {
-            bundleVersion = getBundleVersion();
-        }
-        analyzer.setProperty(Analyzer.BUNDLE_VERSION, bundleVersion);
+        analyzer.setProperty(Analyzer.BUNDLE_VERSION, getBundleVersion());
         IBrandingService brandingService = (IBrandingService) GlobalServiceRegister.getDefault().getService(
                 IBrandingService.class);
         analyzer.setProperty(Analyzer.BUNDLE_VENDOR, brandingService.getFullProductName() + " (" //$NON-NLS-1$
