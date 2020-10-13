@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang3.reflect.TypeUtils;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.IWorkspaceRunnable;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -353,6 +354,11 @@ public class GenericDBService implements IGenericDBService{
                 // copy the value
                 String proName = ((org.talend.daikon.properties.property.Property) otherProp).getName();
                 Object value = ((org.talend.daikon.properties.property.Property) otherProp).getStoredValue();
+                if (value != null && TypeUtils.toString(String.class)
+                        .equals(((org.talend.daikon.properties.property.Property) otherProp).getType())) {
+                    value = TalendQuoteUtils.removeQuotesIfExist((String) value);
+                }
+
                 if (proName.equals("jdbcUrl")) {//$NON-NLS-1$
                     dbConnection.setURL((String) value);
                 } else if (proName.equals("driverClass")) {//$NON-NLS-1$

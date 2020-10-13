@@ -32,6 +32,10 @@ public class UnifiedJDBCBean {
 
     private List<String> paths = new ArrayList<String>();
 
+    private List<String> excludeDefinitions = new ArrayList<String>();
+
+    private List<UnifiedJDBCConfigurationBean> parameterConfigurations = new ArrayList<UnifiedJDBCConfigurationBean>();
+
     /**
      * Getter for databaseId.
      * 
@@ -129,6 +133,42 @@ public class UnifiedJDBCBean {
      */
     public void setPaths(List<String> paths) {
         this.paths = paths;
+    }
+
+    /**
+     * Getter for excludeDefinitions.
+     * 
+     * @return the excludeDefinitions
+     */
+    public List<String> getExcludeDefinitions() {
+        return excludeDefinitions;
+    }
+
+    /**
+     * Sets the excludeDefinitions.
+     * 
+     * @param excludeDefinitions the excludeDefinitions to set
+     */
+    public void setExcludeDefinitions(List<String> excludeDefinitions) {
+        this.excludeDefinitions = excludeDefinitions;
+    }
+
+    /**
+     * Getter for parameterConfigurations.
+     * 
+     * @return the parameterConfigurations
+     */
+    public List<UnifiedJDBCConfigurationBean> getParameterConfigurations() {
+        return parameterConfigurations;
+    }
+
+    /**
+     * Sets the parameterConfigurations.
+     * 
+     * @param parameterConfigurations the parameterConfigurations to set
+     */
+    public void setParameterConfigurations(List<UnifiedJDBCConfigurationBean> parameterConfigurations) {
+        this.parameterConfigurations = parameterConfigurations;
     }
 
 }
