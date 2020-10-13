@@ -34,7 +34,9 @@ import org.talend.core.model.properties.Item;
 import org.talend.core.model.properties.JobletProcessItem;
 import org.talend.core.model.properties.ProcessItem;
 import org.talend.core.model.repository.ERepositoryObjectType;
+import org.talend.core.model.utils.TalendTextUtils;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
+import org.talend.core.runtime.maven.MavenUrlHelper;
 import org.talend.core.ui.component.ComponentsFactoryProvider;
 import org.talend.designer.core.model.utils.emf.talendfile.ElementParameterType;
 import org.talend.designer.core.model.utils.emf.talendfile.ElementValueType;
@@ -72,13 +74,13 @@ public class UpdateModuleListInComponentsMigrationTask extends AbstractItemMigra
         boolean modified = false;
         try {
             if (item instanceof ConnectionItem) {
-                modified = updateConnectionItem((ConnectionItem) item);
+                modified = modified || updateConnectionItem((ConnectionItem) item);
             } else if (item instanceof ProcessItem) {
                 ProcessItem processItem = (ProcessItem) item;
-                modified = updateProcessItem(item, processItem.getProcess());
+                modified = modified || updateProcessItem(item, processItem.getProcess());
             } else if (item instanceof JobletProcessItem) {
                 JobletProcessItem jobletItem = (JobletProcessItem) item;
-                modified = updateProcessItem(item, jobletItem.getJobletProcess());
+                modified = modified || updateProcessItem(item, jobletItem.getJobletProcess());
             }
         } catch (Exception ex) {
             ExceptionHandler.process(ex);
@@ -144,11 +146,7 @@ public class UpdateModuleListInComponentsMigrationTask extends AbstractItemMigra
                 if (p instanceof ElementParameterType) {
                     ElementParameterType param = (ElementParameterType) p;
                     // variable name used for Stat&Logs
-                    if (param.getField().equals(EParameterFieldType.MODULE_LIST.name()) && param.getValue() != null) { // $NON-NLS-1$
-                        String jarUri = getMavenUriForJar(param.getValue());
-                        param.setValue(jarUri);
-                        modified = true;
-                    }
+                    modified = updateParam(param);
                 }
             }
         }
@@ -159,28 +157,12 @@ public class UpdateModuleListInComponentsMigrationTask extends AbstractItemMigra
         boolean modified = false;
         for (Object nodeObject : processType.getNode()) {
             NodeType nodeType = (NodeType) nodeObject;
+            if (nodeType.getComponentName().equals("cConfig")) {
+                return false;
+            }
             for (Object paramObjectType : nodeType.getElementParameter()) {
                 ElementParameterType param = (ElementParameterType) paramObjectType;
-                if (param.getField() != null) {
-                    if (param.getField().equals(EParameterFieldType.MODULE_LIST.name())
-                            && param.getValue() != null) {
-                        String jarUri = getMavenUriForJar(param.getValue());
-                        param.setValue(jarUri);
-                        modified = true;
-                    }
-
-                    if ("DRIVER_JAR".equals(param.getName()) && param.getField().equals(EParameterFieldType.TABLE.name())
-                            && param.getElementValue() != null) {
-
-                        EList<?> elementValues = param.getElementValue();
-                        for (Object ev : elementValues) {
-                            ElementValueType evt = (ElementValueType) ev;
-                            String jarUri = getMavenUriForJar(evt.getValue());
-                            evt.setValue(jarUri);
-                        }
-                        modified = true;
-                    }
-                }
+                modified = modified || updateParam(param);
             }
         }
         return modified;
@@ -195,6 +177,9 @@ public class UpdateModuleListInComponentsMigrationTask extends AbstractItemMigra
             ComponentCategory category = ComponentCategory.getComponentCategoryFromItem(item);
             for (Object nodeObjectType : processType.getNode()) {
                 NodeType nodeType = (NodeType) nodeObjectType;
+                if (nodeType.getComponentName().equals("cConfig")) {
+                    return false;
+                }
                 IComponent component = ComponentsFactoryProvider.getInstance().get(nodeType.getComponentName(),
                         category.getName());
                 if (component == null) {
@@ -205,11 +190,7 @@ public class UpdateModuleListInComponentsMigrationTask extends AbstractItemMigra
                     ElementParameterType param = (ElementParameterType) paramObjectType;
                     IElementParameter paramFromEmf = fNode.getElementParameter(param.getName());
                     if (paramFromEmf != null) {
-                        if (param.getField().equals(EParameterFieldType.MODULE_LIST.name()) && param.getValue() != null) {
-                            String jarUri = getMavenUriForJar(param.getValue());
-                            param.setValue(jarUri);
-                            modified = true;
-                        }
+                        modified = modified || updateParam(param);
                     }
                 }
             }
@@ -217,20 +198,53 @@ public class UpdateModuleListInComponentsMigrationTask extends AbstractItemMigra
         return modified;
     }
 
-
-
     private List<ERepositoryObjectType> getAllMetaDataType() {
         List<ERepositoryObjectType> list = new ArrayList<ERepositoryObjectType>();
         list.add(ERepositoryObjectType.METADATA_CONNECTIONS);
         return list;
     }
 
-    public static String getMavenUriForJar(String jarName) {
-        ModuleNeeded mod = new ModuleNeeded(null, jarName, null, true);
-        if (!StringUtils.isEmpty(mod.getCustomMavenUri())) {
-            return mod.getCustomMavenUri();
+    private static boolean updateParam(ElementParameterType param) {
+        boolean modified = false;
+        if (param.getField() != null) {
+            if (param.getField().equals(EParameterFieldType.MODULE_LIST.name()) && param.getValue() != null) {
+                String jarUri = getMavenUriForJar(param.getValue());
+                param.setValue(jarUri);
+                modified = true;
+            }
+
+            if ("DRIVER_JAR".equals(param.getName()) && param.getField().equals(EParameterFieldType.TABLE.name())
+                    && param.getElementValue() != null) {
+
+                List<ElementValueType> newListValue = new ArrayList();
+                EList<?> elementValues = param.getElementValue();
+                for (Object ev : elementValues) {
+                    ElementValueType evt = (ElementValueType) ev;
+                    String jarUri = getMavenUriForJar(evt.getValue());
+                    evt.setValue(jarUri);
+                    newListValue.add(evt);
+                    modified = true;
+                }
+
+                if (modified) {
+                    param.getElementValue().clear();
+                    param.getElementValue().addAll(newListValue);
+                }
+            }
         }
-        return mod.getMavenUri();
+        return modified;
+    }
+
+    public static String getMavenUriForJar(String jarName) {
+        jarName = TalendTextUtils.removeQuotes(jarName);
+        if (!StringUtils.isEmpty(jarName) && !jarName.startsWith(MavenUrlHelper.MVN_PROTOCOL)) {
+            ModuleNeeded mod = new ModuleNeeded(null, jarName, null, true);
+            if (!StringUtils.isEmpty(mod.getCustomMavenUri())) {
+                return mod.getCustomMavenUri();
+            }
+            return mod.getMavenUri();
+        }
+        return jarName;
     }
 
     /*
