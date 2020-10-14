@@ -16,7 +16,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -61,9 +60,6 @@ public class UnifiedComponentUtil {
     private static Logger log = Logger.getLogger(UnifiedComponentUtil.class);
 
     private static Map<String, UnifiedJDBCBean> additionalJDBCCache = new HashMap<String, UnifiedJDBCBean>();
-
-    public static final List<String> FILTER_DEFINITION = Arrays
-            .asList(new String[] { "tJDBCCommit", "tJDBCSP", "tJDBCRollback" });
 
     public static IComponent getEmfComponent(Node node, IComponent component) {
         if (isDelegateComponent(component)) {
@@ -160,7 +156,8 @@ public class UnifiedComponentUtil {
                         continue;
                     }
                 }
-                if (isAdditionalJDBC(dbTypeName) && FILTER_DEFINITION.contains(component.getName())) {
+                if (isAdditionalJDBC(dbTypeName)
+                        && isUnsupportedComponent(component.getName(), getAdditionalJDBC().get(dbTypeName))) {
                     continue;
                 }
                 IComponent delegateComponent = service.getDelegateComponent(component);
