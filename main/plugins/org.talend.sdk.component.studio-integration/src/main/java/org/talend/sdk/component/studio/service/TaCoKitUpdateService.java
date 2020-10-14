@@ -70,6 +70,15 @@ public class TaCoKitUpdateService implements ITaCoKitUpdateService {
 
     @Override
     public ICarInstallationResult installCars(Collection<File> files, boolean share, IProgressMonitor monitor) throws Exception {
+        return installCars(files, share, false, monitor);
+    }
+    
+    @Override
+    public ICarInstallationResult deployCars(Collection<File> files, boolean share, IProgressMonitor monitor) throws Exception {
+        return installCars(files, share, true, monitor);
+    }
+    
+    private ICarInstallationResult installCars(Collection<File> files, boolean share, boolean isDeployCommand, IProgressMonitor monitor) throws Exception {
         if (monitor == null) {
             monitor = new NullProgressMonitor();
         }
@@ -88,6 +97,7 @@ public class TaCoKitUpdateService implements ITaCoKitUpdateService {
                 try {
                     carFeature = generateExtraFeature(carFile, monitor);
                     carFeature.setShareEnable(share);
+                    carFeature.setDeployCommand(isDeployCommand);
                 } catch (Exception e) {
                     ExceptionHandler.process(e);
                 }

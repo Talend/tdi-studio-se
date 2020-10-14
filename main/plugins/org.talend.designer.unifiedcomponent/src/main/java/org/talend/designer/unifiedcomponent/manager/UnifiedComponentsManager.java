@@ -103,7 +103,7 @@ public class UnifiedComponentsManager {
                 for (IComponentDelegate delegateComp : componentDelegates) {
                     jdbcUnifier.setDelegateComponent(delegateComp);
                     if (StringUtils.isNotBlank(jdbcUnifier.getComponentName())
-                            && UnifiedComponentUtil.FILTER_DEFINITION.contains(jdbcUnifier.getComponentName())) {
+                            && UnifiedComponentUtil.isUnsupportedComponent(jdbcUnifier.getComponentName(), bean)) {
                         continue;
                     }
                     initDelegateComponent(jdbcUnifier);

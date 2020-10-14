@@ -1650,26 +1650,28 @@ public abstract class AbstractTalendEditor extends GraphicalEditorWithFlyoutPale
                 final StructuredSelection newSelection = (StructuredSelection) viewer.getSelection();
                 if (!newSelection.isEmpty() && newSelection.getFirstElement() instanceof TalendEntryEditPart) {
                     TalendEntryEditPart editPart = (TalendEntryEditPart) newSelection.getFirstElement();
-                    TalendCombinedTemplateCreationEntry entry =
-                            (TalendCombinedTemplateCreationEntry) editPart.getModel();
-                    IComponent newComponent = entry.getComponent();
-                    if (newComponent != null && newComponent instanceof StitchPseudoComponent) {
-                        if (newComponent.equals(previousComponent)) { // check if we are clicking on it for a 2nd time
-                            StitchPseudoComponent stitchPseudoComponent = (StitchPseudoComponent) newComponent;
-                            try {
-                                final URL compURL = new URL(stitchPseudoComponent.getConnectorURL()
-                                        + StitchDataLoaderConstants.getUTMParamSuffix());
-                                PlatformUI.getWorkbench().getBrowserSupport().getExternalBrowser().openURL(compURL);
-                            } catch (PartInitException | MalformedURLException e) {
-                                ExceptionHandler.process(e);
+                    if(editPart.getModel() instanceof TalendCombinedTemplateCreationEntry) {
+                        TalendCombinedTemplateCreationEntry entry =
+                                (TalendCombinedTemplateCreationEntry) editPart.getModel();
+                        IComponent newComponent = entry.getComponent();
+                        if (newComponent != null && newComponent instanceof StitchPseudoComponent) {
+                            if (newComponent.equals(previousComponent)) { // check if we are clicking on it for a 2nd time
+                                StitchPseudoComponent stitchPseudoComponent = (StitchPseudoComponent) newComponent;
+                                try {
+                                    final URL compURL = new URL(stitchPseudoComponent.getConnectorURL()
+                                            + StitchDataLoaderConstants.getUTMParamSuffix());
+                                    PlatformUI.getWorkbench().getBrowserSupport().getExternalBrowser().openURL(compURL);
+                                } catch (PartInitException | MalformedURLException e) {
+                                    ExceptionHandler.process(e);
+                                }
+                                previousComponent = null; // remove the registered selection
+                            } else { // if it's the first time selecting a stitch connector
+                                previousComponent = newComponent; // register the first click
                             }
+                            super.mouseUp(mouseEvent, viewer); // simulate the release of button to avoid dropping on canvas
+                        } else { // user click at another component after a stitch component
                             previousComponent = null; // remove the registered selection
-                        } else { // if it's the first time selecting a stitch connector
-                            previousComponent = newComponent; // register the first click
                         }
-                        super.mouseUp(mouseEvent, viewer); // simulate the release of button to avoid dropping on canvas
-                    } else { // user click at another component after a stitch component
-                        previousComponent = null; // remove the registered selection
                     }
                 } else { // user clicks at somewhere outside the palette: the canvas for instance
                     previousComponent = null; // remove the registered selection
