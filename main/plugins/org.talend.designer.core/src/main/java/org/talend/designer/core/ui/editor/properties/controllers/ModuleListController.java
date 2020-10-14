@@ -53,6 +53,8 @@ import org.talend.core.model.process.EParameterFieldType;
 import org.talend.core.model.process.IElementParameter;
 import org.talend.core.model.process.IExternalNode;
 import org.talend.core.model.utils.TalendTextUtils;
+import org.talend.core.runtime.maven.MavenArtifact;
+import org.talend.core.runtime.maven.MavenUrlHelper;
 import org.talend.core.ui.CoreUIPlugin;
 import org.talend.core.ui.properties.tab.IDynamicProperty;
 import org.talend.designer.core.model.components.EParameterName;
@@ -135,7 +137,8 @@ public class ModuleListController extends AbstractElementPropertySectionControll
                         // update the text current value
                         Text text = (Text) hashCurControls.get(propertyName);
                         if (text != null && !text.isDisposed()) {
-                            text.setText(moduleName);
+                            String modName = getModuleName(moduleName);
+                            text.setText(modName);
                         }
 
                         return new PropertyChangeCommand(elem, propertyName, lastSegment);
@@ -350,7 +353,13 @@ public class ModuleListController extends AbstractElementPropertySectionControll
 
         Object value = param.getValue();
         if (value instanceof String) {
-            text.setText(TalendTextUtils.removeQuotes((String) value));
+
+            String txt = TalendTextUtils.removeQuotes((String) value);
+            if (param.getFieldType() == EParameterFieldType.MODULE_LIST) {
+                txt = getModuleName(txt);
+            }
+
+            text.setText(txt);
         }
 
         if (param.isContextMode()) {
@@ -359,5 +368,13 @@ public class ModuleListController extends AbstractElementPropertySectionControll
             text.setEnabled(false);
             buttonEdit.setEnabled(false);
         }
+    }
+
+    private static String getModuleName(String jarPath) {
+        if (jarPath != null && jarPath.startsWith(MavenUrlHelper.MVN_PROTOCOL)) {
+            MavenArtifact art = MavenUrlHelper.parseMvnUrl(jarPath);
+            return art.getFileName();
+        }
+        return jarPath;
     }
 }

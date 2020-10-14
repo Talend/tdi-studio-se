@@ -570,7 +570,7 @@ public class JavaProcessUtil {
                                         module = ModulesNeededProvider.getModuleNeededById(jarName);
                                     }
                                     if (module == null) {
-                                        module = ModuleNeeded.newInstance(null, TalendTextUtils.removeQuotes(value), null, true);
+                                        module = ModuleNeeded.newInstance(null, TalendTextUtils.removeQuotes(s), null, true);
                                     }
                                     modulesNeeded.add(module);
                                 });
@@ -578,7 +578,7 @@ public class JavaProcessUtil {
                             }
                             if (curParam.getName().equals("connection.driverTable")) { //$NON-NLS-1$
                                 Stream.of(value.split(";")).forEach(s -> modulesNeeded //$NON-NLS-1$
-                                        .add(ModuleNeeded.newInstance(null, TalendTextUtils.removeQuotes(value), null, true)));
+                                        .add(ModuleNeeded.newInstance(null, TalendTextUtils.removeQuotes(s), null, true)));
                             }
                         }
                     }
