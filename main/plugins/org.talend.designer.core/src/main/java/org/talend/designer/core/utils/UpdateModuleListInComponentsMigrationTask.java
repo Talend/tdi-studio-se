@@ -117,8 +117,17 @@ public class UpdateModuleListInComponentsMigrationTask extends AbstractItemMigra
     protected boolean updateDatabaseConnection(DatabaseConnection dbConnection) throws Exception {
         String driverJar = dbConnection.getDriverJarPath();
         if (driverJar != null) {
-            String uri = getMavenUriForJar(driverJar);
-            dbConnection.setDriverJarPath(uri);
+            String[] jars = driverJar.split(";");
+            StringBuffer sb = new StringBuffer();
+            for (String jar : jars) {
+                String uri = getMavenUriForJar(jar);
+                if (sb.length() > 0) {
+                    sb.append(";");
+                }
+                sb.append(uri);
+            }
+
+            dbConnection.setDriverJarPath(sb.toString());
             return true;
         }
         return false;
