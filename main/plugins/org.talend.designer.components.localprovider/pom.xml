@@ -97,7 +97,7 @@
 								<artifactItem>
 									<groupId>org.talend.components</groupId>
 									<artifactId>components-soap</artifactId>
-									<version>2.3-20201015</version>
+									<version>2.3-20201016</version>
 									<type>jar</type>
 									<overWrite>true</overWrite>
 									<outputDirectory>${soap.dir}</outputDirectory>
