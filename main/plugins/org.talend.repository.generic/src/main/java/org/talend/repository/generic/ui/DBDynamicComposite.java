@@ -62,24 +62,26 @@ public class DBDynamicComposite extends DynamicComposite{
                         .setValue(StringUtils.isEmpty(((DatabaseConnectionImpl) dbConnection).getURL()) ? "jdbc:"
                                 : ((DatabaseConnectionImpl) dbConnection).getURL());
             }
-            if (genericElementParameter.getName().equals(EConnectionParameterName.GENERIC_DRIVER_JAR.getDisplayName())) {
-
-                if (!StringUtils.isEmpty(((DatabaseConnectionImpl) dbConnection).getURL())
-                        && !StringUtils.isEmpty(((DatabaseConnectionImpl) dbConnection).getDriverJarPath())) {
-                    String driverJarPath = ((DatabaseConnectionImpl) dbConnection).getDriverJarPath();
-                    List<Map<String, String>> list = new ArrayList<Map<String, String>>();
-                    String[] split = driverJarPath.split(";");
-                    for (String jar : split) {
-                        if (!StringUtils.isEmpty(jar)) {
-                            Map<String, String> map = new HashMap<String, String>();
-                            map.put("drivers", jar);
-                            list.add(map);
-                        }
-
-                    }
-                    genericElementParameter.setValue(list);
-                }
-            }
+            // if
+            // (genericElementParameter.getName().equals(EConnectionParameterName.GENERIC_DRIVER_JAR.getDisplayName()))
+            // {
+            //
+            // if (!StringUtils.isEmpty(((DatabaseConnectionImpl) dbConnection).getURL())
+            // && !StringUtils.isEmpty(((DatabaseConnectionImpl) dbConnection).getDriverJarPath())) {
+            // String driverJarPath = ((DatabaseConnectionImpl) dbConnection).getDriverJarPath();
+            // List<Map<String, String>> list = new ArrayList<Map<String, String>>();
+            // String[] split = driverJarPath.split(";");
+            // for (String jar : split) {
+            // if (!StringUtils.isEmpty(jar)) {
+            // Map<String, String> map = new HashMap<String, String>();
+            // map.put("drivers", jar);
+            // list.add(map);
+            // }
+            //
+            // }
+            // genericElementParameter.setValue(list);
+            // }
+            // }
             if (genericElementParameter.getName()
                     .equalsIgnoreCase(EConnectionParameterName.GENERIC_DRIVER_CLASS.getDisplayName())) {
                 genericElementParameter.setValue(((DatabaseConnectionImpl) dbConnection).getDriverClass());
