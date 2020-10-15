@@ -144,10 +144,10 @@
 
 	<CODEGENERATION>
 		<IMPORTS>
-                        <IMPORT NAME="jakarta.activation-api-1.2.2" MODULE="jakarta.activation-api-1.2.2.jar" MVN="mvn:jakarta.activation/jakarta.activation-api/1.2.2" REQUIRED="true" />
+			<IMPORT NAME="activation" MODULE="activation.jar" MVN="mvn:org.talend.libraries/activation/6.0.0" REQUIRED="true" BundleID="" />
 			<IMPORT NAME="saajimpl" MODULE="saaj-impl-1.5.2.jar" MVN="mvn:com.sun.xml.messaging.saaj/saaj-impl/1.5.2" REQUIRED="true"/>
 			<IMPORT NAME="dom4j-2.1.3" MODULE="dom4j-2.1.3.jar" MVN="mvn:org.dom4j/dom4j/2.1.3" REQUIRED="true" />
-			<IMPORT NAME="components-soap" MODULE="components-soap-2.3-20201015.jar" MVN="mvn:org.talend.components/components-soap/2.3-20201015" REQUIRED="true" />
+			<IMPORT NAME="components-soap" MODULE="components-soap-2.3-20201016.jar" MVN="mvn:org.talend.components/components-soap/2.3-20201016" REQUIRED="true" />
 			<IMPORT NAME="stax-ex-1.8.3" MODULE="stax-ex-1.8.3.jar" MVN="mvn:org.jvnet.staxex/stax-ex/1.8.3" REQUIRED="true" />
 			<IMPORT NAME="jakarta.xml.soap-api-1.4.2" MODULE="jakarta.xml.soap-api-1.4.2.jar" MVN="mvn:jakarta.xml.soap/jakarta.xml.soap-api/1.4.2" REQUIRED="true" />
 			<IMPORT NAME="xercesImpl-2.12.0" MODULE="xercesImpl-2.12.0.jar" MVN="mvn:xerces/xercesImpl/2.12.0" REQUIRED="true"/>
