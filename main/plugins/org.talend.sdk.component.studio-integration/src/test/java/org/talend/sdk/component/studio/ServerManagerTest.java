@@ -66,6 +66,7 @@ import org.talend.sdk.component.server.front.model.ComponentDetailList;
 import org.talend.sdk.component.server.front.model.ComponentIndices;
 import org.talend.sdk.component.server.front.model.ConfigTypeNodes;
 import org.talend.sdk.component.studio.mvn.Mvn;
+import org.talend.sdk.component.studio.util.TaCoKitConst;
 import org.talend.sdk.component.studio.websocket.WebSocketClient;
 
 class ServerManagerTest {
@@ -146,7 +147,7 @@ class ServerManagerTest {
     }
 
     private void assertClient(final int port) {
-        try (WebSocketClient client = new WebSocketClient("ws://localhost:" + port + "/websocket/v1", 600000)) {
+        try (WebSocketClient client = new WebSocketClient("ws://", String.valueOf(port), "/websocket/v1", 600000)) {
             // we loop since we reuse the same session so we must ensure this reuse works
             for (int i = 0; i < 2; i++) {
                 // simple endpoint
@@ -198,7 +199,7 @@ class ServerManagerTest {
     }
 
     private boolean isStarted(final int port) throws IOException {
-        final URL url = new URL("http://localhost:" + port + "/api/v1/component/index");
+        final URL url = new URL("http://" + TaCoKitConst.DEFAULT_LOCALHOST + ":" + port + "/api/v1/component/index");
         InputStream stream = null;
         try {
             stream = url.openStream();

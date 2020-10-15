@@ -16,6 +16,8 @@ import org.talend.core.model.repository.ERepositoryObjectType;
 
 public class TaCoKitConst {
 
+    public static final String DEFAULT_LOCALHOST = "127.0.0.1"; //$NON-NLS-1$
+
     public static final String BUNDLE_ID = "org.talend.sdk.component.studio-integration"; //$NON-NLS-1$
 
     public static final ERepositoryObjectType METADATA_TACOKIT = ERepositoryObjectType.valueOf("TACOKIT"); //$NON-NLS-1$
