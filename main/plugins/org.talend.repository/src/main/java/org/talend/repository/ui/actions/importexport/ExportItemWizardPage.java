@@ -1047,9 +1047,8 @@ public class ExportItemWizardPage extends WizardPage {
     private void registerRelatedBeans(Collection<Item> items) {
         RepositoryNode codeRepositoryNode = ProjectRepositoryNode.getInstance().getRootRepositoryNode(
                 ERepositoryObjectType.valueOf("BEANS"));
-        List<IRepositoryNode> checkedNodesBeans = codeRepositoryNode.getChildren();
-
         if (codeRepositoryNode != null) {
+            List<IRepositoryNode> checkedNodesBeans = codeRepositoryNode.getChildren();
             for (Item item : items) {
                 Set<String> beanNames = getCBeanRegisterComponentDependency(item);
 
