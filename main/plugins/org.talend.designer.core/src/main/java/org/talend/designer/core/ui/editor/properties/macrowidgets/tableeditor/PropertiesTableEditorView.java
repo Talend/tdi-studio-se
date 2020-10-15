@@ -1073,9 +1073,12 @@ public class PropertiesTableEditorView<B> extends AbstractDataTableEditorView<B>
     }
 
     private static String getModuleName(String jarPath) {
-        if (jarPath != null && jarPath.startsWith(MavenUrlHelper.MVN_PROTOCOL)) {
-            MavenArtifact art = MavenUrlHelper.parseMvnUrl(jarPath);
-            return art.getFileName();
+        if (jarPath != null) {
+            jarPath = TalendQuoteUtils.removeQuotes(jarPath);
+            if (jarPath.startsWith(MavenUrlHelper.MVN_PROTOCOL)) {
+                MavenArtifact art = MavenUrlHelper.parseMvnUrl(jarPath);
+                return art.getFileName();
+            }
         }
         return jarPath;
     }

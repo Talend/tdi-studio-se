@@ -57,6 +57,7 @@ import org.talend.core.runtime.maven.MavenArtifact;
 import org.talend.core.runtime.maven.MavenUrlHelper;
 import org.talend.core.ui.CoreUIPlugin;
 import org.talend.core.ui.properties.tab.IDynamicProperty;
+import org.talend.core.utils.TalendQuoteUtils;
 import org.talend.designer.core.model.components.EParameterName;
 import org.talend.designer.core.model.components.ExternalUtilities;
 import org.talend.designer.core.ui.dialog.BrmsDialog;
@@ -371,9 +372,12 @@ public class ModuleListController extends AbstractElementPropertySectionControll
     }
 
     private static String getModuleName(String jarPath) {
-        if (jarPath != null && jarPath.startsWith(MavenUrlHelper.MVN_PROTOCOL)) {
-            MavenArtifact art = MavenUrlHelper.parseMvnUrl(jarPath);
-            return art.getFileName();
+        if (jarPath != null) {
+            jarPath = TalendQuoteUtils.removeQuotes(jarPath);
+            if (jarPath.startsWith(MavenUrlHelper.MVN_PROTOCOL)) {
+                MavenArtifact art = MavenUrlHelper.parseMvnUrl(jarPath);
+                return art.getFileName();
+            }
         }
         return jarPath;
     }
