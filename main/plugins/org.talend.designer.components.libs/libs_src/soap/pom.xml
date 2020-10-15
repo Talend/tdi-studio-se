@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.talend.components</groupId>
 	<artifactId>components-soap</artifactId>
-	<version>2.3-20201015</version>
+	<version>2.3-20201016</version>
 	<packaging>jar</packaging>
 
 	<name>talend-soap</name>
@@ -55,9 +55,9 @@
 			<version>1.5.2</version>
 		</dependency>
 		<dependency>
-			<groupId>jakarta.activation</groupId>
-			<artifactId>jakarta.activation-api</artifactId>
-			<version>1.2.2</version>
+			<groupId>javax.activation</groupId>
+			<artifactId>activation</artifactId>
+			<version>1.1</version>
 		</dependency>
 		<dependency>
 			<groupId>xerces</groupId>
