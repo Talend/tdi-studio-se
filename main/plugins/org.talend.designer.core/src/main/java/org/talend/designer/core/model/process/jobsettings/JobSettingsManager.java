@@ -562,7 +562,7 @@ public class JobSettingsManager {
                     if (!moduleNameList.contains(moduleName)) {
                         moduleNameList.add(moduleName);
                     }
-                    String moduleValue = TalendTextUtils.addQuotes(moduleName);
+                    String moduleValue = TalendTextUtils.addQuotes(module.getMavenUri());
                     if (!moduleValueList.contains(moduleValue)) {
                         moduleValueList.add(moduleValue);
                     }
