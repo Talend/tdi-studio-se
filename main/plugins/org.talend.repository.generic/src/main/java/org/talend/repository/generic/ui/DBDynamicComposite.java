@@ -62,26 +62,44 @@ public class DBDynamicComposite extends DynamicComposite{
                         .setValue(StringUtils.isEmpty(((DatabaseConnectionImpl) dbConnection).getURL()) ? "jdbc:"
                                 : ((DatabaseConnectionImpl) dbConnection).getURL());
             }
-            // if
-            // (genericElementParameter.getName().equals(EConnectionParameterName.GENERIC_DRIVER_JAR.getDisplayName()))
-            // {
-            //
-            // if (!StringUtils.isEmpty(((DatabaseConnectionImpl) dbConnection).getURL())
-            // && !StringUtils.isEmpty(((DatabaseConnectionImpl) dbConnection).getDriverJarPath())) {
-            // String driverJarPath = ((DatabaseConnectionImpl) dbConnection).getDriverJarPath();
-            // List<Map<String, String>> list = new ArrayList<Map<String, String>>();
-            // String[] split = driverJarPath.split(";");
-            // for (String jar : split) {
-            // if (!StringUtils.isEmpty(jar)) {
-            // Map<String, String> map = new HashMap<String, String>();
-            // map.put("drivers", jar);
-            // list.add(map);
-            // }
-            //
-            // }
-            // genericElementParameter.setValue(list);
-            // }
-            // }
+            if (genericElementParameter.getName().equals(EConnectionParameterName.GENERIC_DRIVER_JAR.getDisplayName())) {
+
+                if (!StringUtils.isEmpty(((DatabaseConnectionImpl) dbConnection).getURL())
+                        && !StringUtils.isEmpty(((DatabaseConnectionImpl) dbConnection).getDriverJarPath())) {
+                    String driverJarPath = ((DatabaseConnectionImpl) dbConnection).getDriverJarPath();
+                    List<Map<String, String>> list = new ArrayList<Map<String, String>>();
+                    String[] split = driverJarPath.split(";");
+                    for (String jar : split) {
+                        if (!StringUtils.isEmpty(jar)) {
+                            Map<String, String> map = new HashMap<String, String>();
+                            map.put("drivers", jar);
+                            list.add(map);
+                        }
+
+                    }
+                    boolean setVal = false;
+                    if (genericElementParameter.getValue() == null) {
+                        setVal = true;
+                    } else {
+                        List<Map<String, String>> oldValueList = (List<Map<String, String>>) genericElementParameter.getValue();
+                        if (oldValueList.isEmpty()) {
+                            setVal = true;
+                        } else {
+                            boolean allEmpty = true;
+                            for (Map<String, String> val : oldValueList) {
+                                if (!val.isEmpty()) {
+                                    allEmpty = false;
+                                    break;
+                                }
+                            }
+                            setVal = allEmpty;
+                        }
+                    }
+                    if (setVal) {
+                        genericElementParameter.setValue(list);
+                    }
+                }
+            }
             if (genericElementParameter.getName()
                     .equalsIgnoreCase(EConnectionParameterName.GENERIC_DRIVER_CLASS.getDisplayName())) {
                 genericElementParameter.setValue(((DatabaseConnectionImpl) dbConnection).getDriverClass());
