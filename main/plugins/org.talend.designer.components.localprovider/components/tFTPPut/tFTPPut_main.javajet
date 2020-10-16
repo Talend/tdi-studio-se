@@ -111,16 +111,6 @@ try{
                         else {
                             dest_<%=cid%> = remoteDir_<%=cid%> + "/" + destRename_<%= cid %>;
                         }
-                         <%
-                            if(("overwrite").equals(sftpoverwrite) || ("resume").equals(sftpoverwrite)){
-                         %>
-                         try{
-                            c_<%=cid%>.rm(dest_<%=cid%>); // delete file if exist.
-                         }catch(com.jcraft.jsch.SftpException e_<%=cid%>){
-                         }
-                         <%
-                         }
-                         %>
                         
                         try{
                             c_<%=cid%>.put(listings<%=cid %>[m<%=cid %>].getAbsolutePath(), dest_<%=cid%>, monitor<%=cid%>, mode<%=cid%>);
@@ -138,6 +128,8 @@ try{
                                 globalMap.put("<%=cid %>_CURRENT_FILE_EXISTS",true);
                             }
                         }catch(com.jcraft.jsch.SftpException e_<%=cid%>) {
+                            if (e_<%=cid%>.id != 4 &&   // if exception is not resume (normal) pb.
+                                (e_<%=cid%>.getMessage() == null || !e_<%=cid%>.getMessage().startsWith("failed to resume"))) { 
                             <%if(isLog4jEnabled){%>
                                 log.error("<%=cid%> - File transfer fail."+e_<%= cid %>.getMessage());
                             <%}%>
@@ -162,6 +154,7 @@ try{
                     <%
                         }
                     %>
+                        } // end if exception not resume pb
                         }catch(java.lang.Exception e_<%=cid%>){
                            if(!(e_<%=cid%> instanceof com.jcraft.jsch.SftpException)) {
                                 msg_<%=cid%>.add("file " + listings<%=cid %>[m<%=cid %>].getAbsolutePath() + " not found?");
