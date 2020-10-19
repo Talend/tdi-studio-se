@@ -682,7 +682,7 @@ skeleton="../templates/db_output_bulk.skeleton"
 	globalMap.put("<%=cid%>_GPLOAD_OUTPUT", gploadOutput_<%=cid%>.toString());
 		<%if(isLog4jEnabled){%>
 			log.info("<%=cid%> - Execute '"+command_<%=cid %>.toString()+"' has finished.");
-			log.info("<%=cid%> - Loaded records count:" + insertedCount_<%=cid%> + ".");
+			log.info("<%=cid%> - Loaded records count:" + globalMap.get("<%=cid%>_NB_LINE") + ".");
 		<%}%>
 <%
 	}
