@@ -407,7 +407,7 @@ public class ProcessChangeListener implements PropertyChangeListener {
         }
         if (newValue instanceof IRepositoryViewObject) {
             IRepositoryViewObject object = (IRepositoryViewObject) newValue;
-            if (!ERepositoryObjectType.TEST_CONTAINER.equals(object.getRepositoryObjectType())) {
+            if (getAllProcessTypes().contains(object.getRepositoryObjectType())) {
                 try {
                     AggregatorPomsHelper.removeAllVersionsFromParentModules(object.getProperty());
                 } catch (Exception e) {
@@ -424,7 +424,7 @@ public class ProcessChangeListener implements PropertyChangeListener {
         }
         if (newValue instanceof IRepositoryViewObject) {
             IRepositoryViewObject object = (IRepositoryViewObject) newValue;
-            if (!ERepositoryObjectType.TEST_CONTAINER.equals(object.getRepositoryObjectType())) {
+            if (getAllProcessTypes().contains(object.getRepositoryObjectType())) {
                 try {
                     AggregatorPomsHelper.restoreAllVersionsFromParentModules(object.getProperty());
                 } catch (Exception e) {
