@@ -139,6 +139,9 @@ public class ProcessManager implements AutoCloseable {
                 Thread.currentThread().interrupt();
                 break;
             } catch (final RuntimeException re) {
+                if (CommonsPlugin.isDebugMode()) {
+                    ExceptionHandler.process(re);
+                }
                 try {
                     sleep(500); // wait and retry, the healthcheck failed
                 } catch (final InterruptedException e) {
@@ -364,7 +367,10 @@ public class ProcessManager implements AutoCloseable {
             @Override
             public void run() {
 
-                List<String> localHostAddresses = NetworkUtil.getLocalAddresses();
+                List<String> localHostAddresses = NetworkUtil.getLocalLoopbackAddresses(true);
+                if (CommonsPlugin.isDebugMode()) {
+                    ExceptionHandler.log("Local addresses passed to sdk: " + localHostAddresses);
+                }
                 int addressCount = localHostAddresses.size();
                 final long end = System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(15);
                 for (int i = 0; end - System.currentTimeMillis() >= 0; i++) {
