@@ -584,6 +584,7 @@ skeleton="../templates/db_output_bulk.skeleton"
 				final Process ps = Runtime.getRuntime().exec(cmds);
 
 				ps.waitFor();
+				globalMap.put("<%=cid%>_EXIT_CODE", ps.exitValue());
 
 				java.io.BufferedReader reader = new java.io.BufferedReader(new java.io.InputStreamReader(ps.getInputStream()));
 				java.io.BufferedReader errorReader = new java.io.BufferedReader(new java.io.InputStreamReader(ps.getErrorStream()));
