@@ -93,9 +93,7 @@ imports="
 		    <%dbInputBeginUtil.createStatement(node);%>
 
 		    String dbquery_<%=cid%> = <%=dbInputBeginUtil.getQueryString(node)%>;
-			<%if(isLog4jEnabled){%>
-                log.debug("<%=cid%> - Executing the query: '"+dbquery_<%=cid%>+"'.");
-			<%}%>
+		    <% log4jCodeGenerateUtil.query(node, "dbquery_" + cid); %>
 
             <% 
             if(isAmazonAurora){
