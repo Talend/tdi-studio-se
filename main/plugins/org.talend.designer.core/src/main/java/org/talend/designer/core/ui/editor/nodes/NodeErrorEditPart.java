@@ -93,15 +93,8 @@ public class NodeErrorEditPart extends AbstractGraphicalEditPart implements Prop
         } else {
             (errorFig).setAlpha(NodeError.ALPHA_VALUE);
         }
-//        errorFig.setSize(100, 100);
         ((NodeError) getModel()).setErrorSize(errorFig.getSize());
-//mike        Image image = ImageProvider.getImage(ECoreImage.JOBLET_STANDARD_ICON);
-//        ImageFigure otherFig = new ImageFigure(image);
-//        otherFig.setVisible(true);
-//        otherFig.setBounds(new Rectangle(image.getBounds()));
-//        this.figure = otherFig;
-//        errorFig.add(otherFig, 0);
-//        errorFig.setVisible(true);
+
         return errorFig;
     }
 
