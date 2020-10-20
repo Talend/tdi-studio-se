@@ -2377,14 +2377,18 @@ public class ProcessUpdateManager extends AbstractUpdateManager {
             for (int i = 0; i < oldList.size(); i++) {
                 Map<String, Object> oldMap = oldList.get(i);
                 Map<String, Object> objectMap = (Map<String, Object>) objectList.get(i);
+                String oldDriver = String.valueOf(oldMap.get(nodeParamDriverKey));
                 String driver = String.valueOf(objectMap.get("drivers"));
                 if (driver != null) {
-                    MavenArtifact artifact = MavenUrlHelper.parseMvnUrl(TalendTextUtils.removeQuotes(driver));
-                    if (artifact != null) {
-                        driver = artifact.getFileName();
+                    driver = TalendTextUtils.removeQuotes(driver);
+                    if (!oldDriver.startsWith(MavenUrlHelper.MVN_PROTOCOL)) {
+                        MavenArtifact artifact = MavenUrlHelper.parseMvnUrl(driver);
+                        if (artifact != null) {
+                            driver = artifact.getFileName();
+                        }
                     }
                 }
-                if (oldMap.get(nodeParamDriverKey).equals(driver)) {
+                if (oldDriver.equals(driver)) {
                     sameValues = true;
                 } else {
                     sameValues = false;

@@ -16,7 +16,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -45,6 +44,7 @@ import org.talend.daikon.properties.property.Property;
 import org.talend.designer.core.IUnifiedComponentService;
 import org.talend.designer.core.model.components.EParameterName;
 import org.talend.designer.core.model.components.UnifiedJDBCBean;
+import org.talend.designer.core.model.components.UnifiedJDBCConfigurationBean;
 import org.talend.designer.core.ui.editor.nodes.Node;
 import org.talend.designer.core.ui.views.properties.ComponentSettingsView;
 
@@ -60,9 +60,6 @@ public class UnifiedComponentUtil {
     private static Logger log = Logger.getLogger(UnifiedComponentUtil.class);
 
     private static Map<String, UnifiedJDBCBean> additionalJDBCCache = new HashMap<String, UnifiedJDBCBean>();
-
-    public static final List<String> FILTER_DEFINITION = Arrays
-            .asList(new String[] { "tJDBCCommit", "tJDBCSP", "tJDBCRollback" });
 
     public static IComponent getEmfComponent(Node node, IComponent component) {
         if (isDelegateComponent(component)) {
@@ -142,8 +139,10 @@ public class UnifiedComponentUtil {
                 }
                 if (isAdditionalJDBC(databaseName)) {
                     String compKey = StringUtils.deleteWhitespace(databaseName);
-                    if (component.getName().contains(compKey)
-                            && FILTER_DEFINITION.contains(component.getName().replaceFirst(compKey, "JDBC"))) {
+                    boolean unsupport = UnifiedComponentUtil.isUnsupportedComponent(
+                            component.getName().replaceFirst(compKey, "JDBC"),
+                            UnifiedComponentUtil.getAdditionalJDBC().get(databaseName));
+                    if (component.getName().contains(compKey) && unsupport) {
                         continue;
                     }
                 }
@@ -151,16 +150,14 @@ public class UnifiedComponentUtil {
                 filtedList.add(component);
             }
 
-            // filtedList.addAll(componentMap.values());
-
-            // filtedList.addAll(componentList);
             for (IComponent component : componentList) {
                 if (componentsHandler != null && componentsHandler.extractComponentsCategory() != null) {
                     if (!component.getPaletteType().equals(componentsHandler.extractComponentsCategory().getName())) {
                         continue;
                     }
                 }
-                if (isAdditionalJDBC(dbTypeName) && FILTER_DEFINITION.contains(component.getName())) {
+                if (isAdditionalJDBC(dbTypeName)
+                        && isUnsupportedComponent(component.getName(), getAdditionalJDBC().get(dbTypeName))) {
                     continue;
                 }
                 IComponent delegateComponent = service.getDelegateComponent(component);
@@ -251,13 +248,16 @@ public class UnifiedComponentUtil {
             if (bean == null) {
                 return;
             }
-            if (node.getElementParameter("useAutoCommit") != null) {
-                // TODO hard code for now, next step get from json
-                node.getElementParameter("useAutoCommit").setValue(true);
-            }
-            if (node.getElementParameter("autocommit") != null) {
-                // TODO hard code for now, next step get from json
-                node.getElementParameter("autocommit").setValue(true);
+            for (UnifiedJDBCConfigurationBean configBean : bean.getParameterConfigurations()) {
+                if (node.getComponent().getName().equals(configBean.getComponentName())) {
+                    Map<String, Object> parameterMap = configBean.getParameters();
+                    for (String parameName : parameterMap.keySet()) {
+                        IElementParameter elementParameter = node.getElementParameter(parameName);
+                        if (elementParameter != null) {
+                            elementParameter.setValue(parameterMap.get(parameName));
+                        }
+                    }
+                }
             }
             if (node.getElementParameter("connection.jdbcUrl") != null) {
                 node.getElementParameter("connection.jdbcUrl").setValue(TalendQuoteUtils.addQuotes(bean.getUrl()));
@@ -311,6 +311,14 @@ public class UnifiedComponentUtil {
         return false;
     }
 
+    public static boolean isUnsupportedComponent(String compName, UnifiedJDBCBean unifiedJDBCBean) {
+        List<String> definitionNames = unifiedJDBCBean.getExcludeDefinitions();
+        if (!definitionNames.isEmpty() && definitionNames.contains(compName)) {
+            return true;
+        }
+        return false;
+    }
+
     public static Map<String, UnifiedJDBCBean> loadAdditionalJDBC(InputStream inputStream) {
         ObjectMapper objectMapper = new ObjectMapper();
         JsonNode jsonNode = null;
@@ -326,6 +334,40 @@ public class UnifiedComponentUtil {
                 for (JsonNode path : paths) {
                     JsonNode jo_path = (JsonNode) path;
                     bean.getPaths().add(jo_path.get("path").asText());
+                }
+                // optional setting excludes
+                JsonNode excludes = jo.get("excludes");
+                if (excludes != null) {
+                    for (JsonNode exclude : excludes) {
+                        JsonNode component = exclude.get("component");
+                        if (component != null) {
+                            bean.getExcludeDefinitions().add(component.asText());
+                        }
+                    }
+                }
+                // optional setting configuration
+                JsonNode configuration = jo.get("configuration");
+                if (configuration != null) {
+                    for (JsonNode jo_config : configuration) {
+                        UnifiedJDBCConfigurationBean configBean = new UnifiedJDBCConfigurationBean();
+                        JsonNode component = jo_config.get("component");
+                        if (component == null) {
+                            continue;
+                        }
+                        configBean.setComponentName(component.asText());
+                        Map<String, Object> parameters = configBean.getParameters();
+                        JsonNode jo_parameters = jo_config.get("parameters");
+                        if (jo_parameters != null) {
+                            for (JsonNode jo_param : jo_parameters) {
+                                JsonNode name = jo_param.get("name");
+                                JsonNode value = jo_param.get("value");
+                                if (name != null && value != null) {
+                                    parameters.put(name.asText(), value.asText());
+                                }
+                            }
+                        }
+                        bean.getParameterConfigurations().add(configBean);
+                    }
                 }
                 additionalJDBCCache.put(bean.getDisplayName(), bean);
             }
