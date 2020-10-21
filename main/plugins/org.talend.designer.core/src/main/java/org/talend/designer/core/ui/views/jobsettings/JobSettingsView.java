@@ -545,6 +545,10 @@ public class JobSettingsView extends ViewPart implements IJobSettingsView, ISele
                     .equals(ERepositoryObjectType.getItemType(process.getProperty().getItem()))) {
                 return false;
             }
+            // child route job
+            // if (ProcessUtils.isChildRouteProcess(process)) {
+            //    return false;
+            // }
             // test case
             if (ProcessUtils.isTestContainer(process)) {
                 return false;
