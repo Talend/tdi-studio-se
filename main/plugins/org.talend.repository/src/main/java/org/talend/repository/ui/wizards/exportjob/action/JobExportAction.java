@@ -43,9 +43,11 @@ import org.talend.core.model.repository.IRepositoryViewObject;
 import org.talend.core.model.repository.job.JobResource;
 import org.talend.core.model.repository.job.JobResourceManager;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
+import org.talend.core.runtime.process.ITalendProcessJavaProject;
 import org.talend.core.ui.CoreUIPlugin;
 import org.talend.core.ui.export.ArchiveFileExportOperationFullPath;
 import org.talend.core.ui.services.IDesignerCoreUIService;
+import org.talend.designer.runprocess.IRunProcessService;
 import org.talend.designer.runprocess.ItemCacheManager;
 import org.talend.designer.runprocess.ProcessorException;
 import org.talend.designer.runprocess.ProcessorUtilities;
@@ -60,12 +62,14 @@ import org.talend.repository.ui.wizards.exportjob.scriptsmanager.JobScriptsManag
 import org.talend.repository.ui.wizards.exportjob.util.ExportJobUtil;
 
 /**
- * 
+ *
  * class global comment. Detailled comment
  */
 public class JobExportAction implements IRunnableWithProgress {
 
-    private List<? extends IRepositoryNode> nodes;
+    private static final String LIB = "lib";
+
+	private List<? extends IRepositoryNode> nodes;
 
     private String jobVersion;
 
@@ -204,6 +208,7 @@ public class JobExportAction implements IRunnableWithProgress {
             manager.setTopFolder(resourcesToExport);
         }
 
+        cleanLibFolderBeforeExport();
         doArchiveExport(monitor, resourcesToExport);
 
         clean();
@@ -228,7 +233,7 @@ public class JobExportAction implements IRunnableWithProgress {
 
     /**
      * DOC ggu Comment method "doArchiveExport".
-     * 
+     *
      * @param monitor
      * @param resourcesToExport
      */
@@ -244,7 +249,7 @@ public class JobExportAction implements IRunnableWithProgress {
 
     /**
      * DOC ggu Comment method "generatedCodes".
-     * 
+     *
      * @param version
      * @param monitor
      * @param processes
@@ -283,7 +288,7 @@ public class JobExportAction implements IRunnableWithProgress {
 
     /**
      * DOC zli Comment method "getTempDestinationValue".
-     * 
+     *
      * @return
      */
     protected String getTempDestinationValue() {
@@ -315,9 +320,9 @@ public class JobExportAction implements IRunnableWithProgress {
     }
 
     /**
-     * 
+     *
      * DOC aiming Comment method "reBuildJobZipFile".
-     * 
+     *
      * @param processes
      */
     protected void reBuildJobZipFile(List<ExportFileResource> processes) {
@@ -365,7 +370,7 @@ public class JobExportAction implements IRunnableWithProgress {
     /**
      * Added by Marvin Wang on Feb.1, 2012 for estimating if the file can be created. In win7 or other systems, have not
      * the permission to create a file directly under system disk(like C:\).
-     * 
+     *
      * @param disZipFileStr
      * @return
      */
@@ -417,6 +422,24 @@ public class JobExportAction implements IRunnableWithProgress {
 
     private boolean isMultiNodes() {
         return nodes.size() > 1;
+    }
+
+    public void cleanLibFolderBeforeExport() {
+    	IRunProcessService runProcessService = CorePlugin.getDefault().getRunProcessService();
+        ITalendProcessJavaProject talendProcessJavaProject = runProcessService
+                .getTalendJobJavaProject(nodes.get(0).getObject().getProperty());
+
+        if (talendProcessJavaProject != null) {
+	        File libFolder = new File(talendProcessJavaProject.getBundleResourcesFolder().getLocation().toOSString()
+	                + File.separator
+	                + LIB);
+	
+	        if (libFolder.exists()) {
+		        for(File file: libFolder.listFiles())
+		            if (!file.isDirectory() && file.getName().endsWith(".jar"))
+		                file.delete();
+	        }
+        }
     }
 
 }
