@@ -912,9 +912,7 @@ public class ProcessUpdateManager extends AbstractUpdateManager {
                                     if (repValue == null) {
                                         continue;
                                     }
-                                    if (repositoryValue.equals("connection.driverTable")) {
-                                        ConnectionUtil.resetDriverValue(repValue);
-                                    }
+
                                     if (repositoryValue.equals(UpdatesConstants.TYPE)) { // datebase type
                                         boolean found = false;
                                         String[] list = param.getListRepositoryItems();
