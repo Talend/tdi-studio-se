@@ -174,9 +174,6 @@ public abstract class AbstractJobSettingsPage extends ProjectSettingPage {
                             if (repValue == null) {
                                 continue;
                             }
-                            if (repositoryValue.equals("connection.driverTable")) {// PASSWORD
-                                ConnectionUtil.resetDriverValue(repValue);
-                            }
                             if (repositoryValue.equals(UpdatesConstants.TYPE)) { // datebase type
                                 boolean found = false;
                                 String[] list = param.getListRepositoryItems();
