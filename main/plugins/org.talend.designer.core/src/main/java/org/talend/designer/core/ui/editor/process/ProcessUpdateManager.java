@@ -2378,6 +2378,7 @@ public class ProcessUpdateManager extends AbstractUpdateManager {
                 Map<String, Object> oldMap = oldList.get(i);
                 Map<String, Object> objectMap = (Map<String, Object>) objectList.get(i);
                 String oldDriver = String.valueOf(oldMap.get(nodeParamDriverKey));
+                oldDriver = TalendTextUtils.removeQuotes(oldDriver);
                 String driver = String.valueOf(objectMap.get("drivers"));
                 if (driver != null) {
                     driver = TalendTextUtils.removeQuotes(driver);
