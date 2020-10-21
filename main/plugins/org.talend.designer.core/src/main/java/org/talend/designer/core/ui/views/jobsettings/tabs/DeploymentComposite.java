@@ -114,6 +114,8 @@ public class DeploymentComposite extends AbstractTabComposite {
     private boolean isServiceItem;
 
     private boolean isDataServiceJob; // Is ESB SOAP Service Job
+    
+    private boolean isChildJob; 
 
     public DeploymentComposite(Composite parent, int style, TabbedPropertySheetWidgetFactory widgetFactory,
             IRepositoryViewObject repositoryViewObject) {
@@ -139,12 +141,21 @@ public class DeploymentComposite extends AbstractTabComposite {
             defaultVersion = getDefaultVersion(process.getVersion());
 
             isDataServiceJob = false;
+            isChildJob = false;
             // Disable widgests in case of the job is for ESB data service
             if (!process.getComponentsType().equals(ComponentCategory.CATEGORY_4_CAMEL.getName())) {
                 List<INode> nodes = (List<INode>) process.getGraphicalNodes();
                 for (INode node : nodes) {
                     if ("tESBProviderRequest".equals(node.getComponent().getName())) {
                         isDataServiceJob = true;
+                        defaultVersion = "";
+                        break;
+                    }
+                }
+                
+                for (INode node : nodes) {
+                    if ("tRouteInput".equals(node.getComponent().getName())) {
+                        isChildJob = true;
                         defaultVersion = "";
                         break;
                     }
@@ -179,7 +190,7 @@ public class DeploymentComposite extends AbstractTabComposite {
                     .getLastVersion(isService ? serviceItem.getProperty().getId() : process.getId());
             String latestVersion = obj.getVersion();
 
-            if (!currentVersion.equals(latestVersion) || isDataServiceJob || isProcessItem || isServiceItem) {
+            if (!currentVersion.equals(latestVersion) || isDataServiceJob || isChildJob || isProcessItem || isServiceItem) {
                 groupIdCheckbox.setEnabled(false);
                 groupIdText.setEnabled(false);
                 versionCheckbox.setEnabled(false);
@@ -210,6 +221,17 @@ public class DeploymentComposite extends AbstractTabComposite {
             messageComposite.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
             widgetFactory.createLabel(messageComposite,
                     "SOAP data service cannot be published, deployment setting is \naccording to the defined service.");
+        }
+        
+        if (isChildJob) {
+            Composite messageComposite = new Composite(this, SWT.NONE);
+            GridLayout layout = new GridLayout(1, false);
+            layout.horizontalSpacing = 10;
+            layout.verticalSpacing = 10;
+            messageComposite.setLayout(layout);
+            messageComposite.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+            widgetFactory.createLabel(messageComposite,
+                    "Deployment parameters will be inherited from parent route");
         }
         Composite composite = new Composite(this, SWT.NONE);
         GridLayout layout = new GridLayout(2, false);
@@ -297,6 +319,22 @@ public class DeploymentComposite extends AbstractTabComposite {
             final Control buildTypeControl = buildTypeCombo.getControl();
             buildTypeControl.setVisible(showBuildType);
             buildTypeLabel.setVisible(showBuildType);
+            
+            if (isChildJob) {
+                groupIdText.setText("");
+                groupIdCheckbox.setSelection(false);
+                groupIdText.setEnabled(false);
+                
+                versionText.setText("");
+                versionCheckbox.setSelection(false);
+                versionText.setEnabled(false);
+                versionText.setToolTipText(""); //$NON-NLS-1$
+                
+                snapshotCheckbox.setSelection(false);
+                
+                buildTypeLabel.setVisible(false);
+                buildTypeCombo.getCCombo().setVisible(false);
+            }
 
             if (showBuildType) {
                 Map<String, Object> parameters = new HashMap<String, Object>();
@@ -325,6 +363,9 @@ public class DeploymentComposite extends AbstractTabComposite {
     private boolean isShowBuildType() {
         // add support for ESB Service.
         if (!PluginChecker.isTIS()) {
+            return false;
+        }
+        if (isChildJob) {
             return false;
         }
         Map<String, Object> parameters = new HashMap<String, Object>();
