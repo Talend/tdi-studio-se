@@ -7,10 +7,6 @@ import java.io.OutputStream;
 
 import org.apache.poi.hsmf.MAPIMessage;
 import org.apache.poi.hsmf.datatypes.AttachmentChunks;
-import org.apache.poi.hsmf.datatypes.Chunk;
-import org.apache.poi.hsmf.datatypes.MAPIProperty;
-import org.apache.poi.hsmf.datatypes.StringChunk;
-import org.apache.poi.hsmf.datatypes.Types;
 import org.apache.poi.hsmf.exceptions.ChunkNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,12 +32,12 @@ public class MsgMailUtil {
 
 	public MsgMailUtil(String fileName, String outAttachmentPath)
 			throws IOException {
-		msg = new MAPIMessage(fileName);
+		this.msg = new MAPIMessage(fileName);
 		this.outAttachmentPath = outAttachmentPath;
 	}
 
-	public void activeLog(String logger_name, String position) {
-		this.log = LoggerFactory.getLogger(logger_name);
+	public void activeLog(String loggerName, String position) {
+		this.log = LoggerFactory.getLogger(loggerName);
 		this.position = position;
 	}
 
@@ -70,20 +66,14 @@ public class MsgMailUtil {
 		}
 
 		File attachedFile = new File(dir, fileName);
-		OutputStream fileOut = null;
-		try {
+		try(OutputStream fileOut = new FileOutputStream(attachedFile)) {
 			processLog(Level.INFO, "Exporting attachment file :" + fileName);
 			processLog(Level.INFO,
 					"File location:" + attachedFile.getAbsolutePath());
 
-			fileOut = new FileOutputStream(attachedFile);
 			fileOut.write(attachment.getEmbeddedAttachmentObject());
 
 			processLog(Level.INFO, "Export successfully");
-		} finally {
-			if (fileOut != null) {
-				fileOut.close();
-			}
 		}
 	}
 
