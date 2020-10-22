@@ -386,7 +386,7 @@ public class JobletUtil {
         return cloneNode;
     }
 
-    private void updateReferenceComponentInJoblet(Node node, Node cloneNode) {
+    public void updateReferenceComponentInJoblet(Node node, Node cloneNode) {
         ComponentProperties nodeComponentProperties = node.getComponentProperties();
         ComponentProperties cloneNodeComponentProperties = cloneNode.getComponentProperties();
         if (nodeComponentProperties != null && cloneNodeComponentProperties != null) {
@@ -408,7 +408,7 @@ public class JobletUtil {
         }
     }
 
-    private Properties findOutReferencedComponentProperties(Properties properties) {
+    public Properties findOutReferencedComponentProperties(Properties properties) {
         Properties refProperties = properties.getProperties("referencedComponent");//$NON-NLS-1$
         if (refProperties != null) {
             return refProperties;
