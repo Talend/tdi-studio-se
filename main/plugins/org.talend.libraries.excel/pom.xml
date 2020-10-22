@@ -81,7 +81,7 @@
                                 <artifactItem>
                                     <groupId>${talend.groupid}</groupId>
                                     <artifactId>talendMsgMailUtil</artifactId>
-                                    <version>1.2-20200923</version>
+                                    <version>1.2-20201022</version>
                                 </artifactItem>
                                 <artifactItem>
                                     <groupId>${talend.groupid}</groupId>

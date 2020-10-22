@@ -96,7 +96,7 @@
 
       <IMPORT NAME="poi-scratchpad" MODULE="poi-scratchpad-4.1.2-20200903124306_modified_talend.jar" MVN="mvn:org.apache.poi/poi-scratchpad/4.1.2-20200903124306_modified_talend" UrlPath="platform:/plugin/org.talend.libraries.excel/lib/poi-scratchpad-4.1.2-20200903124306_modified_talend.jar" REQUIRED_IF="(MAIL_TYPE == 'MSG')" />
 
-      <IMPORT NAME="talendMsgMailUtil" MODULE="talendMsgMailUtil-1.2-20200923.jar" MVN="mvn:org.talend.components/talendMsgMailUtil/1.2-20200923" UrlPath="platform:/plugin/org.talend.libraries.excel/lib/talendMsgMailUtil-1.2-20200923.jar" REQUIRED_IF="(MAIL_TYPE == 'MSG')" />
+      <IMPORT NAME="talendMsgMailUtil" MODULE="talendMsgMailUtil-1.2-20201022.jar" MVN="mvn:org.talend.components/talendMsgMailUtil/1.2-20201022" UrlPath="platform:/plugin/org.talend.libraries.excel/lib/talendMsgMailUtil-1.2-20201022.jar" REQUIRED_IF="(MAIL_TYPE == 'MSG')" />
       <IMPORT NAME="log4j-1.2.17.jar" MODULE="log4j-1.2.17.jar" MVN="mvn:log4j/log4j/1.2.17"  UrlPath="platform:/plugin/org.talend.libraries.apache/lib/log4j-1.2.17.jar" REQUIRED_IF="(MAIL_TYPE == 'MSG')" />
     </IMPORTS>
   </CODEGENERATION>

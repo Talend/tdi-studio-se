@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.talend.components</groupId>
 	<artifactId>talendMsgMailUtil</artifactId>
-	<version>1.2-20200923</version>
+	<version>1.2-20201022</version>
 	<packaging>jar</packaging>
 
 	<properties>
