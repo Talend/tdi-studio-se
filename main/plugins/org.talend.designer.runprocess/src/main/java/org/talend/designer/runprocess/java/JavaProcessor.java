@@ -2427,6 +2427,12 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
             MavenArtifact artifact = MavenUrlHelper.parseMvnUrl(module.getMavenUri(), true);
             if (artifact != null) {
                 String key = artifact.getGroupId() + ":" + artifact.getArtifactId();
+                if (artifact.getType() != null) {
+                    key = key + ":" + artifact.getType();
+                }
+                if (artifact.getClassifier() != null) {
+                    key = key + ":" + artifact.getClassifier();
+                }
                 ModuleNeeded checkedModule = keepModules.get(key);
                 if (checkedModule != null) {
                     MavenArtifact checkedArtifact = MavenUrlHelper.parseMvnUrl(checkedModule.getMavenUri(), true);
