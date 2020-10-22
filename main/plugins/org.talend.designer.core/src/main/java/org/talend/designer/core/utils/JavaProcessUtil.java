@@ -567,6 +567,7 @@ public class JavaProcessUtil {
                                     String jarName = TalendTextUtils.removeQuotes(s);
                                     if (!jarName.toLowerCase().endsWith(".jar")) { //$NON-NLS-1$
                                         module = ModulesNeededProvider.getModuleNeededById(jarName);
+                                        module.setRequired(true);
                                     }
                                     if (module == null) {
                                         module = ModuleNeeded.newInstance(null, TalendTextUtils.removeQuotes(s), null, true);
@@ -660,10 +661,12 @@ public class JavaProcessUtil {
                                     } else {
                                         if (!moduleName.toLowerCase().endsWith(".jar")) {
                                             module = ModulesNeededProvider.getModuleNeededById(moduleName);
+                                            module.setRequired(true);
                                         }
                                         if (module == null) {
                                             module = ModuleNeeded.newInstance(null, moduleName, null, true);
                                         }
+
                                     }
                                     modulesNeeded.add(module);
                                 }
