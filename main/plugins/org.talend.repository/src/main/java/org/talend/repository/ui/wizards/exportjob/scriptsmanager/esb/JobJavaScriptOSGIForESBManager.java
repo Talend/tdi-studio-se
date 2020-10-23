@@ -385,9 +385,9 @@ public class JobJavaScriptOSGIForESBManager extends JobJavaScriptsManager {
             }
             beanClassRootFolder = getCodeClassRootFileLocation(ERepositoryObjectType.BEANS);
             RepositoryPlugin.getDefault().getRunProcessService().buildCodesJavaProject(new NullProgressMonitor());
-            if (beanClassRootFolder != null) {
-                FileCopyUtils.copyFolder(beanClassRootFolder, routineClassRootFolder);
-            }
+        }
+        if (beanClassRootFolder != null) {
+            FileCopyUtils.copyFolder(beanClassRootFolder, routineClassRootFolder);
         }
 
         // make a jar file of system routine classes

@@ -41,7 +41,7 @@ import org.talend.designer.core.model.utils.emf.talendfile.impl.ElementParameter
 public class UpdateSeparatorAndEscapeForDatasetAPI extends AbstractJobMigrationTask {
 
 	private static final List<String> IMPACTED_COMPONENTS =
-            Arrays.asList("tFileInputDelimited", "tExtractDelimitedFields");
+            Arrays.asList("tFileInputDelimited", "tExtractDelimitedFields", "tFileOutputDelimited");
     
     @Override
     public Date getOrder() {

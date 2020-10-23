@@ -116,6 +116,7 @@ import org.talend.core.service.IMetadataManagmentService;
 import org.talend.core.ui.ICDCProviderService;
 import org.talend.core.ui.IJobletProviderService;
 import org.talend.core.ui.component.ComponentsFactoryProvider;
+import org.talend.core.utils.TalendQuoteUtils;
 import org.talend.cwm.helper.SAPBWTableHelper;
 import org.talend.daikon.properties.Properties;
 import org.talend.designer.core.DesignerPlugin;
@@ -912,9 +913,7 @@ public class ProcessUpdateManager extends AbstractUpdateManager {
                                     if (repValue == null) {
                                         continue;
                                     }
-                                    if (repositoryValue.equals("connection.driverTable")) {
-                                        ConnectionUtil.resetDriverValue(repValue);
-                                    }
+
                                     if (repositoryValue.equals(UpdatesConstants.TYPE)) { // datebase type
                                         boolean found = false;
                                         String[] list = param.getListRepositoryItems();
@@ -961,9 +960,16 @@ public class ProcessUpdateManager extends AbstractUpdateManager {
                                                     }
                                                 }
                                             }
+                                        } else if ((param.getName().equals("DRIVER_JAR")
+                                                || param.getName().equals("DRIVER_JAR_IMPLICIT_CONTEXT"))
+                                                && param.getValue() != null) {
+                                            sameValues = isSameDriverList((List<Map<String, Object>>) param.getValue(),
+                                                    (List<Map<String, Object>>) repValue);
+
                                         } else if (!param.getValue().equals(repValue)) {
                                             sameValues = false;
                                         }
+
                                     }
                                 }
                                 if (!sameValues) {
@@ -1008,6 +1014,97 @@ public class ProcessUpdateManager extends AbstractUpdateManager {
             }
         }
         return jobSettingsResults;
+    }
+
+    private static boolean isSameDriverList(List<Map<String, Object>> lst1, List<Map<String, Object>> lst2) {
+        if (lst1 == null) {
+            if (lst2 == null) {
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+            if (lst2 == null) {
+                return false;
+            } else {
+                // compare
+                if (lst1.size() != lst2.size()) {
+                    return false;
+                } else {
+                    Set<String> driverSet1 = new HashSet<String>();
+                    Set<String> driverSet2 = new HashSet<String>();
+                    boolean isDriverUri1 = false;
+                    boolean isDriverUri2 = false;
+                    for (Map<String, Object> driverItem1 : lst1) {
+                        Object driver1 = driverItem1.get("drivers");
+                        if (driver1 != null) {
+                            String val = TalendQuoteUtils.removeQuotes(String.valueOf(driver1));
+                            driverSet1.add(val);
+                            if (MavenUrlHelper.isMvnUrl(val)) {
+                                isDriverUri1 = true;
+                            }
+                        }
+                    }
+                    for (Map<String, Object> driverItem2 : lst2) {
+                        Object driver2 = driverItem2.get("drivers");
+                        if (driver2 != null) {
+                            String val = TalendQuoteUtils.removeQuotes(String.valueOf(driver2));
+                            driverSet2.add(val);
+                            if (MavenUrlHelper.isMvnUrl(val)) {
+                                isDriverUri2 = true;
+                            }
+                        }
+                    }
+
+                    if (driverSet1.size() != driverSet2.size()) {
+                        return false;
+                    }
+                    if (isDriverUri1 == isDriverUri2) {
+                        return driverSet1.equals(driverSet2);
+                    } else {
+                        if (isDriverUri1) {
+                            for (String item : driverSet1) {
+                                MavenArtifact art = MavenUrlHelper.parseMvnUrl(item);
+                                if (!driverSet2.contains(art.getFileName())) {
+                                    return false;
+                                }
+                            }
+                        } else {
+                            for (String item : driverSet2) {
+                                MavenArtifact art = MavenUrlHelper.parseMvnUrl(item);
+                                if (!driverSet1.contains(art.getFileName())) {
+                                    return false;
+                                }
+                            }
+                        }
+                        return true;
+                    }
+                }
+            }
+        }
+    }
+
+    private static boolean isSameDriver(Object val1, Object val2) {
+        String driver1 = String.valueOf(val1);
+        String driver2 = String.valueOf(val2);
+        driver1 = TalendQuoteUtils.removeQuotes(driver1);
+        driver2 = TalendQuoteUtils.removeQuotes(driver2);
+        if (MavenUrlHelper.isMvnUrl(driver1)) {
+            if (!MavenUrlHelper.isMvnUrl(driver2)) {
+                MavenArtifact art = MavenUrlHelper.parseMvnUrl(driver1);
+                if (art != null) {
+                    return art.getFileName().equals(driver2);
+                }
+            }
+        } else {
+            if (MavenUrlHelper.isMvnUrl(driver2)) {
+                MavenArtifact art = MavenUrlHelper.parseMvnUrl(driver2);
+                if (art != null) {
+                    return art.getFileName().equals(driver1);
+                }
+            }
+        }
+        return true;
     }
 
     /*
@@ -2377,17 +2474,10 @@ public class ProcessUpdateManager extends AbstractUpdateManager {
             for (int i = 0; i < oldList.size(); i++) {
                 Map<String, Object> oldMap = oldList.get(i);
                 Map<String, Object> objectMap = (Map<String, Object>) objectList.get(i);
+                String oldDriver = String.valueOf(oldMap.get(nodeParamDriverKey));
                 String driver = String.valueOf(objectMap.get("drivers"));
-                if (driver != null) {
-                    MavenArtifact artifact = MavenUrlHelper.parseMvnUrl(TalendTextUtils.removeQuotes(driver));
-                    if (artifact != null) {
-                        driver = artifact.getFileName();
-                    }
-                }
-                if (oldMap.get(nodeParamDriverKey).equals(driver)) {
-                    sameValues = true;
-                } else {
-                    sameValues = false;
+                sameValues = isSameDriver(oldDriver, driver);
+                if (!sameValues) {
                     break;
                 }
             }

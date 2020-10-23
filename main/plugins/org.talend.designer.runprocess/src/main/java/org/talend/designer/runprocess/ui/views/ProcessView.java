@@ -19,6 +19,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.log4j.Logger;
@@ -75,7 +76,6 @@ import org.talend.core.ui.properties.tab.IDynamicProperty;
 import org.talend.core.ui.properties.tab.TalendPropertyTabDescriptor;
 import org.talend.designer.core.ui.views.properties.EElementType;
 import org.talend.designer.core.ui.views.properties.MultipleThreadDynamicComposite;
-import org.talend.designer.runprocess.EDebugProcessType;
 import org.talend.designer.runprocess.RunProcessContext;
 import org.talend.designer.runprocess.RunProcessContextManager;
 import org.talend.designer.runprocess.RunProcessPlugin;
@@ -150,7 +150,7 @@ public class ProcessView extends ViewPart implements PropertyChangeListener {
 
     private static RunProcessContext processContext;
 
-    private Map<EDebugProcessType, IDebugViewHelper> debugViewHelpers;
+    private Map<ComponentCategory, IDebugViewHelper> debugViewHelpers;
 
     private boolean canRun = true;
 
@@ -188,7 +188,7 @@ public class ProcessView extends ViewPart implements PropertyChangeListener {
                 "org.talend.designer.runprocess.runprocess_view_helper", "runprocess_view_helper"); //$NON-NLS-1$ //$NON-NLS-2$
         IExtensionPointLimiter debugextensionPointLimiter = new ExtensionPointLimiterImpl(
                 "org.talend.designer.runprocess.debugprocess_view_helper", "debugprocess_view_helper");
-        debugViewHelpers = new HashMap<EDebugProcessType, IDebugViewHelper>();
+        debugViewHelpers = new HashMap<>();
         ExtensionImplementationProvider.getInstance(debugextensionPointLimiter, null).forEach(e -> {
             if (e instanceof IDebugViewHelper) {
                 IDebugViewHelper helper = (IDebugViewHelper) e;
@@ -204,10 +204,10 @@ public class ProcessView extends ViewPart implements PropertyChangeListener {
         tabFactory = new HorizontalTabFactory();
         setProcessViewHelper(processViewHelperPrm);
         
-        if(!debugViewHelpers.containsKey(EDebugProcessType.DI)) {
+        if (!debugViewHelpers.containsKey(ComponentCategory.CATEGORY_4_DI)) {
          // TOS Debug helper
             DefaultDebugviewHelper defaultDebugViewHelper = new DefaultDebugviewHelper();
-            debugViewHelpers.put(EDebugProcessType.DI, defaultDebugViewHelper);
+            debugViewHelpers.put(ComponentCategory.CATEGORY_4_DI, defaultDebugViewHelper);
         }
         rubjobManager = ProcessManager.getInstance();
         ProxyRepositoryFactory.getInstance().addPropertyChangeListener(this);
@@ -406,9 +406,9 @@ public class ProcessView extends ViewPart implements PropertyChangeListener {
             debugViewHelpers.values().forEach(helper -> {
                 helper.getDebugComposite(parent).setVisible(false);
             });
-            debugTisProcessComposite = lastDebugType != null && debugViewHelpers.get(lastDebugType) != null
-                    ? debugViewHelpers.get(lastDebugType).getDebugComposite(parent)
-                    : debugViewHelpers.get(EDebugProcessType.DI).getDebugComposite(parent);
+            debugTisProcessComposite = oldJobType != null && debugViewHelpers.get(oldJobType) != null
+                    ? debugViewHelpers.get(oldJobType).getDebugComposite(parent)
+                    : debugViewHelpers.get(ComponentCategory.CATEGORY_4_DI).getDebugComposite(parent);
             debugTisProcessComposite.setVisible(true);
             // CSS
             CoreUIPlugin.setCSSClass(debugTisProcessComposite, TraceDebugProcessComposite.class.getSimpleName());
@@ -447,10 +447,9 @@ public class ProcessView extends ViewPart implements PropertyChangeListener {
     }
 
     public IDebugViewHelper getDebugViewHelper() {
-
-        return lastDebugType != null && debugViewHelpers.get(lastDebugType) != null
-                ? debugViewHelpers.get(lastDebugType)
-                : debugViewHelpers.get(EDebugProcessType.DI);
+        return oldJobType != null && debugViewHelpers.get(oldJobType) != null
+                ? debugViewHelpers.get(oldJobType)
+                : debugViewHelpers.get(ComponentCategory.CATEGORY_4_DI);
     }
 
     public ProcessComposite getProcessComposite() {
@@ -594,7 +593,7 @@ public class ProcessView extends ViewPart implements PropertyChangeListener {
         }
     }
 
-    EDebugProcessType lastDebugType = null;
+    ComponentCategory oldJobType = null;
 
     public void refresh() {
         refresh(false);
@@ -624,10 +623,12 @@ public class ProcessView extends ViewPart implements PropertyChangeListener {
         if (contextComposite.isDisposed()) {
             return;
         }
-        
-        if (activeContext != null
-                && !EDebugProcessType.findDebugType(activeContext.getProcess().getComponentsType()).equals(lastDebugType)) {
-            lastDebugType = EDebugProcessType.findDebugType(activeContext.getProcess().getComponentsType());
+
+        ComponentCategory activedType = Optional.ofNullable(activeContext).map(c -> c.getProcess())
+                .map(p -> p.getComponentsType()).map(t -> ComponentCategory.getComponentCategoryFromName(t))
+                .orElse(ComponentCategory.CATEGORY_4_DI);
+        if (!activedType.equals(oldJobType)) {
+            oldJobType = activedType;
             setElement();
         }
         contextComposite.setProcess(((activeContext != null) && !disableAll ? activeContext.getProcess() : null));
@@ -639,14 +640,16 @@ public class ProcessView extends ViewPart implements PropertyChangeListener {
         if (dc != null && dc == processComposite) {
             processComposite.setProcessContext(activeContext);
         } else if (dc != null && dc instanceof TraceDebugProcessComposite) {
-            EDebugProcessType type = lastDebugType == null ? EDebugProcessType.DI : lastDebugType;
-            if (!debugViewHelpers.get(type).getDebugComposite(parent).isVisible()) {
+            ComponentCategory type = oldJobType == null ? ComponentCategory.CATEGORY_4_DI : oldJobType;
+            IDebugViewHelper debugViewHelper = Optional.ofNullable(debugViewHelpers.get(type))
+                    .orElse(debugViewHelpers.get(ComponentCategory.CATEGORY_4_DI));
+            if (!debugViewHelper.getDebugComposite(parent).isVisible()) {
                 debugViewHelpers.values().forEach(helper -> {
                     if (!helper.getDebugType().equals(type)) {
                         helper.getDebugComposite(parent).setVisible(false);
                     }
                 });
-                debugViewHelpers.get(type).getDebugComposite(parent).setVisible(true);
+                debugViewHelper.getDebugComposite(parent).setVisible(true);
             }
             if (debugTisProcessComposite != null) {
                 debugTisProcessComposite.setProcessContext(activeContext);

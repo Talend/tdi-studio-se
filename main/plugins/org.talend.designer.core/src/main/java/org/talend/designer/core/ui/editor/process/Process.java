@@ -181,7 +181,6 @@ import org.talend.designer.core.ui.preferences.TalendDesignerPrefConstants;
 import org.talend.designer.core.ui.projectsetting.ProjectSettingManager;
 import org.talend.designer.core.ui.views.contexts.ContextsView;
 import org.talend.designer.core.ui.views.problems.Problems;
-import org.talend.designer.core.utils.ConnectionUtil;
 import org.talend.designer.core.utils.DesignerUtilities;
 import org.talend.designer.core.utils.DetectContextVarsUtils;
 import org.talend.designer.core.utils.JavaProcessUtil;
@@ -3727,9 +3726,6 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
             updataComponentParamName = EParameterName.UPDATE_COMPONENTS.getName();
             // }
             setPropertyValue(updataComponentParamName, Boolean.TRUE);
-        }
-        if (id.equals(EParameterName.DRIVER_JAR.getName()) || id.equals("DRIVER_JAR_IMPLICIT_CONTEXT")) {
-            ConnectionUtil.getDriverJar(value);
         }
         super.setPropertyValue(id, value);
     }

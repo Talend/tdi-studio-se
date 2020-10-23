@@ -621,7 +621,10 @@ public class ProjectSettingManager extends Utils {
             String moduleName = module.getModuleName();
             if (moduleName != null) {
                 moduleNameList.add(moduleName);
-                moduleValueList.add(TalendTextUtils.addQuotes(moduleName));
+                String moduleValue = TalendTextUtils.addQuotes(module.getMavenUri());
+                if (!moduleValueList.contains(moduleValue)) {
+                    moduleValueList.add(moduleValue);
+                }
             }
         }
         Comparator<String> comprarator = new IgnoreCaseComparator();
