@@ -222,18 +222,18 @@
                         }
 
                         java.io.File attachFile = getUniqueFileName(attachFileName,new java.io.File(path));
-						                        <% if(isLog4jEnabled){ %>
-                                log.info("<%= cid %> - Extracted attachment: '" + attachFile.getName() + "'.");
+                        <% if(isLog4jEnabled){ %>
+                                log.info("<%= cid %> - Extracting attachment: '" + attachFile.getName() + "'.");
                         <% } %>
-                        java.io.BufferedOutputStream out = new java.io.BufferedOutputStream(new java.io.FileOutputStream(attachFile));
-                        java.io.BufferedInputStream in = new java.io.BufferedInputStream(mpart.getInputStream());
-                        int buffer = 0;
-                        while ((buffer = in.read()) != -1) {
-                            out.write(buffer);
+                        try (java.io.BufferedOutputStream out = new java.io.BufferedOutputStream(new java.io.FileOutputStream(attachFile));
+                            java.io.BufferedInputStream in = new java.io.BufferedInputStream(mpart.getInputStream())){
+                            byte[] buffer = new byte[8192];
+                            int bytesRead = 0;
+                            while ((bytesRead = in.read(buffer)) > 0) {
+                                out.write(buffer, 0, bytesRead);
+                            }
                             out.flush();
                         }
-                        out.close();
-                        in.close();
                     }
                 }
 				
