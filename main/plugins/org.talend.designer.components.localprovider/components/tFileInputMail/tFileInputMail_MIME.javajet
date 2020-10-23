@@ -231,18 +231,18 @@
 						}
 	                    path<%=cid%> = path<%=cid%> + attachfileName<%=cid%>;
 	                    <% if(isLog4jEnabled){ %>
-		                    	log.info("<%= cid %> - Extracted attachment: '"+attachfileName<%=cid%>+"'.");
+	                            log.info("<%= cid %> - Extracting attachment: '"+attachfileName<%=cid%>+"'.");
 	                    <% } %>
 	                    java.io.File attachFile  = new java.io.File(path<%=cid%>);
-	                    out<%=cid%> = new java.io.BufferedOutputStream(new java.io.FileOutputStream(attachFile));
-	                    in<%=cid%> = new java.io.BufferedInputStream(mpart<%=cid%>.getInputStream());
-	                    int buffer<%=cid%> = 0;
-	                    while ((buffer<%=cid%> = in<%=cid%>.read()) != -1) {
-	                           out<%=cid%>.write(buffer<%=cid%>);
-	                           out<%=cid%>.flush();
-						}   
-	                    out<%=cid%>.close();
-	                    in<%=cid%>.close();    
+	                    try (out<%=cid%> = new java.io.BufferedOutputStream(new java.io.FileOutputStream(attachFile));
+	                        in<%=cid%> = new java.io.BufferedInputStream(mpart<%=cid%>.getInputStream())){
+	                        byte[] buffer = new byte[8192];
+	                        int bytesRead = 0;
+	                        while ((bytesRead = in<%=cid%>.read(buffer)) > 0) {
+	                           out<%=cid%>.write(buffer, 0, bytesRead);
+	                        }
+	                        out<%=cid%>.flush();
+	                    }
 	                }
 	            }
 			}
