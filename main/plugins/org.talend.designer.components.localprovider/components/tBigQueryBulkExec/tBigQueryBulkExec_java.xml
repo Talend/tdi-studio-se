@@ -237,7 +237,7 @@
          <IMPORT NAME="google-api-services-oauth2-v2-rev151-1.25.0.jar" MODULE="google-api-services-oauth2-v2-rev151-1.25.0.jar" MVN="mvn:com.google.apis/google-api-services-oauth2/v2-rev151-1.25.0"  REQUIRED="true" />
          <IMPORT NAME="google-api-services-bigquery-v2-rev454-1.25.0.jar" MODULE="google-api-services-bigquery-v2-rev454-1.25.0.jar" MVN="mvn:com.google.apis/google-api-services-bigquery/v2-rev454-1.25.0" REQUIRED="true" />
          <IMPORT NAME="google-http-client-1.25.0.jar" MODULE="google-http-client-1.25.0.jar" MVN="mvn:com.google.http-client/google-http-client/1.25.0"  REQUIRED="true" />
-         <IMPORT NAME="google-oauth-client-1.25.0.jar" MODULE="google-oauth-client-1.25.0.jar" MVN="mvn:com.google.oauth-client/google-oauth-client/1.25.0" REQUIRED="true" />
+         <IMPORT NAME="google-oauth-client-1.31.1.jar" MODULE="google-oauth-client-1.31.1.jar" MVN="mvn:com.google.oauth-client/google-oauth-client/1.31.1" REQUIRED="true" />
          <IMPORT NAME="google-http-client-jackson2-1.25.0.jar" MODULE="google-http-client-jackson2-1.25.0.jar" MVN="mvn:com.google.http-client/google-http-client-jackson2/1.25.0"  REQUIRED="true" />
          <IMPORT NAME="guava-20.0.jar" MODULE="guava-20.0.jar" MVN="mvn:com.google.guava/guava/20.0" REQUIRED="true" />
 		<IMPORT NAME="jackson-core-2.10.1.jar" MODULE="jackson-core-2.10.1.jar" MVN="mvn:com.fasterxml.jackson.core/jackson-core/2.10.1" REQUIRED="true" />
