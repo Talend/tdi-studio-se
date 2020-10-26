@@ -60,6 +60,10 @@ if ((metadatas != null) && (metadatas.size() > 0)) { // metadata
 
 org.talend.components.api.component.ComponentDefinition def_<%=cid %> =
         new <%= def.getClass().getName()%>();
+        
+org.talend.components.api.component.runtime.Writer writer_<%=cid%> = null;
+org.talend.components.api.component.runtime.Reader reader_<%=cid%> = null;
+
 <%
 List<Component.CodegenPropInfo> propsToProcess = component.getCodegenPropInfos(componentProps);
 %>
@@ -240,11 +244,11 @@ if(isTopologyNone) {
 
 if (hasOutputOnly || asInputComponent) {
     %>
-    org.talend.components.api.component.runtime.Source source_<%=cid%> =
-            (org.talend.components.api.component.runtime.Source)sourceOrSink_<%=cid%>;
-    org.talend.components.api.component.runtime.Reader reader_<%=cid%> =
-            source_<%=cid%>.createReader(container_<%=cid%>);
-	reader_<%=cid%> = new org.talend.codegen.flowvariables.runtime.FlowVariablesReader(reader_<%=cid%>, container_<%=cid%>);
+    if (sourceOrSink_<%=cid%> instanceof org.talend.components.api.component.runtime.Source) {
+        org.talend.components.api.component.runtime.Source source_<%=cid%> =
+                (org.talend.components.api.component.runtime.Source)sourceOrSink_<%=cid%>;
+        reader_<%=cid%> = source_<%=cid%>.createReader(container_<%=cid%>);
+	    reader_<%=cid%> = new org.talend.codegen.flowvariables.runtime.FlowVariablesReader(reader_<%=cid%>, container_<%=cid%>);
 
     <%
     IConnection main = null;
@@ -266,19 +270,19 @@ if (hasOutputOnly || asInputComponent) {
     	IConnection schemaSourceConnector = (main!=null ? main : reject);
     	String schemaSourceConnectorName = schemaSourceConnector.getMetadataTable().getAttachedConnector();
 	%>
-        boolean multi_output_is_allowed_<%=cid%> = false;
+            boolean multi_output_is_allowed_<%=cid%> = false;
         <% //take care SourceOrSink.validate will change the schema if it contains include-all-fields, so need to get design Avro schema before validate %>
-        org.talend.components.api.component.Connector c_<%=cid%> = null;
-        for (org.talend.components.api.component.Connector currentConnector : props_<%=cid %>.getAvailableConnectors(null, true)) {
-            if (currentConnector.getName().equals("<%=schemaSourceConnectorName%>")) {
-                c_<%=cid%> = currentConnector;
-            }
+            org.talend.components.api.component.Connector c_<%=cid%> = null;
+            for (org.talend.components.api.component.Connector currentConnector : props_<%=cid %>.getAvailableConnectors(null, true)) {
+                if (currentConnector.getName().equals("<%=schemaSourceConnectorName%>")) {
+                    c_<%=cid%> = currentConnector;
+                }
 
-            if (currentConnector.getName().equals("REJECT")) {//it's better to move the code to javajet
-                multi_output_is_allowed_<%=cid%> = true;
+                if (currentConnector.getName().equals("REJECT")) {//it's better to move the code to javajet
+                    multi_output_is_allowed_<%=cid%> = true;
+                }
             }
-        }
-        org.apache.avro.Schema schema_<%=cid%> = props_<%=cid %>.getSchema(c_<%=cid%>, true);
+            org.apache.avro.Schema schema_<%=cid%> = props_<%=cid %>.getSchema(c_<%=cid%>, true);
 
     <%
     	irToRow = new IndexedRecordToRowStructGenerator(cid, null, columnList);
@@ -286,117 +290,119 @@ if (hasOutputOnly || asInputComponent) {
     }
     %>
 
-    // Iterate through the incoming data.
-    boolean available_<%=cid%> = reader_<%=cid%>.start();
+        // Iterate through the incoming data.
+        boolean available_<%=cid%> = reader_<%=cid%>.start();
 
-    resourceMap.put("reader_<%=cid%>", reader_<%=cid%>);
+        resourceMap.put("reader_<%=cid%>", reader_<%=cid%>);
 
-    for (; available_<%=cid%>; available_<%=cid%> = reader_<%=cid%>.advance()) {
-    	nb_line_<%=cid %>++;
+        for (; available_<%=cid%>; available_<%=cid%> = reader_<%=cid%>.advance()) {
+			nb_line_<%=cid %>++;
+	
+			<%if(hasDataOutput) {%>
+			if (multi_output_is_allowed_<%=cid%>) {
+				<%if(main!=null){%>
+					<%=main.getName()%> = null;
+				<%}%>
+	
+				<%if(reject!=null){%>
+					<%=reject.getName()%> = null;
+				<%}%>
+			}
+			<%}%>
 
-    	<%if(hasDataOutput) {%>
-        if (multi_output_is_allowed_<%=cid%>) {
-            <%if(main!=null){%>
-                <%=main.getName()%> = null;
-            <%}%>
-
-            <%if(reject!=null){%>
-                <%=reject.getName()%> = null;
-            <%}%>
-        }
-        <%}%>
-
-        try {
-            Object data_<%=cid%> = reader_<%=cid%>.getCurrent();
-            <%
-            if (main != null) {
-                %>
-
-                if(multi_output_is_allowed_<%=cid%>) {
-                    <%=main.getName()%> = new <%=main.getName() %>Struct();
-                }
-
-                <%
-                irToRow.generateConvertRecord("data_" + cid, main.getName(), main.getMetadataTable().getListColumns());
-            }
-            %>
-        } catch (org.talend.components.api.exception.DataRejectException e_<%=cid%>) {
-        	java.util.Map<String,Object> info_<%=cid%> = e_<%=cid%>.getRejectInfo();
-            <%
-            if (reject!=null) {
-                %>
-                Object data_<%=cid%> = info_<%=cid%>.get("talend_record");
-
-                if (multi_output_is_allowed_<%=cid%>) {
-                    <%=reject.getName()%> = new <%=reject.getName() %>Struct();
-                }
-				try{
-                <%
-                irToRow.generateConvertRecord("data_" + cid, reject.getName());
-                %>
-                }catch(java.lang.Exception e){
-                	// do nothing
-                }
-                <%
-                Set<String> commonColumns = new HashSet<String>();
-
-                for (IMetadataColumn column : columnList) {
-                    commonColumns.add(column.getLabel());
-                }
-
-                //pass error columns
-                List<IMetadataColumn> rejectColumns = reject.getMetadataTable().getListColumns();
-                for(IMetadataColumn column : rejectColumns) {
-                    String columnName = column.getLabel();
-
-                    // JavaType javaType = JavaTypesManager.getJavaTypeFromId(column.getTalendType());
-                    String typeToGenerate = JavaTypesManager.getTypeToGenerate(column.getTalendType(), column.isNullable());
-
-                    //error columns
-                    if(!commonColumns.contains(columnName)) {
-                        %>
-                        <%=reject.getName()%>.<%=columnName%> = (<%=typeToGenerate%>)info_<%=cid%>.get("<%=columnName%>");
-                        <%
-                    }
-                }
-            } else {
-            %>
-            	//TODO use a method instead of getting method by the special key "error/errorMessage"
-            	Object errorMessage_<%=cid%> = null;
-            	if(info_<%=cid%>.containsKey("error")){
-            		errorMessage_<%=cid%> = info_<%=cid%>.get("error");
-        		}else if(info_<%=cid%>.containsKey("errorMessage")){
-            		errorMessage_<%=cid%> = info_<%=cid%>.get("errorMessage");
-        		}else{
-        			errorMessage_<%=cid%> = "Rejected but error message missing";
-        		}
-        		errorMessage_<%=cid%> = "Row "+ nb_line_<%=cid %> + ": "+errorMessage_<%=cid%>;
-    			System.err.println(errorMessage_<%=cid%>);
-            <%
-            }
-            if (main != null) {
-            %>
-            	// If the record is reject, the main line record should put NULL
-            	<%=main.getName()%> = null;
-            <%
-            }
-        %>
-    }
+			try {
+				Object data_<%=cid%> = reader_<%=cid%>.getCurrent();
+				<%
+				if (main != null) {
+					%>
+	
+					if(multi_output_is_allowed_<%=cid%>) {
+						<%=main.getName()%> = new <%=main.getName() %>Struct();
+					}
+	
+					<%
+					irToRow.generateConvertRecord("data_" + cid, main.getName(), main.getMetadataTable().getListColumns());
+				}
+				%>
+			} catch (org.talend.components.api.exception.DataRejectException e_<%=cid%>) {
+				java.util.Map<String,Object> info_<%=cid%> = e_<%=cid%>.getRejectInfo();
+				<%
+				if (reject!=null) {
+					%>
+					Object data_<%=cid%> = info_<%=cid%>.get("talend_record");
+	
+					if (multi_output_is_allowed_<%=cid%>) {
+						<%=reject.getName()%> = new <%=reject.getName() %>Struct();
+					}
+					try{
+					<%
+					irToRow.generateConvertRecord("data_" + cid, reject.getName());
+					%>
+					}catch(java.lang.Exception e){
+						// do nothing
+					}
+					<%
+					Set<String> commonColumns = new HashSet<String>();
+	
+					for (IMetadataColumn column : columnList) {
+						commonColumns.add(column.getLabel());
+					}
+	
+					//pass error columns
+					List<IMetadataColumn> rejectColumns = reject.getMetadataTable().getListColumns();
+					for(IMetadataColumn column : rejectColumns) {
+						String columnName = column.getLabel();
+	
+						// JavaType javaType = JavaTypesManager.getJavaTypeFromId(column.getTalendType());
+						String typeToGenerate = JavaTypesManager.getTypeToGenerate(column.getTalendType(), column.isNullable());
+	
+						//error columns
+						if(!commonColumns.contains(columnName)) {
+							%>
+							<%=reject.getName()%>.<%=columnName%> = (<%=typeToGenerate%>)info_<%=cid%>.get("<%=columnName%>");
+							<%
+						}
+					}
+				} else {
+				%>
+					//TODO use a method instead of getting method by the special key "error/errorMessage"
+					Object errorMessage_<%=cid%> = null;
+					if(info_<%=cid%>.containsKey("error")){
+						errorMessage_<%=cid%> = info_<%=cid%>.get("error");
+					}else if(info_<%=cid%>.containsKey("errorMessage")){
+						errorMessage_<%=cid%> = info_<%=cid%>.get("errorMessage");
+					}else{
+						errorMessage_<%=cid%> = "Rejected but error message missing";
+					}
+					errorMessage_<%=cid%> = "Row "+ nb_line_<%=cid %> + ": "+errorMessage_<%=cid%>;
+					System.err.println(errorMessage_<%=cid%>);
+				<%
+				}
+				if (main != null) {
+				%>
+					// If the record is reject, the main line record should put NULL
+					<%=main.getName()%> = null;
+				<%
+				}
+			%>
+			} // end of catch 
     <%
     // The for loop around the incoming records from the reader is left open.
 
 
 } else if (hasInput) {
     %>
-    org.talend.components.api.component.runtime.Sink sink_<%=cid%> =
-            (org.talend.components.api.component.runtime.Sink)sourceOrSink_<%=cid%>;
-    org.talend.components.api.component.runtime.WriteOperation writeOperation_<%=cid%> = sink_<%=cid%>.createWriteOperation();
-    writeOperation_<%=cid%>.initialize(container_<%=cid%>);
-    org.talend.components.api.component.runtime.Writer writer_<%=cid%> = writeOperation_<%=cid%>.createWriter(container_<%=cid%>);
-    writer_<%=cid%>.open("<%=cid%>");
+    org.talend.codegen.enforcer.IncomingSchemaEnforcer incomingEnforcer_<%=cid%> = null;
+    if (sourceOrSink_<%=cid%> instanceof org.talend.components.api.component.runtime.Sink) {
+    	org.talend.components.api.component.runtime.Sink sink_<%=cid%> =
+            	(org.talend.components.api.component.runtime.Sink)sourceOrSink_<%=cid%>;
+        org.talend.components.api.component.runtime.WriteOperation writeOperation_<%=cid%> = sink_<%=cid%>.createWriteOperation();
+        writeOperation_<%=cid%>.initialize(container_<%=cid%>);
+        writer_<%=cid%> = writeOperation_<%=cid%>.createWriter(container_<%=cid%>);
+        writer_<%=cid%>.open("<%=cid%>");
 
-    resourceMap.put("writer_<%=cid%>", writer_<%=cid%>);
-
+        resourceMap.put("writer_<%=cid%>", writer_<%=cid%>);
+    } // end of "sourceOrSink_<%=cid%> instanceof ...Sink"
     org.talend.components.api.component.Connector c_<%=cid%> = null;
     for (org.talend.components.api.component.Connector currentConnector : props_<%=cid %>.getAvailableConnectors(null, false)) {
         if (currentConnector.getName().equals("MAIN")) {
@@ -405,8 +411,7 @@ if (hasOutputOnly || asInputComponent) {
         }
     }
     org.apache.avro.Schema designSchema_<%=cid%> = props_<%=cid %>.getSchema(c_<%=cid%>, false);
-    org.talend.codegen.enforcer.IncomingSchemaEnforcer incomingEnforcer_<%=cid%>
-            = new org.talend.codegen.enforcer.IncomingSchemaEnforcer(designSchema_<%=cid%>);
+    incomingEnforcer_<%=cid%> = new org.talend.codegen.enforcer.IncomingSchemaEnforcer(designSchema_<%=cid%>);
     <%
     List<? extends IConnection> outgoingConns = node.getOutgoingSortedConnections();
     if (outgoingConns!=null){
@@ -442,7 +447,8 @@ if (hasOutputOnly || asInputComponent) {
         }
     }
 }
-%>
+ %>
+    
                 java.lang.Iterable<?> outgoingMainRecordsList_<%=cid%> = new java.util.ArrayList<Object>();
                 java.util.Iterator outgoingMainRecordsIt_<%=cid%> = null;
 
