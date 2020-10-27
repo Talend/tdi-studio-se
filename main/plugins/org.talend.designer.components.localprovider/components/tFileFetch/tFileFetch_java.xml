@@ -402,6 +402,15 @@ COMPATIBILITY="ALL"
    >
        <DEFAULT>false</DEFAULT>
    </PARAMETER>
+   <PARAMETER
+           NAME="TRUST_ALL_SERVER"
+           FIELD="CHECK"
+           REQUIRED="true"
+           SHOW_IF="PROTO == 'HTTPS_PROTO'"
+           NUM_ROW="70"
+   >
+       <DEFAULT>false</DEFAULT>
+   </PARAMETER>
     </ADVANCED_PARAMETERS>
 
   <CODEGENERATION>

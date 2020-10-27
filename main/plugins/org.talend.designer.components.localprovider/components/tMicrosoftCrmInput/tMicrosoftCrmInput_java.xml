@@ -26,6 +26,10 @@
 
     <PARAMETERS>
 
+        <PARAMETER NAME="HIDDEN_OAUTH_PREMISE" FIELD="CHECK" NUM_ROW="1" REQUIRED="true" SHOW_IF="AUTH_TYPE=='XXX'">
+            <DEFAULT>true</DEFAULT>
+        </PARAMETER>
+
         <PARAMETER NAME="AUTH_TYPE" FIELD="CLOSED_LIST" NUM_ROW="5"
             REQUIRED="true">
             <ITEMS DEFAULT="ON_PREMISE">
@@ -55,6 +59,14 @@
             </ITEMS>
         </PARAMETER>
 
+        <PARAMETER NAME="PREMISE_AUTH" FIELD="CLOSED_LIST" NUM_ROW="5"
+            REQUIRED="true" SHOW_IF="(HIDDEN_OAUTH_PREMISE=='true' AND (AUTH_TYPE=='ON_PREMISE' AND MS_CRM_VERSION=='CRM_2016'))">
+            <ITEMS DEFAULT="NTLM">
+                <ITEM NAME="NTLM" VALUE="NTLM" />
+                <ITEM NAME="OAUTH" VALUE="OAUTH" />
+            </ITEMS>
+        </PARAMETER>
+
         <PARAMETER NAME="ONLINE_REGISTERED_APP" FIELD="CLOSED_LIST" NUM_ROW="5"
             REQUIRED="true" SHOW_IF="(AUTH_TYPE == 'ONLINE') AND (API_VERSION == 'API_2016_ODATA' OR API_VERSION == 'API_2018_ODATA')">
             <ITEMS DEFAULT="NATIVE">
@@ -81,12 +93,12 @@
         </PARAMETER>
 
         <PARAMETER NAME="DOMAIN" FIELD="TEXT" NUM_ROW="20" REQUIRED="true"
-            SHOW_IF="(((AUTH_TYPE == 'ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2011')) OR ((AUTH_TYPE == 'ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016' OR MS_CRM_VERSION == 'CRM_2018')))">
+            SHOW_IF="(((AUTH_TYPE == 'ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2011')) OR ((AUTH_TYPE == 'ON_PREMISE') AND ((PREMISE_AUTH=='NTLM') AND (MS_CRM_VERSION == 'CRM_2016' OR MS_CRM_VERSION == 'CRM_2018'))))">
             <DEFAULT>"192.168.0.22"</DEFAULT>
         </PARAMETER>
 
         <PARAMETER NAME="HOST" FIELD="TEXT" NUM_ROW="20" REQUIRED="true"
-            SHOW_IF="((AUTH_TYPE == 'ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2011')) OR (API_VERSION=='API_2007')  OR ((AUTH_TYPE == 'ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016' OR MS_CRM_VERSION == 'CRM_2018'))">
+            SHOW_IF="((AUTH_TYPE == 'ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2011')) OR (API_VERSION=='API_2007')  OR ((AUTH_TYPE == 'ON_PREMISE') AND ((PREMISE_AUTH=='NTLM') AND (MS_CRM_VERSION == 'CRM_2016' OR MS_CRM_VERSION == 'CRM_2018')))">
             <DEFAULT>"192.168.0.22"</DEFAULT>
         </PARAMETER>
 
@@ -121,7 +133,7 @@
             <DEFAULT>""</DEFAULT>
         </PARAMETER>
         
-        <PARAMETER NAME="APPLICATION_ID" FIELD="TEXT" NUM_ROW="30" REQUIRED="true" SHOW_IF="(AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA' OR API_VERSION=='API_2018_ODATA')">
+        <PARAMETER NAME="APPLICATION_ID" FIELD="TEXT" NUM_ROW="30" REQUIRED="true" SHOW_IF="((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA' OR API_VERSION=='API_2018_ODATA')) OR (AUTH_TYPE=='ON_PREMISE' AND MS_CRM_VERSION=='CRM_2016' AND PREMISE_AUTH=='OAUTH')">
             <DEFAULT>""</DEFAULT>
         </PARAMETER>
 
@@ -129,8 +141,12 @@
             <DEFAULT>""</DEFAULT>
         </PARAMETER>
         
-        <PARAMETER NAME="AUTHORITY" FIELD="TEXT" NUM_ROW="35" REQUIRED="true" SHOW_IF="(AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA' OR API_VERSION=='API_2018_ODATA')">
+        <PARAMETER NAME="AUTHORITY" FIELD="TEXT" NUM_ROW="35" REQUIRED="true" SHOW_IF="((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA' OR API_VERSION=='API_2018_ODATA')) OR (AUTH_TYPE=='ON_PREMISE' AND MS_CRM_VERSION=='CRM_2016' AND PREMISE_AUTH=='OAUTH')">
             <DEFAULT>"https://login.windows.net/common/oauth2/authorize"</DEFAULT>
+        </PARAMETER>
+
+        <PARAMETER NAME="REDIRECT_URL" FIELD="TEXT" NUM_ROW="37" REQUIRED="true" SHOW_IF="(AUTH_TYPE=='ON_PREMISE' AND MS_CRM_VERSION=='CRM_2016' AND PREMISE_AUTH=='OAUTH')">
+            <DEFAULT>"https://localhost"</DEFAULT>
         </PARAMETER>
 
         <PARAMETER NAME="TIMEOUT" FIELD="TEXT" NUM_ROW="45" REQUIRED="true">
@@ -27493,6 +27509,12 @@
 		<PARAMETER NAME="ATTEMPS_INTERVAL_TIME" FIELD="TEXT" NUM_ROW="40" REQUIRED="true" SHOW="false" >
 			<DEFAULT>1000</DEFAULT>
 		</PARAMETER>
+	<PARAMETER NAME="FORCE_OAUTH_RESOURCE" FIELD="CHECK" NUM_ROW="50" SHOW_IF="(AUTH_TYPE == 'ON_PREMISE' AND MS_CRM_VERSION == 'CRM_2016_ODATA' AND PREMISE_AUTH == 'OAUTH')">
+		<DEFAULT>false</DEFAULT>
+	</PARAMETER>
+	<PARAMETER NAME="OAUTH_RESOURCE" FIELD="TEXT" NUM_ROW="50" SHOW_IF="(AUTH_TYPE == 'ON_PREMISE' AND MS_CRM_VERSION == 'CRM_2016_ODATA' AND PREMISE_AUTH == 'OAUTH' AND FORCE_OAUTH_RESOURCE == 'true')">
+		<DEFAULT>"https://talend.api.crm.dynamics.com"</DEFAULT>
+	</PARAMETER>
     </ADVANCED_PARAMETERS>
 
     <CODEGENERATION>
@@ -27523,7 +27545,7 @@
                 <IMPORT NAME="jcifs" MODULE="jcifs-1.3.0.jar" MVN="mvn:org.talend.libraries/jcifs-1.3.0/6.0.0"  REQUIRED_IF="((AUTH_TYPE == 'ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2011')) OR (API_VERSION=='API_2007')" />
                 <!-- 2011 -->
                 <!-- crm client -->
-                <IMPORT NAME="talend-mscrm" MODULE="talend-mscrm-3.4-20200824.jar" MVN="mvn:org.talend.components/talend-mscrm/3.4-20200824"  UrlPath="platform:/plugin/org.talend.libraries.crm/lib/talend-mscrm-3.4-20200824.jar" REQUIRED_IF="(((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2011' OR API_VERSION =='API_2016_ODATA' OR API_VERSION =='API_2018_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016' OR MS_CRM_VERSION == 'CRM_2018')))" />
+                <IMPORT NAME="talend-mscrm" MODULE="talend-mscrm-3.4-20201009.jar" MVN="mvn:org.talend.components/talend-mscrm/3.4-20201009"  UrlPath="platform:/plugin/org.talend.libraries.crm/lib/talend-mscrm-3.4-20201009.jar" REQUIRED_IF="(((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2011' OR API_VERSION =='API_2016_ODATA' OR API_VERSION =='API_2018_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016' OR MS_CRM_VERSION == 'CRM_2018')))" />
                 <!-- axis2 1.7.4 -->
                 <IMPORT NAME="activation-1.1" MODULE="activation-1.1.jar" MVN="mvn:org.talend.libraries/activation-1.1/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.apache.axis2/lib/activation-1.1.jar" REQUIRED_IF="(AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2011')" />
                 <IMPORT NAME="axiom-api-1.2.20" MODULE="axiom-api-1.2.20.jar" MVN="mvn:org.talend.libraries/axiom-api-1.2.20/6.0.0"  REQUIRED_IF="(AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2011')" />
@@ -27569,84 +27591,84 @@
                     MVN="mvn:org.ow2.asm/asm/5.2"
                     REQUIRED_IF="(AUTH_TYPE == 'ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2015')" />
                 <IMPORT
-                    NAME="cxf-core-3.3.4"
-                    MODULE="cxf-core-3.3.4.jar"
-                    MVN="mvn:org.apache.cxf/cxf-core/3.3.4"
+                    NAME="cxf-core-3.3.6"
+                    MODULE="cxf-core-3.3.6.jar"
+                    MVN="mvn:org.apache.cxf/cxf-core/3.3.6"
                     REQUIRED_IF="(AUTH_TYPE == 'ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2015')" />
                 <IMPORT
-                    NAME="cxf-rt-bindings-soap-3.3.4"
-                    MODULE="cxf-rt-bindings-soap-3.3.4.jar"
-                    MVN="mvn:org.apache.cxf/cxf-rt-bindings-soap/3.3.4"
+                    NAME="cxf-rt-bindings-soap-3.3.6"
+                    MODULE="cxf-rt-bindings-soap-3.3.6.jar"
+                    MVN="mvn:org.apache.cxf/cxf-rt-bindings-soap/3.3.6"
                     REQUIRED_IF="(AUTH_TYPE == 'ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2015')" />
                 <IMPORT
-                    NAME="cxf-rt-bindings-xml-3.3.4"
-                    MODULE="cxf-rt-bindings-xml-3.3.4.jar"
-                    MVN="mvn:org.apache.cxf/cxf-rt-bindings-xml/3.3.4"
+                    NAME="cxf-rt-bindings-xml-3.3.6"
+                    MODULE="cxf-rt-bindings-xml-3.3.6.jar"
+                    MVN="mvn:org.apache.cxf/cxf-rt-bindings-xml/3.3.6"
                     REQUIRED_IF="(AUTH_TYPE == 'ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2015')" />
                 <IMPORT
-                    NAME="cxf-rt-databinding-jaxb-3.3.4"
-                    MODULE="cxf-rt-databinding-jaxb-3.3.4.jar"
-                    MVN="mvn:org.apache.cxf/cxf-rt-databinding-jaxb/3.3.4"
+                    NAME="cxf-rt-databinding-jaxb-3.3.6"
+                    MODULE="cxf-rt-databinding-jaxb-3.3.6.jar"
+                    MVN="mvn:org.apache.cxf/cxf-rt-databinding-jaxb/3.3.6"
                     REQUIRED_IF="(AUTH_TYPE == 'ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2015')" />
                 <IMPORT
-                    NAME="cxf-rt-frontend-jaxws-3.3.4"
-                    MODULE="cxf-rt-frontend-jaxws-3.3.4.jar"
-                    MVN="mvn:org.apache.cxf/cxf-rt-frontend-jaxws/3.3.4"
+                    NAME="cxf-rt-frontend-jaxws-3.3.6"
+                    MODULE="cxf-rt-frontend-jaxws-3.3.6.jar"
+                    MVN="mvn:org.apache.cxf/cxf-rt-frontend-jaxws/3.3.6"
                     REQUIRED_IF="(AUTH_TYPE == 'ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2015')" />
                 <IMPORT
-                    NAME="cxf-rt-frontend-simple-3.3.4"
-                    MODULE="cxf-rt-frontend-simple-3.3.4.jar"
-                    MVN="mvn:org.apache.cxf/cxf-rt-frontend-simple/3.3.4"
+                    NAME="cxf-rt-frontend-simple-3.3.6"
+                    MODULE="cxf-rt-frontend-simple-3.3.6.jar"
+                    MVN="mvn:org.apache.cxf/cxf-rt-frontend-simple/3.3.6"
                     REQUIRED_IF="(AUTH_TYPE == 'ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2015')" />
                 <IMPORT
-                    NAME="cxf-rt-security-3.3.4"
-                    MODULE="cxf-rt-security-3.3.4.jar"
-                    MVN="mvn:org.apache.cxf/cxf-rt-security/3.3.4"
+                    NAME="cxf-rt-security-3.3.6"
+                    MODULE="cxf-rt-security-3.3.6.jar"
+                    MVN="mvn:org.apache.cxf/cxf-rt-security/3.3.6"
                     REQUIRED_IF="(AUTH_TYPE == 'ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2015')" />
                 <IMPORT
-                    NAME="cxf-rt-transports-http-3.3.4"
-                    MODULE="cxf-rt-transports-http-3.3.4.jar"
-                    MVN="mvn:org.apache.cxf/cxf-rt-transports-http/3.3.4"
+                    NAME="cxf-rt-transports-http-3.3.6"
+                    MODULE="cxf-rt-transports-http-3.3.6.jar"
+                    MVN="mvn:org.apache.cxf/cxf-rt-transports-http/3.3.6"
                     REQUIRED_IF="(AUTH_TYPE == 'ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2015')" />
                 <IMPORT
-                    NAME="cxf-rt-ws-addr-3.3.4"
-                    MODULE="cxf-rt-ws-addr-3.3.4.jar"
-                    MVN="mvn:org.apache.cxf/cxf-rt-ws-addr/3.3.4"
+                    NAME="cxf-rt-ws-addr-3.3.6"
+                    MODULE="cxf-rt-ws-addr-3.3.6.jar"
+                    MVN="mvn:org.apache.cxf/cxf-rt-ws-addr/3.3.6"
                     REQUIRED_IF="(AUTH_TYPE == 'ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2015')" />
                 <IMPORT
-                    NAME="cxf-rt-ws-mex-3.3.4"
-                    MODULE="cxf-rt-ws-mex-3.3.4.jar"
-                    MVN="mvn:org.apache.cxf/cxf-rt-ws-mex/3.3.4"
+                    NAME="cxf-rt-ws-mex-3.3.6"
+                    MODULE="cxf-rt-ws-mex-3.3.6.jar"
+                    MVN="mvn:org.apache.cxf/cxf-rt-ws-mex/3.3.6"
                     REQUIRED_IF="(AUTH_TYPE == 'ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2015')" />
                 <IMPORT
-                    NAME="cxf-rt-ws-policy-3.3.4"
-                    MODULE="cxf-rt-ws-policy-3.3.4.jar"
-                    MVN="mvn:org.apache.cxf/cxf-rt-ws-policy/3.3.4"
+                    NAME="cxf-rt-ws-policy-3.3.6"
+                    MODULE="cxf-rt-ws-policy-3.3.6.jar"
+                    MVN="mvn:org.apache.cxf/cxf-rt-ws-policy/3.3.6"
                     REQUIRED_IF="(AUTH_TYPE == 'ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2015')" />
                 <IMPORT
-                    NAME="cxf-rt-ws-rm-3.3.4"
-                    MODULE="cxf-rt-ws-rm-3.3.4.jar"
-                    MVN="mvn:org.apache.cxf/cxf-rt-ws-rm/3.3.4"
+                    NAME="cxf-rt-ws-rm-3.3.6"
+                    MODULE="cxf-rt-ws-rm-3.3.6.jar"
+                    MVN="mvn:org.apache.cxf/cxf-rt-ws-rm/3.3.6"
                     REQUIRED_IF="(AUTH_TYPE == 'ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2015')" />
                 <IMPORT
-                    NAME="cxf-rt-ws-security-3.3.4"
-                    MODULE="cxf-rt-ws-security-3.3.4.jar"
-                    MVN="mvn:org.apache.cxf/cxf-rt-ws-security/3.3.4"
+                    NAME="cxf-rt-ws-security-3.3.6"
+                    MODULE="cxf-rt-ws-security-3.3.6.jar"
+                    MVN="mvn:org.apache.cxf/cxf-rt-ws-security/3.3.6"
                     REQUIRED_IF="(AUTH_TYPE == 'ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2015')" />
                 <IMPORT
-                    NAME="cxf-rt-security-saml-3.3.4"
-                    MODULE="cxf-rt-security-saml-3.3.4.jar"
-                    MVN="mvn:org.apache.cxf/cxf-rt-security-saml/3.3.4"
+                    NAME="cxf-rt-security-saml-3.3.6"
+                    MODULE="cxf-rt-security-saml-3.3.6.jar"
+                    MVN="mvn:org.apache.cxf/cxf-rt-security-saml/3.3.6"
                     REQUIRED_IF="(AUTH_TYPE == 'ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2015')" />
                 <IMPORT
-                    NAME="cxf-rt-wsdl-3.3.4"
-                    MODULE="cxf-rt-wsdl-3.3.4.jar"
-                    MVN="mvn:org.apache.cxf/cxf-rt-wsdl/3.3.4"
+                    NAME="cxf-rt-wsdl-3.3.6"
+                    MODULE="cxf-rt-wsdl-3.3.6.jar"
+                    MVN="mvn:org.apache.cxf/cxf-rt-wsdl/3.3.6"
                     REQUIRED_IF="(AUTH_TYPE == 'ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2015')" />
                 <IMPORT
-                    NAME="cxf-services-sts-core-3.3.4"
-                    MODULE="cxf-services-sts-core-3.3.4.jar"
-                    MVN="mvn:org.apache.cxf.services.sts/cxf-services-sts-core/3.3.4"
+                    NAME="cxf-services-sts-core-3.3.6"
+                    MODULE="cxf-services-sts-core-3.3.6.jar"
+                    MVN="mvn:org.apache.cxf.services.sts/cxf-services-sts-core/3.3.6"
                     REQUIRED_IF="(AUTH_TYPE == 'ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2015')" />
                 <IMPORT
                     NAME="ehcache-2.10.5"
