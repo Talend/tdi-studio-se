@@ -569,7 +569,7 @@ public class JavaProcessUtil {
                                     if (!jarName.toLowerCase().endsWith(".jar")) { //$NON-NLS-1$
                                         module = ModulesNeededProvider.getModuleNeededById(jarName);
                                         // TDQ-18826 set required to true for tdqReportRun when it is Dynamic jars
-                                        if (jarName.startsWith("DYNAMIC_")) {
+                                        if (jarName.startsWith("DYNAMIC_") && module != null) {
                                             module.setRequired(true);
                                         }
                                     }
@@ -666,7 +666,7 @@ public class JavaProcessUtil {
                                         if (!moduleName.toLowerCase().endsWith(".jar")) {
                                             module = ModulesNeededProvider.getModuleNeededById(moduleName);
                                             // TDQ-18826 set required to true for tdqReportRun when it is Dynamic jars
-                                            if (moduleName.startsWith("DYNAMIC_")) {
+                                            if (moduleName.startsWith("DYNAMIC_") && module != null) {
                                                 module.setRequired(true);
                                             }
                                         }
