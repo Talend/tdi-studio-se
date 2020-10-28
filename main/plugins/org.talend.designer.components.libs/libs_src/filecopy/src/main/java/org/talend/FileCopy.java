@@ -48,6 +48,7 @@ public class FileCopy {
             Files.setLastModifiedTime(destination,lastModifiedTime);
         } else {
             Files.copy(source, destination, StandardCopyOption.REPLACE_EXISTING);
+            Files.setLastModifiedTime(destination,Files.getLastModifiedTime(source));
         }
     }
 
