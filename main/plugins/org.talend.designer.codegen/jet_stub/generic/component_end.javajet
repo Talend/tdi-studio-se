@@ -58,13 +58,24 @@ if(isTopologyNone) {
 else if(hasOutputOnly || asInputComponent){
 %>
     } // while
-    reader_<%=cid%>.close();
-    final java.util.Map<String, Object> resultMap_<%=cid%> = reader_<%=cid%>.getReturnValues();
+<%
+    if (hasOutputOnly || asInputComponent) {
+%>  
+    } // end of "if (sourceOrSink_<%=cid%> instanceof ...Source)"
+<% } %>
+    java.util.Map<String, Object> resultMap_<%=cid%> = null;
+    if (reader_<%=cid%> != null) {
+        reader_<%=cid%>.close();
+        resultMap_<%=cid%> = reader_<%=cid%>.getReturnValues();
+    }
 <%
 }else if(hasInput){
 %>
-    org.talend.components.api.component.runtime.Result resultObject_<%=cid%> = (org.talend.components.api.component.runtime.Result)writer_<%=cid%>.close();
-    final java.util.Map<String, Object> resultMap_<%=cid%> = writer_<%=cid%>.getWriteOperation().finalize(java.util.Arrays.<org.talend.components.api.component.runtime.Result>asList(resultObject_<%=cid%>), container_<%=cid%>);
+    java.util.Map<String, Object> resultMap_<%=cid%> = null;
+    if (writer_<%=cid%> != null) {
+        org.talend.components.api.component.runtime.Result resultObject_<%=cid%> = (org.talend.components.api.component.runtime.Result)writer_<%=cid%>.close();
+        resultMap_<%=cid%> = writer_<%=cid%>.getWriteOperation().finalize(java.util.Arrays.<org.talend.components.api.component.runtime.Result>asList(resultObject_<%=cid%>), container_<%=cid%>);
+    }
 <%
 } else {
 	return stringBuffer.toString();
