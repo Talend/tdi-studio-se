@@ -799,7 +799,6 @@
 				MVN="mvn:org.talend.libraries/maprfs-0.1/6.0.0" REQUIRED_IF="HIVE_VERSION=='MAPR2' AND (DISTRIBUTION!='CUSTOM')" />
 			<IMPORT NAME="zookeeper-3.3.2.jar" MODULE="zookeeper-3.3.2.jar"
 				MVN="mvn:org.talend.libraries/zookeeper-3.3.2/6.0.0"
-				UrlPath="platform:/plugin/org.talend.libraries.zookeeper/lib/zookeeper-3.3.2.jar"
 				REQUIRED_IF="HIVE_VERSION=='MAPR2' AND (DISTRIBUTION!='CUSTOM')" />
 			<IMPORT NAME="hive-builtins-0.9.0-mapr2.jar" MODULE="hive-builtins-0.9.0-mapr2.jar"
 				MVN="mvn:org.talend.libraries/hive-builtins-0.9.0-mapr2/6.0.0"
@@ -1297,7 +1296,6 @@
 				REQUIRED_IF="HIVE_VERSION=='MAPR310' AND (DISTRIBUTION!='CUSTOM')" />
 			<IMPORT NAME="zookeeper-3.4.5-mapr-1401.jar" MODULE="zookeeper-3.4.5-mapr-1401.jar"
 				MVN="mvn:org.talend.libraries/zookeeper-3.4.5-mapr-1401/6.0.0"
-				UrlPath="platform:/plugin/org.talend.libraries.zookeeper/lib/zookeeper-3.4.5-mapr-1401.jar"
 				REQUIRED_IF="HIVE_VERSION=='MAPR310' AND (DISTRIBUTION!='CUSTOM')" />
 			<IMPORT NAME="commons-lang-2.6" MODULE="commons-lang-2.6.jar"
 				MVN="mvn:commons-lang/commons-lang/2.6"
@@ -1797,7 +1795,6 @@
 				REQUIRED_IF="(HIVE_VERSION=='APACHE_1_0_0' OR HIVE_VERSION=='APACHE_1_0_3_EMR' AND STORE_BY_HBASE=='true') AND (DISTRIBUTION!='CUSTOM')" />
 			<IMPORT NAME="zookeeper-3.4.3.jar" MODULE="zookeeper-3.4.3.jar"
 				MVN="mvn:org.talend.libraries/zookeeper-3.4.3/6.0.0"
-				UrlPath="platform:/plugin/org.talend.libraries.zookeeper/lib/zookeeper-3.4.3.jar"
 				REQUIRED_IF="(HIVE_VERSION=='APACHE_1_0_0' OR HIVE_VERSION=='APACHE_1_0_3_EMR' AND STORE_BY_HBASE=='true') AND (DISTRIBUTION!='CUSTOM')" />
 			<IMPORT NAME="hive-hbase-handler-0.9.0.jar" MODULE="hive-hbase-handler-0.9.0.jar"
 				MVN="mvn:org.talend.libraries/hive-hbase-handler-0.9.0/6.0.0"
@@ -1975,7 +1972,6 @@
 				REQUIRED_IF="(HIVE_VERSION=='HDP_1_2' AND STORE_BY_HBASE=='true') AND (DISTRIBUTION!='CUSTOM')" />
 			<IMPORT NAME="zookeeper-3.4.5.21.jar" MODULE="zookeeper-3.4.5.21.jar"
 				MVN="mvn:org.talend.libraries/zookeeper-3.4.5.21/6.0.0"
-				UrlPath="platform:/plugin/org.talend.libraries.zookeeper/lib/zookeeper-3.4.5.21.jar"
 				REQUIRED_IF="(HIVE_VERSION=='HDP_1_2' AND STORE_BY_HBASE=='true') AND (DISTRIBUTION!='CUSTOM')" />
 			<IMPORT NAME="hive-hbase-handler-0.10.0.21.jar" MODULE="hive-hbase-handler-0.10.0.21.jar"
 				MVN="mvn:org.talend.libraries/hive-hbase-handler-0.10.0.21/6.0.0"
@@ -2095,7 +2091,6 @@
 				REQUIRED_IF="(HIVE_VERSION=='HDP_1_3' AND STORE_BY_HBASE=='true') AND (DISTRIBUTION!='CUSTOM')" />
 			<IMPORT NAME="zookeeper-3.4.5.1.3.0.0-107.jar" MODULE="zookeeper-3.4.5.1.3.0.0-107.jar"
 				MVN="mvn:org.talend.libraries/zookeeper-3.4.5.1.3.0.0-107/6.0.0"
-				UrlPath="platform:/plugin/org.talend.libraries.zookeeper/lib/zookeeper-3.4.5.1.3.0.0-107.jar"
 				REQUIRED_IF="(HIVE_VERSION=='HDP_1_3' AND STORE_BY_HBASE=='true') AND (DISTRIBUTION!='CUSTOM')" />
 			<IMPORT NAME="hive-hbase-handler-0.11.0.1.3.0.0-107.jar"
 				MODULE="hive-hbase-handler-0.11.0.1.3.0.0-107.jar"
@@ -2243,7 +2238,6 @@
 			<!-- CDH 4 Hbase -->
 			<IMPORT NAME="zookeeper-3.4.3-cdh4.0.1.jar" MODULE="zookeeper-3.4.3-cdh4.0.1.jar"
 				MVN="mvn:org.talend.libraries/zookeeper-3.4.3-cdh4.0.1/6.0.0"
-				UrlPath="platform:/plugin/org.talend.libraries.zookeeper/lib/zookeeper-3.4.3-cdh4.0.1.jar"
 				REQUIRED_IF="(HIVE_VERSION=='Cloudera_CDH4' AND STORE_BY_HBASE=='true') AND (DISTRIBUTION!='CUSTOM')" />
 			<IMPORT NAME="hive-hbase-handler-0.9.0-cdh4.1.2.jar" MODULE="hive-hbase-handler-0.9.0-cdh4.1.2.jar"
 				MVN="mvn:org.talend.libraries/hive-hbase-handler-0.9.0-cdh4.1.2/6.0.0"
@@ -2429,7 +2423,6 @@
 				REQUIRED_IF="(HIVE_VERSION=='Cloudera_CDH4_YARN' AND STORE_BY_HBASE=='true') AND (DISTRIBUTION!='CUSTOM')" />
 			<IMPORT NAME="zookeeper-3.4.5-cdh4.4.0.jar" MODULE="zookeeper-3.4.5-cdh4.4.0.jar"
 				MVN="mvn:org.talend.libraries/zookeeper-3.4.5-cdh4.4.0/6.0.0"
-				UrlPath="platform:/plugin/org.talend.libraries.zookeeper/lib/zookeeper-3.4.5-cdh4.4.0.jar"
 				REQUIRED_IF="(HIVE_VERSION=='Cloudera_CDH4_YARN' AND STORE_BY_HBASE=='true') AND (DISTRIBUTION!='CUSTOM')" />
 			<IMPORT NAME="hive-hbase-handler-0.10.0-cdh4.4.0.jar" MODULE="hive-hbase-handler-0.10.0-cdh4.4.0.jar"
 				MVN="mvn:org.talend.libraries/hive-hbase-handler-0.10.0-cdh4.4.0/6.0.0"
@@ -2630,7 +2623,6 @@
 				REQUIRED_IF="(HIVE_VERSION=='Cloudera_CDH5' AND STORE_BY_HBASE=='true') AND (DISTRIBUTION!='CUSTOM')" />
 			<IMPORT NAME="zookeeper-3.4.5-cdh5.0.4.jar" MODULE="zookeeper-3.4.5-cdh5.0.4.jar"
 				MVN="mvn:org.talend.libraries/zookeeper-3.4.5-cdh5.0.4/6.0.0"
-				UrlPath="platform:/plugin/org.talend.libraries.zookeeper/lib/zookeeper-3.4.5-cdh5.0.4.jar"
 				REQUIRED_IF="(HIVE_VERSION=='Cloudera_CDH5' AND STORE_BY_HBASE=='true') AND (DISTRIBUTION!='CUSTOM')" />
 			<IMPORT NAME="hive-hbase-handler-0.12.0-cdh5.0.4.jar" MODULE="hive-hbase-handler-0.12.0-cdh5.0.4.jar"
 				MVN="mvn:org.talend.libraries/hive-hbase-handler-0.12.0-cdh5.0.4/6.0.0"
@@ -2876,7 +2868,6 @@
 				REQUIRED_IF="(HIVE_VERSION=='PIVOTAL_HD_1_0_1' AND STORE_BY_HBASE=='true') AND (DISTRIBUTION!='CUSTOM')" />
 			<IMPORT NAME="zookeeper-3.4.5-gphd-2.0.1.0.jar" MODULE="zookeeper-3.4.5-gphd-2.0.1.0.jar"
 				MVN="mvn:org.talend.libraries/zookeeper-3.4.5-gphd-2.0.1.0/6.0.0"
-				UrlPath="platform:/plugin/org.talend.libraries.zookeeper/lib/zookeeper-3.4.5-gphd-2.0.1.0.jar"
 				REQUIRED_IF="(HIVE_VERSION=='PIVOTAL_HD_1_0_1' AND STORE_BY_HBASE=='true') AND (DISTRIBUTION!='CUSTOM')" />
 			<IMPORT NAME="hive-hbase-handler-0.9.1-gphd-2.0.1.0.jar"
 				MODULE="hive-hbase-handler-0.9.1-gphd-2.0.1.0.jar"
@@ -3080,7 +3071,6 @@
 				REQUIRED_IF="(HIVE_VERSION=='PIVOTAL_HD_2_0' AND STORE_BY_HBASE=='true') AND (DISTRIBUTION!='CUSTOM')" />
 			<IMPORT NAME="zookeeper-3.4.5-gphd-3.0.0.0.jar" MODULE="zookeeper-3.4.5-gphd-3.0.0.0.jar"
 				MVN="mvn:org.talend.libraries/zookeeper-3.4.5-gphd-3.0.0.0/6.0.0"
-				UrlPath="platform:/plugin/org.talend.libraries.zookeeper/lib/zookeeper-3.4.5-gphd-3.0.0.0.jar"
 				REQUIRED_IF="(HIVE_VERSION=='PIVOTAL_HD_2_0' AND STORE_BY_HBASE=='true') AND (DISTRIBUTION!='CUSTOM')" />
 			<IMPORT NAME="hive-hbase-handler-0.12.0-gphd-3.0.0.0.jar"
 				MODULE="hive-hbase-handler-0.12.0-gphd-3.0.0.0.jar"
@@ -3290,7 +3280,6 @@
 				REQUIRED_IF="(HIVE_VERSION=='HDP_2_0' AND STORE_BY_HBASE=='true') AND (DISTRIBUTION!='CUSTOM')" />
 			<IMPORT NAME="zookeeper-3.4.5.2.0.5.0-67.jar" MODULE="zookeeper-3.4.5.2.0.5.0-67.jar"
 				MVN="mvn:org.talend.libraries/zookeeper-3.4.5.2.0.5.0-67/6.0.0"
-				UrlPath="platform:/plugin/org.talend.libraries.zookeeper/lib/zookeeper-3.4.5.2.0.5.0-67.jar"
 				REQUIRED_IF="(HIVE_VERSION=='HDP_2_0' AND STORE_BY_HBASE=='true') AND (DISTRIBUTION!='CUSTOM')" />
 			<IMPORT NAME="hive-hbase-handler-0.12.0.2.0.6.0-76.jar"
 				MODULE="hive-hbase-handler-0.12.0.2.0.6.0-76.jar"
@@ -3513,7 +3502,6 @@
 				REQUIRED_IF="(HIVE_VERSION=='HDP_2_1' AND STORE_BY_HBASE=='true') AND (DISTRIBUTION!='CUSTOM')" />
 			<IMPORT NAME="zookeeper-3.4.5.2.1.1.0-385.jar" MODULE="zookeeper-3.4.5.2.1.1.0-385.jar"
 				MVN="mvn:org.talend.libraries/zookeeper-3.4.5.2.1.1.0-385/6.0.0"
-				UrlPath="platform:/plugin/org.talend.libraries.zookeeper/lib/zookeeper-3.4.5.2.1.1.0-385.jar"
 				REQUIRED_IF="(HIVE_VERSION=='HDP_2_1' AND STORE_BY_HBASE=='true') AND (DISTRIBUTION!='CUSTOM')" />
 			<IMPORT NAME="hive-hbase-handler-0.13.0.2.1.1.0-385.jar"
 				MODULE="hive-hbase-handler-0.13.0.2.1.1.0-385.jar"

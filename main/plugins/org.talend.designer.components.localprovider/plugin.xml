@@ -210,8 +210,7 @@
     	<libraryNeeded
 	   		context="plugin:org.talend.libraries.zookeeper"
         	id="zookeeper-cdh5.4-lastest"
-         	name="zookeeper-3.4.5-cdh5.4.0.jar" mvn_uri="mvn:org.talend.libraries/zookeeper-3.4.5-cdh5.4.0/6.0.0"
-         	uripath="platform:/plugin/org.talend.libraries.zookeeper/lib/zookeeper-3.4.5-cdh5.4.0.jar">
+         	name="zookeeper-3.4.5-cdh5.4.0.jar" mvn_uri="mvn:org.talend.libraries/zookeeper-3.4.5-cdh5.4.0/6.0.0">
     	</libraryNeeded>
     	
     	<libraryNeeded
@@ -272,8 +271,7 @@
     	<libraryNeeded
 	   		context="plugin:org.talend.libraries.sqoop"
         	id="sqoop-cdh5.4-lastest"
-         	name="sqoop-1.4.5-cdh5.4.0.jar" mvn_uri="mvn:org.talend.libraries/sqoop-1.4.5-cdh5.4.0/6.0.0"
-         	uripath="platform:/plugin/org.talend.libraries.sqoop/lib/sqoop-1.4.5-cdh5.4.0.jar">
+         	name="sqoop-1.4.5-cdh5.4.0.jar" mvn_uri="mvn:org.talend.libraries/sqoop-1.4.5-cdh5.4.0/6.0.0">
     	</libraryNeeded>
 
 	   	<libraryNeeded
@@ -411,8 +409,7 @@
     	<libraryNeeded
 	   		context="plugin:org.talend.libraries.zookeeper"
         	id="zookeeper-cdh5.1-lastest"
-         	name="zookeeper-3.4.5-cdh5.1.2.jar" mvn_uri="mvn:org.talend.libraries/zookeeper-3.4.5-cdh5.1.2/6.0.0"
-         	uripath="platform:/plugin/org.talend.libraries.zookeeper/lib/zookeeper-3.4.5-cdh5.1.2.jar">
+         	name="zookeeper-3.4.5-cdh5.1.2.jar" mvn_uri="mvn:org.talend.libraries/zookeeper-3.4.5-cdh5.1.2/6.0.0">
     	</libraryNeeded>
 
     	<libraryNeeded
@@ -473,8 +470,7 @@
     	<libraryNeeded
 	   		context="plugin:org.talend.libraries.sqoop"
         	id="sqoop-cdh5.1-lastest"
-         	name="sqoop-1.4.4-cdh5.1.2.jar" mvn_uri="mvn:org.talend.libraries/sqoop-1.4.4-cdh5.1.2/6.0.0"
-         	uripath="platform:/plugin/org.talend.libraries.sqoop/lib/sqoop-1.4.4-cdh5.1.2.jar">
+         	name="sqoop-1.4.4-cdh5.1.2.jar" mvn_uri="mvn:org.talend.libraries/sqoop-1.4.4-cdh5.1.2/6.0.0">
     	</libraryNeeded>
 
     	<!-- HDP_2_3 libraries -->
@@ -753,8 +749,7 @@
         <libraryNeeded
             context="plugin:org.talend.libraries.sqoop"
             id="sqoop-HDP_2_3"
-            name="sqoop-1.4.6.2.3.2.0-2950.jar" mvn_uri="mvn:org.talend.libraries/sqoop-1.4.6.2.3.2.0-2950/6.1.0"
-            uripath="platform:/plugin/org.talend.libraries.sqoop/lib/sqoop-1.4.6.2.3.2.0-2950.jar">
+            name="sqoop-1.4.6.2.3.2.0-2950.jar" mvn_uri="mvn:org.talend.libraries/sqoop-1.4.6.2.3.2.0-2950/6.1.0">
         </libraryNeeded>
 
         <libraryNeeded
@@ -839,8 +834,7 @@
         <libraryNeeded
             context="plugin:org.talend.libraries.zookeeper"
             id="zookeeper-HDP_2_3"
-            name="zookeeper-3.4.6.2.3.2.0-2950.jar" mvn_uri="mvn:org.talend.libraries/zookeeper-3.4.6.2.3.2.0-2950/6.1.0"
-            uripath="platform:/plugin/org.talend.libraries.zookeeper/lib/zookeeper-3.4.6.2.3.2.0-2950.jar">
+            name="zookeeper-3.4.6.2.3.2.0-2950.jar" mvn_uri="mvn:org.talend.libraries/zookeeper-3.4.6.2.3.2.0-2950/6.1.0">
         </libraryNeeded>
 
        <libraryNeeded
@@ -976,8 +970,7 @@
     	<libraryNeeded
 	   		context="plugin:org.talend.libraries.zookeeper"
         	id="zookeeper-hdp2.2-lastest"
-         	name="zookeeper-3.4.6.2.2.0.0-2041.jar" mvn_uri="mvn:org.talend.libraries/zookeeper-3.4.6.2.2.0.0-2041/6.0.0"
-         	uripath="platform:/plugin/org.talend.libraries.zookeeper/lib/zookeeper-3.4.6.2.2.0.0-2041.jar">
+         	name="zookeeper-3.4.6.2.2.0.0-2041.jar" mvn_uri="mvn:org.talend.libraries/zookeeper-3.4.6.2.2.0.0-2041/6.0.0">
     	</libraryNeeded>
 
     	<libraryNeeded
@@ -1059,8 +1052,7 @@
     	<libraryNeeded
 	   		context="plugin:org.talend.libraries.sqoop"
         	id="sqoop-hdp2.2-lastest"
-         	name="sqoop-1.4.5.2.2.0.0-2041.jar" mvn_uri="mvn:org.talend.libraries/sqoop-1.4.5.2.2.0.0-2041/6.0.0"
-         	uripath="platform:/plugin/org.talend.libraries.sqoop/lib/sqoop-1.4.5.2.2.0.0-2041.jar">
+         	name="sqoop-1.4.5.2.2.0.0-2041.jar" mvn_uri="mvn:org.talend.libraries/sqoop-1.4.5.2.2.0.0-2041/6.0.0">
     	</libraryNeeded>
 
     	<libraryNeeded
@@ -1232,8 +1224,7 @@
         <libraryNeeded
             context="plugin:org.talend.libraries.zookeeper"
             id="zookeeper-emr400-latest"
-            name="zookeeper-3.4.5.jar" mvn_uri="mvn:org.talend.libraries/zookeeper-3.4.5/6.0.0"
-            uripath="platform:/plugin/org.talend.libraries.zookeeper/lib/zookeeper-3.4.5.jar">
+            name="zookeeper-3.4.5.jar" mvn_uri="mvn:org.talend.libraries/zookeeper-3.4.5/6.0.0">
         </libraryNeeded>
 
         <libraryNeeded
@@ -1363,8 +1354,7 @@
     	<libraryNeeded
 	   		context="plugin:org.talend.libraries.zookeeper"
         	id="zookeeper-mapr-4.0.X-lastest"
-         	name="zookeeper-3.4.5-mapr-1406.jar" mvn_uri="mvn:org.talend.libraries/zookeeper-3.4.5-mapr-1406/6.0.0"
-         	uripath="platform:/plugin/org.talend.libraries.zookeeper/lib/zookeeper-3.4.5-mapr-1406.jar">
+         	name="zookeeper-3.4.5-mapr-1406.jar" mvn_uri="mvn:org.talend.libraries/zookeeper-3.4.5-mapr-1406/6.0.0">
     	</libraryNeeded>
 
     	<libraryNeeded
@@ -1438,8 +1428,7 @@
     	<libraryNeeded
 	   		context="plugin:org.talend.libraries.sqoop"
         	id="sqoop-mapr-4.0.X-lastest"
-         	name="sqoop-1.4.4-mapr-1408.jar" mvn_uri="mvn:org.talend.libraries/sqoop-1.4.4-mapr-1408/6.0.0"
-         	uripath="platform:/plugin/org.talend.libraries.sqoop/lib/sqoop-1.4.4-mapr-1408.jar">
+         	name="sqoop-1.4.4-mapr-1408.jar" mvn_uri="mvn:org.talend.libraries/sqoop-1.4.4-mapr-1408/6.0.0">
     	</libraryNeeded>
 
         <!-- MAPR 41X libraries-->
@@ -1472,8 +1461,7 @@
         <libraryNeeded
             context="plugin:org.talend.libraries.zookeeper"
             id="zookeeper-mapr-4.1.X-lastest"
-            name="zookeeper-3.4.5-mapr-1503.jar" mvn_uri="mvn:org.talend.libraries/zookeeper-3.4.5-mapr-1503/6.0.0"
-            uripath="platform:/plugin/org.talend.libraries.zookeeper/lib/zookeeper-3.4.5-mapr-1503.jar">
+            name="zookeeper-3.4.5-mapr-1503.jar" mvn_uri="mvn:org.talend.libraries/zookeeper-3.4.5-mapr-1503/6.0.0">
         </libraryNeeded>
 
         <libraryNeeded
@@ -1645,8 +1633,7 @@
         <libraryNeeded
             context="plugin:org.talend.libraries.sqoop"
             id="sqoop-mapr-4.1.X-lastest"
-            name="sqoop-1.4.4-mapr-1502.jar" mvn_uri="mvn:org.talend.libraries/sqoop-1.4.4-mapr-1502/6.0.0"
-            uripath="platform:/plugin/org.talend.libraries.sqoop/lib/sqoop-1.4.4-mapr-1502.jar">
+            name="sqoop-1.4.4-mapr-1502.jar" mvn_uri="mvn:org.talend.libraries/sqoop-1.4.4-mapr-1502/6.0.0">
         </libraryNeeded>
 
     	<!-- common libraries -->
