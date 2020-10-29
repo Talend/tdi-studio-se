@@ -94,7 +94,7 @@
 				<!-- Transitive dependencies of google-cloud-storage -->
 				<IMPORT NAME="google-cloud-core-1.93.4.jar" MODULE="google-cloud-core-1.93.4.jar" MVN="mvn:com.google.cloud/google-cloud-core/1.93.4" REQUIRED_IF="(AUTH_TYPE == 'SERVICE_ACCOUNT')" />
 				<IMPORT NAME="google-api-client-1.25.0.jar" MODULE="google-api-client-1.25.0.jar" MVN="mvn:com.google.api-client/google-api-client/1.25.0" REQUIRED_IF="(AUTH_TYPE == 'SERVICE_ACCOUNT')" />
-				<IMPORT NAME="google-oauth-client-1.31.1.jar" MODULE="google-oauth-client-1.31.1.jar" MVN="mvn:com.google.oauth-client/google-oauth-client/1.31.1" REQUIRED_IF="(AUTH_TYPE == 'SERVICE_ACCOUNT')" />
+				<IMPORT NAME="google-oauth-client-1.31.0.jar" MODULE="google-oauth-client-1.31.0.jar" MVN="mvn:com.google.oauth-client/google-oauth-client/1.31.0" REQUIRED_IF="(AUTH_TYPE == 'SERVICE_ACCOUNT')" />
 				<IMPORT NAME="google-api-services-storage-v1-rev20191011-1.30.3" MODULE="google-api-services-storage-v1-rev20191011-1.30.3.jar" MVN="mvn:com.google.apis/google-api-services-storage/v1-rev20191011-1.30.3" REQUIRED_IF="(AUTH_TYPE == 'SERVICE_ACCOUNT')" />
 				<IMPORT NAME="gson-2.8.6" MODULE="gson-2.8.6.jar" MVN="mvn:com.google.code.gson/gson/2.8.6" REQUIRED_IF="(AUTH_TYPE == 'SERVICE_ACCOUNT')" />
 				<IMPORT NAME="api-common-1.6.0" MODULE="api-common-1.6.0.jar" MVN="mvn:com.google.api/api-common/1.6.0" REQUIRED_IF="(AUTH_TYPE == 'SERVICE_ACCOUNT')" />
