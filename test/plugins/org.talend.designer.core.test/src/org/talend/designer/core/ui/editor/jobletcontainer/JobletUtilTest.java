@@ -23,6 +23,7 @@ import org.junit.Test;
 import org.talend.commons.exception.PersistenceException;
 import org.talend.commons.ui.runtime.image.ImageUtils;
 import org.talend.commons.utils.VersionUtils;
+import org.talend.components.api.properties.ComponentReferenceProperties;
 import org.talend.core.CorePlugin;
 import org.talend.core.context.Context;
 import org.talend.core.context.RepositoryContext;
@@ -39,6 +40,7 @@ import org.talend.core.model.repository.RepositoryObject;
 import org.talend.core.model.routines.RoutinesUtil;
 import org.talend.core.repository.ui.view.RepositoryLabelProvider;
 import org.talend.core.ui.component.ComponentsFactoryProvider;
+import org.talend.daikon.properties.Properties;
 import org.talend.designer.core.model.process.AbstractProcessProvider;
 import org.talend.designer.core.model.utils.emf.talendfile.ParametersType;
 import org.talend.designer.core.model.utils.emf.talendfile.RoutinesParameterType;
@@ -104,6 +106,52 @@ public class JobletUtilTest {
         Assert.assertFalse(jobletProcessAfterReload == jobletProcess);
         Assert.assertEquals(jobletProcessAfterReload.getGraphicalNodes().size(), 0);
 
+    }
+
+    @Test
+    public void testGetAndUpdateReferenceComponentInJoblet() {
+        Property porperty = new FakePropertyImpl();
+        Process currentProcess = new Process(porperty);
+        JobletUtil jobletutil = new JobletUtil();
+        // tJDBCInput
+        IComponent tJDBCInput = components.get("tJDBCInput", ComponentCategory.CATEGORY_4_DI.getName());
+        Assert.assertNotNull("component tJDBCInput not load", tJDBCInput);
+        Node node = new Node(tJDBCInput, currentProcess);
+        Node clonedNode = new Node(node.getComponent(), currentProcess, node.getUniqueName());
+        Properties nodeReference = jobletutil.findOutReferencedComponentProperties(node.getComponentProperties());
+        Properties cloneNodeReference = jobletutil.findOutReferencedComponentProperties(clonedNode.getComponentProperties());
+        Assert.assertNotNull(nodeReference);
+
+        getReferenceCompProperty(nodeReference, "referenceType")
+                .setStoredValue(ComponentReferenceProperties.ReferenceType.COMPONENT_INSTANCE);
+        jobletutil.updateReferenceComponentInJoblet(node, clonedNode);
+        Assert.assertEquals(getReferenceCompProperty(nodeReference, "referenceType").getValue(),
+                getReferenceCompProperty(cloneNodeReference, "referenceType").getValue());
+
+        // tSnowflakeInput
+        IComponent tSnowflakeInput = components.get("tSnowflakeInput", ComponentCategory.CATEGORY_4_DI.getName());
+        node = new Node(tSnowflakeInput, currentProcess);
+        clonedNode = new Node(node.getComponent(), currentProcess, node.getUniqueName());
+        nodeReference = jobletutil.findOutReferencedComponentProperties(node.getComponentProperties());
+        cloneNodeReference = jobletutil.findOutReferencedComponentProperties(clonedNode.getComponentProperties());
+        Assert.assertNotNull(nodeReference);
+        getReferenceCompProperty(nodeReference, "referenceType")
+                .setStoredValue(ComponentReferenceProperties.ReferenceType.COMPONENT_INSTANCE);
+        jobletutil.updateReferenceComponentInJoblet(node, clonedNode);
+        Assert.assertEquals(getReferenceCompProperty(nodeReference, "referenceType").getValue(),
+                getReferenceCompProperty(cloneNodeReference, "referenceType").getValue());
+
+        // normal component tJava should no exception
+        IComponent tjava = components.get("tJava", ComponentCategory.CATEGORY_4_DI.getName());
+        node = new Node(tSnowflakeInput, currentProcess);
+        clonedNode = new Node(node.getComponent(), currentProcess, node.getUniqueName());
+        jobletutil.updateReferenceComponentInJoblet(node, clonedNode);
+
+    }
+
+    private org.talend.daikon.properties.property.Property<?> getReferenceCompProperty(Properties properties,
+            String propertyName) {
+        return (org.talend.daikon.properties.property.Property<?>) properties.getProperty(propertyName);
     }
 
     private IRepositoryViewObject createRepositoryObject(String label, String id, String version) throws PersistenceException {
