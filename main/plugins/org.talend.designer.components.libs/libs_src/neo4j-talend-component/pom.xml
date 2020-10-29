@@ -336,14 +336,6 @@
 	<!-- ================ -->
 	<!-- = Repositories = -->
 	<!-- ================ -->
-	<repositories>
-		<!-- Neo4j repository -->
-		<repository>
-			<id>neo4j-releases</id>
-			<name>Neo4j</name>
-			<url>http://m2.neo4j.org/content/repositories/public/</url>
-		</repository>
-	</repositories>
 
 
 	<distributionManagement>
