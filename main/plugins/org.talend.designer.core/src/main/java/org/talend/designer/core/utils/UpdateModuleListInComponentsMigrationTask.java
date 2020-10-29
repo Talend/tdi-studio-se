@@ -25,15 +25,18 @@ import org.talend.core.CorePlugin;
 import org.talend.core.model.components.ComponentCategory;
 import org.talend.core.model.components.IComponent;
 import org.talend.core.model.general.ModuleNeeded;
+import org.talend.core.model.general.Project;
 import org.talend.core.model.metadata.builder.connection.Connection;
 import org.talend.core.model.metadata.builder.connection.DatabaseConnection;
 import org.talend.core.model.migration.AbstractItemMigrationTask;
 import org.talend.core.model.process.EParameterFieldType;
 import org.talend.core.model.process.IElementParameter;
 import org.talend.core.model.properties.ConnectionItem;
+import org.talend.core.model.properties.ImplicitContextSettings;
 import org.talend.core.model.properties.Item;
 import org.talend.core.model.properties.JobletProcessItem;
 import org.talend.core.model.properties.ProcessItem;
+import org.talend.core.model.properties.StatAndLogsSettings;
 import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.core.model.utils.TalendTextUtils;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
@@ -44,7 +47,6 @@ import org.talend.designer.core.model.utils.emf.talendfile.ElementValueType;
 import org.talend.designer.core.model.utils.emf.talendfile.NodeType;
 import org.talend.designer.core.model.utils.emf.talendfile.ParametersType;
 import org.talend.designer.core.model.utils.emf.talendfile.ProcessType;
-import org.talend.migration.IMigrationTask.ExecutionResult;
 import org.talend.repository.model.migration.EncryptPasswordInComponentsMigrationTask.FakeNode;
 
 /**
@@ -76,13 +78,19 @@ public class UpdateModuleListInComponentsMigrationTask extends AbstractItemMigra
         boolean modified = false;
         try {
             if (item instanceof ConnectionItem) {
-                modified = modified || updateConnectionItem((ConnectionItem) item);
+                if (updateConnectionItem((ConnectionItem) item)) {
+                    modified = true;
+                }
             } else if (item instanceof ProcessItem) {
                 ProcessItem processItem = (ProcessItem) item;
-                modified = modified || updateProcessItem(item, processItem.getProcess());
+                if (updateProcessItem(item, processItem.getProcess())) {
+                    modified = true;
+                }
             } else if (item instanceof JobletProcessItem) {
                 JobletProcessItem jobletItem = (JobletProcessItem) item;
-                modified = modified || updateProcessItem(item, jobletItem.getJobletProcess());
+                if (updateProcessItem(item, jobletItem.getJobletProcess())) {
+                    modified = true;
+                }
             }
         } catch (Exception ex) {
             ExceptionHandler.process(ex);
@@ -94,6 +102,86 @@ public class UpdateModuleListInComponentsMigrationTask extends AbstractItemMigra
                 factory.save(item, true);
                 // regenerate poms for affected job
                 CorePlugin.getDefault().getRunProcessService().generatePom(item);
+                return ExecutionResult.SUCCESS_NO_ALERT;
+            } catch (Exception ex) {
+                ExceptionHandler.process(ex);
+                return ExecutionResult.FAILURE;
+            }
+        }
+        return ExecutionResult.NOTHING_TO_DO;
+    }
+
+    @Override
+    public ExecutionResult execute(Project project) {
+        ExecutionResult result = super.execute(project);
+        if (result == ExecutionResult.FAILURE) {
+            return result;
+        }
+
+        result = this.migrateProjectSettings(project);
+
+        return result;
+    }
+
+    @Override
+    public ExecutionResult execute(Project project, boolean doSave) {
+        ExecutionResult result = super.execute(project, doSave);
+        if (result == ExecutionResult.FAILURE) {
+            return result;
+        }
+
+        result = this.migrateProjectSettings(project);
+
+        return result;
+    }
+
+    @Override
+    public ExecutionResult execute(Project project, Item item) {
+
+        ExecutionResult result = super.execute(project, item);
+        if (result == ExecutionResult.FAILURE) {
+            return result;
+        }
+        result = migrateProjectSettings(project);
+        return result;
+    }
+
+    protected ExecutionResult migrateProjectSettings(Project project) {
+        boolean modified = false;
+        org.talend.core.model.properties.Project emfProject = project.getEmfProject();
+        StatAndLogsSettings statAndLogs = emfProject.getStatAndLogsSettings();
+        if (statAndLogs != null && statAndLogs.getParameters() != null) {
+            ParametersType parameters = statAndLogs.getParameters();
+            List elementParameter = parameters.getElementParameter();
+            for (int i = 0; i < elementParameter.size(); i++) {
+                final Object object = elementParameter.get(i);
+                if (object instanceof ElementParameterType) {
+                    ElementParameterType parameterType = (ElementParameterType) object;
+                    if (updateParam(parameterType)) {
+                        modified = true;
+                    }
+                }
+            }
+        }
+
+        ImplicitContextSettings ctxSettings = emfProject.getImplicitContextSettings();
+        if (ctxSettings != null && ctxSettings.getParameters() != null) {
+            ParametersType parameters = ctxSettings.getParameters();
+            List elementParameter = parameters.getElementParameter();
+            for (int i = 0; i < elementParameter.size(); i++) {
+                final Object object = elementParameter.get(i);
+                if (object instanceof ElementParameterType) {
+                    ElementParameterType parameterType = (ElementParameterType) object;
+                    if (updateParam(parameterType)) {
+                        modified = true;
+                    }
+                }
+            }
+        }
+
+        if (modified) {
+            try {
+                factory.saveProject(project);
                 return ExecutionResult.SUCCESS_NO_ALERT;
             } catch (Exception ex) {
                 ExceptionHandler.process(ex);
@@ -159,7 +247,9 @@ public class UpdateModuleListInComponentsMigrationTask extends AbstractItemMigra
                 if (p instanceof ElementParameterType) {
                     ElementParameterType param = (ElementParameterType) p;
                     // variable name used for Stat&Logs
-                    modified = updateParam(param);
+                    if (updateParam(param)) {
+                        modified = true;
+                    }
                 }
             }
         }
@@ -175,7 +265,9 @@ public class UpdateModuleListInComponentsMigrationTask extends AbstractItemMigra
             }
             for (Object paramObjectType : nodeType.getElementParameter()) {
                 ElementParameterType param = (ElementParameterType) paramObjectType;
-                modified = modified || updateParam(param);
+                if (updateParam(param)) {
+                    modified = true;
+                }
             }
         }
         return modified;
@@ -203,7 +295,9 @@ public class UpdateModuleListInComponentsMigrationTask extends AbstractItemMigra
                     ElementParameterType param = (ElementParameterType) paramObjectType;
                     IElementParameter paramFromEmf = fNode.getElementParameter(param.getName());
                     if (paramFromEmf != null) {
-                        modified = modified || updateParam(param);
+                        if (updateParam(param)) {
+                            modified = true;
+                        }
                     }
                 }
             }
@@ -224,24 +318,17 @@ public class UpdateModuleListInComponentsMigrationTask extends AbstractItemMigra
                 String jarUri = getMavenUriForJar(param.getValue());
                 param.setValue(jarUri);
                 modified = true;
-            }
-
-            if ("DRIVER_JAR".equals(param.getName()) && param.getField().equals(EParameterFieldType.TABLE.name())
+            } else if (("DRIVER_JAR".equals(param.getName()) || "DRIVER_JAR_IMPLICIT_CONTEXT".equals(param.getName()))
                     && param.getElementValue() != null) {
 
-                List<ElementValueType> newListValue = new ArrayList();
                 EList<?> elementValues = param.getElementValue();
                 for (Object ev : elementValues) {
                     ElementValueType evt = (ElementValueType) ev;
                     String jarUri = getMavenUriForJar(evt.getValue());
-                    evt.setValue(jarUri);
-                    newListValue.add(evt);
-                    modified = true;
-                }
-
-                if (modified) {
-                    param.getElementValue().clear();
-                    param.getElementValue().addAll(newListValue);
+                    if (!StringUtils.equals(jarUri, evt.getValue())) {
+                        evt.setValue(jarUri);
+                        modified = true;
+                    }
                 }
             }
         }
@@ -250,7 +337,7 @@ public class UpdateModuleListInComponentsMigrationTask extends AbstractItemMigra
 
     public static String getMavenUriForJar(String jarName) {
         jarName = TalendTextUtils.removeQuotes(jarName);
-        if (!StringUtils.isEmpty(jarName) && !jarName.startsWith(MavenUrlHelper.MVN_PROTOCOL)) {
+        if (!StringUtils.isEmpty(jarName) && !MavenUrlHelper.isMvnUrl(jarName)) {
             ModuleNeeded mod = new ModuleNeeded(null, jarName, null, true);
             if (!StringUtils.isEmpty(mod.getCustomMavenUri())) {
                 return mod.getCustomMavenUri();
