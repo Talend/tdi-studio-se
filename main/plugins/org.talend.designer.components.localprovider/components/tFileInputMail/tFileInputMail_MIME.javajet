@@ -209,8 +209,6 @@
 	 	    	javax.mail.Multipart mp<%=cid%> = (javax.mail.Multipart) msg_<%=cid %>.getContent();
 	 	    	String attachfileName<%=cid%> = "";
 	 	    	String path<%=cid%> = "";
-	 	    	java.io.BufferedOutputStream out<%=cid%> = null;
-	 	    	java.io.BufferedInputStream in<%=cid%> = null;
 	            for (int i = 0; i < mp<%=cid%>.getCount(); i++) {
 	                javax.mail.BodyPart mpart<%=cid%> = mp<%=cid%>.getBodyPart(i);
 	                String disposition<%=cid%> = mpart<%=cid%>.getDisposition();
@@ -234,14 +232,14 @@
 	                            log.info("<%= cid %> - Extracting attachment: '"+attachfileName<%=cid%>+"'.");
 	                    <% } %>
 	                    java.io.File attachFile  = new java.io.File(path<%=cid%>);
-	                    try (out<%=cid%> = new java.io.BufferedOutputStream(new java.io.FileOutputStream(attachFile));
-	                        in<%=cid%> = new java.io.BufferedInputStream(mpart<%=cid%>.getInputStream())){
+	                    try (java.io.BufferedOutputStream out = new java.io.BufferedOutputStream(new java.io.FileOutputStream(attachFile));
+	                        java.io.BufferedInputStream in = new java.io.BufferedInputStream(mpart<%=cid%>.getInputStream())){
 	                        byte[] buffer = new byte[8192];
 	                        int bytesRead = 0;
-	                        while ((bytesRead = in<%=cid%>.read(buffer)) > 0) {
-	                           out<%=cid%>.write(buffer, 0, bytesRead);
+	                        while ((bytesRead = in.read(buffer)) > 0) {
+	                           out.write(buffer, 0, bytesRead);
 	                        }
-	                        out<%=cid%>.flush();
+	                        out.flush();
 	                    }
 	                }
 	            }
