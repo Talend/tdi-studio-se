@@ -121,7 +121,7 @@ try{
     responseCode_<%=cid%> = urlConn_<%=cid%>.getResponseCode();
     globalMap.put("<%=cid%>_RESPONSE_CODE", responseCode_<%=cid%>);
 
-    if (java.net.HttpURLConnection.HTTP_OK == responseCode_<%=cid%>) {
+    if ( responseCode_<%=cid%> >= 200 && responseCode_<%=cid%> < 300) { //Status code 2XX indicates success
         java.io.InputStream bis_<%=cid%> = new java.io.BufferedInputStream(urlConn_<%=cid%>.getInputStream());
 <%
   // output response content to file
