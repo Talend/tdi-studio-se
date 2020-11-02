@@ -1010,6 +1010,14 @@ public class LoginProjectPage extends AbstractLoginActionPage {
         if (LoginHelper.isRestart) {
             loginDialog.okPressed();
         } else {
+            if (LoginHelper.isRemotesConnection(getConnection())) {
+                String branch = getBranch();
+                if (StringUtils.isBlank(branch)) {
+                    MessageDialog.openInformation(null, Messages.getString("LoginProjectPage.finish.checkBranch.title"),
+                            Messages.getString("LoginProjectPage.finish.checkBranch.desc"));
+                    return;
+                }
+            }
             // should save before login, since svn related codes will read them
             saveLastUsedProjectAndBranch();
             boolean isLogInOk = loginHelper.logIn(getConnection(), getProject(), errorManager);
@@ -1923,14 +1931,7 @@ public class LoginProjectPage extends AbstractLoginActionPage {
                 branchesViewer.setInput(projectBranches);
                 branchesViewer.setSelection(new StructuredSelection(new Object[] { "trunk" })); //$NON-NLS-1$
             } else if ("git".equals(storage)) { //$NON-NLS-1$
-                String master = "master"; //$NON-NLS-1$
-                projectBranches.add(master);
                 branchesViewer.setInput(projectBranches);
-                if (projectBranches.size() != 0) {
-                    branchesViewer.setSelection(new StructuredSelection(
-                            new Object[] { projectBranches.contains(master) ? master : projectBranches.get(0) }));
-                }
-
             }
             branchesViewer.getCombo().setEnabled(false);
             if (backgroundGUIUpdate == null/* || (backgroundGUIUpdate.getState() == Job.NONE) */) {
@@ -1969,8 +1970,18 @@ public class LoginProjectPage extends AbstractLoginActionPage {
                                             branchesViewer.setSelection(new StructuredSelection(new Object[] { projectBranches
                                                     .contains("trunk") ? "trunk" : projectBranches.get(0) }));
                                         } else if ("git".equals(storage) && projectBranches.size() != 0) {
-                                            branchesViewer.setSelection(new StructuredSelection(new Object[] { projectBranches
-                                                    .contains("master") ? "master" : projectBranches.get(0) }));
+                                            String defaultBranch = null;
+                                            if (projectBranches.contains(SVNConstant.NAME_MAIN)) {
+                                                defaultBranch = SVNConstant.NAME_MAIN;
+                                            } else if (projectBranches.contains(SVNConstant.NAME_MASTER)) {
+                                                defaultBranch = SVNConstant.NAME_MASTER;
+                                            } else {
+                                                defaultBranch = projectBranches.get(0);
+                                            }
+                                            if (StringUtils.isNotBlank(defaultBranch)) {
+                                                branchesViewer
+                                                        .setSelection(new StructuredSelection(new Object[] { defaultBranch }));
+                                            }
                                         }
                                         // svnBranchCombo.getCombo().setFont(originalFont);
                                         branchesViewer.getCombo().setEnabled(projectViewer.getControl().isEnabled());
