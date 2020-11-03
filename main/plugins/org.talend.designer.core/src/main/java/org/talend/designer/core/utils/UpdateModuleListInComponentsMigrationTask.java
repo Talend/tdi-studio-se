@@ -40,6 +40,7 @@ import org.talend.core.model.properties.StatAndLogsSettings;
 import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.core.model.utils.TalendTextUtils;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
+import org.talend.core.runtime.maven.MavenArtifact;
 import org.talend.core.runtime.maven.MavenUrlHelper;
 import org.talend.core.ui.component.ComponentsFactoryProvider;
 import org.talend.designer.core.model.utils.emf.talendfile.ElementParameterType;
@@ -260,12 +261,10 @@ public class UpdateModuleListInComponentsMigrationTask extends AbstractItemMigra
         boolean modified = false;
         for (Object nodeObject : processType.getNode()) {
             NodeType nodeType = (NodeType) nodeObject;
-            if (nodeType.getComponentName().equals("cConfig")) {
-                return false;
-            }
+            boolean isConfig = nodeType.getComponentName().equals("cConfig");
             for (Object paramObjectType : nodeType.getElementParameter()) {
                 ElementParameterType param = (ElementParameterType) paramObjectType;
-                if (updateParam(param)) {
+                if (isConfig ? updateParamForcConfig(param) : updateParam(param)) {
                     modified = true;
                 }
             }
@@ -282,9 +281,7 @@ public class UpdateModuleListInComponentsMigrationTask extends AbstractItemMigra
             ComponentCategory category = ComponentCategory.getComponentCategoryFromItem(item);
             for (Object nodeObjectType : processType.getNode()) {
                 NodeType nodeType = (NodeType) nodeObjectType;
-                if (nodeType.getComponentName().equals("cConfig")) {
-                    return false;
-                }
+                boolean isConfig = nodeType.getComponentName().equals("cConfig");
                 IComponent component = ComponentsFactoryProvider.getInstance().get(nodeType.getComponentName(),
                         category.getName());
                 if (component == null) {
@@ -295,7 +292,7 @@ public class UpdateModuleListInComponentsMigrationTask extends AbstractItemMigra
                     ElementParameterType param = (ElementParameterType) paramObjectType;
                     IElementParameter paramFromEmf = fNode.getElementParameter(param.getName());
                     if (paramFromEmf != null) {
-                        if (updateParam(param)) {
+                        if (isConfig ? updateParamForcConfig(param) : updateParam(param)) {
                             modified = true;
                         }
                     }
@@ -328,6 +325,52 @@ public class UpdateModuleListInComponentsMigrationTask extends AbstractItemMigra
                     if (!StringUtils.equals(jarUri, evt.getValue())) {
                         evt.setValue(jarUri);
                         modified = true;
+                    }
+                }
+            }
+        }
+        return modified;
+    }
+
+    private static boolean updateParamForcConfig(ElementParameterType param) {
+        boolean modified = false;
+        if (param.getField() != null) {
+            if (param.getField().equals(EParameterFieldType.MODULE_LIST.name()) && param.getValue() != null) {
+                String jarUri = getMavenUriForJar(param.getValue());
+                param.setValue(jarUri);
+                modified = true;
+            } else if (("DRIVER_JAR".equals(param.getName()) || "DRIVER_JAR_IMPLICIT_CONTEXT".equals(param.getName()))
+                    && param.getElementValue() != null) {
+
+                EList<?> elementValues = param.getElementValue();
+
+                String jarUri = null;
+                ElementValueType jn = null;
+
+                for (Object ev : elementValues) {
+                    ElementValueType evt = (ElementValueType) ev;
+                    switch (evt.getElementRef()) {
+                    case "JAR_NAME": {
+                        jarUri = getMavenUriForJar(evt.getValue());
+                        if (!StringUtils.equals(jarUri, evt.getValue())) {
+                            evt.setValue(jarUri);
+                            jn = evt;
+                            modified = true;
+                        }
+                        break;
+                    }
+                    case "JAR_NEXUS_VERSION": {
+                        if (StringUtils.isNotBlank(evt.getValue()) && StringUtils.isNotBlank(jarUri)) {
+                            MavenArtifact ma = MavenUrlHelper.parseMvnUrl(jarUri);
+                            if (ma != null && jn != null) {
+                                String jarVersion = ma.getVersion();
+                                jarUri = jarUri.replaceAll(jarVersion, evt.getValue());
+                                jn.setValue(jarUri);
+                                modified = true;
+                            }
+                        }
+                        break;
+                    }
                     }
                 }
             }
