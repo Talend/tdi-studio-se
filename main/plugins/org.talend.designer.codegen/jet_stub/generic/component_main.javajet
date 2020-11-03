@@ -84,7 +84,7 @@ if(hasInput){
             for (int i = 0; i < input_columnList.size(); i++) {
                 if(!input_columnList.get(i).getTalendType().equals("id_Dynamic")) {
                 %>
-                    if (incomingEnforcer_<%=cid%>.getDesignSchema().getField("<%=input_columnList.get(i)%>") == null){
+                    if (incomingEnforcer_<%=cid%> != null && incomingEnforcer_<%=cid%>.getDesignSchema().getField("<%=input_columnList.get(i)%>") == null){
                         incomingEnforcer_<%=cid%>.addIncomingNodeField("<%=input_columnList.get(i)%>", ((Object) <%=inputConn.getName()%>.<%=input_columnList.get(i)%>).getClass().getCanonicalName());
                         shouldCreateRuntimeSchemaForIncomingNode = true;
                     }
@@ -92,7 +92,7 @@ if(hasInput){
                 }
             }
             %>
-            if (shouldCreateRuntimeSchemaForIncomingNode){
+            if (shouldCreateRuntimeSchemaForIncomingNode && incomingEnforcer_<%=cid%> != null){
                 incomingEnforcer_<%=cid%>.createRuntimeSchema();
             }
             <%
@@ -111,7 +111,7 @@ if(hasInput){
 
         if (dynamicPos != -1)  {
             %>
-            if (!incomingEnforcer_<%=cid%>.areDynamicFieldsInitialized()) {
+            if (incomingEnforcer_<%=cid%> != null && !incomingEnforcer_<%=cid%>.areDynamicFieldsInitialized()) {
                 // Initialize the dynamic columns when they are first encountered.
                 for (routines.system.DynamicMetadata dm_<%=cid%> : <%=inputConn.getName()%>.<%=input_columnList.get(dynamicPos).getLabel()%>.metadatas) {
                     incomingEnforcer_<%=cid%>.addDynamicField(
@@ -128,22 +128,26 @@ if(hasInput){
         }
 
         %>
-        incomingEnforcer_<%=cid%>.createNewRecord();
+        if (incomingEnforcer_<%=cid%> != null) {
+            incomingEnforcer_<%=cid%>.createNewRecord();
+        }
         <%
         for (int i = 0; i < input_columnList.size(); i++) { // column
             IMetadataColumn column = input_columnList.get(i);
             if (dynamicPos != i) {
                 %>
                 //skip the put action if the input column doesn't appear in component runtime schema
-                if (incomingEnforcer_<%=cid%>.getRuntimeSchema().getField("<%=input_columnList.get(i)%>") != null){
+                if (incomingEnforcer_<%=cid%> != null && incomingEnforcer_<%=cid%>.getRuntimeSchema().getField("<%=input_columnList.get(i)%>") != null){
                     incomingEnforcer_<%=cid%>.put("<%=column.getLabel()%>", <%=inputConn.getName()%>.<%=column.getLabel()%>);
                 }
                 <%
             } else {
                 %>
-                for (int i = 0; i < <%=inputConn.getName()%>.<%=column.getLabel()%>.getColumnCount(); i++) {
-                    incomingEnforcer_<%=cid%>.put(<%=inputConn.getName()%>.<%=column.getLabel()%>.getColumnMetadata(i).getName(),
-                            <%=inputConn.getName()%>.<%=column.getLabel()%>.getColumnValue(i));
+                if (incomingEnforcer_<%=cid%> != null) {
+                    for (int i = 0; i < <%=inputConn.getName()%>.<%=column.getLabel()%>.getColumnCount(); i++) {
+                        incomingEnforcer_<%=cid%>.put(<%=inputConn.getName()%>.<%=column.getLabel()%>.getColumnMetadata(i).getName(),
+                                <%=inputConn.getName()%>.<%=column.getLabel()%>.getColumnValue(i));
+                    }
                 }
                 <%
             }
@@ -177,7 +181,11 @@ if(hasInput){
 		} // propInfo
         
         %>
-        org.apache.avro.generic.IndexedRecord data_<%=cid%> = incomingEnforcer_<%=cid%>.getCurrentRecord();
+        
+        org.apache.avro.generic.IndexedRecord data_<%=cid%> = null;
+        if (incomingEnforcer_<%=cid%> != null) {
+            data_<%=cid%> = incomingEnforcer_<%=cid%>.getCurrentRecord();
+        }
         
         <%
         boolean isParallelize ="true".equalsIgnoreCase(ElementParameterParser.getValue(node, "__PARALLELIZE__"));
@@ -190,8 +198,9 @@ if(hasInput){
         	}
         }
         %>
-
-        writer_<%=cid%>.write(data_<%=cid%>);
+        if (writer_<%=cid%> != null && data_<%=cid%> != null) {
+        	writer_<%=cid%>.write(data_<%=cid%>);
+        }
         
         nb_line_<%=cid %>++;
         <%if(hasMainOutput){

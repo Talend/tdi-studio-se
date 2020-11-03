@@ -1874,11 +1874,6 @@ public class DataProcess implements IGeneratingProcess {
             for (DataNode node : statsAndLogsNodeList) {
                 if (node.getUniqueName().equals(StatsAndLogsManager.CONNECTION_UID)) {
                     connNode = node;
-                    IElementParameter parameter = connNode.getElementParameter("connection.driverTable");
-                    if (parameter != null) {
-                        Object repValue = parameter.getValue();
-                        ConnectionUtil.resetDriverValue(repValue);
-                    }
                     break;
                 }
             }

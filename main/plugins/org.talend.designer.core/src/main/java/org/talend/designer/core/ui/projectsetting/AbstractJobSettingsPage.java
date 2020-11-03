@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.IWorkspaceRunnable;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -64,6 +65,7 @@ import org.talend.core.model.update.UpdatesConstants;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
 import org.talend.core.ui.CoreUIPlugin;
 import org.talend.core.ui.services.IDesignerCoreUIService;
+import org.talend.core.utils.TalendQuoteUtils;
 import org.talend.designer.core.i18n.Messages;
 import org.talend.designer.core.model.components.EParameterName;
 import org.talend.designer.core.model.components.EmfComponent;
@@ -190,7 +192,14 @@ public abstract class AbstractJobSettingsPage extends ProjectSettingPage {
 
                             } else {
                                 // check the value
-                                if (!param.getValue().equals(repValue)) {
+                                if ((param.getName().equals("DRIVER_JAR")
+                                        || param.getName().equals("DRIVER_JAR_IMPLICIT_CONTEXT")) && param.getValue() != null) {
+                                    sameValues = isSameDriverList((List<Map<String, String>>) param.getValue(),
+                                            (List<Map<String, String>>) repValue);
+                                    if (!sameValues) {
+                                        break;
+                                    }
+                                } else if (!param.getValue().equals(repValue)) {
                                     sameValues = false;
                                     break;
                                 }
@@ -223,6 +232,42 @@ public abstract class AbstractJobSettingsPage extends ProjectSettingPage {
 
         }
 
+    }
+
+    protected boolean isSameDriverList(List<Map<String, String>> driverList1, List<Map<String, String>> driverList2) {
+        if (driverList1 == null) {
+            if (driverList2 == null) {
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+            if (driverList2 == null) {
+                return false;
+            } else {
+                // compare
+                if (driverList1.size() != driverList2.size()) {
+                    return false;
+                }
+                Set<String> driverSet1 = new HashSet<String>();
+                Set<String> driverSet2 = new HashSet<String>();
+
+                for (Map<String, String> driverMap : driverList1) {
+                    String jar = driverMap.get("drivers");
+                    if (jar != null) {
+                        driverSet1.add(TalendQuoteUtils.removeQuotes(jar));
+                    }
+                }
+                for (Map<String, String> driverMap : driverList2) {
+                    String jar = driverMap.get("drivers");
+                    if (jar != null) {
+                        driverSet2.add(TalendQuoteUtils.removeQuotes(jar));
+                    }
+                }
+
+                return driverSet1.equals(driverSet2);
+            }
+        }
     }
 
     protected abstract void checkSettingExisted();
