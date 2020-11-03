@@ -188,7 +188,7 @@ public class GenericDBService implements IGenericDBService{
         NamedThing drivers = ComponentsUtils.getNameThingFromComponentPropertiesByName(componentProperties, "drivers");//$NON-NLS-1$
         if (drivers != null && drivers instanceof org.talend.daikon.properties.property.Property<?>) {
             org.talend.daikon.properties.property.Property<?> driverProp = (org.talend.daikon.properties.property.Property<?>) drivers;
-            if (ContextParameterUtils.isContainContextParam(driverProp.getStringValue())) {
+            if (ContextParameterUtils.isContainContextParam(driverProp.getStoredValue().toString())) {
                 return;
             }
             Object storedValue = driverProp.getStoredValue();
