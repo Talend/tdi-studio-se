@@ -66,7 +66,7 @@ if ((metadatas!=null)&&(metadatas.size()>0)) {
 <%
 			if(reportType.equalsIgnoreCase("html")){
 %>
-	net.sf.jasperreports.engine.JRExporter exporter_<%=cid%> = new net.sf.jasperreports.engine.export.JRHtmlExporter();		
+	net.sf.jasperreports.engine.JRExporter exporter_<%=cid%> = new net.sf.jasperreports.engine.export.HtmlExporter();		
 <%
 			}else if(reportType.equalsIgnoreCase("pdf")){
 %>
