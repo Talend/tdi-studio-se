@@ -161,12 +161,8 @@ public class ExcelTool {
     }
 
     private void appendActionForFile(String fileName) throws Exception {
-        if (password == null) {
-            InputStream inp = new FileInputStream(fileName);
-            wb = WorkbookFactory.create(inp);
-        } else {
-           wb = readEncryptedFile(fileName);
-        }
+        InputStream inp = new FileInputStream(fileName);
+        wb = WorkbookFactory.create(inp, password);
         sheet = wb.getSheet(sheetName);
         if (sheet != null) {
             if (appendSheet) {
@@ -191,26 +187,9 @@ public class ExcelTool {
     }
 
     private void initPreXlsx(String fileName) throws Exception {
-        if(password == null) {
-            InputStream preIns = new FileInputStream(fileName);
-            preWb = WorkbookFactory.create(preIns);
-        } else {
-            preWb = readEncryptedFile(fileName);
-        }
+        InputStream preIns = new FileInputStream(fileName);
+        preWb = WorkbookFactory.create(preIns, password);
         preSheet = preWb.getSheet(sheetName);
-    }
-    
-    private Workbook readEncryptedFile(String fileName)
-            throws IOException, GeneralSecurityException {
-        InputStream inp = new FileInputStream(fileName);
-        POIFSFileSystem fs = new POIFSFileSystem(inp);
-        EncryptionInfo info = new EncryptionInfo(fs);
-        Decryptor decryptor = Decryptor.getInstance(info);
-        if (!decryptor.verifyPassword(password)) {
-            throw new GeneralSecurityException("Error: Incorrect password!");
-        }
-        InputStream dataStream = decryptor.getDataStream(fs);
-        return WorkbookFactory.create(dataStream);
     }
 
     public void setFont(String fontName) {

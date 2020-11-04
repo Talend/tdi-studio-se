@@ -99,6 +99,8 @@ import org.talend.core.repository.model.provider.LoginConnectionManager;
 import org.talend.core.repository.services.ILoginConnectionService;
 import org.talend.core.repository.utils.ProjectHelper;
 import org.talend.core.runtime.CoreRuntimePlugin;
+import org.talend.core.runtime.util.SharedStudioUtils;
+import org.talend.core.service.IUpdateService;
 import org.talend.core.services.ICoreTisService;
 import org.talend.core.services.IGITProviderService;
 import org.talend.core.ui.TalendBrowserLaunchHelper;
@@ -634,6 +636,9 @@ public class LoginProjectPage extends AbstractLoginActionPage {
             checkErrors();
             log.info("validate updatesite..."); //$NON-NLS-1$
             validateUpdate();
+            if (SharedStudioUtils.isSharedStudioMode()) {
+                validatePatchForSharedMode();
+            }
         } catch (PersistenceException e) {
             CommonExceptionHandler.process(e);
             log.error(e);
@@ -1503,20 +1508,21 @@ public class LoginProjectPage extends AbstractLoginActionPage {
                     errorManager.setErrMessage(Messages.getString("LoginProjectPage.archivaFinish")); //$NON-NLS-1$
                     changeFinishButtonAction(FINISH_ACTION_RESTART);
                 } else {
-                    OverTimePopupDialogTask<Boolean> overTimePopupDialogTask = new OverTimePopupDialogTask<Boolean>() {
+                    if (!SharedStudioUtils.isSharedStudioMode()) {
+                        OverTimePopupDialogTask<Boolean> overTimePopupDialogTask = new OverTimePopupDialogTask<Boolean>() {
 
-                        @Override
-                        public Boolean run() throws Throwable {
-                            return LoginHelper.isStudioNeedUpdate(currentBean);
+                            @Override
+                            public Boolean run() throws Throwable {
+                                return LoginHelper.isStudioNeedUpdate(currentBean);
+                            }
+                        };
+                        overTimePopupDialogTask.setNeedWaitingProgressJob(false);
+                        boolean needUpdate = overTimePopupDialogTask.runTask();
+                        if (needUpdate && isWorkSpaceSame()) {
+                            refreshProjectOperationAreaEnable(false);
+                            errorManager.setErrMessage(Messages.getString("LoginProjectPage.updateArchiva")); //$NON-NLS-1$
+                            changeFinishButtonAction(FINISH_ACTION_UPDATE);
                         }
-                    };
-                    overTimePopupDialogTask.setNeedWaitingProgressJob(false);
-                    boolean needUpdate = overTimePopupDialogTask.runTask();
-
-                    if (needUpdate && isWorkSpaceSame()) {
-                        refreshProjectOperationAreaEnable(false);
-                        errorManager.setErrMessage(Messages.getString("LoginProjectPage.updateArchiva")); //$NON-NLS-1$
-                        changeFinishButtonAction(FINISH_ACTION_UPDATE);
                     }
                 }
             }
@@ -1526,6 +1532,17 @@ public class LoginProjectPage extends AbstractLoginActionPage {
             updateArchivaErrorButton();
         } catch (Throwable e) {
             CommonExceptionHandler.process(e);
+        }
+    }
+    
+    protected void validatePatchForSharedMode() throws JSONException {
+        String missingPatchVersion = null;
+        if (GlobalServiceRegister.getDefault().isServiceRegistered(IUpdateService.class)) {
+            IUpdateService updateService = GlobalServiceRegister.getDefault().getService(IUpdateService.class);
+            missingPatchVersion = updateService.getSharedStudioMissingPatchVersion();
+        }
+        if (missingPatchVersion != null) {
+            errorManager.setWarnMessage(Messages.getString("LoginProjectPage.sharedModeMissingPatchFile", missingPatchVersion));
         }
     }
 
