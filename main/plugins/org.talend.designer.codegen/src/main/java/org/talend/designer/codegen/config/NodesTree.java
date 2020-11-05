@@ -55,7 +55,7 @@ public class NodesTree {
         if (init) {
             if (typeGen == ETypeGen.CAMEL) {
                 buildCamelSubTrees(true);
-            } else if (typeGen == ETypeGen.MR || typeGen == ETypeGen.STORM) {
+            } else if (typeGen == ETypeGen.MR) {
                 buildBigDataSubTrees(typeGen);
             } else if (typeGen == ETypeGen.SPARK) {
                 buildSparkSubTrees(typeGen);

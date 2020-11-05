@@ -41,17 +41,9 @@ public class RootPaletteItem extends AbstractPaletteItem implements IPaletteItem
             type = ERepositoryObjectType.valueOf("PROCESS_MR"); //$NON-NLS-1$
             imageDesc = ImageProvider.getImageDesc(ECoreImage.PROCESS_BATCH_MR_ICON);
             break;
-        case CATEGORY_4_STORM:
-            type = ERepositoryObjectType.valueOf("PROCESS_STORM"); //$NON-NLS-1$
-            imageDesc = ImageProvider.getImageDesc(ECoreImage.PROCESS_STREAMING_STORM_ICON);
-            break;
         case CATEGORY_4_SPARK:
             type = ERepositoryObjectType.valueOf("PROCESS_MR"); //$NON-NLS-1$
             imageDesc = ImageProvider.getImageDesc(ECoreImage.PROCESS_BATCH_SPARK_ICON);
-            break;
-        case CATEGORY_4_SPARKSTREAMING:
-            type = ERepositoryObjectType.valueOf("PROCESS_STORM"); //$NON-NLS-1$
-            imageDesc = ImageProvider.getImageDesc(ECoreImage.PROCESS_STREAMING_SPARK_ICON);
             break;
         case CATEGORY_4_DI:
         default:
@@ -63,7 +55,7 @@ public class RootPaletteItem extends AbstractPaletteItem implements IPaletteItem
         String desc = category.getDesc();
         String label = type.getLabel();
         if (ERepositoryObjectType.PROCESS.equals(type)
-                && (PluginChecker.isStormPluginLoader() || PluginChecker.isMapReducePluginLoader())) {
+                && (PluginChecker.isMapReducePluginLoader())) {
             label = ConvertJobsUtil.JobType.STANDARD.getDisplayName();
         }
         setLabel(label + ("".equals(desc) ? "" : " (" + desc + ")")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$

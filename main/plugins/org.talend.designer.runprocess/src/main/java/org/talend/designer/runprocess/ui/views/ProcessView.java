@@ -428,7 +428,7 @@ public class ProcessView extends ViewPart implements PropertyChangeListener {
             sash.setWeights(new int[]{90,1});
         }
         if (EComponentCategory.MAPREDUCE_JOB_CONFIG_FOR_HADOOP.equals(category)
-                || EComponentCategory.STORM_JOB_CONFIG.equals(category) || EComponentCategory.SPARK_JOB_CONFIG.equals(category)) {
+                || EComponentCategory.SPARK_JOB_CONFIG.equals(category)) {
             if (processContext != null) {
                 dc = new MultipleThreadDynamicComposite(parent, SWT.H_SCROLL | SWT.V_SCROLL | SWT.NO_FOCUS, category,
                         (Element) processContext.getProcess(), true, Display.getCurrent().getSystemColor(
@@ -521,9 +521,6 @@ public class ProcessView extends ViewPart implements PropertyChangeListener {
                         ArrayUtils.indexOf(categories, EComponentCategory.DEBUGRUN));
                 categories = (EComponentCategory[]) ArrayUtils.add(categories, 1,
                         EComponentCategory.MAPREDUCE_JOB_CONFIG_FOR_HADOOP);
-            }
-            if (processContext.getProcess().getComponentsType().equals(ComponentCategory.CATEGORY_4_STORM.getName())) {
-                categories = (EComponentCategory[]) ArrayUtils.add(categories, 1, EComponentCategory.STORM_JOB_CONFIG);
             }
 
             if (processContext.getProcess().getComponentsType().equals(ComponentCategory.CATEGORY_4_SPARK.getName())

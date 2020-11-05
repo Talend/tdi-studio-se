@@ -98,21 +98,6 @@ public class CheckLogManagerTest {
         }
         assertTrue(modules4log4j.contains("log4j-1.2-api-2.12.1.jar"));
 
-        process.setComponentsType(ComponentCategory.CATEGORY_4_STORM.getName());
-        UpdateLog4jJarUtils.addLog4jToModuleList(modulesNeeded, true, process);
-        modules4log4j.clear();
-        for (ModuleNeeded moule : modulesNeeded) {
-            modules4log4j.add(moule.getModuleName());
-        }
-        assertTrue(modules4log4j.contains("log4j-1.2-api-2.12.1.jar"));
-        
-        process.setComponentsType(ComponentCategory.CATEGORY_4_STORM.getName());
-        UpdateLog4jJarUtils.addLog4jToModuleList(modulesNeeded, true, process);
-        modules4log4j.clear();
-        for (ModuleNeeded moule : modulesNeeded) {
-            modules4log4j.add(moule.getModuleName());
-        }
-        assertTrue(modules4log4j.contains("log4j-1.2-api-2.12.1.jar"));
 
         process.setComponentsType(ComponentCategory.CATEGORY_4_DI.getName());
         UpdateLog4jJarUtils.addLog4jToModuleList(modulesNeeded, true, process);

@@ -49,9 +49,6 @@ public class OpenJobAction extends Action implements IWorkbenchWindowActionDeleg
         if (ERepositoryObjectType.PROCESS_ROUTELET != null) {
             repObjectTypes.add(ERepositoryObjectType.PROCESS_ROUTELET);
         }
-        if (PluginChecker.isStormPluginLoader()) {
-            repObjectTypes.add(ERepositoryObjectType.PROCESS_STORM);
-        }
         if (PluginChecker.isMapReducePluginLoader()) {
             repObjectTypes.add(ERepositoryObjectType.PROCESS_MR);
         }

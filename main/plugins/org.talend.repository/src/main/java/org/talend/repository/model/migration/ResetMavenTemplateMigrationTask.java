@@ -82,9 +82,6 @@ public class ResetMavenTemplateMigrationTask extends AbstractProjectMigrationTas
             if (PluginChecker.isMapReducePluginLoader()) {
                 resetJobCustomTemplateFile(fsProject, ERepositoryObjectType.PROCESS_MR);
             }
-            if (PluginChecker.isStormPluginLoader()) {
-                resetJobCustomTemplateFile(fsProject, ERepositoryObjectType.PROCESS_STORM);
-            }
             if (isPluginLoaded(EXPORT_ROUTE_PLUGIN_ID)) {
                 resetServiceCustomTemplateFile(fsProject);
             }

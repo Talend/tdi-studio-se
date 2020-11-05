@@ -38,8 +38,6 @@ public class JobScriptsManagerFactory {
                 ERepositoryObjectType type = (ERepositoryObjectType) jobType;
                 if (type.equals(ERepositoryObjectType.PROCESS_MR)) {
                     return new MapReduceJobJavaScriptsManager(exportChoiceMap, contextName, launcher, statisticPort, tracePort);
-                } else if (type.equals(ERepositoryObjectType.valueOf("PROCESS_STORM"))) { //$NON-NLS-1$
-                    return new StormJobJavaScriptsManager(exportChoiceMap, contextName, launcher, statisticPort, tracePort);
                 }
             }
             return new JobJavaScriptsManager(exportChoiceMap, contextName, launcher, statisticPort, tracePort);

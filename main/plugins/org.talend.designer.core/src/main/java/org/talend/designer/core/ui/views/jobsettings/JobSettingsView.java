@@ -507,8 +507,6 @@ public class JobSettingsView extends ViewPart implements IJobSettingsView, ISele
                     icon = ImageProvider.getImage(EJobSettingImage.PROCESS_SPARK_ICON_X16);
                 } else if (ComponentCategory.CATEGORY_4_SPARKSTREAMING.getName().equals(process.getComponentsType())) {
                     icon = ImageProvider.getImage(EJobSettingImage.PROCESS_SPARK_STREAMING_ICON_X16);
-                } else if (ComponentCategory.CATEGORY_4_STORM.getName().equals(process.getComponentsType())) {
-                    icon = ImageProvider.getImage(EJobSettingImage.PROCESS_STORM_ICON_X16);
                 }
             }
         }
@@ -855,8 +853,7 @@ public class JobSettingsView extends ViewPart implements IJobSettingsView, ISele
                 if (repositoryObjectType == null) {
                     repositoryObjectType = repositoryNode.getObjectType();
                 }
-                if (repositoryObjectType == ERepositoryObjectType.PROCESS_MR
-                        || repositoryObjectType == ERepositoryObjectType.PROCESS_STORM) {
+                if (repositoryObjectType == ERepositoryObjectType.PROCESS_MR) {
                     jobSettingImage = getImage(repositoryObject);
                 }
                 if (jobSettingImage == null) {

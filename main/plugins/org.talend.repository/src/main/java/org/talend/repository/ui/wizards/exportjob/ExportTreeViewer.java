@@ -18,7 +18,6 @@ import java.util.List;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.eclipse.jface.layout.GridDataFactory;
-import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.viewers.CheckboxTreeViewer;
 import org.eclipse.jface.viewers.ICheckStateListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -31,10 +30,8 @@ import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.TreeItem;
 import org.talend.core.GlobalServiceRegister;
@@ -301,8 +298,6 @@ public class ExportTreeViewer {
             } else if (contentType == ERepositoryObjectType.REFERENCED_PROJECTS) {
                 return true;
             } else if (contentType == ERepositoryObjectType.valueOf(ERepositoryObjectType.class, "PROCESS_MR")) {
-                return true;
-            } else if (contentType == ERepositoryObjectType.valueOf(ERepositoryObjectType.class, "PROCESS_STORM")) {
                 return true;
             } else {
                 return false;

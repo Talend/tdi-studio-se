@@ -69,8 +69,7 @@ public class JobSearchResultProcessor extends JobTypeProcessor {
         if (node.getType() == ENodeType.SYSTEM_FOLDER || node.getType() == ENodeType.STABLE_SYSTEM_FOLDER) {
             try {
                 if (node.getContentType().equals(ERepositoryObjectType.PROCESS)
-                        || node.getContentType().equals(ERepositoryObjectType.PROCESS_MR)
-                        || node.getContentType().equals(ERepositoryObjectType.valueOf("PROCESS_STORM"))) {
+                        || node.getContentType().equals(ERepositoryObjectType.PROCESS_MR)) {
                     return true;
                 }
             } catch (Exception e) { // ignore
@@ -108,7 +107,6 @@ public class JobSearchResultProcessor extends JobTypeProcessor {
         List<ERepositoryObjectType> list = new ArrayList<ERepositoryObjectType>(50);
         list.add(ERepositoryObjectType.PROCESS);
         list.add(ERepositoryObjectType.PROCESS_MR);
-        list.add(ERepositoryObjectType.valueOf("PROCESS_STORM"));
         return list;
     }
 }

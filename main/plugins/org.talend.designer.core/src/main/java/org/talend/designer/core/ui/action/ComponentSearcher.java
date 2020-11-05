@@ -127,14 +127,11 @@ public class ComponentSearcher {
         try {
             List<IRepositoryViewObject> repositoryObjectList = factory.getAll(ERepositoryObjectType.PROCESS, false);
             repositoryObjectList.addAll(factory.getAll(ERepositoryObjectType.PROCESS_MR, false));
-            repositoryObjectList.addAll(factory.getAll(ERepositoryObjectType.valueOf("PROCESS_STORM"), false));
             if (ProjectManager.getInstance().getReferencedProjects(ProjectManager.getInstance().getCurrentProject()).size() > 0) {
                 for (Project refProject : ProjectManager.getInstance().getReferencedProjects(
                         ProjectManager.getInstance().getCurrentProject())) {
                     repositoryObjectList.addAll(factory.getAll(refProject, ERepositoryObjectType.PROCESS, false));
                     repositoryObjectList.addAll(factory.getAll(refProject, ERepositoryObjectType.PROCESS_MR, false));
-                    repositoryObjectList
-                            .addAll(factory.getAll(refProject, ERepositoryObjectType.valueOf("PROCESS_STORM"), false));
                 }
             }
             monitor.beginTask("Searching Component in Jobs ", repositoryObjectList.size()); //$NON-NLS-1$

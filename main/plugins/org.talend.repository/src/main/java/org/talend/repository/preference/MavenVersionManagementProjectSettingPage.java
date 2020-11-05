@@ -164,8 +164,7 @@ public class MavenVersionManagementProjectSettingPage extends AbstractVersionMan
                 || type == ERepositoryObjectType.TEST_CONTAINER
                 || type == ERepositoryObjectType.valueOf(NODENAME_ROUTE_DESIGNS)
                 || type == ERepositoryObjectType.valueOf(NODENAME_SERVICES) || type == ERepositoryObjectType.PROCESS_ROUTE
-                || type == ERepositoryObjectType.PROCESS_SPARK || type == ERepositoryObjectType.PROCESS_SPARKSTREAMING
-                || type == ERepositoryObjectType.PROCESS_STORM) {
+                || type == ERepositoryObjectType.PROCESS_SPARK || type == ERepositoryObjectType.PROCESS_SPARKSTREAMING) {
             return true;
         }
         return false;

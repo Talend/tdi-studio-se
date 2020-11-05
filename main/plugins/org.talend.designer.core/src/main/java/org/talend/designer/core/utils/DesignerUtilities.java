@@ -42,7 +42,6 @@ import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.core.ui.IRouteletService;
 import org.talend.core.ui.editor.JobEditorInput;
 import org.talend.designer.core.ICreateMRProcessService;
-import org.talend.designer.core.ICreateStormProcessService;
 import org.talend.designer.core.IDesignerCoreService;
 import org.talend.designer.core.model.components.EParameterName;
 import org.talend.designer.core.model.process.jobsettings.JobSettingsConstants;
@@ -233,16 +232,6 @@ public class DesignerUtilities {
                         return new StructuredSelection(result);
                     }
                 };
-            } else if (result.getContentType() == ERepositoryObjectType.PROCESS_STORM) {
-                if (PluginChecker.isStormPluginLoader()) {
-                    boolean isStormProcessServiceRegistered = GlobalServiceRegister.getDefault()
-                            .isServiceRegistered(ICreateStormProcessService.class);
-                    if (isStormProcessServiceRegistered) {
-                        ICreateStormProcessService stromService = (ICreateStormProcessService) GlobalServiceRegister.getDefault()
-                                .getService(ICreateStormProcessService.class);
-                        return stromService.getEditProcessAction(result);
-                    }
-                }
             } else if (result.getContentType() == ERepositoryObjectType.PROCESS_MR) {
                 if (PluginChecker.isMapReducePluginLoader()) {
                     boolean isMRProcessServiceRegistered = GlobalServiceRegister.getDefault()

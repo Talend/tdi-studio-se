@@ -55,9 +55,6 @@ public class BigDataJobUtil {
         if (isMRWithHDInsight()) {
             return true;
         }
-        if (isBDJobWithFramework(ERepositoryObjectType.PROCESS_STORM, HadoopConstants.FRAMEWORK_STORM)) {
-            return true;
-        }
         return isSparkWithHDInsight();
     }
 
@@ -69,8 +66,7 @@ public class BigDataJobUtil {
      */
     public boolean isSparkWithHDInsight() {
         boolean isSparkWithHDInsight = false;
-        if (isBDJobWithFramework(ERepositoryObjectType.PROCESS_MR, HadoopConstants.FRAMEWORK_SPARK)
-                || isBDJobWithFramework(ERepositoryObjectType.PROCESS_STORM, HadoopConstants.FRAMEWORK_SPARKSTREAMING)) {
+        if (isBDJobWithFramework(ERepositoryObjectType.PROCESS_MR, HadoopConstants.FRAMEWORK_SPARK)) {
             List<? extends IElementParameter> parameters = process.getElementParametersWithChildrens();
             boolean modeParameterVisited = false;
             for (IElementParameter pt : parameters) {
@@ -119,8 +115,7 @@ public class BigDataJobUtil {
     private boolean isSparkWithYarnClusterMode() {
         Boolean isSparkInYarnClusterMode = false;
         // Test if we are in Spark or Spark streaming
-        if (isBDJobWithFramework(ERepositoryObjectType.PROCESS_MR, HadoopConstants.FRAMEWORK_SPARK)
-                || isBDJobWithFramework(ERepositoryObjectType.PROCESS_STORM, HadoopConstants.FRAMEWORK_SPARKSTREAMING)) {
+        if (isBDJobWithFramework(ERepositoryObjectType.PROCESS_MR, HadoopConstants.FRAMEWORK_SPARK)) {
 
             List<? extends IElementParameter> parameters = process.getElementParametersWithChildrens();
             for (IElementParameter pt : parameters) {
@@ -135,7 +130,6 @@ public class BigDataJobUtil {
     }
 
     private boolean isBDJobWithFramework(ERepositoryObjectType objectType, String frameworkName) {
-        // Storm/SparkStreaming(PROCESS_STORM), MR/Spark(PROCESS_MR)
         if (process != null && process instanceof IProcess2 && ((IProcess2) process).getAdditionalProperties() != null
                 && frameworkName.equals(((IProcess2) process).getAdditionalProperties().get(HadoopConstants.FRAMEWORK))) {
             return true;
@@ -205,7 +199,6 @@ public class BigDataJobUtil {
                 }
             }
         }
-        // only left is: isBDJobWithFramework(ERepositoryObjectType.PROCESS_STORM, HadoopConstants.FRAMEWORK_STORM))
         // which must be true
 
         Set<String> stormJarNames = new HashSet<>();

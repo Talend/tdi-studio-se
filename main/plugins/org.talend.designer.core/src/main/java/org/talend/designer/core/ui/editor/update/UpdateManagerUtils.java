@@ -831,7 +831,6 @@ public final class UpdateManagerUtils {
             case JOB_PROPERTY_EXTRA:
             case JOB_PROPERTY_STATS_LOGS:
             case JOB_PROPERTY_HEADERFOOTER:
-            case JOB_PROPERTY_STORM:
             case JOB_PROPERTY_MAPREDUCE:
                 command = new UpdateMainParameterCommand(result);
                 break;

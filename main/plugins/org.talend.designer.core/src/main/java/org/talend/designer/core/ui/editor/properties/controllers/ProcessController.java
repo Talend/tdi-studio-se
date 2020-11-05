@@ -483,7 +483,6 @@ public class ProcessController extends AbstractElementPropertySectionController 
         } else {
             List<ERepositoryObjectType> repObjectTypes = new ArrayList<ERepositoryObjectType>();
             repObjectTypes.add(ERepositoryObjectType.PROCESS);
-            repObjectTypes.add(ERepositoryObjectType.PROCESS_STORM);
             repObjectTypes.add(ERepositoryObjectType.PROCESS_MR);
             RepositoryReviewDialog dialog = new RepositoryReviewDialog((button).getShell(), repObjectTypes, procssId);
 

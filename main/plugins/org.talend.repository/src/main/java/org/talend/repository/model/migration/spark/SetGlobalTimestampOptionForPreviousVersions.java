@@ -69,7 +69,7 @@ public class SetGlobalTimestampOptionForPreviousVersions extends AbstractJobMigr
     
     @Override
     public List<ERepositoryObjectType> getTypes() {
-        return Arrays.asList(ERepositoryObjectType.PROCESS_MR, ERepositoryObjectType.PROCESS_STORM);
+        return Arrays.asList(ERepositoryObjectType.PROCESS_MR);
     }
 
     @Override

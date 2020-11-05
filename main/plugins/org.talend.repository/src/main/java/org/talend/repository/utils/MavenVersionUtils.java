@@ -129,9 +129,6 @@ public class MavenVersionUtils {
             if (ERepositoryObjectType.PROCESS_MR != null) {
                 versioningTypes.add(ERepositoryObjectType.PROCESS_MR);
             }
-            if (ERepositoryObjectType.PROCESS_STORM != null) {
-                versioningTypes.add(ERepositoryObjectType.PROCESS_STORM);
-            }
             if (ERepositoryObjectType.PROCESS_ROUTE != null) {
                 versioningTypes.add(ERepositoryObjectType.PROCESS_ROUTE);
             }

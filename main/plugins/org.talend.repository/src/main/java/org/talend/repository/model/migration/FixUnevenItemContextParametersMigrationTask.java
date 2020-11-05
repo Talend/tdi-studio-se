@@ -35,7 +35,7 @@ public class FixUnevenItemContextParametersMigrationTask extends AbstractItemMig
         EList<ContextType> contexts = null;
         String defualtGroupName = null;
         if (item instanceof ProcessItem) {
-            // process, process_mr, process_storm, route, routelet.
+            // process, process_mr, route, routelet.
             ProcessItem processItem = (ProcessItem) item;
             contexts = processItem.getProcess().getContext();
             defualtGroupName = processItem.getProcess().getDefaultContext();
@@ -162,7 +162,6 @@ public class FixUnevenItemContextParametersMigrationTask extends AbstractItemMig
         toReturn.add(ERepositoryObjectType.JOBLET);
         toReturn.add(ERepositoryObjectType.PROCESS);
         toReturn.add(ERepositoryObjectType.PROCESS_MR);
-        toReturn.add(ERepositoryObjectType.PROCESS_STORM);
         toReturn.add(ERepositoryObjectType.PROCESS_ROUTE);
         toReturn.add(ERepositoryObjectType.PROCESS_ROUTELET);
         return toReturn;

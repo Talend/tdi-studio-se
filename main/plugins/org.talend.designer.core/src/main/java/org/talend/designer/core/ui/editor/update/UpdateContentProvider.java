@@ -31,7 +31,6 @@ import org.talend.core.model.update.UpdateResult;
 import org.talend.core.model.update.UpdatesConstants;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
 import org.talend.core.service.IMRProcessService;
-import org.talend.core.service.IStormProcessService;
 import org.talend.core.ui.ISparkJobletProviderService;
 import org.talend.core.ui.ISparkStreamingJobletProviderService;
 import org.talend.designer.core.model.utils.emf.talendfile.NodeType;
@@ -105,11 +104,6 @@ public class UpdateContentProvider implements ITreeContentProvider {
                                 isMRProcess = mrProcessService.isMapReduceItem(processItem);
                             }
                             boolean isStreamingProcess = false;
-                            if (GlobalServiceRegister.getDefault().isServiceRegistered(IStormProcessService.class)) {
-                                IStormProcessService streamingService = (IStormProcessService) GlobalServiceRegister.getDefault()
-                                        .getService(IStormProcessService.class);
-                                isStreamingProcess = streamingService.isStormItem(processItem);
-                            }
                             if(isMRProcess){
                                 job.setMR(isMRProcess);
                             }else if(isStreamingProcess){

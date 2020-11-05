@@ -110,10 +110,6 @@ public class TalendJavaProjectManagerTest {
             IFolder processMRFolder = jobsFolder.getFolder(TalendJavaProjectConstants.DIR_PROCESS_MR);
             assertTrue(processMRFolder.exists());
         }
-        if (PluginChecker.isStormPluginLoader()) {
-            IFolder processStormFolder = jobsFolder.getFolder(TalendJavaProjectConstants.DIR_PROCESS_STORM);
-            assertTrue(processStormFolder.exists());
-        }
         if (PluginChecker.isRouteLoaded()) {
             IFolder processRouteFolder = jobsFolder.getFolder(TalendJavaProjectConstants.DIR_PROCESS_ROUTES);
             assertTrue(processRouteFolder.exists());

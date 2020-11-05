@@ -469,12 +469,12 @@ public final class CodeGeneratorEmittersPoolFactory {
             }
             jetBean.setFamily(StringUtils.removeSpecialCharsForPackage(familyName.toLowerCase()));
 
-            // Spark, M/R and Storm requires the plugin org.talend.designer.spark to be in the classpath in order to
+            // Spark, M/R requires the plugin org.talend.designer.spark to be in the classpath in order to
             // generate the code.
             String sparkUtilsPluginName = "org.talend.designer.spark"; //$NON-NLS-1$
             String bigDataUtilsPluginName = "org.talend.designer.bigdata"; //$NON-NLS-1$
             if (PluginChecker.isPluginLoaded(sparkUtilsPluginName) && ("SPARK".equals(component.getPaletteType()) //$NON-NLS-1$
-                    || "MR".equals(component.getPaletteType()) || "STORM".equals(component.getPaletteType()) //$NON-NLS-1$ //$NON-NLS-2$
+                    || "MR".equals(component.getPaletteType()) //$NON-NLS-1$ //$NON-NLS-2$
                     || "SPARKSTREAMING".equals(component.getPaletteType()))) { //$NON-NLS-1$
                 jetBean.addClassPath("BIGDATA_LIBRARIES", bigDataUtilsPluginName); //$NON-NLS-1$
                 jetBean.addClassPath("SPARK_LIBRARIES", sparkUtilsPluginName); //$NON-NLS-1$

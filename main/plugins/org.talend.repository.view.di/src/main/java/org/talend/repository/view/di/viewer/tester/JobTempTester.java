@@ -13,8 +13,6 @@
 package org.talend.repository.view.di.viewer.tester;
 
 import org.talend.core.model.repository.ERepositoryObjectType;
-import org.talend.repository.model.IRepositoryNode;
-import org.talend.repository.model.IRepositoryNode.EProperties;
 import org.talend.repository.model.RepositoryNode;
 import org.talend.repository.tester.AbstractNodeTester;
 
@@ -25,7 +23,7 @@ import org.talend.repository.tester.AbstractNodeTester;
 public class JobTempTester extends AbstractNodeTester {
 
     /**
-     * property used to check if object is a mapreduce or storm job
+     * property used to check if object is a mapreduce job
      */
     public static final String IS_JOBTEMP_BRANCH = "isJobTempBranch"; //$NON-NLS-1$
 

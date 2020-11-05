@@ -454,8 +454,7 @@ public class TalendEditorDropTargetListener extends TemplateTransferDropTargetLi
 
         ERepositoryObjectType dragType = viewObject.getRepositoryObjectType();
         boolean refused = (dragType == ERepositoryObjectType.PROCESS_ROUTE || dragType == ERepositoryObjectType.PROCESS_ROUTELET)
-                && (editorItemType == ERepositoryObjectType.PROCESS || editorItemType == ERepositoryObjectType.PROCESS_MR
-                        || editorItemType == ERepositoryObjectType.PROCESS_STORM);
+                && (editorItemType == ERepositoryObjectType.PROCESS || editorItemType == ERepositoryObjectType.PROCESS_MR);
         return refused;
     }
 
@@ -1159,8 +1158,7 @@ public class TalendEditorDropTargetListener extends TemplateTransferDropTargetLi
                             && hasDbTableField) {
                         LabelValue = DesignerUtilities.getParameterVar(dbTableParam.getName());
                     } else if (repositoryNode.getObjectType() == ERepositoryObjectType.PROCESS
-                            || repositoryNode.getObjectType() == ERepositoryObjectType.PROCESS_MR
-                            || repositoryNode.getObjectType() == ERepositoryObjectType.PROCESS_STORM) { // dnd a job
+                            || repositoryNode.getObjectType() == ERepositoryObjectType.PROCESS_MR) { // dnd a job
                         LabelValue = DesignerUtilities.getParameterVar(EParameterName.PROCESS);
                     } else if (repositoryNode.getObjectType() == ERepositoryObjectType.JOBLET
                             || repositoryNode.getObjectType() == ERepositoryObjectType.SPARK_JOBLET

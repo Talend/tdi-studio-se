@@ -23,10 +23,8 @@ import org.eclipse.ui.IWorkbench;
 import org.talend.commons.runtime.model.repository.ERepositoryStatus;
 import org.talend.commons.ui.runtime.image.EImage;
 import org.talend.commons.ui.runtime.image.ImageProvider;
-import org.talend.core.GlobalServiceRegister;
 import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
-import org.talend.designer.core.ICamelDesignerCoreService;
 import org.talend.designer.documentation.generation.wizards.GenerateDocAsHTMLWizard;
 import org.talend.repository.ProjectManager;
 import org.talend.repository.i18n.Messages;
@@ -54,9 +52,8 @@ public class GenerateDocAsHTMLAction extends AContextualAction {
         List<RepositoryNode> nodes = selection.toList();
 
         for (RepositoryNode node : nodes) {
-            if (ERepositoryObjectType.PROCESS_MR != null || ERepositoryObjectType.PROCESS_STORM != null) {
-                if (node.getProperties(EProperties.CONTENT_TYPE) == ERepositoryObjectType.PROCESS_MR
-                        || node.getProperties(EProperties.CONTENT_TYPE) == ERepositoryObjectType.PROCESS_STORM) {
+            if (ERepositoryObjectType.PROCESS_MR != null) {
+                if (node.getProperties(EProperties.CONTENT_TYPE) == ERepositoryObjectType.PROCESS_MR) {
                     if (node.getObject() != null && instance.isInCurrentMainProject(node)) {
                         canWork = true;
                     }

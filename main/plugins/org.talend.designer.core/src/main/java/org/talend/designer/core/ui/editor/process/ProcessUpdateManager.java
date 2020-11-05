@@ -131,7 +131,6 @@ import org.talend.designer.core.ui.editor.nodes.Node;
 import org.talend.designer.core.ui.editor.update.UpdateCheckResult;
 import org.talend.designer.core.ui.editor.update.UpdateManagerUtils;
 import org.talend.designer.core.ui.preferences.TalendDesignerPrefConstants;
-import org.talend.designer.core.utils.ConnectionUtil;
 import org.talend.designer.core.utils.SAPParametersUtils;
 import org.talend.metadata.managment.ui.utils.ConnectionContextHelper;
 import org.talend.repository.UpdateRepositoryUtils;
@@ -678,11 +677,6 @@ public class ProcessUpdateManager extends AbstractUpdateManager {
                 mainResults.addAll(
                         checkJobSettingsParameters(EComponentCategory.MAPREDUCE_JOB_CONFIG_FOR_HADOOP, type, onlySimpleShow));
             } else if (ComponentCategory.CATEGORY_4_SPARK.getName().equals(getProcess().getComponentsType())) {
-                mainResults.addAll(checkJobSettingsParameters(EComponentCategory.SPARK_JOB_CONFIG, type, onlySimpleShow));
-            }
-            break;
-        case JOB_PROPERTY_STORM:
-            if (ComponentCategory.CATEGORY_4_SPARKSTREAMING.getName().equals(getProcess().getComponentsType())) {
                 mainResults.addAll(checkJobSettingsParameters(EComponentCategory.SPARK_JOB_CONFIG, type, onlySimpleShow));
             }
             break;
@@ -2930,7 +2924,6 @@ public class ProcessUpdateManager extends AbstractUpdateManager {
             case JOB_PROPERTY_EXTRA:
             case JOB_PROPERTY_STATS_LOGS:
             case JOB_PROPERTY_HEADERFOOTER:
-            case JOB_PROPERTY_STORM:
             case JOB_PROPERTY_MAPREDUCE:
                 try {
                     tmpResults = checkMainParameters(type, onlySimpleShow, contextData);

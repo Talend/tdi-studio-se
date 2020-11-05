@@ -34,8 +34,6 @@ public class GenericComponentCategoryFactory {
             return Arrays.asList(ComponentCategory.CATEGORY_4_DI.getName());
         } else if (SupportedProduct.MAP_REDUCE.equals(productType)) {
             return Arrays.asList(ComponentCategory.CATEGORY_4_MAPREDUCE.getName());
-        } else if (SupportedProduct.STORM.equals(productType)) {
-            return Arrays.asList(ComponentCategory.CATEGORY_4_STORM.getName());
         } else if (SupportedProduct.SPARK.equals(productType)) {
             return Arrays.asList(ComponentCategory.CATEGORY_4_SPARK.getName());
         } else if (SupportedProduct.SPARKSTREAMING.equals(productType)) {

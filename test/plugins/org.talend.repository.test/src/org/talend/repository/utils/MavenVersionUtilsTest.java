@@ -1,9 +1,10 @@
 package org.talend.repository.utils;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.talend.core.model.properties.PropertiesFactory;
 import org.talend.core.model.properties.Property;
@@ -52,7 +53,6 @@ public class MavenVersionUtilsTest {
     public void testIsVersioningType() {
         assertTrue(MavenVersionUtils.isVersioningType(ERepositoryObjectType.PROCESS));
         assertTrue(MavenVersionUtils.isVersioningType(ERepositoryObjectType.PROCESS_MR));
-        assertTrue(MavenVersionUtils.isVersioningType(ERepositoryObjectType.PROCESS_STORM));
         assertTrue(MavenVersionUtils.isVersioningType(ERepositoryObjectType.PROCESS_ROUTE));
         ERepositoryObjectType serviceType = ERepositoryObjectType.valueOf("SERVICES");
         if (serviceType != null) {

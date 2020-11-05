@@ -181,7 +181,7 @@ public class MainComposite extends AbstractTabComposite {
             if (ERepositoryObjectType.getAllTypesOfProcess().contains(repositoryObject.getRepositoryObjectType())) {
                 allowEnableControl = true;
                 enableControl = true;
-                if (!PluginChecker.isMapReducePluginLoader() && !PluginChecker.isStormPluginLoader()) {
+                if (!PluginChecker.isMapReducePluginLoader()) {
                     allowEnableControl = false;
                 }
                 Item originalItem = repositoryObject.getProperty().getItem();
@@ -1021,10 +1021,6 @@ public class MainComposite extends AbstractTabComposite {
                 try {
                     List<IRepositoryViewObject> listExistingObjects = proxyRepositoryFactory.getAll(
                             ERepositoryObjectType.PROCESS, true, false);
-                    if (PluginChecker.isStormPluginLoader()) {
-                        listExistingObjects.addAll(proxyRepositoryFactory
-                                .getAll(ERepositoryObjectType.PROCESS_STORM, true, false));
-                    }
                     if (PluginChecker.isMapReducePluginLoader()) {
                         listExistingObjects.addAll(proxyRepositoryFactory.getAll(ERepositoryObjectType.PROCESS_MR, true, false));
                     }

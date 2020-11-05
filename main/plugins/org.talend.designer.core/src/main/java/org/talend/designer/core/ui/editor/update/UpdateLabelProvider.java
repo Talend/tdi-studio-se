@@ -103,7 +103,6 @@ public class UpdateLabelProvider implements ITableLabelProvider {
                         case MAP_PATH:
                             image = getImageFromNode(category.getNode());
                             break;
-                        case JOB_PROPERTY_STORM:
                         case JOB_PROPERTY_MAPREDUCE:
                             for (ERepositoryObjectType etype : (ERepositoryObjectType[]) ERepositoryObjectType.values()) {
                                 String alias = etype.getAlias();
@@ -136,7 +135,6 @@ public class UpdateLabelProvider implements ITableLabelProvider {
                     case NODE_VALIDATION_RULE:
                     case JOB_PROPERTY_EXTRA:
                     case JOB_PROPERTY_STATS_LOGS:
-                    case JOB_PROPERTY_STORM:
                     case JOB_PROPERTY_MAPREDUCE:
                         ERepositoryObjectType type = RepositoryUpdateManager.getTypeFromSource(item.getRemark());
                         if (type != null) {

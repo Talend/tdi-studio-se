@@ -105,7 +105,6 @@ import org.talend.core.repository.model.ProxyRepositoryFactory;
 import org.talend.core.repository.utils.ConvertJobsUtil;
 import org.talend.core.runtime.CoreRuntimePlugin;
 import org.talend.core.service.IMRProcessService;
-import org.talend.core.service.IStormProcessService;
 import org.talend.core.services.ICoreTisService;
 import org.talend.core.ui.CoreUIPlugin;
 import org.talend.core.ui.IJobletProviderService;
@@ -4447,10 +4446,8 @@ public class Node extends Element implements IGraphicalNode {
             boolean targetIsBigdata = false;
             String bigDataType = "Batch"; //$NON-NLS-1$
             try {
-                boolean isStormServiceRegistered = GlobalServiceRegister.getDefault()
-                        .isServiceRegistered(IStormProcessService.class);
                 boolean isMRServiceRegistered = GlobalServiceRegister.getDefault().isServiceRegistered(IMRProcessService.class);
-                if (isStormServiceRegistered || isMRServiceRegistered) {
+                if (isMRServiceRegistered) {
                     IElementParameter elementParameter = getElementParameter("PROCESS:PROCESS_TYPE_PROCESS"); //$NON-NLS-1$ ;
                     if (elementParameter != null) {
                         Object value = elementParameter.getValue();
@@ -4465,14 +4462,6 @@ public class Node extends Element implements IGraphicalNode {
                                                     .isMapReduceItem(lastVersion.getProperty().getItem())) {
                                         targetIsBigdata = true;
                                         bigDataType = "Batch"; //$NON-NLS-1$
-                                    }
-                                }
-                                if (isStormServiceRegistered) {
-                                    if (GlobalServiceRegister.getDefault()
-                                            .getService(IStormProcessService.class)
-                                                    .isStormItem(lastVersion.getProperty().getItem())) {
-                                        targetIsBigdata = true;
-                                        bigDataType = "Streaming"; //$NON-NLS-1$
                                     }
                                 }
                             }

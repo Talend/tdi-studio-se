@@ -38,8 +38,6 @@ public class ChangeLocalModeForSparkConfiguration extends AbstractJobMigrationTa
         List<ERepositoryObjectType> toReturn = new ArrayList<ERepositoryObjectType>();
         // PROCESS_MR stands for Map/Reduce and Spark.
         toReturn.add(ERepositoryObjectType.PROCESS_MR);
-        // PROCESS_STORM stands for Strom and Spark Streaming.
-        toReturn.add(ERepositoryObjectType.PROCESS_STORM);
         return toReturn;
     }
 

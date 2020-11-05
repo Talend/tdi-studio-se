@@ -115,8 +115,6 @@ public class AddEncodingTypeForDQComponentsTask extends AbstractJobMigrationTask
         List<ERepositoryObjectType> toReturn = super.getTypes();
         // PROCESS_MR stands for Map/Reduce and Spark.
         toReturn.add(ERepositoryObjectType.PROCESS_MR);
-        // PROCESS_STORM stands for Storm and Spark Streaming.
-        toReturn.add(ERepositoryObjectType.PROCESS_STORM);
         return toReturn;
     }
 }

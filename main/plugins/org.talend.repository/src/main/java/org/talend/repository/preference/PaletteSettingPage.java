@@ -189,18 +189,6 @@ public class PaletteSettingPage extends ProjectSettingPage {
                     } else if (((IPaletteItem) e1).getPaletteType() == ComponentCategory.CATEGORY_4_MAPREDUCE
                             && ((IPaletteItem) e2).getPaletteType() == ComponentCategory.CATEGORY_4_CAMEL) {
                         return 1; // down
-                    } else if (((IPaletteItem) e1).getPaletteType() == ComponentCategory.CATEGORY_4_MAPREDUCE
-                            && ((IPaletteItem) e2).getPaletteType() == ComponentCategory.CATEGORY_4_STORM) {
-                        return -1; // up
-                    } else if (((IPaletteItem) e1).getPaletteType() == ComponentCategory.CATEGORY_4_STORM
-                            && ((IPaletteItem) e2).getPaletteType() == ComponentCategory.CATEGORY_4_MAPREDUCE) {
-                        return 1; // down
-                    } else if (((IPaletteItem) e1).getPaletteType() == ComponentCategory.CATEGORY_4_CAMEL
-                            && ((IPaletteItem) e2).getPaletteType() == ComponentCategory.CATEGORY_4_STORM) {
-                        return -1; // up
-                    } else if (((IPaletteItem) e1).getPaletteType() == ComponentCategory.CATEGORY_4_STORM
-                            && ((IPaletteItem) e2).getPaletteType() == ComponentCategory.CATEGORY_4_CAMEL) {
-                        return 1; // down
                     }
 
                 }
@@ -623,12 +611,6 @@ public class PaletteSettingPage extends ProjectSettingPage {
                 List<IRepositoryViewObject> allMr = repositoryFactory.getAll(project, mrType, true);
                 addUsedComponents(componentsUsed, allMr, ComponentCategory.CATEGORY_4_MAPREDUCE);
                 addUsedComponents(componentsUsed, allMr, ComponentCategory.CATEGORY_4_SPARK);
-            }
-            ERepositoryObjectType stormType = ERepositoryObjectType.valueOf("PROCESS_STORM"); //$NON-NLS-1$
-            if (stormType != null) {
-                List<IRepositoryViewObject> allStorm = repositoryFactory.getAll(project, stormType, true);
-                addUsedComponents(componentsUsed, allStorm, ComponentCategory.CATEGORY_4_STORM);
-                addUsedComponents(componentsUsed, allStorm, ComponentCategory.CATEGORY_4_SPARKSTREAMING);
             }
 
             if (GlobalServiceRegister.getDefault().isServiceRegistered(ITestContainerProviderService.class)) {

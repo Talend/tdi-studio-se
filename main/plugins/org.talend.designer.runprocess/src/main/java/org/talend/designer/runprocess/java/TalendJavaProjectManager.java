@@ -123,10 +123,6 @@ public class TalendJavaProjectManager {
                             if (PluginChecker.isMapReducePluginLoader()) {
                                 createFolderIfNotExist(jobs.getFolder(DIR_PROCESS_MR), monitor);
                             }
-                            // process_storm
-                            if (PluginChecker.isStormPluginLoader()) {
-                                createFolderIfNotExist(jobs.getFolder(DIR_PROCESS_STORM), monitor);
-                            }
                             // routes
                             if (PluginChecker.isRouteLoaded()) {
                                 createFolderIfNotExist(jobs.getFolder(DIR_PROCESS_ROUTES), monitor);

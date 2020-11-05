@@ -174,7 +174,6 @@ import org.talend.core.model.repository.job.JobResource;
 import org.talend.core.model.repository.job.JobResourceManager;
 import org.talend.core.repository.ui.editor.RepositoryEditorInput;
 import org.talend.core.service.IMRProcessService;
-import org.talend.core.service.IStormProcessService;
 import org.talend.core.ui.IJobletProviderService;
 import org.talend.core.ui.ITestContainerProviderService;
 import org.talend.core.ui.component.ComponentPaletteUtilities;
@@ -560,9 +559,8 @@ public abstract class AbstractTalendEditor extends GraphicalEditorWithFlyoutPale
 
         // generate the MR infor parameter.
         try {
-            boolean isStormServiceRegistered = GlobalServiceRegister.getDefault().isServiceRegistered(IStormProcessService.class);
             boolean isMRServiceRegistered = GlobalServiceRegister.getDefault().isServiceRegistered(IMRProcessService.class);
-            if (isStormServiceRegistered || isMRServiceRegistered) {
+            if (isMRServiceRegistered) {
                 IProcess2 process = getProcess();
                 if (process != null) {
                     IRepositoryViewObject repoObjectView = DesignerPlugin.getDefault().getRepositoryService()
@@ -577,16 +575,6 @@ public abstract class AbstractTalendEditor extends GraphicalEditorWithFlyoutPale
                                 // We make sure that the current item is a Batch item before generating the M/R
                                 // information parameters.
                                 mrService.generateMRInfosParameter(process);
-                            }
-                        }
-                        if (isStormServiceRegistered) {
-                            IStormProcessService stormService = GlobalServiceRegister.getDefault()
-                                    .getService(IStormProcessService.class);
-
-                            if (stormService.isStormItem(currentItem)) {
-                                // We make sure that the current item is a Streaming item before generating the Spark
-                                // Streaming information parameters.
-                                stormService.generateSparkStreamingInfosParameter(process);
                             }
                         }
                     }

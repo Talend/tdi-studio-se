@@ -1,6 +1,5 @@
 package org.talend.repository.model.migration;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashSet;
@@ -30,7 +29,7 @@ public class RemoveDuplicatedContextGroupMigrationTask extends AbstractItemMigra
     public ExecutionResult execute(Item item) {
         List<?> contexts = null;
         if (item instanceof ProcessItem) {
-            // process, process_mr, process_storm, route, routelet.
+            // process, process_mr, route, routelet.
             ProcessItem processItem = (ProcessItem) item;
             contexts = processItem.getProcess().getContext();
         } else if (item instanceof JobletProcessItem) {

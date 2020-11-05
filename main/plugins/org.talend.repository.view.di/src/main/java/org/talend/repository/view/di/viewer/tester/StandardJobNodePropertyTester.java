@@ -41,7 +41,7 @@ public class StandardJobNodePropertyTester extends AbstractNodeTester {
             // FIXME, only load the related plugin, then can display the standard node, else same TOS, only Job Designs
             // with standard job by default, and be children directly.
             if (root != null
-                    && (PluginChecker.isStormPluginLoader() || PluginChecker.isMapReducePluginLoader() || PluginChecker
+                    && (PluginChecker.isMapReducePluginLoader() || PluginChecker
                             .isJobLetPluginLoaded())) {
                 return true;
             }

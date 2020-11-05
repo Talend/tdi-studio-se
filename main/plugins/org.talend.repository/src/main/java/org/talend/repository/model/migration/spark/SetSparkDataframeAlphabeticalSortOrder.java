@@ -45,7 +45,6 @@ public class SetSparkDataframeAlphabeticalSortOrder extends AbstractJobMigration
     public List<ERepositoryObjectType> getTypes() {
         List<ERepositoryObjectType> toReturn = new ArrayList<ERepositoryObjectType>();
         toReturn.add(ERepositoryObjectType.PROCESS_MR);
-        toReturn.add(ERepositoryObjectType.PROCESS_STORM);
         return toReturn;
     }
 

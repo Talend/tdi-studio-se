@@ -62,7 +62,6 @@ import org.talend.core.runtime.process.ITalendProcessJavaProject;
 import org.talend.core.runtime.process.LastGenerationInfo;
 import org.talend.core.runtime.process.TalendProcessOptionConstants;
 import org.talend.core.service.IMRProcessService;
-import org.talend.core.service.IStormProcessService;
 import org.talend.core.utils.BitwiseOptionUtils;
 import org.talend.designer.core.ICamelDesignerCoreService;
 import org.talend.designer.core.model.utils.emf.component.IMPORTType;
@@ -590,15 +589,7 @@ public class JavaProcessorUtilities {
                 return true;
             }
         }
-        if (GlobalServiceRegister.getDefault().isServiceRegistered(IStormProcessService.class)) {
-            IStormProcessService streamingService = (IStormProcessService) GlobalServiceRegister.getDefault().getService(
-                    IStormProcessService.class);
-            if (streamingService.isStormItem(item)) {
-                return true;
-            }
-        }
-        if (GlobalServiceRegister.getDefault().isServiceRegistered(IMRProcessService.class)
-                || GlobalServiceRegister.getDefault().isServiceRegistered(IStormProcessService.class)) {
+        if (GlobalServiceRegister.getDefault().isServiceRegistered(IMRProcessService.class)) {
             if (item != null && item.eClass() == PropertiesPackage.Literals.PROCESS_ITEM) {
                 ProcessType processType = ((ProcessItem) item).getProcess();
                 EList<NodeType> nodes = processType.getNode();

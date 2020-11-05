@@ -621,16 +621,8 @@ public class ComponentSettingsView extends ViewPart implements IComponentSetting
                             isMRProcess = true;
                         }
                     }
-                    boolean isStormProcess = false;
-                    process = ((Connection) elem).getSource().getProcess();
-                    if (process instanceof IProcess2) {
-                        IProcess2 process2 = (IProcess2) process;
-                        if (ComponentCategory.CATEGORY_4_STORM.getName().equals(process2.getComponentsType())) {
-                            isStormProcess = true;
-                        }
-                    }
-                    // mrjob and stormjob not add breakpoint
-                    if (!isStormProcess && !isMRProcess) {
+                    // mrjob not add breakpoint
+                    if (!isMRProcess) {
                         list.add(EComponentCategory.BREAKPOINT);
                     }
 
@@ -660,19 +652,11 @@ public class ComponentSettingsView extends ViewPart implements IComponentSetting
                             isMRProcess = true;
                         }
                     }
-                    boolean isStormProcess = false;
                     process = ((Connection) elem).getSource().getProcess();
-                    if (process instanceof IProcess2) {
-                        IProcess2 process2 = (IProcess2) process;
-                        if (ComponentCategory.CATEGORY_4_STORM.getName().equals(process2.getComponentsType())) {
-                            isStormProcess = true;
-                        }
-                    }
                     int length = categories.length;
                     EComponentCategory[] newCategories;
-                    boolean isNormalJobNeedRecovery = (!isMRProcess && !isStormProcess && !isAvoidRecoveryByConditions(elem));
-                    boolean isMrStormJobNeedRecovery = isMRProcess || isStormProcess;
-                    if (isNeedRecoveryCategory(propertyValue, isNormalJobNeedRecovery, isMrStormJobNeedRecovery)) {
+                    boolean isNormalJobNeedRecovery = (!isMRProcess && !isAvoidRecoveryByConditions(elem));
+                    if (isNeedRecoveryCategory(propertyValue, isNormalJobNeedRecovery)) {
                         newCategories = new EComponentCategory[length + 1];
                         for (int i = 0; i < length; i++) {
                             newCategories[i] = categories[i];
@@ -757,10 +741,10 @@ public class ComponentSettingsView extends ViewPart implements IComponentSetting
         return false;
     }
 
-    private boolean isNeedRecoveryCategory(Object currentConnPropertyValue, boolean isNormalJob, boolean isMrStormJob) {
+    private boolean isNeedRecoveryCategory(Object currentConnPropertyValue, boolean isNormalJob) {
         // subjob_ok and subjob_error both need the recovery category
         boolean isSubJobConn = currentConnPropertyValue.equals(EConnectionType.ON_SUBJOB_OK);
-        return (isSubJobConn && isNormalJob) || isMrStormJob;
+        return (isSubJobConn && isNormalJob);
     }
 
     /**

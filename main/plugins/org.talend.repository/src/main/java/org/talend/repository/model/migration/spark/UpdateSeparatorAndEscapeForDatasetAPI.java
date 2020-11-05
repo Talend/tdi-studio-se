@@ -27,7 +27,6 @@ import org.talend.core.model.properties.Item;
 import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.designer.core.model.utils.emf.talendfile.NodeType;
 import org.talend.designer.core.model.utils.emf.talendfile.ProcessType;
-import org.talend.designer.core.model.utils.emf.talendfile.impl.ContextTypeImpl;
 import org.talend.designer.core.model.utils.emf.talendfile.impl.ElementParameterTypeImpl;
 
 /**
@@ -51,7 +50,7 @@ public class UpdateSeparatorAndEscapeForDatasetAPI extends AbstractJobMigrationT
     
     @Override
     public List<ERepositoryObjectType> getTypes() {
-        return Arrays.asList(ERepositoryObjectType.PROCESS_MR, ERepositoryObjectType.PROCESS_STORM);
+        return Arrays.asList(ERepositoryObjectType.PROCESS_MR);
     }
 
     @Override

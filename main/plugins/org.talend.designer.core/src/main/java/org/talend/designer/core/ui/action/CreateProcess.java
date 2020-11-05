@@ -74,7 +74,7 @@ public class CreateProcess extends AContextualAction implements IIntroAction {
 
     public CreateProcess() {
         super();
-        if (PluginChecker.isStormPluginLoader() || PluginChecker.isMapReducePluginLoader()
+        if (PluginChecker.isMapReducePluginLoader()
                 || PluginChecker.isJobLetPluginLoaded()) {
             this.setText(CREATE_STANDARD_LABEL);
             this.setToolTipText(CREATE_STANDARD_LABEL);

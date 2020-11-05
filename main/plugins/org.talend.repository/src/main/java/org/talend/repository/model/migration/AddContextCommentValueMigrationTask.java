@@ -43,7 +43,7 @@ public class AddContextCommentValueMigrationTask extends AbstractItemMigrationTa
     public ExecutionResult execute(Item item) {
         EList<ContextType> contexts = null;
         if (item instanceof ProcessItem) {
-            // process, process_mr, process_storm, route, routelet.
+            // process, process_mr, route, routelet.
             ProcessItem processItem = (ProcessItem) item;
             contexts = processItem.getProcess().getContext();
         } else if (item instanceof JobletProcessItem) {
@@ -124,7 +124,6 @@ public class AddContextCommentValueMigrationTask extends AbstractItemMigrationTa
         toReturn.add(ERepositoryObjectType.JOBLET);
         toReturn.add(ERepositoryObjectType.PROCESS);
         toReturn.add(ERepositoryObjectType.PROCESS_MR);
-        toReturn.add(ERepositoryObjectType.PROCESS_STORM);
         toReturn.add(ERepositoryObjectType.PROCESS_ROUTE);
         toReturn.add(ERepositoryObjectType.PROCESS_ROUTELET);
         return toReturn;

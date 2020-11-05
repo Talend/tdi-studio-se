@@ -12,8 +12,8 @@
 // ============================================================================
 package org.talend.designer.core.generic.palette;
 
-import static org.hamcrest.CoreMatchers.*;
-import static org.hamcrest.MatcherAssert.*;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.util.Arrays;
 import java.util.List;
@@ -41,9 +41,6 @@ public class GenericComponentCategoryFactoryTest {
 
         paletteTypes = GenericComponentCategoryFactory.getPaletteTypes(SupportedProduct.MAP_REDUCE);
         assertThat(paletteTypes, is(Arrays.asList(ComponentCategory.CATEGORY_4_MAPREDUCE.getName())));
-
-        paletteTypes = GenericComponentCategoryFactory.getPaletteTypes(SupportedProduct.STORM);
-        assertThat(paletteTypes, is(Arrays.asList(ComponentCategory.CATEGORY_4_STORM.getName())));
 
         paletteTypes = GenericComponentCategoryFactory.getPaletteTypes(SupportedProduct.SPARK);
         assertThat(paletteTypes, is(Arrays.asList(ComponentCategory.CATEGORY_4_SPARK.getName())));

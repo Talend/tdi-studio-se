@@ -36,7 +36,6 @@ import org.talend.core.model.update.UpdatesConstants;
 import org.talend.core.model.update.extension.UpdateManagerProviderDetector;
 import org.talend.core.service.IEBCDICProviderService;
 import org.talend.core.service.IMRProcessService;
-import org.talend.core.service.IStormProcessService;
 import org.talend.core.ui.ISparkJobletProviderService;
 import org.talend.core.ui.ISparkStreamingJobletProviderService;
 import org.talend.designer.core.model.components.EParameterName;
@@ -249,23 +248,6 @@ public class UpdateCheckResult extends UpdateResult {
                     category = JobSettingsView.getViewNameLable();
                 }
                 break;
-            case JOB_PROPERTY_STORM:
-                boolean isStreaming = false;
-                if (getUpdateObject() != null && getUpdateObject() instanceof org.talend.designer.core.ui.editor.process.Process) {
-                    if (GlobalServiceRegister.getDefault().isServiceRegistered(IStormProcessService.class)) {
-                        IStormProcessService streamingService = (IStormProcessService) GlobalServiceRegister.getDefault()
-                                .getService(IStormProcessService.class);
-                        org.talend.core.model.properties.Item item = ((org.talend.designer.core.ui.editor.process.Process) getUpdateObject())
-                                .getProperty().getItem();
-                        isStreaming = streamingService.isStormItem(item);
-                    }
-                }
-                if (isStreaming) {
-                    category = JobSettingsView.VIEW_NAME_STREAMING;//
-                } else {
-                    category = JobSettingsView.getViewNameLable();
-                }
-                break;
             case CONTEXT:
                 // case JOBLET_CONTEXT:
                 category = UpdatesConstants.CONTEXT;
@@ -321,11 +303,6 @@ public class UpdateCheckResult extends UpdateResult {
                             IMRProcessService.class);
                     isMR = mrProcessService.isMapReduceItem(item);
                 }
-                if (GlobalServiceRegister.getDefault().isServiceRegistered(IStormProcessService.class)) {
-                    IStormProcessService streamingService = (IStormProcessService) GlobalServiceRegister.getDefault().getService(
-                            IStormProcessService.class);
-                    isStreaming = streamingService.isStormItem(item);
-                }
             }
             if (getJob() instanceof org.talend.core.model.properties.Item) {
                 jobInfor = RepositoryUpdateManager.getUpdateJobInfor(((org.talend.core.model.properties.Item) getJob())
@@ -336,11 +313,6 @@ public class UpdateCheckResult extends UpdateResult {
                     IMRProcessService mrProcessService = (IMRProcessService) GlobalServiceRegister.getDefault().getService(
                             IMRProcessService.class);
                     isMR = mrProcessService.isMapReduceItem((org.talend.core.model.properties.Item) getJob());
-                }
-                if (GlobalServiceRegister.getDefault().isServiceRegistered(IStormProcessService.class)) {
-                    IStormProcessService streamingService = (IStormProcessService) GlobalServiceRegister.getDefault().getService(
-                            IStormProcessService.class);
-                    isStreaming = streamingService.isStormItem((org.talend.core.model.properties.Item) getJob());
                 }
             }
             String others = null;

@@ -99,7 +99,6 @@ import org.talend.designer.runprocess.mapreduce.MapReduceJavaProcessor;
 import org.talend.designer.runprocess.maven.MavenJavaProcessor;
 import org.talend.designer.runprocess.prefs.RunProcessPrefsConstants;
 import org.talend.designer.runprocess.spark.SparkJavaProcessor;
-import org.talend.designer.runprocess.storm.StormJavaProcessor;
 import org.talend.designer.runprocess.ui.views.ProcessView;
 import org.talend.librariesmanager.model.ModulesNeededProvider;
 import org.talend.repository.ProjectManager;
@@ -271,8 +270,6 @@ public class DefaultRunProcessService implements IRunProcessService {
             return new MapReduceJavaProcessor(process, property, filenameFromLabel);
         } else if (ComponentCategory.CATEGORY_4_SPARK.getName().equals(process.getComponentsType())) {
             return new SparkJavaProcessor(process, property, filenameFromLabel);
-        } else if (ComponentCategory.CATEGORY_4_STORM.getName().equals(process.getComponentsType())) {
-            return new StormJavaProcessor(process, property, filenameFromLabel);
         } else if (ComponentCategory.CATEGORY_4_SPARKSTREAMING.getName().equals(process.getComponentsType())) {
             return new SparkJavaProcessor(process, property, filenameFromLabel);
         } else if (ComponentCategory.CATEGORY_4_CAMEL.getName().equals(process.getComponentsType())) {

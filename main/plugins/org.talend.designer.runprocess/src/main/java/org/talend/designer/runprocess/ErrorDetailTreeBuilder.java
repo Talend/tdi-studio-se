@@ -137,8 +137,6 @@ public class ErrorDetailTreeBuilder {
                     return ImageProvider.getImage(ECoreImage.PROCESS_BATCH_MR_ICON);
                 } else if (HadoopConstants.SPARK_TYPE.equals(componentsType)) {
                     return ImageProvider.getImage(ECoreImage.PROCESS_BATCH_SPARK_ICON);
-                } else if (HadoopConstants.STORM_TYPE.equals(componentsType)) {
-                    return ImageProvider.getImage(ECoreImage.PROCESS_STREAMING_STORM_ICON);
                 } else if (HadoopConstants.SPARKSTREAMING_TYPE.equals(componentsType)) {
                     return ImageProvider.getImage(ECoreImage.PROCESS_STREAMING_SPARK_ICON);
                 } else {
