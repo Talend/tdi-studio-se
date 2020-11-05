@@ -63,7 +63,7 @@ public class ToolbarInputZone extends ToolbarZone {
      */
     private void createComponents() {
         addAlias = new ToolItem(getToolBarActions(), SWT.PUSH);
-        addAlias.setToolTipText(Messages.getString("ToolbarInputZone.widgetTooltip.addAlias")); //$NON-NLS-1$
+        addAlias.setToolTipText(Messages.getString("ToolbarInputZone.widgetTooltip.addTable")); //$NON-NLS-1$
         addAlias.setImage(org.talend.commons.ui.runtime.image.ImageProvider.getImage(org.talend.commons.ui.runtime.image.ImageProvider
                 .getImageDesc(EImage.ADD_ICON)));
 

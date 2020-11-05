@@ -102,7 +102,7 @@ public class AliasDialog {
                     return Messages.getString("AliasDialog.aliasAlreadyExists", new Object[] { selectedPhysicalTable }); //$NON-NLS-1$
                 }
                 if (selectedPhysicalTable == null || selectedPhysicalTable.length() == 0) {
-                    return Messages.getString("AliasDialog.TableMustBeSelected"); //$NON-NLS-1$
+                    return Messages.getString("AliasDialog.tableMustBeSelected1"); //$NON-NLS-1$
                 }
                 if (isSameAsVisibleTableName(newText) && !update) {
                     return Messages.getString("AliasDialog.aliasAlreadyExists", new Object[] { newText }); //$NON-NLS-1$
@@ -115,8 +115,8 @@ public class AliasDialog {
 
         };
         aliasInternalDialog = new AliasInternalDialog(mapperManager.getUiManager().getShell(),
-                update ? Messages.getString("AliasDialog.renameAlias") : Messages.getString("AliasDialog.addNewAlias"), //$NON-NLS-1$ //$NON-NLS-2$
-                Messages.getString("AliasDialog.typeAliasOfTable"), proposedAlias, inputValidator); //$NON-NLS-1$
+                update ? Messages.getString("AliasDialog.renameAlias") : Messages.getString("AliasDialog.addTable"), //$NON-NLS-1$ //$NON-NLS-2$
+                Messages.getString("AliasDialog.alias"), proposedAlias, inputValidator); //$NON-NLS-1$
 
         int response = aliasInternalDialog.open();
         if (response == InputDialog.OK) {
@@ -182,6 +182,8 @@ public class AliasDialog {
          * Ok button widget.
          */
         private Button okButton;
+
+        private Label warnMessageText;
 
         /**
          * Input text widget.
@@ -289,7 +291,7 @@ public class AliasDialog {
             // create message
 
             Label label = new Label(composite, SWT.WRAP);
-            label.setText(Messages.getString("AliasDialog.SelectTableToUse")); //$NON-NLS-1$
+            label.setText(Messages.getString("AliasDialog.table")); //$NON-NLS-1$
 
             combo = new Combo(composite, SWT.DROP_DOWN | SWT.READ_ONLY);
             combo.setItems(physicalTables);
@@ -320,6 +322,9 @@ public class AliasDialog {
                 label.setLayoutData(data);
                 label.setFont(parent.getFont());
             }
+            warnMessageText = new Label(composite, SWT.WRAP);
+            warnMessageText.setText(Messages.getString("AliasDialog.warnMessage")); //$NON-NLS-1$
+
             text = new Text(composite, SWT.SINGLE | SWT.BORDER);
             text.setLayoutData(new GridData(GridData.GRAB_HORIZONTAL | GridData.HORIZONTAL_ALIGN_FILL));
             text.addModifyListener(new ModifyListener() {
