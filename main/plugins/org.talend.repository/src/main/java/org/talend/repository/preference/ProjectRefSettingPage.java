@@ -433,7 +433,7 @@ public class ProjectRefSettingPage extends ProjectSettingPage {
                 IRepositoryService repositoryService = (IRepositoryService) GlobalServiceRegister.getDefault()
                         .getService(IRepositoryService.class);
                 if (repositoryService != null) {
-                    return repositoryService.getProjectBranch(lastSelectedProject);
+                    return repositoryService.getProjectBranch(lastSelectedProject, false);
                 }
                 return null;
             }

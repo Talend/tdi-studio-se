@@ -851,7 +851,7 @@ public class RepositoryService implements IRepositoryService, IRepositoryContext
     }
 
     @Override
-    public List<String> getProjectBranch(Project project) {
+    public List<String> getProjectBranch(Project project, boolean onlyLocalIfPossible) {
         List<String> branchesList = new ArrayList<String>();
         if (!isInitedProviderService) {
             initProviderService();
@@ -866,7 +866,7 @@ public class RepositoryService implements IRepositoryService, IRepositoryContext
                     }
                 }
                 if (!project.isLocal() && gitProviderService != null && gitProviderService.isGITProject(project)) {
-                    branchesList.addAll(Arrays.asList(gitProviderService.getBranchList(project)));
+                    branchesList.addAll(Arrays.asList(gitProviderService.getBranchList(project, onlyLocalIfPossible)));
                 }
             } catch (PersistenceException e) {
                 CommonExceptionHandler.process(e);
