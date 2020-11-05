@@ -15,8 +15,11 @@ package org.talend.repository.ui.login;
 import java.io.File;
 import java.net.URI;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringUtils;
@@ -26,6 +29,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.jobs.IJobChangeEvent;
+import org.eclipse.core.runtime.jobs.IJobChangeListener;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.core.runtime.jobs.JobChangeAdapter;
 import org.eclipse.jface.dialogs.IDialogConstants;
@@ -102,7 +106,6 @@ import org.talend.core.runtime.CoreRuntimePlugin;
 import org.talend.core.runtime.util.SharedStudioUtils;
 import org.talend.core.service.IUpdateService;
 import org.talend.core.services.ICoreTisService;
-import org.talend.core.services.IGITProviderService;
 import org.talend.core.ui.TalendBrowserLaunchHelper;
 import org.talend.core.ui.branding.IBrandingService;
 import org.talend.core.ui.workspace.ChooseWorkspaceData;
@@ -192,6 +195,8 @@ public class LoginProjectPage extends AbstractLoginActionPage {
 
     protected Job backgroundGUIUpdate;
 
+    private IJobChangeListener guiUpdateJobChangeListener;
+
     private String selectedProjectBeforeRefresh;
 
     // protected ConnectionBean beforeConnBean;
@@ -206,6 +211,10 @@ public class LoginProjectPage extends AbstractLoginActionPage {
     protected LoginHelper loginHelper;
 
     protected LoginFetchLicenseHelper loginFetchLicenseHelper;
+
+    private Map<String, Boolean> forceRefreshProjectBranchMap = Collections.synchronizedMap(new HashMap<>());
+
+    private boolean disableBranchRefresh = false;
 
     public LoginProjectPage(Composite parent, LoginDialogV2 dialog, int style) {
         super(parent, dialog, style);
@@ -673,6 +682,8 @@ public class LoginProjectPage extends AbstractLoginActionPage {
                     } else {
                         loginHelper.setCurrentSelectedConnBean(connection);
                     }
+                    currentProjectSettings = null;
+                    forceRefreshProjectBranchMap.clear();
                     loginFetchLicenseHelper.cancelAndClearFetchJobs();
                     errorManager.clearAllMessages();
                     // beforeConnBean = connection;
@@ -1886,7 +1897,12 @@ public class LoginProjectPage extends AbstractLoginActionPage {
     }
 
     private void selectProject(Project goodProject) throws JSONException {
-        projectViewer.setSelection(new StructuredSelection(new Object[] { goodProject }), true);
+        try {
+            disableBranchRefresh = true;
+            projectViewer.setSelection(new StructuredSelection(new Object[] { goodProject }), true);
+        } finally {
+            disableBranchRefresh = false;
+        }
         selectedProjectBeforeRefresh = goodProject.getLabel();
         loginFetchLicenseHelper.fetchLicenseIfNeeded(goodProject);
         fillUIBranches(goodProject, true);
@@ -1922,10 +1938,20 @@ public class LoginProjectPage extends AbstractLoginActionPage {
     }
 
     private void fillUIBranches(final Project project, boolean lastUsedBranch) throws JSONException {
-        final String storage = getStorage(project);
+        if (disableBranchRefresh) {
+            return;
+        }
         if (LoginHelper.isRemotesConnection(getConnection())) {
+            if (StringUtils.equals(Optional.ofNullable(project).map(p -> p.getTechnicalLabel()).orElse(null),
+                    Optional.ofNullable(currentProjectSettings).map(p -> p.getTechnicalLabel()).orElse(null))) {
+                String projTechLabel = Optional.ofNullable(currentProjectSettings).map(p -> p.getTechnicalLabel()).orElse(null);
+                if (StringUtils.isNotBlank(projTechLabel)) {
+                    forceRefreshProjectBranchMap.put(projTechLabel, true);
+                }
+            }
             currentProjectSettings = project;
             final List<String> projectBranches = new ArrayList<String>();
+            final String storage = getStorage(project);
             if ("svn".equals(storage)) {
                 projectBranches.add("trunk"); //$NON-NLS-1$
                 branchesViewer.setInput(projectBranches);
@@ -1941,19 +1967,35 @@ public class LoginProjectPage extends AbstractLoginActionPage {
                     protected IStatus run(IProgressMonitor monitor) {
                         projectBranches.clear();
                         try {
-                            projectBranches.addAll(loginHelper.getProjectBranches(currentProjectSettings));
+                            Boolean forceRefreshBranch = null;
+                            String projTechLabel = Optional.ofNullable(currentProjectSettings).map(p -> p.getTechnicalLabel())
+                                    .orElse(null);
+                            if (StringUtils.isNotBlank(projTechLabel)) {
+                                forceRefreshBranch = forceRefreshProjectBranchMap.get(projTechLabel);
+                            }
+                            if (forceRefreshBranch == null) {
+                                forceRefreshBranch = false;
+                            }
+                            projectBranches.addAll(loginHelper.getProjectBranches(currentProjectSettings, !forceRefreshBranch));
                         } catch (JSONException e) {
                             // TODO Auto-generated catch block
                             ExceptionHandler.process(e);
                         }
-                        return org.eclipse.core.runtime.Status.OK_STATUS;
+                        if (monitor.isCanceled()) {
+                            return org.eclipse.core.runtime.Status.CANCEL_STATUS;
+                        } else {
+                            return org.eclipse.core.runtime.Status.OK_STATUS;
+                        }
                     }
 
                 };
-                Job.getJobManager().addJobChangeListener(new JobChangeAdapter() {
+                guiUpdateJobChangeListener = new JobChangeAdapter() {
 
                     @Override
                     public void done(IJobChangeEvent event) {
+                        if (event == null || org.eclipse.core.runtime.Status.CANCEL_STATUS.equals(event.getResult())) {
+                            return;
+                        }
                         if (event.getJob().equals(backgroundGUIUpdate)) {
                             if (branchesViewer != null && !branchesViewer.getCombo().isDisposed()) {
                                 branchesViewer.getCombo().getDisplay().syncExec(new Runnable() {
@@ -1965,6 +2007,12 @@ public class LoginProjectPage extends AbstractLoginActionPage {
                                             return;
                                         }
                                         branchesViewer.setInput(projectBranches);
+                                        String storage = null;
+                                        try {
+                                            storage = getStorage(currentProjectSettings);
+                                        } catch (Exception e) {
+                                            ExceptionHandler.process(e);
+                                        }
                                         //branchesViewer.setSelection(new StructuredSelection(new Object[] { projectBranches.get(0) })); //$NON-NLS-1$
                                         if ("svn".equals(storage) && projectBranches.size() != 0) {
                                             branchesViewer.setSelection(new StructuredSelection(new Object[] { projectBranches
@@ -1990,26 +2038,20 @@ public class LoginProjectPage extends AbstractLoginActionPage {
                             }
                         }
                     }
-                });
+                };
+                Job.getJobManager().addJobChangeListener(guiUpdateJobChangeListener);
                 branchesViewer.getCombo().addDisposeListener(new DisposeListener() {
 
                     @Override
                     public void widgetDisposed(DisposeEvent e) {
                         backgroundGUIUpdate = null;
+                        Job.getJobManager().removeJobChangeListener(guiUpdateJobChangeListener);
                     }
                 });
             }
+            backgroundGUIUpdate.cancel();
             backgroundGUIUpdate.schedule();
         }
-    }
-
-    private List<String> getBranches(Project project) {
-        IGITProviderService gitProviderService = (IGITProviderService) GlobalServiceRegister.getDefault().getService(
-                IGITProviderService.class);
-        String[] branchArr = gitProviderService.getBranchList(project);
-        List<String> branches = Arrays.asList(branchArr);
-
-        return branches;
     }
 
     /**
