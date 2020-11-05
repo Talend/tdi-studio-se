@@ -71,6 +71,10 @@ public class LibraryField extends TableField {
         colName.setText(Messages.getString("LibraryField.requiredColumn")); //$NON-NLS-1$
         colName.setWidth(70);
 
+        TableColumn moduleUriColumn = new TableColumn(contextTable, SWT.LEFT);
+        moduleUriColumn.setText(Messages.getString("LibraryField.mavenUriColumn")); //$NON-NLS-1$
+        moduleUriColumn.setWidth(300);
+
         TableColumn descriptionColumn = new TableColumn(contextTable, SWT.NONE);
         descriptionColumn.setText(Messages.getString("LibraryField.descriptionColumn")); //$NON-NLS-1$
         descriptionColumn.setWidth(200);
@@ -143,6 +147,8 @@ public class LibraryField extends TableField {
                     case 0:
                         return type.getMODULE();
                     case 2:
+                        return type.getMVN();
+                    case 3:
                         return type.getMESSAGE();
                     default:
                         return ""; //$NON-NLS-1$

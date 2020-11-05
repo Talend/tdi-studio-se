@@ -1061,12 +1061,18 @@ public class PropertiesTableEditorView<B> extends AbstractDataTableEditorView<B>
 
     class ModuleTableLabelProvider implements IColumnLabelProvider {
 
+        private final String[] KEYS = new String[] { "drivers", "JAR_NAME" };
+
         @Override
         public String getLabel(Object bean) {
             if (bean instanceof Map) {
                 Map<String, String> valueMap = (Map<String, String>) bean;
-                String value = valueMap.get("drivers");
-                return getModuleName(value);
+                for (String key : KEYS) {
+                    if (valueMap.containsKey(key)) {
+                        String value = valueMap.get(key);
+                        return getModuleName(value);
+                    }
+                }
             }
             return "newLine";
         }
