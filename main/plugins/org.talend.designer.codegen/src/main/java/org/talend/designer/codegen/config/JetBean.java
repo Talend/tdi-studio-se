@@ -405,7 +405,7 @@ public class JetBean {
 
     public String getFullTemplatePath() {
         try {
-            return TemplateUtil.getPlatformUrlOfBundle(getJetPluginRepository(), true) + getTemplateRelativeUri();
+            return TemplateUtil.getPlatformUrlOfBundle(getJetPluginRepository()) + getTemplateRelativeUri();
         } catch (Throwable e) {
             ExceptionHandler.process(e);
         }

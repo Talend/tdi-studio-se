@@ -161,7 +161,7 @@ public class TemplateUtil {
      * @param bundleName
      * @return
      */
-    public static String getPlatformUrlOfBundle(String bundleName, boolean withLastFileSeparator) {
+    public static String getPlatformUrlOfBundle(String bundleName) {
     	if (ComponentBundleToPath.SHARED_STUDIO_CUSTOM_COMPONENT_BUNDLE.equals(bundleName)) {
     		String basePath = ComponentBundleToPath.getPathFromBundle(bundleName);
     		if (!basePath.endsWith("/")) {
@@ -179,9 +179,7 @@ public class TemplateUtil {
             sb.append(bundle.getSymbolicName());
             sb.append("_");
             sb.append(bundle.getVersion().toString());
-            if (withLastFileSeparator) {
-            	sb.append("/");
-            }     
+            sb.append("/");   
             return sb.toString();	
     	}
     }
