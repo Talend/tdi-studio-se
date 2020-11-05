@@ -144,8 +144,8 @@
   <CODEGENERATION>
     <IMPORTS>
       <IMPORT NAME="filecopy" MODULE="filecopy.jar" 
-              MVN="mvn:org.talend.libraries/filecopy/2.0.0"
-              UrlPath="platform:/plugin/org.talend.libraries.custom/lib/filecopy-2.0.0.jar"
+              MVN="mvn:org.talend.components/filecopy/2.0.1"
+              UrlPath="platform:/plugin/org.talend.libraries.custom/lib/filecopy-2.0.1.jar"
               REQUIRED="true" />
     </IMPORTS>
   </CODEGENERATION>
