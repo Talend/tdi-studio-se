@@ -99,13 +99,13 @@ public class AliasDialog {
                     // (newText)
                     // != null) {
                     // return Messages.getString("AliasDialog.aliasIsInvalid"); //$NON-NLS-1$
-                    return Messages.getString("AliasDialog.aliasAlreadyExists", new Object[] { selectedPhysicalTable }); //$NON-NLS-1$
+                    return Messages.getString("AliasDialog.aliasAlreadyExists1", new Object[] { selectedPhysicalTable }); //$NON-NLS-1$
                 }
                 if (selectedPhysicalTable == null || selectedPhysicalTable.length() == 0) {
                     return Messages.getString("AliasDialog.tableMustBeSelected1"); //$NON-NLS-1$
                 }
                 if (isSameAsVisibleTableName(newText) && !update) {
-                    return Messages.getString("AliasDialog.aliasAlreadyExists", new Object[] { newText }); //$NON-NLS-1$
+                    return Messages.getString("AliasDialog.aliasAlreadyExists1", new Object[] { newText }); //$NON-NLS-1$
                 }
                 if (KeywordsValidator.isKeyword(newText) || KeywordsValidator.isSqlKeyword(newText)) {
                     return Messages.getString("AliasDialog.inputValid"); //$NON-NLS-1$
