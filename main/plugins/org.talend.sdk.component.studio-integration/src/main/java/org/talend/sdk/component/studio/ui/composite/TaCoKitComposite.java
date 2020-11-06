@@ -122,7 +122,7 @@ public class TaCoKitComposite extends MissingSettingsMultiThreadDynamicComposite
                 .filter(TaCoKitElementParameter.class::isInstance)
                 .map(TaCoKitElementParameter.class::cast)
                 .filter(TaCoKitElementParameter::isRedrawable)
-                .forEach(p -> p.registerListener("show", redrawListener));
+                .forEach(p -> p.registerRedrawListener("show", redrawListener));
     }
 
     protected void preDispose() {
@@ -131,7 +131,7 @@ public class TaCoKitComposite extends MissingSettingsMultiThreadDynamicComposite
                 .filter(TaCoKitElementParameter.class::isInstance)
                 .map(TaCoKitElementParameter.class::cast)
                 .filter(TaCoKitElementParameter::isRedrawable)
-                .forEach(p -> p.unregisterListener("show", redrawListener));
+                .forEach(p -> p.unregisterRedrawListener("show", redrawListener));
     }
 
     @Override
