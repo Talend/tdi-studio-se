@@ -34,13 +34,15 @@ import org.talend.core.model.components.ComponentUtilities;
 import org.talend.core.model.components.IComponentsFactory;
 import org.talend.core.model.general.Project;
 import org.talend.core.model.repository.ERepositoryObjectType;
+import org.talend.core.runtime.util.SharedStudioInfoProvider;
+import org.talend.core.runtime.util.SharedStudioUtils;
 import org.talend.core.ui.branding.IBrandingService;
 import org.talend.designer.codegen.CodeGeneratorActivator;
 import org.talend.designer.codegen.components.ui.IComponentPreferenceConstant;
 import org.talend.repository.ProjectManager;
 
 /***/
-public class UserComponentsProvider extends AbstractCustomComponentsProvider {
+public class UserComponentsProvider extends AbstractCustomComponentsProvider implements SharedStudioInfoProvider{
 
     @Override
     protected File getExternalComponentsLocation() {
@@ -147,5 +149,11 @@ public class UserComponentsProvider extends AbstractCustomComponentsProvider {
     public String getComponentsBundle() {
         return IComponentsFactory.COMPONENTS_LOCATION;
     }
-
+    
+    public boolean isSupportCurrentMode() {
+    	if (SharedStudioUtils.isSharedStudioMode()) {
+    		return false;
+    	}
+    	return true;
+    }
 }

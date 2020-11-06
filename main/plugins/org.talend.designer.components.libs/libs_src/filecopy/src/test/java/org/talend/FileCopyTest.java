@@ -100,6 +100,24 @@ class FileCopyTest {
         Assertions.assertEquals(referenceSize, copy.length(), "Size error");
     }
 
+    @Test
+    void testLastModifiedTime() throws Exception {
+        final URL repCopy = Thread.currentThread().getContextClassLoader().getResource("copy");
+
+        File file = this.buildFile("fileLMT.txt", 10L * 1024L);
+        file.deleteOnExit();
+        long referencceTime = 324723894L;
+        file.setLastModified(referencceTime);
+
+        File copy = new File(repCopy.getPath(), "fileLMTDestination.txt");
+        if (copy.exists()) {
+            copy.delete();
+        }
+        copy.deleteOnExit();
+        FileCopy.copyFile(file.getPath(), copy.getPath(), true);
+        Assertions.assertEquals(referencceTime, copy.lastModified(), "modified time is not idential");
+    }
+
     /**
      * Generate a new file for testing.
      * 

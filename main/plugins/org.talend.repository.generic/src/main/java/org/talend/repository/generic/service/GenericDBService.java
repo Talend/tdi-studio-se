@@ -76,6 +76,7 @@ import org.talend.designer.core.generic.model.GenericTableUtils;
 import org.talend.designer.core.generic.utils.ComponentsUtils;
 import org.talend.designer.core.model.FakeElement;
 import org.talend.designer.core.model.components.ElementParameter;
+import org.talend.designer.core.utils.UnifiedComponentUtil;
 import org.talend.metadata.managment.utils.MetadataConnectionUtils;
 import org.talend.repository.generic.internal.IGenericWizardInternalService;
 import org.talend.repository.generic.internal.service.GenericWizardInternalService;
@@ -114,6 +115,13 @@ public class GenericDBService implements IGenericDBService{
         if(!isCreation && ((ConnectionItem)item).getConnection().getCompProperties() != null){
             ComponentProperties componentProperties = ComponentsUtils
                     .getComponentPropertiesFromSerialized(connection.getCompProperties(), connection);
+            if (connection instanceof DatabaseConnection) {
+                DatabaseConnection dbConn = (DatabaseConnection) connection;
+                if (UnifiedComponentUtil.isAdditionalJDBC(dbConn.getProductId())) {
+                    // restrict Additional JDBC check quotes
+                    checkMissingQuotes(componentProperties);
+                }
+            }
             List<ComponentWizard> wizards = GenericWizardServiceFactory.getGenericWizardInternalService()
                     .getComponentWizardsForProperties(componentProperties, gitem.getProperty().getId());
             for (ComponentWizard wizard : wizards) {
@@ -174,6 +182,27 @@ public class GenericDBService implements IGenericDBService{
         contextComp.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
         map.put("ContextComposite", contextComp);
         return map;
+    }
+
+    private static void checkMissingQuotes(ComponentProperties componentProperties) {
+        NamedThing drivers = ComponentsUtils.getNameThingFromComponentPropertiesByName(componentProperties, "drivers");//$NON-NLS-1$
+        if (drivers != null && drivers instanceof org.talend.daikon.properties.property.Property<?>) {
+            org.talend.daikon.properties.property.Property<?> driverProp = (org.talend.daikon.properties.property.Property<?>) drivers;
+            if (ContextParameterUtils.isContainContextParam(driverProp.getStoredValue().toString())) {
+                return;
+            }
+            Object storedValue = driverProp.getStoredValue();
+            List newList = new ArrayList<String>();
+            if (storedValue instanceof List) {
+                for (Object object : (List) storedValue) {
+                    String value = String.valueOf(object);
+                    newList.add(TalendQuoteUtils.addQuotesIfNotExist(value));
+                }
+            }
+            if (!newList.isEmpty()) {
+                driverProp.setStoredValue(newList);
+            }
+        }
     }
 
     private List<IElementParameter> getContextParameters(Element element) {
