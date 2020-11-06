@@ -113,7 +113,7 @@
 								<artifactItem>
 									<groupId>org.talend.components</groupId>
 									<artifactId>talend-ws</artifactId>
-									<version>1.0.1-20201022</version>
+									<version>1.0.2-20201106</version>
 									<type>jar</type>
 									<overWrite>true</overWrite>
 									<outputDirectory>${webservicecore.dir}</outputDirectory>
