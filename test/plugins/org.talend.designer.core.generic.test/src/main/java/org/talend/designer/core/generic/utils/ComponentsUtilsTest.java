@@ -314,6 +314,24 @@ public class ComponentsUtilsTest {
         assertEquals("context.jdbc5_drivers", parameterValue); //$NON-NLS-1$
     }
 
+    @Test
+    public void testGetNameThingFromComponentPropertiesByName() {
+        ComponentProperties componentProperties = ComponentsUtils.getComponentProperties("tJDBCInput");
+        assertNotNull("tJDBCInput not load", componentProperties);
+        NamedThing drivers = ComponentsUtils.getNameThingFromComponentPropertiesByName(componentProperties, "drivers");
+        assertNotNull(drivers);
+        NamedThing userId = ComponentsUtils.getNameThingFromComponentPropertiesByName(componentProperties, "userId");
+        assertNotNull(userId);
+        NamedThing jdbcUrl = ComponentsUtils.getNameThingFromComponentPropertiesByName(componentProperties, "jdbcUrl");
+        assertNotNull(jdbcUrl);
+        NamedThing refComp = ComponentsUtils.getNameThingFromComponentPropertiesByName(componentProperties,
+                "referencedComponent");
+        assertNotNull(refComp);
+        // not exist one
+        NamedThing test = ComponentsUtils.getNameThingFromComponentPropertiesByName(componentProperties, "testNoExist");
+        assertNull(test);
+    }
+
     @After
     public void after() {
         System.setProperty("talend.test.component.filter", "false");
