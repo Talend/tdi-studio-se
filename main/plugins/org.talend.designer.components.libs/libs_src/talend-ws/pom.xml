@@ -4,12 +4,12 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.talend.components</groupId>
 	<artifactId>talend-ws</artifactId>
-	<version>1.0.1-20201022</version>
+	<version>1.0.2-20201106</version>
 	<packaging>jar</packaging>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<cxf.version>3.3.6</cxf.version>
+		<cxf.version>3.3.7</cxf.version>
 		<odata.version>4.3.0</odata.version>
 		<slf4j.version>1.7.12</slf4j.version>
 		<talend.nexus.url>https://artifacts-oss.talend.com</talend.nexus.url>
