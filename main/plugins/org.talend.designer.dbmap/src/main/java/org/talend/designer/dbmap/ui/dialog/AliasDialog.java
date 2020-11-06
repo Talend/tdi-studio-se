@@ -104,10 +104,14 @@ public class AliasDialog {
                 if (selectedPhysicalTable == null || selectedPhysicalTable.length() == 0) {
                     return Messages.getString("AliasDialog.tableMustBeSelected1"); //$NON-NLS-1$
                 }
-                if (isSameAsVisibleTableName(newText) && !update) {
+                if (isSameAsVisibleTableName(newText.trim())) {
+                    if (update && newText.equalsIgnoreCase(newText.trim())) {
+                        return null;
+                    }
                     return Messages.getString("AliasDialog.aliasAlreadyExists1", new Object[] { newText }); //$NON-NLS-1$
                 }
-                if (KeywordsValidator.isKeyword(newText) || KeywordsValidator.isSqlKeyword(newText)) {
+                if (KeywordsValidator.isKeyword(newText) || KeywordsValidator.isSqlKeyword(newText)
+                        || newText.trim().contains(" ")) { //$NON-NLS-1$
                     return Messages.getString("AliasDialog.inputValid"); //$NON-NLS-1$
                 }
                 return null;
