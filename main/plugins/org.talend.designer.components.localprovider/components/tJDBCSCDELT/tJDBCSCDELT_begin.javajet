@@ -202,7 +202,7 @@ String activeField = ElementParameterParser.getValue(node,"__L2_ACTIVE_FIELD__")
 boolean isEnableVersion = ("true").equals(ElementParameterParser.getValue(node,"__USE_L2_VERSION__"));
 String versionField = ElementParameterParser.getValue(node,"__L2_VERSION_FIELD__");
 %>
-<%if("mysql_id".equals(dbmsId)) {%>
+<%if("mysql_id".equals(dbmsId) || "singlestore_id".equals(dbmsId)) {%>
 	<%@ include file="./mysql.javajet"%>
 <%} else if("oracle_id".equals(dbmsId)){%>
 	<%@ include file="./oracle.javajet"%>
