@@ -961,4 +961,25 @@ public class ComponentsUtils {
         }
 
     }
+
+    public static NamedThing getNameThingFromComponentPropertiesByName(Properties properties, String name) {
+        if (properties == null || StringUtils.isBlank(name)) {
+            return null;
+        }
+        NamedThing nameThing = null;
+        for (NamedThing thing : properties.getProperties()) {
+            if (name.equals(thing.getName())) {
+                nameThing = thing;
+                break;
+            }
+            if (thing instanceof Properties) {
+                Properties childProperties = (Properties) thing;
+                nameThing = getNameThingFromComponentPropertiesByName(childProperties, name);
+                if (nameThing != null) {
+                    break;
+                }
+            }
+        }
+        return nameThing;
+    }
 }
