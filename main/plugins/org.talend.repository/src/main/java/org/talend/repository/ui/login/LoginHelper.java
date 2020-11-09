@@ -465,7 +465,10 @@ public class LoginHelper {
             }
             List<String> branches = null;
             try {
-                branches = getProjectBranches(lastUsedProject);
+                /**
+                 * Auto login, means there should be local repository
+                 */
+                branches = getProjectBranches(lastUsedProject, true);
             } catch (JSONException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
@@ -810,11 +813,19 @@ public class LoginHelper {
         return projects;
     }
 
-    public List<String> getProjectBranches(Project p) throws JSONException {
+    /**
+     * get branches of project
+     * 
+     * @param p
+     * @param onlyLocalIfPossible try to only get branches from local repository to improve performance
+     * @return
+     * @throws JSONException
+     */
+    public List<String> getProjectBranches(Project p, boolean onlyLocalIfPossible) throws JSONException {
         IRepositoryService repositoryService = (IRepositoryService) GlobalServiceRegister.getDefault()
                 .getService(IRepositoryService.class);
         if (repositoryService != null) {
-            return repositoryService.getProjectBranch(p);
+            return repositoryService.getProjectBranch(p, onlyLocalIfPossible);
         }
         return Collections.EMPTY_LIST;
     }

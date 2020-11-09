@@ -28,13 +28,15 @@ import org.talend.core.GlobalServiceRegister;
 import org.talend.core.model.components.AbstractComponentsProvider;
 import org.talend.core.model.components.ComponentUtilities;
 import org.talend.core.model.components.IComponentsFactory;
+import org.talend.core.runtime.util.SharedStudioInfoProvider;
+import org.talend.core.runtime.util.SharedStudioUtils;
 import org.talend.core.ui.branding.IBrandingService;
 import org.talend.designer.components.exchange.util.ExchangeUtils;
 
 /**
  * DOC hcyi class global comment. Detailled comment
  */
-public class ExchangeComponentsProvider extends AbstractComponentsProvider {
+public class ExchangeComponentsProvider extends AbstractComponentsProvider implements SharedStudioInfoProvider{
 
     /**
      * ExchangeComponentsProvider constructor.
@@ -184,4 +186,10 @@ public class ExchangeComponentsProvider extends AbstractComponentsProvider {
         return IComponentsFactory.COMPONENTS_LOCATION;
     }
 
+    public boolean isSupportCurrentMode() {
+    	if (SharedStudioUtils.isSharedStudioMode()) {
+    		return false;
+    	}
+    	return true;
+    }
 }
