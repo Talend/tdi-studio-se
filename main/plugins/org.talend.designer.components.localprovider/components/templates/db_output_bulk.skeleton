@@ -384,7 +384,7 @@ public class CLASS {
                                 && (column.getColumn().getLength() == null || 0 == column.getColumn().getLength())
                                 && (column.getColumn().getPrecision() == null || 0 == column.getColumn().getPrecision())
                         ){} 
-                        else if (((MYSQL.equalsIgnoreCase(getDBMSId()))||(AS400.equalsIgnoreCase(getDBMSId())) || (SINGLESTORE.equalsIgnoreCase(getDBMSId())))
+                        else if (((MYSQL.equalsIgnoreCase(getDBMSId())) || (AS400.equalsIgnoreCase(getDBMSId())) || (SINGLESTORE.equalsIgnoreCase(getDBMSId())))
                                 && (("DECIMAL".equalsIgnoreCase(dataType)) || ("NUMERIC".equalsIgnoreCase(dataType))||(("FLOAT".equalsIgnoreCase(dataType)))||("DOUBLE".equalsIgnoreCase(dataType)))
                                 && (column.getColumn().getLength() == null || 0 == column.getColumn().getLength())
                                 && (column.getColumn().getPrecision() == null || 0 == column.getColumn().getPrecision())
