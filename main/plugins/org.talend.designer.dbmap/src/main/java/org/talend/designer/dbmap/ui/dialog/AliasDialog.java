@@ -243,7 +243,10 @@ public class AliasDialog {
         @Override
         protected void buttonPressed(int buttonId) {
             if (buttonId == IDialogConstants.OK_ID) {
-                value = text.getText();
+                String aliasValue = text.getText();
+                if (aliasValue != null) {
+                    value = aliasValue.trim();
+                }
             } else {
                 value = null;
             }
