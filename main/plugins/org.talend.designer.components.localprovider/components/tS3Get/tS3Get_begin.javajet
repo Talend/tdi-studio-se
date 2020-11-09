@@ -32,8 +32,14 @@ imports="
     List<Map<String,String>> csv_configuration = (List<Map<String,String>>)ElementParameterParser.getObjectValue(node,"__CSV_CONFIGURATION__");
 	%>
 	<%@ include file="../tS3Connection/S3Client.javajet" %>
-	<%if(!use_select){%>
+	<%if(!use_select){
+		boolean use_temp_files_for_parallel_download = "true".equals(ElementParameterParser.getValue(node,"__USE_TEMP_FILES_FOR_PARALLEL_DOWNLOAD__"));
+	%>
+	<%if(use_temp_files_for_parallel_download) {%>
+	org.talend.aws.TransferManager tm_<%=cid%> = null;
+	<%} else {%>
 	com.amazonaws.services.s3.transfer.TransferManager tm_<%=cid%> = null;
+	<%}%>
 	try{
 		<%
 		if(isLog4jEnabled){
@@ -41,16 +47,20 @@ imports="
 			log.info("<%=cid%> - Getting an object with key:" + <%=key%>);
 		<%
 		}
-		%>
 		
+		if(use_temp_files_for_parallel_download) {
+		%>
+		tm_<%=cid%> = new org.talend.aws.TransferManager(conn_<%=cid%>);
+		<%} else {%>
 		tm_<%=cid%> = com.amazonaws.services.s3.transfer.TransferManagerBuilder
-    			.standard()
-    			.withS3Client(conn_<%=cid%>)
-    			.build();
-    			
-    com.amazonaws.services.s3.model.GetObjectRequest getObjectRequest_<%=cid%> = new com.amazonaws.services.s3.model.GetObjectRequest(<%=bucket%>, <%=key%>);
-    
-		com.amazonaws.services.s3.transfer.Download download_<%=cid%> = tm_<%=cid%>.download(
+				.standard()
+				.withS3Client(conn_<%=cid%>)
+				.build();
+		<%}%>
+				
+		com.amazonaws.services.s3.model.GetObjectRequest getObjectRequest_<%=cid%> = new com.amazonaws.services.s3.model.GetObjectRequest(<%=bucket%>, <%=key%>);
+
+		<%if(use_temp_files_for_parallel_download) {%>org.talend.aws.<%} else {%>com.amazonaws.services.s3.transfer.<%}%>Download download_<%=cid%> = tm_<%=cid%>.download(
 			getObjectRequest_<%=cid%>, 
 			new java.io.File(<%=file%>), 
 			null, 
