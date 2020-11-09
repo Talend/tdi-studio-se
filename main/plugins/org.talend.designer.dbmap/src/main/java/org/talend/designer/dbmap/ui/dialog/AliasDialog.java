@@ -104,7 +104,7 @@ public class AliasDialog {
                 if (selectedPhysicalTable == null || selectedPhysicalTable.length() == 0) {
                     return Messages.getString("AliasDialog.tableMustBeSelected1"); //$NON-NLS-1$
                 }
-                if (isSameAsVisibleTableName(newText.trim())) {
+                if (isSameAsVisibleTableName(newText)) {
                     if (update && newText.equalsIgnoreCase(newText.trim())) {
                         return null;
                     }
@@ -572,7 +572,7 @@ public class AliasDialog {
     public boolean isSameAsVisibleTableName(String tableName) {
         boolean alreadyExists = false;
         for (String table : visibleTables) {
-            if (table.equalsIgnoreCase(tableName)) {
+            if (tableName != null && table.trim().equalsIgnoreCase(tableName.trim())) {
                 alreadyExists = true;
                 break;
             }
