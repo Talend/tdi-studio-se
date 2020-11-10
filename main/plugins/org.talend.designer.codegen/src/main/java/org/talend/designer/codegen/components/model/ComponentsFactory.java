@@ -26,10 +26,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
-import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -75,6 +73,7 @@ import org.talend.core.model.components.IComponentsFactory;
 import org.talend.core.model.components.IComponentsHandler;
 import org.talend.core.model.components.filters.ComponentsFactoryProviderManager;
 import org.talend.core.model.components.filters.IComponentFactoryFilter;
+import org.talend.core.runtime.util.ComponentsLocationProvider;
 import org.talend.core.ui.IJobletProviderService;
 import org.talend.core.ui.ISparkJobletProviderService;
 import org.talend.core.ui.ISparkStreamingJobletProviderService;
@@ -83,8 +82,6 @@ import org.talend.core.ui.images.CoreImageProvider;
 import org.talend.core.utils.TalendCacheUtils;
 import org.talend.designer.codegen.CodeGeneratorActivator;
 import org.talend.designer.codegen.i18n.Messages;
-import org.talend.designer.core.ITisLocalProviderService;
-import org.talend.designer.core.ITisLocalProviderService.ResClassLoader;
 import org.talend.designer.core.model.components.ComponentBundleToPath;
 import org.talend.designer.core.model.components.ComponentFilesNaming;
 import org.talend.designer.core.model.components.EmfComponent;
@@ -164,7 +161,11 @@ public class ComponentsFactory implements IComponentsFactory {
                 throw new RuntimeException(e);
             }
             isInitialising.set(true);
-            removeOldComponentsUserFolder(); // not used anymore
+            try {
+				removeOldComponentsUserFolder();
+			} catch (IOException ex) {
+				ExceptionHandler.process(ex);
+			} // not used anymore
             long startTime = System.currentTimeMillis();
 
             // TimeMeasure.display = true;
@@ -387,10 +388,12 @@ public class ComponentsFactory implements IComponentsFactory {
         ComponentManager.saveResource();
     }
 
-    private void removeOldComponentsUserFolder() {
+    private void removeOldComponentsUserFolder() throws IOException {
         String userPath = IComponentsFactory.COMPONENTS_INNER_FOLDER + File.separatorChar
                 + ComponentUtilities.getExtFolder(OLD_COMPONENTS_USER_INNER_FOLDER);
-        File componentsLocation = getComponentsLocation(userPath);
+        ComponentsProviderManager componentsProviderManager = ComponentsProviderManager.getInstance();
+        AbstractComponentsProvider componentsProvider = componentsProviderManager.loadUserComponentsProvidersFromExtension();
+        File componentsLocation = getComponentsLocation(componentsProvider, userPath);
         if (componentsLocation != null && componentsLocation.exists()) {
             FilesUtils.removeFolder(componentsLocation, true);
         }
@@ -671,114 +674,38 @@ public class ComponentsFactory implements IComponentsFactory {
      *
      * @param currentFolder
      * @return
+     * @throws IOException 
      * @throws BusinessException
      */
 
-    private File getComponentsLocation(String folder) {
-        String componentsPath = IComponentsFactory.COMPONENTS_LOCATION;
-        IBrandingService breaningService = (IBrandingService) GlobalServiceRegister.getDefault()
-                .getService(IBrandingService.class);
-        if (breaningService.isPoweredOnlyCamel()) {
-            componentsPath = IComponentsFactory.CAMEL_COMPONENTS_LOCATION;
-        }
-        Bundle b = Platform.getBundle(componentsPath);
-
-        File file = null;
-        try {
-            URL url = FileLocator.find(b, new Path(folder), null);
-            if (url == null) {
-                return null;
+    private File getComponentsLocation(AbstractComponentsProvider componentsProvider, String folder) throws IOException {
+    	
+    	if (componentsProvider instanceof ComponentsLocationProvider) {
+    		return componentsProvider.getInstallationFolder();
+    	} else {
+            String componentsPath = IComponentsFactory.COMPONENTS_LOCATION;
+            IBrandingService breaningService = (IBrandingService) GlobalServiceRegister.getDefault()
+                    .getService(IBrandingService.class);
+            if (breaningService.isPoweredOnlyCamel()) {
+                componentsPath = IComponentsFactory.CAMEL_COMPONENTS_LOCATION;
             }
-            URL fileUrl = FileLocator.toFileURL(url);
-            file = new File(fileUrl.getPath());
-        } catch (Exception e) {
-            // e.printStackTrace();
-            ExceptionHandler.process(e);
-        }
+            Bundle b = Platform.getBundle(componentsPath);
 
-        return file;
-    }
-
-    private File getComponentsLocation(String folder, AbstractComponentsProvider provider) {
-        File file = null;
-        try {
-            if (provider != null) {
-                file = provider.getInstallationFolder();
-            } else {
-                String componentsPath = IComponentsFactory.COMPONENTS_LOCATION;
-                Bundle b = Platform.getBundle(componentsPath);
-                IBrandingService breaningService = (IBrandingService) GlobalServiceRegister.getDefault()
-                        .getService(IBrandingService.class);
-                if (breaningService.isPoweredOnlyCamel()) {
-                    componentsPath = IComponentsFactory.CAMEL_COMPONENTS_LOCATION;
-                }
+            File file = null;
+            try {
                 URL url = FileLocator.find(b, new Path(folder), null);
                 if (url == null) {
                     return null;
                 }
                 URL fileUrl = FileLocator.toFileURL(url);
                 file = new File(fileUrl.getPath());
-
+            } catch (Exception e) {
+                // e.printStackTrace();
+                ExceptionHandler.process(e);
             }
-        } catch (Exception e) {
-            ExceptionHandler.process(e);
-        }
-        return file;
-    }
 
-    private ResourceBundle getComponentResourceBundle(IComponent currentComp, String source, String cachedPathSource,
-            AbstractComponentsProvider provider) {
-        try {
-            AbstractComponentsProvider currentProvider = provider;
-            if (currentProvider == null) {
-                ComponentsProviderManager componentsProviderManager = ComponentsProviderManager.getInstance();
-                Collection<AbstractComponentsProvider> providers = componentsProviderManager.getProviders();
-                for (AbstractComponentsProvider curProvider : providers) {
-                    String path = new Path(curProvider.getInstallationFolder().toString()).toPortableString();
-                    if (source.startsWith(path)) {
-                        // fix for TDI-19889 and TDI-20507 to get the correct component provider
-                        if (cachedPathSource != null) {
-                            if (path.contains(cachedPathSource)) {
-                                currentProvider = curProvider;
-                                break;
-                            }
-                        } else {
-                            currentProvider = curProvider;
-                            break;
-                        }
-                    }
-                }
-            }
-            String installPath = currentProvider.getInstallationFolder().toString();
-            String label = ComponentFilesNaming.getInstance().getBundleName(currentComp.getName(),
-                    installPath.substring(installPath.lastIndexOf(IComponentsFactory.COMPONENTS_INNER_FOLDER)));
-
-            if (currentProvider.isUseLocalProvider()) {
-                // if the component use local provider as storage (for user / ecosystem components)
-                // then get the bundle resource from the current main component provider.
-
-                // note: code here to review later, service like this shouldn't be used...
-                ResourceBundle bundle = null;
-                IBrandingService brandingService = (IBrandingService) GlobalServiceRegister.getDefault()
-                        .getService(IBrandingService.class);
-                if (brandingService.isPoweredOnlyCamel()) {
-                    bundle = currentProvider.getResourceBundle(label);
-                } else {
-                    ITisLocalProviderService service = (ITisLocalProviderService) GlobalServiceRegister.getDefault()
-                            .getService(ITisLocalProviderService.class);
-                    bundle = service.getResourceBundle(label);
-                }
-                return bundle;
-            } else {
-                ResourceBundle bundle = ResourceBundle.getBundle(label, Locale.getDefault(),
-                        new ResClassLoader(currentProvider.getClass().getClassLoader()));
-                return bundle;
-            }
-        } catch (IOException e) {
-            ExceptionHandler.process(e);
-        }
-
-        return null;
+            return file;
+    	}
     }
 
     private String getCodeLanguageSuffix() {
@@ -1081,6 +1008,14 @@ public class ComponentsFactory implements IComponentsFactory {
     @Override
     public void setComponentsHandler(IComponentsHandler componentsHandler) {
         this.componentsHandler = componentsHandler;
+    }
+    
+    public String getCustomComponentBundlePath() {
+    	ComponentsProviderManager componentsProviderManager = ComponentsProviderManager.getInstance();
+    	AbstractComponentsProvider componentsProvider = componentsProviderManager.loadUserComponentsProvidersFromExtension();
+    	String bundle = componentsProvider.getComponentsBundle();
+    	return ComponentBundleToPath.getPathFromBundle(bundle);
+    	
     }
 
 }

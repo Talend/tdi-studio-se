@@ -10,6 +10,14 @@
       </ComponentsProvider>
    </extension>
    <extension
+         point="org.talend.core.components_provider">
+      <ComponentsProvider
+            class="org.talend.designer.components.exchange.SharedStudioExchangeComponentsProvider"
+            folderName="exchange"
+            id="org.talend.designer.components.exchange.SharedStudioExchangeComponentsProvider">
+      </ComponentsProvider>
+   </extension>
+   <extension
          point="org.talend.core.runtime.service">
       <Service
             class="org.talend.designer.components.exchange.ui.dialog.ExchangeService"
