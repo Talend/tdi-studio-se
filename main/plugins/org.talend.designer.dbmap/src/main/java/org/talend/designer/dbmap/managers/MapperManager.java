@@ -657,28 +657,26 @@ public class MapperManager extends AbstractMapperManager {
      * DOC amaumont Comment method "replacePreviousLocationInAllExpressions".
      */
     public void replacePreviousLocationInAllExpressions(final TableEntryLocation previousLocation,
-            final TableEntryLocation newLocation) {
+            final TableEntryLocation newLocation, boolean renamed) {
 
         DataMapExpressionParser dataMapExpressionParser = new DataMapExpressionParser(getCurrentLanguage());
         Collection<IDataMapTable> tablesData = getTablesData();
         for (IDataMapTable table : tablesData) {
             List<IColumnEntry> columnEntries = table.getColumnEntries();
             for (IColumnEntry entry : columnEntries) {
-                replaceLocation(previousLocation, newLocation, dataMapExpressionParser, table, entry);
+                replaceLocation(previousLocation, newLocation, dataMapExpressionParser, table, entry, renamed);
             }
             if (table instanceof OutputTable) {
                 List<FilterTableEntry> whereConstraintEntries = ((OutputTable) table).getWhereFilterEntries();
                 for (FilterTableEntry entry : whereConstraintEntries) {
-                    replaceLocation(previousLocation, newLocation, dataMapExpressionParser, table, entry);
+                    replaceLocation(previousLocation, newLocation, dataMapExpressionParser, table, entry, renamed);
                 }
                 List<FilterTableEntry> otherConstraintEntries = ((OutputTable) table).getOtherFilterEntries();
                 for (FilterTableEntry entry : otherConstraintEntries) {
-                    replaceLocation(previousLocation, newLocation, dataMapExpressionParser, table, entry);
+                    replaceLocation(previousLocation, newLocation, dataMapExpressionParser, table, entry, renamed);
                 }
             }
-
         }
-        uiManager.refreshBackground(false, false);
     }
 
     /**
@@ -702,12 +700,16 @@ public class MapperManager extends AbstractMapperManager {
      * @return true if expression of entry has changed
      */
     private boolean replaceLocation(final TableEntryLocation previousLocation, final TableEntryLocation newLocation,
-            DataMapExpressionParser dataMapExpressionParser, IDataMapTable table, ITableEntry entry) {
+            DataMapExpressionParser dataMapExpressionParser, IDataMapTable table, ITableEntry entry, boolean renamed) {
         boolean expressionHasChanged = false;
         String currentExpression = entry.getExpression();
         TableEntryLocation[] tableEntryLocations = dataMapExpressionParser.parseTableEntryLocations(currentExpression);
         // loop on all locations of current expression
         for (TableEntryLocation currentLocation : tableEntryLocations) {
+            if (renamed && previousLocation.tableName.equals(currentLocation.tableName)) {
+                previousLocation.columnName = currentLocation.columnName;
+                newLocation.columnName = currentLocation.columnName;
+            }
             if (currentLocation.equals(previousLocation)) {
                 currentExpression = dataMapExpressionParser.replaceLocation(currentExpression, previousLocation, newLocation);
                 expressionHasChanged = true;
@@ -727,7 +729,7 @@ public class MapperManager extends AbstractMapperManager {
                 }
             }
             tableViewerCreator.getTableViewer().refresh(entry);
-            uiManager.parseExpression(currentExpression, entry, false, true, false);
+            uiManager.parseExpression(currentExpression, entry, false, true, false, renamed);
             return true;
         }
         return false;
@@ -799,7 +801,7 @@ public class MapperManager extends AbstractMapperManager {
     public void addInputAliasTable() {
 
         AliasDialog aliasDialog = new AliasDialog(this, tableManager.getPhysicalInputTableNames(), tableManager.getAliases(),
-                tableManager.getVisibleTables());
+                tableManager.getVisibleTables(), false);
         if (!aliasDialog.open()) {
             return;
         }
@@ -849,6 +851,59 @@ public class MapperManager extends AbstractMapperManager {
         uiManager.refreshSqlExpression();
         getProblemsManager().checkProblemsForAllEntriesOfAllTables(true);
 
+    }
+
+    public void renameInputAliasTable() {
+        AliasDialog aliasDialog = new AliasDialog(this, tableManager.getPhysicalInputTableNames(), tableManager.getAliases(),
+                tableManager.getVisibleTables(), true);
+        if (!aliasDialog.open()) {
+            return;
+        }
+
+        String alias = aliasDialog.getAlias();
+        boolean isPhysicalTable = alias.equals("") || alias.equalsIgnoreCase(aliasDialog.getTableName()); //$NON-NLS-1$
+        String aliasOrTableName = isPhysicalTable ? aliasDialog.getTableName() : alias;
+
+        boolean isInvisiblePhysicalTable = aliasDialog.isSameAsPhysicalTable(aliasOrTableName)
+                && !aliasDialog.isSameAsVisibleTableName(aliasOrTableName);
+
+        InputDataMapTableView currentSelectedDataMapTableView = uiManager.getCurrentSelectedInputTableView();
+        if (currentSelectedDataMapTableView != null) {
+            IDataMapTable dataMapTable = currentSelectedDataMapTableView.getDataMapTable();
+            if (dataMapTable != null && dataMapTable instanceof InputTable) {
+                InputTable inputTable = ((InputTable) dataMapTable);
+                String oldName = inputTable.getName();
+                if (isInvisiblePhysicalTable) {
+                    inputTable.setAlias(null);
+                } else {
+                    inputTable.setAlias(aliasOrTableName);
+                }
+                // Update expressions
+                TableEntryLocation oldLocation = new TableEntryLocation(oldName, null);
+                TableEntryLocation newLocation = new TableEntryLocation(inputTable.getName(), null);
+                updateTableEntries(inputTable, oldName, inputTable.getName());
+                // mapperComponent.replaceLocationsInAllExpressions(oldLocation, newLocation, true);
+                replacePreviousLocationInAllExpressions(oldLocation, newLocation, true);
+
+                uiManager.refreshBackground(false, false);
+                uiManager.updateToolbarButtonsStates(Zone.INPUTS);
+                currentSelectedDataMapTableView.updateSelectedDataMapTableViewTitle();
+                // Update tab
+                MetadataTableEditorView inputEditorView = uiManager.getInputMetaEditorView();
+                if (inputEditorView != null) {
+                    inputEditorView.setTitle(inputTable.getTitle());
+                }
+                uiManager.refreshSqlExpression();
+                getProblemsManager().checkProblemsForAllEntriesOfAllTables(true);
+            }
+        }
+    }
+
+    public void updateTableEntries(InputTable inputTable, String oldName, String newName) {
+        List<IColumnEntry> columnEntries = inputTable.getColumnEntries();
+        for (IColumnEntry entry : columnEntries) {
+            tableEntriesManager.updateTableEntryLocation(entry, oldName, newName);
+        }
     }
 
     /**

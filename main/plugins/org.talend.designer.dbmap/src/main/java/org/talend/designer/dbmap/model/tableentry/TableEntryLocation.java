@@ -23,6 +23,10 @@ import org.talend.designer.dbmap.language.DbLanguageConstants;
  */
 public class TableEntryLocation {
 
+    public String prefix;
+
+    public String sufix;
+
     public String tableName;
 
     public String columnName;
@@ -41,12 +45,21 @@ public class TableEntryLocation {
         this.columnName = (columnName == null ? null : columnName.trim());
     }
 
+    public TableEntryLocation(String prefix, String tableName, String columnName, String sufix) {
+        this.prefix = prefix.trim();
+        this.tableName = tableName.trim();
+        this.columnName = columnName.trim();
+        this.sufix = sufix.trim();
+    }
+
     @Override
     public String toString() {
         StringBuffer buffer = new StringBuffer();
+        buffer.append(prefix);
         buffer.append(tableName);
         buffer.append(DbLanguageConstants.PREFIX_FIELD_NAME);
         buffer.append(columnName);
+        buffer.append(sufix);
         return buffer.toString();
     }
 
@@ -60,6 +73,8 @@ public class TableEntryLocation {
         int result = 1;
         result = prime * result + ((this.columnName == null) ? 0 : this.columnName.hashCode());
         result = prime * result + ((this.tableName == null) ? 0 : this.tableName.hashCode());
+        result = prime * result + ((this.prefix == null) ? 0 : this.prefix.hashCode());
+        result = prime * result + ((this.sufix == null) ? 0 : this.sufix.hashCode());
         return result;
     }
 
@@ -90,7 +105,54 @@ public class TableEntryLocation {
             return false;
         }
 
+        if (this.prefix == null) {
+            if (other.prefix != null) {
+                return false;
+            }
+        } else if (!this.prefix.equals(other.prefix)) {
+            return false;
+        }
+
+        if (this.sufix == null) {
+            if (other.sufix != null) {
+                return false;
+            }
+        } else if (!this.sufix.equals(other.sufix)) {
+            return false;
+        }
+
         return true;
     }
 
+    public String getPrefix() {
+        return this.prefix;
+    }
+
+    public void setPrefix(String prefix) {
+        this.prefix = prefix;
+    }
+
+    public String getSufix() {
+        return this.sufix;
+    }
+
+    public void setSufix(String sufix) {
+        this.sufix = sufix;
+    }
+
+    public String getTableName() {
+        return this.tableName;
+    }
+
+    public void setTableName(String tableName) {
+        this.tableName = tableName;
+    }
+
+    public String getColumnName() {
+        return this.columnName;
+    }
+
+    public void setColumnName(String columnName) {
+        this.columnName = columnName;
+    }
 }
