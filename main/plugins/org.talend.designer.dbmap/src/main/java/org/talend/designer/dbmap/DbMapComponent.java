@@ -516,7 +516,7 @@ public class DbMapComponent extends AbstractMapComponent {
      * @param newTableName
      * @param newColumnName
      */
-    private void replaceLocationsInAllExpressions(TableEntryLocation oldLocation, TableEntryLocation newLocation,
+    public void replaceLocationsInAllExpressions(TableEntryLocation oldLocation, TableEntryLocation newLocation,
             boolean tableRenamed) {
         // replace old location by new location for all expressions in mapper
         List<ExternalDbMapTable> tables = new ArrayList<ExternalDbMapTable>(externalData.getInputTables());

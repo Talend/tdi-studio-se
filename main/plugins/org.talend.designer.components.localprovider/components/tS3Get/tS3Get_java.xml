@@ -594,6 +594,11 @@
 		GROUP="SELECT_GROUP">
 		<DEFAULT>"\n"</DEFAULT>
 	</PARAMETER>
+	
+	<PARAMETER NAME="USE_TEMP_FILES_FOR_PARALLEL_DOWNLOAD" FIELD="CHECK" NUM_ROW="120"
+		SHOW_IF="USE_SELECT == 'false'">
+		<DEFAULT>false</DEFAULT>
+	</PARAMETER>
 
     </ADVANCED_PARAMETERS>
 
@@ -626,6 +631,9 @@
 		<IMPORT NAME="commons-codec-1.14.jar" MODULE="commons-codec-1.14.jar"
 			MVN="mvn:commons-codec/commons-codec/1.14"
 			REQUIRED_IF="USE_EXISTING_CONNECTION == 'false'" />
+		<IMPORT NAME="talend-aws-1.0.jar" MODULE="talend-aws-1.0.jar"
+			MVN="mvn:org.talend.components.lib/talend-aws/1.0"
+			REQUIRED_IF="(USE_SELECT == 'false') AND (USE_TEMP_FILES_FOR_PARALLEL_DOWNLOAD == 'true')" />
     </IMPORTS>
    </CODEGENERATION>
 
