@@ -57,7 +57,7 @@ public class TaCoKitWizardComposite extends TaCoKitComposite {
                 .filter(TaCoKitElementParameter.class::isInstance)
                 .map(TaCoKitElementParameter.class::cast)
                 .filter(TaCoKitElementParameter::isRedrawable)
-                .forEach(p -> p.registerRedrawListener("show", getRedrawListener()));
+                .forEach(p -> p.registerListener("show", getRedrawListener()));
     }
 
     @Override
@@ -67,7 +67,7 @@ public class TaCoKitWizardComposite extends TaCoKitComposite {
                 .filter(TaCoKitElementParameter.class::isInstance)
                 .map(TaCoKitElementParameter.class::cast)
                 .filter(TaCoKitElementParameter::isRedrawable)
-                .forEach(p -> p.unregisterRedrawListener("show", getRedrawListener()));
+                .forEach(p -> p.unregisterListener("show", getRedrawListener()));
     }
 
     private void init() {

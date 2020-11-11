@@ -41,9 +41,7 @@ import org.talend.sdk.studio.process.TaCoKitNode;
 public class TaCoKitElementParameter extends ElementParameter implements IAdditionalInfo {
 
     private final PropertyChangeSupport pcs = new PropertyChangeSupport(this);
-    
-    private final PropertyChangeSupport pcs_refresh = new PropertyChangeSupport(this);
-    
+
     private final List<IValueChangedListener> valueChangeListeners = new ArrayList<>();
 
     /**
@@ -124,14 +122,6 @@ public class TaCoKitElementParameter extends ElementParameter implements IAdditi
     public void unregisterListener(final String propertyName, final PropertyChangeListener listener) {
         pcs.removePropertyChangeListener(propertyName, listener);
     }
-    
-    public void registerRedrawListener(final String propertyName, final PropertyChangeListener listener) {
-        pcs_refresh.addPropertyChangeListener(propertyName, listener);
-    }
-    
-    public void unregisterRedrawListener(final String propertyName, final PropertyChangeListener listener) {
-        pcs_refresh.removePropertyChangeListener(propertyName, listener);
-    }
 
     public void addValueChangeListener(final IValueChangedListener listener) {
         valueChangeListeners.add(listener);
@@ -144,11 +134,7 @@ public class TaCoKitElementParameter extends ElementParameter implements IAdditi
     public void firePropertyChange(final String name, final Object oldValue, final Object newValue) {
         pcs.firePropertyChange(name, oldValue, newValue);
     }
-    
-    public void firePropertyChangeRedraw(final String name, final Object oldValue, final Object newValue) {
-        pcs_refresh.firePropertyChange(name, oldValue, newValue);
-    }
-    
+
     void fireValueChange(final Object oldValue, final Object newValue) {
         for (final IValueChangedListener listener : valueChangeListeners) {
             listener.onValueChanged(this, oldValue, newValue);
@@ -298,7 +284,6 @@ public class TaCoKitElementParameter extends ElementParameter implements IAdditi
         super.setValue(newValue);
         firePropertyChange("value", oldValue, getStringValue());
         fireValueChange(oldValue, newValue);
-        firePropertyChangeRedraw("show", "", getValue());
     }
 
     public void updateValueOnly(final Object newValue) {
