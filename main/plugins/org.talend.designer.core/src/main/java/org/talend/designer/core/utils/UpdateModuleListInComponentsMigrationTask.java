@@ -17,6 +17,7 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.emf.common.util.EList;
 import org.talend.commons.exception.ExceptionHandler;
@@ -40,7 +41,6 @@ import org.talend.core.model.properties.StatAndLogsSettings;
 import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.core.model.utils.TalendTextUtils;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
-import org.talend.core.runtime.maven.MavenArtifact;
 import org.talend.core.runtime.maven.MavenUrlHelper;
 import org.talend.core.ui.component.ComponentsFactoryProvider;
 import org.talend.designer.core.model.utils.emf.talendfile.ElementParameterType;
@@ -344,33 +344,29 @@ public class UpdateModuleListInComponentsMigrationTask extends AbstractItemMigra
 
                 EList<?> elementValues = param.getElementValue();
 
-                String jarUri = null;
                 ElementValueType jn = null;
 
                 for (Object ev : elementValues) {
                     ElementValueType evt = (ElementValueType) ev;
                     switch (evt.getElementRef()) {
-                    case "JAR_NAME": {
-                        jarUri = getMavenUriForJar(evt.getValue());
-                        if (!StringUtils.equals(jarUri, evt.getValue())) {
-                            evt.setValue(jarUri);
-                            jn = evt;
-                            modified = true;
-                        }
-                        break;
-                    }
-                    case "JAR_NEXUS_VERSION": {
-                        if (StringUtils.isNotBlank(evt.getValue()) && StringUtils.isNotBlank(jarUri)) {
-                            MavenArtifact ma = MavenUrlHelper.parseMvnUrl(jarUri);
-                            if (ma != null && jn != null) {
-                                String jarVersion = ma.getVersion();
-                                jarUri = jarUri.replaceAll(jarVersion, evt.getValue());
-                                jn.setValue(jarUri);
+                        case "JAR_NAME": {
+                            String jarUri = getMavenUriForJar(evt.getValue());
+                            if (!StringUtils.equals(jarUri, evt.getValue())) {
+                                jn = evt;
                                 modified = true;
                             }
+                            break;
                         }
-                        break;
-                    }
+                        case "JAR_NEXUS_VERSION": {
+                            if (StringUtils.isNotBlank(evt.getValue()) && jn != null) {
+                                String mvnURI = "mvn:org.talend.libraries/" + FilenameUtils.getBaseName(jn.getValue()) + "/"
+                                        + evt.getValue() + "/jar";
+                                jn.setValue(mvnURI);
+                                jn = null;
+                                modified = true;
+                            }
+                            break;
+                        }
                     }
                 }
             }
