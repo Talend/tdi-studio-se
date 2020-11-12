@@ -15,11 +15,12 @@
  */
 package org.talend.sdk.component.studio;
 
-import static java.lang.ClassLoader.*;
-import static java.lang.Thread.*;
-import static java.util.Collections.*;
-import static java.util.Optional.*;
-import static java.util.stream.Collectors.*;
+import static java.lang.ClassLoader.getSystemClassLoader;
+import static java.lang.Thread.sleep;
+import static java.util.Collections.emptyEnumeration;
+import static java.util.Optional.ofNullable;
+import static java.util.stream.Collectors.joining;
+import static java.util.stream.Collectors.toSet;
 
 import java.io.File;
 import java.io.IOException;
@@ -40,6 +41,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.concurrent.locks.Lock;
 import java.util.function.Function;
 import java.util.logging.ConsoleHandler;
@@ -50,7 +52,9 @@ import java.util.stream.Stream;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.m2e.core.MavenPlugin;
+import org.talend.commons.CommonsPlugin;
 import org.talend.commons.exception.ExceptionHandler;
+import org.talend.commons.utils.network.NetworkUtil;
 import org.talend.core.GlobalServiceRegister;
 import org.talend.core.services.ICoreTisService;
 import org.talend.sdk.component.studio.lang.LocalLock;
@@ -62,7 +66,9 @@ import org.talend.sdk.component.studio.util.TaCoKitUtil;
 
 public class ProcessManager implements AutoCloseable {
 
-    private static final String CLIENT_IP = "127.0.0.1";
+    private static final String PROP_SDK_SERVER_STARTUP_TIMEOUT = "talend.studio.sdk.startup.timeout";
+
+    private static final String PROP_SDK_SERVER_STARTUP_TIMEOUT_DEFAULT = "2";
 
     private final String groupId;
 
@@ -82,15 +88,34 @@ public class ProcessManager implements AutoCloseable {
 
     private Exception loadException;
 
+    private String serverAddress;
+
     public ProcessManager(final String groupId, final Function<String, File> resolver) {
         this.groupId = groupId;
         this.mvnResolver = resolver;
+        this.serverAddress = TaCoKitConst.DEFAULT_LOCALHOST;
+    }
+
+    public String getServerAddress() {
+        return this.serverAddress;
+    }
+
+    private void setServerAddress(String address) {
+        this.serverAddress = address;
     }
 
     public void waitForServer(final Runnable healthcheck) {
         // useful for the client, to ensure we are ready
         final int steps = 250;
-        for (int i = 0; i < TimeUnit.MINUTES.toMillis(10) / steps; i++) {
+        int timeout = Integer.valueOf(PROP_SDK_SERVER_STARTUP_TIMEOUT_DEFAULT);
+        try {
+            timeout = Integer
+                    .valueOf(System.getProperty(PROP_SDK_SERVER_STARTUP_TIMEOUT, PROP_SDK_SERVER_STARTUP_TIMEOUT_DEFAULT));
+        } catch (Throwable e) {
+            ExceptionHandler.process(e);
+        }
+        boolean inTime = true;
+        for (int i = 0; inTime = (i < TimeUnit.MINUTES.toMillis(timeout) / steps); i++) {
             try {
                 if (ready.await(steps, TimeUnit.MILLISECONDS)) {
                     healthcheck.run();
@@ -114,6 +139,9 @@ public class ProcessManager implements AutoCloseable {
                 Thread.currentThread().interrupt();
                 break;
             } catch (final RuntimeException re) {
+                if (CommonsPlugin.isDebugMode()) {
+                    ExceptionHandler.process(re);
+                }
                 try {
                     sleep(500); // wait and retry, the healthcheck failed
                 } catch (final InterruptedException e) {
@@ -122,6 +150,14 @@ public class ProcessManager implements AutoCloseable {
                 }
             }
         }
+        RuntimeException ex = null;
+        if (inTime) {
+            ex = new IllegalStateException("Component server didn\'t start properly, please check the log before");
+        } else {
+            ex = new IllegalStateException(new TimeoutException("Timeout when waiting for component server initialization: "
+                    + "-D" + PROP_SDK_SERVER_STARTUP_TIMEOUT + "=" + timeout));
+        }
+        throw ex;
     }
 
     synchronized public String reload() {
@@ -330,23 +366,42 @@ public class ProcessManager implements AutoCloseable {
 
             @Override
             public void run() {
+
+                List<String> localHostAddresses = NetworkUtil.getLocalLoopbackAddresses(true);
+                if (CommonsPlugin.isDebugMode()) {
+                    ExceptionHandler.log("Local addresses passed to sdk: " + localHostAddresses);
+                }
+                int addressCount = localHostAddresses.size();
                 final long end = System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(15);
-                while (end - System.currentTimeMillis() >= 0) {
+                for (int i = 0; end - System.currentTimeMillis() >= 0; i++) {
                     final Thread serverThread = ProcessManager.this.serverThread;
                     if (serverThread == null || !serverThread.isAlive()) {
                         lock.unlock();
                         throw new IllegalStateException("Component server startup failed");
                     }
-                    try (final Socket ignored = new Socket(CLIENT_IP, port)) {
-                        final URLConnection conn = new URL("http://" + CLIENT_IP + ":" + port + "/api/v1/environment")
+                    // 500 * 10 == 5000ms == 5s => means switching address per 5s
+                    int select = Math.abs(i / 10 % addressCount);
+                    String clientIp = localHostAddresses.get(select);
+                    String ip = clientIp;
+                    if (ip.startsWith("[") && ip.endsWith("]")) {
+                        // ipv6
+                        ip = ip.substring(1, ip.length() - 1);
+                    }
+                    try (final Socket ignored = new Socket(ip, port)) {
+                        final URLConnection conn = new URL("http://" + clientIp + ":" + port + "/api/v1/environment")
                                 .openConnection();
                         conn.setRequestProperty("Content-Type", "application/json");
                         conn.setRequestProperty("Accept", "application/json");
                         conn.getInputStream().close();
+                        // update server address before informing others
+                        setServerAddress(clientIp);
                         lock.unlock();
                         ready.countDown();
                         return;
-                    } catch (final IOException e) {
+                    } catch (final Exception e) {
+                        if (CommonsPlugin.isDebugMode()) {
+                            ExceptionHandler.process(e);
+                        }
                         try {
                             Thread.sleep(500);
                         } catch (final InterruptedException e1) {

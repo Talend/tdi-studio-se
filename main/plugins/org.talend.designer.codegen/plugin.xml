@@ -69,6 +69,14 @@
       </ComponentsProvider>
    </extension>
    <extension
+         point="org.talend.core.components_provider">
+      <ComponentsProvider
+            class="org.talend.designer.codegen.components.model.SharedStudioUserComponentProvider"
+            folderName="user"
+            id="org.talend.designer.codegen.components.model.SharedStudioUserComponentProvider">
+      </ComponentsProvider>
+   </extension>
+   <extension
          point="org.eclipse.core.runtime.preferences">
       <initializer
             class="org.talend.designer.codegen.components.ui.ComponentPreferenceInitializer">

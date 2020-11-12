@@ -116,6 +116,7 @@ import org.talend.core.model.process.IContextManager;
 import org.talend.core.model.process.IContextParameter;
 import org.talend.core.model.process.IElementParameter;
 import org.talend.core.model.process.INode;
+import org.talend.core.model.process.IProcess;
 import org.talend.core.model.process.IProcess2;
 import org.talend.core.model.process.JobInfo;
 import org.talend.core.model.properties.InformationLevel;
@@ -834,8 +835,11 @@ public abstract class AbstractMultiPageTalendEditor extends MultiPageEditorPart 
             List<Node> nodes = (List<Node>) oldProcess.getGraphicalNodes();
             List<Node> newNodes = new ArrayList<Node>();
             newNodes.addAll(nodes);
+            Set<IProcess> processSet = new HashSet<IProcess>();
             for (Node node : newNodes) {
-                node.getProcess().checkStartNodes();
+                if (processSet.add(node.getProcess())) {
+                    node.getProcess().checkStartNodes();
+                }
                 node.checkAndRefreshNode();
                 IElementParameter ep = node.getElementParameter("ACTIVATE");
                 if (ep != null && ep.getValue().equals(Boolean.FALSE)) {

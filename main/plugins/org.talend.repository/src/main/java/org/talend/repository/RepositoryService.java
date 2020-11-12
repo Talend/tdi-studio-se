@@ -104,6 +104,7 @@ import org.talend.core.repository.model.RepositoryFactoryProvider;
 import org.talend.core.repository.model.repositoryObject.SalesforceModuleRepositoryObject;
 import org.talend.core.repository.utils.ProjectHelper;
 import org.talend.core.repository.utils.RepositoryPathProvider;
+import org.talend.core.runtime.util.SharedStudioUtils;
 import org.talend.core.services.ICoreTisService;
 import org.talend.core.services.IGITProviderService;
 import org.talend.core.services.ISVNProviderService;
@@ -321,7 +322,7 @@ public class RepositoryService implements IRepositoryService, IRepositoryContext
             logged = LoginHelper.getInstance().loginAuto();
         }
         if (!logged) {
-            if (ArrayUtils.contains(Platform.getApplicationArgs(), EclipseCommandLine.LOGIN_ONLINE_UPDATE)) {
+            if (ArrayUtils.contains(Platform.getApplicationArgs(), EclipseCommandLine.LOGIN_ONLINE_UPDATE) && !SharedStudioUtils.isSharedStudioMode()) {
                 ICoreTisService tisService = ICoreTisService.get();
                 if (tisService != null) {
                     LoginHelper loginHelper = LoginHelper.getInstance();
@@ -850,7 +851,7 @@ public class RepositoryService implements IRepositoryService, IRepositoryContext
     }
 
     @Override
-    public List<String> getProjectBranch(Project project) {
+    public List<String> getProjectBranch(Project project, boolean onlyLocalIfPossible) {
         List<String> branchesList = new ArrayList<String>();
         if (!isInitedProviderService) {
             initProviderService();
@@ -865,7 +866,7 @@ public class RepositoryService implements IRepositoryService, IRepositoryContext
                     }
                 }
                 if (!project.isLocal() && gitProviderService != null && gitProviderService.isGITProject(project)) {
-                    branchesList.addAll(Arrays.asList(gitProviderService.getBranchList(project)));
+                    branchesList.addAll(Arrays.asList(gitProviderService.getBranchList(project, onlyLocalIfPossible)));
                 }
             } catch (PersistenceException e) {
                 CommonExceptionHandler.process(e);

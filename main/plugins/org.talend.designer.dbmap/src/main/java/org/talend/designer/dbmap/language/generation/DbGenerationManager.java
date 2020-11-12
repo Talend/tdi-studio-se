@@ -1178,13 +1178,13 @@ public abstract class DbGenerationManager {
             if (table.getAlias() == null) {
                 tableName = getHandledTableName(component, table.getName(), table.getAlias());
             } else {
-                tableName = getHandledField(table.getAlias());
+                tableName = getHandledField(component, table.getAlias());
             }
             if (!subQueryTable.contains(tableName)) {
                 entryName = getOriginalColumnName(entryName, component, table);
                 entryName = getColumnName(null, entryName);
             }
-            String locationInputEntry = language.getLocation(tableName, getHandledField(entryName));
+            String locationInputEntry = language.getLocation(tableName, getHandledField(component, entryName));
             appendSqlQuery(sbWhere, DbMapSqlConstants.SPACE, isSqlQuery);
             appendSqlQuery(sbWhere, locationInputEntry, isSqlQuery);
             appendSqlQuery(sbWhere, getSpecialRightJoin(table), isSqlQuery);
@@ -1265,7 +1265,7 @@ public abstract class DbGenerationManager {
                 String handledTableName = getHandledTableName(component, inputTable.getTableName(), alias);
                 appendSqlQuery(sb, handledTableName);
                 appendSqlQuery(sb, DbMapSqlConstants.SPACE);
-                String handledField = getHandledField(alias);
+                String handledField = getHandledField(component, alias);
                 appendSqlQuery(sb, handledField);
                 aliasAlreadyDeclared.add(alias);
             } else {
@@ -1738,9 +1738,20 @@ public abstract class DbGenerationManager {
         return "\""; //$NON-NLS-1$
     }
 
-    protected String getHandledField(String field) {
+    protected String getHandledField(DbMapComponent component, String field) {
         if (field != null) {
-            field = field.replace("\"", "\\\"");
+            List<String> contextList = getContextList(component);
+            boolean haveReplace = false;
+            for (String context : contextList) {
+                if (field.contains(context)) {
+                    field = field.replaceAll("\\b" + context + "\\b", "\" +" + context + "+ \""); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+                    haveReplace = true;
+                    break;
+                }
+            }
+            if (!haveReplace) {
+                field = field.replace("\"", "\\\"");
+            }
         }
         return field;
     }
@@ -1869,7 +1880,7 @@ public abstract class DbGenerationManager {
                             String columnName = column.getLabel();
                             if (columnName.equals(dbMapEntry.getName()) && column.isKey()) {
                                 isKey = column.isKey();
-                                keyColumn = addQuotes(columnEntry) + " = " + expression;//$NON-NLS-1$
+                                keyColumn = addQuotes(columnEntry) + " = " + exp;//$NON-NLS-1$
                                 break;
                             }
                         }
@@ -1885,7 +1896,7 @@ public abstract class DbGenerationManager {
                         } else {
                             isFirstColumn = false;
                         }
-                        appendSqlQuery(sb, addQuotes(columnEntry) + " = " + expression); //$NON-NLS-1$
+                        appendSqlQuery(sb, addQuotes(columnEntry) + " = " + exp); //$NON-NLS-1$
                     }
                 }
             }

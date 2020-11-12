@@ -1690,6 +1690,11 @@ public abstract class DataMapTableView extends Composite implements IDataMapTabl
         }
     }
 
+    public void updateSelectedDataMapTableViewTitle() {
+        nameLabel.setText(getTitle());
+        nameLabel.getParent().layout();
+    }
+
     /**
      *
      * Provide a color provider for Constraints table and dataMap table.

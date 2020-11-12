@@ -103,22 +103,22 @@ public class PostgresGenerationManager extends DbGenerationManager {
 
                 if (inputTable.getAlias() != null && !"".equals(inputTable.getAlias())
                         && !replacedStrings.contains(inputTable.getAlias())) {
-                    expression = replaceFields4Expression(expression, inputTable.getAlias());
+                    expression = replaceFields4Expression(component, expression, inputTable.getAlias());
                     replacedStrings.add(inputTable.getAlias());
                 } else {
                     if (needReplaceSchema && !replacedStrings.contains(schemaStr)) {
-                        expression = replaceFields4Expression(expression, schemaStr);
+                        expression = replaceFields4Expression(component, expression, schemaStr);
                         replacedStrings.add(schemaStr);
                     }
                     if (needReplaceTable && !replacedStrings.contains(tableNameStr)) {
-                        expression = replaceFields4Expression(expression, tableNameStr);
+                        expression = replaceFields4Expression(component, expression, tableNameStr);
                         replacedStrings.add(tableNameStr);
                     }
                 }
                 for (IMetadataColumn co : connection.getMetadataTable().getListColumns()) {
                     String columnLabel = co.getOriginalDbColumnName();
                     if (!replacedStrings.contains(columnLabel) && expression.contains(columnLabel)) {
-                        expression = replaceFields4Expression(expression, columnLabel);
+                        expression = replaceFields4Expression(component, expression, columnLabel);
                         replacedStrings.add(columnLabel);
                     }
                 }
@@ -129,12 +129,12 @@ public class PostgresGenerationManager extends DbGenerationManager {
             if (metadataList != null) {
                 for (IMetadataTable table : metadataList) {
                     String tableName = table.getLabel();
-                    expression = replaceFields4Expression(expression, tableName);
+                    expression = replaceFields4Expression(component, expression, tableName);
                     replacedStrings.add(expression);
                     for (IMetadataColumn column : table.getListColumns()) {
                         String columnLabel = column.getOriginalDbColumnName();
                         if (!replacedStrings.contains(columnLabel) && expression.contains(columnLabel)) {
-                            expression = replaceFields4Expression(expression, columnLabel);
+                            expression = replaceFields4Expression(component, expression, columnLabel);
                             replacedStrings.add(columnLabel);
                         }
                     }
@@ -146,8 +146,8 @@ public class PostgresGenerationManager extends DbGenerationManager {
 
     }
 
-    private String replaceFields4Expression(String expression, String subExpression) {
-        String subExpressionWithQuote = getHandledField(subExpression);
+    private String replaceFields4Expression(DbMapComponent component, String expression, String subExpression) {
+        String subExpressionWithQuote = getHandledField(component, subExpression);
         if (expression.indexOf(subExpressionWithQuote) != -1) {
             return expression;
         } else {
@@ -157,7 +157,7 @@ public class PostgresGenerationManager extends DbGenerationManager {
     }
 
     @Override
-    protected String getHandledField(String field) {
+    protected String getHandledField(DbMapComponent component, String field) {
         return getHandledField(field, false);
     }
 
@@ -236,10 +236,10 @@ public class PostgresGenerationManager extends DbGenerationManager {
             if (aliasName == null) {
                 String tableAndSchema = "";
                 if (hasSchema) {
-                    tableAndSchema = getHandledField(schemaNoQuote);
+                    tableAndSchema = getHandledField(component, schemaNoQuote);
                     tableAndSchema = tableAndSchema + ".";
                 }
-                tableAndSchema = tableAndSchema + getHandledField(tableNoQuote);
+                tableAndSchema = tableAndSchema + getHandledField(component, tableNoQuote);
 
                 if (isVariable(schemaNoQuote) || isVariable(tableNoQuote)) {
                     tableAndSchema = replaceVariablesForExpression(component, tableAndSchema);
@@ -283,9 +283,9 @@ public class PostgresGenerationManager extends DbGenerationManager {
         }
 
         if (aliasName != null) {
-            sb.append(getHandledField(aliasName));
+            sb.append(getHandledField(component, aliasName));
         } else {
-            sb.append(getHandledField(tableName));
+            sb.append(getHandledField(component, tableName));
         }
 
     }

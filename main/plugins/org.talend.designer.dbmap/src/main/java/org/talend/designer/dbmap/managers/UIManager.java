@@ -372,6 +372,7 @@ public class UIManager extends AbstractUIManager {
         ToolbarZone toolbar = null;
         if (currentZone == Zone.INPUTS) {
             toolbar = getInputsZone().getToolbar();
+            ((ToolbarInputZone) toolbar).setEnabledRenameAliasButton(currentSelectedInputTableView != null);
             ((ToolbarInputZone) toolbar).setEnabledRemoveAliasButton(currentSelectedInputTableView != null);
             toolbar.setEnabledMinimizeTablesButton(getInputsTablesView().size() > 0);
         } else if (currentZone == Zone.OUTPUTS) {
@@ -980,6 +981,13 @@ public class UIManager extends AbstractUIManager {
      */
     public ParseExpressionResult parseExpression(String expression, ITableEntry currentModifiedITableEntry,
             boolean linkMustHaveSelectedState, boolean checkInputKeyAutomatically, boolean inputExpressionAppliedOrCanceled) {
+        return parseExpression(expression, currentModifiedITableEntry, linkMustHaveSelectedState, checkInputKeyAutomatically,
+                inputExpressionAppliedOrCanceled, false);
+    }
+
+    public ParseExpressionResult parseExpression(String expression, ITableEntry currentModifiedITableEntry,
+            boolean linkMustHaveSelectedState, boolean checkInputKeyAutomatically, boolean inputExpressionAppliedOrCanceled,
+            boolean renamed) {
 
         DataMapTableView dataMapTableView = mapperManager.retrieveDataMapTableView(currentModifiedITableEntry);
         boolean linkHasBeenAdded = false;
@@ -1012,13 +1020,14 @@ public class UIManager extends AbstractUIManager {
                 alreadyProcessed.add(location);
             }
         }
-
-        Set<IMapperLink> targets = mapperManager.getGraphicalLinksFromTarget(currentModifiedITableEntry);
-        Set<IMapperLink> linksFromTarget = new HashSet<IMapperLink>(targets);
-        for (IMapperLink link : linksFromTarget) {
-            if (sourcesForTargetToDelete.contains(link.getPointLinkDescriptor1().getTableEntry())) {
-                mapperManager.removeLink(link, link.getPointLinkDescriptor2().getTableEntry());
-                linkHasBeenRemoved = true;
+        if (!renamed) {
+            Set<IMapperLink> targets = mapperManager.getGraphicalLinksFromTarget(currentModifiedITableEntry);
+            Set<IMapperLink> linksFromTarget = new HashSet<IMapperLink>(targets);
+            for (IMapperLink link : linksFromTarget) {
+                if (sourcesForTargetToDelete.contains(link.getPointLinkDescriptor1().getTableEntry())) {
+                    mapperManager.removeLink(link, link.getPointLinkDescriptor2().getTableEntry());
+                    linkHasBeenRemoved = true;
+                }
             }
         }
         mapperManager.orderLinks();
@@ -1105,7 +1114,8 @@ public class UIManager extends AbstractUIManager {
         TableEntryLocation previousLocation = new TableEntryLocation(currentModifiedITableEntry.getParentName(),
                 previousColumnName);
         TableEntryLocation newLocation = new TableEntryLocation(currentModifiedITableEntry.getParentName(), newColumnName);
-        mapperManager.replacePreviousLocationInAllExpressions(previousLocation, newLocation);
+        mapperManager.replacePreviousLocationInAllExpressions(previousLocation, newLocation, false);
+        mapperManager.getUiManager().refreshBackground(false, false);
         refreshSqlExpression();
 
         if (!renamingDependentEntries) {
