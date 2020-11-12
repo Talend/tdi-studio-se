@@ -156,7 +156,6 @@ public class DeploymentComposite extends AbstractTabComposite {
                 for (INode node : nodes) {
                     if ("tRouteInput".equals(node.getComponent().getName())) {
                         isChildJob = true;
-                        defaultVersion = "";
                         break;
                     }
                 }
@@ -190,7 +189,7 @@ public class DeploymentComposite extends AbstractTabComposite {
                     .getLastVersion(isService ? serviceItem.getProperty().getId() : process.getId());
             String latestVersion = obj.getVersion();
 
-            if (!currentVersion.equals(latestVersion) || isDataServiceJob || isChildJob || isProcessItem || isServiceItem) {
+            if (!currentVersion.equals(latestVersion) || isDataServiceJob || isProcessItem || isServiceItem) {
                 groupIdCheckbox.setEnabled(false);
                 groupIdText.setEnabled(false);
                 versionCheckbox.setEnabled(false);
@@ -231,7 +230,7 @@ public class DeploymentComposite extends AbstractTabComposite {
             messageComposite.setLayout(layout);
             messageComposite.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
             widgetFactory.createLabel(messageComposite,
-                    "Deployment parameters will be inherited from parent route");
+                    "Deployment parameters will be inherited from parent route during publishing from Studio and Command Line");
         }
         Composite composite = new Composite(this, SWT.NONE);
         GridLayout layout = new GridLayout(2, false);
@@ -320,22 +319,6 @@ public class DeploymentComposite extends AbstractTabComposite {
             buildTypeControl.setVisible(showBuildType);
             buildTypeLabel.setVisible(showBuildType);
             
-            if (isChildJob) {
-                groupIdText.setText("");
-                groupIdCheckbox.setSelection(false);
-                groupIdText.setEnabled(false);
-                
-                versionText.setText("");
-                versionCheckbox.setSelection(false);
-                versionText.setEnabled(false);
-                versionText.setToolTipText(""); //$NON-NLS-1$
-                
-                snapshotCheckbox.setSelection(false);
-                
-                buildTypeLabel.setVisible(false);
-                buildTypeCombo.getCCombo().setVisible(false);
-            }
-
             if (showBuildType) {
                 Map<String, Object> parameters = new HashMap<String, Object>();
                 parameters.put(getObjectType(), getObject());
@@ -363,9 +346,6 @@ public class DeploymentComposite extends AbstractTabComposite {
     private boolean isShowBuildType() {
         // add support for ESB Service.
         if (!PluginChecker.isTIS()) {
-            return false;
-        }
-        if (isChildJob) {
             return false;
         }
         Map<String, Object> parameters = new HashMap<String, Object>();
