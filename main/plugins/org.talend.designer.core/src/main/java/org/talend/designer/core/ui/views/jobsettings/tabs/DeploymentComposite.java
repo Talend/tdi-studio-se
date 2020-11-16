@@ -325,7 +325,6 @@ public class DeploymentComposite extends AbstractTabComposite {
             final Control buildTypeControl = buildTypeCombo.getControl();
             buildTypeControl.setVisible(showBuildType);
             buildTypeLabel.setVisible(showBuildType);
-            
 
             if (showBuildType) {
                 Map<String, Object> parameters = new HashMap<String, Object>();
