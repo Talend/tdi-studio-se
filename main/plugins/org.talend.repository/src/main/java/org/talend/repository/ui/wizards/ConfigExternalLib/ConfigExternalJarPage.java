@@ -18,7 +18,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.eclipse.emf.common.util.EList;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.SWT;
@@ -27,12 +26,11 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
-import org.talend.commons.ui.runtime.exception.ExceptionHandler;
+import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.ui.swt.dialogs.IConfigModuleDialog;
 import org.talend.core.CorePlugin;
 import org.talend.core.GlobalServiceRegister;
 import org.talend.core.ILibraryManagerUIService;
-import org.talend.core.model.properties.RoutineItem;
 import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.designer.core.model.utils.emf.component.ComponentFactory;
 import org.talend.designer.core.model.utils.emf.component.IMPORTType;
@@ -49,8 +47,6 @@ public class ConfigExternalJarPage extends ConfigExternalLibPage {
     private Map<IMPORTType, File> newJarFiles = new HashMap<IMPORTType, File>();
 
     private LibraryField libField;
-
-    private RoutineItem routineItem;
 
     /**
      * ConfigExternalJarPage.
@@ -73,6 +69,7 @@ public class ConfigExternalJarPage extends ConfigExternalLibPage {
          * Call this to make sure librariesListener is registed.<br>
          * Please refer to MavenPomSynchronizer#addChangeLibrariesListener
          */
+        // FIXME
         CorePlugin.getDefault().getRunProcessService().getTalendCodeJavaProject(ERepositoryObjectType.ROUTINES);
     }
 
@@ -81,8 +78,6 @@ public class ConfigExternalJarPage extends ConfigExternalLibPage {
      *
      * @see org.eclipse.jface.dialogs.IDialogPage#createControl(org.eclipse.swt.widgets.Composite)
      */
-    EList routines = null;
-
     @Override
     public void createControl(Composite parent) {
         initializeDialogUnits(parent);
@@ -95,9 +90,7 @@ public class ConfigExternalJarPage extends ConfigExternalLibPage {
         libField = new EditJavaRoutineExternalJarField(Messages.getString("ImportExternalJarPage.fileField.label"), //$NON-NLS-1$
                 composite, isReadOnly());
 
-        routineItem = getSelectedRoutine();
-        routines = routineItem.getImports();
-        libField.setInput(routines);
+        libField.setInput(getImports());
 
         setErrorMessage(null); // should not initially have error message
 
@@ -117,11 +110,12 @@ public class ConfigExternalJarPage extends ConfigExternalLibPage {
             @Override
             public void run() {
                 try {
-                    CorePlugin.getDefault().getProxyRepositoryFactory().save(getSelectedRoutine());
+                    CorePlugin.getDefault().getProxyRepositoryFactory().save(getSelectedItem());
                 } catch (Exception e) {
                     ExceptionHandler.process(e);
                 }
-                CorePlugin.getDefault().getRunProcessService().updateLibraries(routineItem);
+                CorePlugin.getDefault().getRunProcessService().updateLibraries(getSelectedItem());
+                // TODO also update routinesjar project
             }
         });
 
@@ -176,19 +170,17 @@ public class ConfigExternalJarPage extends ConfigExternalLibPage {
         protected List<IMPORTType> getNewInputObject() {
             List<IMPORTType> importTypes = new ArrayList<IMPORTType>();
             if (GlobalServiceRegister.getDefault().isServiceRegistered(ILibraryManagerUIService.class)) {
-                ILibraryManagerUIService libUiService = (ILibraryManagerUIService) GlobalServiceRegister.getDefault().getService(
-                        ILibraryManagerUIService.class);
+                ILibraryManagerUIService libUiService = GlobalServiceRegister.getDefault()
+                        .getService(ILibraryManagerUIService.class);
                 IConfigModuleDialog dialog = libUiService.getConfigModuleDialog(getShell(), null);
                 if (dialog.open() == IDialogConstants.OK_ID) {
                     IMPORTType type = ComponentFactory.eINSTANCE.createIMPORTType();
-                    RoutineItem routine = getSelectedRoutine();
-                    type.setNAME(routine.getProperty().getLabel());
+                    type.setNAME(getSelectedItem().getProperty().getLabel());
                     type.setMODULE(dialog.getModuleName());
                     type.setMVN(dialog.getMavenURI());
                     type.setREQUIRED(true);
                     importTypes.add(type);
                 }
-                ConfigExternalJarPage.this.setPageComplete(true);
             }
             ConfigExternalJarPage.this.setPageComplete(true);
             return importTypes;

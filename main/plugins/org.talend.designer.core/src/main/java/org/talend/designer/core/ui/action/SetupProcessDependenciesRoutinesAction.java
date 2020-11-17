@@ -170,6 +170,7 @@ public class SetupProcessDependenciesRoutinesAction extends AContextualAction {
     }
 
     private void createRoutinesDependencies(ProcessType process, List<RoutineItemRecord> routineRecords) {
+        // TODO big one
         if (routineRecords == null) {
             return;
         }

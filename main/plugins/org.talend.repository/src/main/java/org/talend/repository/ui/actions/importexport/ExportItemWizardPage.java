@@ -307,8 +307,8 @@ public class ExportItemWizardPage extends WizardPage {
     }
 
     private Set<IRepositoryNode> getBeansWithIds(Set<String> ids) {
-        RepositoryNode codeRepositoryNode = ProjectRepositoryNode.getInstance().getRootRepositoryNode(
-                ERepositoryObjectType.valueOf("BEANS"));
+        RepositoryNode codeRepositoryNode = ProjectRepositoryNode.getInstance()
+                .getRootRepositoryNode(ERepositoryObjectType.BEANS);
 
         Set<IRepositoryNode> repositoryNodes = new HashSet<IRepositoryNode>();
 
@@ -1046,7 +1046,7 @@ public class ExportItemWizardPage extends WizardPage {
 
     private void registerRelatedBeans(Collection<Item> items) {
         RepositoryNode codeRepositoryNode = ProjectRepositoryNode.getInstance().getRootRepositoryNode(
-                ERepositoryObjectType.valueOf("BEANS"));
+                ERepositoryObjectType.BEANS);
         if (codeRepositoryNode != null) {
             List<IRepositoryNode> checkedNodesBeans = codeRepositoryNode.getChildren();
             for (Item item : items) {

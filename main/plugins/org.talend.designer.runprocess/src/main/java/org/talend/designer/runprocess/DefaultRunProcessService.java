@@ -65,7 +65,6 @@ import org.talend.core.model.process.ProcessUtils;
 import org.talend.core.model.properties.Item;
 import org.talend.core.model.properties.ProjectReference;
 import org.talend.core.model.properties.Property;
-import org.talend.core.model.properties.RoutineItem;
 import org.talend.core.model.relationship.Relation;
 import org.talend.core.model.relationship.RelationshipItemBuilder;
 import org.talend.core.model.repository.ERepositoryObjectType;
@@ -394,7 +393,7 @@ public class DefaultRunProcessService implements IRunProcessService {
      * org.talend.designer.runprocess.IRunProcessService#updateLibraries(org.talend.core.model.properties.RoutineItem)
      */
     @Override
-    public void updateLibraries(RoutineItem routineItem) {
+    public void updateLibraries(Item routineItem) {
         Set<ModuleNeeded> modulesForRoutine = ModulesNeededProvider.updateModulesNeededForRoutine(routineItem);
         File libDir = getJavaProjectLibFolder().getLocation().toFile();
         if (libDir == null) {
@@ -817,7 +816,7 @@ public class DefaultRunProcessService implements IRunProcessService {
         try {
             AggregatorPomsHelper.buildAndInstallCodesProject(monitor, ERepositoryObjectType.ROUTINES);
             if (ProcessUtils.isRequiredBeans(null)) {
-                AggregatorPomsHelper.buildAndInstallCodesProject(monitor, ERepositoryObjectType.valueOf("BEANS")); //$NON-NLS-1$
+                AggregatorPomsHelper.buildAndInstallCodesProject(monitor, ERepositoryObjectType.BEANS);
             }
         } catch (Exception e) {
             ExceptionHandler.process(e);

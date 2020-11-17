@@ -76,7 +76,6 @@ import org.eclipse.jdt.debug.core.JDIDebugModel;
 import org.eclipse.jdt.internal.ui.JavaPlugin;
 import org.eclipse.jdt.internal.ui.text.java.JavaFormattingStrategy;
 import org.eclipse.jdt.launching.IJavaLaunchConfigurationConstants;
-import org.eclipse.jdt.launching.sourcelookup.advanced.AdvancedJavaLaunchDelegate;
 import org.eclipse.jdt.ui.text.IJavaPartitions;
 import org.eclipse.jdt.ui.text.JavaTextTools;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -1458,7 +1457,7 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
 
             if (ProcessUtils.isRequiredBeans(process)) {
                 ITalendProcessJavaProject beansProject = TalendJavaProjectManager
-                        .getTalendCodeJavaProject(ERepositoryObjectType.valueOf("BEANS")); //$NON-NLS-1$
+                        .getTalendCodeJavaProject(ERepositoryObjectType.BEANS);
                 IPath beansOutputPath = beansProject.getOutputFolder().getLocation();
                 basePath.append(getClassPath(beansOutputPath));
                 basePath.append(classPathSeparator);

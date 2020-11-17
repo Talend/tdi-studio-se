@@ -34,6 +34,7 @@ import org.talend.repository.model.IProxyRepositoryFactory;
 import org.talend.repository.model.IRepositoryNode.EProperties;
 import org.talend.repository.model.RepositoryNode;
 import org.talend.repository.model.RepositoryNodeUtilities;
+import org.talend.repository.ui.wizards.routines.NewInnerRoutineWizard;
 import org.talend.repository.ui.wizards.routines.NewRoutineWizard;
 
 /**
@@ -75,14 +76,19 @@ public class CreateRoutineAction extends AbstractRoutineAction {
         if (canWork) {
             Object o = selection.getFirstElement();
             RepositoryNode node = (RepositoryNode) o;
+            ERepositoryObjectType nodeType = (ERepositoryObjectType) node.getProperties(EProperties.CONTENT_TYPE);
             switch (node.getType()) {
             case SIMPLE_FOLDER:
             case SYSTEM_FOLDER:
-                ERepositoryObjectType nodeType = (ERepositoryObjectType) node.getProperties(EProperties.CONTENT_TYPE);
                 if (nodeType != ERepositoryObjectType.ROUTINES) {
                     canWork = false;
                 }
                 if (node.getObject() != null && node.getObject().isDeleted()) {
+                    canWork = false;
+                }
+                break;
+            case REPOSITORY_ELEMENT:
+                if (nodeType != ERepositoryObjectType.ROUTINESJAR) {
                     canWork = false;
                 }
                 break;
@@ -123,8 +129,12 @@ public class CreateRoutineAction extends AbstractRoutineAction {
             node = (RepositoryNode) obj;
             path = RepositoryNodeUtilities.getPath(node);
         }
-
-        NewRoutineWizard routineWizard = new NewRoutineWizard(path);
+        NewRoutineWizard routineWizard;
+        if (ERepositoryObjectType.ROUTINESJAR == node.getParent().getContentType()) {
+            routineWizard = new NewInnerRoutineWizard(path);
+        } else {
+            routineWizard = new NewRoutineWizard(path);
+        }
         WizardDialog dlg = new WizardDialog(Display.getCurrent().getActiveShell(), routineWizard);
 
         if (dlg.open() == Window.OK) {

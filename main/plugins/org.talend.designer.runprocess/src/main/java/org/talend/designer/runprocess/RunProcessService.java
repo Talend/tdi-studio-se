@@ -35,7 +35,6 @@ import org.talend.core.model.process.IProcess2;
 import org.talend.core.model.process.JobInfo;
 import org.talend.core.model.properties.Item;
 import org.talend.core.model.properties.Property;
-import org.talend.core.model.properties.RoutineItem;
 import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.core.runtime.process.ITalendProcessJavaProject;
 import org.talend.core.runtime.projectsetting.ProjectPreferenceManager;
@@ -210,7 +209,7 @@ public class RunProcessService implements IRunProcessService {
      * org.talend.designer.runprocess.IRunProcessService#updateLibraries(org.talend.core.model.properties.RoutineItem)
      */
     @Override
-    public void updateLibraries(RoutineItem routineItem) {
+    public void updateLibraries(Item routineItem) {
         delegateService.updateLibraries(routineItem);
     }
 

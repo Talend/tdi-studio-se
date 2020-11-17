@@ -1846,8 +1846,11 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
         }
     }
 
+    @SuppressWarnings("unchecked")
     protected void checkRoutineDependencies() {
+        boolean init = false;
         if (routinesDependencies == null) {
+            init = true;
             routinesDependencies = new ArrayList<RoutinesParameterType>();
         }
         try {
@@ -1984,6 +1987,10 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
                         routinesDependencies.add(routinesParameterType);
                     }
                 }
+            }
+            if (init) {
+                EList<RoutinesParameterType> allRoutines = getProcessType().getRoutinesDependencies();
+                routinesDependencies.addAll(allRoutines.stream().filter(r -> r.getType() != null).collect(Collectors.toList()));
             }
         } catch (PersistenceException e) {
             ExceptionHandler.process(e);
@@ -4701,7 +4708,11 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
 
     @Override
     public Set<String> getNeededRoutines() {
-        return getNeededCodeItem(neededRoutines, ERepositoryObjectType.ROUTINES);
+        // TODO
+        Set<String> neededRoutines = new HashSet<>();
+        neededRoutines.addAll(getNeededCodeItem(neededRoutines, ERepositoryObjectType.ROUTINES));
+        neededRoutines.addAll(getNeededCodeItem(neededRoutines, ERepositoryObjectType.ROUTINESJAR));
+        return neededRoutines;
     }
 
     private Set<String> getNeededCodeItem(Set<String> neededCodeItem, ERepositoryObjectType itemType) {

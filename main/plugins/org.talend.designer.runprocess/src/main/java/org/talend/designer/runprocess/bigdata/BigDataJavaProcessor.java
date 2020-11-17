@@ -292,7 +292,7 @@ public abstract class BigDataJavaProcessor extends MavenJavaProcessor implements
 
                 if (ProcessUtils.isRequiredBeans(process)) {
                     ITalendProcessJavaProject beansProject = TalendJavaProjectManager
-                            .getTalendCodeJavaProject(ERepositoryObjectType.valueOf("BEANS")); //$NON-NLS-1$
+                            .getTalendCodeJavaProject(ERepositoryObjectType.BEANS);
                     IFile beansJar = beansProject.getTargetFolder().getFile(
                             JavaUtils.BEANS_JAR_NAME + "-" + PomUtil.getDefaultMavenVersion() + FileExtensions.JAR_FILE_SUFFIX); //$NON-NLS-1$
                     libJars.append(beansJar.getLocation().toPortableString() + ","); //$NON-NLS-1$

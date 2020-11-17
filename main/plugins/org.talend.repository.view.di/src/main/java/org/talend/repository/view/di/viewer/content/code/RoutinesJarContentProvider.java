@@ -17,7 +17,7 @@ import org.talend.core.repository.model.ProjectRepositoryNode;
 import org.talend.repository.model.RepositoryNode;
 import org.talend.repository.viewer.content.code.AbstractCodeContentProvider;
 
-public class RoutinesContentProvider extends AbstractCodeContentProvider {
+public class RoutinesJarContentProvider extends AbstractCodeContentProvider {
 
     /*
      * (non-Javadoc)
@@ -29,7 +29,7 @@ public class RoutinesContentProvider extends AbstractCodeContentProvider {
     @Override
     protected RepositoryNode getTopLevelNodeFromProjectRepositoryNode(ProjectRepositoryNode projectNode) {
 
-        return projectNode.getRootRepositoryNode(ERepositoryObjectType.ROUTINES);
+        return projectNode.getRootRepositoryNode(ERepositoryObjectType.ROUTINESJAR);
     }
 
 }
