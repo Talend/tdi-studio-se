@@ -17,6 +17,7 @@ import java.nio.charset.StandardCharsets;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -68,6 +69,7 @@ import org.talend.core.language.ECodeLanguage;
 import org.talend.core.model.action.DisableLanguageActions;
 import org.talend.core.model.components.IComponentsFactory;
 import org.talend.core.model.general.ConnectionBean;
+import org.talend.core.model.general.ModuleNeeded;
 import org.talend.core.model.general.Project;
 import org.talend.core.model.metadata.IMetadataConnection;
 import org.talend.core.model.metadata.builder.connection.DatabaseConnection;
@@ -137,6 +139,8 @@ import org.talend.repository.ui.login.LoginHelper;
 import org.talend.repository.ui.login.connections.ConnectionUserPerReader;
 import org.talend.repository.ui.login.connections.network.NetworkErrorRetryDialog;
 import org.talend.repository.ui.utils.ColumnNameValidator;
+import org.talend.repository.ui.utils.Log4jPrefsSettingManager;
+import org.talend.repository.ui.utils.UpdateLog4jJarUtils;
 import org.talend.repository.ui.views.IRepositoryView;
 import org.talend.utils.json.JSONException;
 import org.talend.utils.json.JSONObject;
@@ -996,4 +1000,11 @@ public class RepositoryService implements IRepositoryService, IRepositoryContext
             ((RepoViewCommonNavigator) repView).setShouldCheckRepositoryDirty(shouldFlag);
         }
     }
+
+    @Override
+    public List<ModuleNeeded> getLog4j2Modules() {
+        return Log4jPrefsSettingManager.getInstance().isSelectLog4j2() ? UpdateLog4jJarUtils.getLog4j2Modules()
+                : Collections.emptyList();
+    }
+
 }
