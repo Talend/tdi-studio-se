@@ -772,20 +772,13 @@ skeleton="@{org.talend.designer.components.localprovider}/components/templates/d
 					} else if(line.contains("|ERROR|")){
 						  failure = true;
 					      line = line.substring(line.indexOf("|ERROR|")+7);
-					      String line1 = line;
-					      if(line.length()>1250) {
-					            String tmp = line.substring(0, 1000);
-					            tmp += ".....";
-					            tmp += line.substring(line.length()-200);
-					            line = tmp;
-					      }
 					      if(<%=dieOnError%>){
-					      	throw new RuntimeException ("gpload failed because: " + line1);
+					      	throw new RuntimeException ("gpload failed because: " + line);
 					      } else {
 					      	<%if(isLog4jEnabled){%>
-					      		log.error(line1);
+					      		log.error(line);
 					      	<%} else {%>
-					      		System.out.println("WARNING GPLOAD FAILURE:" + line1);
+					      		System.out.println("WARNING GPLOAD FAILURE:" + line);
 					      	<%}%>
 
 					      }
