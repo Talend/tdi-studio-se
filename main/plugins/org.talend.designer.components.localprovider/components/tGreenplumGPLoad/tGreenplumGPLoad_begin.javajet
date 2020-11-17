@@ -14,9 +14,9 @@ imports="
     java.util.Map
     java.util.HashMap
 " 
-skeleton="../templates/db_output_bulk.skeleton"
+skeleton="@{org.talend.designer.components.localprovider}/components/templates/db_output_bulk.skeleton"
 %>
-<%@ include file="../templates/Log4j/Log4jDBConnUtil.javajet"%>
+<%@ include file="@{org.talend.designer.components.localprovider}/components/templates/Log4j/Log4jDBConnUtil.javajet"%>
 
 <% 
 	CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
@@ -34,6 +34,8 @@ skeleton="../templates/db_output_bulk.skeleton"
 	String tableAction = ElementParameterParser.getValue(node, "__TABLE_ACTION__");
 	String dataAction = ElementParameterParser.getValue(node, "__DATA_ACTION__");
 	String dataFile = ElementParameterParser.getValue(node, "__DATA_FILE__");
+	boolean removeFile = ("true").equals(ElementParameterParser.getValue(node,"__REMOVE_DATAFILE__"));
+	boolean useGzip = ("true").equals(ElementParameterParser.getValue(node,"__USE_GZIP_COMPRESSION__"));
 	boolean useNamedPiped = ElementParameterParser.getValue(node, "__USE_NAMED_PIPE__").equals("true");
 	String namedPipeName = ElementParameterParser.getValue(node, "__NAMED_PIPE__");
 	List<Map<String, String>> updateOptions = (List<Map<String,String>>)ElementParameterParser.getObjectValue(node, "__UPDATE_OPTIONS__");
@@ -64,7 +66,7 @@ skeleton="../templates/db_output_bulk.skeleton"
 	boolean gploadpyPathGiven = ElementParameterParser.getValue(node, "__SPECIFY_GPLOADPY_PATH__").equals("true");
 	String gploadpyPath = ElementParameterParser.getValue(node, "__GPLOADPY_PATH__");
 	
-	
+	boolean guessColumnList = ("true").equals(ElementParameterParser.getValue(node,"__GUESS_COLUMN_LIST__"));
 	
 	String dbmsId = ElementParameterParser.getValue(node,"__MAPPING__");
 	boolean dieOnError = ("true").equals(ElementParameterParser.getValue(node,"__DIE_ON_ERROR__"));
@@ -98,8 +100,18 @@ skeleton="../templates/db_output_bulk.skeleton"
 	boolean isLog4jEnabled = ("true").equals(ElementParameterParser.getValue(node.getProcess(), "__LOG4J_ACTIVATE__"));
 	
 %>
+	String dataFile_<%=cid%> = <%=dataFile%>;
+<%
+	if(useGzip) {
+		//make sure it ends with .gz
+%>
+	if(!dataFile_<%=cid%>.endsWith(".gz")) {
+			dataFile_<%=cid%> += ".gz";
+	}
+<%
+	}
+%>
 	int deletedCount_<%=cid%> = 0;
-	int insertedCount_<%=cid%> = 0;
 <%
 	// -----------------------------------------------------------
 	// basic setup check:
@@ -138,7 +150,7 @@ skeleton="../templates/db_output_bulk.skeleton"
 	//-----------------------------------------------------------
 	// create table option
 	//-----------------------------------------------------------
-	if((columnList != null && columnList.size() > 0) || "CLEAR".equals(tableAction) || "TRUNCATE".equals(tableAction)) {
+	if((columnList != null && columnList.size() > 0 && false == "NONE".equals(tableAction) ) || "CLEAR".equals(tableAction) || "TRUNCATE".equals(tableAction)) {
         Manager manager = getManager(dbmsId, cid);
 		%>
 
@@ -375,18 +387,18 @@ skeleton="../templates/db_output_bulk.skeleton"
 	
 	if (useExistingCtrlFile) {
 		%>
-		String gploadCtrlFile = <%=ctrlFile%>;
+		String gploadCtrlFile_<%=cid%> = <%=ctrlFile%>;
 		<%
 	} else {
 		%>
-		String gploadCtrlFile = "gp_ctrl_" + "<%=cid%>" + pid + Thread.currentThread().getId() + ".txt";
+		String gploadCtrlFile_<%=cid%> = "gp_ctrl_" + "<%=cid%>" + pid + Thread.currentThread().getId() + ".txt";
 
 		String delim_<%=cid%> = <%=fieldSeparator%>;
 		String escape_<%=cid%> = <%=escapeChar%>;
 		String quote_<%=cid%> = <%=quoteChar%>;
 		delim_<%=cid%> = "\t".equals(delim_<%=cid%>) ? "\\t" : delim_<%=cid%>;
-		
-		try (java.io.PrintWriter gpctrl_<%=cid%> = new java.io.PrintWriter(new java.io.FileOutputStream(gploadCtrlFile, false), true)){
+
+		try (java.io.PrintWriter gpctrl_<%=cid%> = new java.io.PrintWriter(new java.io.FileOutputStream(gploadCtrlFile_<%=cid%>, false), true)){
 			gpctrl_<%=cid%>.println("---");
 			gpctrl_<%=cid%>.println("VERSION: 1.0.0.1");
 			gpctrl_<%=cid%>.println("DATABASE: " + <%=dbname%>);
@@ -437,8 +449,10 @@ skeleton="../templates/db_output_bulk.skeleton"
 			<% if (useNamedPiped) { %>
 			gpctrl_<%=cid%>.println("          - " + (new com.infobright.io.NamedPipeFactory()).getNativePipeName(<%=namedPipeName%>));
 			<% } else { %>
-			gpctrl_<%=cid%>.println("          - " + <%=dataFile%>);
+			gpctrl_<%=cid%>.println("          - " + dataFile_<%=cid%>);
 			<% } %>
+
+
 			gpctrl_<%=cid%>.println("    - DELIMITER: '" + delim_<%=cid%> + "'");
 			gpctrl_<%=cid%>.println("    - ESCAPE: '" + escape_<%=cid%> + "'");
 			
@@ -468,6 +482,45 @@ skeleton="../templates/db_output_bulk.skeleton"
 							gpctrl_<%=cid%>.println("    - ERROR_TABLE: '" + <%=value%> + "'");
 						<%
 					}
+					if (key.equals("LOG_ERRORS")){
+						%>
+							gpctrl_<%=cid%>.println("    - LOG_ERRORS: " + <%=value%> );
+						<%
+					}
+					if (key.equals("MAX_LINE_LENGTH")){
+						%>
+							gpctrl_<%=cid%>.println("    - MAX_LINE_LENGTH: " + <%=value%> );
+						<%
+					}
+				}
+			}
+			%>
+
+			<%
+			if(guessColumnList) {
+			%>
+				gpctrl_<%=cid%>.println("    - COLUMNS:");
+				//iterate on schema.
+			<%
+				//pass the columnlist
+				List<IMetadataTable> metadataList = node.getMetadataList();
+				if ((metadataList != null) && (metadataList.size() > 0)) {
+				  IMetadataTable metadataTable = metadataList.get(0);
+				  if (metadataTable != null) {
+				  	java.util.HashMap <String,String> columnTypeHashMap = new java.util.HashMap<String,String>();
+				  	columnTypeHashMap.put("id_String","text");
+				  	columnTypeHashMap.put("id_byte[]","bytea");
+				  	columnTypeHashMap.put("id_Date","timestamp");
+				  	columnTypeHashMap.put("id_BigDecimal","numeric (500,100)");
+				  	columnTypeHashMap.put("id_Double","numeric (500,100)");
+				  	columnTypeHashMap.put("id_Integer","integer");
+				  	for (IMetadataColumn metadataColumn : metadataTable.getListColumns()) {
+				  		String dbTypeOfColumn = metadataColumn.getType();
+			%>
+					gpctrl_<%=cid%>.println("        - <%=metadataColumn.getOriginalDbColumnName()%> : <%=columnTypeHashMap.get(metadataColumn.getTalendType() )%>");
+			<%
+					}
+				  }
 				}
 			}
 			%>
@@ -482,6 +535,23 @@ skeleton="../templates/db_output_bulk.skeleton"
 			gpctrl_<%=cid%>.println("    - HEADER: true");
 			<% } %>
 			gpctrl_<%=cid%>.println("    - ENCODING: " + <%=encoding%>);
+
+			<%
+			for (Map<String, String> option : options) {
+				String key = option.get("KEY");
+				String value = option.get("VALUE");
+				
+				if(value != null && !("".equals(value))) {
+					if (key.equals("EXTERNAL_SCHEMA")){
+						%>
+							gpctrl_<%=cid%>.println("  EXTERNAL:");
+							gpctrl_<%=cid%>.println("    - SCHEMA: '" + <%=value%> + "'");
+						<%
+					}
+				}
+			}
+			%>
+
 			gpctrl_<%=cid%>.println("  OUTPUT: ");
 			gpctrl_<%=cid%>.println("    - TABLE: '" + tableName4Load_<%=cid%>+"'");
 			gpctrl_<%=cid%>.println("    - MODE: <%=dataAction.toLowerCase()%>");
@@ -517,13 +587,66 @@ skeleton="../templates/db_output_bulk.skeleton"
 					<%
 				}
 			}
+
+			List<String> preload = new ArrayList<String>();
+			for (Map<String, String> option : options) {
+				String key = option.get("KEY");
+				String value = option.get("VALUE");
+				
+				if(value != null && !("".equals(value))) {
+					if (key.equals("PRELOAD_TRUNCATE")){
+							preload.add("    - TRUNCATE: " + value );
+					}
+					if (key.equals("PRELOAD_REUSE_TABLES")){
+							preload.add("    - REUSE_TABLES: " + value );
+					}
+					if (key.equals("PRELOAD_STAGING_TABLE")){
+							preload.add("    - STAGING_TABLE: '\"+" + value +"+\"'");
+					}
+					if (key.equals("PRELOAD_FAST_MATCH")){
+							preload.add("    - FAST_MATCH: " + value );
+					}
+				}
+			}
+			if(preload.size() >0) {
 			%>
+				gpctrl_<%=cid%>.println("  PRELOAD:");
+				<%for (String line : preload) {%>
+				gpctrl_<%=cid%>.println("<%=line%>");
+				<%}
+			}
+
+			List<String> sqlBeforeOrAfter = new ArrayList<String>();
+			for (Map<String, String> option : options) {
+				String key = option.get("KEY");
+				String value = option.get("VALUE");
+				
+				if(value != null && !("".equals(value))) {
+					if (key.equals("SQL_BEFORE")){
+							sqlBeforeOrAfter.add("    - BEFORE: \\\"\"+(" + value +")+\"\\\"");
+					}
+					if (key.equals("SQL_AFTER")){
+							sqlBeforeOrAfter.add("    - AFTER: \\\"\"+(" + value +").replace(\"\\\"\",\"\\\\\\\"\")+\"\\\"");
+					}
+				}
+			}
+			if(sqlBeforeOrAfter.size() > 0) {
+			%>
+				gpctrl_<%=cid%>.println("  SQL:");
+				<%for (String line : sqlBeforeOrAfter) {%>
+				gpctrl_<%=cid%>.println("<%=line%>");
+				<%}
+			}
+			%>
+
 		}
 		<%
 	}
 
 	
 	List<String> parametersList = new ArrayList();
+	parametersList.add("\"-f\"");
+	parametersList.add("gploadCtrlFile_"+cid);
 	parametersList.add("\"-h\"");
 	parametersList.add(dbhost);
 	parametersList.add("\"-p\"");
@@ -569,20 +692,42 @@ skeleton="../templates/db_output_bulk.skeleton"
 		public void run() {
 			int nbLine_<%=cid %> = 0;
 			try {
+				Boolean failure = false;
+				int dataErrors = 0;
 				String[] cmds = new String[] {
 						<%if (!"".equals(pythonPathForCMD)){%>
 							<%=pythonPathForCMD%>,
 						<%}%>
 						<%=gpLoadPathForCMD%>
-						, "-f", gploadCtrlFile
 				<%
 				for (int i=0; i < parametersList.size(); i++) {
-						%>,<%=parametersList.get(i)%><%
+						%>,<%=parametersList.get(i)%>
+						<%
 					}
 				%>
 				};
-				final Process ps = Runtime.getRuntime().exec(cmds);
+				<%
+				String passwordFieldName = "__PASS__";
+				%>
 
+				<%@ include file="@{org.talend.designer.components.localprovider}/components/templates/password.javajet"%>
+			   	
+		        String dbPwd_<%=cid %> = decryptedPassword_<%=cid%>;
+
+		        String[] env_<%=cid %> = null;
+				java.util.Map<String, String> envMap_<%=cid %> = System.getenv();
+				java.util.Map<String, String> envMapClone_<%=cid %> = new java.util.HashMap();
+				envMapClone_<%=cid %>.putAll(envMap_<%=cid %>);
+				envMapClone_<%=cid %>.put("PGPASSWORD", dbPwd_<%=cid %>);
+
+				env_<%=cid %> = new String[envMapClone_<%=cid %>.size()];
+				int i_<%=cid %> = 0;
+				for (String envKey : (java.util.Set<String>) envMapClone_<%=cid %>.keySet()) {
+					env_<%=cid %>[i_<%=cid %>++] = envKey + "=" + envMapClone_<%=cid %>.get(envKey);
+				}
+
+				final Process ps = Runtime.getRuntime().exec(cmds,env_<%=cid %>);
+				
 				ps.waitFor();
 				globalMap.put("<%=cid%>_EXIT_CODE", ps.exitValue());
 
@@ -590,13 +735,20 @@ skeleton="../templates/db_output_bulk.skeleton"
 				java.io.BufferedReader errorReader = new java.io.BufferedReader(new java.io.InputStreamReader(ps.getErrorStream()));
 				String line = "";
 				while ((line = reader.readLine()) != null) {
-					gploadOutput_<%=cid%>.append(line);
-					System.out.println(line);
-					if (line.contains("rows Inserted")) {
-						nbLine_<%=cid %> = getNBLine(line);
-					}
+					gploadOutput_<%=cid%>.append(line+"\n");
+					<%if(isLog4jEnabled){%>
+						log.debug(line);
+					<%} else {%>
+						System.out.println(line);
+					<%}%>
 
-					if (line.contains("rows Updated")) {
+
+					if(line.contains("|INFO|rows Inserted")){
+						globalMap.put("<%=cid%>_NB_LINE_INSERTED",getNBLine(line));
+						nbLine_<%=cid %> += getNBLine(line);
+					} else
+					if(line.contains("|INFO|rows Updated")){
+				    	globalMap.put("<%=cid%>_NB_LINE_UPDATED", getNBLine(line));
 <%
 						if ("UPDATE".equals(dataAction)) {
 %>
@@ -609,16 +761,90 @@ skeleton="../templates/db_output_bulk.skeleton"
 <%
 						}
 %>
+					} else if(line.contains("|INFO|data formatting errors =")){
+							dataErrors = getNBLine(line);
+					      globalMap.put("<%=cid%>_NB_DATA_ERRORS", dataErrors);
+					} else if(line.contains("|INFO|gpload ") && !line.contains("session") && !line.contains("gpload.py") ){
+					      globalMap.put("<%=cid%>_STATUS", line.substring(line.indexOf("gpload ")+7).replace(" ",""));
+					} else if(line.contains("|INFO|running time:")){
+					      line = line.substring(line.indexOf("time: ")+5).replace(" ","");
+					      globalMap.put("<%=cid%>_RUNTIME", line.substring(0,line.indexOf("seconds")));
+					} else if(line.contains("|ERROR|")){
+						  failure = true;
+					      line = line.substring(line.indexOf("|ERROR|")+7);
+					      String line1 = line;
+					      if(line.length()>1250) {
+					            String tmp = line.substring(0, 1000);
+					            tmp += ".....";
+					            tmp += line.substring(line.length()-200);
+					            line = tmp;
+					      }
+					      if(<%=dieOnError%>){
+					      	throw new RuntimeException ("gpload failed because: " + line1);
+					      } else {
+					      	<%if(isLog4jEnabled){%>
+					      		log.error(line1);
+					      	<%} else {%>
+					      		System.out.println("WARNING GPLOAD FAILURE:" + line1);
+					      	<%}%>
+
+					      }
 					}
+
 				}
 
 				globalMap.put("<%=cid%>_NB_LINE", nbLine_<%=cid %>);
 
 				String errorLine = "";
 				while ((errorLine = errorReader.readLine()) != null) {
-					gploadOutput_<%=cid%>.append(errorLine);
-					System.err.println(errorLine);
+					gploadOutput_<%=cid%>.append(errorLine+"\n");
+					<%if(isLog4jEnabled){%>
+						log.error(errorLine);
+					<%} else {%>
+						System.out.println(errorLine);
+					<%}%>
+
+
+					if (errorLine.contains("name 'tableName' is not defined") ) {
+						failure = true;
+
+						String errorLine1 = "Table (" + <%=dbname%> + "." + <%=dbschema%> + "." + <%=tableName%> + ") is not available in target (" + <%=dbhost%> + ")!";
+					    if(<%=dieOnError%>){
+					      	throw new RuntimeException ("gpload failed because: " + errorLine1);
+					    } else {
+					      	<%if(isLog4jEnabled){%>
+					      		log.error(errorLine1);
+					      	<%} else {%>
+					      		System.out.println("WARNING GPLOAD FAILURE:" + errorLine1);
+					      	<%}%>
+
+					    }
+					}
+					if (errorLine.toUpperCase().contains("|ERROR|") ) {
+						failure = true;
+					    if(<%=dieOnError%>){
+					      	throw new RuntimeException ("gpload failed because: " + errorLine);
+					    } else {
+					      	<%if(isLog4jEnabled){%>
+					      		log.error(errorLine);
+					      	<%} else {%>
+					      		System.out.println("WARNING GPLOAD FAILURE:" + errorLine);
+					      	<%}%>
+
+					    }
+					}
+
 				}
+<%
+				if(removeFile ) {
+%>
+					if(!failure && dataErrors == 0) {
+						java.io.File file = new java.io.File(<%=dataFile%>);
+						file.delete();
+					}
+<%
+				}
+%>
 			}
 			catch (java.lang.Exception e) {
 				globalMap.put("<%=cid%>_GPLOAD_ERROR",e.getMessage());
@@ -649,7 +875,10 @@ skeleton="../templates/db_output_bulk.skeleton"
 	// component is used in startable mode.
 	//-----------------------------------------------------------------
 	if(isLog4jEnabled){%>
-		StringBuffer command_<%=cid%> = new StringBuffer(<%=gpLoadPathForCMD%>);
+		StringBuffer command_<%=cid%> = new StringBuffer(
+			<%if (!"".equals(pythonPathForCMD)){%>
+				<%=pythonPathForCMD%>+" "+
+			<%}%><%=gpLoadPathForCMD%>+" ");
 		<%
 		for (int i=0; i < parametersList.size(); i++) {
 		%>
@@ -668,9 +897,13 @@ skeleton="../templates/db_output_bulk.skeleton"
 				Thread.sleep(10000);
 			}
 		<%
+		} else if(useGzip) { //using GZIP compressed data file
+		%>
+			java.util.zip.GZIPOutputStream outputStream_<%=cid%> = new java.util.zip.GZIPOutputStream(new java.io.BufferedOutputStream(new java.io.FileOutputStream(dataFile_<%=cid%>,false), 1024000) );
+		<%			
 		} else { //using data file
 		%>
-			java.io.BufferedOutputStream outputStream_<%=cid%> = new java.io.BufferedOutputStream(new java.io.FileOutputStream(<%=dataFile%>,false), 1024000);
+			java.io.BufferedOutputStream outputStream_<%=cid%> = new java.io.BufferedOutputStream(new java.io.FileOutputStream(dataFile_<%=cid%>,false), 1024000);
 		<%
 		}
 	} else { // no input connections
