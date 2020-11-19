@@ -17,7 +17,6 @@ import java.nio.charset.StandardCharsets;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -1002,9 +1001,13 @@ public class RepositoryService implements IRepositoryService, IRepositoryContext
     }
 
     @Override
+    public boolean isProjectLevelLog4j2() {
+        return Log4jPrefsSettingManager.getInstance().isSelectLog4j2();
+    }
+
+    @Override
     public List<ModuleNeeded> getLog4j2Modules() {
-        return Log4jPrefsSettingManager.getInstance().isSelectLog4j2() ? UpdateLog4jJarUtils.getLog4j2Modules()
-                : Collections.emptyList();
+        return UpdateLog4jJarUtils.getLog4j2Modules();
     }
 
 }
