@@ -70,6 +70,7 @@ import org.talend.designer.maven.tools.BuildCacheManager;
 import org.talend.designer.maven.tools.MavenPomSynchronizer;
 import org.talend.designer.maven.tools.creator.CreateMavenCodeProject;
 import org.talend.designer.maven.utils.MavenProjectUtils;
+import org.talend.designer.maven.utils.PomUtil;
 import org.talend.designer.maven.utils.TalendCodeProjectUtil;
 import org.talend.designer.runprocess.IProcessor;
 import org.talend.designer.runprocess.ProcessorUtilities;
@@ -202,6 +203,10 @@ public class TalendJavaProjectManager {
                 }
                 // only update code pom for main project.
                 if (ProjectManager.getInstance().getCurrentProject().getTechnicalLabel().equals(projectTechName)) {
+                    if (ERepositoryObjectType.ROUTINES == type) {
+                        PomUtil.checkExistingLog4j2Dependencies4RoutinePom(projectTechName,
+                                codeProject.getFile(TalendMavenConstants.POM_FILE_NAME));
+                    }
                     helper.updateCodeProjectPom(monitor, type, codeProject.getFile(TalendMavenConstants.POM_FILE_NAME));
                 }
                 talendCodeJavaProject = new TalendProcessJavaProject(javaProject);

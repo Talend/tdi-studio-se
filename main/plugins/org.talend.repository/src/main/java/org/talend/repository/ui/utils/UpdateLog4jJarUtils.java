@@ -166,16 +166,7 @@ public class UpdateLog4jJarUtils {
                 log4j1To2Api.setMavenUri("mvn:org.apache.logging.log4j/log4j-1.2-api/"+LOG4J_VERSION);//$NON-NLS-1$
                 moduleNeededList.add(log4j1To2Api);
             }
-            ModuleNeeded log4jSlf4jImpl = new ModuleNeeded("org.apache.logging.log4j", "log4j-slf4j-impl-"+LOG4J_VERSION+".jar", null, true); //$NON-NLS-1$ //$NON-NLS-2$
-            log4jSlf4jImpl.setMavenUri("mvn:org.apache.logging.log4j/log4j-slf4j-impl/"+LOG4J_VERSION);//$NON-NLS-1$
-            moduleNeededList.add(log4jSlf4jImpl);
-            ModuleNeeded log4jApi = new ModuleNeeded("org.apache.logging.log4j", "log4j-api-"+LOG4J_VERSION+".jar", null, true); //$NON-NLS-1$ //$NON-NLS-2$
-            log4jApi.setMavenUri("mvn:org.apache.logging.log4j/log4j-api/"+LOG4J_VERSION);//$NON-NLS-1$
-            moduleNeededList.add(log4jApi);
-            ModuleNeeded log4jCore = new ModuleNeeded("org.apache.logging.log4j", "log4j-core-"+LOG4J_VERSION+".jar", null, true); //$NON-NLS-1$ //$NON-NLS-2$
-            log4jCore.setMavenUri("mvn:org.apache.logging.log4j/log4j-core/"+LOG4J_VERSION);//$NON-NLS-1$
-            moduleNeededList.add(log4jCore);
-
+            moduleNeededList.addAll(getLog4j2Modules());
         } else {
             boolean usedjclOverSlf4jBefore = false;
 
@@ -212,7 +203,19 @@ public class UpdateLog4jJarUtils {
 
     }
 
-
+    public static List<ModuleNeeded> getLog4j2Modules() {
+        List<ModuleNeeded> moduleNeededList = new ArrayList<>();
+        ModuleNeeded log4jSlf4jImpl = new ModuleNeeded("org.apache.logging.log4j", "log4j-slf4j-impl-"+LOG4J_VERSION+".jar", null, true); //$NON-NLS-1$ //$NON-NLS-2$
+        log4jSlf4jImpl.setMavenUri("mvn:org.apache.logging.log4j/log4j-slf4j-impl/"+LOG4J_VERSION);//$NON-NLS-1$
+        moduleNeededList.add(log4jSlf4jImpl);
+        ModuleNeeded log4jApi = new ModuleNeeded("org.apache.logging.log4j", "log4j-api-"+LOG4J_VERSION+".jar", null, true); //$NON-NLS-1$ //$NON-NLS-2$
+        log4jApi.setMavenUri("mvn:org.apache.logging.log4j/log4j-api/"+LOG4J_VERSION);//$NON-NLS-1$
+        moduleNeededList.add(log4jApi);
+        ModuleNeeded log4jCore = new ModuleNeeded("org.apache.logging.log4j", "log4j-core-"+LOG4J_VERSION+".jar", null, true); //$NON-NLS-1$ //$NON-NLS-2$
+        log4jCore.setMavenUri("mvn:org.apache.logging.log4j/log4j-core/"+LOG4J_VERSION);//$NON-NLS-1$
+        moduleNeededList.add(log4jCore);
+        return moduleNeededList;
+    }
 
     private static List<ModuleNeeded> removeLog4jFromModuleListAndGetModulesUsedBefore(IProcess process,
             Collection<ModuleNeeded> jarList) {
