@@ -15,6 +15,7 @@ package org.talend.sdk.component.studio.model.parameter;
 import static org.mockito.Mockito.*;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
@@ -38,7 +39,8 @@ public class SettingVisitorTest {
     @Test
     public void testVisit4NotLeafNode() throws Exception {
         final Node nodeMock = mockNode(metadata());
-        final OutputSchemaParameter parameter = new OutputSchemaParameter(nodeMock, "schema", "FLOW", null, true); //$NON-NLS-1$ //$NON-NLS-2$
+        final OutputSchemaParameter parameter = new OutputSchemaParameter(nodeMock, "schema", "FLOW", null, true, //$NON-NLS-1$ //$NON-NLS-2$
+                Collections.emptyList());
 
         SettingVisitor visitor = new SettingVisitor(nodeMock, parameter, new ArrayList());
 
@@ -54,7 +56,8 @@ public class SettingVisitorTest {
     @Test
     public void testVisit4LeafNodeObject() throws Exception {
         final Node nodeMock = mockNode(metadata());
-        final OutputSchemaParameter parameter = new OutputSchemaParameter(nodeMock, "schema", "FLOW", null, true);//$NON-NLS-1$ //$NON-NLS-2$
+        final OutputSchemaParameter parameter = new OutputSchemaParameter(nodeMock, "schema", "FLOW", null, true, //$NON-NLS-1$ //$NON-NLS-2$
+                Collections.emptyList());
         
         SettingVisitor visitor = new SettingVisitor(nodeMock, parameter, new ArrayList());
         
