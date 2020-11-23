@@ -188,6 +188,10 @@ final java.util.Map<String, String> registry_metadata_<%=cid%> = new java.util.H
                     }
                 } else {
                     value = ElementParameterParser.getStringElementParameterValue(p);
+                    // fix MEMO Types: behave now as TEXT_AREA
+                    if (p.getFieldType().toString().startsWiths("MEMO")){
+                        value = value.replace("\n", " ").replace("\r", " ");
+                    }
                     if (org.talend.core.model.utils.ContextParameterUtils.isDynamic(value)) {
                         value = "String.valueOf(" + value + ")";
                     }
