@@ -26,8 +26,6 @@ import org.talend.designer.core.model.components.EParameterName;
 import org.talend.designer.core.model.components.ElementParameter;
 import org.talend.designer.core.ui.editor.nodes.Node;
 import org.talend.sdk.component.studio.i18n.Messages;
-import org.talend.sdk.component.studio.util.TaCoKitConst;
-import org.talend.sdk.component.studio.util.TaCoKitUtil;
 
 /**
  * SchemaElementParameter for Component output schema.
@@ -38,7 +36,7 @@ public class OutputSchemaParameter extends SchemaElementParameter {
     public static final String ADDITIONAL_PARAM_METADATA_ELEMENT = "TACOKIT_ADDITIONAL_PARAM_METADATA_ELEMENT";
 
     public OutputSchemaParameter(final IElement element, final String name, final String connectionName,
-                                 final String discoverSchema, final boolean show) {
+                                 final String discoverSchema, final boolean show, final List<String> childrenNames) {
         super(element);
 
         setName(name);
@@ -49,6 +47,7 @@ public class OutputSchemaParameter extends SchemaElementParameter {
         setReadOnly(false);
         setRequired(true);
         setContext(connectionName);
+        setListItemsDisplayCodeName(childrenNames.stream().filter(p-> !p.endsWith("[]")).toArray(String[]::new));
 
         createSchemaType(connectionName, show);
         createRepository(show);
