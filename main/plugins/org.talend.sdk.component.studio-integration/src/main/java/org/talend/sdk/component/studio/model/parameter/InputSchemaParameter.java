@@ -36,7 +36,7 @@ public class InputSchemaParameter extends SchemaElementParameter {
      * @param name           parameter name - unique identifier
      * @param connectionName a name of connections with which this schema associated
      */
-    public InputSchemaParameter(final IElement element, final String name, final String connectionName) {
+    public InputSchemaParameter(final IElement element, final String name, final String connectionName, final List<String> childrenNames) {
         super(element);
         setName(name);
         setDisplayName(DISPLAY_NAME);
@@ -46,6 +46,7 @@ public class InputSchemaParameter extends SchemaElementParameter {
         setRequired(false);
         setContext(connectionName);
         setTaggedValue(CONNECTION_TYPE, PropertyDefinitionDecorator.Connection.Type.IN.toString());
+        setListItemsDisplayCodeName(childrenNames.stream().filter(p-> !p.endsWith("[]")).toArray(String[]::new));
     }
 
     /**
