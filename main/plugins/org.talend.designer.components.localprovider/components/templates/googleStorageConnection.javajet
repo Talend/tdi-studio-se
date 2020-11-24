@@ -10,8 +10,13 @@ if(("true").equals(useExistingConn)) {
   %>
   com.google.cloud.storage.Storage storage_<%=cid%> = (com.google.cloud.storage.Storage)globalMap.get("service_<%=connection%>");
 <% } else {
-  if ("SERVICE_ACCOUNT".equals(authType)) {
-    String pathToServerAccoutKeyFile = ElementParameterParser.getValue(node, "__SERVICE_ACCOUNT_KEY__");
+  if ("SERVICE_ACCOUNT".equals(authType) || "GS_SERVICE_ACCOUNT".equals(authType)) {
+    String pathToServerAccoutKeyFile;
+    if("SERVICE_ACCOUNT".equals(authType)) {
+      pathToServerAccoutKeyFile = ElementParameterParser.getValue(node, "__SERVICE_ACCOUNT_KEY__");
+    }else {
+      pathToServerAccoutKeyFile = ElementParameterParser.getValue(node, "__GS_SERVICE_ACCOUNT_KEY__");
+    }
 %>
 com.google.auth.Credentials credential_<%=cid%> = null;
 try {
