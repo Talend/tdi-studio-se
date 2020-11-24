@@ -118,6 +118,8 @@
             <DEFAULT>false</DEFAULT>
         </PARAMETER>
   </ADVANCED_PARAMETERS>
+  
+  <CODEGENERATION/>
 
   <RETURNS>
     <RETURN NAME="NB_LINE"          TYPE="id_Integer" AVAILABILITY="AFTER"/>
