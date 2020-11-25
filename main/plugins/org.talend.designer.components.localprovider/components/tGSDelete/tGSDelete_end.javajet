@@ -19,14 +19,17 @@ imports="
 
 	String connection = ElementParameterParser.getValue(node,"__CONNECTION__");
 	String authType = ElementParameterParser.getValue(node, "__AUTH_TYPE__");
-  boolean useHMACAuthType = false;
-
-	List< ? extends INode> nodes =  node.getProcess().getNodesOfType("tGSConnection");
-	for (INode ne : nodes) {
-		if (connection.equals(ne.getUniqueName())) {
-			String authTypeInConnectionComponent = ElementParameterParser.getValue(ne, "__AUTH_TYPE__");
-			useHMACAuthType = "USER_ACCOUNT_HMAC".equals(authTypeInConnectionComponent);
+	boolean useHMACAuthType = false;
+	if(("true").equals(useExistingConn)) {
+		List< ? extends INode> nodes =  node.getProcess().getNodesOfType("tGSConnection");
+		for (INode ne : nodes) {
+			if (connection.equals(ne.getUniqueName())) {
+				String authTypeInConnectionComponent = ElementParameterParser.getValue(ne, "__AUTH_TYPE__");
+				useHMACAuthType = "USER_ACCOUNT_HMAC".equals(authTypeInConnectionComponent);
+			}
 		}
+	} else {
+		useHMACAuthType = "USER_ACCOUNT_HMAC".equals(authType);
 	}
 
 	if(!queryDelObjInListBuckets || buckets.size()>0){
