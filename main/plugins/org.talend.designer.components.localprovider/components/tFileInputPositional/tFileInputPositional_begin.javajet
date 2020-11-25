@@ -996,9 +996,13 @@
                         			IMetadataColumn column = columnList.get(i);
                     				if(i % 100 == 0){
                     				%>
-                    				    <%=firstConnName %>.<%=metadata.getDynamicColumn().getLabel()%> = dynamic_<%=cid %>.copyMetadata();
-                        				substringBegin<%=cid%> = positionalUtil_<%=cid%>.parseValue_<%=i%>(row_<%=cid%>, substringBegin<%=cid%>, substringEnd<%=cid%>, rowLen_<%=cid%>, columnValue<%=cid%> <%if("BYTES".equals(patternUnits)){%>, arrays_<%=cid%>, byteArray_<%=cid%><%}%><%if(useExistingDynamic){%>, <%=firstConnName %>.<%=metadata.getDynamicColumn().getLabel()%><%}%>);
-                        				substringEnd<%=cid%> = substringBegin<%=cid%>;
+		                            <% if (useExistingDynamic) { %>
+                   				           <%=firstConnName %>.<%=metadata.getDynamicColumn().getLabel()%> = dynamic_<%=cid %>.copyMetadata();
+                        				   substringBegin<%=cid%> = positionalUtil_<%=cid%>.parseValue_<%=i%>(row_<%=cid%>, substringBegin<%=cid%>, substringEnd<%=cid%>, rowLen_<%=cid%>, columnValue<%=cid%> <%if("BYTES".equals(patternUnits)){%>, arrays_<%=cid%>, byteArray_<%=cid%><%}%>, <%=firstConnName %>.<%=metadata.getDynamicColumn().getLabel()%>);
+                                    <% } else { %>
+                   				           substringBegin<%=cid%> = positionalUtil_<%=cid%>.parseValue_<%=i%>(row_<%=cid%>, substringBegin<%=cid%>, substringEnd<%=cid%>, rowLen_<%=cid%>, columnValue<%=cid%> <%if("BYTES".equals(patternUnits)){%>, arrays_<%=cid%>, byteArray_<%=cid%><%}%>);
+                   				    <% } %>                        				
+                   				    substringEnd<%=cid%> = substringBegin<%=cid%>;
                     				<%
                         			}
                         		}
