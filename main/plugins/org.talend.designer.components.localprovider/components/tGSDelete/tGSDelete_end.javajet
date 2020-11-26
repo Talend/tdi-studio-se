@@ -26,6 +26,7 @@ imports="
 			if (connection.equals(ne.getUniqueName())) {
 				String authTypeInConnectionComponent = ElementParameterParser.getValue(ne, "__AUTH_TYPE__");
 				useHMACAuthType = "USER_ACCOUNT_HMAC".equals(authTypeInConnectionComponent);
+				break;
 			}
 		}
 	} else {
