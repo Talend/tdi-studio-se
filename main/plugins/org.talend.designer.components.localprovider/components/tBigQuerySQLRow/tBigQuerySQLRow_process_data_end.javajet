@@ -1,4 +1,4 @@
-<%@ jet 
+<%@ jet
 imports="
         org.talend.core.model.process.INode
         org.talend.designer.codegen.config.CodeGeneratorArgument
@@ -6,7 +6,7 @@ imports="
         org.talend.core.model.process.IConnection
         org.talend.core.model.process.IConnectionCategory
         java.util.List
-" 
+"
 %>
     <%@ include file="@{org.talend.designer.components.localprovider}/components/templates/Log4j/Log4jFileUtil.javajet"%>
     <%
@@ -20,7 +20,7 @@ imports="
             IConnection conn =conns.get(0);
             String connName = conn.getName();
             if (conn.getLineStyle().hasConnectionCategory(IConnectionCategory.DATA)) {
-                if (authMode.equals("OAUTH")) {
+                if (authMode.equals("OAUTH") || authMode.equals("TOKEN")) {
                 %>
                     }
                     pageToken_<%=cid%> = dataList_<%=cid %>.getPageToken();
@@ -35,7 +35,7 @@ imports="
                 }
                 <%
                 } else {
-                    throw new IllegalArgumentException("authentication mode should be either \"SERVICEACCOUNT\" or \"OAUTH\", but it is " + authMode);
+                    throw new IllegalArgumentException("authentication mode should be either \"SERVICEACCOUNT\" or \"OAUTH\"or \"TOKEN\", but it is " + authMode);
                 }
                 log4jFileUtil.retrievedDataNumberInfo(node);
             }
