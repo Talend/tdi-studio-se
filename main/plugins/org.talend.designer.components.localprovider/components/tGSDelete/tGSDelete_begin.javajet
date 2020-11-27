@@ -1,18 +1,18 @@
-<%@ jet 
+<%@ jet
 	imports="
 		org.talend.core.model.process.ElementParameterParser
 		org.talend.core.model.process.INode
 		org.talend.designer.codegen.config.CodeGeneratorArgument
-		
+
 		java.util.List
 		java.util.Map
-	" 
+	"
 %>
 	<%
     CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
     INode node = (INode)codeGenArgument.getArgument();
     String cid = node.getUniqueName();
-    
+
     String accessKey = ElementParameterParser.getValue(node, "__ACCESS_KEY__");
 
 	String useExistingConn = ElementParameterParser.getValue(node,"__USE_EXISTING_CONNECTION__");
@@ -24,19 +24,15 @@
 	String connection = ElementParameterParser.getValue(node,"__CONNECTION__");
 	String authType = ElementParameterParser.getValue(node, "__AUTH_TYPE__");
 	String objects_prefix=ElementParameterParser.getValue(node,"__OBJECTS_PREFIX__");
-	boolean useServiceAccountForConnection = false;
-	
-	//Define if connection use Service account for connection
-	if(("true").equals(useExistingConn)) {
+
+  if(("true").equals(useExistingConn)) {
 		List< ? extends INode> nodes =  node.getProcess().getNodesOfType("tGSConnection");
 		for (INode ne : nodes) {
 			if (connection.equals(ne.getUniqueName())) {
-				String authTypeInConnectionComponent = ElementParameterParser.getValue(ne, "__AUTH_TYPE__");
-				useServiceAccountForConnection = "SERVICE_ACCOUNT".equals(authTypeInConnectionComponent);
+				authType = ElementParameterParser.getValue(ne, "__AUTH_TYPE__");
+        break;
 			}
 		}
-	} else {
-		useServiceAccountForConnection = "SERVICE_ACCOUNT".equals(authType);
 	}
 	List<Map<String, String>> buckets = (List<Map<String,String>>)ElementParameterParser.getObjectValue(node, "__BUCKETS__");
 	boolean queryDelObjInListBuckets = "true".equals(ElementParameterParser.getValue(node,"__DEL_IN_LIST_BUCKETS__"));
@@ -44,18 +40,18 @@
 	int nb_line_<%=cid%> = 0;
 
 <%
-if (!useServiceAccountForConnection){
+if ("USER_ACCOUNT_HMAC".equals(authType)){
 %>
 	org.jets3t.service.impl.rest.httpclient.GoogleStorageService service_<%=cid%> = null;
 	try {
 	<%
 	if(("true").equals(useExistingConn)) {
-		
+
 		%>
 		service_<%=cid%> = (org.jets3t.service.impl.rest.httpclient.GoogleStorageService)globalMap.get("service_<%=connection%>");
 		<%
 		if(isLog4jEnabled){
-		%>	
+		%>
 			log.info("<%=cid%> - Get an free connection from " + "<%=connection%>" + ".");
 		<%
 		}
@@ -70,10 +66,10 @@ if (!useServiceAccountForConnection){
 	   <%@ include file="@{org.talend.designer.components.localprovider}/components/templates/password.javajet"%>
 
 		org.jets3t.service.security.GSCredentials credentials_<%=cid%> = new org.jets3t.service.security.GSCredentials(<%=accessKey%>,decryptedPassword_<%=cid%>);
-	
+
 		service_<%=cid%> = new org.jets3t.service.impl.rest.httpclient.GoogleStorageService(credentials_<%=cid%>," <%=GoogleTracker%>",null);
 		service_<%=cid%>.getAccountOwner();
-	<%		
+	<%
 	}
 	if(!queryDelObjInListBuckets){
 		if(isSpecifyprojectID){
@@ -175,44 +171,11 @@ if (!useServiceAccountForConnection){
 	<%
 	}
 	%>
-<%
-} else {
+<% } else {
+  String gsProjectID=ElementParameterParser.getValue(node,"__GS_PROJECT_ID__");
 %>
-	com.google.cloud.storage.Storage storage_<%=cid%> = null;
-	<%
-	if(("true").equals(useExistingConn)) {
-	%>
-		storage_<%=cid%> = (com.google.cloud.storage.Storage)globalMap.get("service_<%=connection%>");
-	<%
-	} else {
-		String pathToServerAccoutKeyFile = ElementParameterParser.getValue(node, "__SERVICE_ACCOUNT_KEY__");
-	%>
-		com.google.auth.Credentials credential_<%=cid%> = null;
-		try {
-			credential_<%=cid%> = com.google.auth.oauth2.GoogleCredentials
-					.fromStream(new java.io.FileInputStream(<%=pathToServerAccoutKeyFile%>));
-		} catch (IOException e_<%=cid%>) {
-			<%
-			if(isLog4jEnabled){
-			%>
-				log.error("<%=cid%> - Exception in component <%=cid%>.", e_<%=cid%>);
-			<%
-			}
-			%>
-			<%
-			if (("true").equals(dieOnError)) {
-			%>
-				throw(e_<%=cid%>);
-			<%
-			}
-			%>
-		}
-		com.google.cloud.storage.StorageOptions.Builder builder = com.google.cloud.storage.StorageOptions.newBuilder();
-		storage_<%=cid%> = builder.setCredentials(credential_<%=cid%>).build().getService();
-	<%
-	}
-	if(!queryDelObjInListBuckets){
-	%>
+	<%@ include file="@{org.talend.designer.components.localprovider}/components/templates/googleStorageConnection.javajet"%>
+  <% if(!queryDelObjInListBuckets){ %>
 		com.google.api.gax.paging.Page<com.google.cloud.storage.Bucket> buckets_<%=cid%> = storage_<%=cid%>.list();
 
 		for (com.google.cloud.storage.Bucket bucket_<%=cid%> : buckets_<%=cid%>.iterateAll()) {
