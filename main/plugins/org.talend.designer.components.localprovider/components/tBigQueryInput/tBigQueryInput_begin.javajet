@@ -32,7 +32,7 @@
 	String basePackage = "";
 	boolean isCustomTemporaryName = ElementParameterParser.getBooleanValue(node,"__USE_CUSTOM_TEMPORARY_DATASET__");
 	String tempDataset =  ElementParameterParser.getValue(node,"__TEMPORARY_DATASET_NAME__");
-	
+
 	String encoding = ElementParameterParser.getValue(node,"__ENCODING__");
 	String advancedSeparatorStr = ElementParameterParser.getValue(node, "__ADVANCED_SEPARATOR__");
 	boolean advancedSeparator = (advancedSeparatorStr!=null&&!("").equals(advancedSeparatorStr))?("true").equals(advancedSeparatorStr):false;
@@ -44,7 +44,7 @@
 
     String tokenFile = ElementParameterParser.getValue(node,"__TOKEN_NAME__");
     boolean isLog4jEnabled = ("true").equals(ElementParameterParser.getValue(node.getProcess(), "__LOG4J_ACTIVATE__"));
-	
+
 	//Dynamic start
 	List<IMetadataTable> metadatas = node.getMetadataList();
 	    int sizeListColumns = 0;
@@ -59,11 +59,20 @@
 		    }
 	    }
 		int dynamic_index=-1;
-		
+
 	//Dynamic end
-	
-	
-    if (authMode.equals("OAUTH")) {
+
+
+    if (authMode.equals("OAUTH") || authMode.equals("TOKEN") ) {
+%>
+		final String PROJECT_ID_<%=cid %> = <%=projectId %>;
+    com.google.api.services.bigquery.Bigquery bigqueryclient_<%=cid%> = null;
+    com.google.api.client.auth.oauth2.Credential credential_<%=cid%> = null;
+    long nb_line_<%=cid%> = 0;
+		final com.google.api.client.http.HttpTransport TRANSPORT_<%=cid %> = new com.google.api.client.http.javanet.NetHttpTransport();
+		final com.google.api.client.json.JsonFactory JSON_FACTORY_<%=cid %> = new com.google.api.client.json.jackson2.JacksonFactory();
+<%
+      if (authMode.equals("OAUTH")) {
 		%>
 		final String CLIENT_ID_<%=cid %> = <%=clientId %>;
 		<%
@@ -73,21 +82,17 @@
 		<%@ include file="@{org.talend.designer.components.localprovider}/components/templates/password.javajet"%>
 
 		final String CLIENT_SECRET_<%=cid%> = "{\"web\": {\"client_id\": \""+<%=clientId%>+"\",\"client_secret\": \"" +decryptedPassword_<%=cid%>+ "\",\"auth_uri\": \"https://accounts.google.com/o/oauth2/auth\",\"token_uri\": \"https://accounts.google.com/o/oauth2/token\"}}";
-		final String PROJECT_ID_<%=cid %> = <%=projectId %>;
 
 		// Static variables for API scope, callback URI, and HTTP/JSON functions
 		final List<String> SCOPES_<%=cid%> = java.util.Arrays.asList("https://www.googleapis.com/auth/bigquery");
 		final String REDIRECT_URI_<%=cid%> = "urn:ietf:wg:oauth:2.0:oob";
-		final com.google.api.client.http.HttpTransport TRANSPORT_<%=cid %> = new com.google.api.client.http.javanet.NetHttpTransport();
-		final com.google.api.client.json.JsonFactory JSON_FACTORY_<%=cid %> = new com.google.api.client.json.jackson2.JacksonFactory();
 
 		com.google.api.client.googleapis.auth.oauth2.GoogleClientSecrets clientSecrets_<%=cid%> = com.google.api.client.googleapis.auth.oauth2.GoogleClientSecrets.load(
 						new com.google.api.client.json.jackson2.JacksonFactory(), new java.io.InputStreamReader(new java.io.ByteArrayInputStream(
 								CLIENT_SECRET_<%=cid%>.getBytes())));
 
 		com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeFlow flow_<%=cid%> = null;
-		com.google.api.services.bigquery.Bigquery bigqueryclient_<%=cid%> = null;
-		long nb_line_<%=cid%> = 0;
+
 		<%
 		if(isLog4jEnabled){
 		%>
@@ -129,7 +134,7 @@
 		// access token.
 		if (storedRefreshToken_<%=cid%> != null) {
 			// Request a new Access token using the refresh token.
-			com.google.api.client.googleapis.auth.oauth2.GoogleCredential credential_<%=cid%> = new com.google.api.client.googleapis.auth.oauth2.GoogleCredential.Builder().setTransport(TRANSPORT_<%=cid%>)
+			credential_<%=cid%> = new com.google.api.client.googleapis.auth.oauth2.GoogleCredential.Builder().setTransport(TRANSPORT_<%=cid%>)
 					.setJsonFactory(JSON_FACTORY_<%=cid%>).setClientSecrets(clientSecrets_<%=cid%>)
 					.build().setFromTokenResponse(new com.google.api.client.auth.oauth2.TokenResponse().setRefreshToken(storedRefreshToken_<%=cid%>));
 
@@ -141,7 +146,6 @@
 			<%
 			}
 			%>
-			bigqueryclient_<%=cid%> = new com.google.api.services.bigquery.Bigquery.Builder(new com.google.api.client.http.javanet.NetHttpTransport(),new com.google.api.client.json.jackson2.JacksonFactory(),credential_<%=cid%>).setApplicationName("Talend").build();
 		} else {
 			<%
 			if(isLog4jEnabled){
@@ -183,7 +187,7 @@
 							.build();
 				}
 				com.google.api.client.googleapis.auth.oauth2.GoogleTokenResponse response_<%=cid%> = flow_<%=cid%>.newTokenRequest(authorizationCode_<%=cid%>).setRedirectUri(REDIRECT_URI_<%=cid%>).execute();
-				com.google.api.client.auth.oauth2.Credential credential_<%=cid%> = flow_<%=cid%>.createAndStoreCredential(response_<%=cid%>, null);
+				credential_<%=cid%> = flow_<%=cid%>.createAndStoreCredential(response_<%=cid%>, null);
 
 				<%
 				if(isLog4jEnabled){
@@ -195,17 +199,25 @@
 				// Store the refresh token for future use.
 				java.util.Properties storeProperties_<%=cid%> = new java.util.Properties();
 				storeProperties_<%=cid%>.setProperty("refreshtoken", credential_<%=cid%>.getRefreshToken());
-				java.io.FileOutputStream outputStream_<%=cid%> = new java.io.FileOutputStream(tokenFile_<%=cid %>);
-				storeProperties_<%=cid%>.store(outputStream_<%=cid%>,null);
-				if (outputStream_<%=cid%> != null) {
-				    outputStream_<%=cid%>.close();
-				}
-
-				bigqueryclient_<%=cid%> = new com.google.api.services.bigquery.Bigquery.Builder(new com.google.api.client.http.javanet.NetHttpTransport(),new com.google.api.client.json.jackson2.JacksonFactory(),credential_<%=cid%>).build();
+        try (java.io.FileOutputStream outputStream_<%=cid%> = new java.io.FileOutputStream(tokenFile_<%=cid %>)) {
+            storeProperties_<%=cid%>.store(outputStream_<%=cid%>,null);
+        }
 			}
 		}
+<%} else {
 
-
+  if (ElementParameterParser.canEncrypt(node, "__ACCESS_TOKEN__")) {%>
+     final String decryptedAccessToken_<%=cid%> = routines.system.PasswordEncryptUtil.decryptPassword(<%=ElementParameterParser.getEncryptedValue(node, "__ACCESS_TOKEN__")%>);
+     credential_<%=cid%> =
+			new com.google.api.client.auth.oauth2.Credential(com.google.api.client.auth.oauth2.BearerToken.authorizationHeaderAccessMethod()).setFromTokenResponse(
+				(new com.google.api.client.auth.oauth2.TokenResponse()).setAccessToken(decryptedAccessToken_<%=cid%>));
+  <%} else {%>
+     credential_<%=cid%> =
+			new com.google.api.client.auth.oauth2.Credential(com.google.api.client.auth.oauth2.BearerToken.authorizationHeaderAccessMethod()).setFromTokenResponse(
+				(new com.google.api.client.auth.oauth2.TokenResponse()).setAccessToken(<%= ElementParameterParser.getValue(node, "__ACCESS_TOKEN__")%>));
+  <%}
+} %>
+		bigqueryclient_<%=cid%> = new com.google.api.services.bigquery.Bigquery.Builder(TRANSPORT_<%=cid %>, JSON_FACTORY_<%=cid %>,credential_<%=cid%>).setApplicationName("Talend").build();
 
 		<%@ include file="@{org.talend.designer.components.localprovider}/components/tBigQueryInput/BigQueryInputQueryHelper.javajet"%>
 
@@ -218,11 +230,12 @@
 			log.debug("<%=cid%> - Running Query: "+querySql_<%=cid %>);
 		<%
 		}
-		%>
+		if (authMode.equals("OAUTH")) { %>
+       BigQueryUtil_<%=cid%> bigQueryUtil_<%=cid%> = new BigQueryUtil_<%=cid%>(PROJECT_ID_<%=cid%>, bigqueryclient_<%=cid%>, tokenFile_<%=cid%><% if (isCustomTemporaryName) {%>, <%=tempDataset%> <%} %>);
+    <%} else {%>
+       BigQueryUtil_<%=cid%> bigQueryUtil_<%=cid%> = new BigQueryUtil_<%=cid%>(PROJECT_ID_<%=cid%>, bigqueryclient_<%=cid%>, null, <% if (isCustomTemporaryName) {%><%=tempDataset%> <%} else {%>null<% } %>, credential_<%=cid%>);
+    <%}
 
-		BigQueryUtil_<%=cid%> bigQueryUtil_<%=cid%> = new BigQueryUtil_<%=cid%>(PROJECT_ID_<%=cid%>, bigqueryclient_<%=cid%>, tokenFile_<%=cid%><% if (isCustomTemporaryName) {%>, <%=tempDataset%> <%} %>);
-
-		<%
 		if(isLog4jEnabled){
 		%>
 			log.info("<%=cid%> - Try <%="LARGE".equals(resultSizeType) ? "with" : "without"%> the allowLargeResults flag");
@@ -242,15 +255,17 @@
 		//Dynamic start
 
 		<%
-		
 		if(isDynamic){
 		%>
 		<%@ include file="@{org.talend.designer.components.localprovider}/components/templates/DB/Input/BigQuery/BigQueryHelper_Oauth.javajet"%>
 		BigQueryHelper_<%=cid%> helper_<%=cid%> = new BigQueryHelper_<%=cid%>();
+    <% if(authMode.equals("TOKEN") && !ElementParameterParser.canEncrypt(node, "__ACCESS_TOKEN__")) { %>
+    credential_<%=cid%>.setAccessToken(<%= ElementParameterParser.getValue(node, "__ACCESS_TOKEN__")%>);
+    <% } %>
 		com.google.api.services.bigquery.model.TableSchema schema_<%=cid%> = bigqueryclient_<%=cid%>
 						.jobs().getQueryResults(PROJECT_ID_<%=cid%>, insert_<%=cid%>.getJobReference().getJobId()).execute().getSchema();
 		routines.system.Dynamic dcg_<%=cid%> =  new routines.system.Dynamic();
-		
+
 		    <%
 
 		    for(int i=0; i< columnList.size(); i++) {
@@ -272,7 +287,7 @@
 			    	dcg_<%=cid%>.metadatas.add(dynamicMetadata_<%=cid%>);
 			    }
 			<%
-		
+
 		}
 		%>
 		//Dynamic end
@@ -375,14 +390,14 @@
 		//Dynamic start
 
 		<%
-		
+
 		if(isDynamic){
 		%>
 		<%@ include file="@{org.talend.designer.components.localprovider}/components/templates/DB/Input/BigQuery/BigQueryHelper_ServiceAccount.javajet"%>
 		BigQueryHelper_<%=cid%> helper_<%=cid%> = new BigQueryHelper_<%=cid%>();
 		com.google.cloud.bigquery.Schema schema_<%=cid%> = result_<%=cid%>.getSchema();
 		routines.system.Dynamic dcg_<%=cid%> =  new routines.system.Dynamic();
-		
+
 		    <%
 
 		    for(int i=0; i< columnList.size(); i++) {
@@ -411,21 +426,24 @@
 			    	dcg_<%=cid%>.metadatas.add(dynamicMetadata_<%=cid%>);
 			    }
 			<%
-		
+
 		}
 		%>
 		//Dynamic end
 		long nb_line_<%=cid%> = 0;
 	<%
 	} else {
-		throw new IllegalArgumentException("authentication mode should be either \"SERVICEACCOUNT\" or \"OAUTH\", but it is " + authMode);
+		throw new IllegalArgumentException("authentication mode should be either \"SERVICEACCOUNT\", \"OAUTH\" or \"TOKEN\", but it is " + authMode);
 	}
 
 
-	if (authMode.equals("OAUTH")) {
+	if (authMode.equals("OAUTH") || authMode.equals("TOKEN")) {
 	%>
 	while (true) {
 		// Fetch Results
+    <% if(authMode.equals("TOKEN") && !ElementParameterParser.canEncrypt(node, "__ACCESS_TOKEN__")) { %>
+    credential_<%=cid%>.setAccessToken(<%= ElementParameterParser.getValue(node, "__ACCESS_TOKEN__")%>);
+    <% } %>
 		com.google.api.services.bigquery.model.TableDataList dataList_<%=cid %> = bigqueryclient_<%=cid%>.tabledata()
 					.list(PROJECT_ID_<%=cid %>,
 							insert_<%=cid %>.getConfiguration().getQuery()
@@ -452,7 +470,7 @@
 			nb_line_<%=cid%> ++;
 	<%
 	} else {
-		throw new IllegalArgumentException("authentication mode should be either \"SERVICEACCOUNT\" or \"OAUTH\", but it is " + authMode);
+		throw new IllegalArgumentException("authentication mode should be either \"SERVICEACCOUNT\", \"OAUTH\" or \"TOKEN\", but it is " + authMode);
 	}
 		%>
 		int fieldsCount_<%=cid %> = field_<%=cid %>.size();
@@ -466,8 +484,8 @@
 				IConnection conn =conns.get(0);
 				String connName = conn.getName();
 				if (conn.getLineStyle().hasConnectionCategory(IConnectionCategory.DATA)) {
-				    
-					
+
+
 					if ((metadatas!=null) && (metadatas.size() > 0)) {
 						IMetadataTable metadata = metadatas.get(0);
 						if (metadata != null) {
@@ -500,7 +518,7 @@
 									<%=connName%>.<%=column.getLabel()%> = <%=defVal%>;
 								} else {
 								<%
-								if (authMode.equals("OAUTH")) {
+								if (authMode.equals("OAUTH") || authMode.equals("TOKEN")) {
 								%>
 								value_<%=cid%> = field_<%=cid %>.get(column_index_<%=cid%>).getV();
 								<%
@@ -509,7 +527,7 @@
 								value_<%=cid%> = field_<%=cid %>.get(column_index_<%=cid%>).getValue();
 								<%
 								} else {
-									throw new IllegalArgumentException("authentication mode should be either \"SERVICEACCOUNT\" or \"OAUTH\", but it is " + authMode);
+									throw new IllegalArgumentException("authentication mode should be either \"SERVICEACCOUNT\", \"OAUTH\" or \"TOKEN\", but it is " + authMode);
 								}
 								%>
 								if(com.google.api.client.util.Data.isNull(value_<%=cid%>)) value_<%=cid%> = null;

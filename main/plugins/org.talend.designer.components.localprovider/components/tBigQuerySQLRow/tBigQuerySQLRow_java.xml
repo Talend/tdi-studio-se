@@ -44,9 +44,31 @@
             <ITEMS DEFAULT="SERVICEACCOUNT">
                 <ITEM NAME="SERVICEACCOUNT" VALUE="SERVICEACCOUNT"/>
                 <ITEM NAME="OAUTH" VALUE="OAUTH"/>
-            </ITEMS>
-        </PARAMETER>
+        				<ITEM NAME="TOKEN" VALUE="TOKEN" />
+        			</ITEMS>
+        	</PARAMETER>
 
+          <PARAMETER
+            NAME="ACCESS_TOKEN"
+            FIELD="PASSWORD"
+            NUM_ROW="10"
+            REQUIRED="true"
+            SHOW_IF="AUTH_MODE == 'TOKEN'"
+            GROUP="AUTHENTICATION"
+          >
+            <DEFAULT>""</DEFAULT>
+          </PARAMETER>
+
+          <PARAMETER
+            NAME="ACCESS_TOKEN_WARNING"
+            FIELD="LABEL"
+            NUM_ROW="11"
+            REQUIRED="false"
+            GROUP="AUTHENTICATION"
+            SHOW_IF="AUTH_MODE == 'TOKEN'"
+            >
+            <DEFAULT>*Note: If the Access Token Expire we won't be able to refresh it!"</DEFAULT>
+          </PARAMETER>
         <PARAMETER
                 NAME="SERVICE_ACCOUNT_CREDENTIALS_FILE"
                 REPOSITORY_VALUE="SERVICE_ACCOUNT_CREDENTIALS_FILE"

@@ -14,13 +14,15 @@ package org.talend.sdk.component.studio.model.parameter;
 
 import static org.junit.Assert.assertTrue;
 
+import java.util.Collections;
+
 import org.junit.Test;
 
 public class InputSchemaParameterTest {
 
     @Test
     public void testIsPersisted() {
-        InputSchemaParameter isp = new InputSchemaParameter(null, "", "");
+        InputSchemaParameter isp = new InputSchemaParameter(null, "", "", Collections.emptyList());
         assertTrue(isp.isPersisted());
     }
 }
