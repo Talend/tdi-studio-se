@@ -81,7 +81,7 @@ public class SetDatasetCheckBoxGlobalOption extends AbstractJobMigrationTask {
         property.setField("CHECK"); //$NON-NLS-1$
         property.setValue("false"); //$NON-NLS-1$
         boolean isParameterAlreadyAdded = processType.getParameters().getElementParameter().stream().anyMatch(x -> "USE_DATASET_API".equals(((ElementParameterTypeImpl) x).getName()));
-        if (!isParameterAlreadyAdded && !talendStudioVersion.startsWith("7.3.1") && !talendStudioVersion.startsWith("7.4.1")) {
+        if (!isParameterAlreadyAdded && talendStudioVersion.compareTo("7.3.1") < 0) {
         	processType.getParameters().getElementParameter().add(property);
         }
     	ProxyRepositoryFactory factory = ProxyRepositoryFactory.getInstance();
