@@ -140,23 +140,7 @@ public class OracleGenerationManager extends DbGenerationManager {
                     if (expression != null && expression.trim().length() > 0) {
                         String exp = replaceVariablesForExpression(component, expression);
                         appendSqlQuery(sb, exp);
-                        DataMapExpressionParser dataMapExpressionParser = new DataMapExpressionParser(language);
-                        TableEntryLocation[] tableEntriesLocationsSources = dataMapExpressionParser
-                                .parseTableEntryLocations(expression);
-                        boolean columnChanged = false;
-                        if (tableEntriesLocationsSources.length > 1) {
-                            columnChanged = true;
-                        } else {
-                            for (TableEntryLocation tableEntriesLocationsSource : tableEntriesLocationsSources) {
-                                TableEntryLocation location = tableEntriesLocationsSource;
-                                String entryName = getAliasOf(dbMapEntry.getName());
-                                if (location != null && entryName != null
-                                        && !entryName.startsWith("_") && !entryName.equals(location.columnName)) {//$NON-NLS-1$
-                                    columnChanged = true;
-
-                                }
-                            }
-                        }
+                        boolean columnChanged = isColumnChanged(dbMapEntry, expression);
                         if (!added && columnChanged) {
                             String name = DbMapSqlConstants.SPACE + DbMapSqlConstants.AS + DbMapSqlConstants.SPACE
                                     + getAliasOf(dbMapEntry.getName());
@@ -443,4 +427,23 @@ public class OracleGenerationManager extends DbGenerationManager {
         return expression;
     }
 
+    @Override
+    protected boolean isColumnChanged(ExternalDbMapEntry dbMapEntry, String expression) {
+        boolean columnChanged = false;
+        DataMapExpressionParser dataMapExpressionParser = new DataMapExpressionParser(language);
+        TableEntryLocation[] tableEntriesLocationsSources = dataMapExpressionParser.parseTableEntryLocations(expression);
+        if (tableEntriesLocationsSources.length > 1) {
+            columnChanged = true;
+        } else {
+            for (TableEntryLocation tableEntriesLocationsSource : tableEntriesLocationsSources) {
+                TableEntryLocation location = tableEntriesLocationsSource;
+                String entryName = getAliasOf(dbMapEntry.getName());
+                if (location != null && entryName != null && !entryName.startsWith("_") //$NON-NLS-1$
+                        && !entryName.equals(location.columnName)) {
+                    columnChanged = true;
+                }
+            }
+        }
+        return columnChanged;
+    }
 }

@@ -14,8 +14,11 @@ package org.talend.designer.dbmap.language.teradata;
 
 import org.talend.core.model.metadata.IMetadataTable;
 import org.talend.designer.dbmap.DbMapComponent;
+import org.talend.designer.dbmap.external.data.ExternalDbMapEntry;
 import org.talend.designer.dbmap.external.data.ExternalDbMapTable;
 import org.talend.designer.dbmap.language.generation.DbGenerationManager;
+import org.talend.designer.dbmap.model.tableentry.TableEntryLocation;
+import org.talend.designer.dbmap.utils.DataMapExpressionParser;
 
 /**
  * DOC amaumont class global comment. Detailled comment <br/>
@@ -37,5 +40,25 @@ public class TeradataGenerationManager extends DbGenerationManager {
     protected ExternalDbMapTable removeUnmatchingEntriesWithColumnsOfMetadataTable(ExternalDbMapTable externalDbMapTable,
             IMetadataTable metadataTable) {
         return externalDbMapTable; // keep original, don't change
+    }
+
+    @Override
+    protected boolean isColumnChanged(ExternalDbMapEntry dbMapEntry, String expression) {
+        boolean columnChanged = false;
+        DataMapExpressionParser dataMapExpressionParser = new DataMapExpressionParser(language);
+        TableEntryLocation[] tableEntriesLocationsSources = dataMapExpressionParser.parseTableEntryLocations(expression);
+        if (tableEntriesLocationsSources.length > 1) {
+            columnChanged = true;
+        } else {
+            for (TableEntryLocation tableEntriesLocationsSource : tableEntriesLocationsSources) {
+                TableEntryLocation location = tableEntriesLocationsSource;
+                String entryName = getAliasOf(dbMapEntry.getName());
+                if (location != null && entryName != null && !entryName.startsWith("_") //$NON-NLS-1$
+                        && !entryName.equals(location.columnName)) {
+                    columnChanged = true;
+                }
+            }
+        }
+        return columnChanged;
     }
 }
