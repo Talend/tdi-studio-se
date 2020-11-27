@@ -28,6 +28,7 @@ import org.talend.core.model.properties.PropertiesFactory;
 import org.talend.core.model.properties.Property;
 import org.talend.core.model.utils.ProcessStreamTrashReaderUtil;
 import org.talend.core.prefs.ITalendCorePrefConstants;
+import org.talend.core.runtime.util.SharedStudioUtils;
 import org.talend.core.utils.CsvArray;
 import org.talend.designer.core.i18n.Messages;
 import org.talend.designer.core.ui.editor.process.Process;
@@ -75,7 +76,7 @@ public abstract class AbstractGuessSchemaProcess {
     abstract protected boolean isCheckError();
 
     protected void initOutpath() {
-        outpath = new Path(System.getProperty("user.dir")).append("Temp"); //$NON-NLS-1$ //$NON-NLS-2$
+        outpath = SharedStudioUtils.getTempFolderPath();
     }
 
     protected void configContext(Process inProcess, INode inNode) {

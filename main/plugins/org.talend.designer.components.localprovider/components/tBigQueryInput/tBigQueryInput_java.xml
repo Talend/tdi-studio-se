@@ -43,21 +43,43 @@
     	REQUIRED="true"
     	NUM_ROW="1"
     />
-    
+
     <PARAMETER NAME="AUTH_MODE" FIELD="CLOSED_LIST" NUM_ROW="3" REQUIRED="true" GROUP="AUTHENTICATION" REPOSITORY_VALUE="AUTH_MODE">
 			<ITEMS DEFAULT="SERVICEACCOUNT">
 				<ITEM NAME="SERVICEACCOUNT" VALUE="SERVICEACCOUNT" />
 				<ITEM NAME="OAUTH" VALUE="OAUTH" />
+				<ITEM NAME="TOKEN" VALUE="TOKEN" />
 			</ITEMS>
 	</PARAMETER>
-	
-	<PARAMETER 
-			NAME="SERVICE_ACCOUNT_CREDENTIALS_FILE" 
+
+  <PARAMETER
+    NAME="ACCESS_TOKEN"
+    FIELD="PASSWORD"
+    NUM_ROW="10"
+    REQUIRED="true"
+    SHOW_IF="AUTH_MODE == 'TOKEN'"
+    GROUP="AUTHENTICATION"
+  >
+    <DEFAULT>""</DEFAULT>
+  </PARAMETER>
+
+  <PARAMETER
+    NAME="ACCESS_TOKEN_WARNING"
+    FIELD="LABEL"
+    NUM_ROW="11"
+    REQUIRED="false"
+    GROUP="AUTHENTICATION"
+    SHOW_IF="AUTH_MODE == 'TOKEN'"
+    >
+    <DEFAULT>*Note: If the Access Token Expire we won't be able to refresh it!"</DEFAULT>
+  </PARAMETER>
+	<PARAMETER
+			NAME="SERVICE_ACCOUNT_CREDENTIALS_FILE"
 			REPOSITORY_VALUE="SERVICE_ACCOUNT_CREDENTIALS_FILE"
 			GROUP="AUTHENTICATION"
-			FIELD="FILE" 
-			NUM_ROW="10" 
-			REQUIRED="true" 
+			FIELD="FILE"
+			NUM_ROW="10"
+			REQUIRED="true"
 			SHOW_IF="AUTH_MODE == 'SERVICEACCOUNT'"
 			>
 			<DEFAULT>""</DEFAULT>
@@ -104,7 +126,7 @@
     >
       <DEFAULT>""</DEFAULT>
     </PARAMETER>
-    
+
     <PARAMETER
       NAME="USE_LEGACY_SQL"
       FIELD="CHECK"
@@ -113,7 +135,7 @@
     >
       <DEFAULT>false</DEFAULT>
     </PARAMETER>
-    
+
     <PARAMETER
       NAME="QUERY"
       FIELD="MEMO_SQL"
@@ -122,13 +144,13 @@
     >
       <DEFAULT>"select id, name from employee"</DEFAULT>
     </PARAMETER>
-    <!-- 
-    https://cloud.google.com/bigquery/querying-data#large-results 
+    <!--
+    https://cloud.google.com/bigquery/querying-data#large-results
     SMALL: allowLargeResult is false
     LARGE: allowLargeResult is true and auto create/clean temp dataset/table
     AUTO: try SMALL first, if get responseTooLarge error then try LARGE
     -->
-    <PARAMETER 
+    <PARAMETER
    		NAME="RESULT_SIZE"
    		FIELD="CLOSED_LIST"
 		NUM_ROW="60"
