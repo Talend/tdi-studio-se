@@ -308,6 +308,13 @@
 				<plugin>
 					<groupId>org.talend.ci</groupId>
 					<artifactId>osgihelper-maven-plugin</artifactId>
+					<dependencies>
+						<dependency>
+							<groupId>commons-codec</groupId>
+							<artifactId>commons-codec</artifactId>
+							<version>1.15</version>
+						</dependency>
+					</dependencies>
 					<executions>
 					  <execution>
 						<id>osgi-helper</id>
