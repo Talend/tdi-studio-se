@@ -227,18 +227,19 @@
 						this.isBehindDynamic=true;
 						dynamic_index = valueN;
 					%>
-						<%=dynamicName%>.clearColumnValues();
+						
+						<%=targetConnName %>.<%=column.getLabel() %> = <%=dynamicName%>.copyMetadata();
+						
 						int fieldCount = <%=sourceValueName%>.getColumnsCountOfCurrentRow();
 						dynamic_column_count_<%=cid%> = <%=dynamicName%>.getColumnCount();
 						for (int i = 0; i < dynamic_column_count_<%=cid%> ; i++) {
 							if ((<%=dynamic_index%>+i) < fieldCount){
-								<%=dynamicName%>.addColumnValue(<%=sourceValueName%>.get(<%=dynamic_index%>+i)<%=(isTrimAll || (!trimSelects.isEmpty() && ("true").equals(trimSelects.get(valueN).get("TRIM"))))?".trim()":"" %>);
+								<%=targetConnName %>.<%=column.getLabel() %>.addColumnValue(<%=sourceValueName%>.get(<%=dynamic_index%>+i)<%=(isTrimAll || (!trimSelects.isEmpty() && ("true").equals(trimSelects.get(valueN).get("TRIM"))))?".trim()":"" %>);
 							}
 							else{
-								<%=dynamicName%>.addColumnValue("");
+								<%=targetConnName %>.<%=column.getLabel() %>.addColumnValue("");
 							}
 						}
-						<%=targetConnName %>.<%=column.getLabel() %>=<%=dynamicName%>;
 					<%
 					}else{
 						
@@ -704,8 +705,7 @@
 						IMetadataColumn column1 =metadata.getListColumns().get(colNo);
 						if("id_Dynamic".equals(column1.getTalendType())) {
 					%>
-    						<%=dynamicName%>.clearColumnValues();
-    						<%=targetConnName %>.<%=column1.getLabel() %> = <%=dynamicName%>;
+    						<%=targetConnName %>.<%=column1.getLabel() %> = <%=dynamicName%>.copyMetadata();
 					<%
 						} else {
 					%>
@@ -873,17 +873,16 @@
 								%>
 								    dynamic_column_count_<%=cid%> = <%=dynamicName%>.getColumnCount();
 									if(dynamic_column_count_<%=cid%> > 0) {
-										<%=dynamicName%>.clearColumnValues();
+										<%=targetConnName %>.<%=column.getLabel() %> = <%=dynamicName%>.copyMetadata();
 									}
 									int fieldCount = <%=sourceValueName%>.length;
 									for (int i = 0; i < dynamic_column_count_<%=cid%>; i++) {
 										if ((<%=dynamic_index%>+i) < fieldCount) {
-											<%=dynamicName%>.addColumnValue(<%=sourceValueName%>[<%=dynamic_index%>+i]);
+											<%=targetConnName %>.<%=column.getLabel() %>.addColumnValue(<%=sourceValueName%>[<%=dynamic_index%>+i]);
 										} else {
-											<%=dynamicName%>.addColumnValue("");
+											<%=targetConnName %>.<%=column.getLabel() %>.addColumnValue("");
 										}
 									}
-									<%=targetConnName %>.<%=column.getLabel() %> = <%=dynamicName%>;
 								<%
 								}
 							}

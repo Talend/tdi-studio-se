@@ -15,7 +15,7 @@ imports="
     String resultSizeType = ElementParameterParser.getValue(node,"__RESULT_SIZE__");
     boolean isCustomTemporaryName = ElementParameterParser.getBooleanValue(node,"__USE_CUSTOM_TEMPORARY_DATASET__");
 
-	if (authMode.equals("OAUTH")) {
+	if (authMode.equals("OAUTH") || authMode.equals("TOKEN")) {
 	%>
 			}
 		pageToken_<%=cid%> = dataList_<%=cid %>.getPageToken();
@@ -41,7 +41,7 @@ imports="
               }
           }
       } else {
-          throw new IllegalArgumentException("authentication mode should be either \"SERVICEACCOUNT\" or \"OAUTH\", but it is " + authMode);
+          throw new IllegalArgumentException("authentication mode should be either \"SERVICEACCOUNT\" or \"OAUTH\" or \"TOKEN\", but it is " + authMode);
       }
       log4jFileUtil.retrievedDataNumberInfo(node);
 %>

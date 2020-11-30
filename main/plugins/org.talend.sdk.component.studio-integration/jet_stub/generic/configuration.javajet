@@ -54,10 +54,15 @@ final java.util.Map<String, String> registry_metadata_<%=cid%> = new java.util.H
 <%
                     }
                 }
-            } else if(p.getFieldType() == EParameterFieldType.SCHEMA_TYPE) {
+            } else if (p.getFieldType() == EParameterFieldType.SCHEMA_TYPE || p.getFieldType() == EParameterFieldType.TACOKIT_INPUT_SCHEMA) {
                 final String parameterName = p.getName();
                 IConnection connection = null;
-                final List<? extends IConnection> connections = NodeUtil.getOutgoingConnections(node, p.getContext());
+                final List<? extends IConnection> connections;
+                if (p.getFieldType() == EParameterFieldType.SCHEMA_TYPE) {
+                    connections = NodeUtil.getOutgoingConnections(node, p.getContext());
+                } else {
+                    connections = NodeUtil.getIncomingConnections(node, p.getContext());
+                }
                 if(connections != null && !connections.isEmpty()) {
                     connection = connections.get(0);
                 }
@@ -73,7 +78,6 @@ final java.util.Map<String, String> registry_metadata_<%=cid%> = new java.util.H
                             int precision = col.getPrecision() == null ? -1 : col.getPrecision();
                             String pattern = col.getPattern() == null ? "" : col.getPattern();
                         %>
-                        // getIncomingConnections
                         registry_metadata_<%=cid%>.put("length", "<%=length%>");
                         registry_metadata_<%=cid%>.put("precision", "<%=precision%>");
                         registry_metadata_<%=cid%>.put("pattern", "<%=org.talend.core.model.utils.TalendTextUtils.removeQuotes(pattern)%>");
@@ -81,46 +85,78 @@ final java.util.Map<String, String> registry_metadata_<%=cid%> = new java.util.H
                         }
                     }
                     if (!hasDynamic){
+                        String [] columnMetas = java.util.Optional.ofNullable(p.getListItemsDisplayCodeName()).orElse(new String[0]);
+                        List<String> metas = new java.util.ArrayList();
+                        for (String k : columnMetas){
+                            metas.add(k.substring(k.lastIndexOf(".")+1));
+                        }
                         for(int i = 0; i < columns.size(); i++) {
                             IMetadataColumn column = columns.get(i);
-                        %>
-                        configuration_<%=cid%>.put("<%=parameterName%>[<%=i%>]", "<%=column.getLabel()%>");
-                        <%
-                        }
-                    }
-                }
-            } else if (p.getFieldType() == EParameterFieldType.TACOKIT_INPUT_SCHEMA) {
-                final String parameterName = p.getName();
-                IConnection connection = null;
-                final List<? extends IConnection> connections = NodeUtil.getIncomingConnections(node, p.getContext());
-                if(connections != null && !connections.isEmpty()) {
-                    connection = connections.get(0);
-                }
-                if(connection != null) {
-                    IMetadataTable metaTable = connection.getMetadataTable();
-                    List<IMetadataColumn> columns = metaTable.getListColumns();
-                    boolean hasDynamic = false;
-                    for (int i = 0; i < columns.size(); i++) {
-                        IMetadataColumn column = columns.get(i);
-                        if ("id_Dynamic".equals(column.getTalendType())) {
-                            hasDynamic = true;
-                            int length = column.getLength() == null ? -1 : column.getLength();
-                            int precision = column.getPrecision() == null ? -1 : column.getPrecision();
-                            String pattern = column.getPattern() == null ? "" : column.getPattern();
-                        %>
-                        // getIncomingConnections
-                        registry_metadata_<%=cid%>.put("length", "<%=length%>");
-                        registry_metadata_<%=cid%>.put("precision", "<%=precision%>");
-                        registry_metadata_<%=cid%>.put("pattern", "<%=org.talend.core.model.utils.TalendTextUtils.removeQuotes(pattern)%>");
-                        <%
-                        }
-                    }
-                    if (!hasDynamic){
-                        for(int i = 0; i < columns.size(); i++) {
-                            IMetadataColumn column = columns.get(i);
-                        %>
-                        configuration_<%=cid%>.put("<%=parameterName%>[<%=i%>]", "<%=column.getLabel()%>");
-                        <%
+                            for (String meta : metas){
+                                if (meta.equals("label")){
+                                %>
+                                configuration_<%=cid%>.put("<%=parameterName%>[<%=i%>].label", "<%=column.getLabel()%>");
+                                <%
+                                }
+                                if (meta.equals("originalDbColumnName")){
+                                %>
+                                configuration_<%=cid%>.put("<%=parameterName%>[<%=i%>].originalDbColumnName", "<%=column.getOriginalDbColumnName()%>");
+                                <%
+                                }
+                                if (meta.equals("pattern")){
+                                String pattern = column.getPattern() == null ? "" : column.getPattern();
+                                %>
+                                configuration_<%=cid%>.put("<%=parameterName%>[<%=i%>].pattern", "<%=org.talend.core.model.utils.TalendTextUtils.removeQuotes(pattern)%>");
+                                <%
+                                }
+                                if (meta.equals("defaultValue")){
+                                %>
+                                configuration_<%=cid%>.put("<%=parameterName%>[<%=i%>].defaultValue", "<%=column.getDefault()%>");
+                                <%
+                                }
+                                if (meta.equals("key")){
+                                %>
+                                configuration_<%=cid%>.put("<%=parameterName%>[<%=i%>].key", "<%=column.isKey()%>");
+                                <%
+                                }
+                                if (meta.equals("nullable")){
+                                %>
+                                configuration_<%=cid%>.put("<%=parameterName%>[<%=i%>].nullable", "<%=column.isNullable()%>");
+                                <%
+                                }
+                                if (meta.equals("talendType")){
+                                %>
+                                configuration_<%=cid%>.put("<%=parameterName%>[<%=i%>].talendType", "<%=column.getTalendType()%>");
+                                <%
+                                }
+                                if (meta.equals("type")){
+                                %>
+                                configuration_<%=cid%>.put("<%=parameterName%>[<%=i%>].type", "<%=column.getType()%>");
+                                <%
+                                }
+                                if (meta.equals("length")){
+                                int length = column.getLength() == null ? -1 : column.getLength();
+                                %>
+                                configuration_<%=cid%>.put("<%=parameterName%>[<%=i%>].length", "<%=length%>");
+                                <%
+                                }
+                                if (meta.equals("precision")){
+                                int precision = column.getPrecision() == null ? -1 : column.getPrecision();
+                                %>
+                                configuration_<%=cid%>.put("<%=parameterName%>[<%=i%>].precision", "<%=precision%>");
+                                <%
+                                }
+                                if (meta.equals("comment")){
+                                %>
+                                configuration_<%=cid%>.put("<%=parameterName%>[<%=i%>].comment", "<%=column.getComment()%>");
+                                <%
+                                }
+                            }
+                            if (metas.size() == 0){
+                            %>
+                            configuration_<%=cid%>.put("<%=parameterName%>[<%=i%>]", "<%=column.getLabel()%>");
+                            <%
+                            }
                         }
                     }
                 }

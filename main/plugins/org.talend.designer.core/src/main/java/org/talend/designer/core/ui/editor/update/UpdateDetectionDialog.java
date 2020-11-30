@@ -23,6 +23,7 @@ import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.viewers.CheckStateChangedEvent;
 import org.eclipse.jface.viewers.CheckboxTreeViewer;
 import org.eclipse.jface.viewers.ICheckStateListener;
+import org.eclipse.jface.viewers.ICheckStateProvider;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -364,26 +365,28 @@ public class UpdateDetectionDialog extends SelectionDialog {
         composite.setLayout(new GridLayout());
         composite.setLayoutData(new GridData(GridData.FILL_BOTH));
 
-        int style = SWT.FULL_SELECTION | SWT.H_SCROLL | SWT.V_SCROLL | SWT.BORDER;
+        int style = SWT.FULL_SELECTION | SWT.H_SCROLL | SWT.V_SCROLL | SWT.BORDER | SWT.VIRTUAL;
         if (!isOnlySimpleShow()) { // display check button.
             style = SWT.CHECK | style;
         }
         viewer = new CheckboxTreeViewer(new Tree(composite, style));
-
-        viewer.setContentProvider(new UpdateContentProvider());
-        viewer.setLabelProvider(new UpdateLabelProvider());
-        viewer.setSorter(new UpdateViewerSorter());
-        viewer.setInput(getInputElements());
-        // viewer.setColumnProperties(new String[] { ITEMS, OPERATIONS, REMARKS });
-        // viewer.setCellEditors(new CellEditor[] { null, null, null });
-        // viewer.setCellModifier(new UpdateCellModifier());
-
         final Tree tree = viewer.getTree();
         tree.setHeaderVisible(true);
         tree.setLinesVisible(true);
         tree.setLayoutData(new GridData(GridData.FILL_BOTH));
         addViewerListener();
-        createColumns(tree);
+        createColumns(tree);     
+        viewer.setUseHashlookup(true);
+        viewer.setContentProvider(new UpdateContentProvider());
+        viewer.setLabelProvider(new UpdateLabelProvider());
+        viewer.setSorter(new UpdateViewerSorter());
+        viewer.setCheckStateProvider(new UpdateViewerCheckStateProvider());
+        viewer.setInput(getInputElements());
+
+        // viewer.setColumnProperties(new String[] { ITEMS, OPERATIONS, REMARKS });
+        // viewer.setCellEditors(new CellEditor[] { null, null, null });
+        // viewer.setCellModifier(new UpdateCellModifier());
+
         return composite;
     }
 
@@ -421,7 +424,9 @@ public class UpdateDetectionDialog extends SelectionDialog {
 
                 if (getViewerHelper() != null) {
                     getViewerHelper().updateCheckedState(event.getElement(), event.getChecked());
+                    getViewerHelper().refreshDialogStatus();
                 }
+                updateParentState(event);
             }
 
             /**
@@ -449,8 +454,32 @@ public class UpdateDetectionDialog extends SelectionDialog {
                 }
                 return false;
             }
+            
+            private void updateParentState(CheckStateChangedEvent event) {
+                Job currentJob = null;
+                if (event.getElement() instanceof Item) {
+                    Item item = (Item)event.getElement();
+                    item.setChecked(event.getChecked());
+                    currentJob = item.getParent().getParent();
+                } else if (event.getElement() instanceof Category) {
+                    Category category = (Category)event.getElement();
+                    for (Item item : category.getItems()) {
+                        item.setChecked(event.getChecked());;
+                    }
+                    currentJob = category.getParent();
+                } else if (event.getElement() instanceof Job) {
+                    currentJob = (Job)event.getElement();
+                    for (Category category: currentJob.getCategories()) {
+                        for (Item item : category.getItems()) {
+                            item.setChecked(event.getChecked());;
+                        }
+                    }
+                }
+                if (currentJob != null) {
+                    viewer.refresh(currentJob);
+                }
+            }
         });
-
     }
 
     @Override
@@ -554,5 +583,65 @@ public class UpdateDetectionDialog extends SelectionDialog {
             }
         }
         return builtIn;
+    }
+}
+
+class UpdateViewerCheckStateProvider implements ICheckStateProvider{
+
+    @Override
+    public boolean isChecked(Object element) {
+        if (element instanceof Job) {
+            Job job = (Job) element;
+            for (Category category : job.getCategories()) {
+                for (Item item : category.getItems()) {
+                    if (item.isChecked()) {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        } else if (element instanceof Category) {
+            Category category = (Category)element;
+            for (Item item : category.getItems()) {
+                if (item.isChecked()) {
+                    return true;
+                }
+            }
+        } else if (element instanceof Item) {
+            return ((Item)element).isChecked();
+        }
+        return false;
+    }
+
+    @Override
+    public boolean isGrayed(Object element) {
+        int selectCount = 0;
+        int unSelectCount = 0;
+        if (element instanceof Job) {
+            Job job = (Job) element;
+            for (Category category : job.getCategories()) {
+                for (Item item : category.getItems()) {
+                    if (item.isChecked()) {
+                        selectCount ++;
+                    }else {
+                        unSelectCount ++;
+                    }
+                }
+            }
+        } 
+        if (element instanceof Category) {
+            Category category = (Category)element;
+            for (Item item : category.getItems()) {
+                if (item.isChecked()) {
+                    selectCount ++;
+                }else {
+                    unSelectCount ++;
+                }
+            }
+        }
+        if (selectCount > 0 && unSelectCount > 0) {
+            return true;
+        }
+        return false;
     }
 }

@@ -37,6 +37,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.PlatformUI;
 import org.talend.commons.ui.runtime.exception.ExceptionHandler;
 import org.talend.core.download.DownloadHelper;
+import org.talend.core.runtime.util.SharedStudioUtils;
 import org.talend.designer.components.exchange.i18n.Messages;
 import org.talend.designer.components.exchange.model.Category;
 import org.talend.designer.components.exchange.model.VersionRevision;
@@ -105,7 +106,7 @@ public class ImportExchangeDialog extends Dialog {
 
     @Override
     protected void okPressed() {
-        IPath tempPath = new Path(System.getProperty("user.dir")).append("temp"); //$NON-NLS-1$ //$NON-NLS-2$
+        IPath tempPath = SharedStudioUtils.getTempFolderPath();
         File pathFile = tempPath.toFile();
         if (downloadproperty.getFileName() == null || downloadproperty.getFileName() == null) {
             MessageBox box = new MessageBox(Display.getCurrent().getActiveShell(), SWT.ICON_WARNING | SWT.OK);
