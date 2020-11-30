@@ -217,8 +217,8 @@ if ("USER_ACCOUNT_HMAC".equals(authType)){
 			<% if(!useSrcPath) { %>
 				targetName_<%=cid%> = targetFolder_<%=cid%>+targetName_<%=cid%>.substring(targetName_<%=cid%>.lastIndexOf('/') + 1);
 			<% } else { %>
-        targetName_<%=cid%> = targetFolder_<%=cid%>+targetName_<%=cid%>;
-      <% } %>
+        		targetName_<%=cid%> = targetFolder_<%=cid%>+targetName_<%=cid%>;
+      		<% } %>
 			com.google.cloud.storage.CopyWriter copyWriter_<%=cid%> = blob_<%=cid%>.copyTo(<%=targetBucket%>, targetName_<%=cid%>);
 			<%
 			if("MOVE".equals(actionType) ){
