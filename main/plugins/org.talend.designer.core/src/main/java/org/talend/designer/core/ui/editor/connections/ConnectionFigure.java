@@ -337,14 +337,6 @@ public class ConnectionFigure extends PolylineConnectionEx implements IMapMode {
         ResourceDisposeUtil.setAndCheckColor(this, color, true);
     }
 
-    public void disposeColors() {
-        // ResourceDisposeUtil.disposeColor(getForegroundColor());
-    }
-
-    public void disposeResource() {
-
-    }
-
     /**
      * Getter for connectionProperty.
      *
