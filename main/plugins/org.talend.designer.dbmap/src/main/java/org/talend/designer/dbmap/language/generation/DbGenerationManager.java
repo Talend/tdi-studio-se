@@ -954,10 +954,12 @@ public abstract class DbGenerationManager {
             }
         }
         Set<String> globalMapList = getGlobalMapList(component, expression);
-        int i = expression.indexOf("+");//$NON-NLS-1$
-        int j = expression.lastIndexOf("+");//$NON-NLS-1$
-        if (i > -1 && j > -1 && i != j) {
-            return expression;
+        if (globalMapList.size() > 0) {
+            String tempExpression = expression.trim();
+            if ((tempExpression.startsWith("\"+") && tempExpression.endsWith("+\"")) //$NON-NLS-1$//$NON-NLS-2$
+                    || (tempExpression.startsWith("\" +") && tempExpression.endsWith("+ \""))) {//$NON-NLS-1$ //$NON-NLS-2$
+                return expression;
+            }
         }
         for (String globalMapStr : globalMapList) {
             String regex = parser.getGlobalMapExpressionRegex(globalMapStr);
