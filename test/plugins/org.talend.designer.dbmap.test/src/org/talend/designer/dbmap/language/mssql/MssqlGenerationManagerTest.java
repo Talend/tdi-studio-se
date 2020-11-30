@@ -1,8 +1,7 @@
 package org.talend.designer.dbmap.language.mssql;
 
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -1108,6 +1107,39 @@ public class MssqlGenerationManagerTest extends DbGenerationManagerTestHelper {
         String expectedQuery = "\"UPDATE dbo.tar\n" + "SET tarColumn = A.id,\n" + "tarColumn1 = A.name\n"
                 + "FROM\n \" +dbo+\".\"+src1+ \" A CROSS JOIN  \n\" +dbo+\".\"+src2+ \" B CROSS JOIN  \n\" +dbo+\".\"+src3+ \" C"
                 + "\nWHERE" + "\n  B.id = A.id\n  AND  C.id = B.id\"";
+        assertEquals(expectedQuery, query);
+    }
+
+    @Test
+    public void testBuildSqlSelectWithColumnsAliasIfChecked() {
+        // Only support teradata columns alias now, others not add it .
+        MssqlGenerationManager manager = new MssqlGenerationManager();
+        manager.setUseAliasInOutputTable(true);
+        String schema = "";
+        String main_table = "main_table";
+        String main_alias = "";
+        String lookup_table = "lookup_table";
+        String lookup_alias = "";
+        init4ColumnAlias(schema, main_table, main_alias, lookup_table, lookup_alias);
+        String expectedQuery = "\"SELECT\n" + "main_table.id, main_table.name_alias, main_table.age_alias, lookup_table.score\n"
+                + "FROM\n" + " main_table , lookup_table\"";
+        String query = manager.buildSqlSelect(dbMapComponent, "grade");
+        assertEquals(expectedQuery, query);
+    }
+
+    @Test
+    public void testBuildSqlSelectWithColumnsAliasIfunChecked() {
+        MssqlGenerationManager manager = new MssqlGenerationManager();
+        manager.setUseAliasInOutputTable(false);
+        String schema = "";
+        String main_table = "main_table";
+        String main_alias = "";
+        String lookup_table = "lookup_table";
+        String lookup_alias = "";
+        init4ColumnAlias(schema, main_table, main_alias, lookup_table, lookup_alias);
+        String expectedQuery = "\"SELECT\n" + "main_table.id, main_table.name_alias, main_table.age_alias, lookup_table.score\n"
+                + "FROM\n" + " main_table , lookup_table\"";
+        String query = manager.buildSqlSelect(dbMapComponent, "grade");
         assertEquals(expectedQuery, query);
     }
 }
