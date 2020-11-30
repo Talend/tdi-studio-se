@@ -2,6 +2,7 @@ package com.talend.compress.zip;
 
 import java.io.File;
 import java.util.List;
+import java.util.Optional;
 
 import net.lingala.zip4j.core.ZipFile;
 import net.lingala.zip4j.model.FileHeader;
@@ -44,6 +45,8 @@ public class Unzip {
         this.useZip4jDecryption = useZip4jDecryption;
 	}
 
+	public void setEncording(String encording){this.encording = encording;}
+
 	private boolean needPassword = false;
     private boolean useZip4jDecryption = false;
 
@@ -55,6 +58,8 @@ public class Unzip {
 
 	private String sourceZip;
 	private String targetDir;
+	private String encording;
+
 
 	public Unzip(String sourceZip, String targetDir) {
 		this.sourceZip = sourceZip;
@@ -92,6 +97,9 @@ public class Unzip {
 		}
 
 		ZipFile zipFile = new ZipFile(sourceZip);
+		if(encording != null){
+            zipFile.setFileNameCharset(encording);
+        }
 
 		if (checkArchive) {
 			if (!zipFile.isValidZipFile()) {
@@ -152,9 +160,8 @@ public class Unzip {
 			is = new javax.crypto.CipherInputStream(is,
 					org.talend.archive.IntegrityUtil.createCipher(
 							javax.crypto.Cipher.DECRYPT_MODE, password));
-
 			org.apache.commons.compress.archivers.zip.ZipArchiveInputStream input = new org.apache.commons.compress.archivers.zip.ZipArchiveInputStream(
-					new java.io.BufferedInputStream(is));
+					new java.io.BufferedInputStream(is),Optional.ofNullable(encording).orElse("UTF8"));
 			org.apache.commons.compress.archivers.zip.ZipArchiveEntry entry;
 
 			while ((entry = input.getNextZipEntry()) != null) {
@@ -190,7 +197,7 @@ public class Unzip {
 		org.apache.commons.compress.archivers.zip.ZipFile zip = null;
 		try {
 			zip = new org.apache.commons.compress.archivers.zip.ZipFile(
-					sourceZip);
+					sourceZip,Optional.ofNullable(encording).orElse("UTF8"));
 			java.util.Enumeration enuFiles = zip.getEntries();
 			java.io.InputStream is = null;
 

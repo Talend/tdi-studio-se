@@ -74,13 +74,18 @@
      >
       <DEFAULT>false</DEFAULT>
     </PARAMETER>
-
   </PARAMETERS>
 
   <ADVANCED_PARAMETERS>
         <PARAMETER NAME="PRINTOUT" FIELD="CHECK" REQUIRED="true"
             NUM_ROW="2">
             <DEFAULT>false</DEFAULT>
+        </PARAMETER>
+		<PARAMETER NAME="USE_ENCODING" FIELD="CHECK" REQUIRED="true" NUM_ROW="5">
+            <DEFAULT>false</DEFAULT>
+        </PARAMETER>
+		<PARAMETER NUM_ROW="5" FIELD="TEXT" NAME="ENCORDING" SHOW_IF="USE_ENCODING == 'true'">
+            <DEFAULT>"UTF-8"</DEFAULT>
         </PARAMETER>
   </ADVANCED_PARAMETERS>
 
@@ -90,7 +95,7 @@
        <IMPORT NAME="Ant-Zip" MODULE="ant-1.10.8.jar" MVN="mvn:org.apache.ant/ant/1.10.8" REQUIRED="true" />
        <IMPORT NAME="Check-Archive" MODULE="checkArchive-1.1-20190917.jar" MVN="mvn:org.talend.libraries/checkArchive-1.1-20190917/6.0.0" UrlPath="platform:/plugin/org.talend.libraries.custom/lib/checkArchive-1.1-20190917.jar" REQUIRED="true" />
        <IMPORT NAME="zip4j-1.3.3.jar" MODULE="zip4j-1.3.3.jar" MVN="mvn:net.lingala.zip4j/zip4j/1.3.3"  REQUIRED="true" />
-       <IMPORT NAME="talendzip-1.0-20190917.jar" MODULE="talendzip-1.0-20190917.jar" MVN="mvn:org.talend.libraries/talendzip/1.0-20190917" UrlPath="platform:/plugin/org.talend.libraries.custom/lib/talendzip-1.0-20190917.jar" REQUIRED="true" />
+       <IMPORT NAME="talendzip-1.1-20201120.jar" MODULE="talendzip-1.1-20201120.jar" MVN="mvn:org.talend.components/talendzip/1.1-20201120" UrlPath="platform:/plugin/org.talend.libraries.custom/lib/talendzip-1.1-20201120.jar" REQUIRED="true" />
      </IMPORTS>
    </CODEGENERATION>
 
