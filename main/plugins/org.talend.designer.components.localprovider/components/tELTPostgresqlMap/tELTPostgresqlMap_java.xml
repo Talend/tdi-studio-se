@@ -87,6 +87,19 @@
       REPOSITORY_VALUE="DATABASE:POSTGRESQL"
     />
     
+    <PARAMETER
+      NAME="DB_VERSION"
+      FIELD="CLOSED_LIST"
+      NUM_ROW="30"
+      SHOW_IF="(#LINK@CONNECTOR.OUT.TABLE_REF == '0') AND (USE_EXISTING_CONNECTION == 'false')"
+      REPOSITORY_VALUE="DB_VERSION"
+    >
+      <ITEMS DEFAULT="V9_X">
+        <ITEM NAME="PRIOR_TO_V9" VALUE="PRIOR_TO_V9" />
+        <ITEM NAME="V9_X" VALUE="V9_X" />
+      </ITEMS>
+    </PARAMETER>
+    
 
     <PARAMETER
       NAME="HOST"
@@ -175,7 +188,11 @@
   </ADVANCED_PARAMETERS>
   
    <CODEGENERATION>
-   </CODEGENERATION>
+      <IMPORTS>
+        <IMPORT NAME="Driver-Postgres9" MODULE="postgresql-42.2.14.jar" MVN="mvn:org.postgresql/postgresql/42.2.14" REQUIRED_IF="DB_VERSION =='V9_X'" />
+        <IMPORT NAME="Driver-Postgres" MODULE="postgresql-8.4-703.jdbc4.jar" MVN="mvn:postgresql/postgresql/8.4-703.jdbc4" REQUIRED_IF="DB_VERSION =='PRIOR_TO_V9'" />
+      </IMPORTS>
+  </CODEGENERATION>
 
    <RETURNS>
    </RETURNS>

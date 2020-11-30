@@ -1,16 +1,16 @@
-<%@ jet 
+<%@ jet
 	imports="
 		org.talend.core.model.process.INode
 		org.talend.core.model.process.ElementParameterParser
 		org.talend.designer.codegen.config.CodeGeneratorArgument
 		java.util.List
-	" 
+	"
 %>
 	<%
     CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
     INode node = (INode)codeGenArgument.getArgument();
     String cid = node.getUniqueName();
-    
+
     String accessKey = ElementParameterParser.getValue(node, "__ACCESS_KEY__");
 
 	String useExistingConn = ElementParameterParser.getValue(node,"__USE_EXISTING_CONNECTION__");
@@ -22,28 +22,24 @@
 	String newObjectKey = ElementParameterParser.getValue(node,"__NEW_OBJECTKEY__");
 	String actionType = ElementParameterParser.getValue(node,"__ACTION_TYPE__");
 	boolean isRename = ("true").equals(ElementParameterParser.getValue(node,"__RENAME__"));
-	
+
 	String dieOnError = ElementParameterParser.getValue(node, "__DIE_ON_ERROR__");
 	boolean isLog4jEnabled = ("true").equals(ElementParameterParser.getValue(node.getProcess(), "__LOG4J_ACTIVATE__"));
 
 	String connection = ElementParameterParser.getValue(node,"__CONNECTION__");
 	String authType = ElementParameterParser.getValue(node, "__AUTH_TYPE__");
-	boolean useServiceAccountForConnection = false;
-	
-	//Define if connection use Service account for connection
-	if(("true").equals(useExistingConn)) {
+
+  if(("true").equals(useExistingConn)) {
 		List< ? extends INode> nodes =  node.getProcess().getNodesOfType("tGSConnection");
 		for (INode ne : nodes) {
 			if (connection.equals(ne.getUniqueName())) {
-				String authTypeInConnectionComponent = ElementParameterParser.getValue(ne, "__AUTH_TYPE__");
-				useServiceAccountForConnection = "SERVICE_ACCOUNT".equals(authTypeInConnectionComponent);
+				authType = ElementParameterParser.getValue(ne, "__AUTH_TYPE__");
+        break;
 			}
 		}
-	} else {
-		useServiceAccountForConnection = "SERVICE_ACCOUNT".equals(authType);
 	}
 
-if (!useServiceAccountForConnection){
+if ("USER_ACCOUNT_HMAC".equals(authType)){
 	%>
 	org.jets3t.service.impl.rest.httpclient.GoogleStorageService service_<%=cid%> = null;
 	try {
@@ -53,24 +49,24 @@ if (!useServiceAccountForConnection){
 			service_<%=cid%> = (org.jets3t.service.impl.rest.httpclient.GoogleStorageService)globalMap.get("service_<%=connection%>");
 			<%
 			if(isLog4jEnabled){
-			%>	
+			%>
 				log.info("<%=cid%> - Get an free connection from " + "<%=connection%>" + ".");
 			<%
 			}
 		}else{
 		%>
-	
+
 	       	<%
 			String passwordFieldName = "__SECRET_KEY__";
 			final String GoogleTracker = org.talend.core.utils.TrackerUtil.getGoogleTracker();
 	       	%>
-	
+
 		   <%@ include file="@{org.talend.designer.components.localprovider}/components/templates/password.javajet"%>
-	
+
 			org.jets3t.service.security.GSCredentials credentials_<%=cid%> = new org.jets3t.service.security.GSCredentials(<%=accessKey%>,decryptedPassword_<%=cid%>);
 			service_<%=cid%> = new org.jets3t.service.impl.rest.httpclient.GoogleStorageService(credentials_<%=cid%>," <%=GoogleTracker%>",null);
 			service_<%=cid%>.getAccountOwner();
-		<%		
+		<%
 		}
 		%>
 		String targetFolder_<%=cid%>=<%=targetFolder%>;
@@ -91,7 +87,7 @@ if (!useServiceAccountForConnection){
 					service_<%=cid%>.copyObject(<%=srcBucketName%>, srcObjectKey_<%=cid%>, <%=targetBucket%>,tarObj_<%=cid%> , false);
 				<%
 				}else{
-				%>		
+				%>
 					service_<%=cid%>.moveObject(<%=srcBucketName%>, srcObjectKey_<%=cid%>, <%=targetBucket%>, tarObj_<%=cid%>, false);
 				<%
 				}
@@ -126,8 +122,8 @@ if (!useServiceAccountForConnection){
 		<%
 		}
 		%>
-		globalMap.put("<%=cid %>_SOURCE_BUCKET",<%=srcBucketName%>); 
-		globalMap.put("<%=cid %>_SOURCE_OBJECTKEY",<%=sourceObjectKey%>); 
+		globalMap.put("<%=cid %>_SOURCE_BUCKET",<%=srcBucketName%>);
+		globalMap.put("<%=cid %>_SOURCE_OBJECTKEY",<%=sourceObjectKey%>);
 
 		globalMap.put("<%=cid %>_DESTINATION_BUCKETNAME", <%=targetBucket%>);
 		globalMap.put("<%=cid %>_DESTINATION_FOLDER", <%=targetFolder%>);
@@ -170,7 +166,7 @@ if (!useServiceAccountForConnection){
 					%>
 					System.err.println(servError_<%=cid%>.getErrorMessage());
 				}
-	
+
 			}else{
 				<%
 				if(isLog4jEnabled){
@@ -189,48 +185,15 @@ if (!useServiceAccountForConnection){
 		if(service_<%=cid%> !=null){
 			service_<%=cid%>.shutdown();
 		}
-		
+
 		<%
 		}
 		%>
 	}
-<%
-} else {
+<% } else {
+  String gsProjectID=ElementParameterParser.getValue(node,"__GS_PROJECT_ID__");
 %>
-	com.google.cloud.storage.Storage storage_<%=cid%> = null;
-	<%
-	if(("true").equals(useExistingConn)) {
-	%>
-		storage_<%=cid%> = (com.google.cloud.storage.Storage)globalMap.get("service_<%=connection%>");
-	<%
-	} else {
-		String pathToServerAccoutKeyFile = ElementParameterParser.getValue(node, "__SERVICE_ACCOUNT_KEY__");
-	%>
-		com.google.auth.Credentials credential_<%=cid%> = null;
-		try {
-			credential_<%=cid%> = com.google.auth.oauth2.GoogleCredentials
-					.fromStream(new java.io.FileInputStream(<%=pathToServerAccoutKeyFile%>));
-		} catch (IOException e_<%=cid%>) {
-			<%
-			if(isLog4jEnabled){
-			%>
-				log.error("<%=cid%> - Exception in component <%=cid%>.", e_<%=cid%>);
-			<%
-			}
-			%>
-			<%
-			if (("true").equals(dieOnError)) {
-			%>
-				throw(e_<%=cid%>);
-			<%
-			}
-			%>
-		}
-		com.google.cloud.storage.StorageOptions.Builder builder = com.google.cloud.storage.StorageOptions.newBuilder();
-		storage_<%=cid%> = builder.setCredentials(credential_<%=cid%>).build().getService();
-	<%
-	}
-	%>
+	<%@ include file="@{org.talend.designer.components.localprovider}/components/templates/googleStorageConnection.javajet"%>
 	String targetFolder_<%=cid%>=<%=targetFolder%>;
 	if(targetFolder_<%=cid%>.length()>0 && !targetFolder_<%=cid%>.endsWith("/")){
 		targetFolder_<%=cid%>=targetFolder_<%=cid%>+"/";
@@ -242,7 +205,7 @@ if (!useServiceAccountForConnection){
 		com.google.cloud.storage.Storage.BlobListOption blobListOptionPrefix_<%=cid%> = com.google.cloud.storage.Storage.BlobListOption.prefix(<%=sourceObjectKey%>);
 		com.google.api.gax.paging.Page<com.google.cloud.storage.Blob> allBlobs_<%=cid%> = bucket_<%=cid%>.list(blobListOptionPrefix_<%=cid%>);
 		for (com.google.cloud.storage.Blob blob_<%=cid%> : allBlobs_<%=cid%>.iterateAll()) {
-			
+
 			com.google.cloud.storage.CopyWriter copyWriter_<%=cid%> = blob_<%=cid%>.copyTo(<%=targetBucket%>, targetFolder_<%=cid%>+blob_<%=cid%>.getName());
 			<%
 			if("MOVE".equals(actionType) ){
@@ -276,8 +239,8 @@ if (!useServiceAccountForConnection){
 	<%
 	}
 	%>
-	globalMap.put("<%=cid %>_SOURCE_BUCKET",<%=srcBucketName%>); 
-	globalMap.put("<%=cid %>_SOURCE_OBJECTKEY",<%=sourceObjectKey%>); 
+	globalMap.put("<%=cid %>_SOURCE_BUCKET",<%=srcBucketName%>);
+	globalMap.put("<%=cid %>_SOURCE_OBJECTKEY",<%=sourceObjectKey%>);
 
 	globalMap.put("<%=cid %>_DESTINATION_BUCKETNAME", <%=targetBucket%>);
 	globalMap.put("<%=cid %>_DESTINATION_FOLDER", <%=targetFolder%>);

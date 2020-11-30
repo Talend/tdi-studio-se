@@ -22,8 +22,10 @@
     boolean dieWhenArchiveCorrupted = "true".equals(ElementParameterParser.getValue(node, "__DIE_ON_ERROR__"));
     boolean isPasswordNeeded = "true".equals(ElementParameterParser.getValue(node, "__CHECKPASSWORD__"));
     boolean needPrintout = "true".equals(ElementParameterParser.getValue(node, "__PRINTOUT__"));
+	boolean UseEncoding = "true".equals(ElementParameterParser.getValue(node, "__USE_ENCODING__"));
 
     String decryptMethod = ElementParameterParser.getValue(node, "__DECRYPT_METHOD__");
+	String encoding = ElementParameterParser.getValue(node, "__ENCORDING__");
 
     log4jFileUtil.componentStartInfo(node);
 %>
@@ -213,6 +215,9 @@
         unzip_<%=cid%>.setExtractPath(<%=extractPath%>);
         unzip_<%=cid%>.setUtil(util_<%=cid %>);
         unzip_<%=cid%>.setUseZip4jDecryption(<%="ZIP4J_DECRYPT".equals(decryptMethod)%>);
+		<%if(UseEncoding){%>
+		unzip_<%=cid%>.setEncording(<%=encoding%>);
+		<%}%>
 
         try{
         unzip_<%=cid%>.doUnzip();

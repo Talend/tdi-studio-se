@@ -1,0 +1,53 @@
+<%@ jet
+imports="
+  org.talend.core.model.process.INode
+  org.talend.core.model.process.ElementParameterParser
+  org.talend.designer.codegen.config.CodeGeneratorArgument
+  "
+%>
+<%
+if(("true").equals(useExistingConn)) {
+  %>
+  com.google.cloud.storage.Storage storage_<%=cid%> = (com.google.cloud.storage.Storage)globalMap.get("service_<%=connection%>");
+<% } else {
+  if ("SERVICE_ACCOUNT".equals(authType) || "GS_SERVICE_ACCOUNT".equals(authType)) {
+    String pathToServerAccoutKeyFile;
+    if("SERVICE_ACCOUNT".equals(authType)) {
+      pathToServerAccoutKeyFile = ElementParameterParser.getValue(node, "__SERVICE_ACCOUNT_KEY__");
+    }else {
+      pathToServerAccoutKeyFile = ElementParameterParser.getValue(node, "__GS_SERVICE_ACCOUNT_KEY__");
+    }
+%>
+com.google.auth.Credentials credential_<%=cid%> = null;
+try {
+  credential_<%=cid%> = com.google.auth.oauth2.GoogleCredentials
+      .fromStream(new java.io.FileInputStream(<%=pathToServerAccoutKeyFile%>));
+} catch (IOException e_<%=cid%>) {
+  <% if (("true").equals(dieOnError)) { %>
+    throw(e_<%=cid%>);
+  <% }
+    if(isLog4jEnabled){ %>
+        log.error("<%=cid%> - Exception in component <%=cid%>.", e_<%=cid%>);
+  <% } %>
+}
+  com.google.cloud.storage.Storage storage_<%=cid%> = com.google.cloud.storage.StorageOptions.newBuilder().setCredentials(credential_<%=cid%>).build().getService();
+<% } else {
+      if (ElementParameterParser.canEncrypt(node, "__GS_ACCESS_TOKEN__")) {%>
+      final String decryptedAccessTokenGS_<%=cid%> = routines.system.PasswordEncryptUtil.decryptPassword(<%=ElementParameterParser.getEncryptedValue(node, "__GS_ACCESS_TOKEN__")%>);
+      com.google.auth.Credentials credential_<%=cid%> = com.google.auth.oauth2.GoogleCredentials.create(
+              new com.google.auth.oauth2.AccessToken(decryptedAccessTokenGS_<%=cid%>, new Date(Long.MAX_VALUE)));
+      <%} else {%>
+      class ReinitializeAccessTokenCredentials_<%=cid%> extends com.google.auth.oauth2.GoogleCredentials {
+            ReinitializeAccessTokenCredentials_<%=cid%> (com.google.auth.oauth2.AccessToken accessToken) {
+              super(accessToken);
+            }
+            public com.google.auth.oauth2.AccessToken refreshAccessToken() throws IOException {
+                return new com.google.auth.oauth2.AccessToken(<%= ElementParameterParser.getValue(node, "__GS_ACCESS_TOKEN__")%>, new Date(Long.MAX_VALUE));
+            }
+      }
+      com.google.auth.Credentials credential_<%=cid%> = new ReinitializeAccessTokenCredentials_<%=cid%>(new com.google.auth.oauth2.AccessToken(<%= ElementParameterParser.getValue(node, "__GS_ACCESS_TOKEN__")%>, new Date(Long.MAX_VALUE)));
+      <%}%>
+      com.google.cloud.storage.Storage storage_<%=cid%> = com.google.cloud.storage.StorageOptions.newBuilder().setCredentials(credential_<%=cid%>)
+            .setProjectId(<%=gsProjectID%>).build().getService();
+      <%}
+}%>
