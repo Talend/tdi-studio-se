@@ -109,6 +109,13 @@
 								</goals>
 							</execution>
 						</executions>
+						<dependencies>
+							<dependency>
+				              	<groupId>commons-codec</groupId>
+								<artifactId>commons-codec</artifactId>
+								<version>1.15</version>
+				            </dependency>
+						</dependencies>
 					</plugin>
 				</plugins>
 			</build>
