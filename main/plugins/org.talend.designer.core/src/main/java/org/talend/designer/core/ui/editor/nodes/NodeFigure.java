@@ -400,13 +400,6 @@ public class NodeFigure extends Figure {
             ResourceDisposeUtil.disposeColor(connection.getBackgroundColor());
             ResourceDisposeUtil.disposeColor(connection.getForegroundColor());
         }
-        // connection.disposeColors();
-        if (targetConnection != null) {
-            targetConnection.disposeColors();
-        }
-        if (targetDummy != null) {
-            targetDummy.disposeColors();
-        }
     }
 
     public ImageFigure getImageFigure() {

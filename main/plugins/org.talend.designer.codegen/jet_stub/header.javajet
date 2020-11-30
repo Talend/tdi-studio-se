@@ -437,6 +437,20 @@ private RunTrace runTrace = new RunTrace();
 		globalMap.put(KEY_DB_DATASOURCES, talendDataSources);
 		globalMap.put(KEY_DB_DATASOURCES_RAW, new java.util.HashMap<String, javax.sql.DataSource>(dataSources));
 	}
+	
+	public void setDataSourceReferences(List serviceReferences) throws Exception{
+		
+		java.util.Map<String, routines.system.TalendDataSource> talendDataSources = new java.util.HashMap<String, routines.system.TalendDataSource>();
+		java.util.Map<String, javax.sql.DataSource> dataSources = new java.util.HashMap<String, javax.sql.DataSource>();
+		
+		for (java.util.Map.Entry<String, javax.sql.DataSource> entry : BundleUtils.getServices(serviceReferences,  javax.sql.DataSource.class).entrySet()) {
+                    dataSources.put(entry.getKey(), entry.getValue());
+                    talendDataSources.put(entry.getKey(), new routines.system.TalendDataSource(entry.getValue()));
+		}
+
+		globalMap.put(KEY_DB_DATASOURCES, talendDataSources);
+		globalMap.put(KEY_DB_DATASOURCES_RAW, new java.util.HashMap<String, javax.sql.DataSource>(dataSources));
+	}
 
 <%
 	for (INode logCatcher : process.getNodesOfType("tLogCatcher")) {
