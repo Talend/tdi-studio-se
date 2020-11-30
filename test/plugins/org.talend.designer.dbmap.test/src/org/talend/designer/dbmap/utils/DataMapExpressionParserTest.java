@@ -1,6 +1,6 @@
 package org.talend.designer.dbmap.utils;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -132,6 +132,49 @@ public class DataMapExpressionParserTest {
         Assert.assertEquals(list.get(0), "((String)globalMap.get(\"#main_table%\"))");
         Assert.assertEquals(list.get(1), "((String)globalMap.get(\"@lookup_table*\"))");
 
+    }
+
+    @Test
+    public void testGetGlobalMapSet4ExpressionString1() {
+        String sqlQuery = "((String)globalMap.get(\"TECH_SYSTEM_SOURCE\"))";
+        Set<String> globalList = parser.getGlobalMapSet(sqlQuery);
+        Assert.assertEquals(globalList.size(), 1);
+        List<String> list = new ArrayList<String>(globalList);
+        Assert.assertEquals(list.get(0), "((String)globalMap.get(\"TECH_SYSTEM_SOURCE\"))");
+    }
+
+    @Test
+    public void testGetGlobalMapSet4ExpressionString2() {
+        String sqlQuery = "\"+((String)globalMap.get(\"TECH_SYSTEM_SOURCE\"))+\"";
+        Set<String> globalList = parser.getGlobalMapSet(sqlQuery);
+        Assert.assertEquals(globalList.size(), 1);
+        List<String> list = new ArrayList<String>(globalList);
+        Assert.assertEquals(list.get(0), "((String)globalMap.get(\"TECH_SYSTEM_SOURCE\"))");
+    }
+
+    @Test
+    public void testGetGlobalMapSet4ExpressionString3() {
+        String sqlQuery = "globalMap.get(\"TECH_SYSTEM_SOURCE\")";
+        Set<String> globalList = parser.getGlobalMapSet(sqlQuery);
+        Assert.assertEquals(globalList.size(), 0);
+    }
+
+    @Test
+    public void testGetGlobalMapSet4ExpressionInteger1() {
+        String sqlQuery = "((Integer)globalMap.get(\"TECH_SYSTEM_SOURCE\"))";
+        Set<String> globalList = parser.getGlobalMapSet(sqlQuery);
+        Assert.assertEquals(globalList.size(), 1);
+        List<String> list = new ArrayList<String>(globalList);
+        Assert.assertEquals(list.get(0), "((Integer)globalMap.get(\"TECH_SYSTEM_SOURCE\"))");
+    }
+
+    @Test
+    public void testGetGlobalMapSet4ExpressionInteger2() {
+        String sqlQuery = "\"+((Integer)globalMap.get(\"TECH_SYSTEM_SOURCE\"))+\"";
+        Set<String> globalList = parser.getGlobalMapSet(sqlQuery);
+        Assert.assertEquals(globalList.size(), 1);
+        List<String> list = new ArrayList<String>(globalList);
+        Assert.assertEquals(list.get(0), "((Integer)globalMap.get(\"TECH_SYSTEM_SOURCE\"))");
     }
 
     @Test

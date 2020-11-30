@@ -28,7 +28,6 @@ import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.viewers.IBaseLabelProvider;
-import org.eclipse.jface.viewers.IContentProvider;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.TableEditor;
 import org.eclipse.swt.events.ControlAdapter;
@@ -49,7 +48,6 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
-import org.eclipse.ui.internal.navigator.NavigatorContentServiceContentProvider;
 import org.eclipse.ui.internal.navigator.NavigatorDecoratingLabelProvider;
 import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.exception.LoginException;
@@ -630,8 +628,10 @@ public class VersionManagementPage extends AbstractVersionManagementProjectSetti
                                 if (!object.getNewVersion().equals(repositoryObject.getVersion())) {
                                     final Item item = object.getItem();
                                     Property itemProperty = item.getProperty();
+                                    String oldVersion = object.getOldVersion();
+                                    String label = itemProperty.getLabel();
                                     itemProperty.setVersion(object.getNewVersion());
-                                    monitor.subTask(itemProperty.getLabel());
+                                    monitor.subTask(label);
 
                                     try {
                                         // for bug 12853 ,version management doesn't work for joblet because eResource
@@ -648,11 +648,11 @@ public class VersionManagementPage extends AbstractVersionManagementProjectSetti
                                         }
                                         if (obj != null) {
                                             // obj.setVersion(object.getNewVersion());
-                                            FACTORY.save(project, obj.getProperty());
+                                            FACTORY.save(project, obj.getProperty(), label, oldVersion);
                                             builder.addOrUpdateItem(obj.getProperty().getItem(), true);
                                         } else {
                                             String id = itemProperty.getId();
-                                            FACTORY.save(project, itemProperty);
+                                            FACTORY.save(project, itemProperty, label, oldVersion);
                                             if (versionLatest.getSelection()) {
                                                 builder.updateItemVersion(item, object.getOldVersion(), id, versions, true);
                                             }

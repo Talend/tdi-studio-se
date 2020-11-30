@@ -45,6 +45,7 @@ if ((metadatas!=null)&&(metadatas.size()>0)) {
     			String removeHeader = ElementParameterParser.getValue(node, "__REMOVE_HEADER__"); // add for feature7788
         		String encoding = ElementParameterParser.getValue(node, "__ENCODING__");
 				boolean isAllowEmpty = ("true").equals(ElementParameterParser.getValue(node, "__CREATE_EMPTY_ELEMENT__"));
+				boolean ignoreServiceAttributes = ("true").equals(ElementParameterParser.getValue(node, "__IGNORE_SERVICE_ATTRIBUTES_FOR_EMPTY__"));
                 boolean expandEmptyElm = ("true").equals(ElementParameterParser.getValue(node, "__EXPAND_EMPTY_ELM__"));
         		String mode = ElementParameterParser.getValue(node, "__GENERATION_MODE__");
         		List<Map<String, String>> rootTable = 
@@ -119,6 +120,7 @@ if ((metadatas!=null)&&(metadatas.size()>0)) {
 						%>
 						java.util.List<java.util.Map<String,String>> flows;
 						java.lang.Exception lastException;
+						java.lang.Error lastError;
 						String currentComponent;
 						
 						ThreadXMLField_<%=cid%>(java.util.Queue q) {
@@ -138,6 +140,11 @@ if ((metadatas!=null)&&(metadatas.size()>0)) {
 						public java.lang.Exception getLastException() {
 							return this.lastException;
 						}
+						
+						public java.lang.Error getLastError() {
+							return this.lastError;
+						}
+						
 						public String getCurrentComponent() {
 							return this.currentComponent;
 						}
@@ -149,6 +156,8 @@ if ((metadatas!=null)&&(metadatas.size()>0)) {
 							} catch (TalendException te) {
 								this.lastException = te.getException();
 								this.currentComponent = te.getCurrentComponent();
+							} catch (java.lang.Error error) {
+								this.lastError = error;
 							}
 						}
 					}
@@ -200,6 +209,18 @@ java.util.Map<String,String> arraysValueMap_<%=cid%> = new java.util.HashMap<Str
 %>
 
 class NestXMLTool_<%=cid%>{
+<%
+    if (!isAllowEmpty && ignoreServiceAttributes) {
+%>
+        private java.util.Set<String> serviceAttributeNames = new java.util.HashSet<>();
+        {
+            serviceAttributeNames.add("type");
+            serviceAttributeNames.add("class");
+            serviceAttributeNames.add("array");
+        }
+<%
+    }
+%>
 	public void parseAndAdd(org.dom4j.Element nestRoot, String value){
 		try {
             org.dom4j.Document doc4Str = org.dom4j.DocumentHelper.parseText("<root>"+ value + "</root>");
@@ -235,16 +256,25 @@ class NestXMLTool_<%=cid%>{
 			for (org.dom4j.Element tmp: (java.util.List<org.dom4j.Element>) root.elements()) {
 				removeEmptyElement(tmp);
 			}
-			if (root.content().size() == 0 
-    			&& root.attributes().size() == 0 
-    			&& root.declaredNamespaces().size() == 0) {
-    			if(root.getParent()!=null){
-                	root.getParent().remove(root);
+
+            boolean noSignificantDataAnnotationsExist = root.attributes().isEmpty() <%if (!isAllowEmpty && ignoreServiceAttributes) {%>|| isOnlyServiceAttributesDeclared(root.attributes()) <% } %>;
+            if (root.content().isEmpty()
+                && noSignificantDataAnnotationsExist && root.declaredNamespaces().isEmpty()) {
+                if(root.getParent()!=null){
+                    root.getParent().remove(root);
                 }
             }
-		}
-	}
-	
+        }
+    }
+<%
+    if (!isAllowEmpty && ignoreServiceAttributes) {
+%>
+        private boolean isOnlyServiceAttributesDeclared(List<org.dom4j.Attribute> attributes) {
+            return attributes.stream().allMatch(a -> serviceAttributeNames.contains(a.getName().toLowerCase()));
+        }
+<%
+    }
+%>
 	public String objectToString(Object value){
 		if(value.getClass().isArray()){
 			StringBuilder sb = new StringBuilder();

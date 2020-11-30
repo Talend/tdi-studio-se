@@ -821,12 +821,10 @@ public class MapperManager extends AbstractMapperManager {
         boolean isPhysicalTable = alias.equals("") || alias.equalsIgnoreCase(aliasDialog.getTableName()); //$NON-NLS-1$
         String aliasOrTableName = isPhysicalTable ? aliasDialog.getTableName() : alias;
 
-        IMetadataTable metadataTable = isPhysicalTable ? connectionFound.getTable() : connectionFound.getTable().clone();
-
         boolean isInvisiblePhysicalTable = aliasDialog.isSameAsPhysicalTable(aliasOrTableName)
                 && !aliasDialog.isSameAsVisibleTableName(aliasOrTableName);
 
-        InputTable inputTable = new InputTable(this, metadataTable, aliasOrTableName);
+        InputTable inputTable = new InputTable(this, connectionFound, aliasOrTableName);
         if (isInvisiblePhysicalTable) {
             inputTable.setAlias(null);
         } else {

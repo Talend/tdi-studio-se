@@ -21,6 +21,7 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.TreeSet;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
@@ -229,9 +230,24 @@ public class JavaProcessorUtilities {
                             RoutineItem routine = (RoutineItem) item;
                             for (Object o : routine.getImports()) {
                                 IMPORTType type = (IMPORTType) o;
+                                
+                                boolean needToAdd = true;
                                 ModuleNeeded neededModule = new ModuleNeeded("camel bean dependencies", type.getMODULE(),
                                         "camel bean dependencies", true);
-                                neededLibraries.add(neededModule);
+
+                                for(ModuleNeeded mn:neededLibraries) {
+                                    if (StringUtils.equals(mn.getModuleName(), type.getMODULE())) {
+                                        if (StringUtils.equals(neededModule.getModuleLocaion(), mn.getModuleLocaion())) {
+                                            needToAdd = false;
+                                            break;
+                                        }
+                                    }
+                                }
+                                
+                                if (needToAdd) {
+                                    neededLibraries.add(neededModule);
+                                }
+
                             }
                         }
                     }

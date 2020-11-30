@@ -96,6 +96,12 @@ public class JobSettingsManager {
 
     private static final String CONNECTOR = TalendTextUtils.getStringConnect();
 
+    private static final String ENCODING_TYPE_UTF_8 = "UTF-8"; //$NON-NLS-1$
+
+    private static final String ENCODING_TYPE_ISO_8859_15 = "ISO-8859-15"; //$NON-NLS-1$
+
+    private static final String ENCODING_TYPE_CUSTOM = "CUSTOM"; //$NON-NLS-1$
+
     private static List<IElementParameter> getHeaderFooterParameters(IProcess process) {
         // for headerFooter Code
         ElementParameter param;
@@ -384,6 +390,51 @@ public class JobSettingsManager {
         param.setShowIf(condition);
         paramList.add(param);
 
+        // begin Override encoding checkbox
+        param = new ElementParameter(process);
+        param.setName(EParameterName.OVERRIDE_ENCODING_FLAG.getName());
+        param.setDisplayName(EParameterName.OVERRIDE_ENCODING_FLAG.getDisplayName());
+        param.setFieldType(EParameterFieldType.CHECK);
+        param.setCategory(EComponentCategory.EXTRA);
+        param.setGroup(IMPLICIT_GROUP);
+        param.setNumRow(33);
+        param.setValue(false);
+        param.setShowIf(condition);
+        paramList.add(param);
+        // end Override encoding checkbox
+
+        // begin encoding select
+        ElementParameter encodingParam = new ElementParameter(process);
+        encodingParam.setName(EParameterName.OVERRIDE_ENCODING_IN_EXTRA.getName());
+        encodingParam.setDisplayName(EParameterName.OVERRIDE_ENCODING_IN_EXTRA.getDisplayName());
+        encodingParam.setCategory(EComponentCategory.EXTRA);
+        encodingParam.setGroup(IMPLICIT_GROUP);
+        encodingParam.setFieldType(EParameterFieldType.ENCODING_TYPE);
+        StringBuilder sb = new StringBuilder();
+        sb.append(JobSettingsConstants.getExtraParameterName(EParameterName.FROM_FILE_FLAG.getName())).append(" == 'true' and ")
+                .append(EParameterName.OVERRIDE_ENCODING_FLAG.getName()).append(" == 'true' and ").append(CONTEXTLOAD_CONDITION);
+        condition = JobSettingsConstants.addBrackets(sb.toString());
+        encodingParam.setShowIf(condition); // $NON-NLS-1$
+        encodingParam.setValue(ENCODING_TYPE_ISO_8859_15);
+        encodingParam.setNumRow(34);
+        paramList.add(encodingParam);
+
+        ElementParameter childParam = new ElementParameter(process);
+        childParam.setName(EParameterName.ENCODING_TYPE.getName());
+        childParam.setDisplayName(EParameterName.ENCODING_TYPE.getDisplayName());
+        childParam.setFieldType(EParameterFieldType.TECHNICAL);
+        childParam.setCategory(EComponentCategory.EXTRA);
+        childParam.setGroup(IMPLICIT_GROUP);
+        childParam.setListItemsDisplayName(new String[] { ENCODING_TYPE_ISO_8859_15, ENCODING_TYPE_UTF_8, ENCODING_TYPE_CUSTOM });
+        childParam.setListItemsDisplayCodeName(
+                new String[] { ENCODING_TYPE_ISO_8859_15, ENCODING_TYPE_UTF_8, ENCODING_TYPE_CUSTOM });
+        childParam.setListItemsValue(new String[] { ENCODING_TYPE_ISO_8859_15, ENCODING_TYPE_UTF_8, ENCODING_TYPE_CUSTOM });
+        childParam.setValue(ENCODING_TYPE_ISO_8859_15);
+        childParam.setNumRow(34);
+        childParam.setShow(true);
+        childParam.setShowIf(condition); // $NON-NLS-1$
+        childParam.setParentParameter(encodingParam);
+        // end encoding select
         return paramList;
     }
 
@@ -928,7 +979,7 @@ public class JobSettingsManager {
             return Collections.emptyList();
         }
 
-        IComponent tContextLoadComponent = new JobContextLoadComponent(fileFlag, dbInput);
+        IComponent tContextLoadComponent = new JobContextLoadComponent(fileFlag, dbInput, process.getComponentsType());
 
         final String uniqueName = "Implicit_Context"; //$NON-NLS-1$
         DataNode tContextLoadNode = new DataNode(tContextLoadComponent, uniqueName);
@@ -952,6 +1003,25 @@ public class JobSettingsManager {
             tContextLoadNode.getElementParameter(EParameterName.IMPLICIT_TCONTEXTLOAD_FILE.getName()).setValue(inputFile);
             String regex = FileSeparator.getSeparatorsRegexp(fileSparator);
             tContextLoadNode.getElementParameter(JobSettingsConstants.IMPLICIT_TCONTEXTLOAD_REGEX).setValue(regex);
+
+            String encoding = (String) process.getElementParameter(EParameterName.OVERRIDE_ENCODING_IN_EXTRA.getName())
+                    .getValue();
+            if (StringUtils.isNotEmpty(encoding) && !encoding.startsWith(TalendTextUtils.getQuoteChar())) {
+                encoding = TalendTextUtils.addQuotes(encoding);
+            }
+
+            // override encoding
+            paramName = EParameterName.OVERRIDE_ENCODING_FLAG.getName();
+            boolean overrideFlag = ((Boolean) process.getElementParameter(paramName).getValue())
+                    && process.getElementParameter(paramName).isShow(process.getElementParameters());
+            if (overrideFlag) {
+                IElementParameter encodingParam = new ElementParameter(tContextLoadNode);
+                encodingParam.setName(EParameterName.ENCODING.getName());
+                encodingParam.setDisplayName(EParameterName.ENCODING.getDisplayName());
+                encodingParam.setFieldType(EParameterFieldType.ENCODING_TYPE);
+                encodingParam.setValue(encoding);
+                tContextLoadNode.addElementParameter(encodingParam);
+            }
         } else {
             // is db
             paramName = JobSettingsConstants.getExtraParameterName(EParameterName.URL.getName());
@@ -1023,7 +1093,8 @@ public class JobSettingsManager {
             String dbType = getDatabaseTypeFromParameter(process);
             if (dbType != null) {
                 // TDI-18161:the SQL script's syntax is not right because of the implicit context of General JDBC.
-                if (dbType.equals(EDatabaseTypeName.GENERAL_JDBC.getDisplayName())) {
+                if (dbType.equals(EDatabaseTypeName.GENERAL_JDBC.getDisplayName())
+                        || dbType.equals(EDatabaseTypeName.GENERAL_JDBC.getProduct())) {
                     dbType = findRealDbTypeForJDBC(process, dbType);
                 }
 

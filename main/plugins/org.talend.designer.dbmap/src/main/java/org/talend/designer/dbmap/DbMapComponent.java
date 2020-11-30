@@ -54,6 +54,7 @@ import org.talend.designer.dbmap.i18n.Messages;
 import org.talend.designer.dbmap.language.generation.DbGenerationManager;
 import org.talend.designer.dbmap.language.generation.GenericDbGenerationManager;
 import org.talend.designer.dbmap.language.hive.HiveGenerationManager;
+import org.talend.designer.dbmap.language.mssql.MssqlGenerationManager;
 import org.talend.designer.dbmap.language.mysql.MysqlGenerationManager;
 import org.talend.designer.dbmap.language.oracle.OracleGenerationManager;
 import org.talend.designer.dbmap.language.postgres.PostgresGenerationManager;
@@ -465,7 +466,9 @@ public class DbMapComponent extends AbstractMapComponent {
         }
         if (externalData != null) {
             // rename metadata column name
-            List<ExternalDbMapTable> tables = new ArrayList<ExternalDbMapTable>(externalData.getInputTables());
+            List<ExternalDbMapTable> tables = new ArrayList<ExternalDbMapTable>();
+            List<ExternalDbMapTable> inputTables = new ArrayList<ExternalDbMapTable>(externalData.getInputTables());
+            tables.addAll(inputTables);
             tables.addAll(externalData.getOutputTables());
             ExternalDbMapTable tableFound = null;
             for (ExternalDbMapTable table : tables) {
@@ -482,11 +485,23 @@ public class DbMapComponent extends AbstractMapComponent {
                 }
             }
 
+            List<String> alias = new ArrayList<String>();
+            alias.add(conectionName);
+            for(ExternalDbMapTable table : inputTables) {
+                if (table.getTableName().equals(conectionName)) {
+                    if(table.getAlias() != null) {
+                        alias.add(table.getAlias());
+                    }
+                }
+            }
+            
             // it is necessary to update expressions only if renamed column come from input table
-            if (tableFound != null && externalData.getInputTables().indexOf(tableFound) != -1) {
-                TableEntryLocation oldLocation = new TableEntryLocation(conectionName, oldColumnName);
-                TableEntryLocation newLocation = new TableEntryLocation(conectionName, newColumnName);
-                replaceLocationsInAllExpressions(oldLocation, newLocation, false);
+            for(String connName : alias) {
+                if (tableFound != null && externalData.getInputTables().indexOf(tableFound) != -1) {
+                    TableEntryLocation oldLocation = new TableEntryLocation(connName, oldColumnName);
+                    TableEntryLocation newLocation = new TableEntryLocation(connName, newColumnName);
+                    replaceLocationsInAllExpressions(oldLocation, newLocation, false);
+                }
             }
 
         }
@@ -588,6 +603,8 @@ public class DbMapComponent extends AbstractMapComponent {
                 generationManager = new PostgresGenerationManager();
             } else if (value.contains("tELTHiveMap")) { //$NON-NLS-1$
                 generationManager = new HiveGenerationManager();
+            } else if (value.contains("tELTMSSqlMap")) {
+                generationManager = new MssqlGenerationManager();
             } else if (value.startsWith("tELT") && value.endsWith("Map")) //$NON-NLS-1$ //$NON-NLS-2$
             {
                 generationManager = new GenericDbGenerationManager();

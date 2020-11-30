@@ -85,6 +85,12 @@ public class ProjectSettingManager extends Utils {
 
     private static String languagePrefix = LanguageManager.getCurrentLanguage().toString() + "_"; //$NON-NLS-1$
 
+    private static final String ENCODING_TYPE_UTF_8 = "UTF-8"; //$NON-NLS-1$
+
+    private static final String ENCODING_TYPE_ISO_8859_15 = "ISO-8859-15"; //$NON-NLS-1$
+
+    private static final String ENCODING_TYPE_CUSTOM = "CUSTOM"; //$NON-NLS-1$
+
     public static void saveProject() {
         RepositoryContext repositoryContext = (RepositoryContext) CorePlugin.getContext().getProperty(
                 Context.REPOSITORY_CONTEXT_KEY);
@@ -448,6 +454,51 @@ public class ProjectSettingManager extends Utils {
         param.setShowIf(condition);
         paramList.add(param);
 
+        // begin Override encoding checkbox
+        param = new ElementParameter(elem);
+        param.setName(EParameterName.OVERRIDE_ENCODING_FLAG.getName());
+        param.setDisplayName(EParameterName.OVERRIDE_ENCODING_FLAG.getDisplayName());
+        param.setFieldType(EParameterFieldType.CHECK);
+        param.setCategory(EComponentCategory.EXTRA);
+        param.setGroup(IMPLICIT_GROUP);
+        param.setNumRow(33);
+        param.setValue(false);
+        param.setShowIf(condition);
+        paramList.add(param);
+        // end Override encoding checkbox
+
+        // begin encoding select
+        ElementParameter encodingParam = new ElementParameter(elem);
+        encodingParam.setName(EParameterName.OVERRIDE_ENCODING_IN_EXTRA.getName());
+        encodingParam.setDisplayName(EParameterName.OVERRIDE_ENCODING_IN_EXTRA.getDisplayName());
+        encodingParam.setCategory(EComponentCategory.EXTRA);
+        encodingParam.setGroup(IMPLICIT_GROUP);
+        encodingParam.setFieldType(EParameterFieldType.ENCODING_TYPE);
+        StringBuilder sb = new StringBuilder();
+        sb.append(JobSettingsConstants.getExtraParameterName(EParameterName.FROM_FILE_FLAG.getName())).append(" == 'true' and ")
+                .append(EParameterName.OVERRIDE_ENCODING_FLAG.getName()).append(" == 'true' and ").append(CONTEXTLOAD_CONDITION);
+        condition = JobSettingsConstants.addBrackets(sb.toString());
+        encodingParam.setShowIf(condition); // $NON-NLS-1$
+        encodingParam.setValue(ENCODING_TYPE_ISO_8859_15);
+        encodingParam.setNumRow(34);
+        paramList.add(encodingParam);
+
+        ElementParameter childParam = new ElementParameter(elem);
+        childParam.setName(EParameterName.ENCODING_TYPE.getName());
+        childParam.setDisplayName(EParameterName.ENCODING_TYPE.getDisplayName());
+        childParam.setFieldType(EParameterFieldType.TECHNICAL);
+        childParam.setCategory(EComponentCategory.EXTRA);
+        childParam.setGroup(IMPLICIT_GROUP);
+        childParam.setListItemsDisplayName(new String[] { ENCODING_TYPE_ISO_8859_15, ENCODING_TYPE_UTF_8, ENCODING_TYPE_CUSTOM });
+        childParam.setListItemsDisplayCodeName(
+                new String[] { ENCODING_TYPE_ISO_8859_15, ENCODING_TYPE_UTF_8, ENCODING_TYPE_CUSTOM });
+        childParam.setListItemsValue(new String[] { ENCODING_TYPE_ISO_8859_15, ENCODING_TYPE_UTF_8, ENCODING_TYPE_CUSTOM });
+        childParam.setValue(ENCODING_TYPE_ISO_8859_15);
+        childParam.setNumRow(34);
+        childParam.setShow(true);
+        childParam.setShowIf(condition); // $NON-NLS-1$
+        childParam.setParentParameter(encodingParam);
+        // end encoding select
     }
 
     private static void createExtraOnDBParameters(Element elem) {

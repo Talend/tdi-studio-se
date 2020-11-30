@@ -2,10 +2,18 @@
 
 <%
 String logLevel= ElementParameterParser.getValue(node, "__LOG_LEVEL__");
-if ("false".equalsIgnoreCase(ElementParameterParser.getValue(node, "__USE_EXISTING_CONNECTION__"))
+boolean useLogFile= "true".equals(ElementParameterParser.getValue(node, "__USE_LOG_FILE__"));
+if (useLogFile){
+    if ("false".equalsIgnoreCase(ElementParameterParser.getValue(node, "__USE_EXISTING_CONNECTION__"))
 && !logLevel.equals("0")) {
 %>
-		logWriter_<%=cid %>.close();
+
+java.io.PrintWriter fileLogWriter_<%=cid %> = (java.io.PrintWriter) globalMap.get("fileLogWriter_<%=cid %>");
+if (fileLogWriter_<%=cid %> != null) {
+	fileLogWriter_<%=cid %>.close();
+}
+
 <%
+    }
 }
 %>

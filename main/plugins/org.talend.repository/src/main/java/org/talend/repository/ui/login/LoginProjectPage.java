@@ -74,6 +74,7 @@ import org.talend.commons.ui.runtime.exception.ExceptionMessageDialog;
 import org.talend.commons.ui.runtime.exception.MessageBoxExceptionHandler;
 import org.talend.commons.ui.runtime.image.EImage;
 import org.talend.commons.ui.runtime.image.ImageProvider;
+import org.talend.commons.utils.network.TalendProxySelector;
 import org.talend.commons.utils.system.EclipseCommandLine;
 import org.talend.commons.utils.system.EnvironmentUtils;
 import org.talend.core.CorePlugin;
@@ -679,6 +680,8 @@ public class LoginProjectPage extends AbstractLoginActionPage {
                     CommonExceptionHandler.process(e);
                 } catch (JSONException e) {
                     CommonExceptionHandler.process(e);
+                } finally {
+                    TalendProxySelector.checkProxy();
                 }
             }
 

@@ -12,6 +12,16 @@
 // ============================================================================
 package org.talend.repository.ui.wizards.exportjob.scriptsmanager.esb;
 
+import aQute.bnd.header.Attrs;
+import aQute.bnd.osgi.Analyzer;
+import aQute.bnd.osgi.Clazz;
+import aQute.bnd.osgi.Descriptors;
+import aQute.bnd.osgi.FileResource;
+import aQute.bnd.osgi.Jar;
+import aQute.bnd.service.AnalyzerPlugin;
+import aQute.bnd.service.Plugin;
+import aQute.service.reporter.Reporter;
+
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -38,6 +48,8 @@ import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.map.MultiKeyMap;
@@ -53,6 +65,7 @@ import org.talend.commons.utils.io.FilesUtils;
 import org.talend.core.CorePlugin;
 import org.talend.core.GlobalServiceRegister;
 import org.talend.core.PluginChecker;
+import org.talend.core.model.components.IComponent;
 import org.talend.core.model.general.ModuleNeeded;
 import org.talend.core.model.general.Project;
 import org.talend.core.model.process.IProcess;
@@ -69,6 +82,7 @@ import org.talend.core.repository.model.ProxyRepositoryFactory;
 import org.talend.core.runtime.process.ITalendProcessJavaProject;
 import org.talend.core.runtime.process.LastGenerationInfo;
 import org.talend.core.runtime.repository.build.BuildExportManager;
+import org.talend.core.service.ITaCoKitDependencyService;
 import org.talend.core.ui.branding.IBrandingService;
 import org.talend.designer.core.ICamelDesignerCoreService;
 import org.talend.designer.core.IDesignerCoreService;
@@ -88,16 +102,6 @@ import org.talend.repository.ui.wizards.exportjob.scriptsmanager.JobJavaScriptsM
 import org.talend.repository.utils.EmfModelUtils;
 import org.talend.repository.utils.EsbConfigUtils;
 import org.talend.repository.utils.TemplateProcessor;
-
-import aQute.bnd.header.Attrs;
-import aQute.bnd.osgi.Analyzer;
-import aQute.bnd.osgi.Clazz;
-import aQute.bnd.osgi.Descriptors;
-import aQute.bnd.osgi.FileResource;
-import aQute.bnd.osgi.Jar;
-import aQute.bnd.service.AnalyzerPlugin;
-import aQute.bnd.service.Plugin;
-import aQute.service.reporter.Reporter;
 
 /**
  * DOC ycbai class global comment. Detailled comment
@@ -243,6 +247,8 @@ public class JobJavaScriptOSGIForESBManager extends JobJavaScriptsManager {
                  * export current item's dependencies. this used for TDM components specially and need more discussion
                  * about then
                  */
+                // TCOMP-1681: feature uses this call for feeding a component-runtime compliant MAVEN-INF/repository and
+                // TALEND-INF/plugins.properties.
                 BuildExportManager.getInstance().exportOSGIDependencies(osgiResource, processItem);
             }
 
@@ -288,6 +294,15 @@ public class JobJavaScriptOSGIForESBManager extends JobJavaScriptsManager {
             if (providedLibResources != null) {
                 list.add(providedLibResources);
             }
+            // TCOMP-1681: for class isolation and avoid clashes, we remove tacokit dependencies to main classpath.
+            // However, they're in the scope of ComponentManager.
+            if (GlobalServiceRegister.getDefault().isServiceRegistered(ITaCoKitDependencyService.class)) {
+                ITaCoKitDependencyService tckService = (ITaCoKitDependencyService) GlobalServiceRegister.getDefault()
+                        .getService(ITaCoKitDependencyService.class);
+                if (tckService != null && tckService.hasTaCoKitComponents(tckService.getJobComponents(processItem))) {
+                    list = cleanupResources(tckService.getJobComponents(processItem), list, tckService);
+                }
+            }
         } catch (ProcessorException e) {
             throw e;
         } catch (Exception e) {
@@ -322,6 +337,28 @@ public class JobJavaScriptOSGIForESBManager extends JobJavaScriptsManager {
         }
         addRoutinesResources(processes, libResource);
         return libResource;
+    }
+
+    private List<ExportFileResource> cleanupResources(Stream<IComponent> components, List<ExportFileResource> resources, ITaCoKitDependencyService service) {
+        Set<String> tckOnly = service.getTaCoKitOnlyDependencies(components);
+        final List<ExportFileResource> rmResources = new ArrayList<>();
+        //This code is nicer but have to reiterate after, so not so efficient
+//        List<URL> rmDeps = resources.stream()
+//                .filter(rf -> "lib".equals(rf.getDirectoryName()))
+//                .map(resource -> resource.getResourcesByRelativePath(""))
+//                .flatMap(urls -> urls.stream())
+//                .filter(url -> tckOnly.stream().anyMatch(tck -> url.toString().endsWith(tck)))
+//                .collect(Collectors.toList());
+        for (ExportFileResource resource : resources) {
+            if (!("lib".equals(resource.getDirectoryName()) || "lib-provided".equals(resource.getDirectoryName()))) {
+                continue;
+            }
+            List<URL> rmDeps = resource.getResourcesByRelativePath("").stream()
+                    .filter(url -> tckOnly.stream().anyMatch(tck -> url.toString().endsWith(tck)))
+                    .collect(Collectors.toList());
+            rmDeps.stream().forEach(dep -> resource.removeResources("", dep));
+        }
+        return resources;
     }
 
     protected String getIncludeRoutinesPath() {
@@ -864,7 +901,14 @@ public class JobJavaScriptOSGIForESBManager extends JobJavaScriptsManager {
         }
         analyzer.setProperty(Analyzer.BUNDLE_NAME, bundleName);
         analyzer.setProperty(Analyzer.BUNDLE_SYMBOLICNAME, symbolicName);
-        analyzer.setProperty(Analyzer.BUNDLE_VERSION, getBundleVersion());
+        String bundleVersion = null;
+        if (processItem.getProperty().getAdditionalProperties() != null &&
+            processItem.getProperty().getAdditionalProperties().containsKey("USER_VERSION")) {
+            bundleVersion = (String) processItem.getProperty().getAdditionalProperties().get("USER_VERSION");
+        } else {
+            bundleVersion = getBundleVersion();
+        }
+        analyzer.setProperty(Analyzer.BUNDLE_VERSION, bundleVersion);
         IBrandingService brandingService = (IBrandingService) GlobalServiceRegister.getDefault().getService(
                 IBrandingService.class);
         analyzer.setProperty(Analyzer.BUNDLE_VENDOR, brandingService.getFullProductName() + " (" //$NON-NLS-1$
@@ -879,9 +923,11 @@ public class JobJavaScriptOSGIForESBManager extends JobJavaScriptsManager {
             Set<URL> resources = libResource.getResourcesByRelativePath(path);
             for (URL url : resources) {
                 // TESB-21804:Fail to deploy cMessagingEndpoint with quartz component in runtime for ClassCastException
-                if (url.getPath().matches("(.*)camel-(.*)-alldep-(.*)$") 
-                        || url.getPath().matches("(.*)activemq-all-[\\d\\.]*.jar$")
-                        || url.getPath().matches("(.*)jms[\\d\\.-]*.jar$")) {
+                String urlStr = url.getPath().replace("\\", "/");
+                if (urlStr.matches("(.*)camel-(.*)-alldep-(.*)$") 
+                        || urlStr.matches("(.*)activemq-all-[\\d\\.]*.jar$")
+                        || urlStr.matches("(.*)/jms[\\d\\.-]*.jar$")
+                        || urlStr.matches("(.*)tdm-lib-di-[\\d\\.-]*.jar$")) {
                     continue;
                 }
                 File dependencyFile = new File(FilesUtils.getFileRealPath(url.getPath()));

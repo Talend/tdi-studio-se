@@ -33,7 +33,9 @@ imports="
 	
 	int partSizeInBytes_<%=cid%> = <%=partSizeMb%> * 1024 * 1024;
 	if(partSizeInBytes_<%=cid%> < 5 << 20 ) {
+		<%if(isLog4jEnabled) {%>
 		log.info("Set part size as 5MB, as it is the recommended minimun value.");
+		<%}%>
 		partSizeInBytes_<%=cid%> = 5 << 20;
 	}
 	

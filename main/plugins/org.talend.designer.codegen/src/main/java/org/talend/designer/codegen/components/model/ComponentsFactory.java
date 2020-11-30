@@ -28,9 +28,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.Set;
-import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.Lock;
@@ -70,7 +70,6 @@ import org.talend.core.model.components.ComponentCategory;
 import org.talend.core.model.components.ComponentManager;
 import org.talend.core.model.components.ComponentProviderInfo;
 import org.talend.core.model.components.ComponentUtilities;
-import org.talend.core.model.components.EComponentType;
 import org.talend.core.model.components.IComponent;
 import org.talend.core.model.components.IComponentsFactory;
 import org.talend.core.model.components.IComponentsHandler;
@@ -838,22 +837,20 @@ public class ComponentsFactory implements IComponentsFactory {
             init(false);
         }
 
-        for (IComponent comp : componentList) {
-            if (comp.getComponentType() != EComponentType.JOBLET) {
-                continue;
-            }
-            String comName = comp.getName();
-            if (comp != null && paletteType.equals(comp.getPaletteType())) {
-                if (comName.equals(name)) {
-                    return comp;
-                } else if (new JobletUtil().matchExpression(comName)) {
-                    String[] names = comName.split(":"); //$NON-NLS-1$
-                    comName = names[1];
-                    if (comName.equals(name)) {
-                        return comp;
-                    }
+        // check if reference joblet component presents
+        JobletUtil jobletUtils = new JobletUtil();
+        Optional<IComponent> result = jobletUtils.findComponentByName(componentList, name, paletteType);
+        if (!result.isPresent()) {
+            // check if any name matching joblet component presents
+            if (jobletUtils.matchExpression(name)) {
+                name = StringUtils.substringAfterLast(name, ":"); //$NON-NLS-1$
+                if (StringUtils.isNotBlank(name)) {
+                    result = jobletUtils.findComponentByName(componentList, name, paletteType);
                 }
             }
+        }
+        if (result.isPresent()) {
+            return result.get();
         }
         return null;
     }

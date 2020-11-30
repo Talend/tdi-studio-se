@@ -302,12 +302,14 @@ public class PropertyChangeCommand extends Command {
             List<? extends IConnection> connections = ((Node) elem).getOutgoingConnections();
             for (IConnection connection : connections) {
                 if (!connection.getName().equals(oldELTValue)) {
-                    // do nothing when custom connection name.
+                    // Update if use custom connection name.
+                    ChangeConnTextCommand command = new ChangeConnTextCommand(connection, newELTValue);
+                    command.execute();
                     continue;
                 }
                 INode targetNode = connection.getTarget();
                 String componentName = targetNode.getComponent().getName();
-                if (componentName.matches("tELT.+Map")) { //$NON-NLS-1$
+                if (componentName.matches("tELT.*Map")) { //$NON-NLS-1$
                     if (GlobalServiceRegister.getDefault().isServiceRegistered(IDbMapDesignerService.class)) {
                         IDbMapDesignerService service = GlobalServiceRegister.getDefault().getService(
                                 IDbMapDesignerService.class);

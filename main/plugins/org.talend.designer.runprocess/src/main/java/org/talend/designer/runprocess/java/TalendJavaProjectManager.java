@@ -630,6 +630,8 @@ public class TalendJavaProjectManager {
         if (processor instanceof MavenJavaProcessor) {
             LastGenerationInfo.getInstance().clearModulesNeededWithSubjobPerJob();
             LastGenerationInfo.getInstance().clearHighPriorityModuleNeeded();
+            // Need to clear modules per job cache
+            LastGenerationInfo.getInstance().clearModulesNeededPerJob();
             // Gen poms only
             ((MavenJavaProcessor) processor).generatePom(option);
         }

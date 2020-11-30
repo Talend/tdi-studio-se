@@ -106,6 +106,21 @@
         exist_tSQLDB = true;
     }
 
+
+    String[] tcompV0Components = new String[] {
+        "tAzureStorageConnection",
+        "tGoogleDriveConnection",
+        "tMarketoConnection",
+        "tSnowflakeConnection",
+        "tSalesforceConnection",
+        "tNetsuiteConnection",
+        "tMarkLogicConnection"
+    };
+    List<INode> tcompV0ComponentsList =  new ArrayList<INode>();
+    for (String tcompV0Component : tcompV0Components) {
+        tcompV0ComponentsList.addAll((List<INode>)process.getNodesOfType(tcompV0Component));
+    }
+
     boolean exist_tSCP = false;
     List<INode> scpComponentsList = (List<INode>)process.getNodesOfType("tSCPConnection");
     if (scpComponentsList.size() > 0) {
@@ -164,6 +179,8 @@
     if (salesforceComponentsList.size() > 0) {
         exist_tSalesforce = true;
     }
+
+    List<INode> snowflakeComponentsList = (List<INode>)process.getNodesOfType("tSnowflakeConnection");
 
     boolean exist_tSAP= false;
     List<INode> sapComponentsList = (List<INode>)process.getNodesOfType("tSAPConnection");
@@ -498,6 +515,8 @@
 				System.getProperties().stringPropertyNames().stream()
 					.filter(it -> it.startsWith("monitoring.audit.logger.properties."))
 					.forEach(key -> properties_<%=jobCatcherNode.getUniqueName()%>.setProperty(key.substring("monitoring.audit.logger.properties.".length()), System.getProperty(key)));
+					
+					org.apache.log4j.Logger.getLogger("audit").setLevel(org.apache.log4j.Level.DEBUG);
 
 				auditLogger_<%=jobCatcherNode.getUniqueName()%> = org.talend.job.audit.JobEventAuditLoggerFactory.createJobAuditLogger(properties_<%=jobCatcherNode.getUniqueName()%>);
 			}
@@ -589,7 +608,16 @@
                         } //endIf
 %>
                         context.setContextType("<%=ctxParam.getName()%>", "<%=ctxParam.getType()%>");
+                        if(context.getStringValue("<%=ctxParam.getName()%>") == null) {
+                            context.<%=ctxParam.getName()%> = null;
+                        } else {
+                        <%//}B1 block%>
 <%
+                        String typeToGenerate ="String";
+                        if( !(ctxParam.getType().equals("id_File") || ctxParam.getType().equals("id_Directory") ||ctxParam.getType().equals("id_List Of Value"))) {
+                           typeToGenerate=JavaTypesManager.getTypeToGenerate(ctxParam.getType(),true);
+                        }
+                        
                         if (ctxParam.getType().equals("id_Password")) {
 %>
                             String pwd_<%=ctxParam.getName()%>_value = context.getProperty("<%=ctxParam.getName()%>");
@@ -607,13 +635,7 @@
                                 }
                             }
 <%
-                            continue;
-                        }
-                        String typeToGenerate ="String";
-                        if( !(ctxParam.getType().equals("id_File") || ctxParam.getType().equals("id_Directory") ||ctxParam.getType().equals("id_List Of Value"))) {
-                           typeToGenerate=JavaTypesManager.getTypeToGenerate(ctxParam.getType(),true);
-                        }
-                        if(typeToGenerate.equals("java.util.Date")) {
+                        } else if(typeToGenerate.equals("java.util.Date")) {
 %>
                         try{
                             String context_<%=ctxParam.getName()%>_value = context.getProperty("<%=ctxParam.getName()%>");
@@ -672,6 +694,10 @@
                             }
 <%
                         }
+%>
+                        <%//{B1 block%>
+                        }
+<%
                     }
 %>
                 } <%/*close last method*/%>
@@ -1264,13 +1290,11 @@ if (execStat) {
             } else {
                 type = "ftp";
             }
-            if ("ftp".equals(type)) { %>
-                ((com.enterprisedt.net.ftp.FTPClient) obj_conn).quit();
-        <%} else if ("sftp".equals(type)) { %>
+            if ("sftp".equals(type)) { %>
                 ((com.jcraft.jsch.ChannelSftp) obj_conn).quit();
-        <%} else { %>
-                ((org.apache.commons.net.ftp.FTPSClient) obj_conn).disconnect();
-        <%}%>
+            <%} else { %>
+                ((org.apache.commons.net.ftp.FTPClient) obj_conn).disconnect();
+            <%}%>
             }
 <%  } %>
         } catch (java.lang.Exception e) {
@@ -1445,12 +1469,14 @@ if (execStat) {
 <%      } %>
 <%      for (INode existNode : existComponentsList) { %>
             connections.put("col_<%=existNode.getUniqueName()%>", globalMap.get("col_<%=existNode.getUniqueName()%>"));
-<%      } %>
+<%      }
 
-<%      for (INode salesforceNode : salesforceComponentsList) { %>
-            connections.put("conn_<%=salesforceNode.getUniqueName()%>", globalMap.get("conn_<%=salesforceNode.getUniqueName()%>"));
-<%      } %>
-<%      for (INode sapNode : sapComponentsList) { %>
+        for (INode tcompV0ConnectionNode : tcompV0ComponentsList) { %>
+            connections.put("<%=tcompV0ConnectionNode.getUniqueName()%>_connection", globalMap.get("<%=tcompV0ConnectionNode.getUniqueName()%>_connection"));
+            connections.put("<%=tcompV0ConnectionNode.getUniqueName()%>_COMPONENT_RUNTIME_PROPERTIES", globalMap.get("<%=tcompV0ConnectionNode.getUniqueName()%>_COMPONENT_RUNTIME_PROPERTIES"));
+<%      }
+
+        for (INode sapNode : sapComponentsList) { %>
             connections.put("conn_<%=sapNode.getUniqueName()%>", globalMap.get("conn_<%=sapNode.getUniqueName()%>"));
 <%      } %>
 <%      for (INode gsNode : gsComponentsList) { %>

@@ -32,6 +32,8 @@
 	
 	boolean isLog4jEnabled = ("true").equals(ElementParameterParser.getValue(node.getProcess(), "__LOG4J_ACTIVATE__"));
 	
+	boolean useCustomNullMarker = ElementParameterParser.getBooleanValue(node, "__USE_CUSTOM_NULL_MARKER__");
+	String nullMarker = useCustomNullMarker ? ElementParameterParser.getValue(node, "__CUSTOM_NULL_MARKER__") : "\"\\\\N\"";
 	String passwordFieldName = "";
 	
     if (authMode.equals("OAUTH")) {
@@ -360,7 +362,7 @@
 		queryLoad_<%=cid%>.setDestinationTable(destinationTable_<%=cid%>);
 		queryLoad_<%=cid%>.setSourceUris(java.util.Arrays.asList(<%=ElementParameterParser.getValue(node, "__GS_FILE__")%>));
 		queryLoad_<%=cid%>.setSkipLeadingRows(<%=ElementParameterParser.getValue(node, "__GS_FILE_HEADER__")%>);
-		queryLoad_<%=cid%>.setNullMarker("\\N");
+		queryLoad_<%=cid%>.setNullMarker(<%= nullMarker %>);
 		config_<%=cid%>.setLoad(queryLoad_<%=cid%>);
 		
 		job_<%=cid%>.setConfiguration(config_<%=cid%>);
@@ -536,7 +538,6 @@
 			
 			com.google.cloud.bigquery.Schema schema_<%=cid%> = com.google.cloud.bigquery.Schema.of(fields_<%=cid%>);
 			com.google.cloud.bigquery.TableInfo tableInfo_<%=cid%> = com.google.cloud.bigquery.TableInfo.newBuilder(tableId_<%=cid%>, com.google.cloud.bigquery.StandardTableDefinition.of(schema_<%=cid%>)).build();
-			table_<%=cid%> = bigquery_<%=cid%>.create(tableInfo_<%=cid%>);
 			loadJobBuilder_<%=cid%>.setSchema(schema_<%=cid%>);
 		}
 		
@@ -577,12 +578,12 @@
 																				
 		<%if("true".equals(ElementParameterParser.getValue(node, "__SET_FIELD_DELIMITER__"))) {
         %>
-         	loadJobBuilder_<%=cid%>.setFormatOptions(csvOptions_<%=cid%>.setFieldDelimiter(<%=fieldDelimiter%>).build());
+         	csvOptions_<%=cid%>.setFieldDelimiter(<%=fieldDelimiter%>);
         <%
         }
         %>		
-		
-		loadJobBuilder_<%=cid%>.setNullMarker("\\N");																
+		loadJobBuilder_<%=cid%>.setFormatOptions(csvOptions_<%=cid%>.build());
+		loadJobBuilder_<%=cid%>.setNullMarker(<%= nullMarker %>);
 		com.google.cloud.bigquery.Job job_<%=cid%> = bigquery_<%=cid%>.create(com.google.cloud.bigquery.JobInfo.of(loadJobBuilder_<%=cid%>.build()));
 		job_<%=cid%> = job_<%=cid%>.waitFor(com.google.cloud.RetryOption.initialRetryDelay(org.threeten.bp.Duration.ofSeconds(1)));
 		if (job_<%=cid%> != null && job_<%=cid%>.getStatus().getError() == null) {

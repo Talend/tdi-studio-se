@@ -18,13 +18,30 @@ public class JobEventAuditLoggerFactory {
 		final AuditConfigurationMap config = AuditConfiguration.loadFromProperties(properties);
 
 		AbstractBackend logger = null;
-		String loggerClass = "org.talend.logging.audit.logback.LogbackBackend";
+		
+		//load log4j2 implement firstly
+		String loggerClass = "org.talend.logging.audit.log4j2.Log4j2Backend";
 		try {
-            final Class<?> clz = Class.forName(loggerClass);
-            logger = (AbstractBackend) clz.getConstructor(AuditConfigurationMap.class).newInstance(config);
-        } catch (ReflectiveOperationException e) {
-            throw new RuntimeException("Unable to load backend " + loggerClass, e);
-        }
+			final Class<?> clz = Class.forName(loggerClass);
+			logger = (AbstractBackend) clz.getConstructor(AuditConfigurationMap.class).newInstance(config);
+		} catch (ReflectiveOperationException e) {
+			// do nothing
+		}
+
+		//load log4j1 implement if not found log4j2
+		if (logger == null) {
+			loggerClass = "org.talend.logging.audit.log4j1.Log4j1Backend";
+			try {
+				final Class<?> clz = Class.forName(loggerClass);
+				logger = (AbstractBackend) clz.getConstructor(AuditConfigurationMap.class).newInstance(config);
+			} catch (ReflectiveOperationException e) {
+				// do nothing
+			}
+		}
+		
+		if(logger == null) {
+			throw new RuntimeException("Unable to load backend : " + loggerClass);
+		}
 
 		final DefaultAuditLoggerBase loggerBase = new DefaultAuditLoggerBase(logger, config);
 

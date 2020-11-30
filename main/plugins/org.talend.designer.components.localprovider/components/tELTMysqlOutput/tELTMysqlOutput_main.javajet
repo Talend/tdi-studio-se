@@ -52,6 +52,7 @@ imports="
     String dbuser = null;
     String dbVersion = "";
     boolean useExistingConn = false;
+    String dbproperties = null;
     if(previousNode != null) {
         dbhost = ElementParameterParser.getValue(previousNode, "__HOST__");
         dbport = ElementParameterParser.getValue(previousNode, "__PORT__");
@@ -59,6 +60,7 @@ imports="
         dbuser = ElementParameterParser.getValue(previousNode, "__USER__");
         useExistingConn = ("true").equals(ElementParameterParser.getValue(previousNode, "__USE_EXISTING_CONNECTION__"));
         dbVersion = ElementParameterParser.getValue(previousNode, "__DB_VERSION__");
+        dbproperties = ElementParameterParser.getValue(previousNode, "__PROPERTIES__");
     }
 
 	String differenttable = ElementParameterParser.getValue(node, "__DIFFERENT_TABLE_NAME__");
@@ -96,7 +98,11 @@ imports="
 %>
     String driverClass_<%=cid%> = "<%=drverClass%>";
     java.lang.Class.forName(driverClass_<%=cid%>);
+    <%if(dbproperties == null || ("\"\"").equals(dbproperties) || ("").equals(dbproperties)) {%>
     String url_<%=cid %> = "<%=jdbcURL%>://"+<%=dbhost%>+":"+<%=dbport%>+"/"+<%=dbname%>;
+    <%} else {%>
+    String url_<%=cid %> = "<%=jdbcURL%>://"+<%=dbhost%>+":"+<%=dbport%>+"/"+<%=dbname%>+"?"+<%=dbproperties%>;
+    <%}%>
     String dbUser_<%=cid%> = <%=dbuser%>;
 
     <%

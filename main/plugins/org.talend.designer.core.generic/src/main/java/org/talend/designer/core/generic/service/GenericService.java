@@ -21,11 +21,13 @@ import java.util.Set;
 import org.talend.components.api.component.ComponentDefinition;
 import org.talend.components.api.properties.ComponentProperties;
 import org.talend.components.api.properties.ComponentReferenceProperties;
+import org.talend.core.model.components.IComponent;
 import org.talend.core.model.process.EParameterFieldType;
 import org.talend.core.model.process.IElementParameter;
 import org.talend.core.model.process.INode;
 import org.talend.core.runtime.services.IGenericService;
 import org.talend.daikon.properties.Properties;
+import org.talend.designer.core.generic.model.Component;
 import org.talend.designer.core.generic.model.GenericElementParameter;
 import org.talend.designer.core.generic.utils.ComponentsUtils;
 
@@ -107,6 +109,11 @@ public class GenericService implements IGenericService {
             return (ComponentReferenceProperties)ps;
         }
         return null;
+    }
+
+    @Override
+    public boolean isTcompv0(IComponent component) {
+        return Component.class.isInstance(component);
     }
 
 }

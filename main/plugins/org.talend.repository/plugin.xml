@@ -3243,6 +3243,15 @@
               version="7.2.2">
         </projecttask>
         <projecttask
+             beforeLogon="false"
+             breaks="7.2.1"
+             class="org.talend.repository.model.migration.SpecialUpdateELTTableNameMigrationTask"
+             description="Update ELT table name"
+             id="org.talend.repository.model.migration.SpecialUpdateELTTableNameMigrationTask"
+             name="SpecialUpdateELTTableNameMigrationTask"
+             version="7.2.2">
+        </projecttask>                 
+        <projecttask
               beforeLogon="false"
               breaks="7.2.1"
               class="org.talend.repository.model.migration.SpecialUpdateELTDefaultNameMigrationTask"

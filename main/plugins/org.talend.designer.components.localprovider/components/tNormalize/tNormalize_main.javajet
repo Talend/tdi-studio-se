@@ -90,7 +90,7 @@ if ((metadatas!=null)&&(metadatas.size()>0)) {//1
             if(!outIterate.isEmpty()||outgoingConnName != null){
   				if(useCSV && isDiscardTrailingEmptyStr){
   				%>
-		  			int lastNoEmptyIndex_<%=cid%>=0;
+		  			lastNoEmptyIndex_<%=cid%>=0;
 		            for(int i_<%=cid%>=normalizeRecord_<%=cid%>.length;i_<%=cid%> > 0;i_<%=cid%>--){
 		            	if(!"".equals(normalizeRecord_<%=cid%>[i_<%=cid%> - 1])){
 		            		lastNoEmptyIndex_<%=cid%>=i_<%=cid%>;
@@ -100,7 +100,7 @@ if ((metadatas!=null)&&(metadatas.size()>0)) {//1
             	<%
             	}else{
            	 	%>
-             		int lastNoEmptyIndex_<%=cid%>=normalizeRecord_<%=cid%>.length;
+             		lastNoEmptyIndex_<%=cid%>=normalizeRecord_<%=cid%>.length;
 	             	<%if(isDiscardTrailingEmptyStr){%>
 	             		if(lastNoEmptyIndex_<%=cid%> == 1 && "".equals(normalizeRecord_<%=cid%>[0])){
 	             			lastNoEmptyIndex_<%=cid%> = 0;

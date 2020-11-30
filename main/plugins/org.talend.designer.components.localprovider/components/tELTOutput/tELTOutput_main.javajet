@@ -35,6 +35,7 @@ skeleton="../templates/db_output_bulk.skeleton"
 	String differenttable = ElementParameterParser.getValue(node, "__DIFFERENT_TABLE_NAME__");
 	boolean useDifferentTable = "true".equals(ElementParameterParser.getValue(node, "__USE_DIFFERENT_TABLE__"));
 	boolean isTableNameVariable="true".equals(ElementParameterParser.getValue(node, "__IS_TABLE_NAME_VARIABLE__"));
+	boolean useUpdateStatement="true".equals(ElementParameterParser.getValue(node, "__USE_UPDATE_STATEMENT__"));
 	%>
 	String select_query_<%=cid %> = null;	
 	String tableName_<%=cid%> = null;
@@ -93,7 +94,7 @@ skeleton="../templates/db_output_bulk.skeleton"
         String username = "username_" + connection;
         String connectionKey=null;
         if("tSnowflakeConnection".equals(connNode.getComponent().getName())){
-           connectionKey=connection+"_Connection";
+           connectionKey=connection+"_connection";
         }else{
         	  connectionKey=conn;
         }
@@ -156,21 +157,36 @@ skeleton="../templates/db_output_bulk.skeleton"
         }
 
         if(("INSERT").equals(dataAction)){
-        %>	
-        	String insertQuery_<%=cid %> = "INSERT INTO "+tableName_<%=cid%>+"(<%=insertColName.toString()%>)  ("+select_query_<%=cid %>+")";
+%>
+            String insertQuery_<%=cid %> = "INSERT INTO "+tableName_<%=cid%>+"(<%=insertColName.toString()%>)  ("+select_query_<%=cid %>+")";
+<%
+        } else if (("UPDATE").equals(dataAction)){
+            if(useUpdateStatement){
+%>
+                String updateQuery_<%=cid %> = select_query_<%=cid %>;
+<%
+                if(CodeGenerationUtils.hasAlphaNumericCharacter(whereClause)) {
+%>
+                    if (updateQuery_<%=cid %>.toUpperCase().contains(" WHERE ")) {
+                        updateQuery_<%=cid %> += " AND (" + <%=CodeGenerationUtils.replaceAllCrBySpace(whereClause)%> + ")";
+                    } else {
+                        updateQuery_<%=cid %> += " WHERE " + <%=CodeGenerationUtils.replaceAllCrBySpace(whereClause)%>;
+                    }
+<%
+                }
+            } else {
+%>
+                String updateQuery_<%=cid %> = "UPDATE "+tableName_<%=cid%>+" SET <%=updateSetStmt.toString()%> "
+<%
+                if(CodeGenerationUtils.hasAlphaNumericCharacter(whereClause)) {
+%>
+                    +"  WHERE " + <%=CodeGenerationUtils.replaceAllCrBySpace(whereClause)%>
+<%
+                }
+%>
+                ;
         <%
-    	} else if (("UPDATE").equals(dataAction)){
-        %>
-        	String updateQuery_<%=cid %> = "UPDATE "+tableName_<%=cid%>+" SET <%=updateSetStmt.toString()%> "
-        <%
-    		if(CodeGenerationUtils.hasAlphaNumericCharacter(whereClause)) {
-        %>
-        		+"  WHERE " + <%=CodeGenerationUtils.replaceAllCrBySpace(whereClause)%>
-        <%
-    		}
-        %>
-        	;
-        <%
+            }
     	} else if (("DELETE").equals(dataAction)){
     	%>
         	String deleteQuery_<%=cid %> = "DELETE  FROM "+ tableName_<%=cid%>+" WHERE EXISTS ("+select_query_<%=cid %>+") " 

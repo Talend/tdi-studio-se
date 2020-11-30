@@ -15,7 +15,9 @@ package org.talend.designer.runprocess.ui;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.lang.reflect.InvocationTargetException;
+import java.text.DateFormat;
 import java.text.MessageFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -122,6 +124,7 @@ import org.talend.designer.runprocess.prefs.RunProcessTokenCollector;
 import org.talend.designer.runprocess.ui.actions.ClearPerformanceAction;
 import org.talend.designer.runprocess.ui.actions.ClearTraceAction;
 import org.talend.designer.runprocess.ui.views.ProcessView;
+import org.talend.utils.dates.DateUtils;
 
 /**
  * DOC Administrator class global comment. Detailled comment
@@ -1137,13 +1140,18 @@ public class DebugProcessTosComposite extends TraceDebugProcessComposite {
                                         isAddedStreamListener = false;
 
                                         if (processContext.isRunning()) {
-                                            final String endingPattern = Messages.getString("ProcessComposite.endPattern"); //$NON-NLS-1$
+                                            final String endingPattern = Messages.getString("ProcessComposite.endJobPattern"); //$NON-NLS-1$
                                             MessageFormat mf = new MessageFormat(endingPattern);
-                                            String byeMsg;
                                             try {
-                                                byeMsg = "\n" //$NON-NLS-1$
-                                                        + mf.format(new Object[] { processContext.getProcess().getName(),
-                                                                new Date(), new Integer(process.getExitValue()) });
+                                                String byeMsg = "\n" //$NON-NLS-1$
+                                                		+ mf.format(new Object[] { processContext.getProcess().getName(), 
+                                                		        DateUtils.getCurrentDate("HH:mm dd/MM/yyyy")});
+                                                
+                                                final String endExitPattern = Messages.getString("ProcessComposite.endExitCode"); //$NON-NLS-1$
+                                                MessageFormat ef = new MessageFormat(endExitPattern);
+                                                String endMsg = ef.format(new Object[] { " = " + new Integer(process.getExitValue()) }); //$NON-NLS-1$
+                                                byeMsg = byeMsg + " [" + endMsg + "]"; //$NON-NLS-1$ //$NON-NLS-2$
+                                                
                                                 processContext.addDebugResultToConsole(new ProcessMessage(MsgType.CORE_OUT,
                                                         byeMsg));
                                             } catch (DebugException e) {
@@ -1191,10 +1199,12 @@ public class DebugProcessTosComposite extends TraceDebugProcessComposite {
                                             clearTraceAction.run();
                                             isAddedStreamListener = true;
 
-                                            final String startingPattern = Messages.getString("ProcessComposite.startPattern"); //$NON-NLS-1$
+                                            final String startingPattern = Messages.getString("ProcessComposite.startJobPattern"); //$NON-NLS-1$
                                             MessageFormat mf = new MessageFormat(startingPattern);
-                                            String welcomeMsg = mf.format(new Object[] { processContext.getProcess().getName(),
-                                                    new Date() });
+                                            
+                                            String welcomeMsg = mf.format(new Object[] { processContext.getProcess().getName(), 
+                                                    DateUtils.getCurrentDate("HH:mm dd/MM/yyyy")});
+                                            
                                             processContext.addDebugResultToConsole(new ProcessMessage(MsgType.CORE_OUT,
                                                     welcomeMsg + "\r\n"));//$NON-NLS-1$
                                         }

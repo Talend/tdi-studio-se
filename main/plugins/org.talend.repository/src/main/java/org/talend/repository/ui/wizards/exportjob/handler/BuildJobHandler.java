@@ -170,9 +170,17 @@ public class BuildJobHandler extends AbstractBuildJobHandler {
         }
 
         // generation option
-        int generationOption = (isOptionChoosed(ExportChoice.includeTestSource) || isOptionChoosed(ExportChoice.executeTests)) ? ProcessorUtilities.GENERATE_ALL_CHILDS
-                | ProcessorUtilities.GENERATE_TESTS
-                : ProcessorUtilities.GENERATE_ALL_CHILDS;
+        int generationOption = 0;
+        if (isOptionChoosed(ExportChoice.mainJobOnly)) {
+            generationOption = ProcessorUtilities.GENERATE_MAIN_ONLY;
+        } else {
+            generationOption = ProcessorUtilities.GENERATE_ALL_CHILDS;
+        }
+
+        if (isOptionChoosed(ExportChoice.includeTestSource) || isOptionChoosed(ExportChoice.executeTests)) {
+            generationOption = generationOption | ProcessorUtilities.GENERATE_TESTS;
+        }
+
         if (isOptionChoosed(ExportChoice.doNotCompileCode)) {
             generationOption = generationOption | ProcessorUtilities.GENERATE_WITHOUT_COMPILING;
         }

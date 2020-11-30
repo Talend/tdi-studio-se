@@ -188,7 +188,7 @@ if(useExistingConn){
 		}
 		else{
 %>
-		    String url_<%=cid%> = "jdbc:sqlanywhere:Host=" + <%=dbServer %> + ":" + <%=dbport %> + ";DatabaseName" + <%=dbname %> + ";" + <%=dbproperties%>;
+		    String url_<%=cid%> = "jdbc:sqlanywhere:Host=" + <%=dbServer %> + ":" + <%=dbport %> + ";DatabaseName=" + <%=dbname %> + ";" + <%=dbproperties%>;
 <%
 		}
 	}

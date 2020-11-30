@@ -36,7 +36,6 @@ import org.talend.commons.exception.SystemException;
 import org.talend.commons.ui.runtime.exception.MessageBoxExceptionHandler;
 import org.talend.core.model.process.IContext;
 import org.talend.core.model.process.IProcess;
-import org.talend.core.model.process.IProcess2;
 import org.talend.core.model.process.ITargetExecutionConfig;
 import org.talend.core.model.runprocess.IEclipseProcessor;
 import org.talend.core.runtime.process.TalendProcessArgumentConstant;
@@ -44,7 +43,6 @@ import org.talend.core.runtime.process.TalendProcessOptionConstants;
 import org.talend.designer.codegen.ICodeGenerator;
 import org.talend.designer.core.ISyntaxCheckableEditor;
 import org.talend.designer.core.i18n.Messages;
-import org.talend.designer.maven.model.MavenSystemFolders;
 import org.talend.designer.runprocess.IProcessMessageManager;
 import org.talend.designer.runprocess.IProcessor;
 import org.talend.designer.runprocess.ProcessorException;
@@ -361,34 +359,13 @@ public abstract class Processor implements IProcessor, IEclipseProcessor, Talend
     protected Process exec(String[] cmd, String path) throws ProcessorException {
         try {
             if (path == null || !new File(path).exists()) {
-                if (getSpecialWorkingDir() != null) {
-                    return Runtime.getRuntime().exec(cmd, null, getSpecialWorkingDir());
-                } else {
-                    return Runtime.getRuntime().exec(cmd);
-                }
+                return Runtime.getRuntime().exec(cmd);
             } else {
                 return Runtime.getRuntime().exec(cmd, null, new File(path));
             }
         } catch (IOException ioe) {
             throw new ProcessorException(Messages.getString("Processor.execFailed"), ioe); //$NON-NLS-1$
         }
-    }
-
-    /**
-     * (TUP-20459)For a job which dependencies resources need set the working dir DOC jding
-     * Comment method "getSpecialWorkingDir".
-     *
-     * @return
-     */
-    private File getSpecialWorkingDir() {
-        if (!(process instanceof IProcess2)) {
-            return null;
-        }
-        File workingDir = project.getFile(MavenSystemFolders.EXT_RESOURCES.getPath()).getLocation().toFile();
-        if (workingDir.exists()) {
-            return workingDir;
-        }
-        return null;
     }
 
     public static Thread createProdConsThread(final InputStream input, final boolean isError, final int bufferSize,

@@ -16,11 +16,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.apache.commons.lang.ArrayUtils;
-import org.talend.commons.ui.runtime.exception.ExceptionHandler;
-import org.talend.commons.utils.StringUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.oro.text.regex.MalformedPatternException;
+import org.apache.oro.text.regex.Pattern;
+import org.apache.oro.text.regex.Perl5Compiler;
+import org.apache.oro.text.regex.Perl5Matcher;
+import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.utils.system.EnvironmentUtils;
 import org.talend.core.PluginChecker;
 import org.talend.core.language.LanguageManager;
@@ -35,10 +38,10 @@ import org.talend.core.model.process.IConnectionCategory;
 import org.talend.core.model.process.IElement;
 import org.talend.core.model.process.IElementParameter;
 import org.talend.core.model.process.INode;
+import org.talend.designer.core.ui.editor.process.Process;
 import org.talend.hadoop.distribution.DistributionFactory;
 import org.talend.hadoop.distribution.ESparkVersion;
 import org.talend.hadoop.distribution.spark.SparkVersionUtil;
-import org.talend.designer.core.ui.editor.process.Process;
 
 /**
  * This class will test an expression in the element parameters. <br>
@@ -74,7 +77,34 @@ public final class Expression {
 
     private static final String LESS_THAN = "<"; //$NON-NLS-1$
 
-    private static final Pattern isShowFuncPattern = Pattern.compile("isShow\\[(\\w+)(\\.\\w+)*\\]"); //$NON-NLS-1$
+    private static final String isShowPrefix = "isShow"; //$NON-NLS-1$
+
+    private static final java.util.regex.Pattern isShowFuncPattern = java.util.regex.Pattern
+            .compile(isShowPrefix + "\\[(\\w+)(\\.\\w+)*\\]"); //$NON-NLS-1$
+
+    private static final String sparkVersionPrefix = "SPARK_"; //$NON-NLS-1$
+
+    private static final java.util.regex.Pattern sparkVersionPattern = java.util.regex.Pattern
+            .compile("(lt|le|gt|ge|eq|ne)\\s*'(" + sparkVersionPrefix + ".*)'"); //$NON-NLS-1$ //$NON-NLS-2$
+
+    private static Perl5Matcher conditionMatcher = new Perl5Matcher();
+
+    private static Pattern andPattern;
+
+    private static Pattern orPattern;
+
+    static {
+        Perl5Compiler compiler = new Perl5Compiler();
+        // example for the reg exp: (.*)[')][ ]*or[ ]*[\w(](.*)
+        String prefixReg = "(.*)[') ][ ]*"; //$NON-NLS-1$
+        String suffixReg = "[ ]*[ (](.*)"; //$NON-NLS-1$
+        try {
+            andPattern = compiler.compile(prefixReg + AND + suffixReg);
+            orPattern = compiler.compile(prefixReg + OR + suffixReg);
+        } catch (MalformedPatternException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     private Expression(String expressionString) {
         this.expressionString = expressionString;
@@ -145,14 +175,15 @@ public final class Expression {
 
     }
 
-    public static boolean isThereCondition(String expression, String condition) {
-        // example for the reg exp: (.*)[')][ ]*or[ ]*[\w(](.*)
-        String refixReg = "(.*)[') ][ ]*"; //$NON-NLS-1$
-        String suffixReg = "[ ]*[ (](.*)"; //$NON-NLS-1$
-        if (expression.matches(refixReg + condition + suffixReg)) {
+    protected static boolean isThereCondition(String expression, String condition) {
+        expression = expression.toLowerCase();
+        if (!expression.contains(condition)) {
+            return false;
+        }
+        if (AND.equals(condition) && conditionMatcher.matches(expression, andPattern)) {
             return true;
         }
-        if (expression.matches(refixReg + condition.toUpperCase() + suffixReg)) {
+        if (OR.equals(condition) && conditionMatcher.matches(expression, orPattern)) {
             return true;
         }
         return false;
@@ -784,13 +815,15 @@ public final class Expression {
     // should be private, but need to unitary tested
     public static boolean evaluateSparkVersion(String simpleExpression, List<? extends IElementParameter> listParam,
             ElementParameter currentParam) {
+        if (!simpleExpression.contains(sparkVersionPrefix)) {
+            return false;
+        }
         INode node = retrieveNodeElementFromParameter(currentParam, listParam);
         ESparkVersion version = SparkVersionUtil.getSparkVersion(node);
         if (version == null) {
             return false;
         }
-        Pattern p = java.util.regex.Pattern.compile("(lt|le|gt|ge|eq|ne)\\s*'(SPARK_.*)'"); //$NON-NLS-1$
-        Matcher m = p.matcher(simpleExpression);
+        Matcher m = sparkVersionPattern.matcher(simpleExpression);
         if (m.find()) {
             ESparkVersion versionToTest = ESparkVersion.valueOf(m.group(2));
             switch (m.group(1)) {
@@ -836,7 +869,7 @@ public final class Expression {
 
     private static List<String> getParaNamesFromIsShowFunc(String expr) {
         List<String> paraNames = new ArrayList<String>();
-        if (expr == null) {
+        if (expr == null || !expr.contains(isShowPrefix)) {
             return paraNames;
         }
         Matcher matcher = isShowFuncPattern.matcher(expr);

@@ -295,7 +295,7 @@ public class DefaultRunProcessService implements IRunProcessService {
             return new MavenJavaProcessor(process, property, filenameFromLabel);
         } else {
             if (property != null) {
-                if (!ProcessorUtilities.isGeneratePomOnly()) {
+                // if (!ProcessorUtilities.isGeneratePomOnly()) {
                     // for esb type only
                     boolean servicePart = false;
                     List<Relation> relations = RelationshipItemBuilder.getInstance().getItemsRelatedTo(property.getId(),
@@ -337,7 +337,7 @@ public class DefaultRunProcessService implements IRunProcessService {
                             return soapService.createOSGIJavaProcessor(process, property, filenameFromLabel);
                         }
                     }
-                }
+                // }
                 return new MavenJavaProcessor(process, property, filenameFromLabel);
             } else {
                 return new MavenJavaProcessor(process, property, filenameFromLabel);
@@ -869,9 +869,11 @@ public class DefaultRunProcessService implements IRunProcessService {
     
     private void deleteRefProjects(Project refProject, AggregatorPomsHelper refHelper) throws Exception {
         IProgressMonitor monitor = new NullProgressMonitor();
-        deleteRefProject(ERepositoryObjectType.ROUTINES, refHelper, monitor);
-        deleteRefProject(ERepositoryObjectType.PIG_UDF, refHelper, monitor);
-        deleteRefProject(ERepositoryObjectType.valueOf("BEANS"), refHelper, monitor); //$NON-NLS-1$
+        for (ERepositoryObjectType codeType : ERepositoryObjectType.getAllTypesOfCodes()) {
+            // use getAllTypesOfCodes to avoid NPE
+            // the ERepositoryObjectType may not load on current license
+            deleteRefProject(codeType, refHelper, monitor);
+        }
 
     }
     
@@ -922,17 +924,23 @@ public class DefaultRunProcessService implements IRunProcessService {
             if (info.equals(mainJobInfo)) {
                 continue;
             }
-            childPoms.add(info.getPomFile());
 
             // copy source code to the main project
             IFile codeFile = info.getCodeFile();
             IPath refPath = codeFile.getProjectRelativePath();
             IFolder targetFolder = mainProject.getFolder(refPath.removeLastSegments(1));
+
             if (!targetFolder.exists()) {
                 targetFolder.create(true, false, progressMonitor);
             }
+            if (codeFile.getLocation().removeLastSegments(1).equals(targetFolder.getLocation())) {
+                continue;
+            }
+
             FilesUtils.copyDirectory(new File(codeFile.getLocation().toPortableString()),
                     new File(targetFolder.getLocation().toPortableString()));
+
+            childPoms.add(info.getPomFile());
         }
 
         PomUtil.updateMainJobDependencies(mainJobInfo.getPomFile(), childPoms, childJobDependencies, progressMonitor);

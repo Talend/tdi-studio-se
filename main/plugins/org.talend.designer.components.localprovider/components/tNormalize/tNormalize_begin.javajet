@@ -26,6 +26,7 @@ imports="
 	    }
 	}
 %>
+	int lastNoEmptyIndex_<%=cid%> = 0;
     int nb_line_<%=cid%> = 0;
 <%
     if(metadataColumns != null && metadataColumns.size() > 0) {

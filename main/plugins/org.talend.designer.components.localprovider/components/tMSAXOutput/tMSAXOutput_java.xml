@@ -262,7 +262,7 @@
        <IMPORT NAME="MSAX-Ncacn_ip_tcp" MODULE="b-ncacn_ip_tcp.jar" MVN="mvn:org.talend.libraries/b-ncacn_ip_tcp/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.microsoft/lib/b-ncacn_ip_tcp.jar" REQUIRED="false" REQUIRED_IF="CONNECTION_TYPE == 'DCOM'" />
        <IMPORT NAME="MSAX-Ncacn_np" MODULE="b-ncacn_np.jar" MVN="mvn:org.talend.libraries/b-ncacn_np/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.microsoft/lib/b-ncacn_np.jar" REQUIRED="false" REQUIRED_IF="CONNECTION_TYPE == 'DCOM'"/>
        <IMPORT NAME="MSAX-Ntlm-securityt" MODULE="b-ntlm-security.jar" MVN="mvn:org.talend.libraries/b-ntlm-security/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.microsoft/lib/b-ntlm-security.jar" REQUIRED="false" REQUIRED_IF="CONNECTION_TYPE == 'DCOM'"/>
-       <IMPORT NAME="MSAX-NET-CONNECTOR" MODULE="janet-java-1.0.jar" MVN="mvn:org.talend.libraries/janet-java-1.0/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.microsoft/lib/janet-java-1.0.jar" REQUIRED="false" REQUIRED_IF="CONNECTION_TYPE == 'DOTNET'"/>
+       <IMPORT NAME="MSAX-NET-CONNECTOR" MODULE="janet-java-1.2.jar" MVN="mvn:org.talend.libraries/janet-java-1.2/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.microsoft/lib/janet-java-1.2.jar" REQUIRED="false" REQUIRED_IF="CONNECTION_TYPE == 'DOTNET'"/>
      </IMPORTS>
   </CODEGENERATION>
 

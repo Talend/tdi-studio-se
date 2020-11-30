@@ -2103,7 +2103,7 @@ class SnowflaketManager extends Manager {
         StringBuilder javaCode = new StringBuilder();
         if(useExistingConnection) {
             javaCode.append(retrieveTable());
-            javaCode.append("java.sql.Connection conn_" + cid + " = (java.sql.Connection)globalMap.get(\"" + connection + "_Connection\");");
+            javaCode.append("java.sql.Connection conn_" + cid + " = (java.sql.Connection)globalMap.get(\"" + connection + "_connection\");");
         } else {
             javaCode.append(super.getConnection());
         }

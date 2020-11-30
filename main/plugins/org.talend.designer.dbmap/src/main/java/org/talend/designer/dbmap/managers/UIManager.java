@@ -242,8 +242,7 @@ public class UIManager extends AbstractUIManager {
                         if (event.index != null) {
                             int index = event.index;
                             for (IMetadataColumn metadataColumn : metadataColumns) {
-                                lastCreatedInOutColumnEntries.add(mapperManager.addNewColumnEntry(dataMapTableView,
-                                        metadataColumn, index++));
+                                addColumn(metadataColumn, dataMapTableView, index);
                             }
                         } else if (event.indicesTarget != null) {
                             List<Integer> indicesTarget = event.indicesTarget;
@@ -251,8 +250,7 @@ public class UIManager extends AbstractUIManager {
                             for (int i = 0; i < lstSize; i++) {
                                 Integer indice = indicesTarget.get(i);
                                 IMetadataColumn metadataColumn = metadataColumns.get(i);
-                                lastCreatedInOutColumnEntries.add(mapperManager.addNewColumnEntry(dataMapTableView,
-                                        metadataColumn, indice));
+                                addColumn(metadataColumn, dataMapTableView, indice);
                             }
 
                         } else {
@@ -276,9 +274,7 @@ public class UIManager extends AbstractUIManager {
                         // metadataEditorTableViewer.refresh();
                         List<IMetadataColumn> metadataColumns = (List<IMetadataColumn>) event.removedObjects;
                         for (IMetadataColumn metadataColumn : metadataColumns) {
-                            ITableEntry metadataTableEntry = mapperManager.retrieveTableEntry(new TableEntryLocation(
-                                    abstractDataMapTable.getName(), metadataColumn.getLabel()));
-                            mapperManager.removeTableEntry(metadataTableEntry);
+                            removeColumn(metadataColumn, abstractDataMapTable);
                         }
                         dataMapTableViewer.refresh();
                         dataMapTableView.resizeAtExpandedSize();
@@ -331,6 +327,40 @@ public class UIManager extends AbstractUIManager {
             otherMetadataTableEditorView.getExtendedToolbar().updateEnabledStateOfButtons();
         }
 
+    }
+    
+    private void removeColumn(IMetadataColumn metadataColumn, AbstractInOutTable abstractDataMapTable) {
+        if(abstractDataMapTable instanceof InputTable) {
+            for(InputTable inTable : mapperManager.getInputTables()) {
+                if(inTable.getTableName().equals(((InputTable)abstractDataMapTable).getTableName())) {
+                    ITableEntry metadataTableEntry = mapperManager.retrieveTableEntry(new TableEntryLocation(
+                            inTable.getName(), metadataColumn.getLabel()));
+                    mapperManager.removeTableEntry(metadataTableEntry);
+                }
+            }
+        }else {
+            ITableEntry metadataTableEntry = mapperManager.retrieveTableEntry(new TableEntryLocation(
+                    abstractDataMapTable.getName(), metadataColumn.getLabel()));
+            mapperManager.removeTableEntry(metadataTableEntry);
+        }
+        
+    }
+    
+    private void addColumn(IMetadataColumn metadataColumn, DataMapTableView dataMapTableView, int index) {
+        IDataMapTable abstractDataMapTable = dataMapTableView.getDataMapTable();
+        IColumnEntry dataMapTableEntry = null;
+        if (dataMapTableView.getZone() == Zone.INPUTS && abstractDataMapTable instanceof InputTable) {
+            for(InputTable inTable : mapperManager.getInputTables()) {
+                if(inTable.getTableName().equals(((InputTable)abstractDataMapTable).getTableName())) {
+                    dataMapTableEntry = new InputColumnTableEntry(inTable, metadataColumn);
+                    mapperManager.getTableEntriesManager().addTableEntry(dataMapTableEntry, index);
+                    lastCreatedInOutColumnEntries.add(dataMapTableEntry);
+                }
+            }
+        }else {
+            lastCreatedInOutColumnEntries.add(mapperManager.addNewColumnEntry(dataMapTableView,
+                    metadataColumn, index++));
+        }
     }
 
     /**

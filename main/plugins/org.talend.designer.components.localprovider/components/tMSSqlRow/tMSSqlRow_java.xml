@@ -294,6 +294,7 @@
         		<ITEM NAME="Object" 		VALUE="Object"/>
         		<ITEM NAME="Short" 			VALUE="Short"/>
         		<ITEM NAME="String" 		VALUE="String"/>
+                <ITEM NAME="NString"        VALUE="NString"/>
         		<ITEM NAME="Time" 			VALUE="Time"/>
         		<ITEM NAME="Null" 			VALUE="Null"/>
         	</ITEMS>

@@ -60,7 +60,7 @@ if(columnList != null && columnList.size() > 0) {
 			}
 			else{
 %>
-				String url_<%=cid %> = "jdbc:sqlanywhere:Host=" + <%=dbhost %> + ":" + <%=dbport %> + ";DatabaseName" + <%=dbname %> + ";" + <%=dbproperties%>;
+				String url_<%=cid %> = "jdbc:sqlanywhere:Host=" + <%=dbhost %> + ":" + <%=dbport %> + ";DatabaseName=" + <%=dbname %> + ";" + <%=dbproperties%>;
 <%
 			}
             }
