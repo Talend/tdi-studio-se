@@ -213,7 +213,7 @@ public abstract class AbstractPublishJobAction implements IRunnableWithProgress 
         try {
             exportChoiceMap.put(ExportChoice.buildImage, true);
             exportChoiceMap.put(ExportChoice.pushImage, true);
-            exportChoiceMap.put(ExportChoice.needAssembly, false);
+            exportChoiceMap.put(ExportChoice.needAssembly, true);
             exportChoiceMap.put(ExportChoice.binaries, true);
             exportChoiceMap.put(ExportChoice.includeLibs, true);
             exportChoiceMap.put(ExportChoice.addStatistics, true);

@@ -331,6 +331,9 @@ public class ExcelTool {
         try {
             wb.write(outputStream);
             wb.close();
+            if(preWb != null){
+                preWb.close();
+            }
         } finally {
             if (outputStream != null) {
                 outputStream.close();
@@ -363,6 +366,9 @@ public class ExcelTool {
             }
         } finally {
             wb.close();
+            if(preWb != null){
+                preWb.close();
+            }
         }
     }
 

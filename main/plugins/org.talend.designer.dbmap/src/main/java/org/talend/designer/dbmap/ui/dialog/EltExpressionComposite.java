@@ -224,7 +224,7 @@ public class EltExpressionComposite extends ExpressionComposite {
             contentProposalAdapter.setProposalAcceptanceStyle(ContentProposalAdapter.PROPOSAL_INSERT);
             contentProposalAdapter.setContentProposalProvider(contentProposalProvider);
             contentProposalAdapter.setAutoActivationDelay(10);
-            contentProposalAdapter.setPopupSize(new Point(300, 200));
+            contentProposalAdapter.setPopupSize(new Point(300, 300));
 
             // add listener to avoid input \r when try press enter to choose proposal
             textControl.addVerifyKeyListener(new VerifyKeyListener() {

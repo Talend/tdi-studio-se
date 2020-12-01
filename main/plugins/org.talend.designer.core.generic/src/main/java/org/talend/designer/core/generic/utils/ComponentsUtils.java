@@ -409,7 +409,8 @@ public class ComponentsUtils {
                 boolean isEnumProperty = EParameterFieldType.CLOSED_LIST.equals(fieldType) && storedValue != null
                         && storedValue instanceof Enum;
                 if (EParameterFieldType.NAME_SELECTION_AREA.equals(fieldType) || EParameterFieldType.JSON_TABLE.equals(fieldType)
-                        || EParameterFieldType.CHECK.equals(fieldType) || isNameProperty || isEnumProperty) {
+                        || EParameterFieldType.CHECK.equals(fieldType) || EParameterFieldType.MAPPING_TYPE.equals(fieldType)
+                        || isNameProperty || isEnumProperty) {
                     // Disable context support for those filed types and name parameter.
                     param.setSupportContext(false);
                 } else {

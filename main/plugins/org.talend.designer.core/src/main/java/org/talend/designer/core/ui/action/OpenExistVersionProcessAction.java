@@ -134,8 +134,7 @@ public class OpenExistVersionProcessAction extends EditPropertiesAction {
         IProcess2 loadedProcess = fileEditorInput.getLoadedProcess();
         List<NodeType> unloadedNode = loadedProcess.getUnloadedNode();
         if (unloadedNode != null && !unloadedNode.isEmpty()) {
-
-            String message = "Some Component are not loaded:\n";
+            String message = Messages.getString("ProcessAction.unloadComponent") + "\n";
             for (int i = 0; i < unloadedNode.size(); i++) {
                 message = message + unloadedNode.get(i).getComponentName() + "\n";
             }

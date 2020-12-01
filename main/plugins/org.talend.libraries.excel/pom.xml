@@ -76,7 +76,7 @@
 								<artifactItem>
                                     <groupId>${talend.groupid}</groupId>
                                     <artifactId>simpleexcel</artifactId>
-                                    <version>2.4-20200923</version>
+                                    <version>2.5-20201119</version>
                                 </artifactItem>
                                 <artifactItem>
                                     <groupId>${talend.groupid}</groupId>
@@ -86,7 +86,7 @@
                                 <artifactItem>
                                     <groupId>${talend.groupid}</groupId>
                                     <artifactId>talendExcel</artifactId>
-                                    <version>1.7-20201028</version>
+                                    <version>1.8-20201113</version>
                                 </artifactItem>
 							</artifactItems>
 						</configuration>

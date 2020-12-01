@@ -177,7 +177,7 @@
 	<CODEGENERATION>
 		<IMPORTS>
 			<IMPORT NAME="Java_Excel" MODULE="jxl.jar" MVN="mvn:org.talend.libraries/jxl/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.jexcel/lib/jxl.jar" REQUIRED_IF="(VERSION_2007 == 'false')" />
-			<IMPORT NAME="simpleexcel" MODULE="simpleexcel-2.4-20200923.jar" MVN="mvn:org.talend.components/simpleexcel/2.4-20200923" UrlPath="platform:/plugin/org.talend.libraries.excel/lib/simpleexcel-2.4-20200923.jar" REQUIRED_IF="(VERSION_2007 == 'true') AND GENERATION_MODE == 'EVENT_MODE')" />
+			<IMPORT NAME="simpleexcel" MODULE="simpleexcel-2.5-20201119.jar" MVN="mvn:org.talend.components/simpleexcel/2.5-20201119" UrlPath="platform:/plugin/org.talend.libraries.excel/lib/simpleexcel-2.5-20201119.jar" REQUIRED_IF="(VERSION_2007 == 'true') AND GENERATION_MODE == 'EVENT_MODE')" />
 			<IMPORT NAME="Java_DOM4J2" MODULE="dom4j-2.1.3.jar" MVN="mvn:org.dom4j/dom4j/2.1.3" REQUIRED_IF="(VERSION_2007 == 'true')" BundleID="" />
 			<IMPORT NAME="log4j" MODULE="log4j-1.2.17.jar" MVN="mvn:log4j/log4j/1.2.17" UrlPath="platform:/plugin/org.talend.libraries.apache/lib/log4j-1.2.17.jar" REQUIRED_IF="(VERSION_2007 == 'true')" BundleID="" />
 

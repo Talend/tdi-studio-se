@@ -275,23 +275,6 @@
 				<microservice.configs.dir>${current.resources.dir}/</microservice.configs.dir>
 				<microservice.running.configs.dir>${current.int-resources.dir}/</microservice.running.configs.dir>
 			</properties>
-			<dependencies>
-				<dependency>
-					<groupId>io.micrometer</groupId>
-					<artifactId>micrometer-registry-prometheus</artifactId>
-					<version>1.1.1</version>
-				</dependency>
-				<dependency>
-					<groupId>io.prometheus.jmx</groupId>
-					<artifactId>collector</artifactId>
-					<version>0.13.0</version>
-				</dependency>
-				<dependency>
-					<groupId>org.springframework.boot</groupId>
-					<artifactId>spring-boot-starter-security</artifactId>
-					<version>2.1.2.RELEASE</version>
-				</dependency>
-			</dependencies>
 			<build>
 			    <plugins>
 			        <plugin>

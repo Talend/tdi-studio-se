@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.talend.components</groupId>
 	<artifactId>talend-mscrm</artifactId>
-	<version>3.4-20201009</version>
+	<version>3.4-20201104</version>
 	<packaging>jar</packaging>
 	
 	<name>talend-mscrm</name>
@@ -11,8 +11,8 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<cxf.version>3.1.1</cxf.version>
-		<odata.version>4.5.0</odata.version>
-        <slf4j.version>1.7.12</slf4j.version>
+		<odata.version>4.7.1</odata.version>
+		<slf4j.version>1.7.12</slf4j.version>
 		<talend.nexus.url>https://artifacts-oss.talend.com</talend.nexus.url>
 		<axis2.version>1.7.9</axis2.version>
 	</properties>

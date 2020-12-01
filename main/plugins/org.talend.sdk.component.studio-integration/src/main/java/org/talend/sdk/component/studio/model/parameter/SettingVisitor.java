@@ -15,6 +15,13 @@
  */
 package org.talend.sdk.component.studio.model.parameter;
 
+import static java.util.Collections.emptyMap;
+import static java.util.Collections.unmodifiableList;
+import static java.util.Optional.ofNullable;
+import static java.util.function.Function.identity;
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
+
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
@@ -27,6 +34,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.TreeMap;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -55,13 +63,6 @@ import org.talend.sdk.component.studio.model.parameter.resolver.HealthCheckResol
 import org.talend.sdk.component.studio.model.parameter.resolver.ParameterResolver;
 import org.talend.sdk.component.studio.model.parameter.resolver.SuggestionsResolver;
 import org.talend.sdk.component.studio.model.parameter.resolver.ValidationResolver;
-
-import static java.util.Collections.emptyMap;
-import static java.util.Collections.unmodifiableList;
-import static java.util.Optional.ofNullable;
-import static java.util.function.Function.identity;
-import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toMap;
 
 /**
  * Creates properties from leafs
@@ -489,11 +490,11 @@ public class SettingVisitor implements PropertyVisitor {
         final String connectionName = getConnectionName(node);
         final String discoverSchemaAction = node.getProperty().getConnection().getDiscoverSchema();
         return new OutputSchemaParameter(getNode(), node.getProperty().getPath(), connectionName, discoverSchemaAction,
-                true);
+                true, node.getChildrenNames());
     }
 
     private TaCoKitElementParameter visitInSchema(final PropertyNode node) {
-        return new InputSchemaParameter(getNode(), node.getProperty().getPath(), getConnectionName(node));
+        return new InputSchemaParameter(getNode(), node.getProperty().getPath(), getConnectionName(node), node.getChildrenNames());
     }
 
     /**
@@ -535,7 +536,7 @@ public class SettingVisitor implements PropertyVisitor {
     protected TaCoKitElementParameter createSchemaParameter(final String connectionName, final String schemaName,
             final String discoverSchemaAction,
             final boolean show) {
-        return new OutputSchemaParameter(getNode(), schemaName, connectionName, discoverSchemaAction, show);
+        return new OutputSchemaParameter(getNode(), schemaName, connectionName, discoverSchemaAction, show, Collections.emptyList());
     }
 
     /**

@@ -162,14 +162,8 @@
 		</property>
 #end
 #if (!$job.dataSources.isEmpty())
-		<property name="dataSources">
-			<map>
-#foreach ($alias in $job.dataSources)
-				<entry key="${alias}">
-					<reference interface="javax.sql.DataSource" filter="(osgi.jndi.service.name=${alias})" />
-				</entry>
-#end ## end data sources aliases loop
-			</map>
+		<property name="dataSourceReferences">
+		    <ref component-id="dataSourceReferenceList" /> 
 		</property>
 #end
 	</bean>
@@ -197,5 +191,8 @@
 		<argument value="${endpoint.defaultContext}" />
 		<argument value="${endpoint.address}" />
 	</bean>
+#end
+#if (!$job.dataSources.isEmpty())
+	<reference-list id="dataSourceReferenceList" member-type="service-reference" interface="javax.sql.DataSource" />
 #end
 </blueprint>
