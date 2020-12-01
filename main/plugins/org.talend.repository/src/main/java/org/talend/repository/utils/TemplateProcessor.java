@@ -28,6 +28,8 @@ import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.app.event.implement.EscapeXmlReference;
 import org.apache.velocity.exception.VelocityException;
 import org.apache.velocity.runtime.RuntimeConstants;
+import org.eclipse.core.runtime.Platform;
+import org.talend.core.runtime.util.SharedStudioUtils;
 
 public class TemplateProcessor {
 
@@ -47,6 +49,10 @@ public class TemplateProcessor {
 //                  "org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader"); //$NON-NLS-1$
             engine.setProperty(RuntimeConstants.EVENTHANDLER_REFERENCEINSERTION,
                 EscapeXmlReference.class.getName());
+            if (SharedStudioUtils.isSharedStudioMode()) {
+                engine.setProperty(RuntimeConstants.RUNTIME_LOG,
+                        Platform.getConfigurationLocation().getURL().getFile() + "/velocity.log");
+            }
             engine.init();
 
             VelocityContext context = new VelocityContext(contextParams);
