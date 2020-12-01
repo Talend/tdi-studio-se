@@ -4,7 +4,7 @@ Bundle-Name: Excel
 Bundle-SymbolicName: org.talend.libraries.excel
 Bundle-Version: 7.4.1.qualifier
 Bundle-ClassPath: .,
- lib/simpleexcel-2.4-20200923.jar,
+ lib/simpleexcel-2.5-20201119.jar,
  lib/commons-collections4-4.1.jar,
  lib/poi-4.1.2-20200903124306_modified_talend.jar,
  lib/poi-ooxml-4.1.2-20200903124306_modified_talend.jar,
