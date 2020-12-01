@@ -64,6 +64,8 @@ public class AliasDialog {
 
     private boolean update = false;
 
+    public String originalAlias;
+
     ProblemsAnalyser problemsAnalyser;
 
     /**
@@ -106,7 +108,9 @@ public class AliasDialog {
                 }
                 if (isSameAsVisibleTableName(newText)) {
                     if (update && newText.equalsIgnoreCase(newText.trim())) {
-                        return null;
+                        if (originalAlias != null) {
+                            return null;
+                        }
                     }
                     return Messages.getString("AliasDialog.aliasAlreadyExists1", new Object[] { newText }); //$NON-NLS-1$
                 }
@@ -366,7 +370,9 @@ public class AliasDialog {
                         aliasInternalDialog.getCombo().setEnabled(false);
                         internalTableName = inputTableName;
                         if (StringUtils.isNotBlank(alias)) {
+                            originalAlias = alias;
                             aliasInternalDialog.getText().setText(alias);
+                            originalAlias = null;
                         }
                     }
                 }
