@@ -239,7 +239,8 @@ public class ComponentsUtils {
                             }
                             GenericComponent currentComponent = new GenericComponent(definition, paletteType,
                                     definition.getName().replace("JDBC", bean.getComponentKey()));
-                            afterCreateComponent(componentsList, currentComponent);
+                            // available for jdbc avoid TDI license blacklist
+                            componentsList.add(currentComponent);
                         } catch (BusinessException e) {
                             ExceptionHandler.process(e);
                         }
