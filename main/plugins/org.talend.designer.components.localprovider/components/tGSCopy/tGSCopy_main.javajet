@@ -22,7 +22,7 @@
 	String newObjectKey = ElementParameterParser.getValue(node,"__NEW_OBJECTKEY__");
 	String actionType = ElementParameterParser.getValue(node,"__ACTION_TYPE__");
 	boolean isRename = ("true").equals(ElementParameterParser.getValue(node,"__RENAME__"));
-
+	boolean useSrcPath = ("true").equals(ElementParameterParser.getValue(node,"__USE_SRC_PATH__"));
 	String dieOnError = ElementParameterParser.getValue(node, "__DIE_ON_ERROR__");
 	boolean isLog4jEnabled = ("true").equals(ElementParameterParser.getValue(node.getProcess(), "__LOG4J_ACTIVATE__"));
 
@@ -80,7 +80,11 @@ if ("USER_ACCOUNT_HMAC".equals(authType)){
 			for (org.jets3t.service.model.GSObject objectSummary_<%=cid%> : objects_<%=cid%>) {
 				String srcObjectKey_<%=cid%>=objectSummary_<%=cid%>.getKey();
 				org.jets3t.service.model.GSObject tarObj_<%=cid%>=service_<%=cid%>.getObject(<%=srcBucketName%>, objectSummary_<%=cid%>.getKey());
-				tarObj_<%=cid%>.setKey(targetFolder_<%=cid%>+objectSummary_<%=cid%>.getKey());
+				String targetName_<%=cid%> = objectSummary_<%=cid%>.getKey();
+				<% if(!useSrcPath) { %>
+					targetName_<%=cid%> = targetName_<%=cid%>.substring(targetName_<%=cid%>.lastIndexOf('/') + 1);
+				<% } %>
+				tarObj_<%=cid%>.setKey(targetFolder_<%=cid%>+targetName_<%=cid%>);
 				<%
 				if("COPY".equals(actionType) ){
 				%>
@@ -105,7 +109,11 @@ if ("USER_ACCOUNT_HMAC".equals(authType)){
 			<%
 			}else{
 			%>
-				tarObj_<%=cid%>.setKey(targetFolder_<%=cid%>+tarObj_<%=cid%>.getKey());
+				String targetName_<%=cid%> = tarObj_<%=cid%>.getKey();
+				<% if(!useSrcPath) { %>
+					targetName_<%=cid%> = targetName_<%=cid%>.substring(targetName_<%=cid%>.lastIndexOf('/') + 1);
+				<% } %>
+				tarObj_<%=cid%>.setKey(targetFolder_<%=cid%>+targetName_<%=cid%>);
 			<%
 			}
 			if("COPY".equals(actionType) ){
@@ -205,8 +213,13 @@ if ("USER_ACCOUNT_HMAC".equals(authType)){
 		com.google.cloud.storage.Storage.BlobListOption blobListOptionPrefix_<%=cid%> = com.google.cloud.storage.Storage.BlobListOption.prefix(<%=sourceObjectKey%>);
 		com.google.api.gax.paging.Page<com.google.cloud.storage.Blob> allBlobs_<%=cid%> = bucket_<%=cid%>.list(blobListOptionPrefix_<%=cid%>);
 		for (com.google.cloud.storage.Blob blob_<%=cid%> : allBlobs_<%=cid%>.iterateAll()) {
-
-			com.google.cloud.storage.CopyWriter copyWriter_<%=cid%> = blob_<%=cid%>.copyTo(<%=targetBucket%>, targetFolder_<%=cid%>+blob_<%=cid%>.getName());
+			String targetName_<%=cid%> = blob_<%=cid%>.getName();
+			<% if(!useSrcPath) { %>
+				targetName_<%=cid%> = targetFolder_<%=cid%>+targetName_<%=cid%>.substring(targetName_<%=cid%>.lastIndexOf('/') + 1);
+			<% } else { %>
+        		targetName_<%=cid%> = targetFolder_<%=cid%>+targetName_<%=cid%>;
+      		<% } %>
+			com.google.cloud.storage.CopyWriter copyWriter_<%=cid%> = blob_<%=cid%>.copyTo(<%=targetBucket%>, targetName_<%=cid%>);
 			<%
 			if("MOVE".equals(actionType) ){
 			%>
@@ -219,16 +232,18 @@ if ("USER_ACCOUNT_HMAC".equals(authType)){
 	}else{
 	%>
 		com.google.cloud.storage.Blob blob_<%=cid%> = storage_<%=cid%>.get(<%=srcBucketName%>, <%=sourceObjectKey%>);
-
-		String blobName_<%=cid%> = blob_<%=cid%>.getName();
+		String targetName_<%=cid%> = blob_<%=cid%>.getName();
+		<% if(!useSrcPath) { %>
+			targetName_<%=cid%> = targetFolder_<%=cid%>+targetName_<%=cid%>.substring(targetName_<%=cid%>.lastIndexOf('/') + 1);
+		<% } %>
 		<%
 		if(isRename){
 		%>
-			blobName_<%=cid%> = targetFolder_<%=cid%>+<%=newObjectKey%>;
+			targetName_<%=cid%> = targetFolder_<%=cid%>+<%=newObjectKey%>;
 		<%
 		}
 		%>
-		com.google.cloud.storage.CopyWriter copyWriter_<%=cid%> = blob_<%=cid%>.copyTo(<%=targetBucket%>, blobName_<%=cid%>);
+		com.google.cloud.storage.CopyWriter copyWriter_<%=cid%> = blob_<%=cid%>.copyTo(<%=targetBucket%>, targetName_<%=cid%>);
 		<%
 		if("MOVE".equals(actionType) ){
 		%>
