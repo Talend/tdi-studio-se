@@ -237,7 +237,7 @@ public abstract class AbstractBuildJobHandler implements IBuildJobHandler, IBuil
         if (isOptionChoosed(ExportChoice.buildImage)) {
             String dockerHost = (String) exportChoice.get(ExportChoice.dockerHost);
             if (dockerHost != null) {
-                otherArgsBuffer.append("-Ddocker.host=" + dockerHost + " "); //$NON-NLS-1$ //$NON-NLS-2$
+                otherArgsBuffer.append("-Djkube.docker.host=" + dockerHost + " "); //$NON-NLS-1$ //$NON-NLS-2$
             }
             String imageName = (String) exportChoice.get(ExportChoice.imageName);
             if (imageName != null) {
