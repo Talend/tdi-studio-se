@@ -954,15 +954,17 @@ public abstract class DbGenerationManager {
             }
         }
         Set<String> globalMapList = getGlobalMapList(component, expression);
+        if (globalMapList.size() > 0) {
+            String tempExpression = expression.trim();
+            if ((tempExpression.startsWith("\"+") && tempExpression.endsWith("+\"")) //$NON-NLS-1$//$NON-NLS-2$
+                    || (tempExpression.startsWith("\" +") && tempExpression.endsWith("+ \""))) {//$NON-NLS-1$ //$NON-NLS-2$
+                return expression;
+            }
+        }
         for (String globalMapStr : globalMapList) {
             String regex = parser.getGlobalMapExpressionRegex(globalMapStr);
             String replacement = parser.getGlobalMapReplacement(globalMapStr);
-            String newExpression = "\"+" + replacement + "+\""; //$NON-NLS-1$ //$NON-NLS-2$
-            if (expression.equals(newExpression)) {
-                return expression;
-            }
-            expression = TalendQuoteUtils.removeQuotesIfExist(expression);
-            expression = expression.replaceAll(regex, newExpression);
+            expression = expression.replaceAll(regex, "\" +" + replacement + "+ \"");//$NON-NLS-1$ //$NON-NLS-2$
         }
         return expression;
     }

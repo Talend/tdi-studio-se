@@ -461,6 +461,10 @@ public abstract class AbstractTalendEditor extends GraphicalEditorWithFlyoutPale
         if (type == ZoomManager.class) {
             return getGraphicalViewer().getProperty(ZoomManager.class.toString());
         }
+        
+        if(type == ScrollingGraphicalViewer.class) {
+            return saveOutlinePicture((ScrollingGraphicalViewer) getGraphicalViewer());
+        }
 
         return super.getAdapter(type);
     }
@@ -1140,7 +1144,8 @@ public abstract class AbstractTalendEditor extends GraphicalEditorWithFlyoutPale
      *
      * @param viewer
      */
-    protected void saveOutlinePicture(ScrollingGraphicalViewer viewer) {
+    protected Map<String, Object> saveOutlinePicture(ScrollingGraphicalViewer viewer) {
+        Map<String,Object> results = new HashMap<String, Object>();
         GlobalConstant.generatingScreenShoot = true;
         LayerManager layerManager = (LayerManager) viewer.getEditPartRegistry().get(LayerManager.ID);
         // save image using swt
@@ -1157,18 +1162,19 @@ public abstract class AbstractTalendEditor extends GraphicalEditorWithFlyoutPale
         Graphics graphics = new SWTGraphics(gc);
         Point point = contentLayer.getBounds().getTopLeft();
         graphics.translate(-point.x, -point.y);
-        IProcess2 process = getProcess();
-        process.setPropertyValue(IProcess.SCREEN_OFFSET_X, String.valueOf(-point.x));
-        process.setPropertyValue(IProcess.SCREEN_OFFSET_Y, String.valueOf(-point.y));
+        results.put(IProcess.SCREEN_OFFSET_X, String.valueOf(-point.x));
+        results.put(IProcess.SCREEN_OFFSET_Y, String.valueOf(-point.y));
         backgroundLayer.paint(graphics);
         contentLayer.paint(graphics);
         graphics.dispose();
         gc.dispose();
-        process.getScreenshots().put("process", ImageUtils.saveImageToData(img));
+        results.put("process", ImageUtils.saveImageToData(img));
         img.dispose();
 
         // service.getProxyRepositoryFactory().refreshJobPictureFolder(outlinePicturePath);
         GlobalConstant.generatingScreenShoot = false;
+        
+        return results;
     }
 
     /**
@@ -1265,7 +1271,11 @@ public abstract class AbstractTalendEditor extends GraphicalEditorWithFlyoutPale
         // getGraphicalViewer().getControl().getDisplay().asyncExec(new Runnable() {
         //
         // public void run() {
-        saveOutlinePicture((ScrollingGraphicalViewer) getGraphicalViewer());
+        Map<String, Object> results = saveOutlinePicture((ScrollingGraphicalViewer) getGraphicalViewer());
+        IProcess2 process = getProcess();
+        process.setPropertyValue(IProcess.SCREEN_OFFSET_X, (String) results.get(IProcess.SCREEN_OFFSET_X));
+        process.setPropertyValue(IProcess.SCREEN_OFFSET_Y, (String) results.get(IProcess.SCREEN_OFFSET_Y));
+        process.getScreenshots().put("process", (byte[]) results.get("process"));
         // }
         //
         // });
