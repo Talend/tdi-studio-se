@@ -24,6 +24,7 @@ package org.talend.fileprocess.delimited;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.text.NumberFormat;
+import java.util.function.Predicate;
 
 /**
  * DOC ibmuser class global comment. Detailled comment <br/>
@@ -45,21 +46,21 @@ public class RowParser extends DelimitedDataReader {
 
     private char[] buffer;
 
-    private static final int BUFFER_SIZE = 2 << 12;
-
-    private char[] chars = new char[BUFFER_SIZE];
+    private static final int BUFFER_SIZE = 8192;
 
     boolean requireAdditionalReadFromSource = true;
 
     private int separatorIndex;
 
-    private boolean firstSymbolInTheEndOfBuffer = false;
+    private boolean foundCR = false;
 
     private int extendedArrayStartIndex = 0;
 
     private int readSymbols = 0;
 
     private int length;
+
+    private Predicate<Character> characterVerifier;
 
     /**
      * DOC ibmuser RowParser constructor comment.
@@ -75,8 +76,9 @@ public class RowParser extends DelimitedDataReader {
         columnBuffer = null;
         values = null;
         if ("\n".equals(rowSeparator) || "\r\n".equals(rowSeparator)) {
+            this.buffer = new char[BUFFER_SIZE];
             this.mode = 0;
-            this.rowSeparator = rowSeparator.toCharArray();
+            characterVerifier = "\n".equals(rowSeparator) ? c -> c == Character.LETTER_NUMBER : this::testCRLF;
         } else if(rowSeparator!=null) {
             streamBuffer = new StreamBuffer();
             this.rowSeparator = rowSeparator.toCharArray();
@@ -248,13 +250,12 @@ public class RowParser extends DelimitedDataReader {
             requireAdditionalReadFromSource = false;
             length = readSymbols + extendedArrayStartIndex;
             for (int j = Math.max(separatorIndex, extendedArrayStartIndex); j < length; j++){
-                int countOfFoundSeparatorSymbols = 0;
-                if ((countOfFoundSeparatorSymbols = getRowSeparators(chars, j)) > 0) {
-                    rowRecord = new String(chars, separatorIndex, j - separatorIndex);
-                    if (j == (length - countOfFoundSeparatorSymbols)) {
+                if (characterVerifier.test(buffer[j])) {
+                    rowRecord = new String(buffer, separatorIndex, j - separatorIndex);
+                    if (j == (length - 1)) {
                         separatorIndex =  0;
                         extendedArrayStartIndex = 0;
-                        chars = new char[BUFFER_SIZE];
+                        buffer = new char[BUFFER_SIZE];
                         if (!skipEmptyRecord || !"".equals(rowRecord)) {
                             requireAdditionalReadFromSource = true;
                             currentRecord++;
@@ -264,7 +265,7 @@ public class RowParser extends DelimitedDataReader {
                             break;
                         }
                     } else {
-                        separatorIndex = j + countOfFoundSeparatorSymbols;
+                        separatorIndex = j + 1;
                         if (!skipEmptyRecord || !"".equals(rowRecord)) {
                             currentRecord++;
                             return true;
@@ -272,7 +273,7 @@ public class RowParser extends DelimitedDataReader {
                         // Skipped, find the next record in the buffer.
                     }
                 }
-                if (j == chars.length - 1) {
+                if (j == buffer.length - 1) {
                     //The end of the buffer is reached, copy unprocessed characters to a new buffer.
                     ensureBufferCapacity();
                 }
@@ -285,14 +286,14 @@ public class RowParser extends DelimitedDataReader {
         }
         //Last record in the end of the file is reached.
         if (readSymbols > 0 || separatorIndex != 0) {
-            rowRecord = new String(chars, separatorIndex, length - separatorIndex);
+            rowRecord = new String(buffer, separatorIndex, length - separatorIndex);
             separatorIndex = 0;
             if (!skipEmptyRecord || !"".equals(rowRecord)) {
                 currentRecord++;
                 return true;
             }
         }
-        chars = null;
+        buffer = null;
         return false;
     }
 
@@ -303,40 +304,15 @@ public class RowParser extends DelimitedDataReader {
      * @throws IOException exception from input stream read.
      */
     private boolean hasMoreData() throws IOException {
-        return requireAdditionalReadFromSource ? (readSymbols = inputStream.read(chars, extendedArrayStartIndex, BUFFER_SIZE)) != -1 : true;
+        return requireAdditionalReadFromSource ? (readSymbols = inputStream.read(buffer, extendedArrayStartIndex, BUFFER_SIZE)) != -1 : true;
     }
 
-    /**
-     * Compare characters for equality with row separators.<br>
-     * For row separators we expect these returns <b>\n</b> = 1, <b>\r\n</b> = 2, not found = 0.<br>
-     * Special case for <b>\r\n</b>, when the first character is matched, but the input characters length is reached, then we can't compare a second value.<br>
-     * In this case we store <b>firstSymbolInTheEndOfBuffer</b> value and return 0. <br>
-     * When the buffer capacity is increased and new read from source performed - we can check condition for <b>firstSymbolInTheEndOfBuffer</b> and validate only the second character.
-     *
-     * @param inputChars - input characters array.
-     * @param index - character index to be checked.
-     * @return count of found separator characters.
-     */
-    private int getRowSeparators(char[] inputChars, int index) {
-        if (rowSeparator.length == 1) {
-            return inputChars[index] == rowSeparator[0] ? 1 : 0;
+    private boolean testCRLF(Character c) {
+        if (foundCR && c == Character.LETTER_NUMBER) {
+            return true;
         }
-        // First character is equal to first separator character.
-        if (firstSymbolInTheEndOfBuffer) {
-            firstSymbolInTheEndOfBuffer = false;
-            // Check only second separator character.
-            return inputChars[index] == rowSeparator[1] ? 2 : 0;
-        }
-        if (inputChars[index] != rowSeparator[0]) {
-            return 0;
-        } else if (inputChars.length <= ++index) {
-            // Input chars array length is reached, can't compare next character.
-            firstSymbolInTheEndOfBuffer = true;
-            return 0;
-        } else {
-            firstSymbolInTheEndOfBuffer = false;
-            return inputChars[index] == rowSeparator[1] ? 2 : 0;
-        }
+        foundCR = c == Character.LINE_SEPARATOR;
+        return false;
     }
 
     /**
@@ -344,10 +320,10 @@ public class RowParser extends DelimitedDataReader {
      * Separator index is reset to 0 to include the unprocessed characters to the next record.
      */
     private void ensureBufferCapacity() {
-        char[] tempChars = chars;
+        char[] tempChars = buffer;
         extendedArrayStartIndex = tempChars.length - separatorIndex;
-        chars = new char[extendedArrayStartIndex + BUFFER_SIZE];
-        System.arraycopy(tempChars, separatorIndex, chars, 0, extendedArrayStartIndex);
+        buffer = new char[extendedArrayStartIndex + BUFFER_SIZE];
+        System.arraycopy(tempChars, separatorIndex, buffer, 0, extendedArrayStartIndex);
         separatorIndex = 0;
     }
 
