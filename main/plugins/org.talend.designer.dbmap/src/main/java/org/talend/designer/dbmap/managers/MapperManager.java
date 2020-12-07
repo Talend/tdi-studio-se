@@ -873,7 +873,7 @@ public class MapperManager extends AbstractMapperManager {
             if (dataMapTable != null && dataMapTable instanceof InputTable) {
                 InputTable inputTable = ((InputTable) dataMapTable);
                 String oldName = inputTable.getName();
-                if (isInvisiblePhysicalTable) {
+                if (isInvisiblePhysicalTable || isPhysicalTable) {
                     inputTable.setAlias(null);
                 } else {
                     inputTable.setAlias(aliasOrTableName);
