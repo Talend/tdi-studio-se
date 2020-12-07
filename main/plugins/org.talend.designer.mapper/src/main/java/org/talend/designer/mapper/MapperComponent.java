@@ -890,10 +890,8 @@ public class MapperComponent extends AbstractMapComponent implements IHashableIn
 
         if (externalData != null) {
             // Output should not have filter until its implemented in spark dataset lib
-            boolean res = externalData.getOutputTables().stream()
-                    .anyMatch(t -> t.getExpressionFilter() != null);
-            if (res) {
-                return false;
+            for (ExternalMapperTable outputTable : externalData.getOutputTables()) {
+                if (outputTable.getExpressionFilter() != null) return false;
             }
         }
 
