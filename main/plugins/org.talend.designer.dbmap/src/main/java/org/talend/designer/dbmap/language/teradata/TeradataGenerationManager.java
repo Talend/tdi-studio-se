@@ -12,6 +12,9 @@
 // ============================================================================
 package org.talend.designer.dbmap.language.teradata;
 
+import java.util.List;
+
+import org.talend.core.model.metadata.IMetadataColumn;
 import org.talend.core.model.metadata.IMetadataTable;
 import org.talend.designer.dbmap.DbMapComponent;
 import org.talend.designer.dbmap.external.data.ExternalDbMapEntry;
@@ -43,22 +46,30 @@ public class TeradataGenerationManager extends DbGenerationManager {
     }
 
     @Override
-    protected boolean isColumnChanged(ExternalDbMapEntry dbMapEntry, String expression) {
-        boolean columnChanged = false;
+    protected boolean isColumnChanged(List<IMetadataColumn> columns, ExternalDbMapEntry dbMapEntry, String expression) {
         DataMapExpressionParser dataMapExpressionParser = new DataMapExpressionParser(language);
         TableEntryLocation[] tableEntriesLocationsSources = dataMapExpressionParser.parseTableEntryLocations(expression);
         if (tableEntriesLocationsSources.length > 1) {
-            columnChanged = true;
+            return true;
         } else {
             for (TableEntryLocation tableEntriesLocationsSource : tableEntriesLocationsSources) {
                 TableEntryLocation location = tableEntriesLocationsSource;
                 String entryName = getAliasOf(dbMapEntry.getName());
                 if (location != null && entryName != null && !entryName.startsWith("_") //$NON-NLS-1$
                         && !entryName.equals(location.columnName)) {
-                    columnChanged = true;
+                    return true;
                 }
             }
         }
-        return columnChanged;
+        for (IMetadataColumn column : columns) {
+            String name = dbMapEntry.getName();
+            if (name != null && name.equals(column.getLabel())) {
+                if (!name.equals(column.getOriginalDbColumnName())) {
+                    return true;
+                }
+                break;
+            }
+        }
+        return false;
     }
 }

@@ -140,7 +140,7 @@ public class OracleGenerationManager extends DbGenerationManager {
                     if (expression != null && expression.trim().length() > 0) {
                         String exp = replaceVariablesForExpression(component, expression);
                         appendSqlQuery(sb, exp);
-                        boolean columnChanged = isColumnChanged(dbMapEntry, expression);
+                        boolean columnChanged = isColumnChanged(columns, dbMapEntry, expression);
                         if (!added && columnChanged) {
                             String name = DbMapSqlConstants.SPACE + DbMapSqlConstants.AS + DbMapSqlConstants.SPACE
                                     + getAliasOf(dbMapEntry.getName());
@@ -428,22 +428,21 @@ public class OracleGenerationManager extends DbGenerationManager {
     }
 
     @Override
-    protected boolean isColumnChanged(ExternalDbMapEntry dbMapEntry, String expression) {
-        boolean columnChanged = false;
+    protected boolean isColumnChanged(List<IMetadataColumn> columns, ExternalDbMapEntry dbMapEntry, String expression) {
         DataMapExpressionParser dataMapExpressionParser = new DataMapExpressionParser(language);
         TableEntryLocation[] tableEntriesLocationsSources = dataMapExpressionParser.parseTableEntryLocations(expression);
         if (tableEntriesLocationsSources.length > 1) {
-            columnChanged = true;
+            return true;
         } else {
             for (TableEntryLocation tableEntriesLocationsSource : tableEntriesLocationsSources) {
                 TableEntryLocation location = tableEntriesLocationsSource;
                 String entryName = getAliasOf(dbMapEntry.getName());
                 if (location != null && entryName != null && !entryName.startsWith("_") //$NON-NLS-1$
                         && !entryName.equals(location.columnName)) {
-                    columnChanged = true;
+                    return true;
                 }
             }
         }
-        return columnChanged;
+        return false;
     }
 }
