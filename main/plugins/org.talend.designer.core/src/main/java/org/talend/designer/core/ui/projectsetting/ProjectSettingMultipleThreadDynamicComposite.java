@@ -12,13 +12,16 @@
 // ============================================================================
 package org.talend.designer.core.ui.projectsetting;
 
+import java.util.Arrays;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.gef.commands.CommandStack;
 import org.eclipse.gef.commands.CommandStackEvent;
 import org.eclipse.gef.commands.CommandStackEventListener;
 import org.eclipse.swt.widgets.Composite;
 import org.talend.commons.exception.PersistenceException;
+import org.talend.core.model.metadata.builder.connection.Connection;
 import org.talend.core.model.metadata.builder.connection.DatabaseConnection;
 import org.talend.core.model.metadata.designerproperties.RepositoryToComponentProperty;
 import org.talend.core.model.process.EComponentCategory;
@@ -32,6 +35,7 @@ import org.talend.core.model.update.UpdatesConstants;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
 import org.talend.designer.core.model.components.EmfComponent;
 import org.talend.designer.core.ui.editor.cmd.ChangeValuesFromRepository;
+import org.talend.designer.core.ui.preferences.StatsAndLogsConstants;
 import org.talend.designer.core.ui.views.properties.MultipleThreadDynamicComposite;
 import org.talend.repository.UpdateRepositoryUtils;
 
@@ -124,11 +128,13 @@ public class ProjectSettingMultipleThreadDynamicComposite extends MultipleThread
                         List<ConnectionItem> connectionItems = proxyRepositoryFactory.getMetadataConnectionsItem();
                         for (ConnectionItem cItem : connectionItems) {
                             if (cItem instanceof DatabaseConnectionItem) {
-                                lastVersion = UpdateRepositoryUtils.getRepositoryObjectById(cItem.getProperty().getId());
-                                id = cItem.getProperty().getId();
-                                lastVersion = UpdateRepositoryUtils.getRepositoryObjectById(id);
-                                elem.setPropertyValue("REPOSITORY_PROPERTY_TYPE", id);
-                                break;
+                                if (isSupportDatabaseType(cItem)) {
+                                    lastVersion = UpdateRepositoryUtils.getRepositoryObjectById(cItem.getProperty().getId());
+                                    id = cItem.getProperty().getId();
+                                    lastVersion = UpdateRepositoryUtils.getRepositoryObjectById(id);
+                                    elem.setPropertyValue("REPOSITORY_PROPERTY_TYPE", id);
+                                    break;
+                                }
                             }
                         }
                     } catch (PersistenceException e) {
@@ -199,4 +205,25 @@ public class ProjectSettingMultipleThreadDynamicComposite extends MultipleThread
         }
 
     }
+
+    private boolean isSupportDatabaseType(ConnectionItem connectionItem) {
+        Connection connection = connectionItem.getConnection();
+        DatabaseConnection dbConnection = null;
+        if (connection instanceof DatabaseConnection) {
+            dbConnection = (DatabaseConnection) connection;
+        }
+        if (dbConnection == null || StringUtils.isBlank(dbConnection.getProductId())) {
+            return false;
+        }
+        // JDBC databaseType with different productId like DeltaLake/SingleStore..
+        String productId = dbConnection.getProductId();
+        String[] supportDatabaseTypeNames = StatsAndLogsConstants.SUPPORT_PRODUCT_NAMES;
+        boolean find = Arrays.stream(supportDatabaseTypeNames).anyMatch(name -> name.equals(productId));
+        if ("ORACLE".equals(productId)) {
+            find = Arrays.stream(StatsAndLogsConstants.DISPLAY_DBNAMES[1])
+                    .anyMatch(typeName -> typeName.equals(connectionItem.getTypeName()));
+        }
+        return find;
+    }
+
 }
