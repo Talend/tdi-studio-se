@@ -3492,12 +3492,12 @@
        </projecttask>
        <projecttask
              beforeLogon="false"
-             breaks="7.4.0"
+             breaks="7.3.0"
              class="org.talend.repository.model.migration.ChangeTMatchGroupConfidentWeightTypeTask"
              description="change the type of Confident Weight and keep the part of integer only"
              id="org.talend.repository.model.migration.ChangeTMatchGroupConfidentWeightTypeTask"
              name="ChangeTMatchGroupConfidentWeightTypeTask"
-             version="7.4.1">
+             version="7.3.1">
        </projecttask>
    </extension>
 
