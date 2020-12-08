@@ -155,3 +155,4 @@ if ((metadatas!=null)&&(metadatas.size()>0)) {
 		StringBuilder stringStderr_<%=cid%> =new StringBuilder();
 		String out_content_<%=cid%> = null;
 		String err_content_<%=cid%> = null;
+		Integer exit_code_<%=cid%> = null;

@@ -118,6 +118,7 @@ if ((metadatas!=null)&&(metadatas.size()>0)) {
 		java.util.Set<org.apache.sshd.client.channel.ClientChannelEvent> clientChannelEvents_<%=cid %> = 
 		channel_<%=cid%>.waitFor(java.util.EnumSet.of(
 		org.apache.sshd.client.channel.ClientChannelEvent.CLOSED,org.apache.sshd.client.channel.ClientChannelEvent.EXIT_STATUS), 0L);
+		exit_code_<%=cid%> = channel_<%=cid%>.getExitStatus();
 		channel_<%=cid%>.close();
 		session_<%=cid%>.close();
 		<%if(isLog4jEnabled){%>
