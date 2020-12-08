@@ -373,7 +373,7 @@ public abstract class DbGenerationManager {
                     }
                     if (expression != null && expression.trim().length() > 0) {
                         appendSqlQuery(sb, exp);
-                        if (!added && isUseAliasInOutputTable() && isColumnChanged(columns, dbMapEntry, expression)) {
+                        if (!added && isUseAliasInOutputTable()) {
                             String name = DbMapSqlConstants.SPACE + DbMapSqlConstants.AS + DbMapSqlConstants.SPACE
                                     + getAliasOf(dbMapEntry.getName());
                             appendSqlQuery(sb, name);
@@ -1011,7 +1011,7 @@ public abstract class DbGenerationManager {
         }
     }
 
-    protected boolean isColumnChanged(List<IMetadataColumn> columns, ExternalDbMapEntry dbMapEntry, String expression) {
+    protected boolean needAlias(List<IMetadataColumn> columns, ExternalDbMapEntry dbMapEntry, String expression) {
         return false;
     }
 

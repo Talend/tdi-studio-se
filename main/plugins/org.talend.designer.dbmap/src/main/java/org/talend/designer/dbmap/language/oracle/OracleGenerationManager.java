@@ -140,8 +140,8 @@ public class OracleGenerationManager extends DbGenerationManager {
                     if (expression != null && expression.trim().length() > 0) {
                         String exp = replaceVariablesForExpression(component, expression);
                         appendSqlQuery(sb, exp);
-                        boolean columnChanged = isColumnChanged(columns, dbMapEntry, expression);
-                        if (!added && columnChanged) {
+                        boolean needAlias = needAlias(columns, dbMapEntry, expression);
+                        if (!added && needAlias) {
                             String name = DbMapSqlConstants.SPACE + DbMapSqlConstants.AS + DbMapSqlConstants.SPACE
                                     + getAliasOf(dbMapEntry.getName());
                             appendSqlQuery(sb, name);
@@ -428,7 +428,7 @@ public class OracleGenerationManager extends DbGenerationManager {
     }
 
     @Override
-    protected boolean isColumnChanged(List<IMetadataColumn> columns, ExternalDbMapEntry dbMapEntry, String expression) {
+    protected boolean needAlias(List<IMetadataColumn> columns, ExternalDbMapEntry dbMapEntry, String expression) {
         DataMapExpressionParser dataMapExpressionParser = new DataMapExpressionParser(language);
         TableEntryLocation[] tableEntriesLocationsSources = dataMapExpressionParser.parseTableEntryLocations(expression);
         if (tableEntriesLocationsSources.length > 1) {
