@@ -964,7 +964,6 @@ public abstract class DbGenerationManager {
         for (String globalMapStr : globalMapList) {
             String regex = parser.getGlobalMapExpressionRegex(globalMapStr);
             String replacement = parser.getGlobalMapReplacement(globalMapStr);
-            expression = TalendQuoteUtils.removeQuotesIfExist(expression);
             expression = expression.replaceAll(regex, "\" +" + replacement + "+ \"");//$NON-NLS-1$ //$NON-NLS-2$
         }
         return expression;

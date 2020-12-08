@@ -64,6 +64,8 @@ public class AliasDialog {
 
     private boolean update = false;
 
+    public boolean initialize = false;
+
     ProblemsAnalyser problemsAnalyser;
 
     /**
@@ -106,12 +108,14 @@ public class AliasDialog {
                 }
                 if (isSameAsVisibleTableName(newText)) {
                     if (update && newText.equalsIgnoreCase(newText.trim())) {
-                        return null;
+                        if (initialize) {
+                            return null;
+                        }
                     }
                     return Messages.getString("AliasDialog.aliasAlreadyExists1", new Object[] { newText }); //$NON-NLS-1$
                 }
                 if (KeywordsValidator.isKeyword(newText) || KeywordsValidator.isSqlKeyword(newText)
-                        || newText.trim().contains(" ")) { //$NON-NLS-1$
+                        || newText.trim().contains(" ") || (newText.length() > 0 && newText.trim().length() == 0)) { //$NON-NLS-1$
                     return Messages.getString("AliasDialog.inputValid"); //$NON-NLS-1$
                 }
                 return null;
@@ -366,7 +370,9 @@ public class AliasDialog {
                         aliasInternalDialog.getCombo().setEnabled(false);
                         internalTableName = inputTableName;
                         if (StringUtils.isNotBlank(alias)) {
+                            initialize = true;
                             aliasInternalDialog.getText().setText(alias);
+                            initialize = false;
                         }
                     }
                 }
