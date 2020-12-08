@@ -188,7 +188,7 @@ public class DbMapComponent extends AbstractMapComponent {
             if (useAliasInOutputTableEP == null) {
                 useAliasInOutputTableEP = new ElementParameter(origNode);
                 useAliasInOutputTableEP.setShow(false);
-                useAliasInOutputTableEP.setFieldType(EParameterFieldType.TEXT);
+                useAliasInOutputTableEP.setFieldType(EParameterFieldType.CHECK);
                 useAliasInOutputTableEP.setName(EParameterName.USE_ALIAS_IN_OUTPUT_TABLE.getName());
                 useAliasInOutputTableEP.setCategory(EComponentCategory.TECHNICAL);
                 useAliasInOutputTableEP.setNumRow(99);

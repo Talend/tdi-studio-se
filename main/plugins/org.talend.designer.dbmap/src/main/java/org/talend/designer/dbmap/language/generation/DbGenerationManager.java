@@ -373,12 +373,14 @@ public abstract class DbGenerationManager {
                     }
                     if (expression != null && expression.trim().length() > 0) {
                         appendSqlQuery(sb, exp);
+                        String alias = exp;
                         if (!added && isUseAliasInOutputTable()) {
                             String name = DbMapSqlConstants.SPACE + DbMapSqlConstants.AS + DbMapSqlConstants.SPACE
                                     + getAliasOf(dbMapEntry.getName());
                             appendSqlQuery(sb, name);
+                            alias = getAliasOf(dbMapEntry.getName());
                         }
-                        queryColumnsName += exp;
+                        queryColumnsName += alias;
                         queryColumnsSegments.add(columnSegment);
                     } else {
                         appendSqlQuery(sb, DbMapSqlConstants.LEFT_COMMENT);
