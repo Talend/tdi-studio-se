@@ -71,7 +71,7 @@ public class TeradataGenerationManagerTest extends DbGenerationManagerTestHelper
         String lookup_table = "((String)globalMap.get(\"lookup_table\"))";
         String lookup_alias = "lookup1";
         init(schema, main_table, main_alias, lookup_table, lookup_alias);
-        String expectedQuery = "\"SELECT\n" + "main1.id, main1.name, main1.age, lookup1.score\n" + "FROM\n"
+        String expectedQuery = "\"SELECT\n" + "main1.id AS id, main1.name AS name, main1.age AS age, lookup1.score AS score\n" + "FROM\n"
                 + " \" +((String)globalMap.get(\"main_table\"))+ \" main1 , \" +((String)globalMap.get(\"lookup_table\"))+ \" lookup1\"";
         String query = manager.buildSqlSelect(dbMapComponent, "grade");
         assertEquals(expectedQuery, query);
@@ -82,7 +82,7 @@ public class TeradataGenerationManagerTest extends DbGenerationManagerTestHelper
         lookup_table = "((String)globalMap.get(\"lookup_table\"))";
         lookup_alias = "";
         init(schema, main_table, main_alias, lookup_table, lookup_alias);
-        expectedQuery = "\"SELECT\n" + "main_table.id, main_table.name, main_table.age, \""
+        expectedQuery = "\"SELECT\n" + "main_table.id AS id, main_table.name AS name, main_table.age AS age, \""
                 + " +context.schema+ \".\" +((String)globalMap.get(\"lookup_table\"))+ \".score AS score\n" + "FROM\n"
                 + " \" +context.schema+\".\"+((String)globalMap.get(\"main_table\"))+((String)globalMap.get(\"main_table1\"))+ \" main_table , \""
                 + " +context.schema+ \".\" +((String)globalMap.get(\"lookup_table\"))";
@@ -128,7 +128,8 @@ public class TeradataGenerationManagerTest extends DbGenerationManagerTestHelper
         String lookup_alias = "";
         init4ColumnAlias(schema, main_table, main_alias, lookup_table, lookup_alias);
         String expectedQuery = "\"SELECT\n"
-                + "main_table.id, main_table.name_alias AS name, main_table.age_alias AS age, lookup_table.score\n" + "FROM\n"
+                + "main_table.id AS id, main_table.name_alias AS name, main_table.age_alias AS age, lookup_table.score AS score\n"
+                + "FROM\n"
                 + " main_table , lookup_table\"";
         String query = manager.buildSqlSelect(dbMapComponent, "grade");
         assertEquals(expectedQuery, query);

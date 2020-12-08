@@ -165,7 +165,8 @@ public class MysqlGenerationManagerTest extends DbGenerationManagerTestHelper {
         String lookup_table = "lookup_table";
         String lookup_alias = "";
         init4ColumnAlias(schema, main_table, main_alias, lookup_table, lookup_alias);
-        String expectedQuery = "\"SELECT\n" + "main_table.id, main_table.name_alias, main_table.age_alias, lookup_table.score\n"
+        String expectedQuery = "\"SELECT\n"
+                + "main_table.id AS id, main_table.name_alias AS name, main_table.age_alias AS age, lookup_table.score AS score\n"
                 + "FROM\n" + " main_table , lookup_table\"";
         String query = manager.buildSqlSelect(dbMapComponent, "grade");
         assertEquals(expectedQuery, query);
