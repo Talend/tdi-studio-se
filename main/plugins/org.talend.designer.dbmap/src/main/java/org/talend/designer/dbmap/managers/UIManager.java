@@ -243,7 +243,7 @@ public class UIManager extends AbstractUIManager {
                         if (event.index != null) {
                             int index = event.index;
                             for (IMetadataColumn metadataColumn : metadataColumns) {
-                                addColumn(metadataColumn, dataMapTableView, index);
+                                addColumn(metadataColumn, dataMapTableView, index++);
                             }
                         } else if (event.indicesTarget != null) {
                             List<Integer> indicesTarget = event.indicesTarget;
