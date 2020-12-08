@@ -218,10 +218,12 @@ public class ProjectSettingMultipleThreadDynamicComposite extends MultipleThread
         // JDBC databaseType with different productId like DeltaLake/SingleStore..
         String productId = dbConnection.getProductId();
         String[] supportDatabaseTypeNames = StatsAndLogsConstants.SUPPORT_PRODUCT_NAMES;
-        boolean find = Arrays.stream(supportDatabaseTypeNames).anyMatch(name -> name.equals(productId));
+        boolean find = false;
         if ("ORACLE".equals(productId)) {
             find = Arrays.stream(StatsAndLogsConstants.DISPLAY_DBNAMES[1])
                     .anyMatch(typeName -> typeName.equals(connectionItem.getTypeName()));
+        } else {
+            find = Arrays.stream(supportDatabaseTypeNames).anyMatch(name -> name.equals(productId));
         }
         return find;
     }
