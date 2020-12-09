@@ -56,7 +56,6 @@ import org.talend.core.model.properties.ProcessItem;
 import org.talend.core.model.properties.PropertiesPackage;
 import org.talend.core.model.properties.Property;
 import org.talend.core.model.properties.RoutineItem;
-import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.core.model.repository.IRepositoryViewObject;
 import org.talend.core.runtime.CoreRuntimePlugin;
 import org.talend.core.runtime.maven.MavenUrlHelper;
@@ -440,10 +439,12 @@ public class JavaProcessorUtilities {
         repositoryBundleService.installModules(listModulesReallyNeeded, null);
         if (missingJars != null) {
             handleMissingJarsForProcess(missingJarsForRoutinesOnly, missingJarsForProcessOnly, missingJars);
-        } else {
+        }
+        if (ModulesNeededProvider.installModuleForRoutineOrBeans()) {
             AggregatorPomsHelper ph = new AggregatorPomsHelper();
             try {
                 ph.updateCodeProjects(new NullProgressMonitor(), false, true);
+                ModulesNeededProvider.setInstallModuleForRoutineOrBeans();
             } catch (Exception e) {
                 CommonExceptionHandler.process(e);
             }
