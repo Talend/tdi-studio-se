@@ -99,6 +99,7 @@ public class ProjectSettingMultipleThreadDynamicComposite extends MultipleThread
                 String propertyType = (String) elementParameter.getChildParameters().get("PROPERTY_TYPE").getValue();
                 ProxyRepositoryFactory proxyRepositoryFactory = ProxyRepositoryFactory.getInstance();
                 IRepositoryViewObject lastVersion = null;
+                boolean connectionChanged = false;
                 if (null != id && !"".equals(id)) {
                     try {
                         lastVersion = proxyRepositoryFactory.getLastVersion(id);
@@ -112,10 +113,13 @@ public class ProjectSettingMultipleThreadDynamicComposite extends MultipleThread
                             }
                             for (ConnectionItem cItem : connectionItems) {
                                 if (cItem instanceof DatabaseConnectionItem) {
-                                    id = cItem.getProperty().getId();
-                                    lastVersion = proxyRepositoryFactory.getLastVersion(id);
-                                    elem.setPropertyValue("REPOSITORY_PROPERTY_TYPE", id);
-                                    break;
+                                    if (isSupportDatabaseType(cItem)) {
+                                        id = cItem.getProperty().getId();
+                                        lastVersion = proxyRepositoryFactory.getLastVersion(id);
+                                        elem.setPropertyValue("REPOSITORY_PROPERTY_TYPE", id);
+                                        connectionChanged = true;
+                                        break;
+                                    }
                                 }
                             }
 
@@ -133,6 +137,7 @@ public class ProjectSettingMultipleThreadDynamicComposite extends MultipleThread
                                     id = cItem.getProperty().getId();
                                     lastVersion = UpdateRepositoryUtils.getRepositoryObjectById(id);
                                     elem.setPropertyValue("REPOSITORY_PROPERTY_TYPE", id);
+                                    connectionChanged = true;
                                     break;
                                 }
                             }
@@ -183,7 +188,7 @@ public class ProjectSettingMultipleThreadDynamicComposite extends MultipleThread
 
                         }
                     }
-                    if (!sameValues) {
+                    if (!sameValues || connectionChanged) {
                         ChangeValuesFromRepository changeValuesFromRepository = new ChangeValuesFromRepository(elem, connection,
                                 repositoryPropertyName, id);
                         changeValuesFromRepository.execute();
