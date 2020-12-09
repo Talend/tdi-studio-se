@@ -22,7 +22,7 @@ imports="
 	
 	boolean useAlias = false;
 	List<IConnection> inConnections = (List<IConnection>) node.getIncomingConnections();
-    if(inConnections != null && inConnections.size() > 0 && inConnections.get(0) != null) {
+      if(inConnections != null && inConnections.size() > 0 && inConnections.get(0) != null) {
         IConnection inConnection = inConnections.get(0);
         INode sourceNode = inConnection.getSource();
         if(sourceNode!=null){
@@ -37,23 +37,23 @@ imports="
 	    public String transform(String content){
 	           String result = null;
 	           content = content.trim();
-	          <% if(!useAlias){%>
-                   String[] splitArr = content.split("\\s");
-                   int lgth = splitArr.length;
-                   if(lgth > 1){// has expr alias
-                     result = "src." + splitArr[lgth - 1];
-                   }else{
-                     int index = content.indexOf(".");
-                     if(index != -1){
-                         result = "src" + content.substring(index);
-                     }else{
-                         result = content;
-                     }
-                  }
-                  return result;
-	           <%}else {%>
-	              return "src." + content;
-	         <%}%>
+	      <%if(!useAlias){%>
+               String[] splitArr = content.split("\\s");
+               int lgth = splitArr.length;
+               if(lgth > 1){// has expr alias
+                 result = "src." + splitArr[lgth - 1];
+               }else{
+                 int index = content.indexOf(".");
+                 if(index != -1){
+                 result = "src" + content.substring(index);
+               }else{
+                 result = content;
+               }
+             }
+               return result;
+	       <%}else{%>
+	           return "src." + content;
+	       <%}%>
 	    }
 	}
    StrUtils_<%= cid %> strUtil_<%= cid %> = new StrUtils_<%= cid %>();
