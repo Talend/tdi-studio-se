@@ -26,8 +26,6 @@ import org.talend.repository.model.RepositoryNode;
  */
 public interface ICreateStormProcessService extends IService {
 
-    public Process createStormProcess(Property property);
-
     public Process createSparkProcess(Property property);
 
     public Process createSparkStreamProcess(Property property);
