@@ -105,12 +105,6 @@ public class ProjectSettingMultipleThreadDynamicComposite extends MultipleThread
                         lastVersion = proxyRepositoryFactory.getLastVersion(id);
                         if (null == lastVersion && propertyType.equals(EmfComponent.REPOSITORY)) {
                             List<ConnectionItem> connectionItems = proxyRepositoryFactory.getMetadataConnectionsItem();
-                            if (connectionItems.isEmpty()) {
-                                elem.setPropertyValue("REPOSITORY_PROPERTY_TYPE", "");
-                                ChangeValuesFromRepository changeValuesFromRepository1 = new ChangeValuesFromRepository(elem,
-                                        null, parentParamName + ":" + "PROPERTY_TYPE", EmfComponent.REPOSITORY);
-                                changeValuesFromRepository1.execute();
-                            }
                             for (ConnectionItem cItem : connectionItems) {
                                 if (cItem instanceof DatabaseConnectionItem) {
                                     if (isSupportDatabaseType(cItem)) {
@@ -121,6 +115,13 @@ public class ProjectSettingMultipleThreadDynamicComposite extends MultipleThread
                                         break;
                                     }
                                 }
+                            }
+
+                            if (connectionItems.isEmpty() || null == lastVersion) {
+                                ChangeValuesFromRepository changeValuesFromRepository1 = new ChangeValuesFromRepository(elem,
+                                        null, parentParamName + ":" + "PROPERTY_TYPE", EmfComponent.BUILTIN);
+                                changeValuesFromRepository1.execute();
+                                connectionUpdated = true;
                             }
 
                         }
