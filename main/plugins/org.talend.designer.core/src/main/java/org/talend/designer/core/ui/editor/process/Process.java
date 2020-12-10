@@ -1399,7 +1399,8 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
                         boolean canAddElementParameter = false;
                         boolean isActiveDatabase = false;
                         String paramName = pType.getName();
-                        if (EParameterName.ACTIVE_DATABASE_DELIMITED_IDENTIFIERS.getName().equals(paramName)) {
+                        if (EParameterName.ACTIVE_DATABASE_DELIMITED_IDENTIFIERS.getName().equals(paramName)
+                                || EParameterName.USE_ALIAS_IN_OUTPUT_TABLE.getName().equals(paramName)) {
                             canAddElementParameter = true;
                             isActiveDatabase = true;
                         }
