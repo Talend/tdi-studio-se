@@ -61,7 +61,7 @@ public class SetDatasetCheckBoxGlobalOption extends AbstractJobMigrationTask {
         }
         List<AdditionalInfoMapImpl> properties = item.getProperty().getAdditionalProperties();
         String talendVersionUsedToCreateJob = null;
-        String lastImportedVersion = null;
+        String lastImportedVersion = "0";
         for (AdditionalInfoMapImpl property : properties) {
         	if ("created_product_version".equals(property.getKey().toString())) {
         		talendVersionUsedToCreateJob = property.getValue().toString();
