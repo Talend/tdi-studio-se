@@ -118,10 +118,10 @@ public class ProjectSettingMultipleThreadDynamicComposite extends MultipleThread
                             }
 
                             if (connectionItems.isEmpty() || null == lastVersion) {
+                                elem.setPropertyValue("REPOSITORY_PROPERTY_TYPE", "");
                                 ChangeValuesFromRepository changeValuesFromRepository1 = new ChangeValuesFromRepository(elem,
                                         null, parentParamName + ":" + "PROPERTY_TYPE", EmfComponent.BUILTIN);
                                 changeValuesFromRepository1.execute();
-                                connectionUpdated = true;
                             }
 
                         }
