@@ -27468,7 +27468,7 @@
                         <ITEM NAME="LESSTHAN" VALUE="LessThan" />
                         <ITEM NAME="GREATEREQUAL" VALUE="GreaterEqual" />
                         <ITEM NAME="LESSEQUAL" VALUE="LessEqual" />
-                        <ITEM NAME="LIKE" VALUE="Like" SHOW_IF="((AUTH_TYPE=='ONLINE') AND (API_VERSION != 'API_2016_ODATA' OR API_VERSION != 'API_2018_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION != 'CRM_2016' OR MS_CRM_VERSION != 'CRM_2018'))"/>
+                        <ITEM NAME="LIKE" VALUE="Like" SHOW_IF="((AUTH_TYPE=='ONLINE' AND (API_VERSION != 'API_2016_ODATA' AND API_VERSION != 'API_2018_ODATA')) OR (AUTH_TYPE=='ON_PREMISE' AND (MS_CRM_VERSION != 'CRM_2016' AND MS_CRM_VERSION != 'CRM_2018')))"/>
                     </ITEMS>
                 </ITEM>
                 <ITEM NAME="RVALUE" FIELD="String" />

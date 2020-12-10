@@ -786,6 +786,11 @@ public class MapperManager extends AbstractMapperManager {
         uiManager.refreshSqlExpression();
     }
 
+    public void useAliasInOutputTable(boolean useAliasInOutputTable) {
+        getComponent().getGenerationManager().setUseAliasInOutputTable(useAliasInOutputTable);
+        uiManager.refreshSqlExpression();
+    }
+
     /**
      * Getter for problemsManager.
      *
@@ -793,6 +798,15 @@ public class MapperManager extends AbstractMapperManager {
      */
     public ProblemsManager getProblemsManager() {
         return this.problemsManager;
+    }
+
+    public boolean componentIsReadOnly() {
+        if (getAbstractMapComponent().getOriginalNode().getJobletNode() != null) {
+            return getAbstractMapComponent().isReadOnly() || getAbstractMapComponent().getOriginalNode().isReadOnly();
+        }
+
+        return getAbstractMapComponent().isReadOnly() || getAbstractMapComponent().getProcess().isReadOnly()
+                || getAbstractMapComponent().getOriginalNode().isReadOnly();
     }
 
     /**
@@ -873,7 +887,7 @@ public class MapperManager extends AbstractMapperManager {
             if (dataMapTable != null && dataMapTable instanceof InputTable) {
                 InputTable inputTable = ((InputTable) dataMapTable);
                 String oldName = inputTable.getName();
-                if (isInvisiblePhysicalTable) {
+                if (isInvisiblePhysicalTable || isPhysicalTable) {
                     inputTable.setAlias(null);
                 } else {
                     inputTable.setAlias(aliasOrTableName);
