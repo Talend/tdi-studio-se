@@ -12,7 +12,7 @@
 // ============================================================================
 package org.talend.designer.dbmap.language.mysql;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 import java.util.Collections;
 
@@ -153,5 +153,4 @@ public class MysqlGenerationManagerTest extends DbGenerationManagerTestHelper {
         assertEquals(expectedQuery, query);
 
     }
-
 }

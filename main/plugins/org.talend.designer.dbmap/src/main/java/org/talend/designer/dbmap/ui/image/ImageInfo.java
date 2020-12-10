@@ -28,6 +28,7 @@ public enum ImageInfo {
     CHECKED_ICON("/icons/checked.png"), //$NON-NLS-1$
     UNCHECKED_ICON("/icons/unchecked.png"), //$NON-NLS-1$
     ADD_FILTER_ICON("/icons/addfilter.png"), //$NON-NLS-1$
+    PROPERTY_TOOL_ICON("/icons/property.png"), //$NON-NLS-1$
     ;
 
     private String path;
