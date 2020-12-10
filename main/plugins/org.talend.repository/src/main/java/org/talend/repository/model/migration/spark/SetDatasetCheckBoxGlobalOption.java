@@ -61,13 +61,18 @@ public class SetDatasetCheckBoxGlobalOption extends AbstractJobMigrationTask {
         }
         List<AdditionalInfoMapImpl> properties = item.getProperty().getAdditionalProperties();
         String talendVersionUsedToCreateJob = null;
+        String lastImportedVersion = "0";
         for (AdditionalInfoMapImpl property : properties) {
         	if ("created_product_version".equals(property.getKey().toString())) {
         		talendVersionUsedToCreateJob = property.getValue().toString();
+        	} else if ("import_product_version".equals(property.getKey().toString())) {
+        		// for some reason since 7.3 the import version is prefixed by time Big Data Platform- so we remove it 
+        		// to keep it as something like 7.3.1.20200831_1017-patch
+        		lastImportedVersion = property.getValue().toString().replaceAll("time Big Data Platform-", "");
         	}
         }
         try {
-    		setGlobalOption(processType, item, talendVersionUsedToCreateJob);
+    		setGlobalOption(processType, item, talendVersionUsedToCreateJob, lastImportedVersion);
             return ExecutionResult.SUCCESS_NO_ALERT;
         } catch (Exception e) {
             ExceptionHandler.process(e);
@@ -75,16 +80,22 @@ public class SetDatasetCheckBoxGlobalOption extends AbstractJobMigrationTask {
         }
     }
     
-    private void setGlobalOption(ProcessType processType, Item item, String talendStudioVersion) throws PersistenceException {
-    	ElementParameterType property = TalendFileFactory.eINSTANCE.createElementParameterType();
-        property.setName(CHECKBOX_DATASET); //$NON-NLS-1$
-        property.setField("CHECK"); //$NON-NLS-1$
-        property.setValue("false"); //$NON-NLS-1$
+    private void setGlobalOption(ProcessType processType, Item item, String talendStudioVersion, String lastImportedVersion) throws PersistenceException {
+    	ElementParameterType propertyFalse = TalendFileFactory.eINSTANCE.createElementParameterType();
+    	propertyFalse.setName(CHECKBOX_DATASET); //$NON-NLS-1$
+        propertyFalse.setField("CHECK"); //$NON-NLS-1$
+        propertyFalse.setValue("false"); //$NON-NLS-1$
+        ElementParameterType propertyTrue = TalendFileFactory.eINSTANCE.createElementParameterType();
+        propertyTrue.setName(CHECKBOX_DATASET); //$NON-NLS-1$
+        propertyTrue.setField("CHECK"); //$NON-NLS-1$
+        propertyTrue.setValue("true"); //$NON-NLS-1$
         boolean isParameterAlreadyAdded = processType.getParameters().getElementParameter().stream().anyMatch(x -> "USE_DATASET_API".equals(((ElementParameterTypeImpl) x).getName()));
-        if (!isParameterAlreadyAdded && talendStudioVersion.compareTo("7.3.1") < 0) {
-        	processType.getParameters().getElementParameter().add(property);
+        if (!isParameterAlreadyAdded && lastImportedVersion.compareTo("7.3.1") > 0) {
+        	processType.getParameters().getElementParameter().add(propertyTrue);
+        } else if (!isParameterAlreadyAdded && talendStudioVersion.compareTo("7.3.1") < 0) {
+        	processType.getParameters().getElementParameter().add(propertyFalse);
         }
-    	ProxyRepositoryFactory factory = ProxyRepositoryFactory.getInstance();
+        ProxyRepositoryFactory factory = ProxyRepositoryFactory.getInstance();
         factory.save(item, true);
     }
 }
