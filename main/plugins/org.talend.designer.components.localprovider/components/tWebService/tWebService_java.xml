@@ -281,12 +281,11 @@
                 BundleID="org.apache.servicemix.bundles.wsdl4j"
                 REQUIRED="true"
             />
-            <IMPORT
-                NAME="commons-httpclient"
-                MODULE="commons-httpclient-3.1.jar"
-                MVN="mvn:commons-httpclient/commons-httpclient/3.1"
-                UrlPath="platform:/plugin/org.talend.libraries.apache.http/lib/commons-httpclient-3.1.jar"
-                REQUIRED="true"
+            <IMPORT 
+                NAME="httpclient-4.5.12" 
+                MODULE="httpclient-4.5.12.jar" 
+                MVN="mvn:org.apache.httpcomponents/httpclient/4.5.12" 
+                REQUIRED="true" 
             />
             <IMPORT
                 NAME="commons-logging"

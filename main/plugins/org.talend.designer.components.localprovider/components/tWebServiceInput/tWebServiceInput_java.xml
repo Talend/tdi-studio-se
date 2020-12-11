@@ -217,8 +217,6 @@ for(int i = 0; i &lt; result.length; i++){
 				REQUIRED="true" />
 			<IMPORT NAME="SOAP-JAF" MODULE="activation.jar" MVN="mvn:org.talend.libraries/activation/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.apache.axis2/lib/activation.jar"
 				REQUIRED="true" />
-			<IMPORT NAME="COMMONSHTTPCLIENT" MODULE="commons-httpclient-3.1.jar" MVN="mvn:commons-httpclient/commons-httpclient/3.1"  UrlPath="platform:/plugin/org.talend.libraries.apache.http/lib/commons-httpclient-3.1.jar"
-				REQUIRED="true" />
 			<IMPORT NAME="COMMONSCODEC" MODULE="commons-codec-1.14.jar" MVN="mvn:commons-codec/commons-codec/1.14"
 				REQUIRED="true" />
 		</IMPORTS>
