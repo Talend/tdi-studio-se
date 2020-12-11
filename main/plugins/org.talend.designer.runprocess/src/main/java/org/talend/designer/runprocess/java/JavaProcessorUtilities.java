@@ -25,6 +25,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.jdt.core.IClasspathEntry;
 import org.eclipse.jface.dialogs.IDialogConstants;
@@ -72,6 +73,7 @@ import org.talend.designer.core.model.utils.emf.talendfile.ProcessType;
 import org.talend.designer.core.ui.editor.process.Process;
 import org.talend.designer.core.utils.BigDataJobUtil;
 import org.talend.designer.core.utils.JavaProcessUtil;
+import org.talend.designer.maven.tools.AggregatorPomsHelper;
 import org.talend.designer.maven.utils.PomUtil;
 import org.talend.designer.runprocess.IRunProcessService;
 import org.talend.designer.runprocess.ProcessorException;
@@ -437,6 +439,15 @@ public class JavaProcessorUtilities {
         repositoryBundleService.installModules(listModulesReallyNeeded, null);
         if (missingJars != null) {
             handleMissingJarsForProcess(missingJarsForRoutinesOnly, missingJarsForProcessOnly, missingJars);
+        }
+        if (ModulesNeededProvider.installModuleForRoutineOrBeans()) {
+            AggregatorPomsHelper ph = new AggregatorPomsHelper();
+            try {
+                ph.updateCodeProjects(new NullProgressMonitor(), false, true);
+                ModulesNeededProvider.setInstallModuleForRoutineOrBeans();
+            } catch (Exception e) {
+                CommonExceptionHandler.process(e);
+            }
         }
     }
 
