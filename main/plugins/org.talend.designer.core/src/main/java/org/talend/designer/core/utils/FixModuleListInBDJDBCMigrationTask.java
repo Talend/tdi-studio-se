@@ -206,8 +206,7 @@ public class FixModuleListInBDJDBCMigrationTask extends AbstractItemMigrationTas
 
         String[] vals = val.split("/");
         if (vals.length > 3 && vals[0].equals("mvn:org.talend.libraries") && vals[2].equals("6.0.0-SNAPSHOT")
-                && (vals[1].equals("context") || vals[1].startsWith("((String)context"))
-                && !vals[vals.length - 1].equals("jar")) {
+                && (vals[1].equals("context") || vals[1].startsWith("((String)context"))) {
             return vals[1] + "." + vals[vals.length - 1];
         }
         return null;
