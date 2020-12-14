@@ -21,10 +21,13 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.emf.common.util.EList;
 import org.talend.commons.exception.ExceptionHandler;
+import org.talend.commons.exception.PersistenceException;
 import org.talend.commons.runtime.model.emf.EmfHelper;
 import org.talend.core.CorePlugin;
+import org.talend.core.GlobalServiceRegister;
 import org.talend.core.model.components.ComponentCategory;
 import org.talend.core.model.components.IComponent;
+import org.talend.core.model.context.ContextUtils;
 import org.talend.core.model.general.ModuleNeeded;
 import org.talend.core.model.general.Project;
 import org.talend.core.model.metadata.builder.connection.Connection;
@@ -33,21 +36,29 @@ import org.talend.core.model.migration.AbstractItemMigrationTask;
 import org.talend.core.model.process.EParameterFieldType;
 import org.talend.core.model.process.IElementParameter;
 import org.talend.core.model.properties.ConnectionItem;
+import org.talend.core.model.properties.ContextItem;
 import org.talend.core.model.properties.ImplicitContextSettings;
 import org.talend.core.model.properties.Item;
 import org.talend.core.model.properties.JobletProcessItem;
 import org.talend.core.model.properties.ProcessItem;
+import org.talend.core.model.properties.Property;
 import org.talend.core.model.properties.StatAndLogsSettings;
 import org.talend.core.model.repository.ERepositoryObjectType;
+import org.talend.core.model.repository.IRepositoryViewObject;
+import org.talend.core.model.repository.RepositoryObject;
+import org.talend.core.model.utils.ContextParameterUtils;
 import org.talend.core.model.utils.TalendTextUtils;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
 import org.talend.core.runtime.maven.MavenUrlHelper;
 import org.talend.core.ui.component.ComponentsFactoryProvider;
+import org.talend.designer.core.model.utils.emf.talendfile.ContextType;
 import org.talend.designer.core.model.utils.emf.talendfile.ElementParameterType;
 import org.talend.designer.core.model.utils.emf.talendfile.ElementValueType;
 import org.talend.designer.core.model.utils.emf.talendfile.NodeType;
 import org.talend.designer.core.model.utils.emf.talendfile.ParametersType;
 import org.talend.designer.core.model.utils.emf.talendfile.ProcessType;
+import org.talend.repository.model.IProxyRepositoryFactory;
+import org.talend.repository.model.IRepositoryService;
 import org.talend.repository.model.migration.EncryptPasswordInComponentsMigrationTask.FakeNode;
 
 /**
@@ -69,6 +80,73 @@ public class UpdateModuleListInComponentsMigrationTask extends AbstractItemMigra
         return toReturn;
     }
 
+    @Override
+    public ExecutionResult execute(Project project) {
+        setProject(project);
+        IRepositoryService service = (IRepositoryService) GlobalServiceRegister.getDefault().getService(IRepositoryService.class);
+        IProxyRepositoryFactory factory = service.getProxyRepositoryFactory();
+        ExecutionResult executeFinal = null;
+        List<IRepositoryViewObject> list = new ArrayList<IRepositoryViewObject>();
+
+        try {
+            for (ERepositoryObjectType curTyp : getAllTypes()) {
+                if (curTyp != null && curTyp.isResourceItem()) {
+                    /* specific project so that on svn model it will migrate all ref projects,bug 17295 */
+                    list.addAll(factory.getAll(project, curTyp, true, true));
+                }
+            }
+
+            if (list.isEmpty()) {
+                return ExecutionResult.NOTHING_TO_DO;
+            }
+
+            for (IRepositoryViewObject object : list) {
+                ExecutionResult execute = null;
+                // in case the resource has been modified (see MergeTosMetadataMigrationTask for example)
+                if ((object.getProperty().eResource() == null || object.getProperty().getItem().eResource() == null)
+                        && (object instanceof RepositoryObject)) {
+                    Property updatedProperty = factory.reload(object.getProperty());
+                    ((RepositoryObject) object).setProperty(updatedProperty);
+                }
+
+                execute = this.migrateProjectSettings(project);
+                if (execute == ExecutionResult.FAILURE) {
+                    return ExecutionResult.FAILURE;
+                }
+
+                Item item = object.getProperty().getItem();
+                execute = execute(item);
+
+                unloadObject(object);
+
+                if (execute == ExecutionResult.FAILURE) {
+                    executeFinal = ExecutionResult.FAILURE;
+                }
+                if (executeFinal != ExecutionResult.FAILURE) {
+                    executeFinal = execute;
+                }
+            }
+
+            return executeFinal;
+        } catch (PersistenceException e) {
+            ExceptionHandler.process(e);
+            return ExecutionResult.FAILURE;
+        }
+    }
+
+    @Override
+    public ExecutionResult execute(Project project, Item item) {
+        if (!getAllTypes().contains(ERepositoryObjectType.getItemType(item))) {
+            return ExecutionResult.NOTHING_TO_DO;
+        }
+        setProject(project);
+        ExecutionResult execute = this.migrateProjectSettings(project);
+        if (execute == ExecutionResult.FAILURE) {
+            return ExecutionResult.FAILURE;
+        }
+        return execute(item);
+    }
+    
     /*
      * (non-Javadoc)
      *
@@ -112,41 +190,6 @@ public class UpdateModuleListInComponentsMigrationTask extends AbstractItemMigra
         return ExecutionResult.NOTHING_TO_DO;
     }
 
-    @Override
-    public ExecutionResult execute(Project project) {
-        ExecutionResult result = super.execute(project);
-        if (result == ExecutionResult.FAILURE) {
-            return result;
-        }
-
-        result = this.migrateProjectSettings(project);
-
-        return result;
-    }
-
-    @Override
-    public ExecutionResult execute(Project project, boolean doSave) {
-        ExecutionResult result = super.execute(project, doSave);
-        if (result == ExecutionResult.FAILURE) {
-            return result;
-        }
-
-        result = this.migrateProjectSettings(project);
-
-        return result;
-    }
-
-    @Override
-    public ExecutionResult execute(Project project, Item item) {
-
-        ExecutionResult result = super.execute(project, item);
-        if (result == ExecutionResult.FAILURE) {
-            return result;
-        }
-        result = migrateProjectSettings(project);
-        return result;
-    }
-
     protected ExecutionResult migrateProjectSettings(Project project) {
         boolean modified = false;
         org.talend.core.model.properties.Project emfProject = project.getEmfProject();
@@ -158,7 +201,7 @@ public class UpdateModuleListInComponentsMigrationTask extends AbstractItemMigra
                 final Object object = elementParameter.get(i);
                 if (object instanceof ElementParameterType) {
                     ElementParameterType parameterType = (ElementParameterType) object;
-                    if (updateParam(parameterType)) {
+                    if (updateParam(parameterType, null)) {
                         modified = true;
                     }
                 }
@@ -173,7 +216,7 @@ public class UpdateModuleListInComponentsMigrationTask extends AbstractItemMigra
                 final Object object = elementParameter.get(i);
                 if (object instanceof ElementParameterType) {
                     ElementParameterType parameterType = (ElementParameterType) object;
-                    if (updateParam(parameterType)) {
+                    if (updateParam(parameterType, null)) {
                         modified = true;
                     }
                 }
@@ -206,10 +249,15 @@ public class UpdateModuleListInComponentsMigrationTask extends AbstractItemMigra
     protected boolean updateDatabaseConnection(DatabaseConnection dbConnection) throws Exception {
         String driverJar = dbConnection.getDriverJarPath();
         if (driverJar != null) {
+            List ctxs = null;
+            ContextItem contextItem = ContextUtils.getContextItemById2(dbConnection.getContextId());
+            if (contextItem != null) {
+                ctxs = contextItem.getContext();
+            }
             String[] jars = driverJar.split(";");
             StringBuffer sb = new StringBuffer();
             for (String jar : jars) {
-                String uri = getMavenUriForJar(jar);
+                String uri = getMavenUriForJar(jar, ctxs);
                 if (sb.length() > 0) {
                     sb.append(";");
                 }
@@ -248,7 +296,7 @@ public class UpdateModuleListInComponentsMigrationTask extends AbstractItemMigra
                 if (p instanceof ElementParameterType) {
                     ElementParameterType param = (ElementParameterType) p;
                     // variable name used for Stat&Logs
-                    if (updateParam(param)) {
+                    if (updateParam(param, processType)) {
                         modified = true;
                     }
                 }
@@ -264,7 +312,7 @@ public class UpdateModuleListInComponentsMigrationTask extends AbstractItemMigra
             boolean isConfig = nodeType.getComponentName().equals("cConfig");
             for (Object paramObjectType : nodeType.getElementParameter()) {
                 ElementParameterType param = (ElementParameterType) paramObjectType;
-                if (isConfig ? updateParamForcConfig(param) : updateParam(param)) {
+                if (isConfig ? updateParamForcConfig(param, processType) : updateParam(param, processType)) {
                     modified = true;
                 }
             }
@@ -292,7 +340,7 @@ public class UpdateModuleListInComponentsMigrationTask extends AbstractItemMigra
                     ElementParameterType param = (ElementParameterType) paramObjectType;
                     IElementParameter paramFromEmf = fNode.getElementParameter(param.getName());
                     if (paramFromEmf != null) {
-                        if (isConfig ? updateParamForcConfig(param) : updateParam(param)) {
+                        if (isConfig ? updateParamForcConfig(param, processType) : updateParam(param, processType)) {
                             modified = true;
                         }
                     }
@@ -308,11 +356,12 @@ public class UpdateModuleListInComponentsMigrationTask extends AbstractItemMigra
         return list;
     }
 
-    private static boolean updateParam(ElementParameterType param) {
+    private boolean updateParam(ElementParameterType param, ProcessType processType) {
         boolean modified = false;
+        List ctxs = processType == null ? null : processType.getContext();
         if (param.getField() != null) {
             if (param.getField().equals(EParameterFieldType.MODULE_LIST.name()) && param.getValue() != null) {
-                String jarUri = getMavenUriForJar(param.getValue());
+                String jarUri = getMavenUriForJar(param.getValue(), ctxs);
                 param.setValue(jarUri);
                 modified = true;
             } else if (("DRIVER_JAR".equals(param.getName()) || "DRIVER_JAR_IMPLICIT_CONTEXT".equals(param.getName()))
@@ -321,7 +370,7 @@ public class UpdateModuleListInComponentsMigrationTask extends AbstractItemMigra
                 EList<?> elementValues = param.getElementValue();
                 for (Object ev : elementValues) {
                     ElementValueType evt = (ElementValueType) ev;
-                    String jarUri = getMavenUriForJar(evt.getValue());
+                    String jarUri = getMavenUriForJar(evt.getValue(), ctxs);
                     if (!StringUtils.equals(jarUri, evt.getValue())) {
                         evt.setValue(jarUri);
                         modified = true;
@@ -332,11 +381,12 @@ public class UpdateModuleListInComponentsMigrationTask extends AbstractItemMigra
         return modified;
     }
 
-    private static boolean updateParamForcConfig(ElementParameterType param) {
+    private boolean updateParamForcConfig(ElementParameterType param, ProcessType processType) {
         boolean modified = false;
+        List ctxs = processType == null ? null : processType.getContext();
         if (param.getField() != null) {
             if (param.getField().equals(EParameterFieldType.MODULE_LIST.name()) && param.getValue() != null) {
-                String jarUri = getMavenUriForJar(param.getValue());
+                String jarUri = getMavenUriForJar(param.getValue(), ctxs);
                 param.setValue(jarUri);
                 modified = true;
             } else if (("DRIVER_JAR".equals(param.getName()) || "DRIVER_JAR_IMPLICIT_CONTEXT".equals(param.getName()))
@@ -350,7 +400,7 @@ public class UpdateModuleListInComponentsMigrationTask extends AbstractItemMigra
                     ElementValueType evt = (ElementValueType) ev;
                     switch (evt.getElementRef()) {
                         case "JAR_NAME": {
-                            String jarUri = getMavenUriForJar(evt.getValue());
+                            String jarUri = getMavenUriForJar(evt.getValue(), ctxs);
                             if (!StringUtils.equals(jarUri, evt.getValue())) {
                                 jn = evt;
                                 modified = true;
@@ -374,9 +424,10 @@ public class UpdateModuleListInComponentsMigrationTask extends AbstractItemMigra
         return modified;
     }
 
-    public static String getMavenUriForJar(String jarName) {
+    public String getMavenUriForJar(String jarName, List ctxs) {
         jarName = TalendTextUtils.removeQuotes(jarName);
-        if (!StringUtils.isEmpty(jarName) && !MavenUrlHelper.isMvnUrl(jarName)) {
+        boolean containContext = containContext(jarName, ctxs);
+        if (!StringUtils.isEmpty(jarName) && !MavenUrlHelper.isMvnUrl(jarName) && !containContext) {
             ModuleNeeded mod = new ModuleNeeded(null, jarName, null, true);
             if (!StringUtils.isEmpty(mod.getCustomMavenUri())) {
                 return mod.getCustomMavenUri();
@@ -384,6 +435,20 @@ public class UpdateModuleListInComponentsMigrationTask extends AbstractItemMigra
             return mod.getMavenUri();
         }
         return jarName;
+    }
+
+    public boolean containContext(String jarName, List ctxs) {
+        if (ctxs == null) {
+            // for project settings
+            return ContextParameterUtils.isContainContextParam(jarName);
+        }
+        // check for job and connections
+        for (Object ct : ctxs) {
+            if (ContextParameterUtils.isContextParamOfContextType((ContextType) ct, jarName)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /*
