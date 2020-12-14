@@ -140,24 +140,8 @@ public class OracleGenerationManager extends DbGenerationManager {
                     if (expression != null && expression.trim().length() > 0) {
                         String exp = replaceVariablesForExpression(component, expression);
                         appendSqlQuery(sb, exp);
-                        DataMapExpressionParser dataMapExpressionParser = new DataMapExpressionParser(language);
-                        TableEntryLocation[] tableEntriesLocationsSources = dataMapExpressionParser
-                                .parseTableEntryLocations(expression);
-                        boolean columnChanged = false;
-                        if (tableEntriesLocationsSources.length > 1) {
-                            columnChanged = true;
-                        } else {
-                            for (TableEntryLocation tableEntriesLocationsSource : tableEntriesLocationsSources) {
-                                TableEntryLocation location = tableEntriesLocationsSource;
-                                String entryName = getAliasOf(dbMapEntry.getName());
-                                if (location != null && entryName != null
-                                        && !entryName.startsWith("_") && !entryName.equals(location.columnName)) {//$NON-NLS-1$
-                                    columnChanged = true;
-
-                                }
-                            }
-                        }
-                        if (!added && columnChanged) {
+                        boolean needAlias = needAlias(columns, dbMapEntry, expression);
+                        if (!added && needAlias) {
                             String name = DbMapSqlConstants.SPACE + DbMapSqlConstants.AS + DbMapSqlConstants.SPACE
                                     + getAliasOf(dbMapEntry.getName());
                             appendSqlQuery(sb, name);
@@ -443,4 +427,22 @@ public class OracleGenerationManager extends DbGenerationManager {
         return expression;
     }
 
+    @Override
+    protected boolean needAlias(List<IMetadataColumn> columns, ExternalDbMapEntry dbMapEntry, String expression) {
+        DataMapExpressionParser dataMapExpressionParser = new DataMapExpressionParser(language);
+        TableEntryLocation[] tableEntriesLocationsSources = dataMapExpressionParser.parseTableEntryLocations(expression);
+        if (tableEntriesLocationsSources.length > 1) {
+            return true;
+        } else {
+            for (TableEntryLocation tableEntriesLocationsSource : tableEntriesLocationsSources) {
+                TableEntryLocation location = tableEntriesLocationsSource;
+                String entryName = getAliasOf(dbMapEntry.getName());
+                if (location != null && entryName != null && !entryName.startsWith("_") //$NON-NLS-1$
+                        && !entryName.equals(location.columnName)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
 }
