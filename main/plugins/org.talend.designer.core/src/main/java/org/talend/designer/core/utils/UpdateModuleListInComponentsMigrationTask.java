@@ -15,9 +15,7 @@ package org.talend.designer.core.utils;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.GregorianCalendar;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -29,6 +27,7 @@ import org.talend.core.CorePlugin;
 import org.talend.core.GlobalServiceRegister;
 import org.talend.core.model.components.ComponentCategory;
 import org.talend.core.model.components.IComponent;
+import org.talend.core.model.context.ContextUtils;
 import org.talend.core.model.general.ModuleNeeded;
 import org.talend.core.model.general.Project;
 import org.talend.core.model.metadata.builder.connection.Connection;
@@ -58,7 +57,6 @@ import org.talend.designer.core.model.utils.emf.talendfile.ElementValueType;
 import org.talend.designer.core.model.utils.emf.talendfile.NodeType;
 import org.talend.designer.core.model.utils.emf.talendfile.ParametersType;
 import org.talend.designer.core.model.utils.emf.talendfile.ProcessType;
-import org.talend.migration.IMigrationTask.ExecutionResult;
 import org.talend.repository.model.IProxyRepositoryFactory;
 import org.talend.repository.model.IRepositoryService;
 import org.talend.repository.model.migration.EncryptPasswordInComponentsMigrationTask.FakeNode;
@@ -70,8 +68,6 @@ import org.talend.repository.model.migration.EncryptPasswordInComponentsMigratio
 public class UpdateModuleListInComponentsMigrationTask extends AbstractItemMigrationTask {
 
     protected ProxyRepositoryFactory factory = ProxyRepositoryFactory.getInstance();
-
-    protected Set<ContextItem> contextItems = new HashSet<ContextItem>();
 
     @Override
     public List<ERepositoryObjectType> getTypes() {
@@ -93,8 +89,6 @@ public class UpdateModuleListInComponentsMigrationTask extends AbstractItemMigra
         List<IRepositoryViewObject> list = new ArrayList<IRepositoryViewObject>();
 
         try {
-            loadContextItems();
-
             for (ERepositoryObjectType curTyp : getAllTypes()) {
                 if (curTyp != null && curTyp.isResourceItem()) {
                     /* specific project so that on svn model it will migrate all ref projects,bug 17295 */
@@ -115,12 +109,13 @@ public class UpdateModuleListInComponentsMigrationTask extends AbstractItemMigra
                     ((RepositoryObject) object).setProperty(updatedProperty);
                 }
 
+                execute = this.migrateProjectSettings(project);
+                if (execute == ExecutionResult.FAILURE) {
+                    return ExecutionResult.FAILURE;
+                }
+
                 Item item = object.getProperty().getItem();
                 execute = execute(item);
-
-                if (execute != ExecutionResult.FAILURE) {
-                    execute = this.migrateProjectSettings(project);
-                }
 
                 unloadObject(object);
 
@@ -139,33 +134,14 @@ public class UpdateModuleListInComponentsMigrationTask extends AbstractItemMigra
         }
     }
 
-    private void loadContextItems() throws PersistenceException {
-        if (contextItems.isEmpty()) {
-            IRepositoryService service = (IRepositoryService) GlobalServiceRegister.getDefault()
-                    .getService(IRepositoryService.class);
-            IProxyRepositoryFactory factory = service.getProxyRepositoryFactory();
-            List<IRepositoryViewObject> contextObjs = factory.getAll(ERepositoryObjectType.CONTEXT);
-            for (IRepositoryViewObject ctxObj : contextObjs) {
-                if (ctxObj.getProperty() != null) {
-                    ContextItem ctxItem = (ContextItem) ctxObj.getProperty().getItem();
-                    if (ctxItem != null) {
-                        contextItems.add(ctxItem);
-                    }
-                }
-            }
-        }
-    }
-    
     @Override
     public ExecutionResult execute(Project project, Item item) {
         if (!getAllTypes().contains(ERepositoryObjectType.getItemType(item))) {
             return ExecutionResult.NOTHING_TO_DO;
         }
         setProject(project);
-        try {
-            loadContextItems();
-        } catch (PersistenceException e) {
-            ExceptionHandler.process(e);
+        ExecutionResult execute = this.migrateProjectSettings(project);
+        if (execute == ExecutionResult.FAILURE) {
             return ExecutionResult.FAILURE;
         }
         return execute(item);
@@ -225,7 +201,7 @@ public class UpdateModuleListInComponentsMigrationTask extends AbstractItemMigra
                 final Object object = elementParameter.get(i);
                 if (object instanceof ElementParameterType) {
                     ElementParameterType parameterType = (ElementParameterType) object;
-                    if (updateParam(parameterType)) {
+                    if (updateParam(parameterType, null)) {
                         modified = true;
                     }
                 }
@@ -240,7 +216,7 @@ public class UpdateModuleListInComponentsMigrationTask extends AbstractItemMigra
                 final Object object = elementParameter.get(i);
                 if (object instanceof ElementParameterType) {
                     ElementParameterType parameterType = (ElementParameterType) object;
-                    if (updateParam(parameterType)) {
+                    if (updateParam(parameterType, null)) {
                         modified = true;
                     }
                 }
@@ -273,10 +249,15 @@ public class UpdateModuleListInComponentsMigrationTask extends AbstractItemMigra
     protected boolean updateDatabaseConnection(DatabaseConnection dbConnection) throws Exception {
         String driverJar = dbConnection.getDriverJarPath();
         if (driverJar != null) {
+            List ctxs = null;
+            ContextItem contextItem = ContextUtils.getContextItemById2(dbConnection.getContextId());
+            if (contextItem != null) {
+                ctxs = contextItem.getContext();
+            }
             String[] jars = driverJar.split(";");
             StringBuffer sb = new StringBuffer();
             for (String jar : jars) {
-                String uri = getMavenUriForJar(jar);
+                String uri = getMavenUriForJar(jar, ctxs);
                 if (sb.length() > 0) {
                     sb.append(";");
                 }
@@ -315,7 +296,7 @@ public class UpdateModuleListInComponentsMigrationTask extends AbstractItemMigra
                 if (p instanceof ElementParameterType) {
                     ElementParameterType param = (ElementParameterType) p;
                     // variable name used for Stat&Logs
-                    if (updateParam(param)) {
+                    if (updateParam(param, processType)) {
                         modified = true;
                     }
                 }
@@ -331,7 +312,7 @@ public class UpdateModuleListInComponentsMigrationTask extends AbstractItemMigra
             boolean isConfig = nodeType.getComponentName().equals("cConfig");
             for (Object paramObjectType : nodeType.getElementParameter()) {
                 ElementParameterType param = (ElementParameterType) paramObjectType;
-                if (isConfig ? updateParamForcConfig(param) : updateParam(param)) {
+                if (isConfig ? updateParamForcConfig(param, processType) : updateParam(param, processType)) {
                     modified = true;
                 }
             }
@@ -359,7 +340,7 @@ public class UpdateModuleListInComponentsMigrationTask extends AbstractItemMigra
                     ElementParameterType param = (ElementParameterType) paramObjectType;
                     IElementParameter paramFromEmf = fNode.getElementParameter(param.getName());
                     if (paramFromEmf != null) {
-                        if (isConfig ? updateParamForcConfig(param) : updateParam(param)) {
+                        if (isConfig ? updateParamForcConfig(param, processType) : updateParam(param, processType)) {
                             modified = true;
                         }
                     }
@@ -375,11 +356,12 @@ public class UpdateModuleListInComponentsMigrationTask extends AbstractItemMigra
         return list;
     }
 
-    private boolean updateParam(ElementParameterType param) {
+    private boolean updateParam(ElementParameterType param, ProcessType processType) {
         boolean modified = false;
+        List ctxs = processType == null ? null : processType.getContext();
         if (param.getField() != null) {
             if (param.getField().equals(EParameterFieldType.MODULE_LIST.name()) && param.getValue() != null) {
-                String jarUri = getMavenUriForJar(param.getValue());
+                String jarUri = getMavenUriForJar(param.getValue(), ctxs);
                 param.setValue(jarUri);
                 modified = true;
             } else if (("DRIVER_JAR".equals(param.getName()) || "DRIVER_JAR_IMPLICIT_CONTEXT".equals(param.getName()))
@@ -388,7 +370,7 @@ public class UpdateModuleListInComponentsMigrationTask extends AbstractItemMigra
                 EList<?> elementValues = param.getElementValue();
                 for (Object ev : elementValues) {
                     ElementValueType evt = (ElementValueType) ev;
-                    String jarUri = getMavenUriForJar(evt.getValue());
+                    String jarUri = getMavenUriForJar(evt.getValue(), ctxs);
                     if (!StringUtils.equals(jarUri, evt.getValue())) {
                         evt.setValue(jarUri);
                         modified = true;
@@ -399,11 +381,12 @@ public class UpdateModuleListInComponentsMigrationTask extends AbstractItemMigra
         return modified;
     }
 
-    private boolean updateParamForcConfig(ElementParameterType param) {
+    private boolean updateParamForcConfig(ElementParameterType param, ProcessType processType) {
         boolean modified = false;
+        List ctxs = processType == null ? null : processType.getContext();
         if (param.getField() != null) {
             if (param.getField().equals(EParameterFieldType.MODULE_LIST.name()) && param.getValue() != null) {
-                String jarUri = getMavenUriForJar(param.getValue());
+                String jarUri = getMavenUriForJar(param.getValue(), ctxs);
                 param.setValue(jarUri);
                 modified = true;
             } else if (("DRIVER_JAR".equals(param.getName()) || "DRIVER_JAR_IMPLICIT_CONTEXT".equals(param.getName()))
@@ -417,7 +400,7 @@ public class UpdateModuleListInComponentsMigrationTask extends AbstractItemMigra
                     ElementValueType evt = (ElementValueType) ev;
                     switch (evt.getElementRef()) {
                         case "JAR_NAME": {
-                            String jarUri = getMavenUriForJar(evt.getValue());
+                            String jarUri = getMavenUriForJar(evt.getValue(), ctxs);
                             if (!StringUtils.equals(jarUri, evt.getValue())) {
                                 jn = evt;
                                 modified = true;
@@ -441,9 +424,9 @@ public class UpdateModuleListInComponentsMigrationTask extends AbstractItemMigra
         return modified;
     }
 
-    public String getMavenUriForJar(String jarName) {
+    public String getMavenUriForJar(String jarName, List ctxs) {
         jarName = TalendTextUtils.removeQuotes(jarName);
-        boolean containContext = containContext(jarName);
+        boolean containContext = containContext(jarName, ctxs);
         if (!StringUtils.isEmpty(jarName) && !MavenUrlHelper.isMvnUrl(jarName) && !containContext) {
             ModuleNeeded mod = new ModuleNeeded(null, jarName, null, true);
             if (!StringUtils.isEmpty(mod.getCustomMavenUri())) {
@@ -454,13 +437,13 @@ public class UpdateModuleListInComponentsMigrationTask extends AbstractItemMigra
         return jarName;
     }
 
-    public boolean containContext(String jarName) {
-        for (ContextItem item : contextItems) {
-            List ctxs = item.getContext();
-            for (Object ct : ctxs) {
-                if (ContextParameterUtils.isContextParamOfContextType((ContextType) ct, jarName)) {
-                    return true;
-                }
+    public boolean containContext(String jarName, List ctxs) {
+        if (ctxs == null || ctxs.isEmpty()) {
+            return false;
+        }
+        for (Object ct : ctxs) {
+            if (ContextParameterUtils.isContextParamOfContextType((ContextType) ct, jarName)) {
+                return true;
             }
         }
         return false;

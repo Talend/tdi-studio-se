@@ -14,6 +14,7 @@ package org.talend.designer.core.utils;
 
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 import org.talend.core.model.utils.TalendTextUtils;
@@ -29,7 +30,7 @@ public class FixModuleListInBDJDBCMigrationTask extends UpdateModuleListInCompon
     protected ProxyRepositoryFactory factory = ProxyRepositoryFactory.getInstance();
 
 
-    public String getMavenUriForJar(String jarName) {
+    public String getMavenUriForJar(String jarName, List ctxs) {
         jarName = TalendTextUtils.removeQuotes(jarName);
 
         if (StringUtils.isEmpty(jarName) || !jarName.startsWith(MavenUrlHelper.MVN_PROTOCOL)) {
@@ -40,7 +41,7 @@ public class FixModuleListInBDJDBCMigrationTask extends UpdateModuleListInCompon
         if (vals.length > 3 && vals[0].equals("mvn:org.talend.libraries") && vals[2].equals("6.0.0-SNAPSHOT")
                 && (vals[1].equals("context") || vals[1].startsWith("((String)context"))) {
             String ctx = vals[1] + "." + vals[vals.length - 1];
-            boolean containContext = containContext(ctx);
+            boolean containContext = containContext(ctx, ctxs);
             if (containContext) {
                 return ctx;
             }
