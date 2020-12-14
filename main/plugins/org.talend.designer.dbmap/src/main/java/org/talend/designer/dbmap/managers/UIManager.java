@@ -86,6 +86,7 @@ import org.talend.designer.dbmap.model.tableentry.OutputColumnTableEntry;
 import org.talend.designer.dbmap.model.tableentry.TableEntryLocation;
 import org.talend.designer.dbmap.ui.MapperUI;
 import org.talend.designer.dbmap.ui.commands.DataMapTableViewSelectedCommand;
+import org.talend.designer.dbmap.ui.dialog.PropertySetDialog;
 import org.talend.designer.dbmap.ui.tabs.TabFolderEditors;
 import org.talend.designer.dbmap.ui.visualmap.TableEntryProperties;
 import org.talend.designer.dbmap.ui.visualmap.link.Link;
@@ -1365,6 +1366,11 @@ public class UIManager extends AbstractUIManager {
      */
     public Display getDisplay() {
         return getMapperContainer().getDisplay();
+    }
+
+    @Override
+    public void openPropertySetDialog() {
+        new PropertySetDialog(getShell(), mapperManager).open();
     }
 
     /**

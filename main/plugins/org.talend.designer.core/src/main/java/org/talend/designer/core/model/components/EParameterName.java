@@ -379,6 +379,8 @@ public enum EParameterName {
 
     ACTIVE_DATABASE_DELIMITED_IDENTIFIERS("Active database delimited identifiers"), //$NON-NLS-1$
 
+    USE_ALIAS_IN_OUTPUT_TABLE("Use alias in output table"), //$NON-NLS-1$
+
     // for tDataprepRun
     PREPARATION_ID("PREPARATION_ID");
 
