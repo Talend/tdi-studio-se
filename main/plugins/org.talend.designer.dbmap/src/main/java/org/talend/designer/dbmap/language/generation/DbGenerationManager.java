@@ -12,8 +12,8 @@
 // ============================================================================
 package org.talend.designer.dbmap.language.generation;
 
-import static java.util.Optional.ofNullable;
-import static java.util.stream.Collectors.toList;
+import static java.util.Optional.*;
+import static java.util.stream.Collectors.*;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -94,6 +94,8 @@ public abstract class DbGenerationManager {
     protected DataMapExpressionParser parser;
 
     private Boolean useDelimitedIdentifiers;
+
+    private Boolean useAliasInOutputTable;
 
     protected Set<String> subQueryTable = new HashSet<String>();
 
@@ -873,7 +875,7 @@ public abstract class DbGenerationManager {
     }
 
     protected void checkParameters(DbMapComponent component) {
-        checkUseDelimitedIdentifiers(component);
+        checkSpecialParameters(component);
     }
 
     protected boolean checkUseUpdateStatement(DbMapComponent dbMapComponent, String outputTableName) {
@@ -906,7 +908,7 @@ public abstract class DbGenerationManager {
                 .collect(toList());
     }
 
-    protected void checkUseDelimitedIdentifiers(DbMapComponent component) {
+    protected void checkSpecialParameters(DbMapComponent component) {
         /**
          * in elt related component javajets(like tELTMSSqlMap_main.javajet), they don't get DbGenerationManager by
          * DbMapComponent#getGenerationManager() while they construct a new manager manually, so some parameters may not
@@ -920,6 +922,18 @@ public abstract class DbGenerationManager {
                 Object value = activeDelimitedIdentifiersEP.getValue();
                 if (value != null) {
                     setUseDelimitedIdentifiers(Boolean.valueOf(value.toString()));
+                }
+            }
+        }
+
+        if (this.useAliasInOutputTable == null) {
+            this.useAliasInOutputTable = false;
+            IElementParameter useAliasInOutputTableEP = component
+                    .getElementParameter(EParameterName.USE_ALIAS_IN_OUTPUT_TABLE.getName());
+            if (useAliasInOutputTableEP != null) {
+                Object value = useAliasInOutputTableEP.getValue();
+                if (value != null) {
+                    setUseAliasInOutputTable(Boolean.valueOf(value.toString()));
                 }
             }
         }
@@ -989,6 +1003,10 @@ public abstract class DbGenerationManager {
                 querySegments.set(i, segment);
             }
         }
+    }
+
+    protected boolean needAlias(List<IMetadataColumn> columns, ExternalDbMapEntry dbMapEntry, String expression) {
+        return false;
     }
 
     protected void appendSqlQuery(StringBuilder sb, String value) {
@@ -1753,6 +1771,14 @@ public abstract class DbGenerationManager {
 
     public void setUseDelimitedIdentifiers(boolean useDelimitedIdentifiers) {
         this.useDelimitedIdentifiers = useDelimitedIdentifiers;
+    }
+
+    public boolean isUseAliasInOutputTable() {
+        return Boolean.TRUE.equals(this.useAliasInOutputTable);
+    }
+
+    public void setUseAliasInOutputTable(boolean useAliasInOutputTable) {
+        this.useAliasInOutputTable = useAliasInOutputTable;
     }
 
     public boolean isConditionChecked(DbMapComponent component, ExternalDbMapTable inputTable) {

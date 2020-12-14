@@ -3269,6 +3269,15 @@
               name="org.talend.repository.model.migration.ChangeDefaultTruncExceedCharsFieldExcelOutputMigrationTask"
               version="7.2.2">
        </projecttask>
+       <projecttask
+             beforeLogon="false"
+             breaks="7.2.1"
+             class="org.talend.repository.model.migration.SpecialUpdateELTEnableColumnAliasMigrationTask"
+             description="Update ELT to enable oracle column alias"
+             id="org.talend.repository.model.migration.SpecialUpdateELTEnableColumnAliasMigrationTask"
+             name="SpecialUpdateELTEnableColumnAliasMigrationTask"
+             version="7.2.2">
+       </projecttask>
    </extension>
 
    <extension
