@@ -438,9 +438,11 @@ public class UpdateModuleListInComponentsMigrationTask extends AbstractItemMigra
     }
 
     public boolean containContext(String jarName, List ctxs) {
-        if (ctxs == null || ctxs.isEmpty()) {
-            return false;
+        if (ctxs == null) {
+            // for project settings
+            return ContextParameterUtils.isContainContextParam(jarName);
         }
+        // check for job and connections
         for (Object ct : ctxs) {
             if (ContextParameterUtils.isContextParamOfContextType((ContextType) ct, jarName)) {
                 return true;

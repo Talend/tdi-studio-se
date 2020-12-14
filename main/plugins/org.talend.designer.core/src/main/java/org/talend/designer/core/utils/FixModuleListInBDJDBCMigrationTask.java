@@ -18,7 +18,6 @@ import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 import org.talend.core.model.utils.TalendTextUtils;
-import org.talend.core.repository.model.ProxyRepositoryFactory;
 import org.talend.core.runtime.maven.MavenUrlHelper;
 
 /**
@@ -26,8 +25,6 @@ import org.talend.core.runtime.maven.MavenUrlHelper;
  *
  */
 public class FixModuleListInBDJDBCMigrationTask extends UpdateModuleListInComponentsMigrationTask {
-
-    protected ProxyRepositoryFactory factory = ProxyRepositoryFactory.getInstance();
 
 
     public String getMavenUriForJar(String jarName, List ctxs) {
