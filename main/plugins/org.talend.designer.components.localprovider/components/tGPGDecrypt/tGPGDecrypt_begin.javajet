@@ -35,6 +35,7 @@
 												"--no-tty",
 											<%}%>
 											"--yes",
+											"--batch",
 											"-q",
 											"-d",
 											"--passphrase",
