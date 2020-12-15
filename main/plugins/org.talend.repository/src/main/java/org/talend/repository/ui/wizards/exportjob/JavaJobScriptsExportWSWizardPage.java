@@ -1206,7 +1206,7 @@ public class JavaJobScriptsExportWSWizardPage extends JavaJobScriptsExportWizard
         exportChoiceMap.put(ExportChoice.needSourceCode, Boolean.FALSE);
         exportChoiceMap.put(ExportChoice.needDependencies, Boolean.TRUE);
         exportChoiceMap.put(ExportChoice.needJobScript, Boolean.FALSE);
-        exportChoiceMap.put(ExportChoice.needAssembly, Boolean.FALSE);
+        exportChoiceMap.put(ExportChoice.needAssembly, Boolean.TRUE);
         exportChoiceMap.put(ExportChoice.needContext, isNeedConext());
         exportChoiceMap.put(ExportChoice.contextName, getContextName());
 
