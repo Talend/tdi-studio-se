@@ -30,11 +30,11 @@ import org.talend.commons.ui.runtime.image.OverlayImageProvider;
 import org.talend.core.model.properties.Item;
 import org.talend.core.model.properties.RoutineItem;
 import org.talend.core.model.properties.RoutinesJarItem;
+import org.talend.core.model.relationship.RelationshipItemBuilder;
 import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.core.model.routines.RoutinesUtil;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
 import org.talend.repository.ProjectManager;
-import org.talend.repository.RepositoryWorkUnit;
 import org.talend.repository.model.IProxyRepositoryFactory;
 import org.talend.repository.model.RepositoryNode;
 import org.talend.repository.model.RepositoryNodeUtilities;
@@ -84,41 +84,32 @@ public class AssignRoutinesToJarAction extends AbstractRoutineAction {
 
         RepositoryReviewDialog dialog = new RepositoryReviewDialog(getWorkbenchPart().getSite().getShell(), ERepositoryObjectType.ROUTINESJAR);
         if (dialog.open() == Window.OK) {
-            RepositoryWorkUnit workUnit = new RepositoryWorkUnit<Object>("Assign routine to jar") { //$NON-NLS-1$
+            RepositoryNode targetRoutinesJarNode = dialog.getResult();
+            ISelection selection = getSelection();
+            Iterator<?> iterator = ((IStructuredSelection) selection).iterator();
+            while (iterator.hasNext()) {
+                RepositoryNode node = (RepositoryNode) iterator.next();
+                IPath targetPath = RepositoryNodeUtilities.getPath(targetRoutinesJarNode);
+                RoutineItem sourceItem = (RoutineItem) node.getObject().getProperty().getItem();
+                List backupImports = new ArrayList<>(sourceItem.getImports());
+                sourceItem.getImports().clear();
+                RoutinesUtil.setInnerCodes(sourceItem.getProperty(), true);
+                RoutinesJarItem routinesJarItem = (RoutinesJarItem) targetRoutinesJarNode.getObject().getProperty().getItem();
+                routinesJarItem.getRoutinesJarType().getImports().addAll(backupImports);
+                try {
+                    ProxyRepositoryFactory.getInstance().copy(sourceItem, targetPath, sourceItem.getProperty().getLabel());
+                    ProxyRepositoryFactory.getInstance().save(routinesJarItem);
+                    RelationshipItemBuilder.getInstance().addOrUpdateItem(routinesJarItem);
 
-                @Override
-                protected void run() {
-                    RepositoryNode targetRoutinesJarNode = dialog.getResult();
-                    ISelection selection = getSelection();
-                    Iterator<?> iterator = ((IStructuredSelection) selection).iterator();
-                    while (iterator.hasNext()) {
-                        RepositoryNode node = (RepositoryNode) iterator.next();
-                        IPath targetPath = RepositoryNodeUtilities.getPath(targetRoutinesJarNode);
-                        RoutineItem sourceItem = (RoutineItem) node.getObject().getProperty().getItem();
-                        List backupImports = new ArrayList<>(sourceItem.getImports());
-                        sourceItem.getImports().clear();
-                        RoutinesUtil.setInnerCodes(sourceItem.getProperty(), true);
-                        RoutinesJarItem routinesJarItem = (RoutinesJarItem) targetRoutinesJarNode.getObject().getProperty()
-                                .getItem();
-                        routinesJarItem.getRoutinesJarType().getImports().addAll(backupImports);
-                        try {
-                            ProxyRepositoryFactory.getInstance().copy(sourceItem, targetPath,
-                                    sourceItem.getProperty().getLabel());
-                            ProxyRepositoryFactory.getInstance().save(routinesJarItem);
+                    // reset
+                    sourceItem.getImports().addAll(backupImports);
+                    RoutinesUtil.setInnerCodes(sourceItem.getProperty(), false);
 
-                            // reset
-                            sourceItem.getImports().addAll(backupImports);
-                            RoutinesUtil.setInnerCodes(sourceItem.getProperty(), false);
-
-                            ProxyRepositoryFactory.getInstance().deleteObjectPhysical(node.getObject());
-                        } catch (Exception e) {
-                            ExceptionHandler.process(e);
-                        }
-                    }
+                    ProxyRepositoryFactory.getInstance().deleteObjectPhysical(node.getObject());
+                } catch (Exception e) {
+                    ExceptionHandler.process(e);
                 }
-            };
-            workUnit.setAvoidUnloadResources(true);
-            ProxyRepositoryFactory.getInstance().executeRepositoryWorkUnit(workUnit);
+            }
         }
     }
 
