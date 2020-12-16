@@ -541,13 +541,11 @@ skeleton="@{org.talend.designer.components.localprovider}/components/templates/d
 				String key = option.get("KEY");
 				String value = option.get("VALUE");
 				
-				if(value != null && !("".equals(value))) {
-					if (key.equals("EXTERNAL_SCHEMA")){
-						%>
-							gpctrl_<%=cid%>.println("  EXTERNAL:");
-							gpctrl_<%=cid%>.println("    - SCHEMA: '" + <%=value%> + "'");
-						<%
-					}
+				if(key.equals("EXTERNAL_SCHEMA") && value != null && !("".equals(value))) {
+					%>
+						gpctrl_<%=cid%>.println("  EXTERNAL:");
+						gpctrl_<%=cid%>.println("    - SCHEMA: '" + <%=value%> + "'");
+					<%
 				}
 			}
 			%>
@@ -588,54 +586,46 @@ skeleton="@{org.talend.designer.components.localprovider}/components/templates/d
 				}
 			}
 
-			List<String> preload = new ArrayList<String>();
+			boolean hasSection = false;
 			for (Map<String, String> option : options) {
 				String key = option.get("KEY");
 				String value = option.get("VALUE");
 				
-				if(value != null && !("".equals(value))) {
-					if (key.equals("PRELOAD_TRUNCATE")){
-							preload.add("    - TRUNCATE: " + value );
-					}
-					if (key.equals("PRELOAD_REUSE_TABLES")){
-							preload.add("    - REUSE_TABLES: " + value );
+				if(key.startsWith("PRELOAD") && value != null && !("".equals(value))) {
+					if(!hasSection ) {
+					%>
+						gpctrl_<%=cid%>.println("  PRELOAD:");
+					<%
+						hasSection = true;
 					}
 					if (key.equals("PRELOAD_STAGING_TABLE")){
-							preload.add("    - STAGING_TABLE: '\"+" + value +"+\"'");
-					}
-					if (key.equals("PRELOAD_FAST_MATCH")){
-							preload.add("    - FAST_MATCH: " + value );
+					%>
+							gpctrl_<%=cid%>.println("    - STAGING_TABLE: '\"" + <%=value%> +"\"'");
+					<%
+					} else {
+					%>
+							gpctrl_<%=cid%>.println("    - <%=key.replace("PRELOAD_","")%>: " + <%=value%> );
+					<%
 					}
 				}
 			}
-			if(preload.size() >0) {
-			%>
-				gpctrl_<%=cid%>.println("  PRELOAD:");
-				<%for (String line : preload) {%>
-				gpctrl_<%=cid%>.println("<%=line%>");
-				<%}
-			}
 
-			List<String> sqlBeforeOrAfter = new ArrayList<String>();
+			hasSection = false;
 			for (Map<String, String> option : options) {
 				String key = option.get("KEY");
 				String value = option.get("VALUE");
 				
-				if(value != null && !("".equals(value))) {
-					if (key.equals("SQL_BEFORE")){
-							sqlBeforeOrAfter.add("    - BEFORE: \\\"\"+(" + value +").replace(\"\\\"\",\"\\\\\\\"\")+\"\\\"");
+				if(key.startsWith("SQL") && value != null && !("".equals(value))) {
+					if(!hasSection ) {
+					%>
+						gpctrl_<%=cid%>.println("  SQL:");
+					<%
+						hasSection = true;
 					}
-					if (key.equals("SQL_AFTER")){
-							sqlBeforeOrAfter.add("    - AFTER: \\\"\"+(" + value +").replace(\"\\\"\",\"\\\\\\\"\")+\"\\\"");
-					}
+					%>
+					gpctrl_<%=cid%>.println("    - <%=key.replace("SQL_","")%>: \"" +  (<%=value%>).replace("\"","\\\"") +"\"");
+					<%
 				}
-			}
-			if(sqlBeforeOrAfter.size() > 0) {
-			%>
-				gpctrl_<%=cid%>.println("  SQL:");
-				<%for (String line : sqlBeforeOrAfter) {%>
-				gpctrl_<%=cid%>.println("<%=line%>");
-				<%}
 			}
 			%>
 
