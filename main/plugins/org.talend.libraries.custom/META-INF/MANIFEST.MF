@@ -4,7 +4,7 @@ Bundle-Name: Custom
 Bundle-SymbolicName: org.talend.libraries.custom;singleton:=true
 Bundle-Version: 7.2.2.qualifier
 Bundle-ClassPath: .,
- lib/talend_file_enhanced_20070724.jar
+ lib/talend_file_enhanced-1.1.jar
 Export-Package: org.talend.fileprocess,
  org.talend.fileprocess.delimited
 Bundle-ActivationPolicy: lazy

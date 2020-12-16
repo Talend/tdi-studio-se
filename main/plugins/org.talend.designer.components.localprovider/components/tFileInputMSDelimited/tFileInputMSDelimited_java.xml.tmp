@@ -81,7 +81,7 @@
 
 	<CODEGENERATION>
 		<IMPORTS>
-				<IMPORT NAME="Talen File Enhanced" MODULE="talend_file_enhanced_20070724.jar" REQUIRED="true" />
+				<IMPORT NAME="Talen File Enhanced" MODULE="talend_file_enhanced-1.1.jar" REQUIRED="true" />
 		</IMPORTS>
 	</CODEGENERATION>
 
