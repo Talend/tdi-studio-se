@@ -245,7 +245,7 @@
 				<IMPORT NAME="google-http-client-jackson2-1.25.0" MODULE="google-http-client-jackson2-1.25.0.jar" MVN="mvn:com.google.http-client/google-http-client-jackson2/1.25.0" REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false') AND ((AUTH_TYPE == 'SERVICE_ACCOUNT') OR (AUTH_TYPE == 'TOKEN'))" />
 				<IMPORT NAME="jackson-core-2.10.1" MODULE="jackson-core-2.10.1.jar" MVN="mvn:com.fasterxml.jackson.core/jackson-core/2.10.1" REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false') AND ((AUTH_TYPE == 'SERVICE_ACCOUNT') OR (AUTH_TYPE == 'TOKEN'))" />
 				<IMPORT NAME="guava-30.0-jre.jar" MODULE="guava-30.0-jre.jar" MVN="mvn:com.google.guava/guava/30.0-jre" REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false') AND ((AUTH_TYPE == 'SERVICE_ACCOUNT') OR (AUTH_TYPE == 'TOKEN'))" />
-
+				<IMPORT NAME="failureaccess-1.0.1.jar" MODULE="failureaccess-1.0.1.jar" MVN="mvn:com.google.guava/failureaccess/1.0.1" REQUIRED="true" />
 			<IMPORT NAME="google-cloud-storage-1.104.0" MODULE="google-cloud-storage-1.104.0.jar" MVN="mvn:com.google.cloud/google-cloud-storage/1.104.0" REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false') AND ((AUTH_TYPE == 'SERVICE_ACCOUNT') OR (AUTH_TYPE == 'TOKEN'))" />
 				<!-- Transitive dependencies of google-cloud-storage -->
 				<IMPORT NAME="google-cloud-core-1.93.4.jar" MODULE="google-cloud-core-1.93.4.jar" MVN="mvn:com.google.cloud/google-cloud-core/1.93.4" REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false') AND ((AUTH_TYPE == 'SERVICE_ACCOUNT') OR (AUTH_TYPE == 'TOKEN'))" />
