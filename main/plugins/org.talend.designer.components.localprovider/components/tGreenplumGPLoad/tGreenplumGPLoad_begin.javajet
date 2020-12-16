@@ -623,7 +623,7 @@ skeleton="@{org.talend.designer.components.localprovider}/components/templates/d
 				
 				if(value != null && !("".equals(value))) {
 					if (key.equals("SQL_BEFORE")){
-							sqlBeforeOrAfter.add("    - BEFORE: \\\"\"+(" + value +")+\"\\\"");
+							sqlBeforeOrAfter.add("    - BEFORE: \\\"\"+(" + value +").replace(\"\\\"\",\"\\\\\\\"\")+\"\\\"");
 					}
 					if (key.equals("SQL_AFTER")){
 							sqlBeforeOrAfter.add("    - AFTER: \\\"\"+(" + value +").replace(\"\\\"\",\"\\\\\\\"\")+\"\\\"");
@@ -737,8 +737,17 @@ skeleton="@{org.talend.designer.components.localprovider}/components/templates/d
 				while ((line = reader.readLine()) != null) {
 					gploadOutput_<%=cid%>.append(line+"\n");
 					<%if(isLog4jEnabled){%>
-						log.debug(line);
-					<%} else {%>
+						if(line.contains("|ERROR|")){
+							log.error("<%=cid%> - gpload says: "+ line);	
+						} else if(line.contains("|WARN|")){
+							log.warn("<%=cid%> - gpload says: "+ line);
+						} else if(line.contains("|INFO|")){
+							log.info("<%=cid%> - gpload says: "+ line);
+						} else {
+							log.debug("<%=cid%> - gpload says: "+ line);
+						}
+					<%}
+						if(!isLog4jEnabled){%>
 						System.out.println(line);
 					<%}%>
 
@@ -776,7 +785,7 @@ skeleton="@{org.talend.designer.components.localprovider}/components/templates/d
 					      	throw new RuntimeException ("gpload failed because: " + line);
 					      } else {
 					      	<%if(isLog4jEnabled){%>
-					      		log.error(line);
+					      		log.error("<%=cid%> - gpload says:"+ line);
 					      	<%} else {%>
 					      		System.out.println("WARNING GPLOAD FAILURE:" + line);
 					      	<%}%>
@@ -792,8 +801,9 @@ skeleton="@{org.talend.designer.components.localprovider}/components/templates/d
 				while ((errorLine = errorReader.readLine()) != null) {
 					gploadOutput_<%=cid%>.append(errorLine+"\n");
 					<%if(isLog4jEnabled){%>
-						log.error(errorLine);
-					<%} else {%>
+						log.error("<%=cid%> - gpload says: " + errorLine);
+					<%} 
+					if(!isLog4jEnabled){%>
 						System.out.println(errorLine);
 					<%}%>
 
@@ -804,26 +814,12 @@ skeleton="@{org.talend.designer.components.localprovider}/components/templates/d
 						String errorLine1 = "Table (" + <%=dbname%> + "." + <%=dbschema%> + "." + <%=tableName%> + ") is not available in target (" + <%=dbhost%> + ")!";
 					    if(<%=dieOnError%>){
 					      	throw new RuntimeException ("gpload failed because: " + errorLine1);
-					    } else {
-					      	<%if(isLog4jEnabled){%>
-					      		log.error(errorLine1);
-					      	<%} else {%>
-					      		System.out.println("WARNING GPLOAD FAILURE:" + errorLine1);
-					      	<%}%>
-
 					    }
 					}
 					if (errorLine.toUpperCase().contains("|ERROR|") ) {
 						failure = true;
 					    if(<%=dieOnError%>){
 					      	throw new RuntimeException ("gpload failed because: " + errorLine);
-					    } else {
-					      	<%if(isLog4jEnabled){%>
-					      		log.error(errorLine);
-					      	<%} else {%>
-					      		System.out.println("WARNING GPLOAD FAILURE:" + errorLine);
-					      	<%}%>
-
 					    }
 					}
 
@@ -844,7 +840,6 @@ skeleton="@{org.talend.designer.components.localprovider}/components/templates/d
 				throw new RuntimeException(e.getMessage(),e.getCause());
 			}
 		}
-
 		private int getNBLine(String logLine) {
 			try {
 				return Integer.parseInt(logLine.substring(logLine.lastIndexOf("=") + 1).trim());
@@ -890,14 +885,33 @@ skeleton="@{org.talend.designer.components.localprovider}/components/templates/d
 				Thread.sleep(10000);
 			}
 		<%
-		} else if(useGzip) { //using GZIP compressed data file
+		} else {
 		%>
+			//make sure parent folder exists
+			java.io.File dataFiletmp_<%=cid%> = new java.io.File(dataFile_<%=cid%>);
+			if(dataFiletmp_<%=cid%>.getParentFile() != null && !dataFiletmp_<%=cid%>.getParentFile().exists() ){
+				if(dataFiletmp_<%=cid%>.getParentFile().mkdirs()){
+				<%if(isLog4jEnabled){%>
+					log.info("<%=cid%> - Created parent folder for data file: " + dataFiletmp_<%=cid%>.getParentFile());
+				<%}%>
+				} else {
+				<%if(isLog4jEnabled){%>
+					log.fatal("<%=cid%> - Cannot create parent folder: " + dataFiletmp_<%=cid%>.getParentFile());
+				<%} else {%>
+					System.err.println("<%=cid%> - Cannot create parent folder: " + dataFiletmp_<%=cid%>.getParentFile());
+				<%}%>
+				}
+			}
+		<%
+			if(useGzip) { //using GZIP compressed data file
+		%>				
 			java.util.zip.GZIPOutputStream outputStream_<%=cid%> = new java.util.zip.GZIPOutputStream(new java.io.BufferedOutputStream(new java.io.FileOutputStream(dataFile_<%=cid%>,false), 1024000) );
 		<%			
-		} else { //using data file
+			} else { //using data file
 		%>
 			java.io.BufferedOutputStream outputStream_<%=cid%> = new java.io.BufferedOutputStream(new java.io.FileOutputStream(dataFile_<%=cid%>,false), 1024000);
 		<%
+			}
 		}
 	} else { // no input connections
 %>
