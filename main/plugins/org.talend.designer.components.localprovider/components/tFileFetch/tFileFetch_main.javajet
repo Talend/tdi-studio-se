@@ -48,8 +48,6 @@ if ("http".equals(protocol) || "https".equals(protocol)) {
 	boolean addHeader = "true".equals(ElementParameterParser.getValue(node, "__ADD_HEADER__"));
 	boolean encodeURI = "true".equals(ElementParameterParser.getValue(node, "__ENCODE_URI__"));
 	boolean trustAll = "true".equals(ElementParameterParser.getValue(node, "__TRUST_ALL_SERVER__"));
-
-	String scaccepted_uploadfile = ((uploadFile) ? " || status_"+cid+" == org.apache.commons.httpclient.HttpStatus.SC_ACCEPTED": "");
 %>	
 	java.net.URI uriToFetch_<%=cid %> = null;
 	try {
@@ -405,7 +403,7 @@ if ("http".equals(protocol) || "https".equals(protocol)) {
 
 					System.out.println("Redirect to: " + method_<%=cid%>.getURI());
 					finalURL_<%=cid%> = method_<%=cid%>.getURI().toString();
-				} else if (status_<%=cid%> == org.apache.commons.httpclient.HttpStatus.SC_OK<%= scaccepted_uploadfile%>) {
+				} else if (status_<%=cid%> >= 200 && status_<%=cid%> < 300) { //Status code 2XX indicates success
 					redirect_<%=cid%> = false;
 				} else {
 					throw new java.lang.Exception("Method failed: " + method_<%=cid%>.getStatusLine());
@@ -418,7 +416,7 @@ if ("http".equals(protocol) || "https".equals(protocol)) {
 
 		if (!redirect) {
 		%>
-			if (!(status_<%=cid%> == org.apache.commons.httpclient.HttpStatus.SC_OK<%= scaccepted_uploadfile%>)) {      
+			if (!(status_<%=cid%> >= 200 && status_<%=cid%> < 300)){//Status code 2XX indicates success
 				throw new java.lang.Exception("Method failed: " + method_<%=cid%>.getStatusLine());
 			}
 		<%

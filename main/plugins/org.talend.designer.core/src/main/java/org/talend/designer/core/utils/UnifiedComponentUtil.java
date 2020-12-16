@@ -130,7 +130,6 @@ public class UnifiedComponentUtil {
             IUnifiedComponentService service = GlobalServiceRegister.getDefault().getService(IUnifiedComponentService.class);
             IComponentsHandler componentsHandler = ComponentsFactoryProvider.getInstance().getComponentsHandler();
             // filter for additional JDBC
-            Map<String, IComponent> componentMap = new HashMap<String, IComponent>();
             for (IComponent component : componentList) {
                 String databaseName = service.getUnifiedCompDisplayName(service.getDelegateComponent(component),
                         component.getName());
@@ -143,6 +142,7 @@ public class UnifiedComponentUtil {
                             component.getName().replaceFirst(compKey, "JDBC"),
                             UnifiedComponentUtil.getAdditionalJDBC().get(databaseName));
                     if (component.getName().contains(compKey) && unsupport) {
+                        // filter real component
                         continue;
                     }
                 }
@@ -156,9 +156,15 @@ public class UnifiedComponentUtil {
                         continue;
                     }
                 }
-                if (isAdditionalJDBC(dbTypeName)
-                        && isUnsupportedComponent(component.getName(), getAdditionalJDBC().get(dbTypeName))) {
-                    continue;
+                if (isAdditionalJDBC(dbTypeName)) {
+                    String compKey = StringUtils.deleteWhitespace(
+                            service.getUnifiedCompDisplayName(service.getDelegateComponent(component), component.getName()));
+                    if (StringUtils.isNotBlank(compKey) && isUnsupportedComponent(
+                            component.getName().replaceFirst(compKey, "JDBC"), getAdditionalJDBC().get(dbTypeName))) {
+                        // filter delegate component like {tDBSP(JDBC), tDBSP(SingleStore)...}
+                        // as Delta Lake unsupport SP
+                        continue;
+                    }
                 }
                 IComponent delegateComponent = service.getDelegateComponent(component);
                 if (delegateComponent != null) {
