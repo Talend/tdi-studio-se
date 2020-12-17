@@ -24,15 +24,13 @@ package org.talend.fileprocess.delimited;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.text.NumberFormat;
-import java.util.Scanner;
+import java.util.function.Predicate;
 
 /**
  * DOC ibmuser class global comment. Detailled comment <br/>
  *
  */
 public class RowParser extends DelimitedDataReader {
-
-    // private char[] fieldDelimiter;
 
     private char[] rowSeparator;
 
@@ -42,15 +40,27 @@ public class RowParser extends DelimitedDataReader {
 
     private String rowRecord;
 
-    // private boolean simpleMode = false;
-
     private int mode = 1;
 
     private int rowLength = -1;
 
     private char[] buffer;
 
-    private Scanner scanner = null;
+    private static final int BUFFER_SIZE = 8192;
+
+    boolean requireAdditionalReadFromSource = true;
+
+    private int separatorIndex;
+
+    private boolean foundCR = false;
+
+    private int extendedArrayStartIndex = 0;
+
+    private int readSymbols = 0;
+
+    private int length;
+
+    private Predicate<Character> characterVerifier;
 
     /**
      * DOC ibmuser RowParser constructor comment.
@@ -63,25 +73,16 @@ public class RowParser extends DelimitedDataReader {
     public RowParser(BufferedReader inputStream, String rowSeparator, boolean skipEmptyRecords) throws IOException {
 
         super(inputStream, skipEmptyRecords);
-
         columnBuffer = null;
-
         values = null;
-
         if ("\n".equals(rowSeparator) || "\r\n".equals(rowSeparator)) {
-            // simpleMode = true;
-            mode = 0;
-            if("\r\n".equals(rowSeparator)){
-            	scanner = new Scanner(inputStream);
-            	scanner.useDelimiter(rowSeparator);
-            }
+            this.buffer = new char[BUFFER_SIZE];
+            this.mode = 0;
+            characterVerifier = "\n".equals(rowSeparator) ? c -> c == Character.LETTER_NUMBER : this::testCRLF;
         } else if(rowSeparator!=null) {
             streamBuffer = new StreamBuffer();
-
-            rowBuffer = new ColumnBuffer();
-
             this.rowSeparator = rowSeparator.toCharArray();
-
+            rowBuffer = new ColumnBuffer();
             try {
                 streamBuffer.count = inputStream.read(streamBuffer.buffer, 0, streamBuffer.buffer.length);
             } catch (IOException ex) {
@@ -127,17 +128,14 @@ public class RowParser extends DelimitedDataReader {
             }
 
             try {
-                if (initialized && scanner != null) {
-                    scanner.close();
-                } else if(initialized) {
-                	inputStream.close();
+                if(initialized && inputStream != null) {
+                    inputStream.close();
                 }
             } catch (Exception e) {
                 // just eat the exception
             }
 
             inputStream = null;
-
             closed = true;
         }
     }
@@ -150,45 +148,7 @@ public class RowParser extends DelimitedDataReader {
     public boolean readRecord() throws IOException {
         checkClosed();
         if (mode == 0) {
-            if (skipEmptyRecord) {
-                do {
-                	rowRecord = null;
-                	if(scanner != null){
-	                    if (!scanner.hasNext()) {
-	                        return false;
-	                    }
-	                    rowRecord = scanner.next();
-                	}else{
-                		rowRecord = inputStream.readLine();
-                		if (rowRecord == null) {
-                			 return false;
-	                    }
-                	}
-                    if (!rowRecord.equals("")) {
-                        currentRecord++;
-                        return true;
-                    }
-                } while (true);
-            } else {
-            	rowRecord = null;
-            	if (scanner != null) {
-					if (!scanner.hasNext()) {
-						return false;
-					} else {
-						rowRecord = scanner.next();
-						currentRecord++;
-						return true;
-					}
-				}else{
-					rowRecord = inputStream.readLine();
-					if (rowRecord == null) {
-						return false;
-					} else {
-						currentRecord++;
-						return true;
-					}
-				}
-            }
+            return hasNext();
         } else if (mode == 1) {
             hasReadRecord = false;
             if (streamBuffer.hasMoreData()) {
@@ -278,6 +238,93 @@ public class RowParser extends DelimitedDataReader {
                 return true;
             }
         }
+    }
+
+    /**
+     * Find available record from the source with specified separators.
+     *
+     * @return true if reader has a value, otherwise false.
+     */
+    private boolean hasNext() throws IOException {
+        while (hasMoreData()) {
+            requireAdditionalReadFromSource = false;
+            length = readSymbols + extendedArrayStartIndex;
+            for (int j = Math.max(separatorIndex, extendedArrayStartIndex); j < length; j++){
+                if (characterVerifier.test(buffer[j])) {
+                    rowRecord = new String(buffer, separatorIndex, j - separatorIndex);
+                    if (j == (length - 1)) {
+                        separatorIndex =  0;
+                        extendedArrayStartIndex = 0;
+                        buffer = new char[BUFFER_SIZE];
+                        if (!skipEmptyRecord || !"".equals(rowRecord)) {
+                            requireAdditionalReadFromSource = true;
+                            currentRecord++;
+                            return true;
+                        } else {
+                            // Reached the end of the buffer and the record is skipped.
+                            break;
+                        }
+                    } else {
+                        separatorIndex = j + 1;
+                        if (!skipEmptyRecord || !"".equals(rowRecord)) {
+                            currentRecord++;
+                            return true;
+                        }
+                        // Skipped, find the next record in the buffer.
+                    }
+                }
+                if (j == buffer.length - 1) {
+                    //The end of the buffer is reached, copy unprocessed characters to a new buffer.
+                    ensureBufferCapacity();
+                }
+            }
+            //Reached the last buffer character.
+            requireAdditionalReadFromSource = true;
+            if (readSymbols < BUFFER_SIZE) {
+                break;
+            }
+        }
+        //Last record in the end of the file is reached.
+        if (readSymbols > 0 || separatorIndex != 0) {
+            rowRecord = new String(buffer, separatorIndex, length - separatorIndex);
+            separatorIndex = 0;
+            if (!skipEmptyRecord || !"".equals(rowRecord)) {
+                currentRecord++;
+                return true;
+            }
+        }
+        buffer = null;
+        return false;
+    }
+
+    /**
+     * Perform read from source if <b>requireAdditionalReadFromSource</b> is true, otherwise proceed with current read characters.
+     *
+     * @return true if buffer contain values to be processed, otherwise source is exhausted.
+     * @throws IOException exception from input stream read.
+     */
+    private boolean hasMoreData() throws IOException {
+        return requireAdditionalReadFromSource ? (readSymbols = inputStream.read(buffer, extendedArrayStartIndex, BUFFER_SIZE)) != -1 : true;
+    }
+
+    private boolean testCRLF(Character c) {
+        if (foundCR && c == Character.LETTER_NUMBER) {
+            return true;
+        }
+        foundCR = c == Character.LINE_SEPARATOR;
+        return false;
+    }
+
+    /**
+     * The unprocessed characters has to be copied to a new extended buffer.<br>
+     * Separator index is reset to 0 to include the unprocessed characters to the next record.
+     */
+    private void ensureBufferCapacity() {
+        char[] tempChars = buffer;
+        extendedArrayStartIndex = tempChars.length - separatorIndex;
+        buffer = new char[extendedArrayStartIndex + BUFFER_SIZE];
+        System.arraycopy(tempChars, separatorIndex, buffer, 0, extendedArrayStartIndex);
+        separatorIndex = 0;
     }
 
     /**
