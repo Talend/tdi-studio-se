@@ -51,6 +51,7 @@ import org.talend.core.model.properties.Item;
 import org.talend.core.model.properties.ProcessItem;
 import org.talend.core.model.utils.ContextParameterUtils;
 import org.talend.core.model.utils.TalendTextUtils;
+import org.talend.core.runtime.maven.MavenArtifact;
 import org.talend.core.runtime.maven.MavenConstants;
 import org.talend.core.runtime.maven.MavenUrlHelper;
 import org.talend.core.runtime.process.LastGenerationInfo;
@@ -104,15 +105,21 @@ public class JavaProcessUtil {
             // in some case it's not a real library, but just a text.
             if (!module.getModuleName().contains(".")) { //$NON-NLS-1$
                 it.remove();
-            } else if (dedupModulesList.contains(module.getModuleName())) {
-                if (module.isMrRequired() && previousModule != null
-                        && previousModule.getModuleName().equals(module.getModuleName())) {
-                    previousModule.setMrRequired(Boolean.TRUE);
-                }
-                it.remove();
             } else {
-                dedupModulesList.add(module.getModuleName());
-                previousModule = module;
+                String coordinate = getCoordinate(module);
+                
+                if (dedupModulesList.contains(coordinate)) {
+                    if (module.isMrRequired() && previousModule != null
+                            && previousModule.getModuleName().equals(module.getModuleName())) {
+                        previousModule.setMrRequired(Boolean.TRUE);
+                    }
+                    it.remove();
+                } else {
+//                    dedupModulesList.add(module.getModuleName());
+                    dedupModulesList.add(coordinate);
+                    
+                    previousModule = module;
+                }
             }
         }
 
@@ -124,6 +131,33 @@ public class JavaProcessUtil {
         return new HashSet<ModuleNeeded>(modulesNeeded);
     }
 
+    public static String getCoordinate(ModuleNeeded module) {
+        String mavenUri = module.getMavenUri();
+        if (!MavenUrlHelper.isMvnUrl(mavenUri)) {
+            mavenUri = MavenUrlHelper.generateMvnUrlForJarName(mavenUri);
+        }
+        MavenArtifact artifact = MavenUrlHelper.parseMvnUrl(mavenUri);
+        
+        String groupId = artifact.getGroupId();
+        String artifactId = artifact.getArtifactId();
+        String type = artifact.getType();
+        String version = artifact.getVersion();
+        String classifier = artifact.getClassifier();
+        
+        String separator = ":"; //$NON-NLS-1$
+        String coordinate = groupId + separator + artifactId;
+        if (StringUtils.isNotBlank(type)) {
+            coordinate += separator + type;
+        }
+        if (StringUtils.isNotBlank(classifier)) {
+            coordinate += separator + classifier;
+        }
+        if (StringUtils.isNotBlank(version)) {
+            coordinate += separator + version;
+        }
+        return coordinate;
+    }
+    
     // for MapReduce job, if the jar on Xml don't set MRREQUIRED="true", shouldn't add it to
     // DistributedCache
     public static Set<String> getNeededLibraries(final IProcess process, int options) {
