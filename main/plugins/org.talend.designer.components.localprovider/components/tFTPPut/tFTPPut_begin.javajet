@@ -252,16 +252,6 @@ int nb_file_<%=cid%> = 0;
                 <%@ include file="@{org.talend.designer.components.localprovider}/components/templates/FTP/ftp_connect.javajet"%>
 <%
             }
-
-            if("binary".equalsIgnoreCase(ElementParameterParser.getValue(node, "__MODE__"))){
-%>
-                ftp_<%=cid %>.setFileType(org.apache.commons.net.ftp.FTP.BINARY_FILE_TYPE);
-<%
-            } else {
-%>
-                ftp_<%=cid %>.setFileType(org.apache.commons.net.ftp.FTP.ASCII_FILE_TYPE);
-<%
-            }
 %>
             // msg_<%=cid%> likes a String[] to save the message from transfer.  
             java.util.List<String> msg_<%=cid%> = new java.util.ArrayList<>();
@@ -288,6 +278,26 @@ int nb_file_<%=cid%> = 0;
 <%
             }
         } //common code for ftp and ftps:
+
+
+       if("binary".equalsIgnoreCase(ElementParameterParser.getValue(node, "__MODE__"))){
+
+%>
+
+          ftp_<%=cid %>.setFileType(org.apache.commons.net.ftp.FTP.BINARY_FILE_TYPE);
+
+<%
+
+        } else {
+
+%>
+
+          ftp_<%=cid %>.setFileType(org.apache.commons.net.ftp.FTP.ASCII_FILE_TYPE);
+
+<%
+
+        }
+
 %>
         String rootDir_<%=cid %> = ftp_<%=cid %>.printWorkingDirectory();
         String remotedir_<%=cid%> = (<%=remotedir%>).replaceAll("\\\\", "/");
