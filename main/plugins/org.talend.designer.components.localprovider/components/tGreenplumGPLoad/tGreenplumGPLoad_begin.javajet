@@ -546,6 +546,7 @@ skeleton="@{org.talend.designer.components.localprovider}/components/templates/d
 						gpctrl_<%=cid%>.println("  EXTERNAL:");
 						gpctrl_<%=cid%>.println("    - SCHEMA: '" + <%=value%> + "'");
 					<%
+					break;
 				}
 			}
 			%>
