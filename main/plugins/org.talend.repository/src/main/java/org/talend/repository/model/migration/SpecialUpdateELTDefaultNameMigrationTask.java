@@ -94,12 +94,16 @@ public class SpecialUpdateELTDefaultNameMigrationTask extends AbstractAllJobMigr
                                         if (connectionNameTemp.startsWith(ContextParameterUtils.JAVA_NEW_CONTEXT_PREFIX)) {
                                             int index = connectionNameTemp.indexOf(".", //$NON-NLS-1$
                                                     ContextParameterUtils.JAVA_NEW_CONTEXT_PREFIX.length());
-                                            schemaNewValue = connectionNameTemp.substring(0, index);
-                                            tableNewValue = connectionNameTemp.substring(index + 1, connNameLength);
+                                            if (index > 8) {
+                                                schemaNewValue = connectionNameTemp.substring(0, index);
+                                                tableNewValue = connectionNameTemp.substring(index + 1, connNameLength);
+                                            }
                                         } else {
                                             int index = connectionNameTemp.indexOf(".");//$NON-NLS-1$
-                                            schemaNewValue = connectionNameTemp.substring(0, index);
-                                            tableNewValue = connectionNameTemp.substring(index + 1, connNameLength);
+                                            if (index > 0) {
+                                                schemaNewValue = connectionNameTemp.substring(0, index);
+                                                tableNewValue = connectionNameTemp.substring(index + 1, connNameLength);
+                                            }
                                         }
                                     } else {
                                         String[] names = connectionNameTemp.split("\\.");//$NON-NLS-1$
@@ -110,19 +114,20 @@ public class SpecialUpdateELTDefaultNameMigrationTask extends AbstractAllJobMigr
                                     }
                                     // If global map in link
                                     schemaNewValue = TalendTextUtils.removeQuotesIfExist(schemaNewValue);
-                                    if (schemaNewValue.startsWith("+") && schemaNewValue.endsWith("+")) { //$NON-NLS-1$ //$NON-NLS-2$
+                                    if (schemaNewValue != null && schemaNewValue.startsWith("+") //$NON-NLS-1$
+                                            && schemaNewValue.endsWith("+")) { //$NON-NLS-1$
                                         schemaNewValue = schemaNewValue.substring(1, schemaNewValue.length() - 1);
                                     }
                                     tableNewValue = TalendTextUtils.removeQuotesIfExist(tableNewValue);
-                                    if (tableNewValue.startsWith("+") && tableNewValue.endsWith("+")) { //$NON-NLS-1$ //$NON-NLS-2$
+                                    if (tableNewValue != null && tableNewValue.startsWith("+") && tableNewValue.endsWith("+")) { //$NON-NLS-1$ //$NON-NLS-2$
                                         tableNewValue = tableNewValue.substring(1, tableNewValue.length() - 1);
                                     }
 
                                     // Update the value
-                                    if (!schemaNewValue.equals(schemaValue)) {
+                                    if (schemaNewValue != null && !schemaNewValue.equals(schemaValue)) {
                                         ComponentUtilities.setNodeValue(node, "ELT_SCHEMA_NAME", schemaNewValue); //$NON-NLS-1$
                                     }
-                                    if (!tableNewValue.equals(tableValue)) {
+                                    if (tableNewValue != null && !tableNewValue.equals(tableValue)) {
                                         ComponentUtilities.setNodeValue(node, "ELT_TABLE_NAME", tableNewValue); //$NON-NLS-1$
                                     }
                                 }
