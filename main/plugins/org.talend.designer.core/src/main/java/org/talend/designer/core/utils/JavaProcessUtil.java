@@ -115,7 +115,6 @@ public class JavaProcessUtil {
                     }
                     it.remove();
                 } else {
-//                    dedupModulesList.add(module.getModuleName());
                     dedupModulesList.add(coordinate);
                     
                     previousModule = module;
