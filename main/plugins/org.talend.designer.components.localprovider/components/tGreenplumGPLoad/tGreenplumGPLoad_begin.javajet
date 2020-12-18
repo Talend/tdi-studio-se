@@ -102,8 +102,8 @@ skeleton="@{org.talend.designer.components.localprovider}/components/templates/d
 %>
 	String dataFile_<%=cid%> = <%=dataFile%>;
 <%
-	if(useGzip) {
-		//make sure it ends with .gz
+	if(hasInputRow && useGzip) {
+		//when it have input and checked use gzip, make sure it ends with .gz
 %>
 	if(!dataFile_<%=cid%>.endsWith(".gz")) {
 			dataFile_<%=cid%> += ".gz";
@@ -503,23 +503,11 @@ skeleton="@{org.talend.designer.components.localprovider}/components/templates/d
 				//iterate on schema.
 			<%
 				//pass the columnlist
-				List<IMetadataTable> metadataList = node.getMetadataList();
-				if ((metadataList != null) && (metadataList.size() > 0)) {
-				  IMetadataTable metadataTable = metadataList.get(0);
-				  if (metadataTable != null) {
-				  	java.util.HashMap <String,String> columnTypeHashMap = new java.util.HashMap<String,String>();
-				  	columnTypeHashMap.put("id_String","text");
-				  	columnTypeHashMap.put("id_byte[]","bytea");
-				  	columnTypeHashMap.put("id_Date","timestamp");
-				  	columnTypeHashMap.put("id_BigDecimal","numeric (500,100)");
-				  	columnTypeHashMap.put("id_Double","numeric (500,100)");
-				  	columnTypeHashMap.put("id_Integer","integer");
-				  	for (IMetadataColumn metadataColumn : metadataTable.getListColumns()) {
-				  		String dbTypeOfColumn = metadataColumn.getType();
+				if (stmtStructure != null) {
+				  for (Column column : stmtStructure) {
 			%>
-					gpctrl_<%=cid%>.println("        - <%=metadataColumn.getOriginalDbColumnName()%> : <%=columnTypeHashMap.get(metadataColumn.getTalendType() )%>");
+					gpctrl_<%=cid%>.println("        - <%=column.getColumnName()%> : <%=column.getDataType()%>");
 			<%
-					}
 				  }
 				}
 			}
@@ -737,9 +725,6 @@ skeleton="@{org.talend.designer.components.localprovider}/components/templates/d
 						} else {
 							log.debug("<%=cid%> - gpload says: "+ line);
 						}
-					<%}
-						if(!isLog4jEnabled){%>
-						System.out.println(line);
 					<%}%>
 
 
@@ -777,8 +762,6 @@ skeleton="@{org.talend.designer.components.localprovider}/components/templates/d
 					      } else {
 					      	<%if(isLog4jEnabled){%>
 					      		log.error("<%=cid%> - gpload says:"+ line);
-					      	<%} else {%>
-					      		System.out.println("WARNING GPLOAD FAILURE:" + line);
 					      	<%}%>
 
 					      }
@@ -793,9 +776,6 @@ skeleton="@{org.talend.designer.components.localprovider}/components/templates/d
 					gploadOutput_<%=cid%>.append(errorLine+"\n");
 					<%if(isLog4jEnabled){%>
 						log.error("<%=cid%> - gpload says: " + errorLine);
-					<%} 
-					if(!isLog4jEnabled){%>
-						System.out.println(errorLine);
 					<%}%>
 
 
@@ -818,8 +798,19 @@ skeleton="@{org.talend.designer.components.localprovider}/components/templates/d
 <%
 				if(removeFile ) {
 %>
+                    String dataFile_<%=cid%> = <%=dataFile%>;
+<%
+                    if(hasInputRow && useGzip) {
+                        //when it have input and checked use gzip, make sure it ends with .gz
+%>
+					    if(!dataFile_<%=cid%>.endsWith(".gz")) {
+					            dataFile_<%=cid%> += ".gz";
+					    }
+<%
+                    }
+%>
 					if(!failure && dataErrors == 0) {
-						java.io.File file = new java.io.File(<%=dataFile%>);
+						java.io.File file = new java.io.File(dataFile_<%=cid%>);
 						file.delete();
 					}
 <%
