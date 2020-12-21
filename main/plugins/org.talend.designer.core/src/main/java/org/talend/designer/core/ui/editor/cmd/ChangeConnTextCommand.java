@@ -150,16 +150,20 @@ public class ChangeConnTextCommand extends Command {
                 // Name cases:context.a.context.b /context.a.b /a.context.b /a.b /b
                 if (ContextParameterUtils.isContainContextParam(newNameTemp)) {
                     if (newNameTemp.startsWith(ContextParameterUtils.JAVA_NEW_CONTEXT_PREFIX)) {
-                        int index = newNameTemp.indexOf(".", //$NON-NLS-1$
-                                ContextParameterUtils.JAVA_NEW_CONTEXT_PREFIX.length());
-                        defaultSchemaName = newNameTemp.substring(0, index);
-                        defaultTableName = newNameTemp.substring(index + 1, newNameLength);
-                        update = true;
+                        int contextPrefixLength = ContextParameterUtils.JAVA_NEW_CONTEXT_PREFIX.length();
+                        int index = newNameTemp.indexOf(".", contextPrefixLength);//$NON-NLS-1$
+                        if (index > contextPrefixLength) {
+                            defaultSchemaName = newNameTemp.substring(0, index);
+                            defaultTableName = newNameTemp.substring(index + 1, newNameLength);
+                            update = true;
+                        }
                     } else {
                         int index = newNameTemp.indexOf(".");//$NON-NLS-1$
-                        defaultSchemaName = newNameTemp.substring(0, index);
-                        defaultTableName = newNameTemp.substring(index + 1, newNameLength);
-                        update = true;
+                        if (index > 0) {
+                            defaultSchemaName = newNameTemp.substring(0, index);
+                            defaultTableName = newNameTemp.substring(index + 1, newNameLength);
+                            update = true;
+                        }
                     }
                 } else {
                     String[] names = newNameTemp.split("\\.");//$NON-NLS-1$
