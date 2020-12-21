@@ -304,7 +304,7 @@ public final class Expression {
         if ((simpleExpression.contains("DISTRIB["))) { //$NON-NLS-1$
             return evaluateDistrib(simpleExpression, listParam, currentParam);
         }
-        if ((simpleExpression.contains("SPARK_VERSION["))) { //$NON-NLS-1$
+        if (simpleExpression.contains("SPARK_VERSION[") || simpleExpression.contains("SPARK_LOCAL_VERSION[")) { //$NON-NLS-1$
             return evaluateSparkVersion(simpleExpression, listParam, currentParam);
         }
         

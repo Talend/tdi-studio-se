@@ -35,6 +35,7 @@ import org.talend.core.model.process.IElementParameter;
 import org.talend.core.model.process.INode;
 import org.talend.core.model.process.IProcess;
 import org.talend.core.model.runprocess.shadow.TextElementParameter;
+import org.talend.hadoop.distribution.ESparkVersion;
 
 /**
  * created by ycbai on 2014-6-10 Detailled comment
@@ -296,5 +297,31 @@ public class ExpressionTest {
 
         assertFalse(Expression.isThereCondition("standard='aaa'", "and"));
         assertFalse(Expression.isThereCondition("story='aaa'", "or"));
+    }
+    
+    @Test
+    public void testEvaluateSparkVersion() {
+        
+        IElementParameter sparkLocalModeParameter = mock(IElementParameter.class);
+        when(sparkLocalModeParameter.getValue()).thenReturn(true);
+        IElementParameter sparkLocalVersionParameter = mock(IElementParameter.class);
+        when(sparkLocalVersionParameter.getValue()).thenReturn(ESparkVersion.SPARK_3_0.getSparkVersion());
+        IElementParameter sparkApiVersion = mock(IElementParameter.class);
+        when(sparkApiVersion.getValue()).thenReturn("");
+        IElementParameter distributionParameter = mock(IElementParameter.class);
+        when(distributionParameter.getValue()).thenReturn("");
+        IElementParameter supportedVersionParameter = mock(IElementParameter.class);
+        when(supportedVersionParameter.getValue()).thenReturn("");
+
+        INode node = mock(INode.class);
+        when(node.getElementParameter("SPARK_LOCAL_MODE")).thenReturn(sparkLocalModeParameter);
+        when(node.getElementParameter("SPARK_LOCAL_VERSION")).thenReturn(sparkLocalVersionParameter);
+        when(node.getElementParameter("SPARK_API_VERSION")).thenReturn(sparkApiVersion);
+        when(node.getElementParameter("DISTRIBUTION")).thenReturn(distributionParameter);
+        when(node.getElementParameter("SUPPORTED_SPARK_VERSION")).thenReturn(supportedVersionParameter);
+        
+        ElementParameter currentParam = mock(ElementParameter.class);
+        when(currentParam.getElement()).thenReturn(node);
+        assertTrue(Expression.evaluateSparkVersion("SPARK_LOCAL_VERSION ge 'SPARK_3_0'", null, currentParam));
     }
 }
