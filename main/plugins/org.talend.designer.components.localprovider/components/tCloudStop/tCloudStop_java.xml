@@ -78,8 +78,7 @@ COMPATIBILITY="ALL"
 		<IMPORT NAME="commons-io-2_4" MODULE="commons-io-2.4.jar" MVN="mvn:commons-io/commons-io/2.4"  UrlPath="platform:/plugin/org.talend.libraries.apache.common/lib/commons-io-2.4.jar" REQUIRED_IF="PROVIDER=='AWS_EC2'"/>
 		<IMPORT NAME="ec2-2_0_2" MODULE="ec2-2.0.2.jar" MVN="mvn:org.talend.libraries/ec2-2.0.2/6.0.0"  REQUIRED_IF="PROVIDER=='AWS_EC2'"/>
 		<IMPORT NAME="gson-2_2" MODULE="gson-2.2.jar" MVN="mvn:org.talend.libraries/gson-2.2/6.0.0"  REQUIRED_IF="PROVIDER=='AWS_EC2'"/>
-		<IMPORT NAME="guava-30.0-jre" MODULE="guava-30.0-jre.jar" MVN="mvn:com.google.guava/guava/30.0-jre" REQUIRED_IF="PROVIDER=='AWS_EC2'"/>
-		<IMPORT NAME="failureaccess-1.0.1.jar" MODULE="failureaccess-1.0.1.jar" MVN="mvn:com.google.guava/failureaccess/1.0.1" REQUIRED="true" />
+		<IMPORT NAME="guava-16.0.1" MODULE="guava-16.0.1.jar" MVN="mvn:com.google.guava/guava/16.0.1" REQUIRED_IF="PROVIDER=='AWS_EC2'"/>
 		<IMPORT NAME="guice-3_0" MODULE="guice-3.0.jar" MVN="mvn:com.google.inject/guice/3.0"  REQUIRED_IF="PROVIDER=='AWS_EC2'"/>
 		<IMPORT NAME="guice-assistedinject-3_0" MODULE="guice-assistedinject-3.0.jar" MVN="mvn:org.talend.libraries/guice-assistedinject-3.0/6.0.0"  REQUIRED_IF="PROVIDER=='AWS_EC2'"/>
 		<IMPORT NAME="javax_inject-1" MODULE="javax.inject-1.jar" MVN="mvn:javax.inject/javax.inject/1"  REQUIRED_IF="PROVIDER=='AWS_EC2'"/>
