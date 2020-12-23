@@ -32,6 +32,7 @@ try {
     System.err.println(e_<%=cid%>.getMessage());
 }
 tmp_batchUpdateCount_<%=cid%> = tmp_batchUpdateCount_<%=cid%> > countSum_<%=cid%> ? tmp_batchUpdateCount_<%=cid%> : countSum_<%=cid%>;
+rowsToCommitCount_<%=cid%> += tmp_batchUpdateCount_<%=cid%>;
 <%if (("INSERT").equals(dataAction)) {
 %>
     insertedCount_<%=cid%> += tmp_batchUpdateCount_<%=cid%>;

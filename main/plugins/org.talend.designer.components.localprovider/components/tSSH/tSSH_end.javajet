@@ -46,5 +46,5 @@ imports="
 	<%if(isLog4jEnabled){%>
 		log.info("<%=cid%> - Connection to the server closed.");
 	<%}%>
-	globalMap.put("<%=cid %>_EXIT_CODE",0);
+	globalMap.put("<%=cid %>_EXIT_CODE", exit_code_<%=cid%>);
 	
