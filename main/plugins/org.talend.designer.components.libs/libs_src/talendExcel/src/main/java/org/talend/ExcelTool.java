@@ -345,7 +345,7 @@ public class ExcelTool {
             }
         } finally {
             if(existedOriginToClone!=null) {
-                existedOriginToClone.clear();
+                existedOriginToClone = null;
             }
             if (outputStream != null) {
                 outputStream.close();
@@ -378,7 +378,7 @@ public class ExcelTool {
             }
         } finally {
             if(existedOriginToClone!=null) {
-                existedOriginToClone.clear();
+                existedOriginToClone = null;
             }
             wb.close();
             if(preWb != null){
