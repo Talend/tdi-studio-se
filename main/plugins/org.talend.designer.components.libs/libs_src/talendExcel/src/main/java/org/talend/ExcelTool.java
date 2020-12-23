@@ -80,6 +80,8 @@ public class ExcelTool {
     private boolean isTrackAllColumns = false;
 
     private String password = null;
+    
+    private Map<CellStyle, CellStyle> existedOriginToClone;
 
     public ExcelTool() {
         cellStylesMapping = new HashMap<>();
@@ -264,6 +266,9 @@ public class ExcelTool {
 
     private CellStyle getPreCellStyle() {
         if (preSheet != null && isAbsY && keepCellFormat) {
+            if(existedOriginToClone==null) {
+                existedOriginToClone = new HashMap<>();
+            }
             CellStyle preCellStyle;
             if (preCell == null) {
                 preCellStyle = preSheet.getColumnStyle(curCell.getColumnIndex());
@@ -271,8 +276,12 @@ public class ExcelTool {
                 preCellStyle = preCell.getCellStyle();
             }
 
-            CellStyle targetCellStyle = wb.createCellStyle();
-            targetCellStyle.cloneStyleFrom(preCellStyle);
+            CellStyle targetCellStyle = existedOriginToClone.get(preCellStyle);
+            if(targetCellStyle==null) {
+                targetCellStyle = wb.createCellStyle();
+                targetCellStyle.cloneStyleFrom(preCellStyle);
+                existedOriginToClone.put(preCellStyle, targetCellStyle);
+            }
 
             return targetCellStyle;
 
@@ -335,6 +344,9 @@ public class ExcelTool {
                 preWb.close();
             }
         } finally {
+            if(existedOriginToClone!=null) {
+                existedOriginToClone.clear();
+            }
             if (outputStream != null) {
                 outputStream.close();
             }
@@ -365,6 +377,9 @@ public class ExcelTool {
                 fs.writeFilesystem(fileOutput);
             }
         } finally {
+            if(existedOriginToClone!=null) {
+                existedOriginToClone.clear();
+            }
             wb.close();
             if(preWb != null){
                 preWb.close();
