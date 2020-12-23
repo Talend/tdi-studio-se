@@ -770,6 +770,16 @@ public class DefaultRunProcessService implements IRunProcessService {
     }
 
     @Override
+    public ITalendProcessJavaProject getTalendCodesJarJavaProject(Property property) {
+        return TalendJavaProjectManager.getTalendCodesJarJavaProject(property);
+    }
+
+    @Override
+    public ITalendProcessJavaProject getTalendCodesJarJavaProject(Property property, String projectTechName) {
+        return TalendJavaProjectManager.getTalendCodesJarJavaProject(property, projectTechName);
+    }
+
+    @Override
     public ITalendProcessJavaProject getTalendJobJavaProject(Property property) {
         return TalendJavaProjectManager.getTalendJobJavaProject(property);
     }

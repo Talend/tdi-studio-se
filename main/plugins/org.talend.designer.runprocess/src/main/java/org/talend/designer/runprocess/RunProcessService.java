@@ -427,6 +427,16 @@ public class RunProcessService implements IRunProcessService {
     }
 
     @Override
+    public ITalendProcessJavaProject getTalendCodesJarJavaProject(Property property) {
+        return delegateService.getTalendCodesJarJavaProject(property);
+    }
+
+    @Override
+    public ITalendProcessJavaProject getTalendCodesJarJavaProject(Property property, String projectTechName) {
+        return delegateService.getTalendCodesJarJavaProject(property, projectTechName);
+    }
+
+    @Override
     public ITalendProcessJavaProject getTalendJobJavaProject(Property property) {
         return delegateService.getTalendJobJavaProject(property);
     }

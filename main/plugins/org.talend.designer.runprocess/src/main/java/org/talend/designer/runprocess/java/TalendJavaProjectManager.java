@@ -257,6 +257,49 @@ public class TalendJavaProjectManager {
         }
     }
 
+    public static ITalendProcessJavaProject getTalendCodesJarJavaProject(Property property) {
+        return getTalendCodesJarJavaProject(property, ProjectManager.getInstance().getCurrentProject().getTechnicalLabel());
+    }
+
+    public static ITalendProcessJavaProject getTalendCodesJarJavaProject(Property property, String projectTechName) {
+        ERepositoryObjectType type = ERepositoryObjectType.getItemType(property.getItem());
+        String codeProjectId = AggregatorPomsHelper.getCodeProjectId(type, projectTechName);
+        ITalendProcessJavaProject codesJarJavaProject = talendCodeJavaProjects.get(codeProjectId);
+        if (codesJarJavaProject == null || codesJarJavaProject.getProject() == null
+                || !codesJarJavaProject.getProject().exists()) {
+            try {
+                IProgressMonitor monitor = new NullProgressMonitor();
+                IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
+                AggregatorPomsHelper helper = new AggregatorPomsHelper(projectTechName);
+                IFolder codeProjectFolder = helper.getProjectPomsFolder().getFolder(type.getFolder())
+                        .getFolder(property.getLabel().toLowerCase());
+                cleanUpCodeProject(monitor, codeProjectFolder);
+                IProject codeProject = root.getProject((projectTechName + "_" + type.name()).toUpperCase()); //$NON-NLS-1$
+                if (!codeProject.exists() || TalendCodeProjectUtil.needRecreate(monitor, codeProject)) {
+                    // always enable maven nature for code projects.
+                    createMavenJavaProject(monitor, codeProject, null, codeProjectFolder, true);
+                }
+                IJavaProject javaProject = JavaCore.create(codeProject);
+                if (!javaProject.isOpen()) {
+                    javaProject.open(monitor);
+                }
+                // only update code pom for main project.
+                if (ProjectManager.getInstance().getCurrentProject().getTechnicalLabel().equals(projectTechName)) {
+                    helper.updateCodesJarProjectPom(monitor, property, codeProject.getFile(TalendMavenConstants.POM_FILE_NAME));
+                }
+                codesJarJavaProject = new TalendProcessJavaProject(javaProject);
+                BuildCacheManager.getInstance().clearCodesCache(type);
+                talendCodeJavaProjects.put(codeProjectId, codesJarJavaProject);
+            } catch (Exception e) {
+                ExceptionHandler.process(e);
+            }
+        }
+
+        MavenPomSynchronizer.addChangeLibrariesListener();
+
+        return codesJarJavaProject;
+    }
+
     public static ITalendProcessJavaProject getTalendJobJavaProject(Property property) {
         return getTalendJobJavaProject(property, false);
     }
