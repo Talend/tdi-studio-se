@@ -203,7 +203,7 @@ for(int i = 0; i &lt; result.length; i++){
 		<IMPORTS>
 			<IMPORT NAME="WebServiceInput" MODULE="talend-webservice-input-1.0.2.jar" MVN="mvn:org.talend.libraries/talend-webservice-input-1.0.2/6.0.0"
 				REQUIRED="true" />
-			<IMPORT NAME="SOAP-axis" MODULE="axis-p1.jar" MVN="mvn:org.talend.libraries/axis-p1/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.apache.axis2/lib/axis-p1.jar" REQUIRED="true" />
+			<IMPORT NAME="SOAP-axis" MODULE="axis-1.4.jar" MVN="mvn:org.apache.axis/axis/1.4" REQUIRED="true"/>
 			<IMPORT NAME="SOAP-jaxrpc" MODULE="jaxrpc.jar" MVN="mvn:org.talend.libraries/jaxrpc/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.jax/lib/jaxrpc.jar"
 				REQUIRED="true" />
 			<IMPORT NAME="SOAP-saaj" MODULE="saaj.jar" MVN="mvn:org.talend.libraries/saaj/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.saaj/lib/saaj.jar" REQUIRED="true" />
