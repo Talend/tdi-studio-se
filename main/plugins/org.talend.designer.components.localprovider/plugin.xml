@@ -1744,8 +1744,7 @@
     	<libraryNeeded
 	   		context="plugin:org.talend.libraries.jetty"
         	id="jetty-util-6.1.26.hwx.jar"
-         	name="jetty-util-6.1.26.hwx.jar" mvn_uri="mvn:org.talend.libraries/jetty-util-6.1.26.hwx/6.0.0"
-         	uripath="platform:/plugin/org.talend.libraries.jetty/lib/jetty-util-6.1.26.hwx.jar">
+         	name="jetty-util-6.1.26.hwx.jar" mvn_uri="mvn:org.talend.libraries/jetty-util-6.1.26.hwx/6.0.0">
     	</libraryNeeded>
 
 	   	<libraryNeeded
