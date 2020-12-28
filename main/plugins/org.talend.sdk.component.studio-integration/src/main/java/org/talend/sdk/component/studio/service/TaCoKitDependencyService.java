@@ -38,7 +38,7 @@ public class TaCoKitDependencyService implements ITaCoKitDependencyService {
             "component-runtime-design-extension-", "component-runtime-di-", "component-runtime-impl-",
             "component-runtime-manager-", "component-spi-", "container-core-", "geronimo-annotation_1.3_spec-",
             "geronimo-json_1.1_spec-", "geronimo-jsonb_1.0_spec-", "johnzon-core-", "johnzon-jsonb-", "johnzon-mapper-",
-            "slf4j-api-", "slf4j-log4j12-", "xbean-asm7-shaded-", "xbean-finder-shaded-", "xbean-reflect-");
+            "slf4j-api-", "slf4j-log4j12-", "xbean-asm9-shaded-", "xbean-finder-shaded-", "xbean-reflect-");
 
     /**
      * @param components
