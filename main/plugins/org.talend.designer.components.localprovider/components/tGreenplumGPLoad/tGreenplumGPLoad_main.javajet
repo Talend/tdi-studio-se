@@ -189,7 +189,7 @@ skeleton="@{org.talend.designer.components.localprovider}/components/templates/d
 					temp_<%=cid%> = String.valueOf(<%=inputRowName%>.<%=column.getLabel()%>);
 					temp_<%=cid%> = temp_<%=cid%>.replace(<%=escapeChar%>,escapeCharRepl_<%=cid%>);
 					temp_<%=cid%> = temp_<%=cid%>.replace(<%=quoteChar%>,quoteCharRepl_<%=cid%>);
-					temp_<%=cid%> = temp_<%=cid%>.replaceAll("\\\n", "\\\\012").replaceAll("\\\r","\\\\015");
+					temp_<%=cid%> = temp_<%=cid%>.replace("\n", rowSepRepl_<%=cid%>).replace("\r","");
 					temp_<%=cid%> = temp_<%=cid%>.replaceAll("\\x00", "").replaceAll("\\u0000","");
 					temp_<%=cid%> = temp_<%=cid%>.replace(<%=fieldSeparator%>,fieldSeparatorRepl_<%=cid%>);
 					sb_<%=cid %>.append(<%=quoteChar%> + temp_<%=cid%> + <%=quoteChar%>);
