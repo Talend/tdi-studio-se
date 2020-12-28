@@ -75,6 +75,7 @@ skeleton="@{org.talend.designer.components.localprovider}/components/templates/d
 		%>
 		StringBuilder sb_<%=cid%> = new StringBuilder(1000);
 		String temp_<%=cid%> = null;
+		String rowSepRepl_<%=cid%> = <%=escapeChar%> + "\n";
 		String escapeCharRepl_<%=cid%> = <%=escapeChar%> + <%=escapeChar%>;
 		String fieldSeparatorRepl_<%=cid%> = <%=escapeChar%> + <%=fieldSeparator%>;
 		String null_<%=cid%> = <%=nullValue%>;

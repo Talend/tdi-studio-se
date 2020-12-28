@@ -393,10 +393,13 @@ skeleton="@{org.talend.designer.components.localprovider}/components/templates/d
 		%>
 		String gploadCtrlFile_<%=cid%> = "gp_ctrl_" + "<%=cid%>" + pid + Thread.currentThread().getId() + ".txt";
 
-		String delim_<%=cid%> = <%=fieldSeparator%>;
+		<% if(fieldSeparator.contains("\\\\")) { %>
+	        String delim_<%=cid%> = <%=fieldSeparator%>;
+        <% } else { %>
+    	    String delim_<%=cid%> = <%=fieldSeparator.replace("\\","\\\\")%>;
+        <% } %>
 		String escape_<%=cid%> = <%=escapeChar%>;
 		String quote_<%=cid%> = <%=quoteChar%>;
-		delim_<%=cid%> = "\t".equals(delim_<%=cid%>) ? "\\t" : delim_<%=cid%>;
 
 		try (java.io.PrintWriter gpctrl_<%=cid%> = new java.io.PrintWriter(new java.io.FileOutputStream(gploadCtrlFile_<%=cid%>, false), true)){
 			gpctrl_<%=cid%>.println("---");
