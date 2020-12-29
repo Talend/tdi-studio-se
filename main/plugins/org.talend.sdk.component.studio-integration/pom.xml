@@ -14,17 +14,18 @@
   <description>Studio integration of the Talend Component Kit framework.</description>
 
   <properties>
-    <component-runtime.version>1.1.25</component-runtime.version>
-    <commons-lang3.version>3.6</commons-lang3.version>
+    <component-runtime.version>1.29.0-SNAPSHOT</component-runtime.version>
+    <commons-lang3.version>3.11</commons-lang3.version>
     <mockito.version>2.23.0</mockito.version>
     <oro.version>2.0.8</oro.version>
     <log4j.version>1.2.17</log4j.version>
     <system-rules.version>1.16.0</system-rules.version>
     <common-io.version>2.5</common-io.version>
     <commons-lang.version>2.6</commons-lang.version>
-    <junit5.version>5.4.2</junit5.version>
+    <junit5.version>5.7.0</junit5.version>
     <commons-cli.version>1.4</commons-cli.version>
     <slf4j.version>1.7.25</slf4j.version>
+    <xbean.version>4.18</xbean.version>
   </properties>
 
   <dependencyManagement>
@@ -163,6 +164,26 @@
       <version>${commons-lang.version}</version>
       <scope>test</scope>
     </dependency>
+
+    <dependency>
+      <groupId>org.apache.xbean</groupId>
+      <artifactId>xbean-finder-shaded</artifactId>
+      <version>${xbean.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.xbean</groupId>
+      <artifactId>xbean-reflect</artifactId>
+      <version>${xbean.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.xbean</groupId>
+      <artifactId>xbean-asm9-shaded</artifactId>
+      <version>${xbean.version}</version>
+      <scope>test</scope>
+    </dependency>
+
   </dependencies>
 
   <build>

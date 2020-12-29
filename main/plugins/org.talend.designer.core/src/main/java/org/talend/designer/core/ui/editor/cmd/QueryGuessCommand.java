@@ -179,7 +179,7 @@ public class QueryGuessCommand extends Command {
     private String generateNewQueryFromDQRuler(IElementParameter dqRulerParam) {
         ITDQRuleService rulerService = null;
         try {
-            rulerService = (ITDQRuleService) GlobalServiceRegister.getDefault().getService(ITDQRuleService.class);
+            rulerService = GlobalServiceRegister.getDefault().getService(ITDQRuleService.class);
         } catch (RuntimeException e) {
             // nothing to do
         }
@@ -207,7 +207,10 @@ public class QueryGuessCommand extends Command {
             IElementParameter typeParam = node.getElementParameter("TYPE"); //$NON-NLS-1$
             IElementParameter dbParam = node.getElementParameter(EParameterName.DBNAME.getName());
             IContext lastRunContext = ((IProcess2) process).getLastRunContext();
-            String dbName = JavaProcessUtil.getRealParamValue(process, dbParam.getValue().toString(), lastRunContext);
+            String dbName = JavaProcessUtil
+                    .getRealParamValue(process,
+                            dbParam == null ? org.apache.commons.lang.StringUtils.EMPTY : dbParam.getValue().toString(),
+                            lastRunContext);
             IElementParameter schemaParam = node.getElementParameter(EParameterName.SCHEMA_DB.getName());
             String schemaName = JavaProcessUtil.getRealParamValue(process,
                     schemaParam == null ? org.apache.commons.lang.StringUtils.EMPTY : schemaParam.getValue().toString(),
@@ -223,7 +226,9 @@ public class QueryGuessCommand extends Command {
             if (connectionNode != null) {
                 typeParam = connectionNode.getElementParameter("TYPE"); //$NON-NLS-1$
                 dbParam = connectionNode.getElementParameter(EParameterName.DBNAME.getName());
-                dbName = JavaProcessUtil.getRealParamValue(process, dbParam.getValue().toString(), lastRunContext);
+                dbName = JavaProcessUtil
+                        .getRealParamValue(process, dbParam == null ? org.apache.commons.lang.StringUtils.EMPTY
+                                : dbParam.getValue().toString(), lastRunContext);
                 schemaParam = connectionNode.getElementParameter(EParameterName.SCHEMA_DB.getName());
                 schemaName = JavaProcessUtil.getRealParamValue(process,
                         schemaParam == null ? org.apache.commons.lang.StringUtils.EMPTY : schemaParam.getValue().toString(),

@@ -68,6 +68,11 @@
 								<artifactId>commons-codec</artifactId>
 								<version>1.15</version>
 				            </dependency>
+				            <dependency>
+								<groupId>org.apache.commons</groupId>
+								<artifactId>commons-compress</artifactId>
+							<version>1.19</version>
+						</dependency>
 						</dependencies>
 						<executions>
 							<execution>
@@ -293,6 +298,13 @@
 			    <plugins>
 			        <plugin>
 			            <artifactId>maven-assembly-plugin</artifactId>
+			            <dependencies>
+							<dependency>
+								<groupId>org.apache.commons</groupId>
+								<artifactId>commons-compress</artifactId>
+								<version>1.19</version>
+							</dependency>
+						</dependencies>
 			            <executions>
 			                <execution>
 			                    <phase>package</phase>
