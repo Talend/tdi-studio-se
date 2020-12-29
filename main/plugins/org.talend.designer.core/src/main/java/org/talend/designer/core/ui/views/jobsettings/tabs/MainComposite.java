@@ -784,7 +784,7 @@ public class MainComposite extends AbstractTabComposite {
                                                         RelationshipItemBuilder.getInstance().addOrUpdateItem(repositoryObject.getProperty().getItem());
                                                     }
                                                     proxyRepositoryFactory.save(ProjectManager.getInstance().getCurrentProject(),
-                                                            repositoryObject.getProperty().getItem(), false);
+                                                            repositoryObject.getProperty(), oldName, oldVersion);
                                                     if (needjobletRelateUpdate && GlobalServiceRegister.getDefault()
                                                             .isServiceRegistered(IJobletProviderService.class)) {
                                                         IJobletProviderService jobletService = (IJobletProviderService) GlobalServiceRegister
