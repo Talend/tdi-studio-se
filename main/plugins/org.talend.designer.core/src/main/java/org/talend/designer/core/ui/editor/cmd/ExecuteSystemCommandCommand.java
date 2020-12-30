@@ -25,6 +25,8 @@ import org.eclipse.gef.commands.Command;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.CTabFolder;
+import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.custom.StyleRange;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.graphics.Color;
@@ -35,8 +37,6 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipse.swt.widgets.TabFolder;
-import org.eclipse.swt.widgets.TabItem;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.PlatformUI;
 import org.talend.commons.ui.runtime.exception.ExceptionHandler;
@@ -196,14 +196,14 @@ public class ExecuteSystemCommandCommand extends Command {
             gridData.heightHint = 50;
             cmdText.setLayoutData(gridData);
 
-            TabFolder messTabFolder = new TabFolder(inner, SWT.NONE);
+            CTabFolder messTabFolder = new CTabFolder(inner, SWT.NONE);
             gridData = new GridData(GridData.FILL_BOTH);
             gridData.heightHint = MINIMUM_HEIGHT + 50;
             gridData.widthHint = MINIMUM_WIDTH + 50;
             messTabFolder.setLayoutData(gridData);
             messTabFolder.setBackground(inner.getBackground());
             // message
-            TabItem normalTabItem = new TabItem(messTabFolder, SWT.NONE);
+            CTabItem normalTabItem = new CTabItem(messTabFolder, SWT.NONE);
             normalTabItem.setText(Messages.getString("ExecuteSystemCommandCommand.ConsoleMessages")); //$NON-NLS-1$
 
             consoleText = new StyledText(messTabFolder, SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL | SWT.READ_ONLY);
@@ -217,6 +217,7 @@ public class ExecuteSystemCommandCommand extends Command {
             fillConsole(messages);
 
             normalTabItem.setControl(consoleText);
+            messTabFolder.setSelection(normalTabItem);
             return composite;
         }
 
