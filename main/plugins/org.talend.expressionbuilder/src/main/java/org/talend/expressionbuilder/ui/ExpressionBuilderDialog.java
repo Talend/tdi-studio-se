@@ -304,7 +304,7 @@ public class ExpressionBuilderDialog extends TrayDialog implements IExpressionBu
 
     @Override
     protected Point getInitialSize() {
-        return new Point(870, 500);
+        return new Point(870, 700);
     }
 
     /*
