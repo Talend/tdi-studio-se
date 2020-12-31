@@ -490,7 +490,8 @@ public class JavaProcessUtil {
                                         mn = getModuleValue(process, moduleName);
                                     }
 
-                                    if (line.get("JAR_NEXUS_VERSION") != null) {
+                                    String nexusJarVersion = (String) line.get("JAR_NEXUS_VERSION");
+                                    if (StringUtils.isNotBlank(nexusJarVersion)) {
                                         String a = moduleName.replaceFirst("[.][^.]+$", "");
                                         mn.setMavenUri("mvn:org.talend.libraries/" + a + "/"
                                                 + line.get("JAR_NEXUS_VERSION") + "/jar");
