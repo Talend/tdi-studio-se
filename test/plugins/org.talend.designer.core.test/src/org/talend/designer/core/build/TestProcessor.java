@@ -566,6 +566,12 @@ public class TestProcessor implements IProcessor {
         return null;
     }
 
+    @Override
+    public Set<ModuleNeeded> getCodesJarModulesNeededOfJoblets() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
     /*
      * (non-Javadoc)
      *
@@ -573,6 +579,12 @@ public class TestProcessor implements IProcessor {
      */
     @Override
     public Set<JobInfo> getBuildFirstChildrenJobs() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public Set<JobInfo> getBuildChildrenJobsAndJoblets() {
         // TODO Auto-generated method stub
         return null;
     }

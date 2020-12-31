@@ -36,6 +36,7 @@ import java.util.concurrent.FutureTask;
 import java.util.jar.Attributes;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
+import java.util.stream.Collectors;
 import java.util.zip.InflaterInputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -64,6 +65,7 @@ import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationType;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.debug.core.ILaunchManager;
+import org.eclipse.emf.common.util.EList;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.dom.Message;
 import org.eclipse.jdt.debug.core.IJavaBreakpoint;
@@ -116,6 +118,7 @@ import org.talend.core.model.process.ITargetExecutionConfig;
 import org.talend.core.model.process.JobInfo;
 import org.talend.core.model.process.ProcessUtils;
 import org.talend.core.model.properties.Item;
+import org.talend.core.model.properties.JobletProcessItem;
 import org.talend.core.model.properties.ProcessItem;
 import org.talend.core.model.properties.Property;
 import org.talend.core.model.repository.ERepositoryObjectType;
@@ -125,6 +128,7 @@ import org.talend.core.model.utils.NodeUtil;
 import org.talend.core.prefs.ITalendCorePrefConstants;
 import org.talend.core.runtime.CoreRuntimePlugin;
 import org.talend.core.runtime.maven.MavenArtifact;
+import org.talend.core.runtime.maven.MavenConstants;
 import org.talend.core.runtime.maven.MavenUrlHelper;
 import org.talend.core.runtime.process.ITalendProcessJavaProject;
 import org.talend.core.runtime.process.LastGenerationInfo;
@@ -133,6 +137,7 @@ import org.talend.core.runtime.process.TalendProcessOptionConstants;
 import org.talend.core.runtime.projectsetting.RuntimeLineageManager;
 import org.talend.core.ui.services.IRulesProviderService;
 import org.talend.core.utils.BitwiseOptionUtils;
+import org.talend.core.utils.CodesJarResourceCache;
 import org.talend.designer.codegen.ICodeGenerator;
 import org.talend.designer.codegen.ICodeGeneratorService;
 import org.talend.designer.core.DesignerPlugin;
@@ -140,13 +145,16 @@ import org.talend.designer.core.IDesignerCoreService;
 import org.talend.designer.core.ISyntaxCheckableEditor;
 import org.talend.designer.core.model.components.EParameterName;
 import org.talend.designer.core.model.utils.emf.talendfile.ProcessType;
+import org.talend.designer.core.model.utils.emf.talendfile.RoutinesParameterType;
 import org.talend.designer.core.runprocess.Processor;
 import org.talend.designer.core.ui.editor.CodeEditorFactory;
 import org.talend.designer.core.ui.editor.nodes.Node;
 import org.talend.designer.core.ui.editor.process.Process;
 import org.talend.designer.core.utils.BigDataJobUtil;
+import org.talend.designer.core.utils.JavaProcessUtil;
 import org.talend.designer.maven.utils.ClasspathsJarGenerator;
 import org.talend.designer.maven.utils.MavenVersionHelper;
+import org.talend.designer.maven.utils.PomIdsHelper;
 import org.talend.designer.maven.utils.PomUtil;
 import org.talend.designer.runprocess.IRunProcessService;
 import org.talend.designer.runprocess.ItemCacheManager;
@@ -158,6 +166,7 @@ import org.talend.designer.runprocess.RunProcessPlugin;
 import org.talend.designer.runprocess.i18n.Messages;
 import org.talend.designer.runprocess.prefs.RunProcessPrefsConstants;
 import org.talend.designer.runprocess.utils.JobVMArgumentsUtil;
+import org.talend.librariesmanager.model.ModulesNeededProvider;
 import org.talend.repository.ProjectManager;
 import org.talend.repository.constants.BuildJobConstants;
 import org.talend.repository.ui.utils.UpdateLog4jJarUtils;
@@ -213,6 +222,8 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
     protected Set<JobInfo> buildChildrenJobs;
 
     protected Set<JobInfo> buildFirstChildrenJobs;
+
+    protected Set<JobInfo> buildChildrenJobsAndJoblets;
 
     private final ITalendProcessJavaProject talendJavaProject;
 
@@ -303,24 +314,32 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
     @Override
     public Set<JobInfo> getBuildChildrenJobs() {
         if (buildChildrenJobs == null || buildChildrenJobs.isEmpty()) {
-            buildChildrenJobs = getChildrenJobInfo(false);
+            buildChildrenJobs = getBuildChildrenJobsAndJoblets().stream().filter(info -> info.getJobletProperty() == null)
+                    .collect(Collectors.toSet());
         }
         return buildChildrenJobs;
-
     }
 
     @Override
     public Set<JobInfo> getBuildFirstChildrenJobs() {
         if (buildFirstChildrenJobs == null || buildFirstChildrenJobs.isEmpty()) {
-            buildFirstChildrenJobs = getChildrenJobInfo(true);
+            buildFirstChildrenJobs = getChildrenJobInfo(true, true);
         }
         return buildFirstChildrenJobs;
     }
 
-    private Set<JobInfo> getChildrenJobInfo(boolean firstChildOnly) {
+    @Override
+    public Set<JobInfo> getBuildChildrenJobsAndJoblets() {
+        if (buildChildrenJobsAndJoblets == null || buildChildrenJobsAndJoblets.isEmpty()) {
+            buildChildrenJobsAndJoblets = getChildrenJobInfo(false, true);
+        }
+        return buildChildrenJobsAndJoblets;
+    }
+
+    private Set<JobInfo> getChildrenJobInfo(boolean firstChildOnly, boolean includeJoblet) {
         Set<JobInfo> childrenJobs = new HashSet<>();
         if (property != null && property.getItem() != null) {
-            Set<JobInfo> infos = ProcessorUtilities.getChildrenJobInfo(property.getItem(), firstChildOnly);
+            Set<JobInfo> infos = ProcessorUtilities.getChildrenJobInfo(property.getItem(), firstChildOnly, true);
             for (JobInfo jobInfo : infos) {
                 if (jobInfo.isTestContainer() && !ProcessUtils.isOptionChecked(getArguments(),
                         TalendProcessArgumentConstant.ARG_GENERATE_OPTION,
@@ -370,6 +389,10 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
         }
         if (buildFirstChildrenJobs != null) {
             buildFirstChildrenJobs.clear();
+        }
+
+        if (buildChildrenJobsAndJoblets != null) {
+            buildChildrenJobsAndJoblets.clear();
         }
 
         ITalendProcessJavaProject tProcessJavaProject = getTalendJavaProject();
@@ -1360,8 +1383,7 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
                 basePath.append(rootWorkingDir);
             }
             if (isExternalUse()) { // for tRunJob with independent option and init pom for classpath
-                List<String> codesJars = PomUtil.getCodesExportJars(this.getProcess());
-                for (String codesJar : codesJars) {
+                for (String codesJar : JavaProcessUtil.getCodesExportJars(this)) {
                     basePath.append(classPathSeparator);
                     if (rootWorkingDir.length() > 0) {
                         basePath.append(rootWorkingDir);
@@ -1411,9 +1433,9 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
             IPath externalResourcePath = tProcessJvaProject.getExternalResourcesFolder().getLocation();
             basePath.append(getClassPath(externalResourcePath));
             basePath.append(classPathSeparator);
+
             // add subjobs
-            Set<JobInfo> subjobs = this.getBuildChildrenJobs();
-            for (JobInfo info : subjobs) {
+            for (JobInfo info : getBuildChildrenJobs()) {
                 // add sub job classes folder
                 ITalendProcessJavaProject subjobPrject = TalendJavaProjectManager
                         .getTalendJobJavaProject(info.getProcessItem().getProperty());
@@ -1430,6 +1452,24 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
                 basePath.append(getClassPath(subjobExternalResourcePath));
                 basePath.append(classPathSeparator);
             }
+
+            Set<String> codesJarClassPaths = new HashSet<>();
+            // add codesjars from all subjob/joblets
+            getBuildChildrenJobsAndJoblets().forEach(info -> {
+                Item item = null;
+                if (info.getJobletProperty() != null) {
+                    item = info.getJobletProperty().getItem();
+                } else if (info.getProcessItem() != null) {
+                    item = info.getProcessItem();
+                }
+                if (item != null) {
+                    codesJarClassPaths.addAll(getCodesJarClassPaths(item));
+                }
+            });
+            // add codesjars of main job
+            codesJarClassPaths.addAll(getCodesJarClassPaths(getProperty().getItem()));
+
+            codesJarClassPaths.forEach(s -> basePath.append(s).append(classPathSeparator));
 
             // for loop dependency, add main classPath
             if (ProcessorUtilities.hasLoopDependency() && ProcessorUtilities.getMainJobInfo() != null) {
@@ -1454,7 +1494,6 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
             basePath.append(getClassPath(routineOutputPath));
             basePath.append(classPathSeparator);
 
-
             if (ProcessUtils.isRequiredBeans(process)) {
                 ITalendProcessJavaProject beansProject = TalendJavaProjectManager
                         .getTalendCodeJavaProject(ERepositoryObjectType.BEANS);
@@ -1477,25 +1516,62 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
         return base.toPortableString();
     }
 
+    private Set<String> getCodesJarClassPaths(Item item) {
+        Set<String> classPaths = new HashSet<>();
+        EList<RoutinesParameterType> routinesParameter = null;
+        if (item instanceof ProcessItem) {
+            routinesParameter = ((ProcessItem) item).getProcess().getParameters().getRoutinesParameter();
+        } else if (item instanceof JobletProcessItem) {
+            routinesParameter = ((JobletProcessItem) item).getJobletProcess().getParameters().getRoutinesParameter();
+        }
+        if (routinesParameter != null) {
+            routinesParameter.stream().filter(r -> r.getType() != null).forEach(r -> {
+                Property property = CodesJarResourceCache.getCodesJarById(r.getId());
+                if (ProjectManager.getInstance().isInCurrentMainProject(property)) {
+                    ITalendProcessJavaProject codesJarProject = TalendJavaProjectManager.getTalendCodesJarJavaProject(property);
+                    IPath codesJarOutputPath = codesJarProject.getOutputFolder().getLocation();
+                    classPaths.add(getClassPath(codesJarOutputPath));
+                } else {
+                    MavenArtifact artifact = new MavenArtifact();
+                    artifact.setGroupId(PomIdsHelper.getCodesJarGroupId(property.getItem()));
+                    artifact.setArtifactId(property.getLabel().toLowerCase());
+                    artifact.setVersion(PomIdsHelper
+                            .getCodesJarVersion(ProjectManager.getInstance().getProject(property).getTechnicalLabel()));
+                    artifact.setType(MavenConstants.TYPE_JAR);
+                    // !!!FIXME!!!
+                    // it might not work for cxf related jobs since it use relative path for job execution
+                    // need to user relative path for m2 jar path based on exection path
+                    // or check if codesjars are already in temp/lib folder, if yes, can use this relative path
+                    classPaths.add(PomUtil.getArtifactFullPath(artifact));
+                }
+            });
+        }
+        return classPaths;
+    }
+
     protected String getNeededModulesJarStr() {
         final String classPathSeparator = extractClassPathSeparator();
         final String libPrefixPath = getRootWorkingDir(true);
 
-        int option = TalendProcessOptionConstants.MODULES_WITH_CHILDREN;
+        int option = TalendProcessOptionConstants.MODULES_WITH_CHILDREN | TalendProcessOptionConstants.MODULES_WITH_CODESJAR;
 
         if (isExportConfig() || isSkipClasspathJar()) {
             option = option | TalendProcessOptionConstants.MODULES_EXCLUDE_SHADED;
         }
         Set<ModuleNeeded> neededModulesLogjarUnsorted = LastGenerationInfo.getInstance()
                 .getModulesNeededWithSubjobPerJob(process.getId(), process.getVersion());
+        neededModulesLogjarUnsorted.addAll(
+                LastGenerationInfo.getInstance().getCodesJarModulesNeededWithSubjobPerJob(process.getId(), process.getVersion()));
         if (neededModulesLogjarUnsorted.isEmpty()) {
             neededModulesLogjarUnsorted = getNeededModules(option);
+
+            // get codesjar libraries from related joblets
+            neededModulesLogjarUnsorted.addAll(getCodesJarModulesNeededOfJoblets());
         }
         JavaProcessorUtilities.checkJavaProjectLib(neededModulesLogjarUnsorted);
 
         Set<ModuleNeeded> highPriorityModuleNeeded = LastGenerationInfo.getInstance().getHighPriorityModuleNeeded(process.getId(),
                 process.getVersion());
-
 
         List<ModuleNeeded> neededModules = new ArrayList<ModuleNeeded>();
 
@@ -1571,6 +1647,15 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
             libPath.deleteCharAt(lastSep);
         }
         return libPath.toString();
+    }
+
+    @Override
+    public Set<ModuleNeeded> getCodesJarModulesNeededOfJoblets() {
+        Set<ModuleNeeded> codesJarModulesNeeded = new HashSet<>();
+        getBuildChildrenJobsAndJoblets().stream().filter(info -> info.getJobletProperty() != null)
+                .forEach(info -> codesJarModulesNeeded
+                        .addAll(ModulesNeededProvider.getCodesJarModulesNeededForProcess(info.getJobletProperty().getItem())));
+        return codesJarModulesNeeded;
     }
 
     public static void removeLowerVersionArtifacts(List<ModuleNeeded> neededModules, Set<ModuleNeeded> highPriorityModuleNeeded) {

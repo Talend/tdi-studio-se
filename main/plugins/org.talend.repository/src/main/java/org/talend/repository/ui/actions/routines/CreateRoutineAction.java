@@ -131,7 +131,7 @@ public class CreateRoutineAction extends AbstractRoutineAction {
         }
         NewRoutineWizard routineWizard;
         if (ERepositoryObjectType.ROUTINESJAR == node.getParent().getContentType()) {
-            routineWizard = new NewInnerRoutineWizard(path);
+            routineWizard = new NewInnerRoutineWizard(node, path);
         } else {
             routineWizard = new NewRoutineWizard(path);
         }

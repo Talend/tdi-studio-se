@@ -50,7 +50,7 @@ public class NewRoutineWizard extends Wizard {
     private NewRoutineWizardPage mainPage;
 
     /** Created project. */
-    private RoutineItem routineItem;
+    protected RoutineItem routineItem;
 
     private Property property;
 

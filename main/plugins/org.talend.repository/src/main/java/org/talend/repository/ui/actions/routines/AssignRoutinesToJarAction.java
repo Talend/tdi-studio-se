@@ -93,7 +93,7 @@ public class AssignRoutinesToJarAction extends AbstractRoutineAction {
                 RoutineItem sourceItem = (RoutineItem) node.getObject().getProperty().getItem();
                 List backupImports = new ArrayList<>(sourceItem.getImports());
                 sourceItem.getImports().clear();
-                RoutinesUtil.setInnerCodes(sourceItem.getProperty(), true);
+                RoutinesUtil.setInnerCodes(sourceItem.getProperty(), ERepositoryObjectType.ROUTINESJAR);
                 RoutinesJarItem routinesJarItem = (RoutinesJarItem) targetRoutinesJarNode.getObject().getProperty().getItem();
                 routinesJarItem.getRoutinesJarType().getImports().addAll(backupImports);
                 try {
@@ -103,7 +103,7 @@ public class AssignRoutinesToJarAction extends AbstractRoutineAction {
 
                     // reset
                     sourceItem.getImports().addAll(backupImports);
-                    RoutinesUtil.setInnerCodes(sourceItem.getProperty(), false);
+                    RoutinesUtil.setInnerCodes(sourceItem.getProperty(), null);
 
                     ProxyRepositoryFactory.getInstance().deleteObjectPhysical(node.getObject());
                 } catch (Exception e) {

@@ -81,11 +81,13 @@ import org.talend.core.runtime.projectsetting.ProjectPreferenceManager;
 import org.talend.core.service.IESBMicroService;
 import org.talend.core.service.IESBRouteService;
 import org.talend.core.ui.ITestContainerProviderService;
+import org.talend.core.utils.CodesJarResourceCache;
 import org.talend.designer.core.ui.editor.process.Process;
 import org.talend.designer.maven.model.TalendMavenConstants;
 import org.talend.designer.maven.tools.AggregatorPomsHelper;
 import org.talend.designer.maven.tools.BuildCacheManager;
 import org.talend.designer.maven.tools.CodeM2CacheManager;
+import org.talend.designer.maven.tools.CodesJarM2CacheManager;
 import org.talend.designer.maven.tools.MavenPomSynchronizer;
 import org.talend.designer.maven.tools.ProjectPomManager;
 import org.talend.designer.maven.utils.PomIdsHelper;
@@ -775,11 +777,6 @@ public class DefaultRunProcessService implements IRunProcessService {
     }
 
     @Override
-    public ITalendProcessJavaProject getTalendCodesJarJavaProject(Property property, String projectTechName) {
-        return TalendJavaProjectManager.getTalendCodesJarJavaProject(property, projectTechName);
-    }
-
-    @Override
     public ITalendProcessJavaProject getTalendJobJavaProject(Property property) {
         return TalendJavaProjectManager.getTalendJobJavaProject(property);
     }
@@ -828,6 +825,7 @@ public class DefaultRunProcessService implements IRunProcessService {
             if (ProcessUtils.isRequiredBeans(null)) {
                 AggregatorPomsHelper.buildAndInstallCodesProject(monitor, ERepositoryObjectType.BEANS);
             }
+            CodesJarM2CacheManager.updateCodesJarProject(monitor, false);
         } catch (Exception e) {
             ExceptionHandler.process(e);
         }
@@ -864,6 +862,14 @@ public class DefaultRunProcessService implements IRunProcessService {
             }
             helper.updateRefProjectModules(references, monitor);
             helper.updateCodeProjects(monitor, true);
+
+            CodesJarM2CacheManager.updateCodesJarProject(monitor);
+            for (Property property : CodesJarResourceCache.getAllCodesJar()) {
+                if (!ProjectManager.getInstance().isInCurrentMainProject(property)) {
+                    getTalendCodesJarJavaProject(property).getProject().delete(false, true, monitor);
+                    TalendJavaProjectManager.removeFromCodesJarJavaProjects(property);
+                }
+            }
         } catch (Exception e) {
             ExceptionHandler.process(e);
         }

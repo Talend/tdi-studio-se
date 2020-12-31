@@ -37,6 +37,7 @@ import org.talend.core.model.properties.PropertiesFactory;
 import org.talend.core.model.properties.Property;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
 import org.talend.core.runtime.process.LastGenerationInfo;
+import org.talend.core.runtime.process.TalendProcessOptionConstants;
 import org.talend.core.ui.component.ComponentsFactoryProvider;
 import org.talend.designer.core.ui.editor.connections.Connection;
 import org.talend.designer.core.ui.editor.nodecontainer.NodeContainer;
@@ -74,7 +75,7 @@ public class JavaProcessorUtilitiesTest {
                     "tFixedFlowInput_1", "row1", "row1", false);
 
             Set<ModuleNeeded> neededLibraries = CorePlugin.getDefault().getDesignerCoreService()
-                    .getNeededLibrariesForProcess(process, false);
+                    .getNeededLibrariesForProcess(process, TalendProcessOptionConstants.MODULES_DEFAULT);
             try {
                 JavaProcessorUtilities.computeLibrariesPath(neededLibraries, process, new HashSet<ModuleNeeded>());
             } catch (ProcessorException e) {
@@ -102,7 +103,7 @@ public class JavaProcessorUtilitiesTest {
             process.addNodeContainer(new NodeContainer(tLibraryLoad_1));
             tLibraryLoad_1.getElementParameter("LIBRARY").setValue("computeLibrariesPath.jar");
             Set<ModuleNeeded> neededLibraries = CorePlugin.getDefault().getDesignerCoreService()
-                    .getNeededLibrariesForProcess(process, false);
+                    .getNeededLibrariesForProcess(process, TalendProcessOptionConstants.MODULES_DEFAULT);
             ProcessorException exception = null;
             try {
                 JavaProcessorUtilities.computeLibrariesPath(neededLibraries, process, new HashSet<ModuleNeeded>());
@@ -141,6 +142,8 @@ public class JavaProcessorUtilitiesTest {
         neededModules.add(moduleNeeded_B);
         neededModules.add(moduleNeeded_C);
         neededModules.add(moduleNeeded_D);
+
+        // TODO add codesjar case
 
         LastGenerationInfo.getInstance().clearHighPriorityModuleNeeded();
         Set<ModuleNeeded> highPriorityModuleNeeded = new LinkedHashSet<>();

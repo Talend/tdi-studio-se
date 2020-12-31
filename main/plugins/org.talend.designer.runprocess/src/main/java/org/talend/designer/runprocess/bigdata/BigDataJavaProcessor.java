@@ -26,6 +26,7 @@ import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.emf.common.util.EList;
 import org.talend.commons.exception.CommonExceptionHandler;
 import org.talend.commons.utils.generation.JavaUtils;
 import org.talend.commons.utils.resource.FileExtensions;
@@ -36,13 +37,19 @@ import org.talend.core.model.process.ProcessUtils;
 import org.talend.core.model.properties.ProcessItem;
 import org.talend.core.model.properties.Property;
 import org.talend.core.model.repository.ERepositoryObjectType;
+import org.talend.core.runtime.maven.MavenArtifact;
+import org.talend.core.runtime.maven.MavenConstants;
 import org.talend.core.runtime.maven.MavenUrlHelper;
 import org.talend.core.runtime.process.ITalendProcessJavaProject;
 import org.talend.core.runtime.process.LastGenerationInfo;
 import org.talend.core.runtime.process.TalendProcessOptionConstants;
 import org.talend.core.runtime.repository.build.IMavenPomCreator;
+import org.talend.core.utils.CodesJarResourceCache;
+import org.talend.designer.core.model.utils.emf.talendfile.RoutinesParameterType;
 import org.talend.designer.core.utils.BigDataJobUtil;
+import org.talend.designer.core.utils.JavaProcessUtil;
 import org.talend.designer.maven.tools.creator.CreateMavenJobPom;
+import org.talend.designer.maven.utils.PomIdsHelper;
 import org.talend.designer.maven.utils.PomUtil;
 import org.talend.designer.runprocess.IBigDataProcessor;
 import org.talend.designer.runprocess.ProcessorConstants;
@@ -51,6 +58,7 @@ import org.talend.designer.runprocess.ProcessorUtilities;
 import org.talend.designer.runprocess.java.JavaProcessorUtilities;
 import org.talend.designer.runprocess.java.TalendJavaProjectManager;
 import org.talend.designer.runprocess.maven.MavenJavaProcessor;
+import org.talend.repository.ProjectManager;
 import org.talend.repository.ui.utils.UpdateLog4jJarUtils;
 import org.talend.repository.ui.wizards.exportjob.scriptsmanager.JobScriptsManager;
 import org.talend.repository.ui.wizards.exportjob.scriptsmanager.JobScriptsManager.ExportChoice;
@@ -213,7 +221,7 @@ public abstract class BigDataJavaProcessor extends MavenJavaProcessor implements
         if (process instanceof IProcess2) {
             if (isExport) {
                 // In an export mode, all the dependencies and the routines/beans/udfs are packaged in the lib folder.
-                libNamesUnsorted = JavaProcessorUtilities.extractLibNamesOnlyForMapperAndReducer((IProcess2) process);
+                libNamesUnsorted = JavaProcessorUtilities.extractLibNamesOnlyForMapperAndReducer(this);
             } else {
                 // In the local mode, all the dependencies are packaged in the lib folder. The routines/beans/udfs are
                 // not.
@@ -225,6 +233,8 @@ public abstract class BigDataJavaProcessor extends MavenJavaProcessor implements
         }
         Set<ModuleNeeded> modulesNeeded = LastGenerationInfo.getInstance().getModulesNeededWithSubjobPerJob(process.getId(),
                 process.getVersion());
+        modulesNeeded.addAll(
+                LastGenerationInfo.getInstance().getCodesJarModulesNeededWithSubjobPerJob(process.getId(), process.getVersion()));
         Set<ModuleNeeded> highPriorityModuleNeeded = LastGenerationInfo.getInstance().getHighPriorityModuleNeeded(process.getId(),
                 process.getVersion());
         Set<String> allNeededLibsAfterAdjuster = new HashSet<String>();
@@ -297,6 +307,33 @@ public abstract class BigDataJavaProcessor extends MavenJavaProcessor implements
                             JavaUtils.BEANS_JAR_NAME + "-" + PomUtil.getDefaultMavenVersion() + FileExtensions.JAR_FILE_SUFFIX); //$NON-NLS-1$
                     libJars.append(beansJar.getLocation().toPortableString() + ","); //$NON-NLS-1$
                 }
+
+                EList<RoutinesParameterType> routinesParameter = ((ProcessItem) getProperty().getItem()).getProcess()
+                        .getParameters().getRoutinesParameter();
+                routinesParameter.stream().filter(r -> r.getType() != null).forEach(r -> {
+                    Property property = CodesJarResourceCache.getCodesJarById(r.getId());
+                    if (ProjectManager.getInstance().isInCurrentMainProject(property)) {
+                        ITalendProcessJavaProject codesJarProject = TalendJavaProjectManager
+                                .getTalendCodesJarJavaProject(property);
+                        IFile codesJarFile = codesJarProject.getTargetFolder().getFile(property.getLabel().toLowerCase() + "-" //$NON-NLS-1$
+                                + PomIdsHelper.getCodesJarVersion() + FileExtensions.JAR_FILE_SUFFIX);
+                        libJars.append(codesJarFile.getLocation().toPortableString() + ","); //$NON-NLS-1$
+                    } else {
+                        // TODO to validate if really need this part
+                        MavenArtifact artifact = new MavenArtifact();
+                        artifact.setGroupId(PomIdsHelper.getCodesJarGroupId(property.getItem()));
+                        artifact.setArtifactId(property.getLabel().toLowerCase());
+                        artifact.setVersion(PomIdsHelper
+                                .getCodesJarVersion(ProjectManager.getInstance().getProject(property).getTechnicalLabel()));
+                        artifact.setType(MavenConstants.TYPE_JAR);
+                        // !!!FIXME!!!
+                        // it might not work for cxf related jobs since it use relative path for job execution
+                        // need to user relative path for m2 jar path based on exection path
+                        // or check if codesjars are already in temp/lib folder, if yes, can use this relative path
+                        libJars.append(PomUtil.getArtifactFullPath(artifact));
+                        libJars.append(","); //$NON-NLS-1$
+                    }
+                });
             }
 
             // ... and add the jar of the job itself also located in the target directory/
@@ -325,6 +362,7 @@ public abstract class BigDataJavaProcessor extends MavenJavaProcessor implements
     protected Set<String> extractAllLibs() {
         Set<String> libsRequiredByJob = new HashSet<>();
         Set<ModuleNeeded> neededModules = JavaProcessorUtilities.getNeededModulesForProcess(process);
+        neededModules.addAll(getCodesJarModulesNeededOfJoblets());
         if (!ProcessorUtilities.isExportConfig()) {
 //            JavaProcessorUtilities.addLog4jToModuleList(neededModules, process);
         }
@@ -333,7 +371,7 @@ public abstract class BigDataJavaProcessor extends MavenJavaProcessor implements
         for (ModuleNeeded neededModule : neededModules) {
             libsRequiredByJob.add(neededModule.getModuleName());
         }
-        libsRequiredByJob.addAll(PomUtil.getCodesExportJars(this.getProcess()));
+        libsRequiredByJob.addAll(JavaProcessUtil.getCodesExportJars(this));
         return libsRequiredByJob;
     }
 
@@ -448,10 +486,13 @@ public abstract class BigDataJavaProcessor extends MavenJavaProcessor implements
     public Set<ModuleNeeded> getShadedModulesExclude() {
         Set<ModuleNeeded> modulesNeeded = LastGenerationInfo.getInstance().getModulesNeededPerJob(getProcess().getId(),
                 getProcess().getVersion());
+        modulesNeeded.addAll(
+                LastGenerationInfo.getInstance().getCodesJarModulesNeededPerJob(getProcess().getId(), getProcess().getVersion()));
         if (modulesNeeded.isEmpty()) {
             modulesNeeded = getNeededModules(TalendProcessOptionConstants.MODULES_DEFAULT);
             LastGenerationInfo.getInstance().setModulesNeededPerJob(getProcess().getId(), getProcess().getVersion(),
                     modulesNeeded);
+            modulesNeeded.addAll(getCodesJarModulesNeededOfJoblets());
         }
 
         return new BigDataJobUtil(getProcess()).getShadedModulesExclude(modulesNeeded);
