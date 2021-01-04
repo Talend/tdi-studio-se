@@ -437,6 +437,11 @@ public class RunProcessService implements IRunProcessService {
     }
 
     @Override
+    public ITalendProcessJavaProject getExistingTalendJobProject(Property property) {
+        return delegateService.getExistingTalendJobProject(property);
+    }
+
+    @Override
     public IFolder getCodeSrcFolder(ERepositoryObjectType type, String projectTechName) {
         return delegateService.getCodeSrcFolder(type, projectTechName);
     }

@@ -14,6 +14,8 @@ package org.talend.designer.core.ui.action;
 
 import java.util.List;
 
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TreeViewer;
@@ -32,6 +34,7 @@ import org.talend.core.model.properties.ProcessItem;
 import org.talend.core.model.relationship.RelationshipItemBuilder;
 import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
+import org.talend.core.runtime.process.ITalendProcessJavaProject;
 import org.talend.core.ui.IJobletProviderService;
 import org.talend.designer.core.i18n.Messages;
 import org.talend.designer.core.model.utils.emf.talendfile.ProcessType;
@@ -39,6 +42,8 @@ import org.talend.designer.core.model.utils.emf.talendfile.RoutinesParameterType
 import org.talend.designer.core.model.utils.emf.talendfile.TalendFileFactory;
 import org.talend.designer.core.ui.routine.RoutineItemRecord;
 import org.talend.designer.core.ui.routine.SetupProcessDependenciesRoutinesDialog;
+import org.talend.designer.maven.utils.MavenProjectUtils;
+import org.talend.designer.runprocess.IRunProcessService;
 import org.talend.repository.ProjectManager;
 import org.talend.repository.model.IProxyRepositoryFactory;
 import org.talend.repository.model.RepositoryNode;
@@ -137,8 +142,15 @@ public class SetupProcessDependenciesRoutinesAction extends AContextualAction {
                 createRoutinesDependencies(process, dialog.getBeansJars());
                 try {
                     CorePlugin.getDefault().getRepositoryService().getProxyRepositoryFactory().save(processItem);
+                    if (GlobalServiceRegister.getDefault().isServiceRegistered(IRunProcessService.class)) {
+                        IRunProcessService runService = GlobalServiceRegister.getDefault().getService(IRunProcessService.class);
+                        ITalendProcessJavaProject jobProject = runService.getExistingTalendJobProject(processItem.getProperty());
+                        if (jobProject != null) {
+                            MavenProjectUtils.updateMavenProject(new NullProgressMonitor(), jobProject.getProject());
+                        }
+                    }
                     RelationshipItemBuilder.getInstance().addOrUpdateItem(processItem);
-                } catch (PersistenceException e) {
+                } catch (PersistenceException | CoreException e) {
                     ExceptionHandler.process(e);
                 }
             }
