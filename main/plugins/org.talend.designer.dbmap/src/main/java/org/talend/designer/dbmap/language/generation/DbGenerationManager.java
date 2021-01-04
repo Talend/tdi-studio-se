@@ -12,9 +12,6 @@
 // ============================================================================
 package org.talend.designer.dbmap.language.generation;
 
-import static java.util.Optional.ofNullable;
-import static java.util.stream.Collectors.toList;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
