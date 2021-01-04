@@ -414,8 +414,8 @@ public class TalendJavaProjectManager {
         return talendCodeJavaProjects.get(getCodeProjectId(codeType, projectTechName));
     }
 
-    public static ITalendProcessJavaProject getExistingTalendCodesJarProject(Property property) {
-        return talendCodesJarJavaProjects.get(getCodesJarProjectId(property));
+    public static ITalendProcessJavaProject getExistingTalendCodesJarProject(String codesJarProjectId) {
+        return talendCodesJarJavaProjects.get(codesJarProjectId);
     }
 
     public static void removeFromCodeJavaProjects(ERepositoryObjectType codeType, String projectTechName) {
@@ -424,6 +424,30 @@ public class TalendJavaProjectManager {
 
     public static void removeFromCodesJarJavaProjects(Property Property) {
         talendCodesJarJavaProjects.remove(getCodesJarProjectId(Property));
+    }
+
+    public static void deleteTalendCodesJarProject(Property property, boolean deleteContent) {
+        ERepositoryObjectType type = ERepositoryObjectType.getItemType(property.getItem());
+        String projectTechName = ProjectManager.getInstance().getProject(property).getTechnicalLabel();
+        deleteTalendCodesJarProject(type, projectTechName, property.getLabel(), deleteContent);
+    }
+
+    public static void deleteTalendCodesJarProject(ERepositoryObjectType type, String projectTechName, String codesJarName,
+            boolean deleteContent) {
+        try {
+            String projectId = getCodesJarProjectId(type, projectTechName, codesJarName);
+            ITalendProcessJavaProject project = talendCodesJarJavaProjects.get(projectId);
+            if (project != null) {
+                project.getProject().delete(deleteContent, true, null);
+            }
+            if (deleteContent) {
+                IFolder folder = new AggregatorPomsHelper(projectTechName).getCodeFolder(type).getFolder(codesJarName);
+                folder.delete(true, false, null);
+            }
+            talendCodesJarJavaProjects.remove(projectId);
+        } catch (CoreException e) {
+            ExceptionHandler.process(e);
+        }
     }
 
     public static void deleteTalendJobProjectsUnderFolder(ERepositoryObjectType processType, IPath folderPath,

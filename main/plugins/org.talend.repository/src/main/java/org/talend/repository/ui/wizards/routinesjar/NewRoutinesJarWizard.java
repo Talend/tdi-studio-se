@@ -12,6 +12,7 @@
 // ============================================================================
 package org.talend.repository.ui.wizards.routinesjar;
 
+import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.wizard.Wizard;
@@ -20,13 +21,17 @@ import org.talend.commons.exception.PersistenceException;
 import org.talend.commons.ui.runtime.image.ECoreImage;
 import org.talend.commons.ui.runtime.image.ImageProvider;
 import org.talend.commons.utils.VersionUtils;
+import org.talend.commons.utils.workbench.resources.ResourceUtils;
 import org.talend.core.CorePlugin;
 import org.talend.core.context.Context;
 import org.talend.core.context.RepositoryContext;
+import org.talend.core.model.general.Project;
 import org.talend.core.model.properties.PropertiesFactory;
 import org.talend.core.model.properties.Property;
 import org.talend.core.model.properties.RoutinesJarItem;
+import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
+import org.talend.repository.ProjectManager;
 import org.talend.repository.i18n.Messages;
 import org.talend.repository.model.IProxyRepositoryFactory;
 
@@ -71,6 +76,12 @@ public class NewRoutinesJarWizard extends Wizard {
             property.setId(repositoryFactory.getNextId());
             property.setLabel(property.getDisplayName());
             repositoryFactory.create(routinesJarItem, mainPage.getDestinationPath());
+            Project project = ProjectManager.getInstance().getCurrentProject();
+            IFolder folder = ResourceUtils.getFolder(ResourceUtils.getProject(project),
+                    ERepositoryObjectType.getFolderName(ERepositoryObjectType.ROUTINESJAR), true).getFolder(property.getLabel());
+            if (!folder.exists()) {
+                ResourceUtils.createFolder(folder);
+            }
         } catch (PersistenceException e) {
             MessageDialog.openError(getShell(), Messages.getString("NewProcessWizard.failureTitle"), ""); //$NON-NLS-1$ //$NON-NLS-2$
             ExceptionHandler.process(e);

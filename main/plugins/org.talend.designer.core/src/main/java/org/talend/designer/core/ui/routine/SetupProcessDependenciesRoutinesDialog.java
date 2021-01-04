@@ -21,6 +21,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.jface.dialogs.Dialog;
@@ -54,9 +55,9 @@ import org.talend.core.model.properties.ProcessItem;
 import org.talend.core.model.properties.Property;
 import org.talend.core.model.properties.RoutineItem;
 import org.talend.core.model.repository.ERepositoryObjectType;
-import org.talend.core.model.repository.IRepositoryViewObject;
 import org.talend.core.model.routines.RoutinesUtil;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
+import org.talend.core.utils.CodesJarResourceCache;
 import org.talend.designer.core.ICamelDesignerCoreService;
 import org.talend.designer.core.i18n.Messages;
 import org.talend.designer.core.model.utils.emf.talendfile.ProcessType;
@@ -181,15 +182,15 @@ public class SetupProcessDependenciesRoutinesDialog extends Dialog {
     private void initModel(Project project, ERepositoryObjectType type, Map<Project, List<Property>> all) {
         try {
             Project currentProject = ProjectManager.getInstance().getCurrentProject();
-            List<IRepositoryViewObject> allCodesItemObjects;
+            Set<Property> allCodesProperties;
             if (ERepositoryObjectType.getAllTypesOfCodesJar().contains(type)) {
-                allCodesItemObjects = ProxyRepositoryFactory.getInstance().getAllCodesJars(project, type);
+                allCodesProperties = CodesJarResourceCache.getAllCodesJars();
             } else {
-                allCodesItemObjects = ProxyRepositoryFactory.getInstance().getAll(project, type,
-                        RoutinesUtil.allowDeletedRoutine());
+                allCodesProperties = ProxyRepositoryFactory.getInstance()
+                        .getAll(project, type, RoutinesUtil.allowDeletedRoutine()).stream().map(o -> o.getProperty())
+                        .collect(Collectors.toSet());
             }
-            for (IRepositoryViewObject obj : allCodesItemObjects) {
-                Property property = obj.getProperty();
+            for (Property property : allCodesProperties) {
                 if (project.equals(currentProject)) {
                     addItems(project, all, property);
                 } else {

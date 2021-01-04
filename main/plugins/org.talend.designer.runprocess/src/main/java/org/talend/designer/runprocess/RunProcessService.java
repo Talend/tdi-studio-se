@@ -12,6 +12,7 @@
 // ============================================================================
 package org.talend.designer.runprocess;
 
+import java.beans.PropertyChangeListener;
 import java.util.List;
 import java.util.Set;
 
@@ -439,6 +440,16 @@ public class RunProcessService implements IRunProcessService {
     @Override
     public ITalendProcessJavaProject getExistingTalendJobProject(Property property) {
         return delegateService.getExistingTalendJobProject(property);
+    }
+
+    @Override
+    public ITalendProcessJavaProject getExistingTalendCodesJarProject(String codesJarProjectId) {
+        return delegateService.getExistingTalendCodesJarProject(codesJarProjectId);
+    }
+
+    @Override
+    public PropertyChangeListener addCodesJarChangeListener() {
+        return delegateService.addCodesJarChangeListener();
     }
 
     @Override

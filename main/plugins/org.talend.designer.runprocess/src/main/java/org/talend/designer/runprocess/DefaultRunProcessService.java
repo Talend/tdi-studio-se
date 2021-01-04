@@ -12,6 +12,7 @@
 // ============================================================================
 package org.talend.designer.runprocess;
 
+import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -98,6 +99,7 @@ import org.talend.designer.runprocess.java.TalendJavaProjectManager;
 import org.talend.designer.runprocess.language.SyntaxCheckerFactory;
 import org.talend.designer.runprocess.mapreduce.MapReduceJavaProcessor;
 import org.talend.designer.runprocess.maven.MavenJavaProcessor;
+import org.talend.designer.runprocess.maven.listener.CodesJarChangeListener;
 import org.talend.designer.runprocess.prefs.RunProcessPrefsConstants;
 import org.talend.designer.runprocess.spark.SparkJavaProcessor;
 import org.talend.designer.runprocess.storm.StormJavaProcessor;
@@ -787,6 +789,18 @@ public class DefaultRunProcessService implements IRunProcessService {
     }
 
     @Override
+    public ITalendProcessJavaProject getExistingTalendCodesJarProject(String codesJarProjectId) {
+        return TalendJavaProjectManager.getExistingTalendCodesJarProject(codesJarProjectId);
+    }
+
+    @Override
+    public PropertyChangeListener addCodesJarChangeListener() {
+        CodesJarChangeListener listener = new CodesJarChangeListener();
+        ProxyRepositoryFactory.getInstance().addPropertyChangeListener(new CodesJarChangeListener());
+        return listener;
+    }
+
+    @Override
     public IFolder getCodeSrcFolder(ERepositoryObjectType type, String projectTechName) {
         return new AggregatorPomsHelper(projectTechName).getCodeSrcFolder(type);
     }
@@ -869,7 +883,7 @@ public class DefaultRunProcessService implements IRunProcessService {
             helper.updateCodeProjects(monitor, true);
 
             CodesJarM2CacheManager.updateCodesJarProject(monitor);
-            for (Property property : CodesJarResourceCache.getAllCodesJar()) {
+            for (Property property : CodesJarResourceCache.getAllCodesJars()) {
                 if (!ProjectManager.getInstance().isInCurrentMainProject(property)) {
                     getTalendCodesJarJavaProject(property).getProject().delete(false, true, monitor);
                     TalendJavaProjectManager.removeFromCodesJarJavaProjects(property);
