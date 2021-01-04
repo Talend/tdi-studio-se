@@ -34,8 +34,8 @@
 
 		<PARAMETER FIELD="LABEL" NAME="DEPRECATE_NOTE" COLOR="255;0;0"
                    NUM_ROW="6" REQUIRED="true"
-                   SHOW_IF="(DB_VERSION=='DATAPROC_1_1' OR DB_VERSION=='Cloudera_CDH580_Spark2'
-                   			OR DB_VERSION=='MAPR500' OR DB_VERSION=='MAPR510' OR DB_VERSION=='MAPR520')"
+                   SHOW_IF="(HIVE_VERSION=='DATAPROC_1_1' OR HIVE_VERSION=='Cloudera_CDH580_Spark2'
+                   			OR HIVE_VERSION=='MAPR500' OR HIVE_VERSION=='MAPR510' OR HIVE_VERSION=='MAPR520')"
                    GROUP="VERSION">
             <DEFAULT>This distribution is deprecated</DEFAULT>
         </PARAMETER>
