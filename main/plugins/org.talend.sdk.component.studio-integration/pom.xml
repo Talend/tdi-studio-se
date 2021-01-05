@@ -85,6 +85,18 @@
     	<groupId>org.jruby</groupId>
     	<artifactId>jruby</artifactId>
     	<version>9.2.14.0</version>
+    	<exclusions>
+    		<exclusion>
+    			<groupId>org.jruby</groupId>
+    			<artifactId>jruby-stdlib</artifactId>
+    		</exclusion>
+    	</exclusions>
+    </dependency>
+    
+    <dependency>
+    	<groupId>org.talend.libraries</groupId>
+    	<artifactId>jruby-stdlib-9.2.14.0</artifactId>
+    	<version>6.0.0</version>
     </dependency>
 
     <dependency>
