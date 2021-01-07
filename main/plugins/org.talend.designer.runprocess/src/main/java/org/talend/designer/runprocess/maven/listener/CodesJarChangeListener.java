@@ -22,6 +22,7 @@ import org.eclipse.ltk.core.refactoring.resource.RenameResourceChange;
 import org.talend.commons.exception.ExceptionHandler;
 import org.talend.core.model.properties.Item;
 import org.talend.core.model.properties.Property;
+import org.talend.core.model.properties.RoutinesJarItem;
 import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.core.model.repository.IRepositoryViewObject;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
@@ -104,31 +105,31 @@ public class CodesJarChangeListener implements PropertyChangeListener {
     private void caseCreateOrSave(Object newValue) throws Exception {
         if (newValue instanceof Item) {
             Item item = (Item) newValue;
-            CodesJarResourceCache.addToCache(item.getProperty());
-            CodesJarM2CacheManager.updateCodesJarProject(item.getProperty());
+            if (needUpdate(item)) {
+                CodesJarResourceCache.addToCache(item.getProperty());
+            }
         }
     }
 
     private void caseImport(String propertyName, Object newValue) {
         if (newValue instanceof Set) {
             Set<Item> importItems = (Set<Item>) newValue;
-            importItems.forEach(item -> CodesJarResourceCache.addToCache(item.getProperty()));
-            // update codesjar project is done in ImportItemsWizardPage
+            importItems.stream().filter(item -> needUpdate(item))
+                    .forEach(item -> CodesJarResourceCache.addToCache(item.getProperty()));
         }
     }
 
     private void caseRestore(Object newValue) {
         if (newValue instanceof IRepositoryViewObject) {
             IRepositoryViewObject object = (IRepositoryViewObject) newValue;
-            CodesJarResourceCache.addToCache(object.getProperty());
+            if (needUpdate(object.getProperty().getItem())) {
+                CodesJarResourceCache.addToCache(object.getProperty());
+            }
         }
     }
 
     private boolean needUpdate(Item item) {
-        ERepositoryObjectType type = ERepositoryObjectType.getItemType(item);
-        if (type != null) {
-            return ERepositoryObjectType.getAllTypesOfCodesJar().contains(type);
-        }
-        return false;
+        return item instanceof RoutinesJarItem;
     }
+
 }

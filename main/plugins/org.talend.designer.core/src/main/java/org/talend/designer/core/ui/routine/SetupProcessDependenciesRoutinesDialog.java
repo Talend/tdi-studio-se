@@ -21,7 +21,6 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.jface.dialogs.Dialog;
@@ -121,12 +120,14 @@ public class SetupProcessDependenciesRoutinesDialog extends Dialog {
 
         ProjectManager projectManager = ProjectManager.getInstance();
         Project currentProject = projectManager.getCurrentProject();
-        initModels(currentProject);
+        initModelsForRoutines(currentProject);
 
         Set<Project> referenceProjects = new HashSet<Project>();
         getAllReferenceProjects(currentProject, referenceProjects);
-        referenceProjects.forEach(p -> initModels(p));
+        referenceProjects.forEach(p -> initModelsForRoutines(p));
         
+        initModelsForCodesJars();
+
         Set<RoutineItemRecord> systemRoutinesSet = new LinkedHashSet<>();
         Set<RoutineItemRecord> globalRoutinesSet = new LinkedHashSet<>();
         Set<RoutineItemRecord> routinesJarsSet = new LinkedHashSet<>();
@@ -171,38 +172,34 @@ public class SetupProcessDependenciesRoutinesDialog extends Dialog {
         }
     }
 
-    private void initModels(Project project) {
-        initModel(project, ERepositoryObjectType.ROUTINES, allRoutineItems);
-        initModel(project, ERepositoryObjectType.ROUTINESJAR, allRoutinesJarItems);
-        if (isRouteProcess) {
-            initModel(project, ERepositoryObjectType.BEANSJAR, allBeansJarItems);
+    private void initModelsForRoutines(Project project) {
+        try {
+            Project currentProject = ProjectManager.getInstance().getCurrentProject();
+            ProxyRepositoryFactory.getInstance()
+                    .getAll(project, ERepositoryObjectType.ROUTINES, RoutinesUtil.allowDeletedRoutine()).stream()
+                    .map(o -> o.getProperty()).forEach(p -> {
+                        // don't add system routines in ref-project
+                        if (!project.equals(currentProject) && p.getItem() instanceof RoutineItem
+                                && ((RoutineItem) p.getItem()).isBuiltIn()) {
+                            return;
+                        }
+                        addItems(project, allRoutineItems, p);
+                    });
+        } catch (PersistenceException e) {
+            ExceptionHandler.process(e);
         }
     }
 
-    private void initModel(Project project, ERepositoryObjectType type, Map<Project, List<Property>> all) {
-        try {
-            Project currentProject = ProjectManager.getInstance().getCurrentProject();
-            Set<Property> allCodesProperties;
-            if (ERepositoryObjectType.getAllTypesOfCodesJar().contains(type)) {
-                allCodesProperties = CodesJarResourceCache.getAllCodesJars();
-            } else {
-                allCodesProperties = ProxyRepositoryFactory.getInstance()
-                        .getAll(project, type, RoutinesUtil.allowDeletedRoutine()).stream().map(o -> o.getProperty())
-                        .collect(Collectors.toSet());
+    private void initModelsForCodesJars() {
+        for (Property property : CodesJarResourceCache.getAllCodesJars()) {
+            Project project = ProjectManager.getInstance()
+                    .getProjectFromProjectTechLabel(ProjectManager.getInstance().getProject(property).getTechnicalLabel());
+            ERepositoryObjectType type = ERepositoryObjectType.getItemType(property.getItem());
+            if (type == ERepositoryObjectType.ROUTINESJAR) {
+                addItems(project, allRoutinesJarItems, property);
+            } else if (type == ERepositoryObjectType.BEANSJAR && isRouteProcess) {
+                addItems(project, allBeansJarItems, property);
             }
-            for (Property property : allCodesProperties) {
-                if (project.equals(currentProject)) {
-                    addItems(project, all, property);
-                } else {
-                    // don't add system routines in ref-project
-                    if (property.getItem() instanceof RoutineItem && ((RoutineItem) property.getItem()).isBuiltIn()) {
-                        continue;
-                    }
-                    addItems(project, all, property);
-                }
-            }
-        } catch (PersistenceException e) {
-            ExceptionHandler.process(e);
         }
     }
 
