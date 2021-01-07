@@ -91,6 +91,9 @@ public class CreateRoutineAction extends AbstractRoutineAction {
                 if (nodeType != ERepositoryObjectType.ROUTINESJAR) {
                     canWork = false;
                 }
+                if (node.getObject() != null && node.getObject().isDeleted()) {
+                    canWork = false;
+                }
                 break;
             default:
                 canWork = false;
