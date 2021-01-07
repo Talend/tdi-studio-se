@@ -59,6 +59,7 @@ import org.talend.commons.ui.runtime.image.ImageUtils;
 import org.talend.commons.ui.runtime.swt.tableviewer.selection.ILineSelectionListener;
 import org.talend.commons.ui.runtime.swt.tableviewer.selection.LineSelectionEvent;
 import org.talend.commons.ui.runtime.thread.AsynchronousThreading;
+import org.talend.commons.ui.runtime.ws.WindowSystem;
 import org.talend.commons.ui.swt.tableviewer.IModifiedBeanListener;
 import org.talend.commons.ui.swt.tableviewer.ModifiedBeanEvent;
 import org.talend.commons.ui.swt.tableviewer.TableViewerCreator;
@@ -1336,6 +1337,12 @@ public class UIManager extends AbstractUIManager {
 
     public Point convertPointToReferenceOrigin(final Composite referenceComposite, Point point, Composite child) {
         Point returnedPoint = new Point(point.x, point.y);
+        if (WindowSystem.isBigSurOrLater()) {
+            int headerHeight = (child instanceof DataMapTableView) ? ((DataMapTableView) child).getHeaderHeight() : 0;
+            if (returnedPoint.y < headerHeight) {
+                returnedPoint.y = headerHeight;
+            }
+        }
         while (child != referenceComposite) {
             Rectangle bounds = child.getBounds();
             child = child.getParent();

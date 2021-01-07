@@ -192,12 +192,12 @@ public class ExpressionBuilderDialogForElt extends TrayDialog implements IExpres
     @Override
     protected void configureShell(Shell newShell) {
         super.configureShell(newShell);
-        newShell.setText(Messages.getString("ExpressionBuilderDialog.expression.builder")); //$NON-NLS-1$
+        newShell.setText(Messages.getString("ExpressionBuilderDialog.expression.builder")); // $NON -NLS-1$
     }
 
     @Override
     protected Point getInitialSize() {
-        return new Point(870, 500);
+        return new Point(870, 700);
     }
 
     /*

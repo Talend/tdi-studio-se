@@ -1326,7 +1326,7 @@
 	<CODEGENERATION>
 		<IMPORTS>
 			<IMPORT NAME="VtigerCRM" MODULE="vtigercrm.jar" MVN="mvn:org.talend.libraries/vtigercrm/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.crm/lib/vtigercrm.jar" REQUIRED="true"/>
-			<IMPORT NAME="SOAP-axis" MODULE="axis.jar" MVN="mvn:org.talend.libraries/axis/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.apache.axis2/lib/axis.jar" REQUIRED="true"/>
+			<IMPORT NAME="SOAP-axis" MODULE="axis-1.4.jar" MVN="mvn:org.apache.axis/axis/1.4" REQUIRED="true"/>
 			<IMPORT NAME="SOAP-jaxrpc" MODULE="jaxrpc.jar" MVN="mvn:org.talend.libraries/jaxrpc/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.jax/lib/jaxrpc.jar" REQUIRED="true"/>
 			<IMPORT NAME="SOAP-saaj" MODULE="saaj.jar" MVN="mvn:org.talend.libraries/saaj/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.saaj/lib/saaj.jar" REQUIRED="true"/>
 			<IMPORT NAME="WSDL4J-1_6_3" MODULE="wsdl4j-1.6.3.jar" MVN="mvn:wsdl4j/wsdl4j/1.6.3"  BundleID="org.apache.servicemix.bundles.wsdl4j" REQUIRED="true"/>

@@ -68,10 +68,24 @@
       FIELD="CHECK"
       NUM_ROW="60"
     >
-    	<DEFAULT>false</DEFAULT>
+        <DEFAULT>false</DEFAULT>
     </PARAMETER>
 
   </PARAMETERS>
+  <ADVANCED_PARAMETERS>
+    <PARAMETER
+      NAME="USE_EXTRA_PARAMETERS"
+      FIELD="CHECK"
+      NUM_ROW="1"
+    >
+        <DEFAULT>true</DEFAULT>
+    </PARAMETER>
+    <PARAMETER NAME="EXTRA_PARAMETERS" FIELD="TEXT" REQUIRED="false" NUM_ROW="2"
+        SHOW_IF="USE_EXTRA_PARAMETERS == 'true'">
+      <DEFAULT>"--pinentry-mode loopback"</DEFAULT>
+    </PARAMETER>
+ 
+  </ADVANCED_PARAMETERS>
 
   <CODEGENERATION/>
 

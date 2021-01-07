@@ -44,6 +44,7 @@ import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.swt.widgets.Widget;
 import org.talend.commons.ui.runtime.exception.ExceptionHandler;
 import org.talend.commons.ui.runtime.utils.TableUtils;
+import org.talend.commons.ui.runtime.ws.WindowSystem;
 import org.talend.commons.ui.swt.dialogs.ProgressDialog;
 import org.talend.commons.ui.swt.drawing.link.ExtremityLink;
 import org.talend.commons.ui.swt.drawing.link.IExtremityLink;
@@ -75,6 +76,10 @@ public class Schema2XMLLinker extends TableToTreeLinker<Object, Object> {
     private Color selectedLoopLinkColor;
 
     private Color selectedRelativeLinkColor;
+
+    private Color transparentBgColor;
+
+    private Color originalBgColor;
 
     private FOXManager manager;
 
@@ -116,6 +121,11 @@ public class Schema2XMLLinker extends TableToTreeLinker<Object, Object> {
 
         initColors(display);
 
+        if (WindowSystem.isBigSurOrLater()) {
+            getBackgroundRefresher().setBackgroundColor(originalBgColor);
+            getBgDrawableComposite().setBackground(transparentBgColor);
+        }
+
         setUnselectedStyleLink(createStandardLink(display.getSystemColor(SWT.COLOR_BLUE)));
 
         getSelectedRelativeStyleLink();
@@ -134,12 +144,17 @@ public class Schema2XMLLinker extends TableToTreeLinker<Object, Object> {
         // selectedLoopLinkColor = new Color(display, 255, 131, 255);
         selectedLoopLinkColor = new Color(display, 110, 168, 255);// light blue
         selectedRelativeLinkColor = new Color(display, 110, 168, 0);
+        transparentBgColor = new Color(display, 0, 0, 0, 0);
+        originalBgColor = getBgDrawableComposite().getBackground();
+
         getSource().addDisposeListener(new DisposeListener() {
 
             @Override
             public void widgetDisposed(DisposeEvent e) {
                 selectedLoopLinkColor.dispose();
                 selectedRelativeLinkColor.dispose();
+                transparentBgColor.dispose();
+                originalBgColor.dispose();
                 getSource().removeDisposeListener(this);
             }
         });

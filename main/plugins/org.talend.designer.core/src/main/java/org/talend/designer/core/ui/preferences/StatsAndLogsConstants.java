@@ -78,7 +78,8 @@ public class StatsAndLogsConstants {
             EDatabaseTypeName.ORACLE_OCI.getProduct(), EDatabaseTypeName.PLUSPSQL.getProduct(),
             EDatabaseTypeName.PSQL.getProduct(), EDatabaseTypeName.IBMDB2.getProduct(), EDatabaseTypeName.SYBASEASE.getProduct(),
             EDatabaseTypeName.SQLITE.getProduct(), EDatabaseTypeName.FIREBIRD.getProduct(), EDatabaseTypeName.ACCESS.getProduct(),
-            EDatabaseTypeName.TERADATA.getProduct() };
+            EDatabaseTypeName.TERADATA.getProduct(), EDatabaseTypeName.INGRES.getProduct(),
+            EDatabaseTypeName.INTERBASE.getProduct(), EDatabaseTypeName.INFORMIX.getProduct() };
 
     private static final String[] PERL_DISPLAY_DBNAMES = new String[] {
             "MySQL", "Oracle with SID", "Oracle with service name", "Oracle OCI",//$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$

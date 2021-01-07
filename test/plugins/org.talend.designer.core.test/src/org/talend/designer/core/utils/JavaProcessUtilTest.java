@@ -221,4 +221,21 @@ public class JavaProcessUtilTest {
         return moduleNeededSet;
     }
 
+    @Test
+    public void testGetCoordinate() {
+        String context = "tHiveConnection";
+        String informationMsg = "Required for using this component.";
+        boolean required = false;
+        String[] mvnUris = { "mvn:org.talend.libraries/httpcore-4.4.6/6.3.0/jar", "mvn:org.apache.httpcomponents/httpcore/4.4.6",
+                "mvn:https://studio-dl-client:enc:system.encryption.key.v1:xgJc9IaLeJSt6UpaabOusZUBcK4bLUJipmAhuD6dHI8fBqoB7pm4UDWlWLk=@talend-update.talend.com/nexus/content/groups/dynamicdistribution/!org.apache.httpcomponents/httpcore/4.4.6/jar" };
+        String[] expectedCoordinates = { "org.talend.libraries:httpcore-4.4.6:jar:6.3.0",
+                "org.apache.httpcomponents:httpcore:jar:4.4.6", "org.apache.httpcomponents:httpcore:jar:4.4.6" };
+        for (int i = 0; i < mvnUris.length; i++) {
+            String mvnUri = mvnUris[i];
+            ModuleNeeded module = new ModuleNeeded(context,informationMsg,required,mvnUri);
+            String coordinate = JavaProcessUtil.getCoordinate(module);
+            assertEquals(expectedCoordinates[i], coordinate);
+        }
+        
+    }
 }

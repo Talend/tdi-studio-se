@@ -39,6 +39,17 @@ public class ColorProviderMapper {
         return color;
     }
 
+    public static Color getRGBAColor(ColorInfo colorInfo) {
+        Color colorFromCache = colorsCache.get(colorInfo);
+        if (colorFromCache != null) {
+            return colorFromCache;
+        }
+        Color color = new Color(Display.getCurrent(), colorInfo.getRed(), colorInfo.getGreen(), colorInfo.getBlue(),
+                colorInfo.getAlpha());
+        colorsCache.put(colorInfo, color);
+        return color;
+    }
+
     public static Color getColor(Display display, int swtColor) {
         return display.getSystemColor(swtColor);
     }

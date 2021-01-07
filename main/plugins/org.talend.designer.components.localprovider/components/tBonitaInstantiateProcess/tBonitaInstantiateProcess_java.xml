@@ -230,7 +230,7 @@
 			<IMPORT NAME="ehcache_123" MODULE="ehcache-1.2.3.jar" MVN="mvn:org.talend.libraries/ehcache-1.2.3/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.ehcache/lib/ehcache-1.2.3.jar" REQUIRED="false" />
 			<IMPORT NAME="groovy_all_170" MODULE="groovy-all-1.7.0.jar" MVN="mvn:org.talend.libraries/groovy-all-1.7.0/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.groovy/lib/groovy-all-1.7.0.jar" REQUIRED="false" />
 
-			<IMPORT NAME="h2_12132" MODULE="h2-1.2.132.jar" MVN="mvn:org.talend.libraries/h2-1.2.132/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.jdbc.h2/lib/h2-1.2.132.jar" REQUIRED="false" />
+			<IMPORT NAME="h2_12132" MODULE="h2-1.2.132.jar" MVN="mvn:com.h2database/h2/1.2.132"  REQUIRED="false" />
 			<IMPORT NAME="hibernate_326_ga" MODULE="hibernate-3.2.6.ga.jar" MVN="mvn:org.talend.libraries/hibernate-3.2.6.ga/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.hibernate/lib/hibernate-3.2.6.ga.jar" REQUIRED="false" />
 			<IMPORT NAME="jline_0994" MODULE="jline-0.9.94.jar" MVN="mvn:org.talend.libraries/jline-0.9.94/6.0.0"  REQUIRED="false" />
 			<IMPORT NAME="jta_11" MODULE="jta-1.1.jar" MVN="mvn:javax.transaction/jta/1.1"  REQUIRED_IF="(CLIENT_MODE=='JAVA_CLIENT') AND (DB_VERSION=='BONITA_561' OR DB_VERSION=='BONITA_5101')" />
@@ -257,7 +257,7 @@
 			<IMPORT NAME="bonita_server_561" MODULE="bonita-server-5.6.1.jar" MVN="mvn:org.talend.libraries/bonita-server-5.6.1/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.bonita/lib/bonita-server-5.6.1.jar" REQUIRED_IF="(CLIENT_MODE=='JAVA_CLIENT') AND (DB_VERSION=='BONITA_561')" />
 			<IMPORT NAME="chemistry_opencmis_client_api_020_incubating" MODULE="chemistry-opencmis-client-api-0.2.0-incubating.jar" MVN="mvn:org.talend.libraries/chemistry-opencmis-client-api-0.2.0-incubating/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.apache.chemistry/lib/chemistry-opencmis-client-api-0.2.0-incubating.jar" REQUIRED_IF="(CLIENT_MODE=='JAVA_CLIENT') AND (DB_VERSION=='BONITA_561')" />
 			<IMPORT NAME="chemistry_opencmis_commons_api_020_incubating" MODULE="chemistry-opencmis-commons-api-0.2.0-incubating.jar" MVN="mvn:org.talend.libraries/chemistry-opencmis-commons-api-0.2.0-incubating/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.apache.chemistry/lib/chemistry-opencmis-commons-api-0.2.0-incubating.jar" REQUIRED_IF="(CLIENT_MODE=='JAVA_CLIENT') AND (DB_VERSION=='BONITA_561')" />
-			<IMPORT NAME="h2_12139" MODULE="h2-1.2.139.jar" MVN="mvn:org.talend.libraries/h2-1.2.139/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.jdbc.h2/lib/h2-1.2.139.jar" REQUIRED_IF="(CLIENT_MODE=='JAVA_CLIENT') AND (DB_VERSION=='BONITA_561' OR DB_VERSION=='BONITA_5101')" />
+			<IMPORT NAME="h2_12139" MODULE="h2-1.2.139.jar" MVN="mvn:com.h2database/h2/1.2.139"  REQUIRED_IF="(CLIENT_MODE=='JAVA_CLIENT') AND (DB_VERSION=='BONITA_561' OR DB_VERSION=='BONITA_5101')" />
 			<IMPORT NAME="slf4j_api_161" MODULE="slf4j-api-1.6.1.jar" MVN="mvn:org.talend.libraries/slf4j-api-1.6.1/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.slf4j/lib/slf4j-api-1.6.1.jar" REQUIRED_IF="(CLIENT_MODE=='JAVA_CLIENT') AND (DB_VERSION=='BONITA_561' OR DB_VERSION=='BONITA_5101')" />
 			<IMPORT NAME="slf4j_jdk14_161" MODULE="slf4j-jdk14-1.6.1.jar" MVN="mvn:org.talend.libraries/slf4j-jdk14-1.6.1/6.0.0"  REQUIRED_IF="(CLIENT_MODE=='JAVA_CLIENT') AND (DB_VERSION=='BONITA_561' OR DB_VERSION=='BONITA_5101')" />
 			<!-- Bonita 5.10.1 -->

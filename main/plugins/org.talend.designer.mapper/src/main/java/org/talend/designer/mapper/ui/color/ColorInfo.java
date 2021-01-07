@@ -51,6 +51,7 @@ public enum ColorInfo {
 
     COLOR_BACKGROUND_ERROR_EXPRESSION_CELL(255, 0, 0), // red
     COLOR_BACKGROUND_VALID_EXPRESSION_CELL(255, 255, 255), // white
+    COLOR_BACKGROUND_TRANSPRENT(0, 0, 0, 0), // transparent
 
     COLOR_FOREGROUND_ERROR_EXPRESSION_CELL(255, 255, 255), // white
     COLOR_FOREGROUND_VALID_EXPRESSION_CELL(0, 0, 0), // black
@@ -64,12 +65,21 @@ public enum ColorInfo {
 
     private int blue;
 
+    private int alpha = 255;
+
     private int systemColor = -1;
 
     private ColorInfo(int red, int green, int blue) {
         this.red = red;
         this.green = green;
         this.blue = blue;
+    }
+
+    private ColorInfo(int red, int green, int blue, int alpha) {
+        this.red = red;
+        this.green = green;
+        this.blue = blue;
+        this.alpha = alpha;
     }
 
     // private ColorInfo(int systemColor) {
@@ -86,6 +96,10 @@ public enum ColorInfo {
 
     public int getRed() {
         return this.red;
+    }
+
+    public int getAlpha() {
+        return this.alpha;
     }
 
     public RGB getRGB() {

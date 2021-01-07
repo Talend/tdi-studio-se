@@ -155,7 +155,9 @@ public class JavaProcessorUtilities {
 
             @Override
             public int compare(ModuleNeeded m1, ModuleNeeded m2) {
-                return m1.toString().compareTo(m2.toString());
+                int compareResult = m1.toString().compareTo(m2.toString());
+                return compareResult != 0 ? compareResult
+                        : JavaProcessUtil.getCoordinate(m1).compareTo(JavaProcessUtil.getCoordinate(m2));
             }
         });
 

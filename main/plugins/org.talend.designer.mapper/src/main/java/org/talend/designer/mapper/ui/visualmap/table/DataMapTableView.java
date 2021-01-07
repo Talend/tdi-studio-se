@@ -2416,7 +2416,6 @@ public abstract class DataMapTableView extends Composite implements IDataMapTabl
     public abstract boolean toolbarNeedToHaveRightStyle();
 
     public abstract boolean hasDropDownToolBarItem();
-
     /**
      * DOC amaumont Comment method "parseExpression".
      *
@@ -3354,6 +3353,14 @@ public abstract class DataMapTableView extends Composite implements IDataMapTabl
         public void keyPressed(KeyEvent e) {
             // System.out.println("e.character=" + e.character);
             // System.out.println("keyCode=" + e.keyCode);
+            // TUP-29766
+            if (WindowSystem.isBigSurOrLater() && e.character == '\t') {
+                ITableEntry currentModifiedEntry = textTarget.getCurrentEntry();
+                currentModifiedEntry.setExpression(ControlUtils.getText(textWidget));
+                viewer.getTable().deselectAll();
+                viewer.refresh(currentModifiedEntry);
+                return;
+            }
 
             boolean ctrl = (e.stateMask & SWT.CTRL) != 0;
             boolean altgr = (e.stateMask & SWT.ALT) != 0;
