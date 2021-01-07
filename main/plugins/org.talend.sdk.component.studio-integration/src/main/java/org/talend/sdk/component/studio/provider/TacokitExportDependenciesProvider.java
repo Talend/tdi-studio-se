@@ -14,24 +14,19 @@
 package org.talend.sdk.component.studio.provider;
 
 import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
-import static org.talend.sdk.component.studio.util.TaCoKitUtil.findM2Path;
 import static org.talend.sdk.component.studio.util.TaCoKitUtil.gavToMvnPath;
 import static org.talend.sdk.component.studio.util.TaCoKitUtil.getJobComponents;
 import static org.talend.sdk.component.studio.util.TaCoKitUtil.getTaCoKitComponents;
 import static org.talend.sdk.component.studio.util.TaCoKitUtil.hasTaCoKitComponents;
 
 import java.io.BufferedInputStream;
-import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.jar.JarEntry;
-import java.util.jar.JarFile;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -83,11 +78,8 @@ public class TacokitExportDependenciesProvider implements IBuildExportDependenci
             final String output = EnvironmentUtils.isWindowsSystem() ?
                     project.getResourcesFolder().getLocationURI().getPath().substring(1) :
                     project.getResourcesFolder().getLocationURI().getPath();
-            final Path m2 = findM2Path();
-            final Path resM2 = Paths.get(output, TaCoKitConst.MAVEN_INF, "repository");
             final Path coordinates = Paths.get(output, TaCoKitConst.TALEND_INF, "plugins.properties");
             exportFileResource.addResource("TALEND-INF/", coordinates.toUri().toURL());
-            Files.createDirectories(resM2);
             if (Files.exists(coordinates)) {
                 Files.readAllLines(coordinates).stream()
                         .filter(line -> !line.matches("^\\s?#"))
@@ -98,39 +90,12 @@ public class TacokitExportDependenciesProvider implements IBuildExportDependenci
             } else {
                 Files.createDirectories(coordinates.getParent());
             }
-            // Feed MAVEN-INF repository
-            plugins.forEach((plugin, location) -> {
-                LOG.info("[exportDependencies] Adding {} to MAVEN-INF.", plugin);
-                final Path src = m2.resolve(location);
-                final Path dst = resM2.resolve(location);
-                try {
-                    // First, cp component jar
-                    copyJar(src, dst, exportFileResource);
-                    // then, find deps for current plugin : This is definitely needed for the microservice case and may
-                    // help to avoid classes collisions as it may happen with azure-dls-gen2 for instance!
-                    JarFile jar = new JarFile(src.toFile());
-                    final JarEntry entry = jar.getJarEntry("TALEND-INF/dependencies.txt");
-                    BufferedReader reader = new BufferedReader(new InputStreamReader(jar.getInputStream(entry)));
-                    reader.lines()
-                            .filter(l -> !l.endsWith(":test"))
-                            .map(this::translateGavToJar)
-                            .peek(dep -> LOG.debug("[exportDependencies] Copying dependency {} to MAVEN-INF.", dep))
-                            .forEach(dep -> copyJar(m2.resolve(dep), resM2.resolve(dep), exportFileResource));
-                    reader.close();
-                    jar.close();
-                } catch (IOException | IllegalStateException e) {
-                    LOG.error("[exportDependencies] Error occurred during artifact copy:", e);
-                    ExceptionHandler.process(e);
-                }
-            });
             // Finalize by writing our plugins.properties
             final StringBuffer coord = new StringBuffer("# component-runtime components coordinates:\n");
             plugins.forEach((k, v) -> coord.append(String.format("%s = %s\n", k, v)));
             Files.copy(new BufferedInputStream(new ByteArrayInputStream(coord.toString()
                     .getBytes())), coordinates, REPLACE_EXISTING);
-            // For microservice m2 extraction, not necessary for real OSGi bundle
-            System.setProperty("talend.component.manager.components.present", "true");
-            LOG.info("[exportDependencies] Finished MAVEN-INF feeding.");
+            LOG.info("[exportDependencies] Finished TALEND-INF feeding.");
         } catch (Exception e) {
             LOG.error("[exportDependencies] Error occurred:", e);
             ExceptionHandler.process(e);
