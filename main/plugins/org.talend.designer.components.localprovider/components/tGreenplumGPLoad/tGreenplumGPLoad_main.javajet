@@ -16,7 +16,7 @@ imports="
     java.util.Map
     java.util.HashMap
 " 
-skeleton="../templates/db_output_bulk.skeleton"
+skeleton="@{org.talend.designer.components.localprovider}/components/templates/db_output_bulk.skeleton"
 %>
 
 <% 
@@ -107,7 +107,21 @@ skeleton="../templates/db_output_bulk.skeleton"
 					else {
 					<%
 				}
-				if (javaType == JavaTypesManager.DATE) {
+				if (javaType == JavaTypesManager.BYTE_ARRAY) {
+				%>
+					for(int bi = 0; bi < <%=inputRowName%>.<%=column.getLabel()%>.length; bi++){
+           				sb_<%=cid %>.append("\\\\");
+	  					String octalValue = Integer.toOctalString(<%=inputRowName%>.<%=column.getLabel()%>[bi]);
+	  					if(octalValue.length() > 3) {
+	  						sb_<%=cid %>.append(Integer.parseInt(octalValue.substring(8,11))-400);
+	  					} else {
+	  						if(octalValue.length() ==  2) sb_<%=cid %>.append("0");
+	  						if(octalValue.length() ==  1) sb_<%=cid %>.append("00");
+	  						sb_<%=cid %>.append(octalValue);
+	  					}
+            	  	}
+				<%
+				} else if (javaType == JavaTypesManager.DATE) {
 					%> sb_<%=cid %>.append(TalendDate.formatDate(<%=datePattern%>,<%=inputRowName%>.<%=column.getLabel()%>)); <%
 				} else if (javaType == JavaTypesManager.DOUBLE || javaType == JavaTypesManager.FLOAT || javaType == JavaTypesManager.BIGDECIMAL) {
 					%> sb_<%=cid %>.append(String.format("%-<%=length%>.<%=precision%>f",<%=inputRowName%>.<%=column.getLabel()%>)); <%
@@ -120,7 +134,11 @@ skeleton="../templates/db_output_bulk.skeleton"
 						%> sb_<%=cid %>.append((<%=inputRowName%>.<%=column.getLabel()%> ? "1" : "0")); <%
 					}
 				} else {
-					%> sb_<%=cid %>.append(String.valueOf(<%=inputRowName%>.<%=column.getLabel()%>)); <%
+					%> sb_<%=cid %>.append(String.valueOf(<%=inputRowName%>.<%=column.getLabel()%>)
+						.replace(<%=escapeChar%>,escapeCharRepl_<%=cid%> )
+						.replace(<%=fieldSeparator%>,fieldSeparatorRepl_<%=cid%>)
+						.replaceAll("\\\n", "\\\\012").replaceAll("\\\r","\\\\015")
+						.replaceAll("\\x00", "").replaceAll("\\u0000","") ); <%
 				}
 				if (!isPrimitive) {
 					%>
@@ -141,7 +159,21 @@ skeleton="../templates/db_output_bulk.skeleton"
 					else {
 					<%
 				}
-				if (javaType == JavaTypesManager.DATE) {
+				if (javaType == JavaTypesManager.BYTE_ARRAY) {
+				%>
+					for(int bi = 0; bi < <%=inputRowName%>.<%=column.getLabel()%>.length; bi++){
+            			sb_<%=cid %>.append("\\\\");
+	  					String octalValue = Integer.toOctalString(<%=inputRowName%>.<%=column.getLabel()%>[bi]);
+	  					if(octalValue.length() > 3) {
+	  						sb_<%=cid %>.append(Integer.parseInt(octalValue.substring(8,11))-400);
+	  					} else {
+	  						if(octalValue.length() ==  2) sb_<%=cid %>.append("0");
+	  						if(octalValue.length() ==  1) sb_<%=cid %>.append("00");
+	  						sb_<%=cid %>.append(octalValue);
+	  					}
+            	  	}
+				<%
+				} else if (javaType == JavaTypesManager.DATE) {
 					%> sb_<%=cid %>.append(TalendDate.formatDate(<%=datePattern%>,<%=inputRowName%>.<%=column.getLabel()%>)); <%
 				} else if (javaType == JavaTypesManager.DOUBLE || javaType == JavaTypesManager.FLOAT || javaType == JavaTypesManager.BIGDECIMAL) {
 					%> sb_<%=cid %>.append(String.format("%-<%=length%>.<%=precision%>f",<%=inputRowName%>.<%=column.getLabel()%>)); <%
@@ -158,7 +190,9 @@ skeleton="../templates/db_output_bulk.skeleton"
 					temp_<%=cid%> = String.valueOf(<%=inputRowName%>.<%=column.getLabel()%>);
 					temp_<%=cid%> = temp_<%=cid%>.replace(<%=escapeChar%>,escapeCharRepl_<%=cid%>);
 					temp_<%=cid%> = temp_<%=cid%>.replace(<%=quoteChar%>,quoteCharRepl_<%=cid%>);
-					temp_<%=cid%> = temp_<%=cid%>.replace("\n",rowSepRepl_<%=cid%>);
+					temp_<%=cid%> = temp_<%=cid%>.replace("\n", rowSepRepl_<%=cid%>).replace("\r","");
+					temp_<%=cid%> = temp_<%=cid%>.replaceAll("\\x00", "").replaceAll("\\u0000","");
+					temp_<%=cid%> = temp_<%=cid%>.replace(<%=fieldSeparator%>,fieldSeparatorRepl_<%=cid%>);
 					sb_<%=cid %>.append(<%=quoteChar%> + temp_<%=cid%> + <%=quoteChar%>);
 					temp_<%=cid%> = null;
 					<%
@@ -187,7 +221,7 @@ skeleton="../templates/db_output_bulk.skeleton"
 		%>
 		outputStream_<%=cid%>.write(sb_<%=cid%>.toString().getBytes());
 		<%if(isLog4jEnabled){%>
-			log.debug("<%=cid%> - Loading the record :" + sb_<%=cid%>);
+			log.debug("<%=cid%> - Loading the record :" + sb_<%=cid%>.toString());
 		<%}%>
 		sb_<%=cid%> = null;
 		<%
