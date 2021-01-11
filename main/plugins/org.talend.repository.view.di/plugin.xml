@@ -600,6 +600,18 @@
                class="org.talend.repository.view.di.viewer.handlers.RoutineImportHandler">
          </importResoucesHandler>
       </importResourcesProvider>
+      <importItemsProvider
+            id="org.talend.repository.view.di.importProvider.routinesJar"
+            name="Routines Jar importer"
+            priority="HIGH">
+         <importItemsHandler
+               class="org.talend.repository.view.di.viewer.handlers.RoutinesJarImportHandler">
+            <parameter
+                  name="type"
+                  value="ROUTINESJAR">
+            </parameter>
+         </importItemsHandler>
+      </importItemsProvider>
    </extension>
    <extension
          point="org.talend.core.runtime.itemRelationship">
