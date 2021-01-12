@@ -21,6 +21,10 @@ import org.talend.repository.items.importexport.handlers.model.ImportItem;
  */
 public class RoutinesJarImportHandler extends ImportRepTypeHandler {
 
+    public RoutinesJarImportHandler() {
+        super();
+    }
+
     @Override
     public boolean valid(ImportItem importItem) {
         boolean valid = super.valid(importItem);
