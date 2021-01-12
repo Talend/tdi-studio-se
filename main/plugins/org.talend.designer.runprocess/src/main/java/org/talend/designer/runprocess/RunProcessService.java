@@ -37,6 +37,7 @@ import org.talend.core.model.process.JobInfo;
 import org.talend.core.model.properties.Item;
 import org.talend.core.model.properties.Property;
 import org.talend.core.model.repository.ERepositoryObjectType;
+import org.talend.core.model.routines.CodesJarInfo;
 import org.talend.core.runtime.process.ITalendProcessJavaProject;
 import org.talend.core.runtime.projectsetting.ProjectPreferenceManager;
 import org.talend.designer.core.ui.action.SaveJobBeforeRunAction;
@@ -428,8 +429,8 @@ public class RunProcessService implements IRunProcessService {
     }
 
     @Override
-    public ITalendProcessJavaProject getTalendCodesJarJavaProject(Property property) {
-        return delegateService.getTalendCodesJarJavaProject(property);
+    public ITalendProcessJavaProject getTalendCodesJarJavaProject(CodesJarInfo info) {
+        return delegateService.getTalendCodesJarJavaProject(info);
     }
 
     @Override
@@ -443,8 +444,8 @@ public class RunProcessService implements IRunProcessService {
     }
 
     @Override
-    public ITalendProcessJavaProject getExistingTalendCodesJarProject(String codesJarProjectId) {
-        return delegateService.getExistingTalendCodesJarProject(codesJarProjectId);
+    public ITalendProcessJavaProject getExistingTalendCodesJarProject(CodesJarInfo info) {
+        return delegateService.getExistingTalendCodesJarProject(info);
     }
 
     @Override

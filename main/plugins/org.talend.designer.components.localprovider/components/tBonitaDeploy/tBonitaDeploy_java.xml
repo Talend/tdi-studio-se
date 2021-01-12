@@ -215,7 +215,7 @@
 			<!-- Bonita 5.10.1 -->
 			<IMPORT NAME="bonita_server_5101" MODULE="bonita-server-5.10.1.jar" MVN="mvn:org.talend.libraries/bonita-server-5.10.1/6.0.0" REQUIRED_IF="DB_VERSION=='BONITA_5101'" />
 			<IMPORT NAME="hibernate_search_330_Final" MODULE="hibernate-search-3.3.0.Final.jar" MVN="mvn:org.talend.libraries/hibernate-search-3.3.0.Final/6.0.0" UrlPath="platform:/plugin/org.talend.libraries.hibernate/lib/hibernate-search-3.3.0.Final.jar" REQUIRED_IF="DB_VERSION=='BONITA_5101'" />
-			<IMPORT NAME="hibernate_core_3_6_10_Final" MODULE="hibernate-core-3.6.10.Final.jar" MVN="mvn:org.talend.libraries/hibernate-core-3.6.10.Final/6.0.0" UrlPath="platform:/plugin/org.talend.libraries.hibernate/lib/hibernate-core-3.6.10.Final.jar" REQUIRED_IF="DB_VERSION=='BONITA_5101'" />
+			<IMPORT NAME="hibernate_core_3_6_10_Final" MODULE="hibernate-core-3.6.10.Final.jar" MVN="mvn:org.hibernate/hibernate-core/3.6.10.Final" REQUIRED_IF="DB_VERSION=='BONITA_5101'" />
 			<IMPORT NAME="hibernate_jpa_2_0_api-1_0_1_Final" MODULE="hibernate-jpa-2.0-api-1.0.1.Final.jar" MVN="mvn:org.talend.libraries/hibernate-jpa-2.0-api-1.0.1.Final/6.0.0" UrlPath="platform:/plugin/org.talend.libraries.hibernate/lib/hibernate-jpa-2.0-api-1.0.1.Final.jar" REQUIRED_IF="DB_VERSION=='BONITA_5101'" />
 			<IMPORT NAME="lucene_core_303" MODULE="lucene-core-3.0.3.jar" MVN="mvn:org.talend.libraries/lucene-core-3.0.3/6.0.0" UrlPath="platform:/plugin/org.talend.libraries.apache.lucene/lib/lucene-core-3.0.3.jar" REQUIRED_IF="DB_VERSION=='BONITA_5101'" />
 			<IMPORT NAME="javassist_3120_GA" MODULE="javassist-3.12.0.GA.jar" MVN="mvn:org.talend.libraries/javassist-3.12.0.GA/6.0.0" REQUIRED_IF="DB_VERSION=='BONITA_5101'" />

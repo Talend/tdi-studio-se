@@ -122,6 +122,7 @@ import org.talend.core.model.properties.JobletProcessItem;
 import org.talend.core.model.properties.ProcessItem;
 import org.talend.core.model.properties.Property;
 import org.talend.core.model.repository.ERepositoryObjectType;
+import org.talend.core.model.routines.CodesJarInfo;
 import org.talend.core.model.runprocess.IJavaProcessorStates;
 import org.talend.core.model.utils.JavaResourcesHelper;
 import org.talend.core.model.utils.NodeUtil;
@@ -1520,7 +1521,8 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
         return base.toPortableString();
     }
 
-    private Set<String> getCodesJarClassPaths(Item item) {
+    @SuppressWarnings("unchecked")
+    protected Set<String> getCodesJarClassPaths(Item item) {
         Set<String> classPaths = new HashSet<>();
         EList<RoutinesParameterType> routinesParameter = null;
         if (item instanceof ProcessItem) {
@@ -1530,21 +1532,22 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
         }
         if (routinesParameter != null) {
             routinesParameter.stream().filter(r -> r.getType() != null).forEach(r -> {
-                Property property = CodesJarResourceCache.getCodesJarById(r.getId());
-                if (ProjectManager.getInstance().isInCurrentMainProject(property)) {
-                    ITalendProcessJavaProject codesJarProject = TalendJavaProjectManager.getTalendCodesJarJavaProject(property);
+                CodesJarInfo info = CodesJarResourceCache.getCodesJarById(r.getId());
+                Property property = info.getProperty();
+                String projectTechName = info.getProjectTechName();
+                if (info.isInCurrentMainProject()) {
+                    ITalendProcessJavaProject codesJarProject = TalendJavaProjectManager.getTalendCodesJarJavaProject(info);
                     IPath codesJarOutputPath = codesJarProject.getOutputFolder().getLocation();
                     classPaths.add(getClassPath(codesJarOutputPath));
                 } else {
                     MavenArtifact artifact = new MavenArtifact();
-                    artifact.setGroupId(PomIdsHelper.getCodesJarGroupId(property.getItem()));
+                    artifact.setGroupId(PomIdsHelper.getCodesJarGroupId(projectTechName, property.getItem()));
                     artifact.setArtifactId(property.getLabel().toLowerCase());
-                    artifact.setVersion(PomIdsHelper
-                            .getCodesJarVersion(ProjectManager.getInstance().getProject(property).getTechnicalLabel()));
+                    artifact.setVersion(PomIdsHelper.getCodesJarVersion(projectTechName));
                     artifact.setType(MavenConstants.TYPE_JAR);
                     // !!!FIXME!!!
-                    // it might not work for cxf related jobs since it use relative path for job execution
-                    // need to user relative path for m2 jar path based on exection path
+                    // it might not work for cxf related jobs since it use relative path for job execution ref TUP-22972
+                    // need to use relative path for m2 jar path based on execution path
                     // or check if codesjars are already in temp/lib folder, if yes, can use this relative path
                     classPaths.add(PomUtil.getArtifactFullPath(artifact));
                 }
