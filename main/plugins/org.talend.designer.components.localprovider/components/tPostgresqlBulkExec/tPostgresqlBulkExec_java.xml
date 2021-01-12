@@ -231,7 +231,7 @@
 			<IMPORT NAME="Driver-Postgres9" MODULE="postgresql-42.2.14.jar" MVN="mvn:org.postgresql/postgresql/42.2.14" REQUIRED_IF="(DB_VERSION =='V9_X') AND (USE_EXISTING_CONNECTION == 'false') AND (DRIVER_IF_GREENPLUM == 'POSTGRESQL')" />
 			<IMPORT NAME="Postgres_Driver" 
 			MODULE="postgresql-8.4-703.jdbc4.jar" MVN="mvn:postgresql/postgresql/8.4-703.jdbc4"  REQUIRED_IF="((DB_VERSION =='PRIOR_TO_V9') AND (USE_EXISTING_CONNECTION == 'false') AND (DRIVER_IF_GREENPLUM == 'POSTGRESQL'))" />
-			<IMPORT NAME="Greenplum-Driver" MODULE="greenplum.jar" MVN="mvn:com.pivotal/greenplum/5.8.1" REQUIRED_IF="(DRIVER_IF_GREENPLUM == 'GREENPLUM') AND (USE_EXISTING_CONNECTION == 'false')"/>
+			<IMPORT NAME="Greenplum-Driver" MODULE="greenplum-5.1.4.000275.jar" MVN="mvn:com.pivotal/greenplum/5.1.4.000275" REQUIRED_IF="(DRIVER_IF_GREENPLUM == 'GREENPLUM') AND (USE_EXISTING_CONNECTION == 'false')"/>
 		</IMPORTS>
 	</CODEGENERATION>
 

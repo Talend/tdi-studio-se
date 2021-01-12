@@ -249,7 +249,7 @@
 			FIELD="CLOSED_LIST"
 			NUM_ROW="5"
 		>
-			<ITEMS DEFAULT="POSTGRESQL">
+			<ITEMS DEFAULT="GREENPLUM">
 				<ITEM NAME="POSTGRESQL" VALUE="POSTGRESQL" />
 				<ITEM NAME="GREENPLUM" VALUE="GREENPLUM"/>
 			</ITEMS>
@@ -533,7 +533,7 @@
 			<IMPORT MODULE="namedpipe-1.0.jar" MVN="mvn:org.talend.libraries/namedpipe-1.0/6.0.0"  NAME="namedpipe-1.0.jar" REQUIRED="true"/>
 			<IMPORT NAME="Postgres-Driver"
 			MODULE="postgresql-8.4-703.jdbc4.jar" MVN="mvn:postgresql/postgresql/8.4-703.jdbc4"  REQUIRED_IF="DB_DRIVER =='POSTGRESQL'" />
-			<IMPORT NAME="Greenplum-Driver" MODULE="greenplum.jar" MVN="mvn:com.pivotal/greenplum/5.8.1" REQUIRED_IF="DB_DRIVER =='GREENPLUM'"/>
+			<IMPORT NAME="Greenplum-Driver" MODULE="greenplum-5.1.4.000275.jar" MVN="mvn:com.pivotal/greenplum/5.1.4.000275" REQUIRED_IF="DB_DRIVER =='GREENPLUM'"/>
 			<IMPORT MODULE="namedpipe_jni_64bit.dll" MVN="mvn:org.talend.libraries/namedpipe_jni_64bit/6.0.0/dll"  NAME="namedpipe_jni_64bit.dll" REQUIRED="false"/>
 			<IMPORT MODULE="namedpipe_jni.dll" MVN="mvn:org.talend.libraries/namedpipe_jni/6.0.0/dll"  NAME="namedpipe_jni.dll" REQUIRED="false"/>
 		</IMPORTS>

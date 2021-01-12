@@ -3517,6 +3517,15 @@
                name="UncheckUseExtraParameterMigrationTask"
                version="7.3.1">
        </projecttask>
+       <projecttask
+               beforeLogon="false"
+               breaks="7.3.0"
+               class="org.talend.repository.model.migration.ChangeDefaultDriver4GreenplumMigrationTask"
+               description="Change default driver and version for Greenplum components"
+               id="org.talend.repository.model.migration.ChangeDefaultDriver4GreenplumMigrationTask"
+               name="ChangeDefaultDriver4GreenplumMigrationTask"
+               version="7.3.1">
+       </projecttask>
    </extension>
 
    <extension
