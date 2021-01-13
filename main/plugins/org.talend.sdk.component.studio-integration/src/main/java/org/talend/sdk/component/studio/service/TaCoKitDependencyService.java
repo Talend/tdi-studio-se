@@ -59,7 +59,9 @@ public class TaCoKitDependencyService implements ITaCoKitDependencyService {
                     .filter(jar -> TACOKIT_JARS_BLACKLIST.stream().noneMatch(tck -> jar.contains(tck)))
                     .collect(Collectors.toSet());
             if (ComponentModel.class.isInstance(component)) {
-                tckDeps.addAll(deps);
+                // we keep plugin in original classloader classpath (intent for microservices spring boot)
+                final String pluginPrefix = ((ComponentModel) component).getId().getPlugin() + "-";
+                tckDeps.addAll(deps.stream().filter(dep -> !dep.startsWith(pluginPrefix)).collect(Collectors.toSet()));
             } else {
                 diDeps.addAll(deps);
             }
