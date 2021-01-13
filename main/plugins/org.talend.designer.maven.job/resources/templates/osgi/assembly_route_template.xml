@@ -27,6 +27,7 @@
 			<includes>
 				<include>OSGI-INF/**</include>
 				<include>TALEND-INF/**</include>
+				<include>MAVEN-INF/**</include>
 			</includes>
 		</fileSet>
 

@@ -48,6 +48,8 @@ import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.map.MultiKeyMap;
@@ -64,6 +66,7 @@ import org.talend.commons.utils.io.FilesUtils;
 import org.talend.core.CorePlugin;
 import org.talend.core.GlobalServiceRegister;
 import org.talend.core.PluginChecker;
+import org.talend.core.model.components.IComponent;
 import org.talend.core.model.general.ModuleNeeded;
 import org.talend.core.model.general.Project;
 import org.talend.core.model.process.IProcess;
@@ -80,6 +83,7 @@ import org.talend.core.repository.model.ProxyRepositoryFactory;
 import org.talend.core.runtime.process.ITalendProcessJavaProject;
 import org.talend.core.runtime.process.LastGenerationInfo;
 import org.talend.core.runtime.repository.build.BuildExportManager;
+import org.talend.core.service.ITaCoKitDependencyService;
 import org.talend.core.ui.branding.IBrandingService;
 import org.talend.designer.core.ICamelDesignerCoreService;
 import org.talend.designer.core.IDesignerCoreService;
@@ -248,6 +252,8 @@ public class JobJavaScriptOSGIForESBManager extends JobJavaScriptsManager {
                  * export current item's dependencies. this used for TDM components specially and need more discussion
                  * about then
                  */
+                // TCOMP-1681: feature uses this call for feeding a component-runtime compliant MAVEN-INF/repository and
+                // TALEND-INF/plugins.properties.
                 BuildExportManager.getInstance().exportOSGIDependencies(osgiResource, processItem);
             }
 
@@ -293,6 +299,15 @@ public class JobJavaScriptOSGIForESBManager extends JobJavaScriptsManager {
             if (providedLibResources != null) {
                 list.add(providedLibResources);
             }
+            // TCOMP-1681: for class isolation and avoid clashes, we remove tacokit dependencies to main classpath.
+            // However, they're in the scope of ComponentManager.
+            if (GlobalServiceRegister.getDefault().isServiceRegistered(ITaCoKitDependencyService.class)) {
+                ITaCoKitDependencyService tckService = (ITaCoKitDependencyService) GlobalServiceRegister.getDefault()
+                        .getService(ITaCoKitDependencyService.class);
+                if (tckService != null && tckService.hasTaCoKitComponents(tckService.getJobComponents(processItem))) {
+                    list = cleanupResources(tckService.getJobComponents(processItem), list, tckService);
+                }
+            }
         } catch (ProcessorException e) {
             throw e;
         } catch (Exception e) {
@@ -327,6 +342,28 @@ public class JobJavaScriptOSGIForESBManager extends JobJavaScriptsManager {
         }
         addRoutinesResources(processes, libResource);
         return libResource;
+    }
+
+    private List<ExportFileResource> cleanupResources(Stream<IComponent> components, List<ExportFileResource> resources, ITaCoKitDependencyService service) {
+        Set<String> tckOnly = service.getTaCoKitOnlyDependencies(components);
+        //final List<ExportFileResource> rmResources = new ArrayList<>();
+        //This code is nicer but have to reiterate after, so not so efficient
+//        List<URL> rmDeps = resources.stream()
+//                .filter(rf -> "lib".equals(rf.getDirectoryName()))
+//                .map(resource -> resource.getResourcesByRelativePath(""))
+//                .flatMap(urls -> urls.stream())
+//                .filter(url -> tckOnly.stream().anyMatch(tck -> url.toString().endsWith(tck)))
+//                .collect(Collectors.toList());
+        for (ExportFileResource resource : resources) {
+            if (!("lib".equals(resource.getDirectoryName()) || "lib-provided".equals(resource.getDirectoryName()))) {
+                continue;
+            }
+            List<URL> rmDeps = resource.getResourcesByRelativePath("").stream()
+                    .filter(url -> tckOnly.stream().anyMatch(tck -> url.toString().endsWith(tck)))
+                    .collect(Collectors.toList());
+            rmDeps.stream().forEach(dep -> resource.removeResources("", dep));
+        }
+        return resources;
     }
 
     protected String getIncludeRoutinesPath() {
