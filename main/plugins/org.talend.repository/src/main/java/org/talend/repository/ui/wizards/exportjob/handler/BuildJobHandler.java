@@ -61,6 +61,7 @@ import org.talend.core.runtime.process.TalendProcessArgumentConstant;
 import org.talend.core.runtime.repository.build.BuildExportManager;
 import org.talend.core.service.ITransformService;
 import org.talend.core.ui.ITestContainerProviderService;
+import org.talend.designer.core.model.utils.emf.talendfile.ProcessType;
 import org.talend.designer.maven.model.TalendMavenConstants;
 import org.talend.designer.maven.tools.BuildCacheManager;
 import org.talend.designer.runprocess.IProcessor;
@@ -185,6 +186,8 @@ public class BuildJobHandler extends AbstractBuildJobHandler {
             generationOption = generationOption | ProcessorUtilities.GENERATE_WITHOUT_COMPILING;
         }
         argumentsMap.put(TalendProcessArgumentConstant.ARG_GENERATE_OPTION, generationOption);
+        argumentsMap.put(TalendProcessArgumentConstant.ARG_NEED_JETTY_SERVER,
+                ProcessUtils.hasJettyEndpoint((ProcessType)processItem.getProcess()));
 
         BuildCacheManager.getInstance().clearCurrentCache();
 
