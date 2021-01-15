@@ -52,6 +52,14 @@
 				<include>${talend.job.path}/**</include>
 			</includes>
 		</fileSet>
+		
+		<fileSet><!-- add context resources -->
+			<directory>${current.int-resources.dir}</directory>
+			<outputDirectory>${file.separator}</outputDirectory>
+			<includes>
+				<include>${talend.job.path}/**</include>
+			</includes>
+		</fileSet>
         
         <fileSet> <!-- add provided-lib -->
             <directory>${current.bundle.resources.dir}/provided-lib</directory>
