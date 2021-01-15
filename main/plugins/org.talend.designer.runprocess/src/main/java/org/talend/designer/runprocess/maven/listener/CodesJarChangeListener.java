@@ -89,13 +89,11 @@ public class CodesJarChangeListener implements PropertyChangeListener {
     }
 
     private void caseDelete(String propertyName, Object newValue) {
-        // TODO for move to bin, not here but need to move all inner codes too
-        // need to show innercode items in bin but no context menu for it
         if (newValue instanceof IRepositoryViewObject) {
             Property property = ((IRepositoryViewObject) newValue).getProperty();
             if (needUpdate(property.getItem())) {
-                CodesJarResourceCache.removeCache(property);
                 if (propertyName.equals(ERepositoryActionName.DELETE_FOREVER.getName())) {
+                    CodesJarResourceCache.removeCache(property);
                     TalendJavaProjectManager.deleteTalendCodesJarProject(property, true);
                 }
             }
