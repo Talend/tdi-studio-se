@@ -12,8 +12,8 @@
 // ============================================================================
 package org.talend.designer.dbmap.language.generation;
 
-import static java.util.Optional.*;
-import static java.util.stream.Collectors.*;
+import static java.util.Optional.ofNullable;
+import static java.util.stream.Collectors.toList;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -1418,7 +1418,8 @@ public abstract class DbGenerationManager {
                 }
             }
             if (!replace) {
-                String exp = replaceVariablesForExpression(component, inputTable.getName());
+                String exp = replaceVariablesForExpression(component,
+                        getTableName(component, iconn, inputTable.getName(), getQuote(component)));
                 appendSqlQuery(sb, exp);
             }
         }
@@ -1531,12 +1532,17 @@ public abstract class DbGenerationManager {
                                             continue;
                                         }
                                         if (expression.trim().equals(tableValue + "." + oriName)) {
-                                            expression = tableValue + "." + getColumnName(iconn, oriName, quote);
+                                            String tableValueTemp = tableValue;
+                                            if (tableValue != null && tableValue.equals(originaltableName)) {
+                                                tableValueTemp = getExpressionTableName(component, iconn, tableValue, quote);
+                                            }
+                                            expression = tableValueTemp + "." + getColumnName(iconn, oriName, quote);
                                             expression = expression.replaceAll(quto_markParser,"\\\\" +quto_mark); //$NON-NLS-1$
                                             continue;
                                         }
                                         if (expression.trim().equals(originaltableName + "." + oriName)) {
-                                            expression = originaltableName + "." + getColumnName(iconn, oriName, quote);
+                                            expression = getExpressionTableName(component, iconn, originaltableName, quote) + "."
+                                                    + getColumnName(iconn, oriName, quote);
                                             expression = expression.replaceAll(quto_markParser,"\\\\" +quto_mark); //$NON-NLS-1$
                                             continue;
                                         }
@@ -1549,8 +1555,12 @@ public abstract class DbGenerationManager {
                                         } else {
                                             oriName = oriName.replaceAll("\\$", "\\\\\\$"); //$NON-NLS-1$ //$NON-NLS-2$
                                         }
+                                        String tableValueTemp = tableValue;
+                                        if (tableValue != null && tableValue.equals(originaltableName)) {
+                                            tableValueTemp = getExpressionTableName(component, iconn, tableValue, quote);
+                                        }
                                         expression = expression.replaceFirst(tableValue + "\\." + co.getLabel(), //$NON-NLS-1$
-                                                tableValue + "\\." + oriName); //$NON-NLS-1$
+                                                tableValueTemp + "\\." + oriName); //$NON-NLS-1$
                                         expression = replaceAuotes(component, expression, quto_markParser, quto_mark);
                                     }
                                 }
@@ -1613,7 +1623,7 @@ public abstract class DbGenerationManager {
         return false;
     }
 
-    private String getQuote(DbMapComponent component){
+    protected String getQuote(DbMapComponent component) {
         String quote = TalendQuoteUtils.QUOTATION_MARK;
         IElementParameter mappingPara = component.getElementParameter(EParameterName.MAPPING.getName());
         if(mappingPara == null){
@@ -1723,14 +1733,17 @@ public abstract class DbGenerationManager {
                 String schemaNoQuote = TalendTextUtils.removeQuotes(schemaValue);
                 boolean hasSchema = !"".equals(schemaNoQuote);
                 if (hasSchema) {
-                    handledTableName = schemaValue + "+\".\"+";
+                    handledTableName = getReplaceHandledName(component, schemaValue) + "+\".\"+";
                 }
-                handledTableName = handledTableName + tableValue;
-                return "\" +" + handledTableName + "+ \"";
+                handledTableName = handledTableName + getReplaceHandledName(component, tableValue);
+                return "\" +" + handledTableName + "+ \""; //$NON-NLS-1$ //$NON-NLS-2$
             }
         }
         return tableName;
+    }
 
+    protected String getReplaceHandledName(DbMapComponent component, String handledName) {
+        return handledName;
     }
 
     protected String getColumnName(IConnection conn, String name) {
@@ -1739,6 +1752,14 @@ public abstract class DbGenerationManager {
         } else {
             return name;
         }
+    }
+
+    protected String getExpressionTableName(DbMapComponent component, IConnection conn, String name, String quote) {
+        return name;
+    }
+
+    protected String getTableName(DbMapComponent component, IConnection conn, String name, String quote) {
+        return name;
     }
 
     protected String getColumnName(IConnection conn, String name, String quote) {
