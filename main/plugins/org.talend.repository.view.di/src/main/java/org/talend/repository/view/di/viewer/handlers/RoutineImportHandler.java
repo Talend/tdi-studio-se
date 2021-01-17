@@ -12,12 +12,7 @@
 // ============================================================================
 package org.talend.repository.view.di.viewer.handlers;
 
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashSet;
 import java.util.List;
@@ -25,7 +20,6 @@ import java.util.Set;
 
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.talend.commons.exception.ExceptionHandler;
 import org.talend.core.GlobalServiceRegister;
@@ -36,6 +30,7 @@ import org.talend.core.model.properties.PropertiesPackage;
 import org.talend.core.model.properties.RoutineItem;
 import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.core.model.routines.RoutineLibraryMananger;
+import org.talend.core.model.routines.RoutinesUtil;
 import org.talend.designer.core.model.utils.emf.component.IMPORTType;
 import org.talend.repository.items.importexport.handlers.imports.IImportResourcesHandler;
 import org.talend.repository.items.importexport.handlers.imports.ImportRepTypeHandler;
@@ -44,6 +39,7 @@ import org.talend.repository.items.importexport.manager.ResourcesManager;
 import org.talend.repository.items.importexport.ui.managers.ProviderManager;
 import org.talend.repository.items.importexport.ui.managers.ZipFileManager;
 import org.talend.repository.model.RepositoryConstants;
+import org.talend.repository.view.di.viewer.handlers.util.ImportHandlerUtil;
 
 /**
  * DOC ggu class global comment. Detailled comment
@@ -94,9 +90,9 @@ public class RoutineImportHandler extends ImportRepTypeHandler implements IImpor
                 extRoutines.add(type.getMODULE());
             }
             if (resManager instanceof ProviderManager || resManager instanceof ZipFileManager) {
-                deployJarToDestForArchive(resManager, extRoutines);
+                ImportHandlerUtil.deployJarToDestForArchive(resManager, extRoutines, jarsToDeploy);
             } else {
-                deployJarToDest(resManager, extRoutines);
+                ImportHandlerUtil.deployJarToDest(resManager, extRoutines, jarsToDeploy);
             }
 
         }
@@ -111,64 +107,7 @@ public class RoutineImportHandler extends ImportRepTypeHandler implements IImpor
         return false;
     }
 
-    private void deployJarToDestForArchive(final ResourcesManager manager, Set<String> extRoutines) {
-        if (extRoutines.isEmpty()) {
-            return;
-        }
-        if (GlobalServiceRegister.getDefault().isServiceRegistered(ILibrariesService.class)) {
-            IPath tmpDir = new Path(System.getProperty("user.dir") + File.separatorChar + "tmpJar"); //$NON-NLS-1$ //$NON-NLS-2$
 
-            File dirFile = tmpDir.toFile();
-            for (IPath path : manager.getPaths()) {
-                String fileName = path.lastSegment();
-                if (extRoutines.contains(fileName)) {
-                    try {
-                        InputStream is = manager.getStream(path);
-                        if (!dirFile.exists()) {
-                            dirFile.mkdirs();
-                        }
-                        File temFile = tmpDir.append(fileName).toFile();
-                        if (temFile.exists()) {
-                            temFile.delete();
-                        }
-                        byte[] b = new byte[1024];
-                        int length = 0;
-                        BufferedOutputStream fos = new BufferedOutputStream(new FileOutputStream(temFile, true));
-                        while ((length = is.read(b)) != -1) {
-                            fos.write(b, 0, length);
-                        }
-                        fos.close();
-
-                        jarsToDeploy.add(temFile.toURI().toURL());
-                    } catch (MalformedURLException e) {
-                        ExceptionHandler.process(e);
-                    } catch (IOException e) {
-                        ExceptionHandler.process(e);
-                    }
-                }
-            }
-        }
-    }
-
-    private void deployJarToDest(final ResourcesManager manager, Set<String> extRoutines) {
-        File file = null;
-        if (extRoutines.isEmpty()) {
-            return;
-        }
-        if (GlobalServiceRegister.getDefault().isServiceRegistered(ILibrariesService.class)) {
-            for (Object element : manager.getPaths()) {
-                String value = element.toString();
-                file = new File(value);
-                if (extRoutines.contains(file.getName())) {
-                    try {
-                        jarsToDeploy.add(file.toURL());
-                    } catch (MalformedURLException e) {
-                        ExceptionHandler.process(e);
-                    }
-                }
-            }
-        }
-    }
 
     /*
      * (non-Javadoc)
@@ -262,7 +201,7 @@ public class RoutineImportHandler extends ImportRepTypeHandler implements IImpor
         boolean valid = super.valid(importItem);
         if (valid) {
             Item item = importItem.getItem();
-            if (isBuiltIn(item)) {
+            if (isBuiltIn(item) || RoutinesUtil.isInnerCodes(importItem.getProperty())) {
                 return false;
             }
         }

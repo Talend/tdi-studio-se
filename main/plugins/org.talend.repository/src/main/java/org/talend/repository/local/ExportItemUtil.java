@@ -51,6 +51,7 @@ import org.talend.core.model.properties.Project;
 import org.talend.core.model.properties.PropertiesPackage;
 import org.talend.core.model.properties.Property;
 import org.talend.core.model.properties.RoutineItem;
+import org.talend.core.model.properties.RoutinesJarItem;
 import org.talend.core.model.repository.FakePropertyImpl;
 import org.talend.core.model.repository.IRepositoryViewObject;
 import org.talend.core.model.repository.ResourceModelUtils;
@@ -403,13 +404,17 @@ public class ExportItemUtil {
                     return toExport;
                 }
 
+                List moduleList = null;
                 if (item instanceof RoutineItem) {
-                    List list = ((RoutineItem) item).getImports();
-                    for (int i = 0; i < list.size(); i++) {
-                        String jarName = ((IMPORTTypeImpl) list.get(i)).getMODULE();
-                        jarNameAndUrl.put(jarName, ((IMPORTTypeImpl) list.get(i)).getMVN());
+                    moduleList = ((RoutineItem) item).getImports();
+                } else if (item instanceof RoutinesJarItem) {
+                    moduleList = ((RoutinesJarItem) item).getRoutinesJarType().getImports();
+                }
+                if (moduleList != null) {
+                    for (int i = 0; i < moduleList.size(); i++) {
+                        String jarName = ((IMPORTTypeImpl) moduleList.get(i)).getMODULE();
+                        jarNameAndUrl.put(jarName, ((IMPORTTypeImpl) moduleList.get(i)).getMVN());
                     }
-
                 }
 
                 boolean needChangeItem = false;

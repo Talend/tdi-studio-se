@@ -55,7 +55,7 @@ import org.talend.core.model.properties.ProjectReference;
 import org.talend.core.model.properties.Property;
 import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.core.model.repository.IRepositoryViewObject;
-import org.talend.core.model.routines.RoutinesUtil;
+import org.talend.core.model.routines.CodesJarInfo;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
 import org.talend.core.repository.utils.ItemResourceUtil;
 import org.talend.core.runtime.process.ITalendProcessJavaProject;
@@ -230,9 +230,10 @@ public class TalendJavaProjectManager {
         return projectTechName + "|" + codeType.name(); //$NON-NLS-1$
     }
 
-    public static String getCodesJarProjectId(Property codesJarProperty) {
-        return getCodesJarProjectId(ERepositoryObjectType.getItemType(codesJarProperty.getItem()),
-                ProjectManager.getInstance().getProject(codesJarProperty).getTechnicalLabel(), codesJarProperty.getLabel());
+    public static String getCodesJarProjectId(CodesJarInfo info) {
+        Property codesJarProperty = info.getProperty();
+        return getCodesJarProjectId(ERepositoryObjectType.getItemType(codesJarProperty.getItem()), info.getProjectTechName(),
+                codesJarProperty.getLabel());
     }
 
     public static String getCodesJarProjectId(ERepositoryObjectType codeType, String projectTechName, String codesJarName) {
@@ -274,16 +275,11 @@ public class TalendJavaProjectManager {
         }
     }
 
-    public static ITalendProcessJavaProject getTalendCodesJarJavaProject(Property property) {
-        String projectTechName = ProjectManager.getInstance().getProject(property).getTechnicalLabel();
-        ERepositoryObjectType type = RoutinesUtil.getInnerCodeType(property);
-        String codesJarName = null;
-        if (type == null) {
-            type = ERepositoryObjectType.getItemType(property.getItem());
-            codesJarName = property.getLabel();
-        } else {
-            codesJarName = RoutinesUtil.getCodesJarLabelByInnerCode(property.getItem());
-        }
+    public static ITalendProcessJavaProject getTalendCodesJarJavaProject(CodesJarInfo info) {
+        Property property = info.getProperty();
+        String projectTechName = info.getProjectTechName();
+        ERepositoryObjectType type = ERepositoryObjectType.getItemType(property.getItem());
+        String codesJarName = property.getLabel();
         String codeProjectId = getCodesJarProjectId(type, projectTechName, codesJarName);
         ITalendProcessJavaProject codesJarJavaProject = talendCodesJarJavaProjects.get(codeProjectId);
         if (codesJarJavaProject == null || codesJarJavaProject.getProject() == null
@@ -305,8 +301,7 @@ public class TalendJavaProjectManager {
                 }
                 // only update for main project.
                 if (ProjectManager.getInstance().getCurrentProject().getTechnicalLabel().equals(projectTechName)) {
-                    CodesJarM2CacheManager.updateCodesJarProjectPom(monitor, property,
-                            codeProject.getFile(TalendMavenConstants.POM_FILE_NAME));
+                    CodesJarM2CacheManager.updateCodesJarProjectPom(monitor, info);
                 }
                 codesJarJavaProject = new TalendProcessJavaProject(javaProject);
                 talendCodesJarJavaProjects.put(codeProjectId, codesJarJavaProject);
@@ -414,16 +409,16 @@ public class TalendJavaProjectManager {
         return talendCodeJavaProjects.get(getCodeProjectId(codeType, projectTechName));
     }
 
-    public static ITalendProcessJavaProject getExistingTalendCodesJarProject(String codesJarProjectId) {
-        return talendCodesJarJavaProjects.get(codesJarProjectId);
+    public static ITalendProcessJavaProject getExistingTalendCodesJarProject(CodesJarInfo info) {
+        return talendCodesJarJavaProjects.get(getCodesJarProjectId(info));
     }
 
     public static void removeFromCodeJavaProjects(ERepositoryObjectType codeType, String projectTechName) {
         talendCodeJavaProjects.remove(getCodeProjectId(codeType, projectTechName));
     }
 
-    public static void removeFromCodesJarJavaProjects(Property Property) {
-        talendCodesJarJavaProjects.remove(getCodesJarProjectId(Property));
+    public static void removeFromCodesJarJavaProjects(CodesJarInfo info) {
+        talendCodesJarJavaProjects.remove(getCodesJarProjectId(info));
     }
 
     public static void deleteTalendCodesJarProject(Property property, boolean deleteContent) {

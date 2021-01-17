@@ -982,7 +982,7 @@ public class JavaProcessUtil {
 
     private static Set<String> getCodesJarExportJarFromRoutinesParameterType(List<RoutinesParameterType> routinesParameters) {
         return routinesParameters.stream().filter(r -> r.getType() != null).map(
-                r -> CodesJarResourceCache.getCodesJarById(r.getId()).getLabel().toLowerCase() + FileExtensions.JAR_FILE_SUFFIX)
+                r -> CodesJarResourceCache.getCodesJarById(r.getId()).getProperty().getLabel().toLowerCase() + FileExtensions.JAR_FILE_SUFFIX)
                 .collect(Collectors.toSet());
     }
 

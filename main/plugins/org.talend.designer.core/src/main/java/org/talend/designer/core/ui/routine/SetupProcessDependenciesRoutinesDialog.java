@@ -54,6 +54,7 @@ import org.talend.core.model.properties.ProcessItem;
 import org.talend.core.model.properties.Property;
 import org.talend.core.model.properties.RoutineItem;
 import org.talend.core.model.repository.ERepositoryObjectType;
+import org.talend.core.model.routines.CodesJarInfo;
 import org.talend.core.model.routines.RoutinesUtil;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
 import org.talend.core.utils.CodesJarResourceCache;
@@ -191,9 +192,9 @@ public class SetupProcessDependenciesRoutinesDialog extends Dialog {
     }
 
     private void initModelsForCodesJars() {
-        for (Property property : CodesJarResourceCache.getAllCodesJars()) {
-            Project project = ProjectManager.getInstance()
-                    .getProjectFromProjectTechLabel(ProjectManager.getInstance().getProject(property).getTechnicalLabel());
+        for (CodesJarInfo info : CodesJarResourceCache.getAllCodesJars()) {
+            Project project = ProjectManager.getInstance().getProjectFromProjectTechLabel(info.getProjectTechName());
+            Property property = info.getProperty();
             ERepositoryObjectType type = ERepositoryObjectType.getItemType(property.getItem());
             if (type == ERepositoryObjectType.ROUTINESJAR) {
                 addItems(project, allRoutinesJarItems, property);
