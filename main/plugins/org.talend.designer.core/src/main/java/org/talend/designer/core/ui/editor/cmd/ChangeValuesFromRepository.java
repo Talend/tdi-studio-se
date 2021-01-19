@@ -681,7 +681,8 @@ public class ChangeValuesFromRepository extends ChangeMetadataCommand {
                     if (param.isRepositoryValueUsed()) {
                         if (("GENERATION_MODE").equals(param.getName())) {
                             param.setReadOnly(true);
-                        } else if (isJDBCRepValue && "MAPPING".equals(param.getName())) {
+                        } else if (isJDBCRepValue && EParameterFieldType.MAPPING_TYPE.equals(param.getFieldType())
+                                && EParameterName.MAPPING.getName().equals(param.getName())) {
                             param.setReadOnly(true);
                         } else {
                             param.setReadOnly(false);
