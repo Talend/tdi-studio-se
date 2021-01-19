@@ -357,7 +357,8 @@ public class ChangeValuesFromRepository extends ChangeMetadataCommand {
                     param.setRepositoryValueUsed(true);
                 }
                 if (!isJDBCRepValue && connection instanceof DatabaseConnection
-                        && StringUtils.equals("MAPPING", param.getName())) {//$NON-NLS-1$
+                        && EParameterFieldType.MAPPING_TYPE.equals(param.getFieldType())
+                        && StringUtils.equals(EParameterName.MAPPING.getName(), param.getName())) {// $NON-NLS-1$
                     repositoryValue = param.getName();
                 }
                 if (repositoryValue == null
