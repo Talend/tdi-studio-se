@@ -24,6 +24,20 @@ skeleton="../templates/db_output_bulk.skeleton"
 	<%
 	CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
 	INode node = (INode)codeGenArgument.getArgument();
+	
+	boolean isSnowflakeUseDelimitedIdentifiers = false;
+	List<IConnection> inConnections = (List<IConnection>) node.getIncomingConnections();
+	if(inConnections != null && inConnections.size() > 0 && inConnections.get(0) != null) {
+	IConnection inConnection = inConnections.get(0);
+	INode sourceNode = inConnection.getSource();
+	if(sourceNode!=null){
+	   boolean useDelimitedIdentifiers = "true".equals(ElementParameterParser.getValue(sourceNode, "__ACTIVE_DATABASE_DELIMITED_IDENTIFIERS__"));
+	   String mappingID = ElementParameterParser.getValue(node,"__MAPPING__");
+	   if(useDelimitedIdentifiers && mappingID!=null && "snowflake_id".equalsIgnoreCase(mappingID)){
+	     isSnowflakeUseDelimitedIdentifiers = true;
+	   }
+     }
+   }
 
 	boolean isLog4jEnabled = ("true").equals(ElementParameterParser.getValue(node.getProcess(), "__LOG4J_ACTIVATE__"));
 	String cid = node.getUniqueName();
@@ -68,9 +82,17 @@ skeleton="../templates/db_output_bulk.skeleton"
 	%>
 	String dbschema_<%=cid%> = <%=dbschema%>;
 	if(dbschema_<%=cid%> != null && dbschema_<%=cid%>.trim().length() > 0) {
-		tableName_<%=cid%> = <%=dbschema%> + "." + <%=tableName%>;
+		<%if(isSnowflakeUseDelimitedIdentifiers){%>
+		   tableName_<%=cid%> = "\"" + <%=dbschema%> + "\"" + "." + "\"" + <%=tableName%> + "\"";
+		<%}else{%>
+		   tableName_<%=cid%> = <%=dbschema%> + "." + <%=tableName%>;
+		<%}%>
 	}else {
-		tableName_<%=cid%> = <%=tableName%>;
+		<%if(isSnowflakeUseDelimitedIdentifiers){%>
+		   tableName_<%=cid%> = "\"" + <%=tableName%> + "\"";
+		<%}else{%>
+		   tableName_<%=cid%> = <%=tableName%>;
+		<%}%>
 	}
 	<%
 	String dataAction = ElementParameterParser.getValue(node,"__DATA_ACTION__");
@@ -150,6 +172,9 @@ skeleton="../templates/db_output_bulk.skeleton"
     		if(columnName==null || columnName.trim().isEmpty()){
 				columnName = column.getLabel();
     		}
+            if(isSnowflakeUseDelimitedIdentifiers){
+               columnName= "\"+\"\\\"" + columnName + "\\\"\"+\"";
+            }
           boolean isUpdateColumn = "true".equals(setColumns.get(counterOuter).get("UPDATE_COLUMN"));
           insertColName.append(columnName).append(suffix);
           if (isUpdate && isUpdateColumn) {
