@@ -14,12 +14,15 @@ package org.talend.repository.json.ui.wizards.view;
 
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TreeViewer;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.Widget;
+import org.talend.commons.ui.runtime.ws.WindowSystem;
 import org.talend.commons.ui.swt.drawing.background.IBackgroundRefresher;
 import org.talend.commons.ui.swt.linking.TreeToTablesLinker;
 import org.talend.repository.model.json.JSONFileConnection;
@@ -53,6 +56,11 @@ public class JSONTree2SchemaLinker extends TreeToTablesLinker<Object, Object> {
 
         init(tree, new Table[] { table }, delegateLinker.getBackgroundRefresher());
         initListeners();
+        if (WindowSystem.isBigSurOrLater()) {
+            getBackgroundRefresher().setBackgroundColor(getBgDrawableComposite().getBackground());
+            getBgDrawableComposite().setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_TRANSPARENT));
+            this.getTree().setLinesVisible(true);
+        }
     }
 
     public void init(final Tree tree, Table[] tables, IBackgroundRefresher backgroundRefresher) {
