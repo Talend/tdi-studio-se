@@ -129,6 +129,17 @@
     >
       <DEFAULT>""</DEFAULT>
     </PARAMETER>
+	
+	    <PARAMETER
+      NAME="PARTITION"
+      FIELD="TEXT"
+      NUM_ROW="35"
+      REQUIRED="true"
+      SHOW_IF="(MAPPING == 'databricks_delta_lake_id') AND (DATA_ACTION == 'INSERT')"
+    >
+      <DEFAULT>""</DEFAULT>
+    </PARAMETER>
+	
 
     <PARAMETER
       NAME="MAPPING"
