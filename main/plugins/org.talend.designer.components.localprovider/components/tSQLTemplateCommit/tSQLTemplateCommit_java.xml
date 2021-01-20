@@ -51,6 +51,7 @@
 				<ITEM NAME="TERADATA" VALUE="TERADATA" />
 				<ITEM NAME="VERTICA" VALUE="VERTICA" />
 				<ITEM NAME="SNOWFLAKE" VALUE="SNOWFLAKE" />
+				<ITEM NAME="DELTALAKE" VALUE="DELTALAKE" />
 			</ITEMS>
 		</PARAMETER>
 	   
@@ -214,6 +215,15 @@
 			REQUIRED="true" FILTER="REGEXP:^tSnowflakeConnection|tJDBCConnection$"
 			NUM_ROW="2"
 			SHOW_IF="DBTYPE=='SNOWFLAKE'"
+		/>
+		<!-- Delta Lake -->
+		<PARAMETER
+			NAME="CONNECTION_DELTALAKE"
+			FIELD="COMPONENT_LIST"
+			REQUIRED="true" FILTER="REGEXP:^tDeltaLakeConnection|tJDBCConnection$"
+			NUM_ROW="3"
+			SHOW_IF="DBTYPE=='DELTALAKE'"
+		/>
 		/>
 		<!-- connections end -->
 		
