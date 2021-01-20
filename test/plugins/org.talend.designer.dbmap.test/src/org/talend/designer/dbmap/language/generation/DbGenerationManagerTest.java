@@ -1444,4 +1444,83 @@ public class DbGenerationManagerTest extends DbGenerationManagerTestHelper {
         String query = dbManager.buildSqlSelect(dbMapComponent, "grade");
         assertEquals(expectedQuery, query);
     }
+
+    @Test
+    public void testBuildSqlSelectWithContextCase9() {
+        String schema = "context.schema1.context.schema2";
+        String main_table = "context.main_table1.context.main_table2";
+        String main_alias = "a1";
+        String lookup_table = "lookup_table";
+        String lookup_alias = "a2";
+        init(schema, main_table, main_alias, lookup_table, lookup_alias);
+        String expectedQuery = "\"SELECT\n" + "a1.id, a1.name, a1.age, a2.score\n" + "FROM\n" + " \" +context.schema1 + \"."
+                + "\" + context.schema2+\"." + "\"+context.main_table1 + \"." + "\" + context.main_table2+ \"" + " a1 , "
+                + "\" +context.schema1 + \"." + "\" + context.schema2+\"." + "\"+lookup_table+ \" a2\"";
+        String query = dbManager.buildSqlSelect(dbMapComponent, "grade");
+        assertEquals(expectedQuery, query);
+    }
+
+    @Test
+    public void testBuildSqlSelectWithContextCase10() {
+        String schema = "context.schema1.context.schema2.context.schema3";
+        String main_table = "context.main_table1.context.main_table2.context.main_table3";
+        String main_alias = "a1";
+        String lookup_table = "lookup_table";
+        String lookup_alias = "a2";
+        init(schema, main_table, main_alias, lookup_table, lookup_alias);
+        String expectedQuery = "\"SELECT\n" + "a1.id, a1.name, a1.age, a2.score\n" + "FROM\n" + " \" +context.schema1 + \"."
+                + "\" + context.schema2 + \"." + "\" + context.schema3+\"." + "\"+context.main_table1 + \"."
+                + "\" + context.main_table2 + \"." + "\" + context.main_table3+ \"" + " a1 , "
+                + "\" +context.schema1 + \"." + "\" + context.schema2 + \"." + "\" + context.schema3+\"."
+                + "\"+lookup_table+ \" a2\"";
+        String query = dbManager.buildSqlSelect(dbMapComponent, "grade");
+        assertEquals(expectedQuery, query);
+    }
+
+    @Test
+    public void testBuildSqlSelectWithContextCase11() {
+        String schema = "context.schema1.schema2";
+        String main_table = "context.main_table1.main_table2";
+        String main_alias = "a1";
+        String lookup_table = "lookup_table";
+        String lookup_alias = "a2";
+        init(schema, main_table, main_alias, lookup_table, lookup_alias);
+        String expectedQuery = "\"SELECT\n" + "a1.id, a1.name, a1.age, a2.score\n" + "FROM\n" + " \" +context.schema1 + \"."
+                + "\" + \"schema2\"+\"." + "\"+context.main_table1 + \"." + "\" + \"main_table2\"+ \"" + " a1 , "
+                + "\" +context.schema1 + \"."
+                + "\" + \"schema2\"+\"." + "\"+lookup_table+ \" a2\"";
+        String query = dbManager.buildSqlSelect(dbMapComponent, "grade");
+        assertEquals(expectedQuery, query);
+    }
+
+    @Test
+    public void testBuildSqlSelectWithContextCase12() {
+        String schema = "schema1.context.schema2";
+        String main_table = "main_table1.context.main_table2";
+        String main_alias = "a1";
+        String lookup_table = "lookup_table";
+        String lookup_alias = "a2";
+        init(schema, main_table, main_alias, lookup_table, lookup_alias);
+        String expectedQuery = "\"SELECT\n" + "a1.id, a1.name, a1.age, a2.score\n" + "FROM\n" + " \" +\"schema1\" + \"."
+                + "\" + context.schema2+\"." + "\"+\"main_table1\" + \"." + "\" + context.main_table2+ \"" + " a1 , "
+                + "\" +\"schema1\" + \"."
+                + "\" + context.schema2+\"." + "\"+lookup_table+ \" a2\"";
+        String query = dbManager.buildSqlSelect(dbMapComponent, "grade");
+        assertEquals(expectedQuery, query);
+    }
+
+    @Test
+    public void testBuildSqlSelectWithContextCase13() {
+        String schema = "context.schema1 + \".\" + context.schema2";
+        String main_table = "context.main_table1 + \".\" + context.main_table2";
+        String main_alias = "a1";
+        String lookup_table = "lookup_table";
+        String lookup_alias = "a2";
+        init(schema, main_table, main_alias, lookup_table, lookup_alias);
+        String expectedQuery = "\"SELECT\n" + "a1.id, a1.name, a1.age, a2.score\n" + "FROM\n" + " \" +context.schema1 + \"."
+                + "\" + context.schema2+\"." + "\"+context.main_table1 + \"." + "\" + context.main_table2+ \"" + " a1 , "
+                + "\" +context.schema1 + \"." + "\" + context.schema2+\"." + "\"+lookup_table+ \" a2\"";
+        String query = dbManager.buildSqlSelect(dbMapComponent, "grade");
+        assertEquals(expectedQuery, query);
+    }
 }
