@@ -1977,8 +1977,12 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
                 }
             }
             if (init) {
-                EList<RoutinesParameterType> allRoutines = getProcessType().getParameters().getRoutinesParameter();
-                routinesDependencies.addAll(allRoutines.stream().filter(r -> r.getType() != null).collect(Collectors.toList()));
+                if (getProcessType() != null && getProcessType().getParameters() != null
+                        && getProcessType().getParameters().getRoutinesParameter() != null) {
+                    EList<RoutinesParameterType> allRoutines = getProcessType().getParameters().getRoutinesParameter();
+                    routinesDependencies
+                            .addAll(allRoutines.stream().filter(r -> r.getType() != null).collect(Collectors.toList()));
+                }
             }
         } catch (PersistenceException e) {
             ExceptionHandler.process(e);
