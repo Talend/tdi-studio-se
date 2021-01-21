@@ -222,7 +222,7 @@
 			NAME="CONNECTION_DELTALAKE"
 			FIELD="COMPONENT_LIST"
 			REQUIRED="true" FILTER="REGEXP:^tDeltaLakeConnection|tJDBCConnection$"
-			NUM_ROW="3"
+			NUM_ROW="2"
 			SHOW_IF="DBTYPE=='DELTALAKE'"
 		/>
 		/>
