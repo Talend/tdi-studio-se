@@ -379,7 +379,7 @@ class GenerateToolByDom4j{
 			elements_<%=currEleName%>_<%=cid%> = new java.util.ArrayList<>(<%touchXMLNode.getXMLElement(parentName);%>.elements(qname_<%=currEleName%>_<%=cid%>));
 			resourceMap.put("<%=cid%>_elements_" + qname_<%=currEleName%>_<%=cid%>.getName(), elements_<%=currEleName%>_<%=cid%>);
 		} else {
-			elements_<%=currEleName%>_<%=cid%> = resourceMap.get("<%=cid%>_elements_" + qname_<%=currEleName%>_<%=cid%>.getName());
+			elements_<%=currEleName%>_<%=cid%> = (java.util.List) resourceMap.get("<%=cid%>_elements_" + qname_<%=currEleName%>_<%=cid%>.getName());
 		}
 		int app_size_<%=cid %> = elements_<%=currEleName%>_<%=cid%>.size();
 		
