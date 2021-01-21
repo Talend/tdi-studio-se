@@ -38,7 +38,7 @@ public class TaCoKitDependencyService implements ITaCoKitDependencyService {
             "component-runtime-design-extension-", "component-runtime-di-", "component-runtime-impl-",
             "component-runtime-manager-", "component-spi-", "container-core-", "geronimo-annotation_1.3_spec-",
             "geronimo-json_1.1_spec-", "geronimo-jsonb_1.0_spec-", "johnzon-core-", "johnzon-jsonb-", "johnzon-mapper-",
-            "slf4j-api-", "slf4j-log4j12-", "xbean-asm7-shaded-", "xbean-finder-shaded-", "xbean-reflect-");
+            "slf4j-api-", "slf4j-log4j12-", "xbean-asm9-shaded-", "xbean-finder-shaded-", "xbean-reflect-");
 
     /**
      * @param components
@@ -59,7 +59,9 @@ public class TaCoKitDependencyService implements ITaCoKitDependencyService {
                     .filter(jar -> TACOKIT_JARS_BLACKLIST.stream().noneMatch(tck -> jar.contains(tck)))
                     .collect(Collectors.toSet());
             if (ComponentModel.class.isInstance(component)) {
-                tckDeps.addAll(deps);
+                // we keep plugin in original classloader classpath (intent for microservices spring boot)
+                final String pluginPrefix = ((ComponentModel) component).getId().getPlugin() + "-";
+                tckDeps.addAll(deps.stream().filter(dep -> !dep.startsWith(pluginPrefix)).collect(Collectors.toSet()));
             } else {
                 diDeps.addAll(deps);
             }

@@ -18,8 +18,8 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -367,6 +367,10 @@ public class WebServiceTableLiner extends TableToTablesLinker<Object, Object> {
 
             pointEndCentralCurve.x += offset.x - 6;
             pointEndCentralCurve.y += offset.y;
+
+            if (WindowSystem.isBigSurOrLater()) {
+                pointEndCentralCurve.y -= table.getItemHeight();
+            }
 
             drawableLink.setPoint1(pointEndStraight);
             drawableLink.setPoint2(pointEndCentralCurve);

@@ -23,6 +23,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableItem;
 import org.talend.commons.ui.runtime.utils.TableUtils;
+import org.talend.commons.ui.runtime.ws.WindowSystem;
 import org.talend.commons.ui.swt.advanced.dataeditor.AbstractDataTableEditorView;
 import org.talend.commons.ui.swt.extended.table.ExtendedTableModel;
 import org.talend.commons.ui.swt.linking.TableToTablesLinker;
@@ -267,8 +268,15 @@ public class DropTargetListenerForWebService implements TransferDropTargetListen
                 return;
             }
             TableItem itemTarget = items[0];
+            // Returned wrong TableItem without this.
+            if (WindowSystem.isBigSurOrLater()) {
+                itemTarget.getText();
+            }
             itemTarget.setChecked(true);
             createLinks(itemTarget, tabitem, tabelModel.getName());
+            if (WindowSystem.isBigSurOrLater()) {
+                tabTotabLink.getBackgroundRefresher().refreshBackground();
+            }
         }
 
     }
