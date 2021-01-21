@@ -87,7 +87,8 @@ public class SetupProcessDependenciesRoutinesAction extends AContextualAction {
                     canWork = true;
                 } else if (node.getObjectType() != ERepositoryObjectType.PROCESS
                         && node.getObjectType() != ERepositoryObjectType.JOBLET
-                        && node.getObjectType() != ERepositoryObjectType.PROCESS_ROUTE) {
+                        && node.getObjectType() != ERepositoryObjectType.PROCESS_ROUTE
+                        && node.getObjectType() != ERepositoryObjectType.PROCESS_ROUTELET) {
                     canWork = false;
                 }
                 break;
@@ -123,7 +124,8 @@ public class SetupProcessDependenciesRoutinesAction extends AContextualAction {
         ProxyRepositoryFactory repFactory = ProxyRepositoryFactory.getInstance();
         ERepositoryStatus status = repFactory.getStatus(node.getObject());
         if (!repFactory.isPotentiallyEditable(node.getObject()) || status == ERepositoryStatus.LOCK_BY_OTHER
-                || status == ERepositoryStatus.LOCK_BY_USER) {
+                || status == ERepositoryStatus.LOCK_BY_USER || (ERepositoryObjectType.TEST_CONTAINER != null
+                        && node.getObjectType().equals(ERepositoryObjectType.TEST_CONTAINER))) {
             readonly = true;
         }
         Item item = node.getObject().getProperty().getItem();
