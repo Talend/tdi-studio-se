@@ -1898,13 +1898,17 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
                 tProcessJvaProject.createSubFolder(null, externalResourcesFolder, jobContextFolderPath.toString());
             }
 
-            extResourcePath.refreshLocal(IResource.DEPTH_INFINITE, null);
+            if (!extResourcePath.isSynchronized(IResource.DEPTH_INFINITE)) {
+                extResourcePath.refreshLocal(IResource.DEPTH_INFINITE, null);
+            }
 
             if (!resourcesPath.exists()) {
                 tProcessJvaProject.createSubFolder(null, resourcesFolder, jobContextFolderPath.toString());
             }
 
-            resourcesPath.refreshLocal(IResource.DEPTH_INFINITE, null);
+            if (!resourcesPath.isSynchronized(IResource.DEPTH_INFINITE)) {
+                resourcesPath.refreshLocal(IResource.DEPTH_INFINITE, null);
+            }
 
             for (IResource resource : extResourcePath.members()) {
                 IFile context = resourcesPath.getFile(resource.getName());
@@ -1915,7 +1919,9 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
                 resource.copy(context.getFullPath(), true, null);
             }
 
-            resourcesPath.refreshLocal(IResource.DEPTH_INFINITE, null);
+            if (!resourcesPath.isSynchronized(IResource.DEPTH_INFINITE)) {
+                resourcesPath.refreshLocal(IResource.DEPTH_INFINITE, null);
+            }
 
         } catch (Exception e) {
             e.printStackTrace();
