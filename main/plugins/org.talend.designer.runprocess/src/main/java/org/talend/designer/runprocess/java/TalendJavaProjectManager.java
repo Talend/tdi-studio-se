@@ -289,7 +289,7 @@ public class TalendJavaProjectManager {
                 IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
                 AggregatorPomsHelper helper = new AggregatorPomsHelper(projectTechName);
                 IFolder codeProjectFolder = helper.getCodesJarFolder(property);
-                cleanUpCodeProject(monitor, codeProjectFolder);
+                // cleanUpCodeProject(monitor, codeProjectFolder);
                 IProject codeProject = root.getProject((projectTechName + "_" + type.name() + "_" + codesJarName).toUpperCase()); //$NON-NLS-1$ //$NON-NLS-2$
                 if (!codeProject.exists() || TalendCodeProjectUtil.needRecreate(monitor, codeProject)) {
                     // always enable maven nature for code projects.
