@@ -22,8 +22,10 @@ import java.util.Map;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.gef.commands.Command;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.ComboBoxCellEditor;
+import org.eclipse.jface.viewers.ICellEditorListener;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.custom.CLabel;
@@ -57,6 +59,7 @@ import org.talend.core.ui.properties.tab.IDynamicProperty;
 import org.talend.designer.core.IDesignerCoreService;
 import org.talend.designer.core.model.FakeElement;
 import org.talend.designer.core.model.components.EParameterName;
+import org.talend.designer.core.ui.editor.cmd.PropertyChangeCommand;
 import org.talend.designer.core.ui.editor.connections.Connection;
 import org.talend.designer.core.ui.editor.nodes.Node;
 import org.talend.designer.core.ui.editor.properties.macrowidgets.tableeditor.PropertiesTableEditorModel;
@@ -119,6 +122,29 @@ public class TableController extends AbstractElementPropertySectionController {
 
         table.setToolTipText(VARIABLE_TOOLTIP + param.getVariableName());
 
+        CellEditor[] cellEditors = tableEditorView.getExtendedTableModel().getTableViewer().getCellEditors();
+        if (cellEditors.length > 1) {
+            CellEditor c = cellEditors[1];
+            c.addListener(new ICellEditorListener() {
+
+                @Override
+                public void editorValueChanged(boolean oldValidState, boolean newValidState) {
+                }
+
+                @Override
+                public void applyEditorValue() {
+                    Object propertyValue = elem.getPropertyValue("DRIVER_JAR_IMPLICIT_CONTEXT");
+                    Command cmd = new PropertyChangeCommand(elem, "DRIVER_JAR_IMPLICIT_CONTEXT", propertyValue);
+                    executeCommand(cmd);
+                }
+
+                @Override
+                public void cancelEditor() {
+
+                }
+            });
+        }
+        
         // add listener to tableMetadata (listen the event of the toolbars)
         tableEditorView.getExtendedTableModel().addAfterOperationListListener(new IListenableListListener() {
 
