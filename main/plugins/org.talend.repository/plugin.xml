@@ -3526,6 +3526,15 @@
                name="ChangeDefaultDriver4GreenplumMigrationTask"
                version="7.3.1">
        </projecttask>
+       <projecttask
+             beforeLogon="false"
+             breaks="7.3.0"
+             class="org.talend.repository.model.migration.ChangeFileInputDynamicFieldLength"
+             description="Change the dynamic field length in file input components"
+             id="org.talend.repository.model.migration.ChangeFileInputDynamicFieldLength"
+             name="ChangeFileInputDynamicFieldLength"
+             version="7.3.1">
+       </projecttask>
    </extension>
 
    <extension
