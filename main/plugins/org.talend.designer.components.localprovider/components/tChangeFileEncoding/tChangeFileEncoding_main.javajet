@@ -6,7 +6,7 @@
   "
 %>
 
-<%@ include file="../templates/Log4j/Log4jFileUtil.javajet"%>
+<%@ include file="@{org.talend.designer.components.localprovider}/templates/Log4j/Log4jFileUtil.javajet"%>
 
 <%
 CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
@@ -19,6 +19,7 @@ String sOutEncoding = ElementParameterParser.getValue(node, "__ENCODING__");
 boolean bNeedEncode = "true".equals(ElementParameterParser.getValue(node, "__USE_INENCODING__"));
 boolean bCreateDir = "true".equals(ElementParameterParser.getValue(node, "__CREATE__"));
 String sTmpOutFileName = outFileName;
+final int bufferSize = Integer.parseInt(ElementParameterParser.getValue(node, "__BUFFERSIZE__"));
 
 log4jFileUtil.componentStartInfo(node);
 if (outFileName.equals(inFileName)){
@@ -40,12 +41,14 @@ java.io.File outFile_<%=cid%> = new java.io.File(sOutFileN_<%=cid%>);
 final java.io.BufferedWriter out<%=cid %> = new java.io.BufferedWriter(
   new java.io.OutputStreamWriter(
     new java.io.FileOutputStream(sOutFileN_<%=cid%>, false), <%=sOutEncoding%>
-));
+  ), 
+  <%=bufferSize%>);
     
 java.io.BufferedReader in_<%=cid %> = new java.io.BufferedReader(
   new java.io.InputStreamReader(
     new java.io.FileInputStream(sOriFileN_<%=cid%>), <%=bNeedEncode ? sInEncoding : "System.getProperty(\"file.encoding\")"%>
-));
+  ),
+  <%=bufferSize%>);
 
 //8192: the default buffer size of BufferedReader
 char[] cbuf_<%=cid %> = new char[8192];  
