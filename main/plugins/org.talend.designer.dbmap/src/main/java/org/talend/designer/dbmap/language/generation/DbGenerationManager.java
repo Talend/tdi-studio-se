@@ -1726,7 +1726,6 @@ public abstract class DbGenerationManager {
                     schemaValue = handledParameterValues(schemaValue);
                     handledTableName = schemaValue + "+\".\"+";
                 }
-                tableValue = handledParameterValues(tableValue);
                 handledTableName = handledTableName + tableValue;
                 return "\" +" + handledTableName + "+ \"";
             }
