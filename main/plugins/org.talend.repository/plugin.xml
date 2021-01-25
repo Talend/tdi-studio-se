@@ -3526,6 +3526,15 @@
                name="ChangeDefaultDriver4GreenplumMigrationTask"
                version="7.3.1">
        </projecttask>
+       <projecttask
+              beforeLogon="false"
+              breaks="7.3.0"
+              class="org.talend.repository.model.migration.FixUpgradePasswordEncryptionAlg4ItemMigrationTask"
+              description="Fix upgrading password encryption Alg 4 item migration task"
+              id="org.talend.repository.model.migration.FixUpgradePasswordEncryptionAlg4ItemMigrationTask"
+              name="FixUpgradePasswordEncryptionAlg4ItemMigrationTask"
+              version="7.3.1">
+        </projecttask>
    </extension>
 
    <extension
