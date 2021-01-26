@@ -12,21 +12,16 @@
 // ============================================================================
 package org.talend.repository.ui.wizards.exportjob.scriptsmanager.esb;
 
-import aQute.bnd.header.Attrs;
-import aQute.bnd.osgi.Analyzer;
-import aQute.bnd.osgi.Clazz;
-import aQute.bnd.osgi.Descriptors;
-import aQute.bnd.osgi.FileResource;
-import aQute.bnd.osgi.Jar;
-import aQute.bnd.service.AnalyzerPlugin;
-import aQute.bnd.service.Plugin;
-import aQute.service.reporter.Reporter;
-
+import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
 import java.net.MalformedURLException;
 import java.net.URI;
@@ -41,6 +36,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Properties;
 import java.util.Set;
 import java.util.TreeSet;
@@ -53,11 +49,15 @@ import java.util.stream.Stream;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.map.MultiKeyMap;
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
+import org.osgi.framework.Bundle;
 import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.exception.PersistenceException;
 import org.talend.commons.runtime.utils.io.FileCopyUtils;
@@ -103,6 +103,16 @@ import org.talend.repository.ui.wizards.exportjob.scriptsmanager.JobJavaScriptsM
 import org.talend.repository.utils.EmfModelUtils;
 import org.talend.repository.utils.TemplateProcessor;
 
+import aQute.bnd.header.Attrs;
+import aQute.bnd.osgi.Analyzer;
+import aQute.bnd.osgi.Clazz;
+import aQute.bnd.osgi.Descriptors;
+import aQute.bnd.osgi.FileResource;
+import aQute.bnd.osgi.Jar;
+import aQute.bnd.service.AnalyzerPlugin;
+import aQute.bnd.service.Plugin;
+import aQute.service.reporter.Reporter;
+
 /**
  * DOC ycbai class global comment. Detailled comment
  */
@@ -115,10 +125,48 @@ public class JobJavaScriptOSGIForESBManager extends JobJavaScriptsManager {
 
     private static final Collection<String> EXCLUDED_MODULES = new ArrayList<String>();
 
+    private Bundle esbBundle = Platform.getBundle(PluginChecker.ESBSE_PLUGIN_ID);
+
+    File cacheFile = null;
+
     public JobJavaScriptOSGIForESBManager(Map<ExportChoice, Object> exportChoiceMap, String contextName, String launcher,
             int statisticPort, int tracePort) {
         super(exportChoiceMap, contextName, launcher, statisticPort, tracePort);
+
+        if (esbBundle != null) {
+            IPath stateLocationPath = Platform.getStateLocation(esbBundle);
+
+            cacheFile = new File(stateLocationPath.toFile().getAbsolutePath() + File.separatorChar + "dependencyMap.cache");
+
+            FileInputStream fi = null;
+            ObjectInputStream oi = null;
+            try {
+                if (!cacheFile.exists()) {
+                    cacheFile.createNewFile();
+                } else {
+                    if (cacheFile.length() > 0) {
+                        fi = new FileInputStream(cacheFile);
+                        oi = new ObjectInputStream(fi);
+                        dependencyCacheMap = (Map) oi.readObject();
+                    }
+                }
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            } finally {
+                try {
+                    if (oi != null) {
+                        oi.close();
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
     }
+
+    Map<String, List<String>> dependencyCacheMap = null;
 
     protected static final char PACKAGE_SEPARATOR = '.';
 
@@ -156,7 +204,7 @@ public class JobJavaScriptOSGIForESBManager extends JobJavaScriptsManager {
     private static String complianceLevel = "1.8";
     
     private static String complianceParameter;
-    
+
     static {
         String javaVersion = System.getProperty(JAVA_VERSION);
         if (javaVersion != null) {
@@ -193,6 +241,7 @@ public class JobJavaScriptOSGIForESBManager extends JobJavaScriptsManager {
     @Override
     public List<ExportFileResource> getExportResources(ExportFileResource[] processes, String... codeOptions)
             throws ProcessorException {
+
         List<ExportFileResource> list = new ArrayList<ExportFileResource>();
 
         ExportFileResource osgiResource = new ExportFileResource(null, ""); //$NON-NLS-1$;
@@ -233,6 +282,7 @@ public class JobJavaScriptOSGIForESBManager extends JobJavaScriptsManager {
                 if (null == contextName) {
                     contextName = processItem.getProcess().getDefaultContext();
                 }
+
                 IProcess iProcess = generateJobFiles(processItem, contextName, jobVersion,
                         statisticPort != IProcessor.NO_STATISTICS, tracePort != IProcessor.NO_TRACES,
                         isOptionChoosed(ExportChoice.applyToChildren), progressMonitor);
@@ -268,11 +318,11 @@ public class JobJavaScriptOSGIForESBManager extends JobJavaScriptsManager {
                 // TCOMP-1681: feature uses this call for feeding a component-runtime compliant MAVEN-INF/repository and
                 // TALEND-INF/plugins.properties.
                 BuildExportManager.getInstance().exportOSGIDependencies(osgiResource, processItem);
+
             }
 
             ExportFileResource libResource = getCompiledLibExportFileResource(processes);
             list.add(libResource);
-
 
             ExportFileResource libResourceSelected = new ExportFileResource(null, LIBRARY_FOLDER_NAME);
 
@@ -312,6 +362,7 @@ public class JobJavaScriptOSGIForESBManager extends JobJavaScriptsManager {
             if (providedLibResources != null) {
                 list.add(providedLibResources);
             }
+
             // TCOMP-1681: for class isolation and avoid clashes, we remove tacokit dependencies to main classpath.
             // However, they're in the scope of ComponentManager.
             if (GlobalServiceRegister.getDefault().isServiceRegistered(ITaCoKitDependencyService.class)) {
@@ -321,6 +372,7 @@ public class JobJavaScriptOSGIForESBManager extends JobJavaScriptsManager {
                     list = cleanupResources(tckService.getJobComponents(processItem), list, tckService);
                 }
             }
+
         } catch (ProcessorException e) {
             throw e;
         } catch (Exception e) {
@@ -411,7 +463,6 @@ public class JobJavaScriptOSGIForESBManager extends JobJavaScriptsManager {
             includeRoutines.addAll(getRoutineDependince(processes, false, getIncludeRoutinesPath()));
             jarbuilder.setIncludeRoutines(includeRoutines);
             jarbuilder.buildJar();
-
             libResource.addResources(Collections.singletonList(jarFile.toURI().toURL()));
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -792,6 +843,8 @@ public class JobJavaScriptOSGIForESBManager extends JobJavaScriptsManager {
 
     private static final String TEMPLATE_BLUEPRINT_JOB = "/resources/job-template.xml"; //$NON-NLS-1$
 
+    private Analyzer analyzer = new Analyzer();
+
     private void createJobBundleBlueprintConfig(ProcessItem processItem, IProcess process, File targetFile) throws IOException {
         TemplateProcessor.processTemplate("JOB_BLUEPRINT_CONFIG", //$NON-NLS-1$
                 collectJobInfo(processItem, process), targetFile, JobJavaScriptOSGIForESBManager.class.getClassLoader()
@@ -822,6 +875,7 @@ public class JobJavaScriptOSGIForESBManager extends JobJavaScriptsManager {
     }
 
     private Manifest getManifest(ExportFileResource libResource, ProcessItem processItem) throws IOException {
+
         Analyzer analyzer = createAnalyzer(libResource, processItem);
 
         if (GlobalServiceRegister.getDefault().isServiceRegistered(IRunProcessService.class)) {
@@ -832,7 +886,6 @@ public class JobJavaScriptOSGIForESBManager extends JobJavaScriptsManager {
                 String optional = RESOLUTION_OPTIONAL;
                 Set<String> imports = importCompiler(service, processItem);
                 String[] defaultPackages = analyzer.getProperty(Analyzer.IMPORT_PACKAGE).split(",");
-
                 // JDK upgrade to 11
                 imports.add("org.osgi.framework");
 
@@ -857,8 +910,10 @@ public class JobJavaScriptOSGIForESBManager extends JobJavaScriptsManager {
         // Calculate the manifest
         Manifest manifest = null;
         try {
+            long l = System.currentTimeMillis();
             manifest = analyzer.calcManifest();
             filterImportPackages(manifest);
+            System.out.println("--->" + (System.currentTimeMillis() - l));
         } catch (IOException e) {
             throw e;
         } catch (Exception e) {
@@ -872,33 +927,128 @@ public class JobJavaScriptOSGIForESBManager extends JobJavaScriptsManager {
         // https://github.com/bndtools/bnd/blob/master/biz.aQute.bndlib/src/aQute/bnd/osgi/Analyzer.java#L975
         if ("1.8".equals(complianceLevel)) { //$NON-NLS-1$
             String requireCapability = manifest.getMainAttributes().getValue(Analyzer.REQUIRE_CAPABILITY);
-            // set back to 1.8, version from:
-            // https://github.com/bndtools/bnd/blob/master/biz.aQute.bndlib/src/aQute/bnd/osgi/Clazz.java#L141
-            requireCapability = requireCapability.replace(Clazz.JAVA.OpenJDK9.getFilter(), Clazz.JAVA.OpenJDK8.getFilter())
-                    .replace(Clazz.JAVA.OpenJDK10.getFilter(), Clazz.JAVA.OpenJDK8.getFilter())
-                    .replace(Clazz.JAVA.OpenJDK11.getFilter(), Clazz.JAVA.OpenJDK8.getFilter());
-            manifest.getMainAttributes().put(new Attributes.Name(Analyzer.REQUIRE_CAPABILITY), requireCapability);
+            if (StringUtils.isNotBlank(requireCapability)) {
+                // set back to 1.8, version from:
+                // https://github.com/bndtools/bnd/blob/master/biz.aQute.bndlib/src/aQute/bnd/osgi/Clazz.java#L141
+                requireCapability = requireCapability.replace(Clazz.JAVA.OpenJDK9.getFilter(), Clazz.JAVA.OpenJDK8.getFilter())
+                        .replace(Clazz.JAVA.OpenJDK10.getFilter(), Clazz.JAVA.OpenJDK8.getFilter())
+                        .replace(Clazz.JAVA.OpenJDK11.getFilter(), Clazz.JAVA.OpenJDK8.getFilter());
+                manifest.getMainAttributes().put(new Attributes.Name(Analyzer.REQUIRE_CAPABILITY), requireCapability);
+            }
         }
 
         return manifest;
     }
     
-    private void filterImportPackages(Manifest manifest) {
+    private boolean cacheManifest(URL url, String relativePath) {
+        boolean result = false;
+        ObjectOutputStream o = null;
+        try {
+            File jarFile = new File(url.toURI());
 
-        // remove import packages which are present in private packages
+            try (InputStream is = RepositoryPlugin.getDefault().getBundle()
+                    .getEntry("/resources/osgi-ignore-calmanifest.properties").openStream();
+                    BufferedReader br = new BufferedReader(new InputStreamReader(is))) {
 
-        List<String> privatePackages = new ArrayList<String>(); 
-        String privatePackagesString = manifest.getMainAttributes().getValue(Analyzer.PRIVATE_PACKAGE);
-        if (privatePackagesString != null) {
-            String [] packages = privatePackagesString.split(",");
-            for (String p : packages) {
-                privatePackages.add(p);
+                Optional<String> rs = br.lines()
+                        .filter(fn -> StringUtils.equals(jarFile.getName(), fn) || StringUtils.equals(fn, "*")).findFirst();
+                result = rs.orElse(null) != null;
+            }
+
+            if (result) {
+
+                String key = jarFile.length() + jarFile.getName();
+
+                if (dependencyCacheMap == null || dependencyCacheMap.get(key) == null) {
+                    Jar bin = new Jar(jarFile);
+                    analyzer.clear();
+                    analyzer.setJar(bin);
+                    Manifest manifest = analyzer.calcManifest();
+                    String requireCapabilityString = manifest.getMainAttributes().getValue(Analyzer.REQUIRE_CAPABILITY);
+
+                    // Todo Handle requireCapabilityString to the MANIFEST.MF file ?
+//                    if (requireCapabilityString != null) {
+//
+//                    }
+
+                    String privatePackageString = manifest.getMainAttributes().getValue(Analyzer.PRIVATE_PACKAGE);
+                    String importPackageString = manifest.getMainAttributes().getValue(Analyzer.IMPORT_PACKAGE);
+
+                    List<String> infos = new ArrayList<>();
+                    infos.add(importPackageString);
+                    infos.add(privatePackageString);
+                    infos.add(relativePath);
+
+                    if (dependencyCacheMap == null) {
+                        dependencyCacheMap = new HashMap<>();
+                    }
+
+                    dependencyCacheMap.put(key, infos);
+
+                    if (cacheFile != null && cacheFile.exists()) {
+                        FileOutputStream f = new FileOutputStream(cacheFile);
+                        o = new ObjectOutputStream(f);
+                        o.writeObject(dependencyCacheMap);
+                    }
+                }
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (o != null) {
+                    o.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
             }
         }
+
+        return result;
+
+    }
+
+    private List<String> bundleClasspathKeys = new ArrayList<>();
+
+    private void filterImportPackages(Manifest manifest) {
+
+        List<String> bundleClasspaths = null;
+        if (manifest.getMainAttributes().getValue(Analyzer.BUNDLE_CLASSPATH) == null) {
+            bundleClasspaths = new ArrayList<>();
+        } else {
+            bundleClasspaths = Stream.of(manifest.getMainAttributes().getValue(Analyzer.BUNDLE_CLASSPATH).split(","))
+                    .collect(Collectors.toList());
+        }
         
-        StringBuilder fileterdImportPackage = new StringBuilder();
+        manifest.getMainAttributes().putValue(Analyzer.BUNDLE_CLASSPATH, String.join(",", bundleClasspaths));
+
+        List<String> privatePackages = null;
+        if (manifest.getMainAttributes().getValue(Analyzer.PRIVATE_PACKAGE) == null) {
+            privatePackages = new ArrayList<>();
+        } else {
+            privatePackages = Stream.of(manifest.getMainAttributes().getValue(Analyzer.PRIVATE_PACKAGE).split(","))
+                    .collect(Collectors.toList());
+        }
+        
+        manifest.getMainAttributes().putValue(Analyzer.PRIVATE_PACKAGE, String.join(",", bundleClasspaths));
+        
         String importPackagesString = manifest.getMainAttributes().getValue(Analyzer.IMPORT_PACKAGE);
+        int size = bundleClasspathKeys.size();
+        String[] importPackagesArray = new String[size+1];
+        importPackagesArray[size] = importPackagesString;
+        
+        for (int i = 0; i < size; i++) {
+            List<String> infos = dependencyCacheMap.get(bundleClasspathKeys.get(i));
+            privatePackages.add(infos.get(0));
+            importPackagesArray[i] = infos.get(1);
+            bundleClasspaths.add(infos.get(2));
+        }
+
+        StringBuilder fileterdImportPackage = new StringBuilder();
+        
         if (importPackagesString != null) {
+            
             String [] packages = importPackagesString.split(",");
             for (String p : packages) {
                 String importPackage = p.split(";")[0];
@@ -916,8 +1066,8 @@ public class JobJavaScriptOSGIForESBManager extends JobJavaScriptsManager {
     }
 
     protected Analyzer createAnalyzer(ExportFileResource libResource, ProcessItem processItem) throws IOException {
-        Analyzer analyzer = new Analyzer();
         Jar bin = new Jar(classesLocation);
+        analyzer.clear();
         analyzer.setJar(bin);
 
         final String bundleName = processItem.getProperty().getLabel();
@@ -955,8 +1105,16 @@ public class JobJavaScriptOSGIForESBManager extends JobJavaScriptsManager {
                         || urlStr.matches("(.*)dom4j-[\\d\\.-]*.jar$")) {
                     continue;
                 }
+
                 File dependencyFile = new File(FilesUtils.getFileRealPath(url.getPath()));
                 String relativePath = libResource.getDirectoryName() + PATH_SEPARATOR + dependencyFile.getName();
+                
+                //If don't want to enable this feature just comment out
+                if (cacheManifest(url, relativePath)) {
+                    bundleClasspathKeys.add(dependencyFile.length() + dependencyFile.getName());
+                    continue;
+                }
+
                 bundleClasspath.append(MANIFEST_ITEM_SEPARATOR).append(relativePath);
                 bin.putResource(relativePath, new FileResource(dependencyFile));
                 // analyzer.addClasspath(new File(url.getPath()));
@@ -1142,6 +1300,7 @@ public class JobJavaScriptOSGIForESBManager extends JobJavaScriptsManager {
     }
 
     private Set<String> importCompiler(IRunProcessService service, ProcessItem processItem) {
+
         Set<String> imports = new HashSet<String>();
         if (processItem != null && service != null && processItem.getProperty() != null) {
             ITalendProcessJavaProject talendProcessJavaProject = service.getTalendJobJavaProject(processItem.getProperty());
@@ -1149,7 +1308,6 @@ public class JobJavaScriptOSGIForESBManager extends JobJavaScriptsManager {
                 String src = JavaResourcesHelper.getJobClassFilePath(processItem, true);
                 IFile srcFile = talendProcessJavaProject.getSrcFolder().getFile(src);
                 imports.addAll(importCompiler(srcFile.getLocation().toString()));
-		        
                 // include imports from child jobs
                 if (ERepositoryObjectType.getType(processItem.getProperty()).equals(ERepositoryObjectType.PROCESS)) {
                     for (JobInfo subjobInfo : ProcessorUtilities.getChildrenJobInfo(processItem)) {
