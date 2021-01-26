@@ -6,7 +6,7 @@
   "
 %>
 
-<%@ include file="@{org.talend.designer.components.localprovider}/templates/Log4j/Log4jFileUtil.javajet"%>
+<%@ include file="../templates/Log4j/Log4jFileUtil.javajet"%>
 
 <%
 CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
