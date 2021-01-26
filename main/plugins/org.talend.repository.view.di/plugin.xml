@@ -131,7 +131,7 @@
             icon="icons/routines.png"
             id="org.talend.repository.viewer.code.routines"
             labelProvider="org.talend.repository.viewer.label.RepositoryViewLabelProvider"
-            name="%NavigatorContent.routines"
+            name="%NavigatorContent.globalroutines"
             priority="higher">
          <triggerPoints>
             <and>
@@ -484,7 +484,7 @@
             icon="icons/routines.png"
             isResouce="true"
             key="repository.routines"
-            label="%NavigatorContent.routines"
+            label="%NavigatorContent.globalroutines"
             ordinal="1"
             parentNodeType="CODE"
             products="DI"

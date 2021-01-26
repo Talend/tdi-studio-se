@@ -35,7 +35,7 @@ import org.talend.repository.model.RepositoryConstants;
 
 public class NewRoutinesJarWizardPage extends PropertiesWizardPage {
 
-    private static final String DESC = "Add a new Routines Jar to repository";
+    private static final String DESC = "Add a new Routine Jar to repository";
     // private static final String DESC = Messages.getString("NewRoutineWizardPage.description"); //$NON-NLS-1$
 
     private static String CLASS = ".class"; //$NON-NLS-1$

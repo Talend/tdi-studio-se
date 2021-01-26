@@ -57,7 +57,7 @@ public class SetupProcessDependenciesRoutinesAction extends AContextualAction {
     public SetupProcessDependenciesRoutinesAction() {
         super();
 
-        String text2 = Messages.getString("SetupProcessDependenciesRoutinesAction.title"); //$NON-NLS-1$
+        String text2 = Messages.getString("SetupProcessDependenciesRoutinesAction.actiontitle"); //$NON-NLS-1$
         this.setText(text2);
         this.setToolTipText(text2);
         this.setImageDescriptor(ImageProvider.getImageDesc(ECoreImage.ROUTINE_ICON));

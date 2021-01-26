@@ -250,7 +250,7 @@ public class SetupProcessDependenciesRoutinesDialog extends Dialog {
     @Override
     protected void configureShell(Shell shell) {
         super.configureShell(shell);
-        shell.setText(Messages.getString("SetupProcessDependenciesRoutinesAction.title")); //$NON-NLS-1$
+        shell.setText(Messages.getString("SetupProcessDependenciesRoutinesAction.actiontitle")); //$NON-NLS-1$
     }
 
     @Override

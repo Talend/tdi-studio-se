@@ -63,7 +63,7 @@ public class ShowRoutineItemsDialog extends Dialog {
     protected void configureShell(Shell newShell) {
         super.configureShell(newShell);
         if (type == ERepositoryObjectType.ROUTINES) {
-            newShell.setText(Messages.getString("ShowRoutineItemsDialog.title")); //$NON-NLS-1$
+            newShell.setText(Messages.getString("ShowGlobalRoutineItemsDialog.title")); //$NON-NLS-1$
         } else if (type == ERepositoryObjectType.ROUTINESJAR) {
             newShell.setText(Messages.getString("ShowRoutinesJarItemsDialog.title")); //$NON-NLS-1$
         } else if (type == ERepositoryObjectType.BEANSJAR) {
