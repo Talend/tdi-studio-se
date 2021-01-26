@@ -28,6 +28,7 @@ import org.talend.designer.core.model.utils.emf.talendfile.ElementParameterType;
 import org.talend.designer.core.model.utils.emf.talendfile.ParametersType;
 import org.talend.designer.core.model.utils.emf.talendfile.ProcessType;
 import org.talend.utils.security.PasswordMigrationUtil;
+import org.talend.utils.security.StudioEncryption;
 
 public class FixUpgradePasswordEncryptionAlg4ItemMigrationTask extends UnifyPasswordEncryption4ItemMigrationTask {
 
@@ -110,7 +111,7 @@ public class FixUpgradePasswordEncryptionAlg4ItemMigrationTask extends UnifyPass
 
     protected static boolean reencryptValueIfNeeded(ElementParameterType param) throws Exception {
         String value = param.getValue();
-        if (value != null) {
+        if (value != null && !StudioEncryption.hasEncryptionSymbol(value)) {
             String decryptValue = PasswordMigrationUtil.decryptPassword(value);
             if (decryptValue != null) {
                 param.setRawValue(decryptValue);
