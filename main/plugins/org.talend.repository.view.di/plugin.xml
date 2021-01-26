@@ -1622,6 +1622,13 @@
             class="org.talend.repository.view.di.viewer.handlers.RoutinesJarRepositoryContentHandler">
       </RepositoryContent>
    </extension>
+   <extension
+         point="org.talend.core.repository.checkDeleteItemReference">
+      <check
+            class="org.talend.repository.view.di.viewer.handlers.CheckCodeJarsDeleteReference"
+            priority="normal">
+      </check>
+   </extension>
 
 
 </plugin>
