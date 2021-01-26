@@ -70,6 +70,10 @@ public class ExcelTool {
 
     private boolean isTrackAllColumns = false;
 
+    private boolean isTruncateExceedingCharacters = false;
+
+    private static final int CELL_CHARACTERS_LIMIT = 32767;
+
     public ExcelTool() {
         cellStylesMapping = new HashMap<>();
     }
@@ -274,7 +278,10 @@ public class ExcelTool {
 
     public void addCellValue(String stringValue) {
         addCell();
-        curCell.setCellValue(stringValue);
+        String value = isTruncateExceedingCharacters && stringValue != null && stringValue.length() > CELL_CHARACTERS_LIMIT
+                ? stringValue.substring(0, CELL_CHARACTERS_LIMIT)
+                        : stringValue;
+        curCell.setCellValue(value);
         curCell.setCellStyle(getNormalCellStyle());
     }
 
@@ -339,5 +346,9 @@ public class ExcelTool {
         if (wb instanceof SXSSFWorkbook) {
             ((SXSSFSheet) sheet).flushRows();
         }
+    }
+
+    public void setTruncateExceedingCharacters(boolean isTruncateExceedingCharacters) {
+        this.isTruncateExceedingCharacters = isTruncateExceedingCharacters;
     }
 }

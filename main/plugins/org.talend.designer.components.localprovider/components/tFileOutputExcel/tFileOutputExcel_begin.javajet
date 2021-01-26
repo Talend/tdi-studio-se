@@ -54,7 +54,8 @@ List<Map<String, String>> autoSizeList = (List<Map<String,String>>)ElementParame
 String advancedSeparatorStr = ElementParameterParser.getValue(node, "__ADVANCED_SEPARATOR__");
 boolean advancedSeparator = (advancedSeparatorStr!=null&&!("").equals(advancedSeparatorStr))?("true").equals(advancedSeparatorStr):false;
 String thousandsSeparator = ElementParameterParser.getValueWithJavaType(node, "__THOUSANDS_SEPARATOR__", JavaTypesManager.CHARACTER);
-String decimalSeparator = ElementParameterParser.getValueWithJavaType(node, "__DECIMAL_SEPARATOR__", JavaTypesManager.CHARACTER); 
+String decimalSeparator = ElementParameterParser.getValueWithJavaType(node, "__DECIMAL_SEPARATOR__", JavaTypesManager.CHARACTER);
+boolean isTruncateExceedingCharacters = ("true").equals(ElementParameterParser.getValue(node, "__TRUNCATE_EXCEEDING_CHARACTERS__" ));
 Map<String,String> autColSizeMaping=new HashMap<String,String>();
 
 List< ? extends IConnection> conns = node.getIncomingConnections();
@@ -760,6 +761,7 @@ if(!hasDynamic && isIncludeHeader){
 %>
 		int nb_line_<%=cid%> = 0;
 		org.talend.ExcelTool xlsxTool_<%=cid%> = new org.talend.ExcelTool();
+                xlsxTool_<%=cid%>.setTruncateExceedingCharacters(<%=isTruncateExceedingCharacters%>);
 <%	 
 		if(flushOnRow && (useStream || !isAppendFile)){
 %>
