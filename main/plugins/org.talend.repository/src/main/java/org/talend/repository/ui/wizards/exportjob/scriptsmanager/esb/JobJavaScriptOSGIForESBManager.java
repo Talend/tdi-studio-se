@@ -910,10 +910,8 @@ public class JobJavaScriptOSGIForESBManager extends JobJavaScriptsManager {
         // Calculate the manifest
         Manifest manifest = null;
         try {
-            long l = System.currentTimeMillis();
             manifest = analyzer.calcManifest();
             filterImportPackages(manifest);
-            System.out.println("--->" + (System.currentTimeMillis() - l));
         } catch (IOException e) {
             throw e;
         } catch (Exception e) {
