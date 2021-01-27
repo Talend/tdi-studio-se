@@ -95,7 +95,7 @@
 	<PARAMETER
       NAME="ELT_TABLE_NAME"
       FIELD="TEXT"
-      NUM_ROW="10"
+      NUM_ROW="13"
     >
       <DEFAULT>""</DEFAULT>
     </PARAMETER>

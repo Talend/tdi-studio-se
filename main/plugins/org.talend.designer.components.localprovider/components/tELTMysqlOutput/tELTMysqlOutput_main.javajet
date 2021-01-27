@@ -267,55 +267,56 @@ imports="
 <%
 		} else if (("UPDATE").equals(dataAction)) {
 %>
-		StringBuffer updateQuery_<%=cid %> = new StringBuffer("UPDATE "+<%=tableName%>);
-		updateQuery_<%=cid %>.append(" SET <%=updateSetStmt.toString()%> ");
+			StringBuffer updateQuery_<%=cid %> = new StringBuffer("UPDATE "+<%=tableName%>+" SET <%=updateSetStmt.toString()%> ");
 <%
-		if(!useWhereTable) {
-			if(CodeGenerationUtils.hasAlphaNumericCharacter(whereClause)) {
+			if(CodeGenerationUtils.hasAlphaNumericCharacter(whereClause) || (useWhereTable && whereConditions.size() > 0)) {
 %>
-				updateQuery_<%=cid %>.append("  WHERE " + <%=CodeGenerationUtils.replaceAllCrBySpace(whereClause)%>);
+				updateQuery_<%=cid %>.append(" WHERE ");
 <%
+				if(!useWhereTable) {
+%>
+					updateQuery_<%=cid %>.append(<%=CodeGenerationUtils.replaceAllCrBySpace(whereClause)%>);
+<%
+				} else {
+					for(Map<String, String> whereCondition : whereConditions) {
+						String column_condition = whereCondition.get("COLUMN");
+						String function_condition = whereCondition.get("FUNCTION");
+						String value_condition = whereCondition.get("VALUE_SQL");
+%>
+						updateQuery_<%=cid %>.append(<%=column_condition %> + " " + <%=function_condition %> + " " + <%=value_condition %> + " ");
+<%
+					}
+				}
 			}
-		} else {
 %>
-			updateQuery_<%=cid %>.append(" WHERE ");
-<%
-			for(Map<String, String> whereCondition : whereConditions) {
-				String column_condition = whereCondition.get("COLUMN");
-				String function_condition = whereCondition.get("FUNCTION");
-				String value_condition = whereCondition.get("VALUE_SQL");
-%>
-				updateQuery_<%=cid %>.append(<%=column_condition %> + " " + <%=function_condition %> + " " + <%=value_condition %> + " ");
-<%
-			}
-		}
-%>
-		pstmt_<%=cid %> = conn_<%=cid%>.prepareStatement(updateQuery_<%=cid %>.toString());
+			pstmt_<%=cid %> = conn_<%=cid%>.prepareStatement(updateQuery_<%=cid %>.toString());
 
 <%		
 		}else if (("DELETE").equals(dataAction)){
 %>
-		StringBuffer deleteQuery_<%=cid %> = new StringBuffer("DELETE  FROM "+<%=tableName%>);
-		deleteQuery_<%=cid %>.append(" WHERE EXISTS ("+select_query_<%=cid %>+")");
+			StringBuffer deleteQuery_<%=cid %> = new StringBuffer("DELETE  FROM "+<%=tableName%>+" WHERE EXISTS ("+select_query_<%=cid %>+")");
 <%
-		if(!useWhereTable) {
-			if(CodeGenerationUtils.hasAlphaNumericCharacter(whereClause)) {
+			if(CodeGenerationUtils.hasAlphaNumericCharacter(whereClause) || (useWhereTable && whereConditions.size() > 0)) {
 %>
-				deleteQuery_<%=cid %>.append("  AND " + <%=CodeGenerationUtils.replaceAllCrBySpace(whereClause)%>);
+				deleteQuery_<%=cid %>.append("  AND ");
 <%
+				if(!useWhereTable) {
+%>
+					deleteQuery_<%=cid %>.append(<%=CodeGenerationUtils.replaceAllCrBySpace(whereClause)%>);
+<%
+				} else {
+					for(Map<String, String> whereCondition : whereConditions) {
+						String column_condition = whereCondition.get("COLUMN");
+						String function_condition = whereCondition.get("FUNCTION");
+						String value_condition = whereCondition.get("VALUE_SQL");
+%>
+						deleteQuery_<%=cid %>.append(<%=column_condition %> + " " + <%=function_condition %> + " " + <%=value_condition %> + " ");
+<%
+					}
+				}
 			}
-		} else {
-			for(Map<String, String> whereCondition : whereConditions) {
-				String column_condition = whereCondition.get("COLUMN");
-				String function_condition = whereCondition.get("FUNCTION");
-				String value_condition = whereCondition.get("VALUE_SQL");
 %>
-				deleteQuery_<%=cid %>.append(" AND " + <%=column_condition %> + " " + <%=function_condition %> + " " + <%=value_condition %> + " ");
-<%
-			}
-		}
-%>
-		pstmt_<%=cid %> = conn_<%=cid%>.prepareStatement(deleteQuery_<%=cid %>.toString());
+			pstmt_<%=cid %> = conn_<%=cid%>.prepareStatement(deleteQuery_<%=cid %>.toString());
 <%		
 		}
 %>
@@ -345,7 +346,7 @@ imports="
 <%
 			}else if (("DELETE").equals(dataAction)){
 %>
-		System.out.println("Deleting with : \n" + deleteQuery_<%=cid %>.toString +"\n");
+		System.out.println("Deleting with : \n" + deleteQuery_<%=cid %>.toString() +"\n");
 		<%log4jCodeGenerateUtil.logInfo(node,"info",cid+" - Executing SQL:\"+deleteQuery_"+ cid +"+\"");%> 
 		nb_line_<%=cid%> += nb_line_deleted_<%=cid%> = pstmt_<%=cid %>.executeUpdate();
 		<%log4jCodeGenerateUtil.logInfo(node,"info",cid+" - Executed successfully.");%>
