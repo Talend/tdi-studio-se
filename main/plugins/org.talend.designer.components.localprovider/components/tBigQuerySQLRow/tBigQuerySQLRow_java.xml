@@ -196,8 +196,8 @@
             <IMPORT NAME="google-http-client-jackson2-1.38.0.jar" MODULE="google-http-client-jackson2-1.38.0.jar" MVN="mvn:com.google.http-client/google-http-client-jackson2/1.38.0"  REQUIRED="true" />
             <IMPORT NAME="guava-30.0-jre.jar" MODULE="guava-30.0-jre.jar" MVN="mvn:com.google.guava/guava/30.0-jre" REQUIRED="true"/>
             <IMPORT NAME="failureaccess-1.0.1.jar" MODULE="failureaccess-1.0.1.jar" MVN="mvn:com.google.guava/failureaccess/1.0.1" REQUIRED="true" />
-            <IMPORT NAME="jackson-core-2.11.0.jar" MODULE="jackson-core-2.11.0.jar"
-                    MVN="mvn:com.fasterxml.jackson.core/jackson-core/2.11.0" REQUIRED="true"/>
+            <IMPORT NAME="jackson-core-2.10.1.jar" MODULE="jackson-core-2.10.1.jar"
+                    MVN="mvn:com.fasterxml.jackson.core/jackson-core/2.10.1" REQUIRED="true"/>
             <IMPORT NAME="google-cloud-bigquery-1.126.3.jar" MODULE="google-cloud-bigquery-1.126.3.jar"
                     MVN="mvn:com.google.cloud/google-cloud-bigquery/1.126.3"
                     REQUIRED_IF="AUTH_MODE == 'SERVICEACCOUNT'"/>
