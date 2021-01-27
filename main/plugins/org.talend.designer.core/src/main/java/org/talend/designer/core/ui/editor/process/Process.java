@@ -1203,7 +1203,8 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
                         }
                     } else {
                         if (o instanceof String) {
-                            strValue = (String) o;
+                            strValue = o != null ? ((String)o).trim() : (String)o;
+                            
                             isHexValue = isNeedConvertToHex(strValue);
                             if (isHexValue) {
                                 try {
