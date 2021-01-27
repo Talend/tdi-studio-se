@@ -28,12 +28,12 @@ public class UpdateModuleListInComponents2MigrationTask extends UpdateModuleList
 
     @Override
     protected String parseJarNameForHexVaue(String jarName) {
-        if(jarName.startsWith(MavenUrlHelper.MVN_PROTOCOL)) {
+        if (jarName.startsWith(MavenUrlHelper.MVN_PROTOCOL)) {
             try {
                 String artifactId = MavenUrlHelper.parseMvnUrl(jarName).getArtifactId();
                 String elemValue = new String(Hex.decodeHex(artifactId.toCharArray()), "UTF-8");
-                
-                if(ContextParameterUtils.isContainContextParam(elemValue)) {
+
+                if (ContextParameterUtils.isContainContextParam(elemValue)) {
                     jarName = artifactId;
                 } else {
                     jarName = Hex.encodeHexString(jarName.replace(artifactId, elemValue).getBytes());
@@ -44,7 +44,7 @@ public class UpdateModuleListInComponents2MigrationTask extends UpdateModuleList
         } else {
             jarName = super.parseJarNameForHexVaue(jarName);
         }
-        
+
         return jarName;
     }
 

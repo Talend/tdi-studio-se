@@ -393,13 +393,13 @@ public class UpdateModuleListInComponentsMigrationTask extends AbstractItemMigra
     
     public String getMavenUriForJar(boolean isHexValue, String jarName, List ctxs) {
         jarName = TalendTextUtils.removeQuotes(jarName);
-        
-        if(isHexValue) {
+
+        if (isHexValue) {
             jarName = parseJarNameForHexVaue(jarName);
         }
-        
+
         boolean containContext = containContext(jarName, ctxs);
-        if (!StringUtils.isEmpty(jarName) && !MavenUrlHelper.isMvnUrl(jarName) && !containContext && !isHexValue) {
+        if (!isHexValue && !StringUtils.isEmpty(jarName) && !MavenUrlHelper.isMvnUrl(jarName) && !containContext) {
             ModuleNeeded mod = new ModuleNeeded(null, jarName, null, true);
             if (!StringUtils.isEmpty(mod.getCustomMavenUri())) {
                 return mod.getCustomMavenUri();
@@ -410,18 +410,19 @@ public class UpdateModuleListInComponentsMigrationTask extends AbstractItemMigra
     }
 
     protected String parseJarNameForHexVaue(String jarName) {
-        if(!jarName.startsWith(MavenUrlHelper.MVN_PROTOCOL)) {
+        if (!jarName.startsWith(MavenUrlHelper.MVN_PROTOCOL)) {
             try {
                 byte[] decodeBytes = Hex.decodeHex(jarName.toCharArray());
                 String elemValue = new String(decodeBytes, "UTF-8");
-                if(!elemValue.startsWith(MavenUrlHelper.MVN_PROTOCOL) && !ContextParameterUtils.isContainContextParam(elemValue)) {
+                if (!elemValue.startsWith(MavenUrlHelper.MVN_PROTOCOL)
+                        && !ContextParameterUtils.isContainContextParam(elemValue)) {
                     ModuleNeeded mod = new ModuleNeeded(null, elemValue, null, true);
                     if (!StringUtils.isEmpty(mod.getCustomMavenUri())) {
                         elemValue = mod.getCustomMavenUri();
                     } else {
                         elemValue = mod.getMavenUri();
                     }
-                    
+
                     jarName = Hex.encodeHexString(elemValue.getBytes());
                 }
             } catch (UnsupportedEncodingException e) {
