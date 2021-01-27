@@ -55,6 +55,26 @@ public class UpdateMoudleListInComponentsMigrationTest {
         String encodeHexString = Hex.encodeHexString(jarName.getBytes());
         parsedJarName = mt_73.parseJarNameForHexVaue(encodeHexString); // be hex jar with 'mvn:' prefix
         assertEquals(encodeHexString, parsedJarName);
+        
+        //test new migration task
+        jarName = prefix + encoded_contextA + suffix;
+        UpdateModuleListInComponents2MigrationTask mt_74 = new UpdateModuleListInComponents2MigrationTask();
+        parsedJarName = mt_74.parseJarNameForHexVaue(jarName); //contains hex context
+        assertEquals(encoded_contextA, parsedJarName);
+        
+        jarName = prefix + encoded_jar + suffix;
+        parsedJarName = mt_74.parseJarNameForHexVaue(jarName); //contains hex jar
+        assertEquals(Hex.encodeHexString((prefix + jar + suffix).getBytes()), parsedJarName);
+        
+        parsedJarName = mt_74.parseJarNameForHexVaue(encoded_contextA); //be hex context
+        assertEquals(encoded_contextA, parsedJarName);
+        
+        jarName = prefix + encoded_jar + suffix;
+        parsedJarName = mt_74.parseJarNameForHexVaue(encoded_jar); //be hex jar
+        assertEquals(Hex.encodeHexString((prefix + jar + suffix).getBytes()), parsedJarName);
+        
+        parsedJarName = mt_74.parseJarNameForHexVaue(encodeHexString);// be hex jar with 'mvn:' prefix
+        assertEquals(encodeHexString, parsedJarName);
     }
 
 }
