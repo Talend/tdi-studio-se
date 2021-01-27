@@ -167,7 +167,7 @@ skeleton="../templates/db_output_bulk.skeleton"
 %>
             String insertQuery_<%=cid %> = "INSERT INTO "+tableName_<%=cid%> +
 			<%
-			if(partition != null && !"\"\"".equals(partition)){%> "PARTITION (" + <%=partition%> + ")" +<%}
+			if(partition != null && !"\"\"".equals(partition)){%> " PARTITION (" + <%=partition%> + ")" +<%}
 			%>
 			"("+select_query_<%=cid %>+")";
             <%}else{%>
