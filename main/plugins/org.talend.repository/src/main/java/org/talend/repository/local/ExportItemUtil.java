@@ -456,8 +456,8 @@ public class ExportItemUtil {
             IPath libPath = getProjectOutputPath().append(JavaUtils.JAVA_LIB_DIRECTORY);
             String libAbsPath = new Path(destinationDirectory.toString()).append(libPath.toString()).toPortableString();
             for (String jarName : jarNameAndUrl.keySet()) {
-                if (repositoryBundleService.contains(jarName)) {
-                	String mavenUri =  jarNameAndUrl.get(jarName);
+                String mavenUri = jarNameAndUrl.get(jarName);
+                if (repositoryBundleService.contains(jarName) || repositoryBundleService.contains(mavenUri)) {
                     repositoryBundleService.retrieve(jarName, mavenUri, libAbsPath, new NullProgressMonitor());
                     toExport.put(new File(libAbsPath, jarName), libPath.append(jarName));
                 }
