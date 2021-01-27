@@ -145,6 +145,7 @@ skeleton="../templates/db_output_bulk.skeleton"
 	boolean jsonMode = !dynamoDBMode && "JSON".equals(importType);
 	boolean avroMode = !dynamoDBMode && "AVRO".equals(importType);
 	boolean fixedwidthMode = !dynamoDBMode && "FIXEDWIDTH".equals(importType);
+	boolean parquetMode = !dynamoDBMode && "PARQUET".equals(importType);
 	
 	String redshiftTracker = org.talend.core.utils.TrackerUtil.getRedshiftTracker();
 %>
@@ -188,7 +189,7 @@ skeleton="../templates/db_output_bulk.skeleton"
 		.append("\"")
 	
 <%
-	if(columnList != null && columnList.size() > 0) {
+	if(!parquetMode && columnList != null && columnList.size() > 0) {
 %>
 		.append(" (")
 <%
@@ -338,7 +339,7 @@ skeleton="../templates/db_output_bulk.skeleton"
 	}else{
 		encrypt = encrypt && s3Mode;
 	}
-	if(encrypt) {
+	if(encrypt && !parquetMode) {
 %>
 		.append(";master_symmetric_key=")
 <%
@@ -386,8 +387,11 @@ skeleton="../templates/db_output_bulk.skeleton"
 %>
 	.append("FIXEDWIDTH '").append(<%=mapping%>).append("' ")
 <%
-	}
+	}else if(parquetMode){
 %>
+    .append("FORMAT AS PARQUET ")
+
+<%}%>
 	;
 <%
 	if(delimitedOrCsvMode) {
@@ -398,7 +402,7 @@ skeleton="../templates/db_output_bulk.skeleton"
 <%
 	}
 	
-	if(!dynamoDBMode) {
+	if(!dynamoDBMode && !parquetMode) {
 		String encoding = ElementParameterParser.getValue(node, "__ENCODING__");
 %>
 		command_<%=cid%>.append("ENCODING ").append(<%=encoding%>).append(" ");
@@ -472,14 +476,14 @@ skeleton="../templates/db_output_bulk.skeleton"
  		}
 	}
 	
-	if(encrypt) {
+	if(!parquetMode && encrypt) {
 %>
 		command_<%=cid%>.append("ENCRYPTED ");
 <%
 	}
 	
 	boolean compressed = "true".equals(ElementParameterParser.getValue(node, "__COMPRESS__"));
-	if(compressed && !dynamoDBMode) {
+	if(compressed && !dynamoDBMode && !parquetMode) {
 		String compression = ElementParameterParser.getValue(node, "__COMPRESSION__");
 %>
 		command_<%=cid%>.append("<%=compression%> ");
