@@ -356,6 +356,10 @@ public <%=JavaTypesManager.getTypeToGenerate(ctxParam.getType(),true)%> get<%=Ch
 	%>
 		private final java.util.Map<String, Object> globalMap = new java.util.HashMap<String, Object>();
         private final static java.util.Map<String, Object> junitGlobalMap = new java.util.HashMap<String, Object>();
+
+        public java.util.Map<String, Object> getGlobalMap() {
+            return globalMap;
+        }
 	<%
 	}
 	boolean exist_tParallelize = false;
