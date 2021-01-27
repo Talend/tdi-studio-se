@@ -394,50 +394,42 @@ public class UpdateModuleListInComponentsMigrationTask extends AbstractItemMigra
     public String getMavenUriForJar(boolean isHexValue, String jarName, List ctxs) {
         jarName = TalendTextUtils.removeQuotes(jarName);
         
-        if(isHexValue) {
-            if(jarName.startsWith(MavenUrlHelper.MVN_PROTOCOL)) {
-                try {
-                    String artifactId = MavenUrlHelper.parseMvnUrl(jarName).getArtifactId();
-                    byte[] decodeBytes = Hex.decodeHex(artifactId.toCharArray());
-                    String elemValue = new String(decodeBytes, "UTF-8");
-                    
-                    boolean isContextParam = ContextParameterUtils.isContainContextParam(elemValue);
-                    if(isContextParam) {
-                        jarName = Hex.encodeHexString(elemValue.getBytes());
-                    } else {
-                        jarName = Hex.encodeHexString(jarName.replace(artifactId, elemValue).getBytes());
-                    }
-                } catch (UnsupportedEncodingException e) {
-                    e.printStackTrace();
-                }
-            } else {
-                try {
-                    byte[] decodeBytes = Hex.decodeHex(jarName.toCharArray());
-                    String elemValue = new String(decodeBytes, "UTF-8");
-                    if(!elemValue.startsWith(MavenUrlHelper.MVN_PROTOCOL) && !ContextParameterUtils.isContainContextParam(elemValue)) {
-                        ModuleNeeded mod = new ModuleNeeded(null, elemValue, null, true);
-                        if (!StringUtils.isEmpty(mod.getCustomMavenUri())) {
-                            elemValue = mod.getCustomMavenUri();
-                        } else {
-                            elemValue = mod.getMavenUri();
-                        }
-                        
-                        jarName = Hex.encodeHexString(elemValue.getBytes());
-                    }
-                } catch (UnsupportedEncodingException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                }
-            }
+        if (isHexValue) {
+            jarName = parseJarNameForHexVaue(jarName);
         }
+        
         boolean containContext = containContext(jarName, ctxs);
-        if (!StringUtils.isEmpty(jarName) && !MavenUrlHelper.isMvnUrl(jarName) && !containContext && !isHexValue) {
+        if (!isHexValue && !StringUtils.isEmpty(jarName) && !MavenUrlHelper.isMvnUrl(jarName) && !containContext) {
             ModuleNeeded mod = new ModuleNeeded(null, jarName, null, true);
             if (!StringUtils.isEmpty(mod.getCustomMavenUri())) {
                 return mod.getCustomMavenUri();
             }
             return mod.getMavenUri();
         }
+        return jarName;
+    }
+
+    protected String parseJarNameForHexVaue(String jarName) {
+        if (!jarName.startsWith(MavenUrlHelper.MVN_PROTOCOL)) {
+            try {
+                byte[] decodeBytes = Hex.decodeHex(jarName.toCharArray());
+                String elemValue = new String(decodeBytes, "UTF-8");
+                if (!elemValue.startsWith(MavenUrlHelper.MVN_PROTOCOL)
+                        && !ContextParameterUtils.isContainContextParam(elemValue)) {
+                    ModuleNeeded mod = new ModuleNeeded(null, elemValue, null, true);
+                    if (!StringUtils.isEmpty(mod.getCustomMavenUri())) {
+                        elemValue = mod.getCustomMavenUri();
+                    } else {
+                        elemValue = mod.getMavenUri();
+                    }
+
+                    jarName = Hex.encodeHexString(elemValue.getBytes());
+                }
+            } catch (UnsupportedEncodingException e) {
+                ExceptionHandler.process(e);
+            }
+        }
+        
         return jarName;
     }
 
@@ -462,7 +454,7 @@ public class UpdateModuleListInComponentsMigrationTask extends AbstractItemMigra
      */
     @Override
     public Date getOrder() {
-        GregorianCalendar gc = new GregorianCalendar(2021, 1, 27, 12, 0, 0);
+        GregorianCalendar gc = new GregorianCalendar(2020, 10, 13, 12, 0, 0);
         return gc.getTime();
     }
 }
