@@ -12,11 +12,10 @@
 // ============================================================================
 package org.talend.repository.view.di.viewer.handlers;
 
-import java.io.IOException;
 import java.net.URL;
-import java.util.HashSet;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Set;
+import java.util.Map;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.talend.commons.CommonsPlugin;
@@ -46,7 +45,8 @@ import org.talend.repository.view.di.viewer.handlers.util.ImportHandlerUtil;
  */
 public class RoutinesJarImportHandler extends ImportRepTypeHandler implements IImportResourcesHandler {
 
-    private static Set<URL> jarsToDeploy = new HashSet<URL>();
+    // mvnUrl -> file url
+    private static Map<String, URL> jarsToDeploy = new HashMap<String, URL>();
 
     public RoutinesJarImportHandler() {
         super();
@@ -96,9 +96,9 @@ public class RoutinesJarImportHandler extends ImportRepTypeHandler implements II
         Item item = importItem.getItem();
         if (item instanceof RoutinesJarItem) {
             RoutinesJarItem routinesJarItem = (RoutinesJarItem) item;
-            Set<String> extRoutines = new HashSet<String>();
+            Map<String, String> extRoutines = new HashMap<String, String>();
             for (IMPORTType type : (List<IMPORTType>) routinesJarItem.getRoutinesJarType().getImports()) {
-                extRoutines.add(type.getMODULE());
+                extRoutines.put(type.getMODULE(), type.getMVN());
             }
             if (resManager instanceof ProviderManager || resManager instanceof ZipFileManager) {
                 ImportHandlerUtil.deployJarToDestForArchive(resManager, extRoutines, jarsToDeploy);
@@ -128,28 +128,24 @@ public class RoutinesJarImportHandler extends ImportRepTypeHandler implements II
     @Override
     public void postImport(IProgressMonitor monitor, ResourcesManager resManager, ImportItem[] importedItemRecords) {
         if (jarsToDeploy.size() > 0) {
+            boolean canCheckNeedDeploy = false;
             ILibrariesService libService = (ILibrariesService) GlobalServiceRegister.getDefault()
                     .getService(ILibrariesService.class);
             ILibraryManagerService librairesManagerService = (ILibraryManagerService) GlobalServiceRegister.getDefault()
                     .getService(ILibraryManagerService.class);
             if (librairesManagerService != null) {
-                try {
-                    for (URL url : jarsToDeploy) {
-                        if (RoutineLibraryMananger.getInstance().needDeploy(url)) {
-                            libService.deployLibrary(url, false);
-                        }
+                canCheckNeedDeploy = true;
+            }
+            try {
+                for (String mvnUrl : jarsToDeploy.keySet()) {
+                    URL url = jarsToDeploy.get(mvnUrl);
+                    if (canCheckNeedDeploy && !RoutineLibraryMananger.getInstance().needDeploy(url, mvnUrl)) {
+                        continue;
                     }
-                } catch (IOException e) {
-                    ExceptionHandler.process(e);
-                } catch (Exception e) {
-                    ExceptionHandler.process(e);
+                    libService.deployLibrary(url, mvnUrl, false);
                 }
-            } else {
-                try {
-                    libService.deployLibrarys(jarsToDeploy.toArray(new URL[0]));
-                } catch (IOException e) {
-                    ExceptionHandler.process(e);
-                }
+            } catch (Exception e) {
+                ExceptionHandler.process(e);
             }
 
         }

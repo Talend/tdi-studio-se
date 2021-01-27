@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.core.runtime.IPath;
@@ -33,7 +34,16 @@ import org.talend.repository.items.importexport.manager.ResourcesManager;
  */
 public class ImportHandlerUtil {
 
-    public static void deployJarToDestForArchive(final ResourcesManager manager, Set<String> extRoutines, Set<URL> jarsToDeploy) {
+    /**
+     * 
+     * DOC jding Comment method "deployJarToDestForArchive".
+     * 
+     * @param manager
+     * @param extRoutines K:moduleName V:mvnUrl
+     * @param jarsToDeploy K:mvnUrl V:file URL
+     */
+    public static void deployJarToDestForArchive(final ResourcesManager manager, Map<String, String> extRoutines,
+            Map<String, URL> jarsToDeploy) {
         if (extRoutines.isEmpty()) {
             return;
         }
@@ -41,9 +51,10 @@ public class ImportHandlerUtil {
             IPath tmpDir = new Path(System.getProperty("user.dir") + File.separatorChar + "tmpJar"); //$NON-NLS-1$ //$NON-NLS-2$
 
             File dirFile = tmpDir.toFile();
+            Set<String> moduleSet = extRoutines.keySet();
             for (IPath path : manager.getPaths()) {
                 String fileName = path.lastSegment();
-                if (extRoutines.contains(fileName)) {
+                if (moduleSet.contains(fileName)) {
                     try {
                         InputStream is = manager.getStream(path);
                         if (!dirFile.exists()) {
@@ -61,7 +72,7 @@ public class ImportHandlerUtil {
                         }
                         fos.close();
 
-                        jarsToDeploy.add(temFile.toURI().toURL());
+                        jarsToDeploy.put(extRoutines.get(fileName), temFile.toURI().toURL());
                     } catch (MalformedURLException e) {
                         ExceptionHandler.process(e);
                     } catch (IOException e) {
@@ -72,18 +83,27 @@ public class ImportHandlerUtil {
         }
     }
 
-    public static void deployJarToDest(final ResourcesManager manager, Set<String> extRoutines, Set<URL> jarsToDeploy) {
+    /**
+     * 
+     * DOC jding Comment method "deployJarToDest".
+     * 
+     * @param manager
+     * @param extRoutines K:moduleName V:mvnUrl
+     * @param jarsToDeploy K:mvnUrl V:file URL
+     */
+    public static void deployJarToDest(final ResourcesManager manager, Map<String,String> extRoutines, Map<String,URL> jarsToDeploy) {
         File file = null;
         if (extRoutines.isEmpty()) {
             return;
         }
         if (GlobalServiceRegister.getDefault().isServiceRegistered(ILibrariesService.class)) {
+            Set<String> moduleSet = extRoutines.keySet();
             for (Object element : manager.getPaths()) {
                 String value = element.toString();
                 file = new File(value);
-                if (extRoutines.contains(file.getName())) {
+                if (moduleSet.contains(file.getName())) {
                     try {
-                        jarsToDeploy.add(file.toURL());
+                        jarsToDeploy.put(extRoutines.get(file.getName()), file.toURL());
                     } catch (MalformedURLException e) {
                         ExceptionHandler.process(e);
                     }
