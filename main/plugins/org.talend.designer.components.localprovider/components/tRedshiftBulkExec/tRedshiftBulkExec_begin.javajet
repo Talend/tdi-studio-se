@@ -393,6 +393,14 @@ skeleton="../templates/db_output_bulk.skeleton"
 
 <%}%>
 	;
+	
+	<%if(parquetMode){
+	String encoding = ElementParameterParser.getValue(node, "__PARQUE_STATUPDATE__");
+	%>
+	command_<%=cid%>.append("STATUPDATE <%=encoding%> ");
+	<%}%>
+	
+	
 <%
 	if(delimitedOrCsvMode) {
 %>
