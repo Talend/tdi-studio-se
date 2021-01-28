@@ -703,7 +703,7 @@ if ((metadatas!=null)&&(metadatas.size()>0)) {
 		org.apache.poi.xssf.usermodel.XSSFWorkbook workbook_<%=cid%> = null;
 
 		if(source_<%=cid %> instanceof String){
-			workbook_<%=cid%> = (org.apache.poi.xssf.usermodel.XSSFWorkbook) org.apache.poi.ss.usermodel.WorkbookFactory.create(new java.io.File((String)source_<%=cid %>), password_<%=cid%>);
+			workbook_<%=cid%> = (org.apache.poi.xssf.usermodel.XSSFWorkbook) org.apache.poi.ss.usermodel.WorkbookFactory.create(new java.io.File((String)source_<%=cid %>), password_<%=cid%>, true);
 		} else if(source_<%=cid %> instanceof java.io.InputStream) {
      		workbook_<%=cid%> = (org.apache.poi.xssf.usermodel.XSSFWorkbook) org.apache.poi.ss.usermodel.WorkbookFactory.create((java.io.InputStream)source_<%=cid %>, password_<%=cid%>);
 		} else{
