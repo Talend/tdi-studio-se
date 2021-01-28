@@ -214,8 +214,8 @@
 
    	<CODEGENERATION>
 	   <IMPORTS>
-	   		<IMPORT NAME="xstream-1.4.11.1.jar" MODULE="xstream-1.4.11.1.jar" MVN="mvn:com.thoughtworks.xstream/xstream/1.4.11.1" REQUIRED_IF="((DB_VERSION!='BONITA_652') AND (DB_VERSION!='BONITA_724')) OR (((DB_VERSION=='BONITA_652')OR(DB_VERSION=='BONITA_724')) AND (CLIENT_MODE=='JAVA_CLIENT'))" />
-			<!-- Bonita 5.2.3 -->
+	   		<IMPORT NAME="xstream-1.4.12.jar" MODULE="xstream-1.4.12.jar" MVN="mvn:com.thoughtworks.xstream/xstream/1.4.12" REQUIRED_IF="((DB_VERSION!='BONITA_652') AND (DB_VERSION!='BONITA_724')) OR (((DB_VERSION=='BONITA_652')OR(DB_VERSION=='BONITA_724')) AND (CLIENT_MODE=='JAVA_CLIENT'))" />
+	   		<!-- Bonita 5.2.3 -->
 			<IMPORT NAME="bonita_client_523" MODULE="bonita-client-5.2.3.jar" MVN="mvn:org.talend.libraries/bonita-client-5.2.3/6.0.0" UrlPath="platform:/plugin/org.talend.libraries.bonita/lib/bonita-client-5.2.3.jar" REQUIRED_IF="DB_VERSION=='BONITA_523'" />
 			<IMPORT NAME="bonita_server_523" MODULE="bonita-server-5.2.3.jar" MVN="mvn:org.talend.libraries/bonita-server-5.2.3/6.0.0" UrlPath="platform:/plugin/org.talend.libraries.bonita/lib/bonita-server-5.2.3.jar" REQUIRED_IF="DB_VERSION=='BONITA_523'" />
 			<IMPORT NAME="atlr_276" MODULE="antlr-2.7.6.jar" MVN="mvn:org.talend.libraries/antlr-2.7.6/6.0.0" UrlPath="platform:/plugin/org.talend.libraries.apache.axis2/lib/antlr-2.7.6.jar" REQUIRED_IF="(CLIENT_MODE=='JAVA_CLIENT') AND (DB_VERSION=='BONITA_561' OR DB_VERSION=='BONITA_5101')" />
