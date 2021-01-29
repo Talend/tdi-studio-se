@@ -1767,8 +1767,8 @@ public class EmfComponent extends AbstractBasicComponent {
 
                     for (DistributionVersionModule versionModule : that.getVersionModules()) {
                         IMPORTType importType = ComponentFactory.eINSTANCE.createIMPORTType();
-                        importType.setMODULEGROUP(versionModule.moduleGrop.getModuleName());
-                        importType.setMRREQUIRED(versionModule.moduleGrop.isMrRequired());
+                        importType.setMODULEGROUP(versionModule.moduleGroup.getModuleName());
+                        importType.setMRREQUIRED(versionModule.moduleGroup.isMrRequired());
                         importType.setREQUIREDIF(versionModule.getModuleRequiredIf().getConditionString());
                         ModulesNeededProvider.collectModuleNeeded(node.getComponent() != null ? node.getComponent().getName()
                                 : "", importType, hadoopDistributionImportNeedsList); //$NON-NLS-1$
