@@ -418,7 +418,7 @@ skeleton="../templates/db_output_bulk.skeleton"
 	}
 	
 	boolean regionAdded = false;
-	if(useExistingS3Connection) {
+	if(useExistingS3Connection && !parquetMode) {
 		String regionS3 = ElementParameterParser.getValue(current_node, "__REGION__");
 		boolean set_regionS3 = (regionS3!=null && !regionS3.isEmpty() && !"DEFAULT".equalsIgnoreCase(regionS3));
 		if(set_regionS3) {
@@ -431,7 +431,7 @@ skeleton="../templates/db_output_bulk.skeleton"
 	
 	boolean isSetMaxError = false;
 	final List<Map<String, String>> settings = (List<Map<String,String>>)ElementParameterParser.getObjectValue(node, "__OTHER_CONFIGURATION__");
-	if(settings!=null && !settings.isEmpty()) {
+	if(settings!=null && !settings.isEmpty() && !parquetMode) {
 		for(Map<String, String> parameter : settings) {
 			String parameterKey = parameter.get("OTHER_PARAMETER");
 			String value = parameter.get("DATA_VALUE");
@@ -499,7 +499,8 @@ skeleton="../templates/db_output_bulk.skeleton"
 	}
 	
 	String dateFormat = ElementParameterParser.getValue(node, "__DATEFORMAT__");
-	if("NONE".equals(dateFormat)) {
+	if(!parquetMode){
+	    if("NONE".equals(dateFormat)) {
 		//do nothing
 	} else if("PATTERN".equals(dateFormat)) {
 		String pattern = ElementParameterParser.getValue(node, "__DATE_PATTERN__");
@@ -510,9 +511,10 @@ skeleton="../templates/db_output_bulk.skeleton"
 %>
 		command_<%=cid%>.append("DATEFORMAT 'auto' ");
 <%
-	}
+	    }
 	
 	String timeFormat = ElementParameterParser.getValue(node, "__TIMEFORMAT__");
+	
 	if("NONE".equals(timeFormat)) {
 		//do nothing
 	} else if("PATTERN".equals(timeFormat)) {
@@ -533,6 +535,7 @@ skeleton="../templates/db_output_bulk.skeleton"
 		command_<%=cid%>.append("TIMEFORMAT 'epochmillisecs' ");
 <%
 	}
+	}//!parquetMode
 %>
 	java.sql.Statement stmt_<%=cid %>=conn_<%=cid %>.createStatement();
 	stmt_<%=cid %>.execute(command_<%=cid%>.toString());
