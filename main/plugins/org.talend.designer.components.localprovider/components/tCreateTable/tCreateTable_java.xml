@@ -779,7 +779,6 @@
       <DEFAULT IF="DBTYPE=='EXASOL'">Exasol_id</DEFAULT>
       <DEFAULT IF="DBTYPE=='REDSHIFT'">redshift_id</DEFAULT>
       <DEFAULT IF="DBTYPE=='SNOWFLAKE'">snowflake_id</DEFAULT>
-<DEFAULT IF="DBTYPE=='DELTALAKE'">databricks_delta_lake_id</DEFAULT>
       <DEFAULT IF="DBTYPE=='SYBASE'">sybase_id</DEFAULT>
       <DEFAULT>mysql_id</DEFAULT>
     </PARAMETER>
