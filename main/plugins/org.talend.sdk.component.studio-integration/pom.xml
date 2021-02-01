@@ -14,7 +14,7 @@
   <description>Studio integration of the Talend Component Kit framework.</description>
 
   <properties>
-    <component-runtime.version>1.28.1</component-runtime.version>
+    <component-runtime.version>1.28.2</component-runtime.version>
     <commons-lang3.version>3.11</commons-lang3.version>
     <mockito.version>2.23.0</mockito.version>
     <oro.version>2.0.8</oro.version>
