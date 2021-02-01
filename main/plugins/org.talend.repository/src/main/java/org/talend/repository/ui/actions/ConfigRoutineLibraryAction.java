@@ -62,9 +62,9 @@ public class ConfigRoutineLibraryAction extends AContextualAction {
                     if (type == ERepositoryObjectType.BEANS) {
                         label = "Edit Bean Libraries"; //$NON-NLS-1$
                     } else if (type == ERepositoryObjectType.BEANSJAR) {
-                        label = "Edit Beans Jar Libraries"; //$NON-NLS-1$
+                        label = "Edit Bean Jar Libraries"; //$NON-NLS-1$
                     } else if (type == ERepositoryObjectType.ROUTINESJAR) {
-                        label = "Edit Routines Jar Libraries"; //$NON-NLS-1$
+                        label = "Edit Routine Jar Libraries"; //$NON-NLS-1$
                     } else if (type == ERepositoryObjectType.ROUTINES) {
                         label = Messages.getString("ConfigRoutineLibraryAction.actionLabel"); //$NON-NLS-1$
                     }

@@ -250,7 +250,7 @@ public class SetupProcessDependenciesRoutinesDialog extends Dialog {
     @Override
     protected void configureShell(Shell shell) {
         super.configureShell(shell);
-        shell.setText(Messages.getString("SetupProcessDependenciesRoutinesAction.title")); //$NON-NLS-1$
+        shell.setText(Messages.getString("SetupProcessDependenciesRoutinesAction.actiontitle")); //$NON-NLS-1$
     }
 
     @Override
@@ -302,7 +302,7 @@ public class SetupProcessDependenciesRoutinesDialog extends Dialog {
         routinesJarTabItem.setText(Messages.getString("SetupProcessDependenciesRoutinesDialog.routinesJarLabel")); //$NON-NLS-1$
 
         globalRoutinesTabItem = new CTabItem(folder, SWT.NONE);
-        globalRoutinesTabItem.setText(Messages.getString("SetupProcessDependenciesRoutinesDialog.userRoutineLabel")); //$NON-NLS-1$
+        globalRoutinesTabItem.setText(Messages.getString("SetupProcessDependenciesRoutinesDialog.globalRoutineLabel")); //$NON-NLS-1$
 
         if (isRouteProcess) {
             folder.setSelection(beansJarTabItem);

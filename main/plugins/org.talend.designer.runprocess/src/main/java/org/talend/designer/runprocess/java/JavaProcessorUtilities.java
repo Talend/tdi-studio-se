@@ -461,6 +461,7 @@ public class JavaProcessorUtilities {
             try {
                 IProgressMonitor monitor = new NullProgressMonitor();
                 ph.updateCodeProjects(monitor, false, true);
+                // FIXME can remove this line if retrieve/install modules are done
                 CodesJarM2CacheManager.updateCodesJarProject(monitor);
                 ModulesNeededProvider.setInstallModuleForRoutineOrBeans();
             } catch (Exception e) {

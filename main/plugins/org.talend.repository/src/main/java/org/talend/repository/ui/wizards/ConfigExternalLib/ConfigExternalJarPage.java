@@ -18,6 +18,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.core.resources.IProject;
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.SWT;
@@ -31,9 +34,14 @@ import org.talend.commons.ui.swt.dialogs.IConfigModuleDialog;
 import org.talend.core.CorePlugin;
 import org.talend.core.GlobalServiceRegister;
 import org.talend.core.ILibraryManagerUIService;
+import org.talend.core.model.properties.Item;
 import org.talend.core.model.repository.ERepositoryObjectType;
+import org.talend.core.model.routines.CodesJarInfo;
 import org.talend.designer.core.model.utils.emf.component.ComponentFactory;
 import org.talend.designer.core.model.utils.emf.component.IMPORTType;
+import org.talend.designer.maven.tools.CodesJarM2CacheManager;
+import org.talend.designer.maven.utils.MavenProjectUtils;
+import org.talend.designer.runprocess.IRunProcessService;
 import org.talend.repository.i18n.Messages;
 
 /**
@@ -114,8 +122,18 @@ public class ConfigExternalJarPage extends ConfigExternalLibPage {
                 } catch (Exception e) {
                     ExceptionHandler.process(e);
                 }
+                Item item = getSelectedItem();
+                if (ERepositoryObjectType.getAllTypesOfCodesJar().contains(ERepositoryObjectType.getItemType(item))) {
+                    CodesJarInfo info = CodesJarInfo.create(item.getProperty());
+                    IProject project = IRunProcessService.get().getTalendCodesJarJavaProject(info).getProject();
+                    CodesJarM2CacheManager.updateCodesJarProjectPom(new NullProgressMonitor(), info);
+                    try {
+                        MavenProjectUtils.updateMavenProject(new NullProgressMonitor(), project);
+                    } catch (CoreException e) {
+                        ExceptionHandler.process(e);
+                    }
+                }
                 CorePlugin.getDefault().getRunProcessService().updateLibraries(getSelectedItem());
-                // TODO also update routinesjar project
             }
         });
 
