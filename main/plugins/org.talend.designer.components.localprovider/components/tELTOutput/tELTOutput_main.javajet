@@ -248,7 +248,6 @@ skeleton="../templates/db_output_bulk.skeleton"
 
         if(("INSERT").equals(dataAction)){
         %>
-        //dbmsId: <%=dbmsId%>
         System.out.println("Inserting with : \n" + insertQuery_<%=cid %> + "\n");
         <%log4jCodeGenerateUtil.logInfo(node,"info",cid+" - Executing SQL:\"+insertQuery_"+ cid +"+\"");%>
         java.sql.PreparedStatement pstmt_<%=cid %> = conn_<%=cid%>.prepareStatement(insertQuery_<%=cid %>);
