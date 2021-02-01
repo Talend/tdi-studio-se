@@ -39,29 +39,22 @@ java.io.File outFile_<%=cid%> = new java.io.File(sOutFileN_<%=cid%>);
   }
 <%}%>
 
-final Integer bufferSize;
-Object tempBuff = <%= bufferSizeExpression %>;
-if (tempBuff == null) {
-    bufferSize = 8192;
-}
-else if (tempBuff instanceof Integer) {
-    bufferSize = (Integer) tempBuff;
-}
-else {
-    bufferSize = Integer.parseInt(tempBuff.toString());
+Integer bufferSize_<%=cid%> = <%= bufferSizeExpression %>;
+if (bufferSize_<%=cid%> == null) {
+    bufferSize_<%=cid%> = 8192;
 }
 
 final java.io.BufferedWriter out<%=cid %> = new java.io.BufferedWriter(
   new java.io.OutputStreamWriter(
     new java.io.FileOutputStream(sOutFileN_<%=cid%>, false), <%=sOutEncoding%>
   ), 
-  bufferSize);
+  bufferSize_<%=cid%>);
     
 java.io.BufferedReader in_<%=cid %> = new java.io.BufferedReader(
   new java.io.InputStreamReader(
     new java.io.FileInputStream(sOriFileN_<%=cid%>), <%=bNeedEncode ? sInEncoding : "System.getProperty(\"file.encoding\")"%>
   ),
-  bufferSize);
+  bufferSize_<%=cid%>);
 
 //8192: the default buffer size of BufferedReader
 char[] cbuf_<%=cid %> = new char[8192];  
