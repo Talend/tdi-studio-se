@@ -177,19 +177,9 @@ skeleton="../templates/db_output_bulk.skeleton"
         } else if (("UPDATE").equals(dataAction)){
 		    if(isDeltaLake){
 			%>
-			    String updateQuery_<%=cid %> = select_query_<%=cid %>.substring(0,select_query_<%=cid %>.indexOf(" FROM ")) + select_query_<%=cid %>.substring(select_query_<%=cid %>.indexOf(" WHERE "));
-			<%
-                if(CodeGenerationUtils.hasAlphaNumericCharacter(whereClause)) {
-%>
-                    if (updateQuery_<%=cid %>.toUpperCase().contains(" WHERE ")) {
-                        updateQuery_<%=cid %> += " AND (" + <%=CodeGenerationUtils.replaceAllCrBySpace(whereClause)%> + ")";
-                    } else {
-                        updateQuery_<%=cid %> += " WHERE " + <%=CodeGenerationUtils.replaceAllCrBySpace(whereClause)%>;
-                    }
-<%
-                }
-%>			
-                
+			    String updateQuery_<%=cid %> = null;
+				if (true)
+			    throw new RuntimeException("UPDATE action is not supported by tELTOutput. Please use tDeltaLakeRow.");
             <%
 			}else if(useUpdateStatement){
 %>

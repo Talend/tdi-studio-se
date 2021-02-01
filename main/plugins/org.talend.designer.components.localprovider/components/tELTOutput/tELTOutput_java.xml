@@ -71,7 +71,7 @@
     >
       <ITEMS DEFAULT="INSERT">
         <ITEM NAME="INSERT"           VALUE="INSERT" />
-		<ITEM NAME="UPDATE"           VALUE="UPDATE"/>
+		<ITEM NAME="UPDATE"           VALUE="UPDATE" NOT_SHOW_IF="(MAPPING == 'databricks_delta_lake_id')"/>
 		<ITEM NAME="DELETE"           VALUE="DELETE"/>
       </ITEMS>
     </PARAMETER>
