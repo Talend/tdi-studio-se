@@ -68,7 +68,7 @@ public class SetUseLocalTimezone extends AbstractJobMigrationTask {
 
 	@Override
 	public Date getOrder() {
-		GregorianCalendar gc = new GregorianCalendar(2020, 11, 25, 10, 0, 0);
+		GregorianCalendar gc = new GregorianCalendar(2021, 02, 01, 10, 0, 0);
         return gc.getTime();
 	}
 
