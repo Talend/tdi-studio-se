@@ -259,6 +259,7 @@
       		<DEFAULT IF="DBTYPE=='VERTICA'">vertica_id</DEFAULT>
       		<DEFAULT IF="DBTYPE=='TERADATA'">teradata_id</DEFAULT>
       		<DEFAULT IF="DBTYPE=='SNOWFLAKE'">snowflake_id</DEFAULT>
+<DEFAULT IF="DBTYPE=='DELTALAKE'">databricks_delta_lake_id</DEFAULT>
       		<DEFAULT>teradata_id</DEFAULT>
     	</PARAMETER>
 

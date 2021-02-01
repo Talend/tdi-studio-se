@@ -39,7 +39,6 @@
       NAME="TABLE_ACTION"
       FIELD="CLOSED_LIST"
       NUM_ROW="1"
-	  NOT_SHOW_IF="(MAPPING == 'databricks_delta_lake_id')"
     >
       <ITEMS DEFAULT="NONE">
         <ITEM NAME="NONE" VALUE="NONE" />
