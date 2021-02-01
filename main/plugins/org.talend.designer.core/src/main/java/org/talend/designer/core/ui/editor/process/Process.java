@@ -126,6 +126,7 @@ import org.talend.core.repository.model.ProxyRepositoryFactory;
 import org.talend.core.repository.utils.ConvertJobsUtil;
 import org.talend.core.repository.utils.ProjectHelper;
 import org.talend.core.repository.utils.XmiResourceManager;
+import org.talend.core.runtime.maven.MavenUrlHelper;
 import org.talend.core.runtime.process.TalendProcessArgumentConstant;
 import org.talend.core.runtime.repository.item.ItemProductKeys;
 import org.talend.core.runtime.util.ItemDateParser;
@@ -1521,7 +1522,8 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
                         if (tmpParam != null && EParameterFieldType.PASSWORD.equals(tmpParam.getFieldType())) {
                             elemValue = elementValue.getRawValue();
                         }
-                        if (elementValue.isHexValue() && elemValue != null) {
+                        if (elementValue.isHexValue() && elemValue != null
+                                && !elemValue.startsWith(MavenUrlHelper.MVN_PROTOCOL)) {
                             byte[] decodeBytes = Hex.decodeHex(elemValue.toCharArray());
                             try {
                                 elemValue = new String(decodeBytes, UTF8);
