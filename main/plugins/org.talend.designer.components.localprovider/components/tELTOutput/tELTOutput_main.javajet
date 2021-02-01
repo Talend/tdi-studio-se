@@ -39,7 +39,7 @@ skeleton="../templates/db_output_bulk.skeleton"
     boolean useUpdateStatement="true".equals(ElementParameterParser.getValue(node, "__USE_UPDATE_STATEMENT__"));
     String dbmsId = ElementParameterParser.getValue(node,"__MAPPING__");
     boolean isDeltaLake = "databricks_delta_lake_id".equals(dbmsId);
-	String partition = ElementParameterParser.getValue(node, "__PARTITION__");
+    String partition = ElementParameterParser.getValue(node, "__PARTITION__");
     %>
     String select_query_<%=cid %> = null;
     String tableName_<%=cid%> = null;
@@ -163,25 +163,25 @@ skeleton="../templates/db_output_bulk.skeleton"
         }
 
         if(("INSERT").equals(dataAction)){
-		    if(isDeltaLake){
+            if(isDeltaLake){
 %>
             String insertQuery_<%=cid %> = "INSERT INTO "+tableName_<%=cid%> +
-			<%
-			if(partition != null && !"\"\"".equals(partition)){%> " PARTITION (" + <%=partition%> + ")" +<%}
-			%>
-			"("+select_query_<%=cid %>+")";
+            <%
+            if(partition != null && !"\"\"".equals(partition)){%> " PARTITION (" + <%=partition%> + ")" +<%}
+            %>
+            "("+select_query_<%=cid %>+")";
             <%}else{%>
             String insertQuery_<%=cid %> = "INSERT INTO "+tableName_<%=cid%>+"(<%=insertColName.toString()%>)  ("+select_query_<%=cid %>+")";
 <%
             }
         } else if (("UPDATE").equals(dataAction)){
-		    if(isDeltaLake){
-			%>
-			    String updateQuery_<%=cid %> = null;
-				if (true)
-			    throw new RuntimeException("UPDATE action is not supported by tELTOutput. Please use tDeltaLakeRow.");
+            if(isDeltaLake){
+            %>
+                String updateQuery_<%=cid %> = null;
+                if (true)
+                throw new RuntimeException("UPDATE action is not supported by tELTOutput. Please use tDeltaLakeRow.");
             <%
-			}else if(useUpdateStatement){
+            }else if(useUpdateStatement){
 %>
                 String updateQuery_<%=cid %> = select_query_<%=cid %>;
 <%
