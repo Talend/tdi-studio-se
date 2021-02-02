@@ -22,13 +22,16 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.eclipse.swt.graphics.Image;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.talend.core.model.components.IComponent;
 import org.talend.core.model.properties.Item;
+import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.core.service.ITaCoKitDependencyService;
 import org.talend.sdk.component.studio.ComponentModel;
 import org.talend.sdk.component.studio.util.TaCoKitUtil;
+import org.talend.sdk.component.studio.util.TaCokitImageUtil;
 
 public class TaCoKitDependencyService implements ITaCoKitDependencyService {
 
@@ -84,6 +87,14 @@ public class TaCoKitDependencyService implements ITaCoKitDependencyService {
     @Override
     public boolean hasTaCoKitComponents(final Stream<IComponent> components) {
         return TaCoKitUtil.hasTaCoKitComponents(components);
+    }
+
+    @Override
+    public Image getTaCoKitImageByRepositoryType(ERepositoryObjectType repObjType) {
+        if (!TaCoKitUtil.isTaCoKitType(repObjType)) {
+            return null;
+        }
+        return TaCokitImageUtil.getTaCoKitImageByRepositoryType(repObjType);
     }
 
 }
