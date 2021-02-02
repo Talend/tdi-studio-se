@@ -460,7 +460,7 @@ public class JavaProcessorUtilities {
             AggregatorPomsHelper ph = new AggregatorPomsHelper();
             try {
                 IProgressMonitor monitor = new NullProgressMonitor();
-                ph.updateCodeProjects(monitor, false, true);
+                ph.updateCodeProjects(monitor, false, true, false);
                 // FIXME can remove this line if retrieve/install modules are done
                 CodesJarM2CacheManager.updateCodesJarProject(monitor);
                 ModulesNeededProvider.setInstallModuleForRoutineOrBeans();

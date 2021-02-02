@@ -536,6 +536,11 @@ public class RunProcessService implements IRunProcessService {
     }
 
     @Override
+    public void removeFromCodesJavaProjects(ERepositoryObjectType codeType, String projectTechName) {
+        delegateService.removeFromCodesJavaProjects(codeType, projectTechName);
+    }
+
+    @Override
     public void removeFromCodesJarJavaProjects(CodesJarInfo info) {
         delegateService.removeFromCodesJarJavaProjects(info);
 
