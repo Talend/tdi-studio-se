@@ -37,6 +37,7 @@
 	}
 	int dynamic_index = -1;
 	boolean hasDynamic = false;
+	int dynamicColumnlength = 100;
 	List<IMetadataColumn> columnList = null;
 	List<IMetadataTable> metadatas = node.getMetadataList();
 	IMetadataTable metadata = null;
@@ -52,6 +53,9 @@
         if(columnList.get(i).getTalendType().equals("id_Dynamic")){
             dynamic_index = i+1;
             hasDynamic = true;
+            if(columnList.get(i).getLength() != null){
+                dynamicColumnlength = columnList.get(i).getLength();
+            }
             break;
         }
 	}
@@ -65,7 +69,7 @@
 	class GenerateCode{
 		public int dynamic_index = -1;
 		public int colLen = 0; // the length of the column in the input schema
-		public void generateDynamicSchemaCode(boolean isCsv){
+		public void generateDynamicSchemaCode(boolean isCsv,int dynamicColumnlength){
 		%>
 			if(isFirstCheckDyn_<%=cid %>){// for the header line
 				<%
@@ -85,7 +89,7 @@
 			    	dynamicMetadata_<%=cid%>.setDbName(dynamicMetadata_<%=cid%>.getName());
 			    	dynamicMetadata_<%=cid%>.setType("id_String");
 			    	dynamicMetadata_<%=cid%>.setDbType("VARCHAR");
-			    	dynamicMetadata_<%=cid%>.setLength(100);
+			    	dynamicMetadata_<%=cid%>.setLength(<%=dynamicColumnlength%>);
 			    	dynamicMetadata_<%=cid%>.setPrecision(0);
 			    	dynamicMetadata_<%=cid%>.setNullable(true);
 			    	dynamicMetadata_<%=cid%>.setKey(false);
@@ -565,7 +569,7 @@
 										if(hasDynamic){// generate the dynamic schema code
 											generateCode.colLen = sizeListColumns;
 											generateCode.dynamic_index = dynamic_index;
-											generateCode.generateDynamicSchemaCode(false); //false: delimited mode
+											generateCode.generateDynamicSchemaCode(false,dynamicColumnlength); //false: delimited mode
 											rowUtil.callValueToConnWithD("fid_"+cid, firstConnName, "dynamic_"+cid);
 										}else{
 											rowUtil.callValueToConn("fid_"+cid, firstConnName);
@@ -1347,7 +1351,7 @@
 									if(hasDynamic){// generate the dynamic schema code
 										generateCode.colLen = columnSize;
 										generateCode.dynamic_index = dynamic_index;
-										generateCode.generateDynamicSchemaCode(true); //true: CSV mode
+										generateCode.generateDynamicSchemaCode(true,dynamicColumnlength); //true: CSV mode
 										rowUtil.callValueToConnWithD("row"+cid, firstConnName, "dynamic_"+cid);
 									}else{
 										rowUtil.callValueToConn("row"+cid, firstConnName);

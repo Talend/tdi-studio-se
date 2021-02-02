@@ -1283,10 +1283,10 @@ skeleton="../templates/db_output_bulk.skeleton"
             %>
                 commitCounter_<%=cid%>++;
                 if(commitEvery_<%=cid%> <= commitCounter_<%=cid%>) {
-
                     <%
                     if (useBatch) {
                     %>
+                    if(batchSizeCounter_<%=cid%> > 0) {
                         try {
                             <%dbLog.batch().executeTry(dbLog.str(dataAction));%>
                             pstmt_<%=cid %>.executeBatch();
@@ -1336,6 +1336,7 @@ skeleton="../templates/db_output_bulk.skeleton"
                         %>
                         += (tmp_batchUpdateCount_<%=cid%>!=-1?tmp_batchUpdateCount_<%=cid%>:0);
                         rowsToCommitCount_<%=cid%> += (tmp_batchUpdateCount_<%=cid%>!=-1?tmp_batchUpdateCount_<%=cid%>:0);
+                    }
                     <%
                     }
                     %>
@@ -1348,6 +1349,9 @@ skeleton="../templates/db_output_bulk.skeleton"
                     	rowsToCommitCount_<%=cid%> = 0;
                     }
                     commitCounter_<%=cid%>=0;
+                    <% if (useBatch){ %>
+                    	batchSizeCounter_<%=cid%>=0;
+                    <%}%>
                 }
             <%
             }
