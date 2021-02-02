@@ -434,6 +434,9 @@ public class TalendJavaProjectManager {
             String projectId = getCodesJarProjectId(type, projectTechName, codesJarName);
             ITalendProcessJavaProject project = talendCodesJarJavaProjects.get(projectId);
             if (project != null) {
+                IFolder folder = new AggregatorPomsHelper().getCodeFolder(type).getFolder(codesJarName);
+                IFile projectPom = folder.getFile(TalendMavenConstants.POM_FILE_NAME);
+                AggregatorPomsHelper.removeFromParentModules(projectPom);
                 project.getProject().delete(deleteContent, true, null);
             }
             if (deleteContent) {
@@ -441,7 +444,7 @@ public class TalendJavaProjectManager {
                 folder.delete(true, false, null);
             }
             talendCodesJarJavaProjects.remove(projectId);
-        } catch (CoreException e) {
+        } catch (Exception e) {
             ExceptionHandler.process(e);
         }
     }

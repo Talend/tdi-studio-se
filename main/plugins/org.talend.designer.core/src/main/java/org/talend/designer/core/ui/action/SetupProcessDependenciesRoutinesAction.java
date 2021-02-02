@@ -14,6 +14,7 @@ package org.talend.designer.core.ui.action;
 
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.jface.viewers.ISelection;
@@ -194,22 +195,24 @@ public class SetupProcessDependenciesRoutinesAction extends AContextualAction {
             boolean found = false;
             for (RoutinesParameterType parameter : routinesDependencies) {
                 if (r.getType() == null && parameter.getType() == null) {
-                    if (parameter.getId().equals(r.getId()) || parameter.getName().equals(r.getName())) {
+                    if (parameter.getId().equals(r.getId())
+                            || (parameter.getName() != null && parameter.getName().equals(r.getName()))) {
                         found = true;
                         break;
                     }
                     continue;
                 }
-                if (r.getType() != null && r.getType().equals(parameter.getType())) {
-                    if (parameter.getId().equals(r.getId()) || parameter.getName().equals(r.getName())) {
-                        found = true;
-                        break;
-                    }
+                if (r.getType() != null && r.getType().equals(parameter.getType()) && parameter.getId().equals(r.getId())) {
+                    found = true;
+                    break;
                 }
             }
             if (!found) {
                 RoutinesParameterType itemRecordType = TalendFileFactory.eINSTANCE.createRoutinesParameterType();
-                itemRecordType.setName(r.getName());
+                // won't store name for codejar
+                if (StringUtils.isBlank(r.getType())) {
+                    itemRecordType.setName(r.getName());
+                }
                 itemRecordType.setId(r.getId());
                 itemRecordType.setType(r.getType());
                 process.getParameters().getRoutinesParameter().add(itemRecordType);

@@ -16,19 +16,30 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.Set;
 
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.ltk.core.refactoring.resource.RenameResourceChange;
 import org.talend.commons.exception.ExceptionHandler;
+import org.talend.commons.utils.generation.JavaUtils;
+import org.talend.core.GlobalServiceRegister;
+import org.talend.core.model.general.Project;
 import org.talend.core.model.properties.Item;
 import org.talend.core.model.properties.Property;
+import org.talend.core.model.properties.RoutineItem;
 import org.talend.core.model.properties.RoutinesJarItem;
 import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.core.model.repository.IRepositoryViewObject;
+import org.talend.core.model.routines.CodesJarInfo;
+import org.talend.core.model.routines.RoutinesUtil;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
+import org.talend.core.repository.utils.XmiResourceManager;
+import org.talend.core.runtime.process.ITalendProcessJavaProject;
 import org.talend.core.utils.CodesJarResourceCache;
 import org.talend.designer.maven.tools.AggregatorPomsHelper;
 import org.talend.designer.maven.tools.CodesJarM2CacheManager;
+import org.talend.designer.maven.utils.CodesJarMavenUtil;
+import org.talend.designer.runprocess.IRunProcessService;
 import org.talend.designer.runprocess.java.TalendJavaProjectManager;
 import org.talend.repository.ProjectManager;
 import org.talend.repository.RepositoryWorkUnit;
@@ -84,15 +95,18 @@ public class CodesJarChangeListener implements PropertyChangeListener {
             change.perform(new NullProgressMonitor());
             TalendJavaProjectManager.deleteTalendCodesJarProject(type,
                     ProjectManager.getInstance().getProject(property).getTechnicalLabel(), oldName, true);
-            CodesJarM2CacheManager.updateCodesJarProject(property);
+            CodesJarM2CacheManager.updateCodesJarProject(property, !property.getLabel().equals(oldName));
         }
     }
 
-    private void caseDelete(String propertyName, Object newValue) {
+    private void caseDelete(String propertyName, Object newValue) throws Exception {
         if (newValue instanceof IRepositoryViewObject) {
             Property property = ((IRepositoryViewObject) newValue).getProperty();
-            if (needUpdate(property.getItem())) {
-                if (propertyName.equals(ERepositoryActionName.DELETE_FOREVER.getName())) {
+            if (propertyName.equals(ERepositoryActionName.DELETE_FOREVER.getName())) {
+                if (RoutinesUtil.isInnerCodes(property)) {
+                    updateAndReSyncForInnerCode(property);
+                    updateModifiedDateForCodesJar(property.getItem());
+                } else if (needUpdate(property.getItem())) {
                     CodesJarResourceCache.removeCache(property);
                     TalendJavaProjectManager.deleteTalendCodesJarProject(property, true);
                 }
@@ -105,6 +119,8 @@ public class CodesJarChangeListener implements PropertyChangeListener {
             Item item = (Item) newValue;
             if (needUpdate(item)) {
                 CodesJarResourceCache.addToCache(item.getProperty());
+            } else if (RoutinesUtil.isInnerCodes(item.getProperty())) {
+                updateModifiedDateForCodesJar(item);
             }
         }
     }
@@ -117,17 +133,62 @@ public class CodesJarChangeListener implements PropertyChangeListener {
         }
     }
 
-    private void caseRestore(Object newValue) {
+    private void caseRestore(Object newValue) throws Exception {
         if (newValue instanceof IRepositoryViewObject) {
             IRepositoryViewObject object = (IRepositoryViewObject) newValue;
-            if (needUpdate(object.getProperty().getItem())) {
-                CodesJarResourceCache.addToCache(object.getProperty());
+            Property property = object.getProperty();
+            if (needUpdate(property.getItem())) {
+                CodesJarResourceCache.addToCache(property);
+            } else if (RoutinesUtil.isInnerCodes(property)) {
+                updateModifiedDateForCodesJar(property.getItem());
             }
         }
     }
 
     private boolean needUpdate(Item item) {
         return item instanceof RoutinesJarItem;
+    }
+
+    private void updateAndReSyncForInnerCode(Property property) throws Exception {
+        if (!RoutinesUtil.isInnerCodes(property)) {
+            return;
+        }
+
+        RoutineItem codeItem = (RoutineItem) property.getItem();
+        CodesJarInfo info = CodesJarResourceCache.getCodesJarByInnerCode(codeItem);
+        if (GlobalServiceRegister.getDefault().isServiceRegistered(IRunProcessService.class)) {
+            IRunProcessService runProcessService = GlobalServiceRegister.getDefault().getService(IRunProcessService.class);
+            if (runProcessService != null) {
+                ITalendProcessJavaProject talendCodesJarJavaProject = runProcessService.getTalendCodesJarJavaProject(info);
+                if (talendCodesJarJavaProject == null) {
+                    return;
+                }
+                IFolder routineFolder = talendCodesJarJavaProject.getSrcSubFolder(null,
+                        CodesJarMavenUtil.getCodesJarPackageByInnerCode(codeItem));
+                IFile originalRoutineFile = routineFolder.getFile(property.getLabel() + JavaUtils.JAVA_EXTENSION);
+                if (originalRoutineFile == null || !originalRoutineFile.exists()) {
+                    return;
+                }
+                originalRoutineFile.delete(true, false, null);
+            }
+        }
+
+        if (info.getProperty() != null) {
+            CodesJarM2CacheManager.updateCodesJarProject(info.getProperty());
+        }
+
+    }
+
+    private void updateModifiedDateForCodesJar(Item item) throws Exception {
+        if (item instanceof RoutineItem) {
+            RoutineItem innerCodeItem = (RoutineItem) item;
+            CodesJarInfo info = CodesJarResourceCache.getCodesJarByInnerCode(innerCodeItem);
+            Project project = ProjectManager.getInstance().getProjectFromProjectTechLabel(info.getProjectTechName());
+            IRepositoryViewObject obj = ProxyRepositoryFactory.getInstance().getLastVersion(project, info.getProperty().getId());
+            Property codesJarProperty = obj.getProperty();
+            new XmiResourceManager().saveResource(codesJarProperty.eResource());
+            CodesJarResourceCache.addToCache(codesJarProperty);
+        }
     }
 
 }

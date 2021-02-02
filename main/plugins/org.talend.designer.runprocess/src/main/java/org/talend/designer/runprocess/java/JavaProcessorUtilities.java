@@ -457,11 +457,9 @@ public class JavaProcessorUtilities {
             handleMissingJarsForProcess(missingJarsForRoutinesOnly, missingJarsForProcessOnly, missingJars);
         }
         if (ModulesNeededProvider.installModuleForRoutineOrBeans()) {
-            AggregatorPomsHelper ph = new AggregatorPomsHelper();
             try {
                 IProgressMonitor monitor = new NullProgressMonitor();
-                ph.updateCodeProjects(monitor, false, true);
-                // FIXME can remove this line if retrieve/install modules are done
+                new AggregatorPomsHelper().updateCodeProjects(monitor, false, true);
                 CodesJarM2CacheManager.updateCodesJarProject(monitor);
                 ModulesNeededProvider.setInstallModuleForRoutineOrBeans();
             } catch (Exception e) {

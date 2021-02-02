@@ -13,8 +13,11 @@
 package org.talend.repository.ui.actions.routines;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.runtime.IPath;
@@ -135,7 +138,11 @@ public abstract class AbstractAssignCodesToJarAction extends AContextualAction {
                     ITalendSynchronizer routineSynchronizer = service.createJavaRoutineSynchronizer();
                     routineSynchronizer.syncRoutine(innerCodeItem, true, true);
                 }
-                codesJarItem.getRoutinesJarType().getImports().addAll(newImports);
+                Set<String> mvnSet = new HashSet<String>();
+                List<IMPORTType> codesJarImports = codesJarItem.getRoutinesJarType().getImports();
+                codesJarImports.stream().forEach(codeJarImport -> mvnSet.add(codeJarImport.getMVN()));
+                codesJarImports.addAll(newImports.stream().filter(codeImport -> !mvnSet.contains(codeImport.getMVN()))
+                        .collect(Collectors.toList()));
                 ProxyRepositoryFactory.getInstance().save(codesJarItem);
                 // open project
                 CodesJarInfo info = CodesJarInfo.create(codesJarItem.getProperty());
