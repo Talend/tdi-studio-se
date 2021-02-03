@@ -695,14 +695,12 @@ public class MemoryRuntimeComposite extends ScrolledComposite implements IDynami
             List<INode> nodeList = (List<INode>) process.getGraphicalNodes();
             for (INode node : nodeList) {
                 for (Connection connection : (List<Connection>) node.getOutgoingConnections()) {
-                    ConnectionTrace traceNode = connection.getConnectionTrace();
-                    if (traceNode == null) {
-                        continue;
-                    }
-                    traceNode.setPropertyValue(EParameterName.TRACES_SHOW_ENABLE.getName(), false);
-                    if (connection != null 
-//                            && connection.checkTraceShowEnable()
-                            ) {
+                    if(connection != null) {
+                        ConnectionTrace traceNode = connection.getConnectionTrace();
+                        if (traceNode == null) {
+                            continue;
+                        }
+                        traceNode.setPropertyValue(EParameterName.TRACES_SHOW_ENABLE.getName(), false);
                         connection.setPropertyValue(EParameterName.TRACES_SHOW_ENABLE.getName(), false);
                         connection.setPropertyValue(EParameterName.TRACES_CONNECTION_ENABLE.getName(), false);
                     }
