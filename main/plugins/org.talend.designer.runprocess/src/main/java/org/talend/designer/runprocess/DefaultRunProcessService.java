@@ -962,11 +962,6 @@ public class DefaultRunProcessService implements IRunProcessService {
     }
 
     @Override
-    public void removeFromCodesJavaProjects(ERepositoryObjectType codeType, String projectTechName) {
-        TalendJavaProjectManager.removeFromCodeJavaProjects(codeType, projectTechName);
-    }
-
-    @Override
     public void removeFromCodesJarJavaProjects(CodesJarInfo info) {
         TalendJavaProjectManager.removeFromCodesJarJavaProjects(info);
     }
