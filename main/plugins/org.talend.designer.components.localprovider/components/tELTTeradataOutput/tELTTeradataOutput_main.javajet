@@ -296,7 +296,7 @@ try{
 %>
 		StringBuffer updateQuery_<%=cid %> = new StringBuffer("UPDATE "+tableName_<%=cid%>+" FROM (" + select_query_<%=cid %> + ") src SET <%=updateSetStmt.toString()%>");
 <%		
-		if(CodeGenerationUtils.hasAlphaNumericCharacter(whereClause) || (useWhereTable && whereConditions.size() > 0)) {
+		if((CodeGenerationUtils.hasAlphaNumericCharacter(whereClause) && (!useWhereTable)) || (useWhereTable && whereConditions.size() > 0)) {
 %>
 			updateQuery_<%=cid %>.append(" WHERE ");
 <%
@@ -305,13 +305,15 @@ try{
 				updateQuery_<%=cid %>.append(<%=CodeGenerationUtils.replaceAllCrBySpace(whereClause)%>);
 <%
 			} else {
+				String operator = "\"\"";
 				for(Map<String, String> whereCondition : whereConditions) {
 					String column_condition = whereCondition.get("COLUMN");
 					String function_condition = whereCondition.get("FUNCTION");
 					String value_condition = whereCondition.get("VALUE_SQL");
 <%
-					updateQuery_<%=cid %>.append(<%=column_condition %> + " " + <%=function_condition %> + " " + <%=value_condition %> + " ");
+					updateQuery_<%=cid %>.append(<%=operator %> + <%=column_condition %> + " " + <%=function_condition %> + " " + <%=value_condition %>);
 <%
+					operator = "\" AND \"";
 				}
 			}
 		}
@@ -328,13 +330,10 @@ try{
 %>
 		StringBuffer deleteQuery_<%=cid %> = new StringBuffer("DELETE  FROM "+ tableName_<%=cid%>+" WHERE EXISTS ("+select_query_<%=cid %>+") ");
 <%
-		if(CodeGenerationUtils.hasAlphaNumericCharacter(whereClause) || (useWhereTable && whereConditions.size() > 0)) {
-%>
-			deleteQuery_<%=cid %>.append("  AND ");
-<%
+		if((CodeGenerationUtils.hasAlphaNumericCharacter(whereClause) && (!useWhereTable)) || (useWhereTable && whereConditions.size() > 0)) {
 			if(!useWhereTable) {
 %>
-				deleteQuery_<%=cid %>.append(<%=CodeGenerationUtils.replaceAllCrBySpace(whereClause)%>);
+				deleteQuery_<%=cid %>.append("  AND " + <%=CodeGenerationUtils.replaceAllCrBySpace(whereClause)%>);
 <%			
 			} else {
 				for(Map<String, String> whereCondition : whereConditions) {
@@ -342,7 +341,7 @@ try{
 					String function_condition = whereCondition.get("FUNCTION");
 					String value_condition = whereCondition.get("VALUE_SQL");
 %>
-					deleteQuery_<%=cid %>.append(<%=column_condition %> + " " + <%=function_condition %> + " " + <%=value_condition %> + " ");
+					deleteQuery_<%=cid %>.append("  AND " + <%=column_condition %> + " " + <%=function_condition %> + " " + <%=value_condition %>);
 <%
 				}
 			}

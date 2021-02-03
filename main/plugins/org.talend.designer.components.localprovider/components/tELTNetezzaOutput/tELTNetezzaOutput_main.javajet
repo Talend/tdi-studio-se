@@ -256,7 +256,7 @@ java.sql.Connection conn_<%=cid%> = null;
 			StringBuffer updateQuery_<%=cid %> = new StringBuffer("UPDATE "+<%=tableName%>);
 			updateQuery_<%=cid %>.append(" SET <%=updateSetStmt.toString()%> " +select_query_<%=cid %>.substring(select_query_<%=cid %>.indexOf("FROM")));
 <%
-			if(CodeGenerationUtils.hasAlphaNumericCharacter(whereClause) || (useWhereTable && whereConditions.size() > 0)) {
+			if((CodeGenerationUtils.hasAlphaNumericCharacter(whereClause) && (!useWhereTable)) || (useWhereTable && whereConditions.size() > 0)) {
 %>
 				if(select_query_<%=cid %>.indexOf("WHERE")==-1){
 					updateQuery_<%=cid %>.append("  WHERE ");
@@ -269,13 +269,15 @@ java.sql.Connection conn_<%=cid%> = null;
 					updateQuery_<%=cid %>.append(<%=CodeGenerationUtils.replaceAllCrBySpace(whereClause)%>);
 <%
 				} else {
+					String operator = "\"\"";
 					for(Map<String, String> whereCondition : whereConditions) {
 						String column_condition = whereCondition.get("COLUMN");
 						String function_condition = whereCondition.get("FUNCTION");
 						String value_condition = whereCondition.get("VALUE_SQL");
 %>
-						updateQuery_<%=cid %>.append(<%=column_condition %> + " " + <%=function_condition %> + " " + <%=value_condition %> + " ");
+						updateQuery_<%=cid %>.append(<%=operator %> + <%=column_condition %> + " " + <%=function_condition %> + " " + <%=value_condition %>);
 <%
+						operator = "\" AND \"";
 					}
 				}
 			}
@@ -287,13 +289,10 @@ java.sql.Connection conn_<%=cid%> = null;
 			StringBuffer deleteQuery_<%=cid %> = new StringBuffer("DELETE  FROM "+<%=tableName%>);
 			deleteQuery_<%=cid %>.append(" WHERE EXISTS ("+select_query_<%=cid %>+")");
 <%
-			if(CodeGenerationUtils.hasAlphaNumericCharacter(whereClause) || (useWhereTable && whereConditions.size() > 0)) {
-%>
-				deleteQuery_<%=cid %>.append("  AND ");
-<%
+			if((CodeGenerationUtils.hasAlphaNumericCharacter(whereClause) && (!useWhereTable)) || (useWhereTable && whereConditions.size() > 0)) {
 				if(!useWhereTable) {
 %>
-					deleteQuery_<%=cid %>.append(<%=CodeGenerationUtils.replaceAllCrBySpace(whereClause)%>);
+					deleteQuery_<%=cid %>.append("  AND " + <%=CodeGenerationUtils.replaceAllCrBySpace(whereClause)%>);
 <%
 				} else {
 					for(Map<String, String> whereCondition : whereConditions) {
@@ -301,7 +300,7 @@ java.sql.Connection conn_<%=cid%> = null;
 						String function_condition = whereCondition.get("FUNCTION");
 						String value_condition = whereCondition.get("VALUE_SQL");
 %>
-						deleteQuery_<%=cid %>.append(<%=column_condition %> + " " + <%=function_condition %> + " " + <%=value_condition %> + " ");
+						deleteQuery_<%=cid %>.append("  AND " + <%=column_condition %> + " " + <%=function_condition %> + " " + <%=value_condition %>);
 <%
 					}
 				}
