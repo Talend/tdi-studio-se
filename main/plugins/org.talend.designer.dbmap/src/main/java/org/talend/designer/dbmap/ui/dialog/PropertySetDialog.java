@@ -77,10 +77,10 @@ public class PropertySetDialog extends Dialog {
         delimitedIdentifiersButton.setSelection(generationManager.isUseDelimitedIdentifiers());
         useAliasButton.setSelection(generationManager.isUseAliasInOutputTable());
 
-        // Implement the column alias only for tELTTeradataMap now.
+        // Implement the column alias only for tELTTeradataMap/tELTOracleMap now.
         boolean enabled = false;
         IComponent component = mapperManager.getComponent().getComponent();
-        if (component != null && "tELTTeradataMap".equals(component.getName())) { //$NON-NLS-1$
+        if (component != null && ("tELTTeradataMap".equals(component.getName()) || "tELTOracleMap".equals(component.getName()))) { //$NON-NLS-1$ //$NON-NLS-2$
             enabled = true;
         }
         useAliasButton.setVisible(enabled);
