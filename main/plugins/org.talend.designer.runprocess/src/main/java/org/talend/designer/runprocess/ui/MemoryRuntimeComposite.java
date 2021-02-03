@@ -65,6 +65,7 @@ import org.talend.core.CorePlugin;
 import org.talend.core.model.process.EComponentCategory;
 import org.talend.core.model.process.Element;
 import org.talend.core.model.process.IContext;
+import org.talend.core.model.process.INode;
 import org.talend.core.model.process.IProcess2;
 import org.talend.core.model.process.ITargetExecutionConfig;
 import org.talend.core.model.process.ReplaceNodesInProcessProvider;
@@ -73,6 +74,9 @@ import org.talend.core.model.utils.JavaResourcesHelper;
 import org.talend.core.ui.CoreUIPlugin;
 import org.talend.core.ui.properties.tab.IDynamicProperty;
 import org.talend.designer.core.IMultiPageTalendEditor;
+import org.talend.designer.core.model.components.EParameterName;
+import org.talend.designer.core.ui.editor.connections.Connection;
+import org.talend.designer.core.ui.editor.connections.ConnectionTrace;
 import org.talend.designer.runprocess.RunProcessContext;
 import org.talend.designer.runprocess.i18n.Messages;
 import org.talend.designer.runprocess.ui.actions.SaveJobBeforeRunAction;
@@ -683,6 +687,27 @@ public class MemoryRuntimeComposite extends ScrolledComposite implements IDynami
         	((RuntimeGraphcsComposite)chartComposite).displayReportField();
         }else{
         	chartComposite.dispose();
+        }
+        
+        if(processContext != null) {
+            processContext.setMonitorTrace(false);
+            org.talend.core.model.process.IProcess process = processContext.getProcess();
+            List<INode> nodeList = (List<INode>) process.getGraphicalNodes();
+            for (INode node : nodeList) {
+                for (Connection connection : (List<Connection>) node.getOutgoingConnections()) {
+                    ConnectionTrace traceNode = connection.getConnectionTrace();
+                    if (traceNode == null) {
+                        continue;
+                    }
+                    traceNode.setPropertyValue(EParameterName.TRACES_SHOW_ENABLE.getName(), false);
+                    if (connection != null 
+//                            && connection.checkTraceShowEnable()
+                            ) {
+                        connection.setPropertyValue(EParameterName.TRACES_SHOW_ENABLE.getName(), false);
+                        connection.setPropertyValue(EParameterName.TRACES_CONNECTION_ENABLE.getName(), false);
+                    }
+                }
+            }
         }
     }
 

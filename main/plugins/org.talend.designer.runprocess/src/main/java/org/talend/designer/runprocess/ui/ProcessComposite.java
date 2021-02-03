@@ -15,12 +15,9 @@ package org.talend.designer.runprocess.ui;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.lang.reflect.InvocationTargetException;
-import java.text.DateFormat;
 import java.text.MessageFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -1091,7 +1088,9 @@ public class ProcessComposite extends ScrolledComposite implements IDynamicPrope
                         continue;
                     }
                     traceNode.setPropertyValue(EParameterName.TRACES_SHOW_ENABLE.getName(), false);
-                    if (connection != null && connection.checkTraceShowEnable()) {
+                    if (connection != null 
+//                            && connection.checkTraceShowEnable()
+                            ) {
                         connection.setPropertyValue(EParameterName.TRACES_SHOW_ENABLE.getName(), false);
                     }
                 }
