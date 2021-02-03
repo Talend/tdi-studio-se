@@ -80,8 +80,9 @@ public class UpdateDaikonCryptoUtilsMigrationTask extends AbstractProjectMigrati
             return false;
         }
         for (Dependency dep : deps) {
-            if (StringUtils.equals("org.talend.daikon", dep.getGroupId())) {
-                if (StringUtils.equals("daikon", dep.getArtifactId())) {
+            if (StringUtils.equals("org.talend.daikon", dep.getGroupId()) && StringUtils.equals("0.31.10", dep.getVersion())) {
+                if (StringUtils.equals("crypto-utils", dep.getArtifactId())
+                        || StringUtils.equals("daikon", dep.getArtifactId())) {
                     return true;
                 }
             }
