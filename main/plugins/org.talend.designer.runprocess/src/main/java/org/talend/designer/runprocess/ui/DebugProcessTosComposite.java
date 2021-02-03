@@ -15,12 +15,9 @@ package org.talend.designer.runprocess.ui;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.lang.reflect.InvocationTargetException;
-import java.text.DateFormat;
 import java.text.MessageFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -432,13 +429,16 @@ public class DebugProcessTosComposite extends TraceDebugProcessComposite {
         List<INode> nodeList = (List<INode>) process.getGraphicalNodes();
         for (INode node : nodeList) {
             for (Connection connection : (List<Connection>) node.getOutgoingConnections()) {
-                ConnectionTrace traceNode = connection.getConnectionTrace();
-                if (traceNode == null) {
-                    continue;
-                }
-                traceNode.setPropertyValue(EParameterName.TRACES_SHOW_ENABLE.getName(), trace);
-                if (connection != null && connection.checkTraceShowEnable()) {
-                    connection.setPropertyValue(EParameterName.TRACES_SHOW_ENABLE.getName(), trace);
+                if(connection != null) {
+                    ConnectionTrace traceNode = connection.getConnectionTrace();
+                    if (traceNode == null) {
+                        continue;
+                    }
+                    traceNode.setPropertyValue(EParameterName.TRACES_SHOW_ENABLE.getName(), trace);
+                    if (connection.checkTraceShowEnable()) {
+                        connection.setPropertyValue(EParameterName.TRACES_SHOW_ENABLE.getName(), trace);
+                        connection.setPropertyValue(EParameterName.TRACES_CONNECTION_ENABLE.getName(), trace);
+                    }
                 }
             }
         }
