@@ -336,12 +336,14 @@ for(Column colStmt:stmtStructure){
 	
 		StringBuffer deleteQuery_<%=cid %> = new StringBuffer("DELETE  FROM "+ tableName_<%=cid%>+" WHERE EXISTS ("+select_query_<%=cid %>+") ");
 <%
-		if((CodeGenerationUtils.hasAlphaNumericCharacter(whereClause) && (!useWhereTable)) || (useWhereTable && whereConditions.size() > 0)) {
-			if(!useWhereTable) {
+		if(!useWhereTable) {
+			if(CodeGenerationUtils.hasAlphaNumericCharacter(whereClause)) {
 %>
 				deleteQuery_<%=cid %>.append("  AND " + <%=CodeGenerationUtils.replaceAllCrBySpace(whereClause)%>);
 <%
-			} else {
+			}
+		} else {
+			if(whereConditions.size() > 0) {
 				for(Map<String, String> whereCondition : whereConditions) {
 					String column_condition = whereCondition.get("COLUMN");
 					String function_condition = whereCondition.get("FUNCTION");
