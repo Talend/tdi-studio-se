@@ -3515,7 +3515,7 @@
               description="set use local timezone checkbox to true for previous versions"
               id="org.talend.repository.model.migration.spark.SetUseLocalTimezone"
               name="SetUseLocalTimezone"
-              version="7.3.1">
+              version="7.4.1">
        </projecttask>
        <projecttask
               beforeLogon="false"
