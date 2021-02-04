@@ -26,6 +26,7 @@ import org.talend.core.model.components.filters.IComponentFilter;
 import org.talend.core.model.components.filters.NameComponentFilter;
 import org.talend.core.model.migration.AbstractAllJobMigrationTask;
 import org.talend.core.model.properties.Item;
+import org.talend.designer.core.model.utils.emf.talendfile.ElementParameterType;
 import org.talend.designer.core.model.utils.emf.talendfile.NodeType;
 import org.talend.designer.core.model.utils.emf.talendfile.ProcessType;
 
@@ -37,6 +38,10 @@ import org.talend.designer.core.model.utils.emf.talendfile.ProcessType;
 public class SpecialUpdateELTEnableColumnAliasMigrationTask extends AbstractAllJobMigrationTask {
 
     private static final String ELT_ORACLE_DISABLE_COLUMN_ALIAS = "elt.oracle.disableColumnAlias"; //$NON-NLS-1$
+
+    private static final String USE_ALIAS_IN_OUTPUT_TABLE = "USE_ALIAS_IN_OUTPUT_TABLE"; //$NON-NLS-1$
+
+    private String field = "CHECK"; //$NON-NLS-1$
 
     @Override
     public ExecutionResult execute(Item item) {
@@ -51,7 +56,11 @@ public class SpecialUpdateELTEnableColumnAliasMigrationTask extends AbstractAllJ
                     Arrays.<IComponentConversion> asList(new IComponentConversion() {
 
                         public void transform(NodeType node) {
-                            ComponentUtilities.setNodeValue(node, "USE_ALIAS_IN_OUTPUT_TABLE", String.valueOf(!disableOracleAlias)); //$NON-NLS-1$
+                            ElementParameterType use_alias = ComponentUtilities.getNodeProperty(node, USE_ALIAS_IN_OUTPUT_TABLE);
+                            if (use_alias == null) {
+                                ComponentUtilities.addNodeProperty(node, USE_ALIAS_IN_OUTPUT_TABLE, field);
+                            }
+                            ComponentUtilities.setNodeValue(node, USE_ALIAS_IN_OUTPUT_TABLE, String.valueOf(!disableOracleAlias));
                         }
                     }));
         } catch (PersistenceException e) {
