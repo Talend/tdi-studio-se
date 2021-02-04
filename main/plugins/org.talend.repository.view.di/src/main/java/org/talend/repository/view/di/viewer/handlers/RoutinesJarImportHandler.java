@@ -89,6 +89,7 @@ public class RoutinesJarImportHandler extends ImportRepTypeHandler implements II
         if (RoutinesUtil.isInnerCodes(selectedImportItem.getProperty())) {
             RoutineUtils.changeInnerCodePackage(selectedImportItem.getItem(), true);
         }
+        // TODO if it's codesjar item, clean m2 cache record if exists
     }
 
     @Override

@@ -14,14 +14,18 @@ package org.talend.designer.runprocess.java;
 
 import java.io.File;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
+import org.eclipse.core.resources.IBuildConfiguration;
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IncrementalProjectBuilder;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -372,12 +376,16 @@ public class TalendProcessJavaProject implements ITalendProcessJavaProject {
     public void buildWholeCodeProject() {
         try {
             NullProgressMonitor monitor = new NullProgressMonitor();
-            IProject project = getProject();
-            if (!project.isSynchronized(IResource.DEPTH_INFINITE)) {
-                project.refreshLocal(IResource.DEPTH_INFINITE, monitor);
-            }
-            project.build(IncrementalProjectBuilder.FULL_BUILD, monitor);
-            project.build(IncrementalProjectBuilder.INCREMENTAL_BUILD, monitor);
+            Set<IBuildConfiguration> configs = new HashSet<>();
+            configs.add(getProject().getActiveBuildConfig());
+            ResourcesPlugin.getWorkspace().build(new IBuildConfiguration[] { getProject().getActiveBuildConfig() },
+                    IncrementalProjectBuilder.INCREMENTAL_BUILD, true, monitor);
+            // IProject project = getProject();
+            // if (!project.isSynchronized(IResource.DEPTH_INFINITE)) {
+            // project.refreshLocal(IResource.DEPTH_INFINITE, monitor);
+            // }
+            // project.build(IncrementalProjectBuilder.FULL_BUILD, monitor);
+            // project.build(IncrementalProjectBuilder.INCREMENTAL_BUILD, monitor);
         } catch (CoreException e) {
             ExceptionHandler.process(e);
         }
