@@ -851,4 +851,10 @@ public class FileinToXmlProcess<K extends FileInputNode> extends RepositoryObjec
         // TODO Auto-generated method stub
         return null;
     }
+
+    @Override
+    public INode getNodeByUniqueName(String uniqueName) {
+        // TODO Auto-generated method stub
+        return null;
+    }
 }
