@@ -25,7 +25,8 @@ imports="
 	if((partSizeMb == null) || "".equals(partSizeMb) || "\"\"".equals(partSizeMb)) {
 			partSizeMb = "100";
 	}
-	
+	final String cannedACL = ElementParameterParser.getValue(node, "__CANNED_ACCESS_CONTROL_LIST__");
+	final boolean enableCannedACL = !("NONE".equals(cannedACL));
 	%>
 	<%@ include file="../tS3Connection/S3Client.javajet" %>
 	try{
@@ -73,7 +74,9 @@ imports="
     		if(objectMetadata_<%=cid%> != null) {
     				putRequest_<%=cid%>.setNewObjectMetadata(objectMetadata_<%=cid%>);
     		}
-    		
+    		<%if (enableCannedACL) {%>
+				    putRequest_<%=cid%>.setCannedAccessControlList(com.amazonaws.services.s3.model.CannedAccessControlList.<%=cannedACL%>);
+			<%}%>
     		<%@ include file="../tS3Put/set_kms.javajet"%>
     		
     		conn_<%=cid%>.copyObject(putRequest_<%=cid%>);
@@ -96,7 +99,10 @@ imports="
     				}
     				
     				<%@ include file="../tS3Put/set_kms.javajet"%>
-    				
+    		
+    		<%if (enableCannedACL) {%>
+				putRequest_<%=cid%>.withCannedACL(com.amazonaws.services.s3.model.CannedAccessControlList.<%=cannedACL%>);
+			<%}%>
             com.amazonaws.services.s3.model.InitiateMultipartUploadResult initResult_<%=cid%> = conn_<%=cid%>.initiateMultipartUpload(putRequest_<%=cid%>);
             
             long bytePosition_<%=cid%> = 0;

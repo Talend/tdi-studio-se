@@ -18,6 +18,8 @@ imports="
 
 	boolean enableACL = "true".equalsIgnoreCase(ElementParameterParser.getValue(node, "__ACCESS_CONTROL_LIST__"));
 	List<Map<String, String>> paramsACL = ElementParameterParser.getTableValue(node,"__ACL__");
+	final String cannedACL = ElementParameterParser.getValue(node, "__CANNED_ACCESS_CONTROL_LIST__");
+	final boolean enableCannedACL = !("NONE".equals(cannedACL));
 	%>
 		<%@ include file="../tS3Connection/S3Client.javajet" %>
 	try{
@@ -79,6 +81,9 @@ accessCtrlList.grantPermission(grantee_<%=cid%>_<%=grantee_id%>, com.amazonaws.s
                 com.amazonaws.services.s3.model.CreateBucketRequest bucketRequest_<%=cid%> = new com.amazonaws.services.s3.model.CreateBucketRequest(<%=bucket%>);
 		<%if (enableACL) {%>
 				bucketRequest_<%=cid%>.withAccessControlList(accessCtrlList);
+		<%}%>
+		<%if (enableCannedACL) {%>
+			    bucketRequest_<%=cid%>.withCannedAcl(com.amazonaws.services.s3.model.CannedAccessControlList.<%=cannedACL%>);
 		<%}%>
 		conn_<%=cid%>.createBucket(bucketRequest_<%=cid%>);
 		<%

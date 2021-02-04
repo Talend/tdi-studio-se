@@ -30,7 +30,8 @@ imports="
 
 	boolean enableACL = "true".equals(ElementParameterParser.getValue(node, "__ACCESS_CONTROL_LIST__"));
 	List<Map<String, String>> paramsACL = ElementParameterParser.getTableValue(node,"__ACL__");
-	
+	final String cannedACL = ElementParameterParser.getValue(node, "__CANNED_ACCESS_CONTROL_LIST__");
+	final boolean enableCannedACL = !("NONE".equals(cannedACL));
 	%>
 	<%@ include file="../tS3Connection/S3Client.javajet" %>
 	String key_<%=cid%> = <%=key%>;
@@ -141,7 +142,10 @@ accessCtrlList.grantPermission(grantee_<%=cid%>_<%=grantee_id%>, com.amazonaws.s
 			<%if (enableACL) {%>
 				putRequest_<%=cid%>.withAccessControlList(accessCtrlList);
 			<%}%>
-
+		    <%if (enableCannedACL) {%>
+				putRequest_<%=cid%>.withCannedAcl(com.amazonaws.services.s3.model.CannedAccessControlList.<%=cannedACL%>);
+			<%}%>
+			
   			<%@ include file="./set_kms.javajet"%>
   		
   			com.amazonaws.services.s3.transfer.Upload upload_<%=cid%> = tm_<%=cid%>.upload(putRequest_<%=cid%>);
@@ -176,7 +180,9 @@ accessCtrlList.grantPermission(grantee_<%=cid%>_<%=grantee_id%>, com.amazonaws.s
                     <%if (enableACL) {%>
 				          putRequest_<%=cid%>.withAccessControlList(accessCtrlList);
 			        <%}%>
-    				
+    				<%if (enableCannedACL) {%>
+				         putRequest_<%=cid%>.withCannedAcl(com.amazonaws.services.s3.model.CannedAccessControlList.<%=cannedACL%>);
+			        <%}%>
     				<%@ include file="./set_kms.javajet"%>
     				
     				conn_<%=cid%>.putObject(putRequest_<%=cid%>);
@@ -187,7 +193,9 @@ accessCtrlList.grantPermission(grantee_<%=cid%>_<%=grantee_id%>, com.amazonaws.s
                 <%if (enableACL) {%>
 				putRequest_<%=cid%>.withAccessControlList(accessCtrlList);
 			    <%}%>
-      			
+      			<%if (enableCannedACL) {%>
+				putRequest_<%=cid%>.withCannedACL(com.amazonaws.services.s3.model.CannedAccessControlList.<%=cannedACL%>);
+			    <%}%>
       			<%@ include file="./set_kms.javajet"%>
       			
       			com.amazonaws.services.s3.model.InitiateMultipartUploadResult initResponse_<%=cid%> = conn_<%=cid%>.initiateMultipartUpload(putRequest_<%=cid%>);

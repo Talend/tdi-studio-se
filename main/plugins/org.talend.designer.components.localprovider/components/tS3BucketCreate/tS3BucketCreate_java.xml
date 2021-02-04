@@ -347,6 +347,18 @@
         </ITEMS>
     </PARAMETER>
 
+    <PARAMETER NAME="CANNED_ACCESS_CONTROL_LIST" FIELD="CLOSED_LIST" NUM_ROW="100" DYNAMIC_SETTINGS="true">
+      <ITEMS DEFAULT="NONE">
+        <ITEM NAME="NONE" VALUE="NONE" />
+        <ITEM NAME="PRIVATE" VALUE="Private" />
+        <ITEM NAME="PUBLIC_READ" VALUE="PublicRead" />
+        <ITEM NAME="PUBLIC_READ_WRITE" VALUE="PublicReadWrite" />
+        <ITEM NAME="AWS_EXEC_READ" VALUE="AwsExecRead" />
+        <ITEM NAME="AUTHENTICATED_READ" VALUE="AuthenticatedRead" />
+        <ITEM NAME="LOG_DELIVERY_WRITE" VALUE="LogDeliveryWrite" />
+      </ITEMS>
+    </PARAMETER>
+
     </ADVANCED_PARAMETERS>
 
    <CODEGENERATION>
