@@ -832,11 +832,19 @@ public class RowGenProcess extends Element implements IProcess {
         return ComponentCategory.CATEGORY_4_DI.getName();
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.talend.core.model.process.IProcess#getNeededModules(boolean)
      */
     @Override
     public Set<ModuleNeeded> getNeededModules(int options) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public INode getNodeByUniqueName(String uniqueName) {
         // TODO Auto-generated method stub
         return null;
     }
