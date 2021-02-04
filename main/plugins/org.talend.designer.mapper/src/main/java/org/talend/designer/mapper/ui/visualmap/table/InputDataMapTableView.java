@@ -826,6 +826,10 @@ public class InputDataMapTableView extends DataMapTableView {
 
                 previousStateAtLeastOneHashKey = stateAtLeastOneHashKey;
             }
+            // if user didn't trigger save mapper action ,and click ok to close the window diretly, then it will cause
+            // closeMapper first then here checkChangementsAfterEntryModifiedOrAdded , the Composite will be disposed.
+            // so when try to checkLookupTableProblems on a disposed Widget , will cause org.eclipse.swt.SWTException:
+            // Widget is disposed
             if (headerComposite != null && !headerComposite.isDisposed()) {
                 checkLookupTableProblems(stateAtLeastOneHashKey);
             }
