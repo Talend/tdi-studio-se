@@ -826,8 +826,9 @@ public class InputDataMapTableView extends DataMapTableView {
 
                 previousStateAtLeastOneHashKey = stateAtLeastOneHashKey;
             }
-
-            checkLookupTableProblems(stateAtLeastOneHashKey);
+            if (headerComposite != null && !headerComposite.isDisposed()) {
+                checkLookupTableProblems(stateAtLeastOneHashKey);
+            }
             mapSettingViewerCreator.refresh();
         }
 
