@@ -1380,7 +1380,6 @@ public abstract class DbGenerationManager {
                 int begin = 1;
                 int end = deliveredTable.length() - 1;
                 if (begin <= end) {
-                    appendSqlQuery(sb, DbMapSqlConstants.COMMA);
                     appendSqlQuery(sb, "("); //$NON-NLS-1$
                     appendSqlQuery(sb, DbMapSqlConstants.NEW_LINE);
                     appendSqlQuery(sb, tabSpaceString);
