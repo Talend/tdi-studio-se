@@ -190,6 +190,7 @@
 	<bean id="contextBean" class="${job.className}.ContextBean" factory-method="getContext">
 		<argument value="${endpoint.defaultContext}" />
 		<argument value="${endpoint.address}" />
+        <argument value="${job.className}" />
 	</bean>
 #end
 #if (!$job.dataSources.isEmpty())
