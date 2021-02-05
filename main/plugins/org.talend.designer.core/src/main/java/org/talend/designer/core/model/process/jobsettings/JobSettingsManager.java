@@ -74,7 +74,6 @@ public class JobSettingsManager {
 
     private static boolean isTeamEdition = PluginChecker.isTeamEdition();
 
-    private static List<String> JavaSpecialChars = Arrays.asList(new String[] { "\\t", "\\n", "\\b", "\\r" });
 
     public static List<IElementParameter> getJobSettingsParameters(IProcess process) {
         List<IElementParameter> paramList = new ArrayList<IElementParameter>();
@@ -1337,7 +1336,8 @@ public class JobSettingsManager {
 
         static String doAddMark4SpecialChar(String sequence) {
             String filedSeparator = TalendQuoteUtils.removeQuotes(sequence);
-            if (!JavaSpecialChars.contains(filedSeparator)) {
+            // add only \t for file separator as special case here , to not break something else
+            if (!"\\t".equals(filedSeparator)) {
                 for (String charStr : METADATA_CHAR) {
                     if (!filedSeparator.contains(charStr)) {
                         continue;
