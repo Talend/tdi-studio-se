@@ -31,7 +31,7 @@ imports="
 	boolean enableACL = "true".equals(ElementParameterParser.getValue(node, "__ACCESS_CONTROL_LIST__"));
 	List<Map<String, String>> paramsACL = ElementParameterParser.getTableValue(node,"__ACL__");
 	final String cannedACL = ElementParameterParser.getValue(node, "__CANNED_ACCESS_CONTROL_LIST__");
-	final boolean enableCannedACL = !("NONE".equals(cannedACL));
+	final boolean enableCannedACL = !("\"NONE\"".equals(cannedACL));
 	%>
 	<%@ include file="../tS3Connection/S3Client.javajet" %>
 	String key_<%=cid%> = <%=key%>;
@@ -143,7 +143,10 @@ accessCtrlList.grantPermission(grantee_<%=cid%>_<%=grantee_id%>, com.amazonaws.s
 				putRequest_<%=cid%>.withAccessControlList(accessCtrlList);
 			<%}%>
 		    <%if (enableCannedACL) {%>
-				putRequest_<%=cid%>.withCannedAcl(com.amazonaws.services.s3.model.CannedAccessControlList.<%=cannedACL%>);
+				{
+				   final String cannedACLChoice = <%= cannedACL %>;
+				   putRequest_<%=cid%>.withCannedACL(com.amazonaws.services.s3.model.CannedAccessControlList.valueOf(cannedACLChoice));
+				}
 			<%}%>
 			
   			<%@ include file="./set_kms.javajet"%>
@@ -181,7 +184,10 @@ accessCtrlList.grantPermission(grantee_<%=cid%>_<%=grantee_id%>, com.amazonaws.s
 				          putRequest_<%=cid%>.withAccessControlList(accessCtrlList);
 			        <%}%>
     				<%if (enableCannedACL) {%>
-				         putRequest_<%=cid%>.withCannedAcl(com.amazonaws.services.s3.model.CannedAccessControlList.<%=cannedACL%>);
+				         {
+				             final String cannedACLChoice = <%= cannedACL %>;
+				             putRequest_<%=cid%>.withCannedACL(com.amazonaws.services.s3.model.CannedAccessControlList.valueOf(cannedACLChoice));
+				         }
 			        <%}%>
     				<%@ include file="./set_kms.javajet"%>
     				
@@ -194,7 +200,10 @@ accessCtrlList.grantPermission(grantee_<%=cid%>_<%=grantee_id%>, com.amazonaws.s
 				putRequest_<%=cid%>.withAccessControlList(accessCtrlList);
 			    <%}%>
       			<%if (enableCannedACL) {%>
-				putRequest_<%=cid%>.withCannedACL(com.amazonaws.services.s3.model.CannedAccessControlList.<%=cannedACL%>);
+				{
+				    final String cannedACLChoice = <%= cannedACL %>;
+				    putRequest_<%=cid%>.withCannedACL(com.amazonaws.services.s3.model.CannedAccessControlList.valueOf(cannedACLChoice));
+				}
 			    <%}%>
       			<%@ include file="./set_kms.javajet"%>
       			

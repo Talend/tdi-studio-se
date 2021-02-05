@@ -500,15 +500,15 @@
         </PARAMETER>
         <PARAMETER NAME="CANNED_ACCESS_CONTROL_LIST" FIELD="CLOSED_LIST" NUM_ROW="100" DYNAMIC_SETTINGS="true">
           <ITEMS DEFAULT="NONE">
-        	<ITEM NAME="NONE" VALUE="NONE" />
-	        <ITEM NAME="PRIVATE" VALUE="Private" />
-	        <ITEM NAME="PUBLIC_READ" VALUE="PublicRead" />
-	        <ITEM NAME="PUBLIC_READ_WRITE" VALUE="PublicReadWrite" />
-	        <ITEM NAME="AWS_EXEC_READ" VALUE="AwsExecRead" />
-	        <ITEM NAME="AUTHENTICATED_READ" VALUE="AuthenticatedRead" />
-	        <ITEM NAME="BUCKET_OWNER_READ" VALUE="BucketOwnerRead" />
-	        <ITEM NAME="BUCKET_OWNER_FULL_CONTROL" VALUE="BucketOwnerFullControl" />
-	        <ITEM NAME="LOG_DELIVERY_WRITE" VALUE="LogDeliveryWrite" />
+        	<ITEM NAME="NONE" VALUE="&quot;NONE&quot;" />
+	        <ITEM NAME="PRIVATE" VALUE="&quot;Private&quot;" />
+	        <ITEM NAME="PUBLIC_READ" VALUE="&quot;PublicRead&quot;" />
+	        <ITEM NAME="PUBLIC_READ_WRITE" VALUE="&quot;PublicReadWrite&quot;" />
+	        <ITEM NAME="AWS_EXEC_READ" VALUE="&quot;AwsExecRead&quot;" />
+	        <ITEM NAME="AUTHENTICATED_READ" VALUE="&quot;AuthenticatedRead&quot;" />
+	        <ITEM NAME="BUCKET_OWNER_READ" VALUE="&quot;BucketOwnerRead&quot;" />
+	        <ITEM NAME="BUCKET_OWNER_FULL_CONTROL" VALUE="&quot;BucketOwnerFullControl&quot;" />
+	        <ITEM NAME="LOG_DELIVERY_WRITE" VALUE="&quot;LogDeliveryWrite&quot;" />
           </ITEMS>
         </PARAMETER>
     </ADVANCED_PARAMETERS>
