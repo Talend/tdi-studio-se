@@ -26,6 +26,7 @@ import org.eclipse.gef.commands.Command;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.ComboBoxCellEditor;
 import org.eclipse.jface.viewers.ICellEditorListener;
+import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.custom.CLabel;
@@ -39,6 +40,7 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.ui.views.properties.tabbed.ITabbedPropertyConstants;
 import org.talend.commons.ui.runtime.swt.tableviewer.TableViewerCreatorColumnNotModifiable;
 import org.talend.commons.ui.swt.advanced.dataeditor.control.ExtendedPushButton;
+import org.talend.commons.ui.swt.extended.table.ExtendedTableModel;
 import org.talend.commons.ui.swt.tableviewer.TableViewerCreator;
 import org.talend.commons.utils.data.list.IListenableListListener;
 import org.talend.commons.utils.data.list.ListenableListEvent;
@@ -121,29 +123,38 @@ public class TableController extends AbstractElementPropertySectionController {
         final Table table = tableEditorView.getTable();
 
         table.setToolTipText(VARIABLE_TOOLTIP + param.getVariableName());
+        
+        ExtendedTableModel<Map<String, Object>> extendedTableModel = tableEditorView.getExtendedTableModel();
+        if (extendedTableModel != null) {
+            TableViewer tableViewer = extendedTableModel.getTableViewer();
+            if (tableViewer != null) {
+                CellEditor[] cellEditors = tableViewer.getCellEditors();
+                if (cellEditors != null && cellEditors.length > 1) {
+                    CellEditor c = cellEditors[1];
+                    c.addListener(new ICellEditorListener() {
 
-        CellEditor[] cellEditors = tableEditorView.getExtendedTableModel().getTableViewer().getCellEditors();
-        if (cellEditors.length > 1) {
-            CellEditor c = cellEditors[1];
-            c.addListener(new ICellEditorListener() {
+                        @Override
+                        public void editorValueChanged(boolean oldValidState, boolean newValidState) {
+                        }
 
-                @Override
-                public void editorValueChanged(boolean oldValidState, boolean newValidState) {
+                        @Override
+                        public void applyEditorValue() {
+                            Object propertyValue = elem.getPropertyValue("DRIVER_JAR_IMPLICIT_CONTEXT");
+                            Command cmd = new PropertyChangeCommand(elem, "DRIVER_JAR_IMPLICIT_CONTEXT", propertyValue);
+                            executeCommand(cmd);
+                        }
+
+                        @Override
+                        public void cancelEditor() {
+
+                        }
+                    });
                 }
+            }
 
-                @Override
-                public void applyEditorValue() {
-                    Object propertyValue = elem.getPropertyValue("DRIVER_JAR_IMPLICIT_CONTEXT");
-                    Command cmd = new PropertyChangeCommand(elem, "DRIVER_JAR_IMPLICIT_CONTEXT", propertyValue);
-                    executeCommand(cmd);
-                }
-
-                @Override
-                public void cancelEditor() {
-
-                }
-            });
         }
+
+        
         
         // add listener to tableMetadata (listen the event of the toolbars)
         tableEditorView.getExtendedTableModel().addAfterOperationListListener(new IListenableListListener() {
