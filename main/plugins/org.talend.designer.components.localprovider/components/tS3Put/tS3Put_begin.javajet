@@ -145,7 +145,7 @@ accessCtrlList.grantPermission(grantee_<%=cid%>_<%=grantee_id%>, com.amazonaws.s
 		    <%if (enableCannedACL) {%>
 				{
 				   final String cannedACLChoice = <%= cannedACL %>;
-				   putRequest_<%=cid%>.withCannedACL(com.amazonaws.services.s3.model.CannedAccessControlList.valueOf(cannedACLChoice));
+				   putRequest_<%=cid%>.withCannedAcl(com.amazonaws.services.s3.model.CannedAccessControlList.valueOf(cannedACLChoice));
 				}
 			<%}%>
 			
@@ -186,7 +186,7 @@ accessCtrlList.grantPermission(grantee_<%=cid%>_<%=grantee_id%>, com.amazonaws.s
     				<%if (enableCannedACL) {%>
 				         {
 				             final String cannedACLChoice = <%= cannedACL %>;
-				             putRequest_<%=cid%>.withCannedACL(com.amazonaws.services.s3.model.CannedAccessControlList.valueOf(cannedACLChoice));
+				             putRequest_<%=cid%>.withCannedAcl(com.amazonaws.services.s3.model.CannedAccessControlList.valueOf(cannedACLChoice));
 				         }
 			        <%}%>
     				<%@ include file="./set_kms.javajet"%>
