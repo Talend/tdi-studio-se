@@ -319,7 +319,6 @@ imports="
 					}
 				}
 			}
-		}	
 %>
 			pstmt_<%=cid %> = conn_<%=cid%>.prepareStatement(updateQuery_<%=cid %>.toString());
 

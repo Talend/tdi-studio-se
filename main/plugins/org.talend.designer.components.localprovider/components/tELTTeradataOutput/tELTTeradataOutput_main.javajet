@@ -312,7 +312,7 @@ try{
 					String column_condition = whereCondition.get("COLUMN");
 					String function_condition = whereCondition.get("FUNCTION");
 					String value_condition = whereCondition.get("VALUE_SQL");
-<%
+%>
 					updateQuery_<%=cid %>.append(<%=operator %> + <%=column_condition %> + " " + <%=function_condition %> + " " + <%=value_condition %>);
 <%
 					operator = "\" AND \"";
