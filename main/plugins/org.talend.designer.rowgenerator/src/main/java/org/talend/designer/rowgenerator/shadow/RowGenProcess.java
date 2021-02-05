@@ -832,9 +832,7 @@ public class RowGenProcess extends Element implements IProcess {
         return ComponentCategory.CATEGORY_4_DI.getName();
     }
 
-    /*
-     * (non-Javadoc)
-     * 
+    /* (non-Javadoc)
      * @see org.talend.core.model.process.IProcess#getNeededModules(boolean)
      */
     @Override

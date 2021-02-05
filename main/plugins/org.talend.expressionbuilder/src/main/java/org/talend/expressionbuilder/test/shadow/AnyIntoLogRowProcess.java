@@ -193,8 +193,7 @@ public class AnyIntoLogRowProcess<K extends ShadowNode> implements IProcess {
     @Override
     public List<? extends INode> getNodesOfType(String componentName) {
         List<INode> matchingNodes = new ArrayList<INode>();
-        if ((inNode != null) && (inNode.getComponentName() != null)
-                && (inNode.getComponentName().compareTo(componentName) == 0)) {
+        if ((inNode != null) && (inNode.getComponentName() != null) && (inNode.getComponentName().compareTo(componentName) == 0)) {
             matchingNodes.add(inNode);
         }
         if ((outNode != null) && (outNode.getComponentName() != null)
@@ -684,8 +683,9 @@ public class AnyIntoLogRowProcess<K extends ShadowNode> implements IProcess {
     /*
      * (non-Javadoc)
      *
-     * @see org.talend.core.model.repository.IRepositoryViewObject#setRepositoryNode(org.talend.repository.model.
-     * IRepositoryNode )
+     * @see
+     * org.talend.core.model.repository.IRepositoryViewObject#setRepositoryNode(org.talend.repository.model.IRepositoryNode
+     * )
      */
     public void setRepositoryNode(IRepositoryNode node) {
         // TODO Auto-generated method stub
@@ -804,9 +804,7 @@ public class AnyIntoLogRowProcess<K extends ShadowNode> implements IProcess {
 
     }
 
-    /*
-     * (non-Javadoc)
-     * 
+    /* (non-Javadoc)
      * @see org.talend.core.model.process.IProcess#getNeededModules(boolean)
      */
     @Override
