@@ -14,21 +14,38 @@ package org.talend.designer.runprocess.maven.listener;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.lang.StringUtils;
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.ltk.core.refactoring.resource.RenameResourceChange;
 import org.talend.commons.exception.ExceptionHandler;
+import org.talend.commons.utils.generation.JavaUtils;
+import org.talend.core.GlobalServiceRegister;
 import org.talend.core.model.properties.Item;
 import org.talend.core.model.properties.Property;
+import org.talend.core.model.properties.RoutineItem;
 import org.talend.core.model.properties.RoutinesJarItem;
+import org.talend.core.model.relationship.Relation;
+import org.talend.core.model.relationship.RelationshipItemBuilder;
 import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.core.model.repository.IRepositoryViewObject;
+import org.talend.core.model.routines.CodesJarInfo;
+import org.talend.core.model.routines.RoutinesUtil;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
+import org.talend.core.runtime.process.ITalendProcessJavaProject;
 import org.talend.core.utils.CodesJarResourceCache;
+import org.talend.designer.codegen.ICodeGeneratorService;
+import org.talend.designer.codegen.ITalendSynchronizer;
+import org.talend.designer.core.model.utils.emf.talendfile.RoutinesParameterType;
 import org.talend.designer.maven.tools.AggregatorPomsHelper;
 import org.talend.designer.maven.tools.CodesJarM2CacheManager;
+import org.talend.designer.maven.utils.CodesJarMavenUtil;
+import org.talend.designer.runprocess.IRunProcessService;
 import org.talend.designer.runprocess.java.TalendJavaProjectManager;
 import org.talend.repository.ProjectManager;
 import org.talend.repository.RepositoryWorkUnit;
@@ -71,7 +88,10 @@ public class CodesJarChangeListener implements PropertyChangeListener {
     private void casePropertiesChange(Object oldValue, Object newValue) throws Exception {
         if (oldValue instanceof String[] && newValue instanceof Property) {
             Property property = (Property) newValue;
-            if (!needUpdate(property.getItem())) {
+            if (RoutinesUtil.isInnerCodes(property)) {
+                updateAndReSyncForInnerCode(property, ((String[]) oldValue)[0]);
+                return;
+            } else if (!needUpdate(property.getItem())) {
                 return;
             }
             String[] oldFields = (String[]) oldValue;
@@ -84,15 +104,17 @@ public class CodesJarChangeListener implements PropertyChangeListener {
             change.perform(new NullProgressMonitor());
             TalendJavaProjectManager.deleteTalendCodesJarProject(type,
                     ProjectManager.getInstance().getProject(property).getTechnicalLabel(), oldName, true);
-            CodesJarM2CacheManager.updateCodesJarProject(property);
+            CodesJarM2CacheManager.updateCodesJarProject(property, !property.getLabel().equals(oldName));
         }
     }
 
-    private void caseDelete(String propertyName, Object newValue) {
+    private void caseDelete(String propertyName, Object newValue) throws Exception {
         if (newValue instanceof IRepositoryViewObject) {
             Property property = ((IRepositoryViewObject) newValue).getProperty();
-            if (needUpdate(property.getItem())) {
-                if (propertyName.equals(ERepositoryActionName.DELETE_FOREVER.getName())) {
+            if (propertyName.equals(ERepositoryActionName.DELETE_FOREVER.getName())) {
+                if (RoutinesUtil.isInnerCodes(property)) {
+                    updateAndReSyncForInnerCode(property, property.getLabel());
+                } else if (needUpdate(property.getItem())) {
                     CodesJarResourceCache.removeCache(property);
                     TalendJavaProjectManager.deleteTalendCodesJarProject(property, true);
                 }
@@ -128,6 +150,100 @@ public class CodesJarChangeListener implements PropertyChangeListener {
 
     private boolean needUpdate(Item item) {
         return item instanceof RoutinesJarItem;
+    }
+
+    private void updateAndReSyncForInnerCode(Property property, String originalName) throws Exception {
+        if (!RoutinesUtil.isInnerCodes(property)) {
+            return;
+        }
+
+        RoutineItem codeItem = (RoutineItem) property.getItem();
+        CodesJarInfo info = CodesJarResourceCache.getCodesJarByInnerCode(codeItem);
+        if (GlobalServiceRegister.getDefault().isServiceRegistered(IRunProcessService.class)) {
+            IRunProcessService runProcessService = GlobalServiceRegister.getDefault().getService(IRunProcessService.class);
+            if (runProcessService != null) {
+                ITalendProcessJavaProject talendCodesJarJavaProject = runProcessService.getTalendCodesJarJavaProject(info);
+                if (talendCodesJarJavaProject == null) {
+                    return;
+                }
+                IFolder routineFolder = talendCodesJarJavaProject.getSrcSubFolder(null,
+                        CodesJarMavenUtil.getCodesJarPackageByInnerCode(codeItem));
+                IFile originalRoutineFile = routineFolder.getFile(originalName + JavaUtils.JAVA_EXTENSION);
+                if (originalRoutineFile == null || !originalRoutineFile.exists()) {
+                    return;
+                }
+                originalRoutineFile.delete(true, false, null);
+            }
+        }
+
+        if (!property.getLabel().equals(originalName)) {
+            if (GlobalServiceRegister.getDefault().isServiceRegistered(ICodeGeneratorService.class)) {
+                ICodeGeneratorService codeGenService = (ICodeGeneratorService) GlobalServiceRegister.getDefault()
+                        .getService(ICodeGeneratorService.class);
+                ITalendSynchronizer routineSynchronizer = codeGenService.createRoutineSynchronizer();
+                routineSynchronizer.syncRoutine(codeItem, true, true);
+            }
+        }
+        if (info.getProperty() != null) {
+            CodesJarM2CacheManager.updateCodesJarProject(info.getProperty());
+        }
+
+    }
+
+    public static void updateItemsRelatedToCodeJars(Property property, ERepositoryObjectType objectType, String actionType) {
+        if (!ERepositoryObjectType.getAllTypesOfCodesJar().contains(objectType)) {
+            return;
+        }
+        RelationshipItemBuilder relationshipItemBuilder = RelationshipItemBuilder.getInstance();
+        ProxyRepositoryFactory repositoryFactory = ProxyRepositoryFactory.getInstance();
+        String relationType = null;
+        if (ERepositoryObjectType.ROUTINESJAR != null && ERepositoryObjectType.ROUTINESJAR.equals(objectType)) {
+            relationType = relationshipItemBuilder.ROUTINES_JAR_RELATION;
+        } else if (ERepositoryObjectType.BEANSJAR != null && ERepositoryObjectType.BEANSJAR.equals(objectType)) {
+            relationType = relationshipItemBuilder.BEANS_JAR_RELATION;
+        }
+        if (StringUtils.isBlank(relationType)) {
+            return;
+        }
+        List<Relation> relationList = relationshipItemBuilder.getAllVersionItemsRelatedTo(property.getId(), relationType, false);
+        try {
+            for (Relation relation : relationList) {
+                IRepositoryViewObject relatedObj = repositoryFactory.getSpecificVersion(relation.getId(), relation.getVersion(),
+                        true);
+                if (relatedObj == null) {
+                    continue;
+                }
+                boolean modified = false;
+                Item item = relatedObj.getProperty().getItem();
+                List<RoutinesParameterType> routinesParametersFromItem = RoutinesUtil.getRoutinesParametersFromItem(item);
+
+                if (ERepositoryActionName.DELETE_FOREVER.getName().equals(actionType)) {
+                    Iterator<RoutinesParameterType> iterator = routinesParametersFromItem.iterator();
+                    while (iterator.hasNext()) {
+                        RoutinesParameterType routinesParam = iterator.next();
+                        if (StringUtils.isNotBlank(routinesParam.getType()) && routinesParam.getId().equals(property.getId())) {
+                            iterator.remove();
+                            modified = true;
+                        }
+                    }
+                    RelationshipItemBuilder.getInstance().addOrUpdateItem(item);
+                } else if (ERepositoryActionName.PROPERTIES_CHANGE.getName().equals(actionType)) {
+                    for (RoutinesParameterType param : routinesParametersFromItem) {
+                        if (StringUtils.isNotBlank(param.getType()) && param.getId().equals(property.getId())
+                                && !param.getName().equals(property.getLabel())) {
+                            param.setName(property.getLabel());
+                            modified = true;
+                        }
+                    }
+                }
+
+                if (modified) {
+                    repositoryFactory.save(item);
+                }
+            }
+        } catch (Exception e) {
+            ExceptionHandler.process(e);
+        }
     }
 
 }
