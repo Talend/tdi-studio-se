@@ -129,27 +129,36 @@ public class TableController extends AbstractElementPropertySectionController {
             TableViewer tableViewer = extendedTableModel.getTableViewer();
             if (tableViewer != null) {
                 CellEditor[] cellEditors = tableViewer.getCellEditors();
-                if (cellEditors != null && cellEditors.length > 1) {
-                    CellEditor c = cellEditors[1];
-                    c.addListener(new ICellEditorListener() {
+                if (cellEditors != null && cellEditors.length > 0) {
+                    for (CellEditor c : cellEditors) {
+                        if (c != null) {
+                            c.addListener(new ICellEditorListener() {
 
-                        @Override
-                        public void editorValueChanged(boolean oldValidState, boolean newValidState) {
+                                @Override
+                                public void editorValueChanged(boolean oldValidState, boolean newValidState) {
+                                }
+
+                                @Override
+                                public void applyEditorValue() {
+                                    if (elem != null) {
+                                        Object propertyValue = elem.getPropertyValue("DRIVER_JAR_IMPLICIT_CONTEXT");
+                                        if (propertyValue != null) {
+                                            Command cmd = new PropertyChangeCommand(elem, "DRIVER_JAR_IMPLICIT_CONTEXT",
+                                                    propertyValue);
+                                            executeCommand(cmd);
+                                        }
+                                    }
+                                }
+
+                                @Override
+                                public void cancelEditor() {
+
+                                }
+                            });
                         }
-
-                        @Override
-                        public void applyEditorValue() {
-                            Object propertyValue = elem.getPropertyValue("DRIVER_JAR_IMPLICIT_CONTEXT");
-                            Command cmd = new PropertyChangeCommand(elem, "DRIVER_JAR_IMPLICIT_CONTEXT", propertyValue);
-                            executeCommand(cmd);
-                        }
-
-                        @Override
-                        public void cancelEditor() {
-
-                        }
-                    });
+                    }
                 }
+
             }
 
         }
