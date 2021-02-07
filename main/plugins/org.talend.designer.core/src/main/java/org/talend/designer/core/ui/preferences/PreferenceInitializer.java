@@ -175,6 +175,8 @@ public class PreferenceInitializer extends AbstractPreferenceInitializer {
         store.setDefault(ITalendCorePrefConstants.NEXUS_TIMEOUT, 20000);
         store.setDefault(ITalendCorePrefConstants.NEXUS_REFRESH_FREQUENCY, 0);
 
+        store.setDefault(ITalendCorePrefConstants.NEXUS_SHARE_LIBS, true);
+
         if (!CommonUIPlugin.isFullyHeadless()) {
             Display display = Display.getDefault();
             if (display == null) {
