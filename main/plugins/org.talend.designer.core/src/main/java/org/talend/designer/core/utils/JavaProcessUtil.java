@@ -26,6 +26,9 @@ import java.util.StringTokenizer;
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.emf.common.util.EList;
+import org.talend.commons.exception.ExceptionHandler;
+import org.talend.commons.runtime.service.ITaCoKitService;
 import org.talend.core.CorePlugin;
 import org.talend.core.hadoop.IHadoopClusterService;
 import org.talend.core.hadoop.repository.HadoopRepositoryUtil;
@@ -49,6 +52,7 @@ import org.talend.core.utils.BitwiseOptionUtils;
 import org.talend.designer.core.IDesignerCoreService;
 import org.talend.designer.core.model.components.EParameterName;
 import org.talend.designer.core.model.components.EmfComponent;
+import org.talend.designer.core.model.utils.emf.talendfile.impl.ElementParameterTypeImpl;
 import org.talend.designer.runprocess.ItemCacheManager;
 import org.talend.librariesmanager.model.ModulesNeededProvider;
 
@@ -522,9 +526,9 @@ public class JavaProcessUtil {
             if (value != null && value instanceof List) {
                 List list = (List) value;
                 boolean updateCustomMavenUri = false;
-                for (int i = 0; i < list.size(); i++) {
-                    if (list.get(i) instanceof HashMap) {
-                        HashMap map = (HashMap) list.get(i); // JAR_NAME
+                for (Object element : list) {
+                    if (element instanceof HashMap) {
+                        HashMap map = (HashMap) element; // JAR_NAME
                         Object object = null;
                         if (name.equals("DRIVER_JAR")) { //$NON-NLS-1$
                             object = map.get("JAR_NAME"); //$NON-NLS-1$
@@ -771,5 +775,29 @@ public class JavaProcessUtil {
         }
         module.getExtraAttributes().put("IS_OSGI_EXCLUDED", "true");
         return module;
+    }
+
+    public static boolean needMigration(String componentName, EList parameters) {
+        if (parameters != null) {
+            Map<String, String> properties = new HashMap<>();
+            for (final Object elem : parameters) {
+                ElementParameterTypeImpl parameter = (ElementParameterTypeImpl) elem;
+                if (EParameterFieldType.TECHNICAL.name().equals(parameter.getField())
+                        && parameter.getName().endsWith(".__version")) { //$NON-NLS-1$
+                    properties.put(parameter.getName(), parameter.getValue());
+                }
+            }
+            if (properties.size() > 0) {
+                try {
+                    ITaCoKitService tacokitService = ITaCoKitService.getInstance();
+                    if (tacokitService != null) {
+                        return tacokitService.isNeedMigration(componentName, properties);
+                    }
+                } catch (Exception e) {
+                    ExceptionHandler.process(e);
+                }
+            }
+        }
+        return false;
     }
 }

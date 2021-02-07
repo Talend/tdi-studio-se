@@ -51,6 +51,7 @@ import org.talend.core.model.process.INode;
 import org.talend.core.model.process.INodeConnector;
 import org.talend.core.model.process.INodeReturn;
 import org.talend.core.model.process.IProcess;
+import org.talend.core.model.properties.ProcessItem;
 import org.talend.core.model.temp.ECodePart;
 import org.talend.core.runtime.IAdditionalInfo;
 import org.talend.core.runtime.maven.MavenConstants;
@@ -58,6 +59,7 @@ import org.talend.core.runtime.util.ComponentReturnVariableUtils;
 import org.talend.designer.core.model.components.AbstractBasicComponent;
 import org.talend.designer.core.model.components.NodeReturn;
 import org.talend.designer.core.model.process.DataNode;
+import org.talend.designer.runprocess.ItemCacheManager;
 import org.talend.sdk.component.server.front.model.ActionReference;
 import org.talend.sdk.component.server.front.model.ComponentDetail;
 import org.talend.sdk.component.server.front.model.ComponentId;
@@ -65,6 +67,7 @@ import org.talend.sdk.component.server.front.model.ComponentIndex;
 import org.talend.sdk.component.server.front.model.ConfigTypeNodes;
 import org.talend.sdk.component.server.front.model.SimplePropertyDefinition;
 import org.talend.sdk.component.studio.enums.ETaCoKitComponentType;
+import org.talend.sdk.component.studio.metadata.migration.TaCoKitMigrationManager;
 import org.talend.sdk.component.studio.model.connector.ConnectorCreatorFactory;
 import org.talend.sdk.component.studio.model.connector.TaCoKitNodeConnector;
 import org.talend.sdk.component.studio.model.parameter.ElementParameterCreator;
@@ -106,6 +109,8 @@ public class ComponentModel extends AbstractBasicComponent implements IAdditiona
     private ETaCoKitComponentType tacokitComponentType;
 
     private final ConfigTypeNodes configTypeNodes;
+
+    private final TaCoKitMigrationManager manager = Lookups.taCoKitCache().getMigrationManager();
 
     public ComponentModel(final ComponentIndex component, final ComponentDetail detail, final ConfigTypeNodes configTypeNodes, final ImageDescriptor image32,
             final String reportPath, final boolean isCatcherAvailable) {
@@ -284,8 +289,13 @@ public class ComponentModel extends AbstractBasicComponent implements IAdditiona
      */
     @Override // TODO This is dummy implementation. Correct impl should be added soon
     public List<? extends IElementParameter> createElementParameters(final INode node) {
-        ElementParameterCreator creator =
-                new ElementParameterCreator(this, detail, node, reportPath, isCatcherAvailable);
+        if (isNeedMigration() && node.getProcess() != null) {
+            ProcessItem processItem = ItemCacheManager.getProcessItem(node.getProcess().getId());
+            if (processItem != null) {
+                manager.checkNodeMigration(processItem, getName());
+            }
+        }
+        ElementParameterCreator creator = new ElementParameterCreator(this, detail, node, reportPath, isCatcherAvailable);
         List<IElementParameter> parameters = (List<IElementParameter>) creator.createParameters();
         return parameters;
     }

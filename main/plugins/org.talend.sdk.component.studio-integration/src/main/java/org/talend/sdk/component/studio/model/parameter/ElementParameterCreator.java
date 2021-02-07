@@ -40,7 +40,6 @@ import org.talend.designer.core.model.components.EParameterName;
 import org.talend.designer.core.model.components.ElementParameter;
 import org.talend.sdk.component.server.front.model.ComponentDetail;
 import org.talend.sdk.component.server.front.model.ConfigTypeNode;
-import org.talend.sdk.component.server.front.model.ConfigTypeNodes;
 import org.talend.sdk.component.studio.ComponentModel;
 import org.talend.sdk.component.studio.Lookups;
 import org.talend.sdk.component.studio.model.connector.ConnectorCreatorFactory;
@@ -111,31 +110,11 @@ public class ElementParameterCreator {
             // create config type version param
             properties.stream().filter(p -> p.getConfigurationType() != null && p.getConfigurationTypeName() != null)
                     .forEach(p -> parameters.add(new VersionParameter(node, p.getPath(),
-                            String.valueOf(getConfigTypeVersion(p, component.getConfigTypeNodes(), component.getId().getFamilyId())))));
+                            String.valueOf(TaCoKitUtil.getConfigTypeVersion(p, component.getConfigTypeNodes(),
+                                    component.getId().getFamilyId())))));
         }
 
         checkSchemaProperties(new SettingVisitor(node, updateComponentsParameter, detail).withCategory(BASIC));
-    }
-
-    public static int getConfigTypeVersion(final PropertyDefinitionDecorator p, final ConfigTypeNodes configTypeNodes, final String familyId) {
-        final String type = p.getMetadata().get("configurationtype::type");
-        final String name = p.getMetadata().get("configurationtype::name");
-        return configTypeNodes.getNodes().values().stream()
-                .filter(c -> c.getConfigurationType() != null && c.getName() != null)
-                .filter(c -> c.getConfigurationType().equals(type) && c.getName().equals(name))
-                .filter(c -> familyId.equals(getPropertyFamilyId(c, configTypeNodes)))
-                .findFirst().map(ConfigTypeNode::getVersion).orElse(-1);
-    }
-
-    private static String getPropertyFamilyId(final ConfigTypeNode it, final ConfigTypeNodes nodes) {
-        if (it.getParentId() == null) {
-            return null;
-        }
-        String parent = it.getParentId();
-        while (nodes.getNodes().get(parent) != null && nodes.getNodes().get(parent).getParentId() != null) {
-            parent = nodes.getNodes().get(parent).getParentId();
-        }
-        return parent;
     }
 
     private void addLayoutParameter(final PropertyNode root, final String form) {

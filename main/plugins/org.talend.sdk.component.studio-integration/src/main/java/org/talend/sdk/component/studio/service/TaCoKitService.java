@@ -13,11 +13,19 @@
 package org.talend.sdk.component.studio.service;
 
 import java.io.File;
+import java.util.Collection;
+import java.util.Map;
+import java.util.Optional;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.talend.commons.runtime.service.ITaCoKitService;
+import org.talend.sdk.component.server.front.model.ComponentDetail;
 import org.talend.sdk.component.studio.Lookups;
+import org.talend.sdk.component.studio.metadata.TaCoKitCache;
+import org.talend.sdk.component.studio.model.parameter.PropertyDefinitionDecorator;
+import org.talend.sdk.component.studio.model.parameter.VersionParameter;
 import org.talend.sdk.component.studio.toolbar.ReloadAction;
+import org.talend.sdk.component.studio.util.TaCoKitUtil;
 import org.talend.updates.runtime.service.ITaCoKitUpdateService;
 
 
@@ -29,13 +37,30 @@ public class TaCoKitService implements ITaCoKitService {
     }
 
     @Override
-    public void checkMigration(IProgressMonitor monitor) throws Exception {
-        Lookups.taCoKitCache().getMigrationManager().checkMigration(monitor);
-    }
-
-    @Override
     public boolean isTaCoKitCar(File file, IProgressMonitor monitor) throws Exception {
         return ITaCoKitUpdateService.getInstance().isCar(file, monitor);
     }
 
+    @Override
+    public boolean isNeedMigration(String componentName, Map<String, String> persistedProperties) {
+        TaCoKitCache currentCach = Lookups.taCoKitCache();
+        Optional<ComponentDetail> detail = Lookups.service().getDetail(componentName);
+        final Collection<PropertyDefinitionDecorator> properties = PropertyDefinitionDecorator
+                .wrap(detail.get().getProperties());
+        for (String key : persistedProperties.keySet()) {
+            for (PropertyDefinitionDecorator p : properties) {
+                if (p.getConfigurationType() != null && p.getConfigurationTypeName() != null
+                        && (p.getPath() + VersionParameter.VERSION_SUFFIX).equals(key)) {
+                    int currentVersion = TaCoKitUtil.getConfigTypeVersion(p, currentCach.getConfigTypeNodes(),
+                            detail.get().getId().getFamilyId());
+                    int persistedVersion = Integer.parseInt(persistedProperties.get(key));
+                    if (currentVersion > persistedVersion) {
+                        return true;
+                    }
+                    break;
+                }
+            }
+        }
+        return false;
+    }
 }

@@ -66,7 +66,9 @@ public final class TaCoKitNode {
         EList parameters = node.getElementParameter();
         for (final Object elem : parameters) {
             ElementParameterTypeImpl parameter = (ElementParameterTypeImpl) elem;
-            if (!MIGRATION_EXCLUSIONS.contains(parameter.getName()) && (isComponentProperty(parameter.getName()) || parameter.getName().endsWith(VersionParameter.VERSION_SUFFIX))) {
+            if (!MIGRATION_EXCLUSIONS.contains(parameter.getName())
+                    && (!EParameterFieldType.TECHNICAL.name().equals(parameter.getField())
+                            || parameter.getName().endsWith(VersionParameter.VERSION_SUFFIX))) {
                 properties.put(parameter.getName(), parameter.getValue());
             }
         }
@@ -83,15 +85,14 @@ public final class TaCoKitNode {
         node.getElementParameter().clear();
         node.getElementParameter().addAll(noMigration);
         properties.entrySet().stream().filter(e -> isComponentProperty(e.getKey())).forEach(e -> node.getElementParameter().add(createParameter(e.getKey(), e.getValue())));
-        properties.entrySet().stream().filter(e -> e.getKey().endsWith(VersionParameter.VERSION_SUFFIX))
-                .forEach(e -> {
-                    final ElementParameterTypeImpl parameter = new ElementParameter();
-                    parameter.setName(e.getKey());
-                    parameter.setValue(e.getValue());
-                    parameter.setField(EParameterFieldType.TECHNICAL.getName());
-                    parameter.setShow(false);
-                    node.getElementParameter().add(parameter);
-                });
+        properties.entrySet().stream().filter(e -> e.getKey().endsWith(VersionParameter.VERSION_SUFFIX)).forEach(e -> {
+            final ElementParameterTypeImpl parameter = new ElementParameter();
+            parameter.setName(e.getKey());
+            parameter.setValue(e.getValue());
+            parameter.setField(EParameterFieldType.TECHNICAL.getName());
+            parameter.setShow(false);
+            node.getElementParameter().add(parameter);
+        });
         node.setComponentVersion(Integer.toString(detail.getVersion()));
     }
 
