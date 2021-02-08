@@ -646,7 +646,9 @@
         if (inOSGi) {
             java.util.Dictionary<String, Object> jobProperties = routines.system.BundleUtils.getJobProperties(jobName);
 
-            contextStr = (String)jobProperties.get("context");
+            if (jobProperties != null) {
+                contextStr = (String)jobProperties.get("context");
+            }
         }
 
         try {
