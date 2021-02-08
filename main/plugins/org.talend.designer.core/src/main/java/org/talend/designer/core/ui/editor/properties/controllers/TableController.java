@@ -57,6 +57,7 @@ import org.talend.core.model.process.IElement;
 import org.talend.core.model.process.IElementParameter;
 import org.talend.core.model.properties.ProcessItem;
 import org.talend.core.model.utils.TalendTextUtils;
+import org.talend.core.ui.metadata.celleditor.ModuleListCellEditor;
 import org.talend.core.ui.properties.tab.IDynamicProperty;
 import org.talend.designer.core.IDesignerCoreService;
 import org.talend.designer.core.model.FakeElement;
@@ -67,6 +68,8 @@ import org.talend.designer.core.ui.editor.nodes.Node;
 import org.talend.designer.core.ui.editor.properties.macrowidgets.tableeditor.PropertiesTableEditorModel;
 import org.talend.designer.core.ui.editor.properties.macrowidgets.tableeditor.PropertiesTableEditorView;
 import org.talend.designer.core.ui.editor.properties.macrowidgets.tableeditor.PropertiesTableToolbarEditorView;
+import org.talend.designer.core.ui.projectsetting.ImplicitContextLoadElement;
+import org.talend.designer.core.ui.projectsetting.StatsAndLogsElement;
 import org.talend.designer.runprocess.ItemCacheManager;
 
 /**
@@ -131,20 +134,42 @@ public class TableController extends AbstractElementPropertySectionController {
                 CellEditor[] cellEditors = tableViewer.getCellEditors();
                 if (cellEditors != null && cellEditors.length > 0) {
                     for (CellEditor c : cellEditors) {
-                        if (c != null) {
+                        if (c instanceof ModuleListCellEditor) {
+
+                            IElementParameter moduleParam = ((ModuleListCellEditor) c).getParam();
+                            if (moduleParam == null) {
+                                continue;
+                            }
+                            EParameterFieldType fieldType = moduleParam.getFieldType();
+                            if (EParameterFieldType.MODULE_LIST != fieldType) {
+                                continue;
+                            }
+
                             c.addListener(new ICellEditorListener() {
 
                                 @Override
                                 public void editorValueChanged(boolean oldValidState, boolean newValidState) {
                                 }
 
+
                                 @Override
                                 public void applyEditorValue() {
-                                    if (elem != null) {
+                                    if (elem instanceof ImplicitContextLoadElement) {
                                         Object propertyValue = elem.getPropertyValue("DRIVER_JAR_IMPLICIT_CONTEXT");
                                         if (propertyValue != null) {
                                             Command cmd = new PropertyChangeCommand(elem, "DRIVER_JAR_IMPLICIT_CONTEXT",
                                                     propertyValue);
+
+                                            executeCommand(cmd);
+                                        }
+                                    }
+
+                                    if (elem instanceof StatsAndLogsElement) {
+                                        Object propertyValue = elem.getPropertyValue("DRIVER_JAR");
+                                        if (propertyValue != null) {
+                                            Command cmd = new PropertyChangeCommand(elem, "DRIVER_JAR",
+                                                    propertyValue);
+
                                             executeCommand(cmd);
                                         }
                                     }
