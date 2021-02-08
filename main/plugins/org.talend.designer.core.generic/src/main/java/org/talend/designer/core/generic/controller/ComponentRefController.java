@@ -44,6 +44,7 @@ import org.talend.core.GlobalServiceRegister;
 import org.talend.core.model.process.EParameterFieldType;
 import org.talend.core.model.process.IElementParameter;
 import org.talend.core.model.process.INode;
+import org.talend.core.model.process.IProcess;
 import org.talend.core.model.process.IReplaceNodeHandler;
 import org.talend.core.model.utils.TalendTextUtils;
 import org.talend.core.runtime.services.IGenericWizardService;
@@ -389,7 +390,14 @@ public class ComponentRefController extends AbstractElementPropertySectionContro
                     }
                 }
 
-                refNodes = (List<INode>) node.getProcess().getNodesOfType(referenceComponentName);
+                INode jobletNode = node.getJobletNode();
+                if(jobletNode != null) {
+                    Node _jobletNode = (Node) jobletNode; 
+                    IProcess jobletProcess = _jobletNode.getComponent().getProcess();
+                    refNodes = (List<INode>) jobletProcess.getNodesOfType(referenceComponentName);
+                } else {
+                    refNodes = (List<INode>) node.getProcess().getNodesOfType(referenceComponentName);
+                }
             }
         }
         return refNodes;
