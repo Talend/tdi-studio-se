@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.gef.commands.Command;
@@ -44,7 +45,6 @@ import org.talend.core.GlobalServiceRegister;
 import org.talend.core.model.process.EParameterFieldType;
 import org.talend.core.model.process.IElementParameter;
 import org.talend.core.model.process.INode;
-import org.talend.core.model.process.IProcess;
 import org.talend.core.model.process.IReplaceNodeHandler;
 import org.talend.core.model.utils.TalendTextUtils;
 import org.talend.core.runtime.services.IGenericWizardService;
@@ -390,13 +390,11 @@ public class ComponentRefController extends AbstractElementPropertySectionContro
                     }
                 }
 
-                INode jobletNode = node.getJobletNode();
-                if(jobletNode != null) {
-                    Node _jobletNode = (Node) jobletNode; 
-                    IProcess jobletProcess = _jobletNode.getComponent().getProcess();
-                    refNodes = (List<INode>) jobletProcess.getNodesOfType(referenceComponentName);
-                } else {
-                    refNodes = (List<INode>) node.getProcess().getNodesOfType(referenceComponentName);
+                refNodes = (List<INode>) node.getProcess().getNodesOfType(referenceComponentName);
+                if(node.getJobletNode() != null) {
+                    List<? extends INode> graphicalNodes = node.getProcess().getGraphicalNodes();
+                    List<String> nodeUniqueNames = graphicalNodes.stream().map(inode->inode.getUniqueName()).collect(Collectors.toList());
+                    refNodes = refNodes.stream().filter(inode->!nodeUniqueNames.contains(inode.getUniqueName())).collect(Collectors.toList());
                 }
             }
         }
