@@ -420,4 +420,12 @@ public class JobSettingsManagerTest {
         result = JobSettingsManager.FileSeparator.addMarkWithChar(testStr, "*", "\\", false);
         Assert.assertEquals(expect, result);
     }
+
+    // \t case
+    @Test
+    public void testSimpleCase() {
+        String separator = QUOTE_MARK + "\\t" + QUOTE_MARK;
+        Assert.assertEquals("\"\\t\"", JobSettingsManager.FileSeparator.doRegexpQuote(separator));
+
+    }
 }
