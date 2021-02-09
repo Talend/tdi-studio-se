@@ -14,11 +14,8 @@ package org.talend.designer.runprocess.maven.listener;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Set;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.runtime.NullProgressMonitor;
@@ -30,8 +27,6 @@ import org.talend.core.model.properties.Item;
 import org.talend.core.model.properties.Property;
 import org.talend.core.model.properties.RoutineItem;
 import org.talend.core.model.properties.RoutinesJarItem;
-import org.talend.core.model.relationship.Relation;
-import org.talend.core.model.relationship.RelationshipItemBuilder;
 import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.core.model.repository.IRepositoryViewObject;
 import org.talend.core.model.routines.CodesJarInfo;
@@ -39,9 +34,6 @@ import org.talend.core.model.routines.RoutinesUtil;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
 import org.talend.core.runtime.process.ITalendProcessJavaProject;
 import org.talend.core.utils.CodesJarResourceCache;
-import org.talend.designer.codegen.ICodeGeneratorService;
-import org.talend.designer.codegen.ITalendSynchronizer;
-import org.talend.designer.core.model.utils.emf.talendfile.RoutinesParameterType;
 import org.talend.designer.maven.tools.AggregatorPomsHelper;
 import org.talend.designer.maven.tools.CodesJarM2CacheManager;
 import org.talend.designer.maven.utils.CodesJarMavenUtil;
@@ -88,10 +80,7 @@ public class CodesJarChangeListener implements PropertyChangeListener {
     private void casePropertiesChange(Object oldValue, Object newValue) throws Exception {
         if (oldValue instanceof String[] && newValue instanceof Property) {
             Property property = (Property) newValue;
-            if (RoutinesUtil.isInnerCodes(property)) {
-                updateAndReSyncForInnerCode(property, ((String[]) oldValue)[0]);
-                return;
-            } else if (!needUpdate(property.getItem())) {
+            if (!needUpdate(property.getItem())) {
                 return;
             }
             String[] oldFields = (String[]) oldValue;
@@ -113,7 +102,7 @@ public class CodesJarChangeListener implements PropertyChangeListener {
             Property property = ((IRepositoryViewObject) newValue).getProperty();
             if (propertyName.equals(ERepositoryActionName.DELETE_FOREVER.getName())) {
                 if (RoutinesUtil.isInnerCodes(property)) {
-                    updateAndReSyncForInnerCode(property, property.getLabel());
+                    updateAndReSyncForInnerCode(property);
                 } else if (needUpdate(property.getItem())) {
                     CodesJarResourceCache.removeCache(property);
                     TalendJavaProjectManager.deleteTalendCodesJarProject(property, true);
@@ -152,7 +141,7 @@ public class CodesJarChangeListener implements PropertyChangeListener {
         return item instanceof RoutinesJarItem;
     }
 
-    private void updateAndReSyncForInnerCode(Property property, String originalName) throws Exception {
+    private void updateAndReSyncForInnerCode(Property property) throws Exception {
         if (!RoutinesUtil.isInnerCodes(property)) {
             return;
         }
@@ -168,7 +157,7 @@ public class CodesJarChangeListener implements PropertyChangeListener {
                 }
                 IFolder routineFolder = talendCodesJarJavaProject.getSrcSubFolder(null,
                         CodesJarMavenUtil.getCodesJarPackageByInnerCode(codeItem));
-                IFile originalRoutineFile = routineFolder.getFile(originalName + JavaUtils.JAVA_EXTENSION);
+                IFile originalRoutineFile = routineFolder.getFile(property.getLabel() + JavaUtils.JAVA_EXTENSION);
                 if (originalRoutineFile == null || !originalRoutineFile.exists()) {
                     return;
                 }
@@ -176,74 +165,9 @@ public class CodesJarChangeListener implements PropertyChangeListener {
             }
         }
 
-        if (!property.getLabel().equals(originalName)) {
-            if (GlobalServiceRegister.getDefault().isServiceRegistered(ICodeGeneratorService.class)) {
-                ICodeGeneratorService codeGenService = (ICodeGeneratorService) GlobalServiceRegister.getDefault()
-                        .getService(ICodeGeneratorService.class);
-                ITalendSynchronizer routineSynchronizer = codeGenService.createRoutineSynchronizer();
-                routineSynchronizer.syncRoutine(codeItem, true, true);
-            }
-        }
         if (info.getProperty() != null) {
             CodesJarM2CacheManager.updateCodesJarProject(info.getProperty());
         }
 
     }
-
-    public static void updateItemsRelatedToCodeJars(Property property, ERepositoryObjectType objectType, String actionType) {
-        if (!ERepositoryObjectType.getAllTypesOfCodesJar().contains(objectType)) {
-            return;
-        }
-        RelationshipItemBuilder relationshipItemBuilder = RelationshipItemBuilder.getInstance();
-        ProxyRepositoryFactory repositoryFactory = ProxyRepositoryFactory.getInstance();
-        String relationType = null;
-        if (ERepositoryObjectType.ROUTINESJAR != null && ERepositoryObjectType.ROUTINESJAR.equals(objectType)) {
-            relationType = relationshipItemBuilder.ROUTINES_JAR_RELATION;
-        } else if (ERepositoryObjectType.BEANSJAR != null && ERepositoryObjectType.BEANSJAR.equals(objectType)) {
-            relationType = relationshipItemBuilder.BEANS_JAR_RELATION;
-        }
-        if (StringUtils.isBlank(relationType)) {
-            return;
-        }
-        List<Relation> relationList = relationshipItemBuilder.getAllVersionItemsRelatedTo(property.getId(), relationType, false);
-        try {
-            for (Relation relation : relationList) {
-                IRepositoryViewObject relatedObj = repositoryFactory.getSpecificVersion(relation.getId(), relation.getVersion(),
-                        true);
-                if (relatedObj == null) {
-                    continue;
-                }
-                boolean modified = false;
-                Item item = relatedObj.getProperty().getItem();
-                List<RoutinesParameterType> routinesParametersFromItem = RoutinesUtil.getRoutinesParametersFromItem(item);
-
-                if (ERepositoryActionName.DELETE_FOREVER.getName().equals(actionType)) {
-                    Iterator<RoutinesParameterType> iterator = routinesParametersFromItem.iterator();
-                    while (iterator.hasNext()) {
-                        RoutinesParameterType routinesParam = iterator.next();
-                        if (StringUtils.isNotBlank(routinesParam.getType()) && routinesParam.getId().equals(property.getId())) {
-                            iterator.remove();
-                            modified = true;
-                        }
-                    }
-                    RelationshipItemBuilder.getInstance().addOrUpdateItem(item);
-                } else if (ERepositoryActionName.PROPERTIES_CHANGE.getName().equals(actionType)) {
-                    for (RoutinesParameterType param : routinesParametersFromItem) {
-                        if (StringUtils.isNotBlank(param.getType()) && param.getId().equals(property.getId())
-                                && !param.getName().equals(property.getLabel())) {
-                            param.setName(property.getLabel());
-                            modified = true;
-                        }
-                    }
-                }
-
-                if (modified) {
-                    repositoryFactory.save(item);
-                }
-            }
-        } catch (Exception e) {
-            ExceptionHandler.process(e);
-        }
-    }
-
 }

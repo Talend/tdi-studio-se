@@ -61,17 +61,22 @@ import org.talend.core.model.properties.ByteArray;
 import org.talend.core.model.properties.ConnectionItem;
 import org.talend.core.model.properties.Item;
 import org.talend.core.model.properties.JobScriptItem;
+import org.talend.core.model.properties.Property;
 import org.talend.core.model.properties.RoutineItem;
 import org.talend.core.model.properties.SQLPatternItem;
 import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.core.model.repository.IRepositoryViewObject;
 import org.talend.core.model.repository.RepositoryManager;
+import org.talend.core.model.routines.CodesJarInfo;
+import org.talend.core.model.routines.RoutinesUtil;
 import org.talend.core.model.update.RepositoryUpdateManager;
 import org.talend.core.repository.ui.editor.RepositoryEditorInput;
 import org.talend.core.runtime.process.ITalendProcessJavaProject;
 import org.talend.core.services.IUIRefresher;
+import org.talend.core.utils.CodesJarResourceCache;
 import org.talend.designer.core.ICamelDesignerCoreService;
 import org.talend.designer.core.IDesignerCoreService;
+import org.talend.designer.maven.utils.CodesJarMavenUtil;
 import org.talend.designer.runprocess.IRunProcessService;
 import org.talend.metadata.managment.ui.wizard.PropertiesWizard;
 import org.talend.metadata.managment.ui.wizard.process.EditProcessPropertiesWizard;
@@ -218,7 +223,15 @@ public class EditPropertiesAction extends AContextualAction {
     protected void processRename(IRepositoryNode node, String originalName) {
         try {
             IRunProcessService runProcessService = CorePlugin.getDefault().getRunProcessService();
-            ITalendProcessJavaProject talendProcessJavaProject = runProcessService.getTalendCodeJavaProject(node.getObjectType());
+            ITalendProcessJavaProject talendProcessJavaProject = null;
+            Property property = node.getObject().getProperty();
+            boolean isInnerCode = RoutinesUtil.isInnerCodes(property);
+            if (isInnerCode) {
+                CodesJarInfo info = CodesJarResourceCache.getCodesJarByInnerCode((RoutineItem) property.getItem());
+                talendProcessJavaProject = runProcessService.getTalendCodesJarJavaProject(info);
+            } else {
+                talendProcessJavaProject = runProcessService.getTalendCodeJavaProject(node.getObjectType());
+            }
             if (talendProcessJavaProject == null) {
                 return;
             }
@@ -226,13 +239,15 @@ public class EditPropertiesAction extends AContextualAction {
             IFolder srcFolder = talendProcessJavaProject.getSrcFolder();
             IPackageFragmentRoot root = talendProcessJavaProject.getJavaProject().getPackageFragmentRoot(srcFolder);
 
-            // add for bug TDI-24379 on August 23, 2013.
-            IFolder srcInterFolder = srcFolder.getFolder(JavaUtils.JAVA_INTERNAL_DIRECTORY);
-            if (srcInterFolder.exists()) {
-                File file = new File(srcInterFolder.getLocationURI());
-                for (File f : file.listFiles()) {
-                    if (f.isFile()) {
-                        f.delete();
+            if (!isInnerCode) {
+                // add for bug TDI-24379 on August 23, 2013.
+                IFolder srcInterFolder = srcFolder.getFolder(JavaUtils.JAVA_INTERNAL_DIRECTORY);
+                if (srcInterFolder.exists()) {
+                    File file = new File(srcInterFolder.getLocationURI());
+                    for (File f : file.listFiles()) {
+                        if (f.isFile()) {
+                            f.delete();
+                        }
                     }
                 }
             }
@@ -299,6 +314,9 @@ public class EditPropertiesAction extends AContextualAction {
             }
             RoutineItem item = (RoutineItem) node.getObject().getProperty().getItem();
             IFile javaFile = (IFile) newUnit.getAdapter(IResource.class);
+            if (javaFile == null || !javaFile.exists()) {
+                return;
+            }
             try {
                 ByteArray byteArray = item.getContent();
                 byteArray.setInnerContentFromFile(javaFile);
@@ -317,8 +335,14 @@ public class EditPropertiesAction extends AContextualAction {
     }
 
     protected IPackageFragment getPackageFragment(IPackageFragmentRoot root, IRepositoryNode node) {
-        String folder = node.getContentType().getFolder();
-        String packageName = Path.fromOSString(folder).lastSegment();
+        String packageName = null;
+        Property property = node.getObject().getProperty();
+        if (RoutinesUtil.isInnerCodes(property)) {
+            packageName = CodesJarMavenUtil.getCodesJarPackageByInnerCode((RoutineItem) property.getItem());
+        } else {
+            String folder = node.getContentType().getFolder();
+            packageName = Path.fromOSString(folder).lastSegment();
+        }
         return root.getPackageFragment(packageName);
     }
 
