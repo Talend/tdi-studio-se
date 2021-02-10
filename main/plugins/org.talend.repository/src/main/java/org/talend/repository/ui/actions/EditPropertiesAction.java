@@ -14,7 +14,9 @@ package org.talend.repository.ui.actions;
 
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
+import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IResource;
@@ -64,6 +66,8 @@ import org.talend.core.model.properties.JobScriptItem;
 import org.talend.core.model.properties.Property;
 import org.talend.core.model.properties.RoutineItem;
 import org.talend.core.model.properties.SQLPatternItem;
+import org.talend.core.model.relationship.Relation;
+import org.talend.core.model.relationship.RelationshipItemBuilder;
 import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.core.model.repository.IRepositoryViewObject;
 import org.talend.core.model.repository.RepositoryManager;
@@ -171,6 +175,27 @@ public class EditPropertiesAction extends AContextualAction {
                     IESBService service = (IESBService) GlobalServiceRegister.getDefault().getService(IESBService.class);
                     if (service != null) {
                         service.refreshComponentView(connectionItem);
+                    }
+                }
+            }
+
+            // warn re-generate all pom after codejar rename
+            ERepositoryObjectType objectType = node.getObjectType();
+            if (!originalName.equals(object.getProperty().getLabel())
+                    && ERepositoryObjectType.getAllTypesOfCodesJar().contains(objectType)) {
+                String relationType = null;
+                if (ERepositoryObjectType.ROUTINESJAR != null && ERepositoryObjectType.ROUTINESJAR.equals(objectType)) {
+                    relationType = RelationshipItemBuilder.ROUTINES_JAR_RELATION;
+                } else if (ERepositoryObjectType.BEANSJAR != null && ERepositoryObjectType.BEANSJAR.equals(objectType)) {
+                    relationType = RelationshipItemBuilder.BEANS_JAR_RELATION;
+                }
+                if (StringUtils.isNotBlank(relationType)) {
+                    List<Relation> itemsRelatedTo = RelationshipItemBuilder.getInstance()
+                            .getAllVersionItemsRelatedTo(object.getProperty().getId(), relationType, true);
+                    if (!itemsRelatedTo.isEmpty()) {
+                        MessageDialog.openWarning(Display.getCurrent().getActiveShell(),
+                                Messages.getString("EditPropertiesAction.warning"), //$NON-NLS-1$
+                                Messages.getString("EditPropertiesAction.warnToReGenerateAllPom")); //$NON-NLS-1$
                     }
                 }
             }
