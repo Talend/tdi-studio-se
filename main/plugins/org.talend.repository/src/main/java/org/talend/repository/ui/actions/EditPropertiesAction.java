@@ -80,6 +80,7 @@ import org.talend.core.services.IUIRefresher;
 import org.talend.core.utils.CodesJarResourceCache;
 import org.talend.designer.core.ICamelDesignerCoreService;
 import org.talend.designer.core.IDesignerCoreService;
+import org.talend.designer.maven.tools.CodesJarM2CacheManager;
 import org.talend.designer.maven.utils.CodesJarMavenUtil;
 import org.talend.designer.runprocess.IRunProcessService;
 import org.talend.metadata.managment.ui.wizard.PropertiesWizard;
@@ -251,9 +252,10 @@ public class EditPropertiesAction extends AContextualAction {
             ITalendProcessJavaProject talendProcessJavaProject = null;
             Property property = node.getObject().getProperty();
             boolean isInnerCode = RoutinesUtil.isInnerCodes(property);
+            CodesJarInfo codeJarinfo = null;
             if (isInnerCode) {
-                CodesJarInfo info = CodesJarResourceCache.getCodesJarByInnerCode((RoutineItem) property.getItem());
-                talendProcessJavaProject = runProcessService.getTalendCodesJarJavaProject(info);
+                codeJarinfo = CodesJarResourceCache.getCodesJarByInnerCode((RoutineItem) property.getItem());
+                talendProcessJavaProject = runProcessService.getTalendCodesJarJavaProject(codeJarinfo);
             } else {
                 talendProcessJavaProject = runProcessService.getTalendCodeJavaProject(node.getObjectType());
             }
@@ -351,6 +353,10 @@ public class EditPropertiesAction extends AContextualAction {
             } catch (Exception e) {
                 // e.printStackTrace();
                 ExceptionHandler.process(e);
+            }
+
+            if (isInnerCode && codeJarinfo != null) {
+                CodesJarM2CacheManager.updateCodesJarProject(codeJarinfo.getProperty());
             }
 
         } catch (Exception e) {
