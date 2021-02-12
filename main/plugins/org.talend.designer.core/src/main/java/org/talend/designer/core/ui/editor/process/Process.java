@@ -1090,17 +1090,17 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
     }
     
     private boolean isDefaultValue(IElementParameter param) {
-    	if (param != null && param.getName().equals(EParameterName.JOB_RUN_VM_ARGUMENTS.getName())) {
-    		if(param.getElement() instanceof Process) {
-    			IElementParameter jvmOptParam = ((Process)param.getElement()).getElementParameter(EParameterName.JOB_RUN_VM_ARGUMENTS_OPTION.getName());
-    			if(jvmOptParam != null && param.isValueSetToDefault() && jvmOptParam.isValueSetToDefault()) {
-    				return true;
-    			}else {
-    				return false;
-    			}
-    		}
+        if (param != null && param.getName().equals(EParameterName.JOB_RUN_VM_ARGUMENTS.getName())) {
+            if(param.getElement() instanceof Process) {
+                IElementParameter jvmOptParam = ((Process)param.getElement()).getElementParameter(EParameterName.JOB_RUN_VM_ARGUMENTS_OPTION.getName());
+                if(jvmOptParam != null && param.isValueSetToDefault() && jvmOptParam.isValueSetToDefault()) {
+                    return true;
+                }else {
+                    return false;
+                }
+            }
         }
-    	return param.isValueSetToDefault();
+        return param.isValueSetToDefault();
     }
 
     private void saveElementParameter(IElementParameter param, ProcessType process, TalendFileFactory fileFact,
@@ -1115,7 +1115,7 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
             }
         }
         if (isDefaultValue(param)) {
-        	return;
+            return;
         }
 
         if (param.getFieldType().equals(EParameterFieldType.SCHEMA_TYPE)
@@ -4938,4 +4938,8 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
         return this.generatingProcess;
     }
 
+    @Override
+    public INode getNodeByUniqueName(String uniqueName) {
+        return getGeneratingNodes().stream().filter(n -> n.getUniqueName().equals(uniqueName)).findAny().orElse(null);
+    }
 }
