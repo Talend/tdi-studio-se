@@ -899,4 +899,10 @@ public class FileinToDelimitedProcess<K extends FileInputNode> extends Repositor
         // TODO Auto-generated method stub
         return null;
     }
+
+    @Override
+    public INode getNodeByUniqueName(String uniqueName) {
+        // TODO Auto-generated method stub
+        return null;
+    }
 }
