@@ -48,6 +48,7 @@ if ("http".equals(protocol) || "https".equals(protocol)) {
 	boolean addHeader = "true".equals(ElementParameterParser.getValue(node, "__ADD_HEADER__"));
 	boolean encodeURI = "true".equals(ElementParameterParser.getValue(node, "__ENCODE_URI__"));
 	boolean trustAll = "true".equals(ElementParameterParser.getValue(node, "__TRUST_ALL_SERVER__"));
+	String paramsEncoding = ElementParameterParser.getValue(node, "__ENCODE_PARAMS__");
 %>	
 	java.net.URI uriToFetch_<%=cid %> = null;
 	try {
@@ -329,7 +330,7 @@ if ("http".equals(protocol) || "https".equals(protocol)) {
 			String value = param.get("COMMON_PARAMS_VALUE");
 			varPartList.add("common_" + i + "_" + cid);
 			%>
-			org.apache.commons.httpclient.methods.multipart.StringPart common_<%=i%>_<%=cid%> = new org.apache.commons.httpclient.methods.multipart.StringPart(<%=name %>, <%=value %>);
+			org.apache.commons.httpclient.methods.multipart.StringPart common_<%=i%>_<%=cid%> = new org.apache.commons.httpclient.methods.multipart.StringPart(<%=name %>, <%=value %>, <%=paramsEncoding%>);
 			<%
 		}
 
