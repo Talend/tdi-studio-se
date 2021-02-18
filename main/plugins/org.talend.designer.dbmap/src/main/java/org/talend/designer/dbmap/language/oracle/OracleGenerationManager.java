@@ -140,7 +140,8 @@ public class OracleGenerationManager extends DbGenerationManager {
                     if (expression != null && expression.trim().length() > 0) {
                         String exp = replaceVariablesForExpression(component, expression);
                         appendSqlQuery(sb, exp);
-                        if (!added && isUseAliasInOutputTable()) {
+                        boolean needAlias = needAlias(columns, dbMapEntry, expression);
+                        if (!added && needAlias && isUseAliasInOutputTable()) {
                             String name = DbMapSqlConstants.SPACE + DbMapSqlConstants.AS + DbMapSqlConstants.SPACE
                                     + getAliasOf(dbMapEntry.getName());
                             appendSqlQuery(sb, name);
