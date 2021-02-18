@@ -23,6 +23,7 @@ import org.eclipse.ltk.core.refactoring.resource.RenameResourceChange;
 import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.utils.generation.JavaUtils;
 import org.talend.core.GlobalServiceRegister;
+import org.talend.core.model.general.Project;
 import org.talend.core.model.properties.Item;
 import org.talend.core.model.properties.Property;
 import org.talend.core.model.properties.RoutineItem;
@@ -32,6 +33,7 @@ import org.talend.core.model.repository.IRepositoryViewObject;
 import org.talend.core.model.routines.CodesJarInfo;
 import org.talend.core.model.routines.RoutinesUtil;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
+import org.talend.core.repository.utils.XmiResourceManager;
 import org.talend.core.runtime.process.ITalendProcessJavaProject;
 import org.talend.core.utils.CodesJarResourceCache;
 import org.talend.designer.maven.tools.AggregatorPomsHelper;
@@ -103,6 +105,7 @@ public class CodesJarChangeListener implements PropertyChangeListener {
             if (propertyName.equals(ERepositoryActionName.DELETE_FOREVER.getName())) {
                 if (RoutinesUtil.isInnerCodes(property)) {
                     updateAndReSyncForInnerCode(property);
+                    updateModifiedDateForCodesJar(property.getItem());
                 } else if (needUpdate(property.getItem())) {
                     CodesJarResourceCache.removeCache(property);
                     TalendJavaProjectManager.deleteTalendCodesJarProject(property, true);
@@ -116,6 +119,8 @@ public class CodesJarChangeListener implements PropertyChangeListener {
             Item item = (Item) newValue;
             if (needUpdate(item)) {
                 CodesJarResourceCache.addToCache(item.getProperty());
+            } else if (RoutinesUtil.isInnerCodes(item.getProperty())) {
+                updateModifiedDateForCodesJar(item);
             }
         }
     }
@@ -128,11 +133,14 @@ public class CodesJarChangeListener implements PropertyChangeListener {
         }
     }
 
-    private void caseRestore(Object newValue) {
+    private void caseRestore(Object newValue) throws Exception {
         if (newValue instanceof IRepositoryViewObject) {
             IRepositoryViewObject object = (IRepositoryViewObject) newValue;
-            if (needUpdate(object.getProperty().getItem())) {
-                CodesJarResourceCache.addToCache(object.getProperty());
+            Property property = object.getProperty();
+            if (needUpdate(property.getItem())) {
+                CodesJarResourceCache.addToCache(property);
+            } else if (RoutinesUtil.isInnerCodes(property)) {
+                updateModifiedDateForCodesJar(property.getItem());
             }
         }
     }
@@ -170,4 +178,16 @@ public class CodesJarChangeListener implements PropertyChangeListener {
         }
 
     }
+
+    private void updateModifiedDateForCodesJar(Item item) throws Exception {
+        if (item instanceof RoutineItem) {
+            RoutineItem innerCodeItem = (RoutineItem) item;
+            CodesJarInfo info = CodesJarResourceCache.getCodesJarByInnerCode(innerCodeItem);
+            Project project = ProjectManager.getInstance().getProjectFromProjectTechLabel(info.getProjectTechName());
+            IRepositoryViewObject obj = ProxyRepositoryFactory.getInstance().getLastVersion(project, info.getProperty().getId());
+            Property codesJarProperty = obj.getProperty();
+            new XmiResourceManager().saveResource(codesJarProperty.eResource());
+        }
+    }
+
 }

@@ -1869,10 +1869,8 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
             List<String> possibleRoutines = new ArrayList<String>();
             List<String> routinesToAdd = new ArrayList<String>();
             String additionalString = LanguageManager.getCurrentLanguage() == ECodeLanguage.JAVA ? "." : "";
-            List<String> routinesAlreadySetup = new ArrayList<String>();
-            for (RoutinesParameterType routine : routinesDependencies) {
-                routinesAlreadySetup.add(routine.getName());
-            }
+            List<String> routinesAlreadySetup = routinesDependencies.stream().filter(r -> r.getName() != null)
+                    .map(r -> r.getName()).collect(Collectors.toList());
             for (Project project : referenceProjects) {
                 List<IRepositoryViewObject> refRoutines = factory.getAll(project, ERepositoryObjectType.ROUTINES);
                 for (IRepositoryViewObject object : refRoutines) {
@@ -2065,7 +2063,7 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
             for (Object o : process.getParameters().getRoutinesParameter()) {
                 RoutinesParameterType type = (RoutinesParameterType) o;
                 if (StringUtils.equals(type.getId(), routineType.getId())
-                        || StringUtils.equals(type.getName(), routineType.getName())) {
+                        || (type.getName() != null && StringUtils.equals(type.getName(), routineType.getName()))) {
                     found = true;
                     break;
                 }
@@ -2084,7 +2082,8 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
             for (RoutinesParameterType type : routinesParameters) {
                 found = false;
                 for (RoutinesParameterType existedType : routinesDependencies) {
-                    if (type.getId().equals(existedType.getId()) || type.getName().equals(existedType.getName())) {
+                    if (type.getId().equals(existedType.getId())
+                            || (type.getName() != null && type.getName().equals(existedType.getName()))) {
                         found = true;
                         break;
                     }
@@ -4737,7 +4736,9 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
 
         Set<String> listRoutines = new HashSet<String>();
         for (RoutinesParameterType routine : routinesDependencies) {
-            listRoutines.add(routine.getName());
+            if (routine.getName() != null) {
+                listRoutines.add(routine.getName());
+            }
         }
 
         IJobletProviderService jobletService = null;

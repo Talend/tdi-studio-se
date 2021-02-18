@@ -195,7 +195,8 @@ public class SetupProcessDependenciesRoutinesAction extends AContextualAction {
             boolean found = false;
             for (RoutinesParameterType parameter : routinesDependencies) {
                 if (r.getType() == null && parameter.getType() == null) {
-                    if (parameter.getId().equals(r.getId()) || parameter.getName().equals(r.getName())) {
+                    if (parameter.getId().equals(r.getId())
+                            || (parameter.getName() != null && parameter.getName().equals(r.getName()))) {
                         found = true;
                         break;
                     }

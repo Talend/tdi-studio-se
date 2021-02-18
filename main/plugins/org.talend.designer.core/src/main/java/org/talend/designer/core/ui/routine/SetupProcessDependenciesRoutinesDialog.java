@@ -141,7 +141,7 @@ public class SetupProcessDependenciesRoutinesDialog extends Dialog {
                 continue;
             }
             RoutineItemRecord record = new RoutineItemRecord();
-            record.setName(routinesParameter.getName());
+            record.setName(property.getLabel());
             record.setId(property.getId()); // if system, id is not used
             record.setLabel(property.getLabel());
             if (routinesParameter.getType() != null) {
@@ -227,8 +227,7 @@ public class SetupProcessDependenciesRoutinesDialog extends Dialog {
         for (Project p : allRoutinesJarItems.keySet()) {
             for (Property property : allRoutinesJarItems.get(p)) {
                 String objType = ERepositoryObjectType.getItemType(property.getItem()).name();
-                if ((StringUtils.equals(property.getId(), id) || StringUtils.equals(property.getLabel(), name))
-                        && StringUtils.equals(objType, type)) {
+                if (StringUtils.equals(property.getId(), id) && StringUtils.equals(objType, type)) {
                     return property;
                 }
             }
@@ -237,8 +236,7 @@ public class SetupProcessDependenciesRoutinesDialog extends Dialog {
             for (Project p : allBeansJarItems.keySet()) {
                 for (Property property : allBeansJarItems.get(p)) {
                     String objType = ERepositoryObjectType.getItemType(property.getItem()).name();
-                    if ((StringUtils.equals(property.getId(), id) || StringUtils.equals(property.getLabel(), name))
-                            && StringUtils.equals(objType, type)) {
+                    if (StringUtils.equals(property.getId(), id) && StringUtils.equals(objType, type)) {
                         return property;
                     }
                 }
