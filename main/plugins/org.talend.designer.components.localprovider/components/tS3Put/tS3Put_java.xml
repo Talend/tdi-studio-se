@@ -498,7 +498,7 @@
                 <ITEM NAME="WRITE_ACL" FIELD="CHECK"/>
             </ITEMS>
         </PARAMETER>
-        <PARAMETER NAME="CANNED_ACCESS_CONTROL_LIST" FIELD="CLOSED_LIST" NUM_ROW="100" DYNAMIC_SETTINGS="true">
+        <PARAMETER NAME="CANNED_ACCESS_CONTROL_LIST" FIELD="OPENED_LIST" NUM_ROW="100" DYNAMIC_SETTINGS="true">
           <ITEMS DEFAULT="NONE">
         	<ITEM NAME="NONE" VALUE="&quot;NONE&quot;" />
 	        <ITEM NAME="PRIVATE" VALUE="&quot;Private&quot;" />
@@ -508,7 +508,6 @@
 	        <ITEM NAME="AUTHENTICATED_READ" VALUE="&quot;AuthenticatedRead&quot;" />
 	        <ITEM NAME="BUCKET_OWNER_READ" VALUE="&quot;BucketOwnerRead&quot;" />
 	        <ITEM NAME="BUCKET_OWNER_FULL_CONTROL" VALUE="&quot;BucketOwnerFullControl&quot;" />
-	        <ITEM NAME="LOG_DELIVERY_WRITE" VALUE="&quot;LogDeliveryWrite&quot;" />
           </ITEMS>
         </PARAMETER>
     </ADVANCED_PARAMETERS>

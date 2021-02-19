@@ -412,7 +412,6 @@
     	    <ITEM NAME="AUTHENTICATED_READ" VALUE="&quot;AuthenticatedRead&quot;" />
     	    <ITEM NAME="BUCKET_OWNER_READ" VALUE="&quot;BucketOwnerRead&quot;" />
             <ITEM NAME="BUCKET_OWNER_FULL_CONTROL" VALUE="&quot;BucketOwnerFullControl&quot;" />
-    	    <ITEM NAME="LOG_DELIVERY_WRITE" VALUE="&quot;LogDeliveryWrite&quot;" />
     	  </ITEMS>
     	</PARAMETER>
     </ADVANCED_PARAMETERS>
