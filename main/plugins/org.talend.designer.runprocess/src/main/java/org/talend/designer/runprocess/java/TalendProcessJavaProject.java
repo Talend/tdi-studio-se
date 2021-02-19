@@ -14,9 +14,7 @@ package org.talend.designer.runprocess.java;
 
 import java.io.File;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
 import org.eclipse.core.resources.IBuildConfiguration;
 import org.eclipse.core.resources.IContainer;
@@ -375,11 +373,8 @@ public class TalendProcessJavaProject implements ITalendProcessJavaProject {
     @Override
     public void buildWholeCodeProject() {
         try {
-            NullProgressMonitor monitor = new NullProgressMonitor();
-            Set<IBuildConfiguration> configs = new HashSet<>();
-            configs.add(getProject().getActiveBuildConfig());
             ResourcesPlugin.getWorkspace().build(new IBuildConfiguration[] { getProject().getActiveBuildConfig() },
-                    IncrementalProjectBuilder.INCREMENTAL_BUILD, true, monitor);
+                    IncrementalProjectBuilder.INCREMENTAL_BUILD, true, new NullProgressMonitor());
             // IProject project = getProject();
             // if (!project.isSynchronized(IResource.DEPTH_INFINITE)) {
             // project.refreshLocal(IResource.DEPTH_INFINITE, monitor);

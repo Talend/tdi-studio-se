@@ -187,6 +187,7 @@ public class CodesJarChangeListener implements PropertyChangeListener {
             IRepositoryViewObject obj = ProxyRepositoryFactory.getInstance().getLastVersion(project, info.getProperty().getId());
             Property codesJarProperty = obj.getProperty();
             new XmiResourceManager().saveResource(codesJarProperty.eResource());
+            CodesJarResourceCache.addToCache(codesJarProperty);
         }
     }
 

@@ -4726,7 +4726,7 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
         Iterator<RoutinesParameterType> iterator = routinesDependencies.iterator();
         while (iterator.hasNext()) {
             RoutinesParameterType routine = iterator.next();
-            if (StringUtils.isEmpty(routine.getId()) || StringUtils.isEmpty(routine.getName())) {
+            if (StringUtils.isEmpty(routine.getId()) || (routine.getType() == null && StringUtils.isEmpty(routine.getName()))) {
                 iterator.remove();
             }
         }
