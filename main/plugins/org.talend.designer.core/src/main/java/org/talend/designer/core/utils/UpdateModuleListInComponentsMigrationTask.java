@@ -12,6 +12,7 @@
 // ============================================================================
 package org.talend.designer.core.utils;
 
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -22,6 +23,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.eclipse.emf.common.util.EList;
 import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.runtime.model.emf.EmfHelper;
+import org.talend.commons.utils.Hex;
 import org.talend.core.CorePlugin;
 import org.talend.core.model.components.ComponentCategory;
 import org.talend.core.model.components.IComponent;
@@ -331,7 +333,7 @@ public class UpdateModuleListInComponentsMigrationTask extends AbstractItemMigra
                 EList<?> elementValues = param.getElementValue();
                 for (Object ev : elementValues) {
                     ElementValueType evt = (ElementValueType) ev;
-                    String jarUri = getMavenUriForJar(evt.getValue(), ctxs);
+                    String jarUri = getMavenUriForJar(evt.isHexValue(), evt.getValue(), ctxs);
                     if (!StringUtils.equals(jarUri, evt.getValue())) {
                         evt.setValue(jarUri);
                         modified = true;
@@ -386,15 +388,48 @@ public class UpdateModuleListInComponentsMigrationTask extends AbstractItemMigra
     }
 
     public String getMavenUriForJar(String jarName, List ctxs) {
+        return getMavenUriForJar(false, jarName, ctxs);
+    }
+    
+    public String getMavenUriForJar(boolean isHexValue, String jarName, List ctxs) {
         jarName = TalendTextUtils.removeQuotes(jarName);
+        
+        if (isHexValue) {
+            jarName = parseJarNameForHexVaue(jarName);
+        }
+        
         boolean containContext = containContext(jarName, ctxs);
-        if (!StringUtils.isEmpty(jarName) && !MavenUrlHelper.isMvnUrl(jarName) && !containContext) {
+        if (!isHexValue && !StringUtils.isEmpty(jarName) && !MavenUrlHelper.isMvnUrl(jarName) && !containContext) {
             ModuleNeeded mod = new ModuleNeeded(null, jarName, null, true);
             if (!StringUtils.isEmpty(mod.getCustomMavenUri())) {
                 return mod.getCustomMavenUri();
             }
             return mod.getMavenUri();
         }
+        return jarName;
+    }
+
+    protected String parseJarNameForHexVaue(String jarName) {
+        if (!jarName.startsWith(MavenUrlHelper.MVN_PROTOCOL)) {
+            try {
+                byte[] decodeBytes = Hex.decodeHex(jarName.toCharArray());
+                String elemValue = new String(decodeBytes, "UTF-8");
+                if (!elemValue.startsWith(MavenUrlHelper.MVN_PROTOCOL)
+                        && !ContextParameterUtils.isContainContextParam(elemValue)) {
+                    ModuleNeeded mod = new ModuleNeeded(null, elemValue, null, true);
+                    if (!StringUtils.isEmpty(mod.getCustomMavenUri())) {
+                        elemValue = mod.getCustomMavenUri();
+                    } else {
+                        elemValue = mod.getMavenUri();
+                    }
+
+                    jarName = Hex.encodeHexString(elemValue.getBytes());
+                }
+            } catch (UnsupportedEncodingException e) {
+                ExceptionHandler.process(e);
+            }
+        }
+        
         return jarName;
     }
 

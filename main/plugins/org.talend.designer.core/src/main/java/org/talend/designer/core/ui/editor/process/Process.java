@@ -126,6 +126,7 @@ import org.talend.core.repository.model.ProxyRepositoryFactory;
 import org.talend.core.repository.utils.ConvertJobsUtil;
 import org.talend.core.repository.utils.ProjectHelper;
 import org.talend.core.repository.utils.XmiResourceManager;
+import org.talend.core.runtime.maven.MavenUrlHelper;
 import org.talend.core.runtime.process.TalendProcessArgumentConstant;
 import org.talend.core.runtime.repository.item.ItemProductKeys;
 import org.talend.core.runtime.util.ItemDateParser;
@@ -1089,17 +1090,17 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
     }
     
     private boolean isDefaultValue(IElementParameter param) {
-    	if (param != null && param.getName().equals(EParameterName.JOB_RUN_VM_ARGUMENTS.getName())) {
-    		if(param.getElement() instanceof Process) {
-    			IElementParameter jvmOptParam = ((Process)param.getElement()).getElementParameter(EParameterName.JOB_RUN_VM_ARGUMENTS_OPTION.getName());
-    			if(jvmOptParam != null && param.isValueSetToDefault() && jvmOptParam.isValueSetToDefault()) {
-    				return true;
-    			}else {
-    				return false;
-    			}
-    		}
+        if (param != null && param.getName().equals(EParameterName.JOB_RUN_VM_ARGUMENTS.getName())) {
+            if(param.getElement() instanceof Process) {
+                IElementParameter jvmOptParam = ((Process)param.getElement()).getElementParameter(EParameterName.JOB_RUN_VM_ARGUMENTS_OPTION.getName());
+                if(jvmOptParam != null && param.isValueSetToDefault() && jvmOptParam.isValueSetToDefault()) {
+                    return true;
+                }else {
+                    return false;
+                }
+            }
         }
-    	return param.isValueSetToDefault();
+        return param.isValueSetToDefault();
     }
 
     private void saveElementParameter(IElementParameter param, ProcessType process, TalendFileFactory fileFact,
@@ -1114,7 +1115,7 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
             }
         }
         if (isDefaultValue(param)) {
-        	return;
+            return;
         }
 
         if (param.getFieldType().equals(EParameterFieldType.SCHEMA_TYPE)
@@ -1203,7 +1204,8 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
                         }
                     } else {
                         if (o instanceof String) {
-                            strValue = (String) o;
+                            strValue = o != null ? ((String)o).trim() : (String)o;
+                            
                             isHexValue = isNeedConvertToHex(strValue);
                             if (isHexValue) {
                                 try {
@@ -1520,7 +1522,8 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
                         if (tmpParam != null && EParameterFieldType.PASSWORD.equals(tmpParam.getFieldType())) {
                             elemValue = elementValue.getRawValue();
                         }
-                        if (elementValue.isHexValue() && elemValue != null) {
+                        if (elementValue.isHexValue() && elemValue != null
+                                && !elemValue.startsWith(MavenUrlHelper.MVN_PROTOCOL)) {
                             byte[] decodeBytes = Hex.decodeHex(elemValue.toCharArray());
                             try {
                                 elemValue = new String(decodeBytes, UTF8);
@@ -4930,4 +4933,8 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
         return this.generatingProcess;
     }
 
+    @Override
+    public INode getNodeByUniqueName(String uniqueName) {
+        return getGeneratingNodes().stream().filter(n -> n.getUniqueName().equals(uniqueName)).findAny().orElse(null);
+    }
 }

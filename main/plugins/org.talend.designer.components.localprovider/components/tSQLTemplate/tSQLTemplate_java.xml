@@ -46,6 +46,7 @@
 				<ITEM NAME="NETEZZA" VALUE="NETEZZA" />
 				<ITEM NAME="VERTICA" VALUE="VERTICA" />
 				<ITEM NAME="SNOWFLAKE" VALUE="SNOWFLAKE" />
+				<ITEM NAME="DELTALAKE" VALUE="DELTALAKE" />
 			</ITEMS>
 		</PARAMETER>
 	   
@@ -219,7 +220,14 @@
 			NUM_ROW="3"
 			SHOW_IF="DBTYPE=='SNOWFLAKE'"
 		/>
-
+		<!-- Delta Lake -->
+		<PARAMETER
+			NAME="CONNECTION_DELTALAKE"
+			FIELD="COMPONENT_LIST"
+			REQUIRED="true" FILTER="REGEXP:^tDeltaLakeConnection|tJDBCConnection$"
+			NUM_ROW="3"
+			SHOW_IF="DBTYPE=='DELTALAKE'"
+		/>
 		<!-- connections end -->	
 
 		<PARAMETER 
@@ -271,6 +279,7 @@
       		<DEFAULT IF="DBTYPE=='TERADATA'">teradata_id</DEFAULT>
       		<DEFAULT IF="DBTYPE=='NETEZZA'">netezza_id</DEFAULT>
       		<DEFAULT IF="DBTYPE=='SNOWFLAKE'">snowflake_id</DEFAULT>
+<DEFAULT IF="DBTYPE=='DELTALAKE'">databricks_delta_lake_id</DEFAULT>
 			<DEFAULT>teradata_id</DEFAULT>
     	</PARAMETER>
 		
