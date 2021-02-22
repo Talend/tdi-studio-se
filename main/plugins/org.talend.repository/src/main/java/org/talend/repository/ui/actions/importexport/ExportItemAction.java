@@ -29,6 +29,7 @@ import org.talend.core.model.metadata.builder.connection.CDCConnection;
 import org.talend.core.model.metadata.builder.connection.DatabaseConnection;
 import org.talend.core.model.properties.DatabaseConnectionItem;
 import org.talend.core.model.repository.ERepositoryObjectType;
+import org.talend.core.model.routines.RoutinesUtil;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
 import org.talend.core.ui.ITestContainerProviderService;
 import org.talend.designer.core.ICamelDesignerCoreService;
@@ -89,6 +90,11 @@ public final class ExportItemAction extends AContextualAction implements IWorkbe
                                 && !nodProperty.equals(ERepositoryObjectType.SERVICESPORT)
                                 && !nodProperty.equals(ERepositoryObjectType.REFERENCED_PROJECTS))) {
                     visible = true;
+                }
+
+                if (node.getObject() != null && ERepositoryObjectType.getAllTypesOfCodes().contains(node.getObjectType())
+                        && RoutinesUtil.isInnerCodes(node.getObject().getProperty())) {
+                    visible = false;
                 }
 
                 if (nodProperty != null
