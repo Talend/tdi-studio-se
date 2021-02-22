@@ -102,7 +102,7 @@ public class SAPBAPIParameterTypeMigrationTask extends AbstractJobMigrationTask 
 
 	@Override
 	public Date getOrder() {
-		GregorianCalendar gc = new GregorianCalendar(2019, 9, 23, 18, 0, 0);
+        GregorianCalendar gc = new GregorianCalendar(2021, 1, 22, 18, 0, 0);
 		return gc.getTime();
 	}
 
