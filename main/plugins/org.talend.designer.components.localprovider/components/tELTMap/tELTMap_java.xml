@@ -56,7 +56,7 @@
 	   <PARAMETER
 	     NAME="CONNECTION"
 	     FIELD="COMPONENT_LIST"
-	     REQUIRED="true" FILTER="REGEXP:^tJDBCConnection|tSnowflakeConnection|tSAPHanaConnection$"
+	     REQUIRED="true" FILTER="REGEXP:^tJDBCConnection|tSnowflakeConnection|tSAPHanaConnection|tDeltaLakeConnection$"
 	     NUM_ROW="2"
 	     SHOW_IF="(#LINK@CONNECTOR.OUT.TABLE_REF == '0') AND (USE_EXISTING_CONNECTION == 'true')"
 	     DYNAMIC_SETTINGS="true"/>

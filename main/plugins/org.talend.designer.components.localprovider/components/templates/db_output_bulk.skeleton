@@ -44,6 +44,7 @@ public class CLASS {
     public static final String JDBC = "JDBC";
     public static final String EXASOL = "Exasol_id";
     public static final String SAPHANA = "saphana_id";
+	public static final String DELTALAKE = "databricks_delta_lake_id";
     private static Map<String, Manager> managerMap = new HashMap<String, Manager>();
     public class Column {
         IMetadataColumn column;
@@ -4614,6 +4615,25 @@ public class CLASS {
        protected String getRProtectedChar() {
           return "";
        }
+    }
+	
+	public class DELTALAKEManager extends Manager {
+       public DELTALAKEManager(String cid) {
+          super(cid);
+       }
+       protected String getDBMSId() {
+          return DELTALAKE;
+       }
+       protected String getLProtectedChar() {
+          return "";
+       }
+       protected String getRProtectedChar() {
+          return "";
+       }
+	   
+	   public String getCreateTableSQL(List<Column> columnList) {
+	       return super.getCreateTableSQL(columnList) + " USING DELTA";
+	   }
     }
 
     public class UnDefinedManager extends Manager{

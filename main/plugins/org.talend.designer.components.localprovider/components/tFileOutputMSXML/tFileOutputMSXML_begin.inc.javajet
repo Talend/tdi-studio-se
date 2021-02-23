@@ -371,9 +371,10 @@ class GenerateToolByDom4j{
 		<%touchXMLNode.putCurrentElementByQName(currEleName);%>
 		
 		
-		java.util.List<org.dom4j.Element> allElements_<%=currEleName%>_<%=cid%> = <%touchXMLNode.getXMLElement(parentName);%>.elements();
+		java.util.List<org.dom4j.Node> allElements_<%=currEleName%>_<%=cid%> = <%touchXMLNode.getXMLElement(parentName);%>.content();
 		int order_<%=cid%> = allElements_<%=currEleName%>_<%=cid%>.size();
 		
+
 		java.util.List<org.dom4j.Element> elements_<%=currEleName%>_<%=cid%> = <%touchXMLNode.getXMLElement(parentName);%>.elements(qname_<%=currEleName%>_<%=cid%>);
 		int app_size_<%=cid %> = elements_<%=currEleName%>_<%=cid%>.size();
 		
@@ -408,8 +409,8 @@ class GenerateToolByDom4j{
 			}
 %>
 		}
-			
-		<%touchXMLNode.getXMLElement(parentName);%>.elements().add(order_<%=cid%>,<%touchXMLNode.getXMLElement(currEleName);%>);
+
+		allElements_<%=currEleName%>_<%=cid%>.add(order_<%=cid%>,<%touchXMLNode.getXMLElement(currEleName);%>);
 
 <%
 		}else{
