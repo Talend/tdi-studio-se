@@ -135,6 +135,7 @@ if(isUseParallelize || identityInsert || (!"DROP_CREATE".equals(tableAction) && 
 }
 String identityKey = ElementParameterParser.getValue(node, "__IDENTITY_FIELD__");
 getManager(dbmsId, cid, node).setIsSpecifyIdentityKey(isSpecifyIdentityKey);
+%>
 
 <%@ include file="@{org.talend.designer.components.localprovider}/components/templates/DB/Output/CheckKeysForUpdateAndDelete.javajet"%>
 
