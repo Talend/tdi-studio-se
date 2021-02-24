@@ -35,6 +35,7 @@ import org.talend.core.model.process.IElementParameter;
 import org.talend.core.model.process.INode;
 import org.talend.core.model.process.IProcess;
 import org.talend.core.model.runprocess.shadow.TextElementParameter;
+import org.talend.hadoop.distribution.ESparkVersion;
 
 /**
  * created by ycbai on 2014-6-10 Detailled comment
@@ -74,18 +75,18 @@ public class ExpressionTest {
         updateParameters(parameters, param1, param2, param3);
         assertFalse(Expression.evaluate("isShow[PARA2]", parameters, param3));
     }
-    
+
     @Test
     public void testIsShowFunctionItemShownOnMapping() {
         List<IElementParameter> parameters = new ArrayList<IElementParameter>();
-        ElementParameter  param1 = createMockParameter("MAPPING", "hive_id");
-        ElementParameter  param2 = createMockParameter("PARA2",  "isShow[PARA1]");
-        ElementParameter  param3 = createMockParameter("L2_STARTDATE_FIELD_TYPE", "MAPPING == 'hive_id'");
+        ElementParameter param1 = createMockParameter("MAPPING", "hive_id");
+        ElementParameter param2 = createMockParameter("PARA2", "isShow[PARA1]");
+        ElementParameter param3 = createMockParameter("L2_STARTDATE_FIELD_TYPE", "MAPPING == 'hive_id'");
         updateParameters(parameters, param3, param2, param1);
         assertTrue(Expression.evaluate("MAPPING == 'hive_id'", parameters, param3));
-        
+
         param1 = createMockParameter("MAPPING", "mysql_id");
-        param2 = createMockParameter("PARA2",  "isShow[PARA1]");
+        param2 = createMockParameter("PARA2", "isShow[PARA1]");
         param3 = createMockParameter("L2_STARTDATE_FIELD_TYPE", "MAPPING == 'hive_id'");
         updateParameters(parameters, param3, param2, param1);
         assertFalse(Expression.evaluate("MAPPING == 'hive_id'", parameters, param3));
@@ -176,7 +177,7 @@ public class ExpressionTest {
         when(param.getValue()).thenReturn(list);
         return param;
     }
-    
+
     @Test
     public void testEvaluateDistrib_simplecase() {
         List<IElementParameter> params = new ArrayList<>();
@@ -218,14 +219,10 @@ public class ExpressionTest {
         assertFalse(Expression.evaluateDistrib("!DISTRIB[INVALDDISTRIB, VERSION].doSupportUseDatanodeHostname[]", params, param1));
 
         // invalid link
-        assertFalse(Expression.evaluateDistrib(
-                "DISTRIB[DISTRIB, #LINK@NODE.CONNECTION.HIVE_VERSION]].doSupportUseDatanodeHostname[]", params, param1));
-        assertFalse(Expression.evaluateDistrib(
-                "DISTRIB[#LINK@NODE.CONNECTION.DISTRIBUTION, VERSION]].doSupportUseDatanodeHostname[]", params, param1));
-        assertFalse(Expression.evaluateDistrib(
-                "!DISTRIB[DISTRIB, #LINK@NODE.CONNECTION.HIVE_VERSION]].doSupportUseDatanodeHostname[]", params, param1));
-        assertFalse(Expression.evaluateDistrib(
-                "!DISTRIB[#LINK@NODE.CONNECTION.DISTRIBUTION, VERSION]].doSupportUseDatanodeHostname[]", params, param1));
+        assertFalse(Expression.evaluateDistrib("DISTRIB[DISTRIB, #LINK@NODE.CONNECTION.HIVE_VERSION]].doSupportUseDatanodeHostname[]", params, param1));
+        assertFalse(Expression.evaluateDistrib("DISTRIB[#LINK@NODE.CONNECTION.DISTRIBUTION, VERSION]].doSupportUseDatanodeHostname[]", params, param1));
+        assertFalse(Expression.evaluateDistrib("!DISTRIB[DISTRIB, #LINK@NODE.CONNECTION.HIVE_VERSION]].doSupportUseDatanodeHostname[]", params, param1));
+        assertFalse(Expression.evaluateDistrib("!DISTRIB[#LINK@NODE.CONNECTION.DISTRIBUTION, VERSION]].doSupportUseDatanodeHostname[]", params, param1));
     }
 
     @Test
@@ -260,27 +257,24 @@ public class ExpressionTest {
         ElementParameter invaliddistrib = createMockParameter("INVALDDISTRIB", "INVALID");
         params.add(invaliddistrib);
 
-        assertTrue(Expression.evaluateDistrib(
-                "DISTRIB[#LINK@NODE.CONNECTION.DISTRIBUTION, #LINK@NODE.CONNECTION.HIVE_VERSION].doSupportUseDatanodeHostname[]",
-                params, paramNode));
-        assertFalse(Expression
-                .evaluateDistrib(
-                        "!DISTRIB[#LINK@NODE.CONNECTION.DISTRIBUTION, #LINK@NODE.CONNECTION.HIVE_VERSION].doSupportUseDatanodeHostname[]",
-                        params, paramNode));
+        assertTrue(Expression.evaluateDistrib("DISTRIB[#LINK@NODE.CONNECTION.DISTRIBUTION, #LINK@NODE.CONNECTION.HIVE_VERSION].doSupportUseDatanodeHostname[]", params, paramNode));
+        assertFalse(Expression.evaluateDistrib("!DISTRIB[#LINK@NODE.CONNECTION.DISTRIBUTION, #LINK@NODE.CONNECTION.HIVE_VERSION].doSupportUseDatanodeHostname[]", params, paramNode));
     }
-    
+
     @Test
     public void testEvaluateContains() {
         List<IElementParameter> params = new ArrayList<>();
-        Map<String, Object> line  = new LinkedHashMap<String, Object>() {{
-            put("ADDITIONAL_ARGUMENT", "'hive.import'");
-            put("ADDITIONAL_VALUE", "'true'");
-        }};
+        Map<String, Object> line = new LinkedHashMap<String, Object>() {
+            {
+                put("ADDITIONAL_ARGUMENT", "'hive.import'");
+                put("ADDITIONAL_VALUE", "'true'");
+            }
+        };
         ElementParameter param1 = createMockParameterWithLineInTable("ADDITIONAL_JAVA", line);
         params.add(param1);
         assertTrue(Expression.evaluateContains("ADDITIONAL_JAVA CONTAINS {ADDITIONAL_ARGUMENT='hive.import', ADDITIONAL_VALUE='true'}", params));
-    }    
-    
+    }
+
     @Test
     public void testIsThereCondition() {
         assertTrue(Expression.isThereCondition("a=1 and b=2", "and"));
@@ -296,5 +290,31 @@ public class ExpressionTest {
 
         assertFalse(Expression.isThereCondition("standard='aaa'", "and"));
         assertFalse(Expression.isThereCondition("story='aaa'", "or"));
+    }
+
+    @Test
+    public void testEvaluateSparkVersion() {
+
+        IElementParameter sparkLocalModeParameter = mock(IElementParameter.class);
+        when(sparkLocalModeParameter.getValue()).thenReturn(true);
+        IElementParameter sparkLocalVersionParameter = mock(IElementParameter.class);
+        when(sparkLocalVersionParameter.getValue()).thenReturn(ESparkVersion.SPARK_3_0.getSparkVersion());
+        IElementParameter sparkApiVersion = mock(IElementParameter.class);
+        when(sparkApiVersion.getValue()).thenReturn("");
+        IElementParameter distributionParameter = mock(IElementParameter.class);
+        when(distributionParameter.getValue()).thenReturn("");
+        IElementParameter supportedVersionParameter = mock(IElementParameter.class);
+        when(supportedVersionParameter.getValue()).thenReturn("");
+
+        INode node = mock(INode.class);
+        when(node.getElementParameter("SPARK_LOCAL_MODE")).thenReturn(sparkLocalModeParameter);
+        when(node.getElementParameter("SPARK_LOCAL_VERSION")).thenReturn(sparkLocalVersionParameter);
+        when(node.getElementParameter("SPARK_API_VERSION")).thenReturn(sparkApiVersion);
+        when(node.getElementParameter("DISTRIBUTION")).thenReturn(distributionParameter);
+        when(node.getElementParameter("SUPPORTED_SPARK_VERSION")).thenReturn(supportedVersionParameter);
+
+        ElementParameter currentParam = mock(ElementParameter.class);
+        when(currentParam.getElement()).thenReturn(node);
+        assertTrue(Expression.evaluateSparkVersion("SPARK_VERSION ge 'SPARK_3_0'", null, currentParam));
     }
 }

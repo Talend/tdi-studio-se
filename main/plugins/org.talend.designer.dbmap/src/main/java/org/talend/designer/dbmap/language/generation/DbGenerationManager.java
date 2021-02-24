@@ -61,6 +61,7 @@ import org.talend.designer.dbmap.language.IJoinType;
 import org.talend.designer.dbmap.language.operator.IDbOperator;
 import org.talend.designer.dbmap.language.operator.IDbOperatorManager;
 import org.talend.designer.dbmap.model.tableentry.TableEntryLocation;
+import org.talend.designer.dbmap.utils.DBMapHelper;
 import org.talend.designer.dbmap.utils.DataMapExpressionParser;
 
 /**
@@ -1719,10 +1720,10 @@ public abstract class DbGenerationManager {
                         }
                     }
                 }
-
                 String schemaNoQuote = TalendTextUtils.removeQuotes(schemaValue);
                 boolean hasSchema = !"".equals(schemaNoQuote);
                 if (hasSchema) {
+                    schemaValue = handledParameterValues(schemaValue);
                     handledTableName = schemaValue + "+\".\"+";
                 }
                 handledTableName = handledTableName + tableValue;
@@ -1731,6 +1732,28 @@ public abstract class DbGenerationManager {
         }
         return tableName;
 
+    }
+
+    protected String handledParameterValues(String originalValue) {
+        List<String> paramValues = new ArrayList<String>();
+        DBMapHelper.convertContextParameterValue(paramValues, originalValue);
+        if (paramValues.size() > 0) {
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < paramValues.size(); i++) {
+                String paramValue = paramValues.get(i);
+                if (ContextParameterUtils.isContainContextParam(paramValue)) {
+                    sb.append(paramValue);
+                } else {
+                    sb.append("\"" + paramValue + "\"");//$NON-NLS-1$//$NON-NLS-2$
+                }
+                if (i < paramValues.size() - 1) {
+                    sb.append(" + \".\" + "); //$NON-NLS-1$
+                }
+            }
+            return sb.toString();
+        } else {
+            return originalValue;
+        }
     }
 
     protected String getColumnName(IConnection conn, String name) {

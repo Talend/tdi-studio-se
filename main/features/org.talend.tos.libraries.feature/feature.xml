@@ -19,7 +19,6 @@
   <plugin id="org.talend.libraries.apache.chemistry" download-size="0" install-size="0" version="0.0.0"/>
   <plugin id="org.talend.libraries.apache.common" download-size="0" install-size="0" version="0.0.0"/>
   <plugin id="org.talend.libraries.apache.cxf" download-size="0" install-size="0" version="0.0.0"/>
-  <plugin id="org.talend.libraries.apache.google" download-size="0" install-size="0" version="0.0.0"/>
   <plugin id="org.talend.libraries.apache.http" download-size="0" install-size="0" version="0.0.0"/>
   <plugin id="org.talend.libraries.apache.lucene" download-size="0" install-size="0" version="0.0.0"/>
   <plugin id="org.talend.libraries.apache.xml" download-size="0" install-size="0" version="0.0.0"/>
