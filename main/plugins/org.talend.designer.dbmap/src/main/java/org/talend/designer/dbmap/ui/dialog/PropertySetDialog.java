@@ -65,7 +65,12 @@ public class PropertySetDialog extends Dialog {
         delimitedIdentifiersButton.setText(Messages.getString("PropertySetDialog.delimitedIdentifiers.title")); //$NON-NLS-1$
 
         useAliasButton = new Button(container, SWT.CHECK);
-        useAliasButton.setText(Messages.getString("PropertySetDialog.useAlias.title")); //$NON-NLS-1$
+        String useAliasTitle = Messages.getString("PropertySetDialog.useAlias.title");//$NON-NLS-1$
+        IComponent component = mapperManager.getComponent().getComponent();
+        if (component != null && "tELTOracleMap".equals(component.getName())) { //$NON-NLS-1$
+            useAliasTitle = Messages.getString("PropertySetDialog.useAlias.oracle.title");//$NON-NLS-1$
+        }
+        useAliasButton.setText(useAliasTitle);
 
         init();
         addListener();
