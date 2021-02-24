@@ -77,7 +77,9 @@ imports="
     		<%if (enableCannedACL) {%>
 				    {
 				      final String cannedACLChoice = <%= cannedACL %>;
-				      putRequest_<%=cid%>.setCannedAccessControlList(com.amazonaws.services.s3.model.CannedAccessControlList.valueOf(cannedACLChoice));
+				      if (cannedACLChoice != null && (!cannedACLChoice.isEmpty()) && !("NONE".equals(cannedACLChoice))) {
+				          putRequest_<%=cid%>.setCannedAccessControlList(com.amazonaws.services.s3.model.CannedAccessControlList.valueOf(cannedACLChoice));
+				      }
 				    }
 			<%}%>
     		<%@ include file="../tS3Put/set_kms.javajet"%>
@@ -106,7 +108,9 @@ imports="
     		<%if (enableCannedACL) {%>
 			    {
 				   final String cannedACLChoice = <%= cannedACL %>;
-				   putRequest_<%=cid%>.withCannedACL(com.amazonaws.services.s3.model.CannedAccessControlList.valueOf(cannedACLChoice));
+				   if (cannedACLChoice != null && (!cannedACLChoice.isEmpty()) && !("NONE".equals(cannedACLChoice))) {
+				       putRequest_<%=cid%>.withCannedACL(com.amazonaws.services.s3.model.CannedAccessControlList.valueOf(cannedACLChoice));
+				   }
 			    }
 			<%}%>
             com.amazonaws.services.s3.model.InitiateMultipartUploadResult initResult_<%=cid%> = conn_<%=cid%>.initiateMultipartUpload(putRequest_<%=cid%>);

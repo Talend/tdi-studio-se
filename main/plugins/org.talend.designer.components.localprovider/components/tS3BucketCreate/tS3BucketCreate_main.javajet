@@ -85,7 +85,9 @@ accessCtrlList.grantPermission(grantee_<%=cid%>_<%=grantee_id%>, com.amazonaws.s
 		<%if (enableCannedACL) {%>
 		    {
 		        final String cannedACLChoice = <%= cannedACL %>;
-			    bucketRequest_<%=cid%>.withCannedAcl(com.amazonaws.services.s3.model.CannedAccessControlList.valueOf(cannedACLChoice));
+		        if (cannedACLChoice != null && (!cannedACLChoice.isEmpty()) && !("NONE".equals(cannedACLChoice))) {
+			       bucketRequest_<%=cid%>.withCannedAcl(com.amazonaws.services.s3.model.CannedAccessControlList.valueOf(cannedACLChoice));
+			    }
 			}
 		<%}%>
 		conn_<%=cid%>.createBucket(bucketRequest_<%=cid%>);
