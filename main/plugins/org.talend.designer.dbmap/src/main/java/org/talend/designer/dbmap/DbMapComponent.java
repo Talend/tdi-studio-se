@@ -193,6 +193,9 @@ public class DbMapComponent extends AbstractMapComponent {
                 useAliasInOutputTableEP.setCategory(EComponentCategory.TECHNICAL);
                 useAliasInOutputTableEP.setNumRow(99);
                 useAliasInOutputTableEP.setReadOnly(false);
+                if (getGenerationManager() instanceof OracleGenerationManager) {
+                    getGenerationManager().setUseAliasInOutputTable(true);
+                }
                 List<IElementParameter> elemParams = (List<IElementParameter>) origNode.getElementParameters();
                 elemParams.add(useAliasInOutputTableEP);
             }
