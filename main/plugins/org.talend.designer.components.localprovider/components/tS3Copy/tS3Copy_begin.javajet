@@ -26,7 +26,7 @@ imports="
 			partSizeMb = "100";
 	}
 	final String cannedACL = ElementParameterParser.getValue(node, "__CANNED_ACCESS_CONTROL_LIST__");
-	final boolean enableCannedACL = !("\"NONE\"".equals(cannedACL));
+	final boolean enableCannedACL = (cannedACL != null) && (!cannedACL.isEmpty()) && !("\"NONE\"".equals(cannedACL));
 	%>
 	<%@ include file="../tS3Connection/S3Client.javajet" %>
 	try{

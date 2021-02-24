@@ -31,7 +31,7 @@ imports="
 	boolean enableACL = "true".equals(ElementParameterParser.getValue(node, "__ACCESS_CONTROL_LIST__"));
 	List<Map<String, String>> paramsACL = ElementParameterParser.getTableValue(node,"__ACL__");
 	final String cannedACL = ElementParameterParser.getValue(node, "__CANNED_ACCESS_CONTROL_LIST__");
-	final boolean enableCannedACL = !("\"NONE\"".equals(cannedACL));
+	final boolean enableCannedACL = (cannedACL != null) && (!cannedACL.isEmpty()) && !("\"NONE\"".equals(cannedACL));
 	%>
 	<%@ include file="../tS3Connection/S3Client.javajet" %>
 	String key_<%=cid%> = <%=key%>;
