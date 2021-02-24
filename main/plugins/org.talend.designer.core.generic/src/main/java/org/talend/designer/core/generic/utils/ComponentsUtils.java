@@ -148,6 +148,9 @@ public class ComponentsUtils {
                     && componentDefinition.getFamilies()[0].contains("JDBC")) {
                 jdbcDefinitions.add(componentDefinition);
             }
+            if (UnifiedComponentUtil.JDBC_COMPONENT_BLACKLIST.contains(componentDefinition.getName())) {
+                continue;
+            }
             loadComponents(components, componentDefinition);
         }
 
