@@ -373,12 +373,15 @@ public class TalendProcessJavaProject implements ITalendProcessJavaProject {
     @Override
     public void buildWholeCodeProject() {
         try {
+            IProgressMonitor monitor = new NullProgressMonitor();
+            IProject project = getProject();
+            if (!project.isSynchronized(IResource.DEPTH_INFINITE)) {
+                project.refreshLocal(IResource.DEPTH_INFINITE, monitor);
+            }
             ResourcesPlugin.getWorkspace().build(new IBuildConfiguration[] { getProject().getActiveBuildConfig() },
-                    IncrementalProjectBuilder.INCREMENTAL_BUILD, true, new NullProgressMonitor());
-            // IProject project = getProject();
-            // if (!project.isSynchronized(IResource.DEPTH_INFINITE)) {
-            // project.refreshLocal(IResource.DEPTH_INFINITE, monitor);
-            // }
+                    IncrementalProjectBuilder.FULL_BUILD, true, monitor);
+            ResourcesPlugin.getWorkspace().build(new IBuildConfiguration[] { getProject().getActiveBuildConfig() },
+                    IncrementalProjectBuilder.INCREMENTAL_BUILD, true, monitor);
             // project.build(IncrementalProjectBuilder.FULL_BUILD, monitor);
             // project.build(IncrementalProjectBuilder.INCREMENTAL_BUILD, monitor);
         } catch (CoreException e) {
