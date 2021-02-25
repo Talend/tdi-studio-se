@@ -58,6 +58,12 @@
             isReadAction="true"
             level="12"
             name="Read routine"/>
+      <Action
+            class="org.talend.repository.ui.actions.routines.AssignRoutinesToJarAction"
+            id="org.talend.repositorys.actions.assignoutine"
+            level="10"
+            name="Assign Routines to">
+      </Action>
 
        <Action
             class="org.talend.repository.ui.actions.sqlpattern.ReadSqlpatternAction"
@@ -133,6 +139,12 @@
             isEditAction="false"
             isReadAction="false"
             name="Export Items"/>
+      <Action
+            class="org.talend.repository.ui.actions.routinesjar.CreateRoutinesJarAction"
+            id="org.talend.repository.actions.createroutinesjar"
+            level="10"
+            name="Create Routine Jar">
+      </Action>
    </extension>
    <extension
          point="org.eclipse.ui.views.properties.tabbed.propertyContributor">

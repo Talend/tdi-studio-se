@@ -13,13 +13,16 @@
 package org.talend.designer.core.ui.routine;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.viewers.ArrayContentProvider;
@@ -39,22 +42,27 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Shell;
+import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.exception.PersistenceException;
-import org.talend.commons.ui.runtime.exception.ExceptionHandler;
 import org.talend.commons.ui.runtime.image.EImage;
 import org.talend.commons.ui.runtime.image.ImageProvider;
-import org.talend.core.CorePlugin;
+import org.talend.core.GlobalServiceRegister;
 import org.talend.core.model.general.Project;
+import org.talend.core.model.properties.Item;
+import org.talend.core.model.properties.JobletProcessItem;
+import org.talend.core.model.properties.ProcessItem;
 import org.talend.core.model.properties.Property;
 import org.talend.core.model.properties.RoutineItem;
 import org.talend.core.model.repository.ERepositoryObjectType;
-import org.talend.core.model.repository.IRepositoryViewObject;
+import org.talend.core.model.routines.CodesJarInfo;
 import org.talend.core.model.routines.RoutinesUtil;
+import org.talend.core.repository.model.ProxyRepositoryFactory;
+import org.talend.core.utils.CodesJarResourceCache;
+import org.talend.designer.core.ICamelDesignerCoreService;
 import org.talend.designer.core.i18n.Messages;
 import org.talend.designer.core.model.utils.emf.talendfile.ProcessType;
 import org.talend.designer.core.model.utils.emf.talendfile.RoutinesParameterType;
 import org.talend.repository.ProjectManager;
-import org.talend.repository.model.IProxyRepositoryFactory;
 
 /**
  * ggu class global comment. Detailled comment
@@ -63,66 +71,99 @@ public class SetupProcessDependenciesRoutinesDialog extends Dialog {
 
     private boolean readonly;
 
-    private final List<RoutineItemRecord> userRoutines = new ArrayList<RoutineItemRecord>();
+    private boolean isRouteProcess;
 
-    private final List<RoutineItemRecord> systemRoutines = new ArrayList<RoutineItemRecord>();
+    private final List<RoutineItemRecord> globalRoutines = new ArrayList<>();
+
+    private final List<RoutineItemRecord> systemRoutines = new ArrayList<>();
+    
+    private final List<RoutineItemRecord> routinesJars = new ArrayList<>();
+
+    private final List<RoutineItemRecord> beansJars = new ArrayList<>();
 
     private CTabFolder folder;
 
-    private CTabItem userTabItem, systemTabItem;
+    private CTabItem globalRoutinesTabItem, routinesJarTabItem, beansJarTabItem;
 
     private Button addBtn, delBtn, upBtn, downBtn;
 
-    private ListViewer userViewer, systemViewer;
+    private ListViewer globalRoutinesViewer, routinesJarViewer, beansJarViewer;
 
     private final Map<Project, List<Property>> allRoutineItems = new HashMap<Project, List<Property>>();
 
-    public SetupProcessDependenciesRoutinesDialog(Shell parentShell, ProcessType process, boolean readonly) {
+    private final Map<Project, List<Property>> allRoutinesJarItems = new HashMap<Project, List<Property>>();
+
+    private final Map<Project, List<Property>> allBeansJarItems = new HashMap<Project, List<Property>>();
+
+    public SetupProcessDependenciesRoutinesDialog(Shell parentShell, Item item, boolean readonly) {
         super(parentShell);
         setShellStyle(getShellStyle() | SWT.MAX | SWT.RESIZE | SWT.APPLICATION_MODAL);
         this.readonly = readonly;
-        init(process);
+        if (GlobalServiceRegister.getDefault().isServiceRegistered(ICamelDesignerCoreService.class)) {
+            ICamelDesignerCoreService camelService = GlobalServiceRegister.getDefault()
+                    .getService(ICamelDesignerCoreService.class);
+            isRouteProcess = camelService.isInstanceofCamelRoutes(item);
+        }
+        init(item);
     }
 
     @SuppressWarnings("unchecked")
-    private void init(ProcessType process) {
+    private void init(Item item) {
+        ProcessType process = null;
+        if (item instanceof ProcessItem) {
+            process = ((ProcessItem) item).getProcess();
+        } else if (item instanceof JobletProcessItem) {
+            process = ((JobletProcessItem) item).getJobletProcess();
+        }
         allRoutineItems.clear();
+        allRoutinesJarItems.clear();
+        allBeansJarItems.clear();
 
         ProjectManager projectManager = ProjectManager.getInstance();
         Project currentProject = projectManager.getCurrentProject();
+        initModelsForRoutines(currentProject);
 
-        initModels(currentProject);
         Set<Project> referenceProjects = new HashSet<Project>();
-        this.getAllReferenceProjects(currentProject, referenceProjects);
-        initRefProjects(referenceProjects);
+        getAllReferenceProjects(currentProject, referenceProjects);
+        referenceProjects.forEach(p -> initModelsForRoutines(p));
+        
+        initModelsForCodesJars();
+
+        Set<RoutineItemRecord> systemRoutinesSet = new LinkedHashSet<>();
+        Set<RoutineItemRecord> globalRoutinesSet = new LinkedHashSet<>();
+        Set<RoutineItemRecord> routinesJarsSet = new LinkedHashSet<>();
+        Set<RoutineItemRecord> beansJarsSet = new LinkedHashSet<>();
         List<RoutinesParameterType> routinesDependencies = process.getParameters().getRoutinesParameter();
-        List<String> typeNames = new ArrayList<String>();
-        for (RoutinesParameterType type : routinesDependencies) {
-            RoutineItemRecord record = new RoutineItemRecord();
-
-            record.setName(type.getName());
-
-            Property property = findObject(type.getId(), type.getName());
-            if (property != null) {
-                record.setId(property.getId()); // if system, id is not used
-                record.setLabel(property.getLabel());
-            } else {
-                record.setHasProblem(true);
-                record.setLabel(type.getName()); // use the record
+        for (RoutinesParameterType routinesParameter : routinesDependencies) {
+            Property property = findObject(routinesParameter.getId(), routinesParameter.getName(), routinesParameter.getType());
+            if (property == null) {
+                // if lost, won't display
+                continue;
             }
-            if (!record.hasProblem()) { // if lost, willn't display
-                if (((RoutineItem) property.getItem()).isBuiltIn()) {
-                    systemRoutines.add(record);
-                } else {
-                    if (typeNames.contains(type.getName())) {
-                        break;
-                    } else {
-                        typeNames.add(type.getName());
-                        userRoutines.add(record);
-                    }
+            RoutineItemRecord record = new RoutineItemRecord();
+            record.setName(property.getLabel());
+            record.setId(property.getId()); // if system, id is not used
+            record.setLabel(property.getLabel());
+            if (routinesParameter.getType() != null) {
+                record.setType(routinesParameter.getType());
+            }
+            if (property.getItem() instanceof RoutineItem && ((RoutineItem) property.getItem()).isBuiltIn()) {
+                systemRoutinesSet.add(record);
+            } else {
+                if (routinesParameter.getType() == null) {
+                    globalRoutinesSet.add(record);
+                } else if (ERepositoryObjectType.getItemType(property.getItem()) == ERepositoryObjectType.ROUTINESJAR) {
+                    routinesJarsSet.add(record);
+                } else if (isRouteProcess
+                        && ERepositoryObjectType.getItemType(property.getItem()) == ERepositoryObjectType.BEANSJAR) {
+                    beansJarsSet.add(record);
                 }
             }
         }
+        systemRoutines.addAll(systemRoutinesSet);
+        globalRoutines.addAll(globalRoutinesSet);
+        routinesJars.addAll(routinesJarsSet);
+        beansJars.addAll(beansJarsSet);
     }
 
     private void getAllReferenceProjects(Project currentProject, Set<Project> referenceProjects) {
@@ -132,57 +173,70 @@ public class SetupProcessDependenciesRoutinesDialog extends Dialog {
         }
     }
 
-    private void initRefProjects(Set<Project> referenceProjects) {
-        for (Project p : referenceProjects) {
-            initModels(p);
-        }
-    }
-
-    private void initModels(Project project) {
+    private void initModelsForRoutines(Project project) {
         try {
-
-            IProxyRepositoryFactory proxyRepositoryFactory = CorePlugin.getDefault().getRepositoryService()
-                    .getProxyRepositoryFactory();
-            List<IRepositoryViewObject> allRoutineItemObjects = proxyRepositoryFactory.getAll(project,
-                    ERepositoryObjectType.ROUTINES, RoutinesUtil.allowDeletedRoutine());
-
-            for (IRepositoryViewObject obj : allRoutineItemObjects) {
-                Property property = obj.getProperty();
-                if (project.equals(ProjectManager.getInstance().getCurrentProject())) {
-                    addItems(project, property);
-                } else {
-                    // don't add system routines in ref-project
-                    if (property.getItem() instanceof RoutineItem && !((RoutineItem) property.getItem()).isBuiltIn()) {
-                        addItems(project, property);
-                    }
-                }
-            }
-
+            Project currentProject = ProjectManager.getInstance().getCurrentProject();
+            ProxyRepositoryFactory.getInstance()
+                    .getAll(project, ERepositoryObjectType.ROUTINES, RoutinesUtil.allowDeletedRoutine()).stream()
+                    .map(o -> o.getProperty()).forEach(p -> {
+                        // don't add system routines in ref-project
+                        if (!project.equals(currentProject) && p.getItem() instanceof RoutineItem
+                                && ((RoutineItem) p.getItem()).isBuiltIn()) {
+                            return;
+                        }
+                        addItems(project, allRoutineItems, p);
+                    });
         } catch (PersistenceException e) {
             ExceptionHandler.process(e);
         }
     }
 
-    private void addItems(Project project, Property property) {
-        List<Property> list = allRoutineItems.get(project);
+    private void initModelsForCodesJars() {
+        for (CodesJarInfo info : CodesJarResourceCache.getAllCodesJars()) {
+            Project project = ProjectManager.getInstance().getProjectFromProjectTechLabel(info.getProjectTechName());
+            Property property = info.getProperty();
+            ERepositoryObjectType type = ERepositoryObjectType.getItemType(property.getItem());
+            if (type == ERepositoryObjectType.ROUTINESJAR) {
+                addItems(project, allRoutinesJarItems, property);
+            } else if (type == ERepositoryObjectType.BEANSJAR && isRouteProcess) {
+                addItems(project, allBeansJarItems, property);
+            }
+        }
+    }
+
+    private void addItems(Project project, Map<Project, List<Property>> all, Property property) {
+        List<Property> list = all.get(project);
         if (list == null) {
             list = new ArrayList<Property>();
-            allRoutineItems.put(project, list);
+            all.put(project, list);
         }
         list.add(property);
     }
 
-    private Property findObject(String idOrName, String name) {
-        for (Project p : allRoutineItems.keySet()) {
-            List<Property> list = allRoutineItems.get(p);
-            if (list != null) {
-                for (Property property : list) {
-                    String objIdOrName = property.getId();
-                    String objName = property.getLabel();
-                    // objIdOrName = property.getLabel();
-                    if (objIdOrName != null && objIdOrName.equals(idOrName) && property.getItem() instanceof RoutineItem) {
+    private Property findObject(String id, String name, String type) {
+        if (type == null) {
+            for (Project p : allRoutineItems.keySet()) {
+                for (Property property : allRoutineItems.get(p)) {
+                    if (StringUtils.equals(property.getId(), id) || StringUtils.equals(property.getLabel(), name)) {
                         return property;
-                    } else if (objName != null && objName.equals(name) && property.getItem() instanceof RoutineItem) {
+                    }
+                }
+            }
+            return null;
+        }
+        for (Project p : allRoutinesJarItems.keySet()) {
+            for (Property property : allRoutinesJarItems.get(p)) {
+                String objType = ERepositoryObjectType.getItemType(property.getItem()).name();
+                if (StringUtils.equals(property.getId(), id) && StringUtils.equals(objType, type)) {
+                    return property;
+                }
+            }
+        }
+        if (isRouteProcess) {
+            for (Project p : allBeansJarItems.keySet()) {
+                for (Property property : allBeansJarItems.get(p)) {
+                    String objType = ERepositoryObjectType.getItemType(property.getItem()).name();
+                    if (StringUtils.equals(property.getId(), id) && StringUtils.equals(objType, type)) {
                         return property;
                     }
                 }
@@ -194,7 +248,7 @@ public class SetupProcessDependenciesRoutinesDialog extends Dialog {
     @Override
     protected void configureShell(Shell shell) {
         super.configureShell(shell);
-        shell.setText(Messages.getString("SetupProcessDependenciesRoutinesAction.title")); //$NON-NLS-1$
+        shell.setText(Messages.getString("SetupProcessDependenciesRoutinesAction.actiontitle")); //$NON-NLS-1$
     }
 
     @Override
@@ -209,8 +263,11 @@ public class SetupProcessDependenciesRoutinesDialog extends Dialog {
         Composite composite = new Composite(parent, SWT.NONE);
         composite.setLayout(new GridLayout(2, false));
         GridData layoutData = new GridData(GridData.FILL_BOTH);
-        layoutData.heightHint = 200;
+        layoutData.heightHint = 250;
         layoutData.widthHint = 350;
+        if (isRouteProcess) {
+            layoutData.widthHint = 480;
+        }
 
         composite.setLayoutData(layoutData);
         applyDialogFont(composite);
@@ -233,13 +290,23 @@ public class SetupProcessDependenciesRoutinesDialog extends Dialog {
             }
 
         });
-        userTabItem = new CTabItem(folder, SWT.NONE);
-        userTabItem.setText(Messages.getString("SetupProcessDependenciesRoutinesDialog.userRoutineLabel")); //$NON-NLS-1$
 
-        systemTabItem = new CTabItem(folder, SWT.NONE);
-        systemTabItem.setText(Messages.getString("SetupProcessDependenciesRoutinesDialog.systemRoutineLabel")); //$NON-NLS-1$
+        if (isRouteProcess) {
+            beansJarTabItem = new CTabItem(folder, SWT.NONE);
+            beansJarTabItem.setText(Messages.getString("SetupProcessDependenciesRoutinesDialog.beansJarLabel")); //$NON-NLS-1$
+        }
 
-        folder.setSelection(userTabItem);
+        routinesJarTabItem = new CTabItem(folder, SWT.NONE);
+        routinesJarTabItem.setText(Messages.getString("SetupProcessDependenciesRoutinesDialog.routinesJarLabel")); //$NON-NLS-1$
+
+        globalRoutinesTabItem = new CTabItem(folder, SWT.NONE);
+        globalRoutinesTabItem.setText(Messages.getString("SetupProcessDependenciesRoutinesDialog.globalRoutineLabel")); //$NON-NLS-1$
+
+        if (isRouteProcess) {
+            folder.setSelection(beansJarTabItem);
+        } else {
+            folder.setSelection(routinesJarTabItem);
+        }
         folder.setSimple(false);
 
         ISelectionChangedListener listListener = new ISelectionChangedListener() {
@@ -249,33 +316,30 @@ public class SetupProcessDependenciesRoutinesDialog extends Dialog {
                 updateButtons();
             }
         };
-        // user
-        Composite userComposite = new Composite(folder, SWT.NONE);
-        userComposite.setLayout(new GridLayout());
-        userComposite.setLayoutData(new GridData(GridData.FILL_BOTH));
+        // global routines
+        globalRoutinesViewer = createViewer(globalRoutinesTabItem, globalRoutines, listListener);
+        // routines jars
+        routinesJarViewer = createViewer(routinesJarTabItem, routinesJars, listListener);
+        // beans jars
+        if (isRouteProcess) {
+            beansJarViewer = createViewer(beansJarTabItem, beansJars, listListener);
+        }
+    }
 
-        userViewer = new ListViewer(userComposite, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL | SWT.BORDER);
-        userViewer.setLabelProvider(new RoutineRecordLabelProvider());
-        userViewer.setContentProvider(ArrayContentProvider.getInstance());
-        userViewer.setInput(userRoutines);
-        userViewer.getList().setLayoutData(new GridData(GridData.FILL_BOTH));
-        userViewer.addSelectionChangedListener(listListener);
+    private ListViewer createViewer(CTabItem tabItem, List<RoutineItemRecord> all, ISelectionChangedListener listListener) {
+        Composite composite = new Composite(folder, SWT.NONE);
+        composite.setLayout(new GridLayout());
+        composite.setLayoutData(new GridData(GridData.FILL_BOTH));
 
-        userTabItem.setControl(userComposite);
+        ListViewer viewer = new ListViewer(composite, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL | SWT.BORDER);
+        viewer.setLabelProvider(new RoutineRecordLabelProvider());
+        viewer.setContentProvider(ArrayContentProvider.getInstance());
+        viewer.setInput(all);
+        viewer.getList().setLayoutData(new GridData(GridData.FILL_BOTH));
+        viewer.addSelectionChangedListener(listListener);
 
-        // system
-        Composite systemComposite = new Composite(folder, SWT.NONE);
-        systemComposite.setLayout(new GridLayout());
-        systemComposite.setLayoutData(new GridData(GridData.FILL_BOTH));
-
-        systemViewer = new ListViewer(systemComposite, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL | SWT.BORDER);
-        systemViewer.setLabelProvider(new RoutineRecordLabelProvider());
-        systemViewer.setContentProvider(ArrayContentProvider.getInstance());
-        systemViewer.setInput(systemRoutines);
-        systemViewer.getList().setLayoutData(new GridData(GridData.FILL_BOTH));
-        systemViewer.addSelectionChangedListener(listListener);
-
-        systemTabItem.setControl(systemComposite);
+        tabItem.setControl(composite);
+        return viewer;
     }
 
     private void createButtonField(Composite parent) {
@@ -295,9 +359,20 @@ public class SetupProcessDependenciesRoutinesDialog extends Dialog {
                 if (currentViewer == null) {
                     return;
                 }
-                boolean system = (currentViewer == systemViewer);
                 List<RoutineItemRecord> currentRecords = getCurrentRecords();
-                ShowRoutineItemsDialog dialog = new ShowRoutineItemsDialog(getShell(), allRoutineItems, currentRecords, system);
+                ERepositoryObjectType type = null;
+                Map<Project, List<Property>> allItems = null;
+                if (currentViewer == globalRoutinesViewer) {
+                    type = ERepositoryObjectType.ROUTINES;
+                    allItems = allRoutineItems;
+                } else if (currentViewer == routinesJarViewer) {
+                    type = ERepositoryObjectType.ROUTINESJAR;
+                    allItems = allRoutinesJarItems;
+                } else if (currentViewer == beansJarViewer) {
+                    type = ERepositoryObjectType.BEANSJAR;
+                    allItems = allBeansJarItems;
+                }
+                ShowRoutineItemsDialog dialog = new ShowRoutineItemsDialog(getShell(), allItems, currentRecords, type);
                 if (dialog.open() == Window.OK) {
                     Property[] selectedItems = dialog.getSelectedItems();
                     List<Property> needAddedItems = new ArrayList<Property>();
@@ -305,10 +380,9 @@ public class SetupProcessDependenciesRoutinesDialog extends Dialog {
                     for (Property p : selectedItems) {
                         boolean found = false;
                         for (RoutineItemRecord record : currentRecords) {
-                            if (system) {
-                                found = p.getLabel().equals(record.getLabel());
-                            } else {
-                                found = p.getId().equals(record.getId());
+                            found = p.getId().equals(record.getId());
+                            if (found) {
+                                break;
                             }
                         }
                         if (!found) {
@@ -321,6 +395,10 @@ public class SetupProcessDependenciesRoutinesDialog extends Dialog {
                         newOne.setId(p.getId());
                         newOne.setLabel(p.getLabel());
                         newOne.setName(p.getLabel());
+                        if (type != ERepositoryObjectType.ROUTINES) {
+                            // won't store type for global routines to keep compatible
+                            newOne.setType(type.name());
+                        }
                         newOne.setVersion(p.getVersion());
                         currentRecords.add(newOne);
                     }
@@ -430,33 +508,31 @@ public class SetupProcessDependenciesRoutinesDialog extends Dialog {
     }
 
     private ListViewer getCurrentViewer() {
-        if (folder.getSelection() == userTabItem) {
-            return userViewer;
-        } else if (folder.getSelection() == systemTabItem) {
-            return systemViewer;
+        CTabItem selection = folder.getSelection();
+        if (selection == globalRoutinesTabItem) {
+            return globalRoutinesViewer;
+        }
+        if (selection == routinesJarTabItem) {
+            return routinesJarViewer;
+        }
+        if (isRouteProcess && selection == beansJarTabItem) {
+            return beansJarViewer;
         }
         return null;
     }
 
     private List<RoutineItemRecord> getCurrentRecords() {
-        if (folder.getSelection() == userTabItem) {
-            return userRoutines;
-        } else if (folder.getSelection() == systemTabItem) {
-            return systemRoutines;
+        CTabItem selection = folder.getSelection();
+        if (selection == globalRoutinesTabItem) {
+            return globalRoutines;
         }
-        return null;
-    }
-
-    private RoutineItemRecord getCurrentSelectedRecord() {
-        ListViewer currentViewer = getCurrentViewer();
-        if (currentViewer != null) {
-            Object firstElement = ((IStructuredSelection) currentViewer.getSelection()).getFirstElement();
-            if (firstElement != null && firstElement instanceof RoutineItemRecord) {
-                return (RoutineItemRecord) firstElement;
-            }
-
+        if (selection == routinesJarTabItem) {
+            return routinesJars;
         }
-        return null;
+        if (isRouteProcess && selection == beansJarTabItem) {
+            return beansJars;
+        }
+        return Collections.emptyList();
     }
 
     private void updateButtons(ListViewer viewer) {
@@ -484,17 +560,23 @@ public class SetupProcessDependenciesRoutinesDialog extends Dialog {
         }
     }
 
-    public List<RoutineItemRecord> getUserRoutines() {
-        return this.userRoutines;
+    public List<RoutineItemRecord> getGlobalRoutines() {
+        return globalRoutines;
+    }
+
+    public List<RoutineItemRecord> getRoutinesJars() {
+        return routinesJars;
+    }
+
+    public List<RoutineItemRecord> getBeansJars() {
+        if (isRouteProcess) {
+            return beansJars;
+        }
+        return Collections.emptyList();
     }
 
     public List<RoutineItemRecord> getSystemRoutines() {
-        return this.systemRoutines;
-    }
-
-    @Override
-    protected void okPressed() {
-        super.okPressed();
+        return systemRoutines;
     }
 
 }

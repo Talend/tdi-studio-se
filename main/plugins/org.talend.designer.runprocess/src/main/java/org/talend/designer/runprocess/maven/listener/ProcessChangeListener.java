@@ -465,6 +465,7 @@ public class ProcessChangeListener implements PropertyChangeListener {
         if (allProcessTypes == null) {
             allProcessTypes = ERepositoryObjectType.getAllTypesOfProcess2();
         }
+        allProcessTypes.addAll(ERepositoryObjectType.getAllTypesOfCodesJar());
         return allProcessTypes;
     }
 

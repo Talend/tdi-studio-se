@@ -69,6 +69,7 @@ import org.talend.repository.model.IRepositoryNode;
 import org.talend.repository.model.IRepositoryNode.ENodeType;
 import org.talend.repository.model.IRepositoryNode.EProperties;
 import org.talend.repository.model.RepositoryNode;
+import org.talend.repository.ui.processor.CodesJarTypeProcessor;
 import org.talend.repository.ui.processor.ContextTypeProcessor;
 import org.talend.repository.ui.processor.HeaderFooterTypeProcessor;
 import org.talend.repository.ui.processor.JobTypeProcessor;
@@ -355,6 +356,10 @@ public class RepositoryReviewDialog extends Dialog {
 
         if (type == ERepositoryObjectType.METADATA_VALIDATION_RULES) {
             return new ValidationRuleTypeProcessor(repositoryType, elem);
+        }
+
+        if (ERepositoryObjectType.getAllTypesOfCodesJar().contains(type)) {
+            return new CodesJarTypeProcessor(repositoryType, type);
         }
 
         throw new IllegalArgumentException(Messages.getString("RepositoryReviewDialog.0", type)); //$NON-NLS-1$

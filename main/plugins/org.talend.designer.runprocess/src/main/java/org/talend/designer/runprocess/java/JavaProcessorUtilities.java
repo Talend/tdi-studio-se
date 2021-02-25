@@ -25,6 +25,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.jdt.core.IClasspathEntry;
@@ -74,7 +75,8 @@ import org.talend.designer.core.ui.editor.process.Process;
 import org.talend.designer.core.utils.BigDataJobUtil;
 import org.talend.designer.core.utils.JavaProcessUtil;
 import org.talend.designer.maven.tools.AggregatorPomsHelper;
-import org.talend.designer.maven.utils.PomUtil;
+import org.talend.designer.maven.tools.CodesJarM2CacheManager;
+import org.talend.designer.runprocess.IProcessor;
 import org.talend.designer.runprocess.IRunProcessService;
 import org.talend.designer.runprocess.ProcessorException;
 import org.talend.designer.runprocess.ProcessorUtilities;
@@ -141,10 +143,17 @@ public class JavaProcessorUtilities {
      *
      * @param process
      * @return
+     * @deprecated
      */
     public static Set<String> extractLibNamesOnlyForMapperAndReducer(IProcess2 process) {
         Set<String> libNames = extractLibNamesOnlyForMapperAndReducerWithoutRoutines(process);
-        libNames.addAll(PomUtil.getCodesExportJars(process));
+        libNames.addAll(JavaProcessUtil.getCodesExportJars(process));
+        return libNames;
+    }
+
+    public static Set<String> extractLibNamesOnlyForMapperAndReducer(IProcessor processor) {
+        Set<String> libNames = extractLibNamesOnlyForMapperAndReducerWithoutRoutines((IProcess2) processor.getProcess());
+        libNames.addAll(JavaProcessUtil.getCodesExportJars(processor));
         return libNames;
     }
 
@@ -153,25 +162,34 @@ public class JavaProcessorUtilities {
     }
 
     public static Set<ModuleNeeded> getNeededModulesForProcess(IProcess process, int options) {
-        Set<ModuleNeeded> neededLibraries = new TreeSet<ModuleNeeded>(new Comparator<ModuleNeeded>() {
+        Set<ModuleNeeded> neededLibraries = new TreeSet<>(new Comparator<ModuleNeeded>() {
 
             @Override
             public int compare(ModuleNeeded m1, ModuleNeeded m2) {
+                // FIXME still have possible bug if version 1.1 > 1.11
+                // should use MavenVersionHelper to compare version
                 int compareResult = m1.toString().compareTo(m2.toString());
                 return compareResult != 0 ? compareResult
-                        : JavaProcessUtil.getCoordinate(m1).compareTo(JavaProcessUtil.getCoordinate(m2));
+                        : MavenUrlHelper.getCoordinate(m1.getMavenUri())
+                                .compareTo(MavenUrlHelper.getCoordinate(m2.getMavenUri()));
             }
         });
 
+        boolean includeCodesJar = BitwiseOptionUtils.containOption(options, TalendProcessOptionConstants.MODULES_WITH_CODESJAR);
         Set<ModuleNeeded> neededModules;
         if (BitwiseOptionUtils.containOption(options, TalendProcessOptionConstants.MODULES_WITH_CHILDREN)) {
             neededModules = LastGenerationInfo.getInstance().getModulesNeededWithSubjobPerJob(process.getId(),
                 process.getVersion());
+            if (includeCodesJar) {
+                neededModules.addAll(LastGenerationInfo.getInstance().getCodesJarModulesNeededWithSubjobPerJob(process.getId(),
+                        process.getVersion()));
+            }
         } else {
             neededModules = LastGenerationInfo.getInstance().getModulesNeededPerJob(process.getId(),
                     process.getVersion());
             Set<ModuleNeeded> neededModulesWithSubjobs = LastGenerationInfo.getInstance().getModulesNeededWithSubjobPerJob(process.getId(),
                     process.getVersion());
+
             Iterator<ModuleNeeded> it = neededModules.iterator();
             while(it.hasNext()) {
                 ModuleNeeded module = it.next();
@@ -180,22 +198,21 @@ public class JavaProcessorUtilities {
                     it.remove();
                 }
             }
+            if (includeCodesJar) {
+                neededModules.addAll(
+                        LastGenerationInfo.getInstance().getCodesJarModulesNeededPerJob(process.getId(), process.getVersion()));
+            }
         }
         neededLibraries.addAll(neededModules);
 
-        if (process == null || !(process instanceof IProcess2)) {
-            if (neededLibraries.isEmpty() && process != null) {
+        if (!(process instanceof IProcess2)) {
+            if (neededLibraries.isEmpty()) {
                 neededLibraries = process.getNeededModules(options);
                 if (neededLibraries == null) {
                     neededLibraries = new HashSet<ModuleNeeded>();
-                    // for (ModuleNeeded moduleNeeded : ModulesNeededProvider.getModulesNeeded()) {
-                    // neededLibraries.add(moduleNeeded.getModuleName());
-                    // }
                 }
             } else {
-                for (ModuleNeeded moduleNeeded : ModulesNeededProvider.getRunningModules()) {
-                    neededLibraries.add(moduleNeeded);
-                }
+                neededLibraries.addAll(ModulesNeededProvider.getRunningModules(false));
             }
             return neededLibraries;
         }
@@ -203,18 +220,15 @@ public class JavaProcessorUtilities {
         if (neededLibraries.isEmpty()) {
             neededLibraries = process.getNeededModules(options);
             if (neededLibraries == null) {
-                neededLibraries = new HashSet<ModuleNeeded>();
-                for (ModuleNeeded moduleNeeded : ModulesNeededProvider.getModulesNeeded()) {
-                    neededLibraries.add(moduleNeeded);
-                }
+                neededLibraries = new HashSet<>();
+                neededLibraries.addAll(ModulesNeededProvider.getModulesNeeded());
             }
         } else {
             if (property != null && property.getItem() instanceof ProcessItem) {
-                neededLibraries
-                        .addAll(ModulesNeededProvider.getModulesNeededForProcess((ProcessItem) property.getItem(), process));
-
+                neededLibraries.addAll(ModulesNeededProvider.getCodesModulesNeededForProcess((ProcessItem) property.getItem(),
+                        process, includeCodesJar));
             } else {
-                for (ModuleNeeded moduleNeeded : ModulesNeededProvider.getRunningModules()) {
+                for (ModuleNeeded moduleNeeded : ModulesNeededProvider.getRunningModules(false)) {
                     neededLibraries.add(moduleNeeded);
                 }
             }
@@ -443,9 +457,10 @@ public class JavaProcessorUtilities {
             handleMissingJarsForProcess(missingJarsForRoutinesOnly, missingJarsForProcessOnly, missingJars);
         }
         if (ModulesNeededProvider.installModuleForRoutineOrBeans()) {
-            AggregatorPomsHelper ph = new AggregatorPomsHelper();
             try {
-                ph.updateCodeProjects(new NullProgressMonitor(), false, true);
+                IProgressMonitor monitor = new NullProgressMonitor();
+                new AggregatorPomsHelper().updateCodeProjects(monitor, false, true);
+                CodesJarM2CacheManager.updateCodesJarProject(monitor);
                 ModulesNeededProvider.setInstallModuleForRoutineOrBeans();
             } catch (Exception e) {
                 CommonExceptionHandler.process(e);
