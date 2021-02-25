@@ -9,6 +9,7 @@ imports="
 		org.talend.core.model.process.IConnection
 		org.talend.commons.utils.generation.CodeGenerationUtils
 		java.util.List
+		java.util.ArrayList
 		java.util.LinkedList
     java.util.StringJoiner
 		java.util.Map;
@@ -203,6 +204,10 @@ class Column{
 
 	boolean addCol;
 
+	IMetadataColumn column;
+
+	List<Column> replacement = new ArrayList<Column>();
+
 	public Column(IMetadataColumn column){
 		String columname = column.getOriginalDbColumnName();
 		if(columname!=null && columname.trim().length()>0){
@@ -213,6 +218,18 @@ class Column{
 		this.sqlStmt = "=?";
 		this.value = "?";
 		this.addCol =false;
+	}
+
+	public boolean isReplaced(){
+		return replacement.size()>0;
+	}
+
+	public List<Column> getReplacement(){
+		return this.replacement;
+	}
+
+	public IMetadataColumn getColumn(){
+		return this.column;
 	}
 
 	public String getName(){
@@ -238,6 +255,8 @@ if(columnList != null && columnList.size()>0){
 StringBuilder insertColName = new StringBuilder();
 
 StringBuilder insertValueStmt = new StringBuilder();
+StringBuilder updateSetStmt = new StringBuilder();
+StringBuilder updateWhereStmt = new StringBuilder();
 
 List<Column> stmtStructure =  new LinkedList<Column>();
 
@@ -251,30 +270,55 @@ int counterOuter =0;
 List<Map<String, String>> setColumns = (List<Map<String,String>>)ElementParameterParser.getObjectValue(node, "__SET_COLUMN__");
 boolean isUpdate = "UPDATE".equals(dataAction);
 String suffix = ",";
-StringJoiner updateSetStmt = new StringJoiner(suffix);
+
+boolean firstKey = true;
+boolean firstNoneKey = true;
+
 for(Column colStmt:stmtStructure){
+	if(colStmt.isReplaced()){
+		List<Column> replacedColumns = colStmt.getReplacement();
+		int counterReplace = 0;
+		if(counterOuter==(stmtStructure.size()-1) && counterReplace==(replacedColumns.size()-1) ){
+			suffix = "";
+		}
+		for(Column replacement:replacedColumns){
+			insertColName.append(replacement.getName() + suffix);
+			insertValueStmt.append(replacement.getSqlStmt() + suffix);
+			if(!colStmt.getColumn().isKey()){
+				if(!firstNoneKey){
+					updateSetStmt.append(",");
+				}else{
+					firstNoneKey = false;
+				}
+				updateSetStmt.append(replacement.getName());
+				updateSetStmt.append(replacement.getSqlStmt());
+			}else{
+				if(!firstKey){
+					updateWhereStmt.append(" AND ");
+				}else{
+					firstKey = false;
+				}
+				updateWhereStmt.append(replacement.getName());
+				updateWhereStmt.append(replacement.getSqlStmt());
+			}
+			counterReplace++;
+		}
+	}else{
 		if(counterOuter==(stmtStructure.size()-1)){
 			suffix = "";
 		}
-    boolean isUpdateColumn = "true".equals(setColumns.get(counterOuter).get("UPDATE_COLUMN"));
 		if(colStmt.isAddCol()){
 			insertColName.append(colStmt.getName()+suffix);
 			insertValueStmt.append(colStmt.getSqlStmt()+suffix);
-      if (isUpdate && isUpdateColumn) {
-        updateSetStmt.add(colStmt.getName() + colStmt.getSqlStmt());
-      }
+			updateSetStmt.append(colStmt.getName());
+			updateSetStmt.append(colStmt.getSqlStmt()+suffix);
 		}else{
 			insertColName.append(colStmt.getName()+suffix);
 			insertValueStmt.append(colStmt.getValue()+suffix);
-      if (isUpdate && isUpdateColumn) {
-        updateSetStmt.add(
-                colStmt.getName()
-                + "= \"+ strUtil_"
-                + cid
-                + ".transform(routines.system.StringUtils.splitSQLColumns(selectQueryColumnsName_"+ cid +")[" + counterOuter + "]) +\"");
-      }
+			updateSetStmt.append(colStmt.getName()+"=(\"+select_query_"+ cid +".replaceFirst(java.util.regex.Pattern.quote(selectQueryColumnsName_"+ cid +"),routines.system.StringUtils.splitSQLColumns(selectQueryColumnsName_"+ cid +")[ "+ counterOuter + "])+\")" +suffix);
 		}
-		counterOuter ++;
+	}
+	counterOuter ++;
 }
 %>
 	String tableName_<%=cid%> = <%=tableName%>;
@@ -293,13 +337,14 @@ try{
 }
 <%
 	}else if (("UPDATE").equals(dataAction)){
+
 %>
-		StringBuffer updateQuery_<%=cid %> = new StringBuffer("UPDATE "+tableName_<%=cid%>+" FROM (" + select_query_<%=cid %> + ") src SET <%=updateSetStmt.toString()%>");
+		StringBuffer updateQuery_<%=cid %> = new StringBuffer("UPDATE "+<%=tableName%>+" SET <%=updateSetStmt.toString()%> ");
 <%
 		if(!useWhereTable) {
 			if(CodeGenerationUtils.hasAlphaNumericCharacter(whereClause)) {
 %>
-				updateQuery_<%=cid %>.append("  WHERE " + <%=CodeGenerationUtils.replaceAllCrBySpace(whereClause)%>);
+				updateQuery_<%=cid %>.append(" WHERE " + <%=CodeGenerationUtils.replaceAllCrBySpace(whereClause)%>);
 <%
 			}
 		} else {
@@ -320,6 +365,7 @@ try{
 			}
 		}
 %>
+
 		try{
 			pstmt_<%=cid %> = conn_<%=cid%>.prepareStatement(updateQuery_<%=cid %>.toString());
 		} catch (Exception e){
