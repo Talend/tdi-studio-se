@@ -22,6 +22,7 @@ import org.eclipse.jface.window.Window;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
+import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.ui.gmf.util.DisplayUtils;
 import org.talend.commons.ui.swt.dialogs.ErrorDialogWithDetailAreaAndContinueButton;
 import org.talend.core.database.EDatabaseTypeName;
@@ -121,34 +122,39 @@ public class OpenSQLBuilderDialogJob extends Job {
                 Display.getDefault().asyncExec(new Runnable() {
 
                     public void run() {
-                        Shell parentShell = DisplayUtils.getDefaultShell(false);
-                        if (elem instanceof Node) {
-                            TextUtil.setDialogTitle(process.getName(), (String) ((Node) elem).getElementParameter("LABEL") //$NON-NLS-1$
-                                    .getValue(), elem.getElementName());
-                        } else {
-                            TextUtil.setDialogTitle(process.getName(), null, null);
-                        }
-                        SQLBuilderDialog dial = new SQLBuilderDialog(parentShell);
-                        UIUtils.addSqlBuilderDialog(process.getName(), dial);
+                        try {
+                            Shell parentShell = DisplayUtils.getDefaultShell(false);
+                            if (elem instanceof Node) {
+                                TextUtil.setDialogTitle(process.getName(), (String) ((Node) elem).getElementParameter("LABEL") //$NON-NLS-1$
+                                        .getValue(), elem.getElementName());
+                            } else {
+                                TextUtil.setDialogTitle(process.getName(), null, null);
+                            }
+                            SQLBuilderDialog dial = new SQLBuilderDialog(parentShell);
+                            dial.setBlockOnOpen(true);
+                            UIUtils.addSqlBuilderDialog(process.getName(), dial);
 
-                        dial.setConnParameters(connectionParameters);
-                        if (Window.OK == dial.open()) {
-                            if (!composite.isDisposed() && !connectionParameters.isNodeReadOnly()) {
-                                if (EParameterFieldType.DBTABLE.equals(connectionParameters.getFieldType())) {
-                                    // final String selectDBTable = connectionParameters.getSelectDBTable();
-                                    // if (selectDBTable != null) {
-                                    // Command cmd = new PropertyChangeCommand(elem, propertyName, TalendTextUtils
-                                    // .addSQLQuotes(selectDBTable));
-                                    // commandStack.execute(cmd);
-                                    // }
-                                } else {
-                                    String sql = connectionParameters.getQuery();
-                                    sql = QueryUtil.checkAndAddQuotes(sql);
-                                    PropertyChangeCommand cmd = new PropertyChangeCommand(elem, propertyName, sql);
-                                    cmd.setUpdate(true);
-                                    commandStack.execute(cmd);
+                            dial.setConnParameters(connectionParameters);
+                            if (Window.OK == dial.open()) {
+                                if (!composite.isDisposed() && !connectionParameters.isNodeReadOnly()) {
+                                    if (EParameterFieldType.DBTABLE.equals(connectionParameters.getFieldType())) {
+                                        // final String selectDBTable = connectionParameters.getSelectDBTable();
+                                        // if (selectDBTable != null) {
+                                        // Command cmd = new PropertyChangeCommand(elem, propertyName, TalendTextUtils
+                                        // .addSQLQuotes(selectDBTable));
+                                        // commandStack.execute(cmd);
+                                        // }
+                                    } else {
+                                        String sql = connectionParameters.getQuery();
+                                        sql = QueryUtil.checkAndAddQuotes(sql);
+                                        PropertyChangeCommand cmd = new PropertyChangeCommand(elem, propertyName, sql);
+                                        cmd.setUpdate(true);
+                                        commandStack.execute(cmd);
+                                    }
                                 }
                             }
+                        } catch (Exception e) {
+                            ExceptionHandler.process(e);
                         }
                     }
 
