@@ -195,7 +195,11 @@ public class DbMapComponent extends AbstractMapComponent {
                 useAliasInOutputTableEP.setReadOnly(false);
                 //
                 if (getGenerationManager() instanceof OracleGenerationManager) {
-                    getGenerationManager().setUseAliasInOutputTable(true);
+                    boolean disableAlias = Boolean
+                            .valueOf(System.getProperty("elt.oracle.disableColumnAlias", Boolean.FALSE.toString())); //$NON-NLS-1$
+                    if (!disableAlias) {
+                        getGenerationManager().setUseAliasInOutputTable(true);
+                    }
                 }
                 List<IElementParameter> elemParams = (List<IElementParameter>) origNode.getElementParameters();
                 elemParams.add(useAliasInOutputTableEP);
