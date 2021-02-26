@@ -74,6 +74,7 @@ public class JobSettingsManager {
 
     private static boolean isTeamEdition = PluginChecker.isTeamEdition();
 
+
     public static List<IElementParameter> getJobSettingsParameters(IProcess process) {
         List<IElementParameter> paramList = new ArrayList<IElementParameter>();
         // for extra
@@ -1335,14 +1336,17 @@ public class JobSettingsManager {
 
         static String doAddMark4SpecialChar(String sequence) {
             String filedSeparator = TalendQuoteUtils.removeQuotes(sequence);
-            for (String charStr : METADATA_CHAR) {
-                if (!filedSeparator.contains(charStr)) {
-                    continue;
-                }
-                if("\\".equals(charStr)) {
-                    filedSeparator = addMarkWithChar(filedSeparator, charStr, "\\\\\\", true); //$NON-NLS-1$
-                }else {
-                    filedSeparator = addMarkWithChar(filedSeparator, charStr, "\\\\", true); //$NON-NLS-1$
+            // add only \t for file separator as special case here , to not break something else
+            if (!"\\t".equals(filedSeparator)) {
+                for (String charStr : METADATA_CHAR) {
+                    if (!filedSeparator.contains(charStr)) {
+                        continue;
+                    }
+                    if ("\\".equals(charStr)) {
+                        filedSeparator = addMarkWithChar(filedSeparator, charStr, "\\\\\\", true); //$NON-NLS-1$
+                    } else {
+                        filedSeparator = addMarkWithChar(filedSeparator, charStr, "\\\\", true); //$NON-NLS-1$
+                    }
                 }
             }
             filedSeparator = TalendQuoteUtils.addQuotes(filedSeparator);

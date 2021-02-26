@@ -642,6 +642,16 @@
         }
 %>
 
+        boolean inOSGi = routines.system.BundleUtils.inOSGi();
+
+        if (inOSGi) {
+            java.util.Dictionary<String, Object> jobProperties = routines.system.BundleUtils.getJobProperties(jobName);
+
+            if (jobProperties != null) {
+                contextStr = (String)jobProperties.get("context");
+            }
+        }
+
         try {
             //call job/subjob with an existing context, like: --context=production. if without this parameter, there will use the default context instead.
             java.io.InputStream inContext = <%=className%>.class.getClassLoader().getResourceAsStream("<%=jobClassPackageFolder%>/contexts/" + contextStr + ".properties");
