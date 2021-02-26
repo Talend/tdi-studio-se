@@ -12,6 +12,7 @@
 // ============================================================================
 package org.talend.sqlbuilder.ui;
 
+import org.apache.log4j.Logger;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
@@ -69,6 +70,8 @@ public class OpenSQLBuilderDialogJob extends Job {
 
     private AbstractElementPropertySectionController controller;
 
+    private static final Logger log = Logger.getLogger(OpenSQLBuilderDialogJob.class);
+
     /**
      * DOC dev OpenDialogJob constructor comment.
      *
@@ -106,6 +109,7 @@ public class OpenSQLBuilderDialogJob extends Job {
      */
     @Override
     protected IStatus run(IProgressMonitor monitor) {
+        log.info("start to open dialog...");
         loginProgress = new OpenSQLBuilderDialogProgress(connectionParameters, manager, composite);
         Object obj = controller.getDynamicProperty().getPart();
         Process p = null;
@@ -117,6 +121,7 @@ public class OpenSQLBuilderDialogJob extends Job {
         final Process process = p;
         try {
             loginProgress.run(monitor);
+            log.info("loginProgress done");
             if (EDatabaseTypeName.ACCESS.getDisplayName().equals(connectionParameters.getDbType())
                     || connectionParameters.isStatus()) {
                 Display.getDefault().asyncExec(new Runnable() {
@@ -130,12 +135,14 @@ public class OpenSQLBuilderDialogJob extends Job {
                             } else {
                                 TextUtil.setDialogTitle(process.getName(), null, null);
                             }
+                            log.info("SQLBuilderDialog creating");
                             SQLBuilderDialog dial = new SQLBuilderDialog(parentShell);
                             dial.setBlockOnOpen(true);
                             UIUtils.addSqlBuilderDialog(process.getName(), dial);
 
                             dial.setConnParameters(connectionParameters);
                             if (Window.OK == dial.open()) {
+                                log.info("SQLBuilderDialog opened");
                                 if (!composite.isDisposed() && !connectionParameters.isNodeReadOnly()) {
                                     if (EParameterFieldType.DBTABLE.equals(connectionParameters.getFieldType())) {
                                         // final String selectDBTable = connectionParameters.getSelectDBTable();
@@ -154,6 +161,7 @@ public class OpenSQLBuilderDialogJob extends Job {
                                 }
                             }
                         } catch (Exception e) {
+                            log.error(e);
                             ExceptionHandler.process(e);
                         }
                     }
