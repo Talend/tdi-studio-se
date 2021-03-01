@@ -15,14 +15,15 @@
  */
 package org.talend.sdk.component.studio;
 
-import static java.util.Collections.*;
-import static java.util.Optional.*;
-import static org.apache.ziplock.JarLocation.*;
-import static org.junit.jupiter.api.Assertions.*;
+import static java.util.Collections.emptyList;
+import static java.util.Collections.emptyMap;
+import static java.util.Optional.ofNullable;
+import static org.apache.ziplock.JarLocation.jarLocation;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.lang.reflect.Field;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
