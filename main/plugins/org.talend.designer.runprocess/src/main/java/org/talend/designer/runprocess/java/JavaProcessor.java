@@ -76,7 +76,6 @@ import org.eclipse.jdt.debug.core.JDIDebugModel;
 import org.eclipse.jdt.internal.ui.JavaPlugin;
 import org.eclipse.jdt.internal.ui.text.java.JavaFormattingStrategy;
 import org.eclipse.jdt.launching.IJavaLaunchConfigurationConstants;
-import org.eclipse.jdt.launching.sourcelookup.advanced.AdvancedJavaLaunchDelegate;
 import org.eclipse.jdt.ui.text.IJavaPartitions;
 import org.eclipse.jdt.ui.text.JavaTextTools;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -134,6 +133,7 @@ import org.talend.core.runtime.process.TalendProcessOptionConstants;
 import org.talend.core.runtime.projectsetting.RuntimeLineageManager;
 import org.talend.core.ui.services.IRulesProviderService;
 import org.talend.core.utils.BitwiseOptionUtils;
+import org.talend.core.utils.TalendQuoteUtils;
 import org.talend.designer.codegen.ICodeGenerator;
 import org.talend.designer.codegen.ICodeGeneratorService;
 import org.talend.designer.core.DesignerPlugin;
@@ -1910,7 +1910,11 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
             String encryptionFilePath = System.getProperty(StudioKeysFileCheck.ENCRYPTION_KEY_FILE_SYS_PROP);
             File encryptionFile = new File(encryptionFilePath);
             if (encryptionFile.exists()) {
-                vmArguments.append(StudioKeysFileCheck.ENCRYPTION_KEY_FILE_JVM_PARAM + "=" + encryptionFile.toURI().getPath());
+                String encryptFilePath = encryptionFile.toURI().getPath();
+                if (EnvironmentUtils.isWindowsSystem()) {
+                    encryptFilePath = TalendQuoteUtils.addQuotes(encryptionFilePath);
+                }
+                vmArguments.append(StudioKeysFileCheck.ENCRYPTION_KEY_FILE_JVM_PARAM + "=" + encryptFilePath);
             }
             wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_VM_ARGUMENTS, vmArguments.toString());
         }
