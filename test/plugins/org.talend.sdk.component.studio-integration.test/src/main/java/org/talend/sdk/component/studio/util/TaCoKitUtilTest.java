@@ -12,7 +12,10 @@
 // ============================================================================
 package org.talend.sdk.component.studio.util;
 
+import static java.util.Collections.emptyMap;
+
 import java.util.Arrays;
+import java.util.Collections;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -31,7 +34,7 @@ public class TaCoKitUtilTest {
         final ComponentId id = new ComponentId("Y291Y2hiYXNlI0NvdWNoYmFzZSNJbnB1dA", "Y291Y2hiYXNlI0NvdWNoYmFzZQ", "test",
                 "org.test.components:test:1.1.0-SNAPSHOT", "Test", "Input");
         final ComponentIndex index = new ComponentIndex(id, "Test Input", null, null, null, 1, Arrays.asList("Local", "File"),
-                null);
+                                                        null, emptyMap());
         String displayName = TaCoKitUtil.getDisplayName(index);
         Assert.assertEquals("TestInput", displayName);//$NON-NLS-1$
     }
@@ -41,7 +44,7 @@ public class TaCoKitUtilTest {
         final ComponentId id = new ComponentId("Y291Y2hiYXNlI0NvdWNoYmFzZSNJbnB1dA", "Y291Y2hiYXNlI0NvdWNoYmFzZQ", "test",
                 "org.talend.components:test:1.1.0-SNAPSHOT", "Test", "Input");
         final ComponentIndex index = new ComponentIndex(id, "Test Input", null, null, null, 1, Arrays.asList("Local", "File"),
-                null);
+                null, emptyMap());
         String displayName = TaCoKitUtil.getDisplayName(index);
         Assert.assertEquals("tTestInput", displayName);//$NON-NLS-1$
     }
@@ -56,7 +59,7 @@ public class TaCoKitUtilTest {
         final ComponentId id = new ComponentId("Y291Y2hiYXNlI0NvdWNoYmFzZSNJbnB1dA", "Y291Y2hiYXNlI0NvdWNoYmFzZQ", "test", "",
                 "Test", "Input");
         final ComponentIndex index = new ComponentIndex(id, "Test Input", null, null, null, 1, Arrays.asList("Local", "File"),
-                null);
+                null, emptyMap());
         Assert.assertFalse(TaCoKitUtil.isTaCoKitComponentMadeByTalend(index));
     }
 
@@ -65,7 +68,7 @@ public class TaCoKitUtilTest {
         final ComponentId id = new ComponentId("Y291Y2hiYXNlI0NvdWNoYmFzZSNJbnB1dA", "Y291Y2hiYXNlI0NvdWNoYmFzZQ", "test",
                 "org.test.components:test:1.1.0-SNAPSHOT", "Test", "Input");
         final ComponentIndex index = new ComponentIndex(id, "Test Input", null, null, null, 1, Arrays.asList("Local", "File"),
-                null);
+                null, emptyMap());
         Assert.assertFalse(TaCoKitUtil.isTaCoKitComponentMadeByTalend(index));
     }
 
@@ -74,7 +77,7 @@ public class TaCoKitUtilTest {
         final ComponentId id = new ComponentId("Y291Y2hiYXNlI0NvdWNoYmFzZSNJbnB1dA", "Y291Y2hiYXNlI0NvdWNoYmFzZQ", "test",
                 "org.talend.components:test:1.1.0-SNAPSHOT", "Test", "Input");
         final ComponentIndex index = new ComponentIndex(id, "Test Input", null, null, null, 1, Arrays.asList("Local", "File"),
-                null);
+                null, emptyMap());
         Assert.assertTrue(TaCoKitUtil.isTaCoKitComponentMadeByTalend(index));
     }
 }
