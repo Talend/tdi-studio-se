@@ -812,27 +812,34 @@ public class DefaultRunProcessService implements IRunProcessService {
     }
 
     private void initRefPoms(Project refProject) throws Exception {
-        for (ProjectReference ref : refProject.getProjectReferenceList(true)) {
-            initRefPoms(new Project(ref.getReferencedProject()));
-        }
-        AggregatorPomsHelper refHelper = new AggregatorPomsHelper(refProject.getTechnicalLabel());
-
-        // install ref project pom.
-        refHelper.installRootPom(true);
-
-        // install ref codes project.
-        IProgressMonitor monitor = new NullProgressMonitor();
-        installRefCodeProject(ERepositoryObjectType.ROUTINES, refHelper, monitor);
-
-        if (ProcessUtils.isRequiredPigUDFs(null, refProject)) {
-            installRefCodeProject(ERepositoryObjectType.PIG_UDF, refHelper, monitor);
-        }
-
-        if (ProcessUtils.isRequiredBeans(null, refProject)) {
-            installRefCodeProject(ERepositoryObjectType.valueOf("BEANS"), refHelper, monitor); //$NON-NLS-1$
-        }
-
-        deleteRefProjects(refProject, refHelper);
+        
+    	AggregatorPomsHelper refHelper = new AggregatorPomsHelper(refProject.getTechnicalLabel());
+    	
+    	try {
+    		
+	    	for (ProjectReference ref : refProject.getProjectReferenceList(true)) {
+	            initRefPoms(new Project(ref.getReferencedProject()));
+	        }
+	        
+	        // install ref project pom.
+	        refHelper.installRootPom(true);
+	
+	        // install ref codes project.
+	        IProgressMonitor monitor = new NullProgressMonitor();
+	        installRefCodeProject(ERepositoryObjectType.ROUTINES, refHelper, monitor);
+	
+	        if (ProcessUtils.isRequiredPigUDFs(null, refProject)) {
+	            installRefCodeProject(ERepositoryObjectType.PIG_UDF, refHelper, monitor);
+	        }
+	
+	        if (ProcessUtils.isRequiredBeans(null, refProject)) {
+	            installRefCodeProject(ERepositoryObjectType.valueOf("BEANS"), refHelper, monitor); //$NON-NLS-1$
+	        }
+	        
+    	} finally  {
+    		deleteRefProjects(refProject, refHelper);
+    	}
+        
     }
     
     private void installRefCodeProject(ERepositoryObjectType codeType, AggregatorPomsHelper refHelper, IProgressMonitor monitor)
