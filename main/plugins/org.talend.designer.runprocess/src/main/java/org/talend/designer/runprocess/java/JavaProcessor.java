@@ -1524,9 +1524,14 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
         Set<String> classPaths = new HashSet<>();
         EList<RoutinesParameterType> routinesParameter = null;
         if (item instanceof ProcessItem) {
-            routinesParameter = ((ProcessItem) item).getProcess().getParameters().getRoutinesParameter();
+            if (((ProcessItem) item).getProcess() != null && ((ProcessItem) item).getProcess().getParameters() != null) {
+                routinesParameter = ((ProcessItem) item).getProcess().getParameters().getRoutinesParameter();
+            }
         } else if (item instanceof JobletProcessItem) {
-            routinesParameter = ((JobletProcessItem) item).getJobletProcess().getParameters().getRoutinesParameter();
+            if (((JobletProcessItem) item).getJobletProcess() != null
+                    && ((JobletProcessItem) item).getJobletProcess().getParameters() != null) {
+                routinesParameter = ((JobletProcessItem) item).getJobletProcess().getParameters().getRoutinesParameter();
+            }
         }
         if (routinesParameter != null) {
             routinesParameter.stream().filter(r -> r.getType() != null).forEach(r -> {
