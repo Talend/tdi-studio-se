@@ -1910,10 +1910,7 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
             String encryptionFilePath = System.getProperty(StudioKeysFileCheck.ENCRYPTION_KEY_FILE_SYS_PROP);
             File encryptionFile = new File(encryptionFilePath);
             if (encryptionFile.exists()) {
-                String encryptFilePath = encryptionFile.toURI().getPath();
-                if (EnvironmentUtils.isWindowsSystem()) {
-                    encryptFilePath = TalendQuoteUtils.addQuotes(encryptionFilePath);
-                }
+                String encryptFilePath = TalendQuoteUtils.addQuotes(encryptionFile.toURI().getPath());
                 vmArguments.append(StudioKeysFileCheck.ENCRYPTION_KEY_FILE_JVM_PARAM + "=" + encryptFilePath);
             }
             wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_VM_ARGUMENTS, vmArguments.toString());
