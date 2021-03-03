@@ -95,7 +95,11 @@ public class CodesJarChangeListener implements PropertyChangeListener {
             change.perform(new NullProgressMonitor());
             TalendJavaProjectManager.deleteTalendCodesJarProject(type,
                     ProjectManager.getInstance().getProject(property).getTechnicalLabel(), oldName, true);
-            CodesJarM2CacheManager.updateCodesJarProject(property, !property.getLabel().equals(oldName));
+            boolean isLabelChanged = !property.getLabel().equals(oldName);
+            if (isLabelChanged) {
+                CodesJarM2CacheManager.deleteCodesJarProjectCache(CodesJarInfo.create(property));
+            }
+            CodesJarM2CacheManager.updateCodesJarProject(property, isLabelChanged);
         }
     }
 
@@ -108,6 +112,7 @@ public class CodesJarChangeListener implements PropertyChangeListener {
                     updateModifiedDateForCodesJar(property.getItem());
                 } else if (needUpdate(property.getItem())) {
                     CodesJarResourceCache.removeCache(property);
+                    CodesJarM2CacheManager.deleteCodesJarProjectCache(CodesJarInfo.create(property));
                     TalendJavaProjectManager.deleteTalendCodesJarProject(property, true);
                 }
             }
