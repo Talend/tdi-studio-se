@@ -12,6 +12,7 @@
 // ============================================================================
 package org.talend.repository.view.di.viewer.tester;
 
+import org.talend.core.PluginChecker;
 import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.repository.model.RepositoryNode;
 import org.talend.repository.tester.AbstractNodeTester;
@@ -20,12 +21,16 @@ public class RoutinesJarNodeTester extends AbstractNodeTester {
 
     private static final String IS_ROUTINESJAR = "isRoutinesJar"; //$NON-NLS-1$
 
+    private static final String IS_NEED_SHOW_CUSTOMJAR_NODE = "isNeedShowCustomJarNode"; //$NON-NLS-1$
+
     @Override
     protected Boolean testProperty(Object receiver, String property, Object[] args, Object expectedValue) {
         if (receiver instanceof RepositoryNode) {
             RepositoryNode repositoryNode = (RepositoryNode) receiver;
             if (IS_ROUTINESJAR.equals(property)) {
                 return isRoutinesJar(repositoryNode);
+            } else if (IS_NEED_SHOW_CUSTOMJAR_NODE.equals(property)) {
+                return PluginChecker.isTIS();
             }
         }
         return null;
