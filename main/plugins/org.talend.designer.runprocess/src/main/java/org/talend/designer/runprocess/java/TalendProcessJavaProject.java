@@ -109,6 +109,11 @@ public class TalendProcessJavaProject implements ITalendProcessJavaProject {
     }
 
     @Override
+    public boolean exists() {
+        return javaProject != null && javaProject.exists();
+    }
+
+    @Override
     public IFile getProjectPom() {
         return getProject().getFile(TalendMavenConstants.POM_FILE_NAME);
     }

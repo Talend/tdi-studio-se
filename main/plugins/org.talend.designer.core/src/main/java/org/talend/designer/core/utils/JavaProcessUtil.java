@@ -33,6 +33,7 @@ import java.util.stream.Stream;
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.emf.common.util.EList;
 import org.talend.commons.exception.ExceptionHandler;
+import org.talend.commons.exception.PersistenceException;
 import org.talend.commons.runtime.service.ITaCoKitService;
 import org.talend.commons.utils.generation.JavaUtils;
 import org.talend.commons.utils.resource.FileExtensions;
@@ -61,6 +62,7 @@ import org.talend.core.runtime.maven.MavenConstants;
 import org.talend.core.runtime.maven.MavenUrlHelper;
 import org.talend.core.runtime.process.LastGenerationInfo;
 import org.talend.core.runtime.process.TalendProcessOptionConstants;
+import org.talend.core.ui.ITestContainerProviderService;
 import org.talend.core.utils.BitwiseOptionUtils;
 import org.talend.core.utils.CodesJarResourceCache;
 import org.talend.designer.core.IDesignerCoreService;
@@ -973,16 +975,25 @@ public class JavaProcessUtil {
 
     private static Set<String> getCodesJarExportJarsWithChildren(IProcessor processor) {
         Set<String> codesJars = new HashSet<>();
-        codesJars.addAll(getCodesJarExportJarFromRoutinesParameterType(
-                RoutinesUtil.getRoutinesParametersFromItem(processor.getProperty().getItem())));
+        Item item = processor.getProperty().getItem();
+        ITestContainerProviderService testContainerService = ITestContainerProviderService.get();
+        if (testContainerService != null && testContainerService.isTestContainerItem(item)) {
+            try {
+                item = testContainerService.getParentJobItem(item);
+            } catch (PersistenceException e) {
+                ExceptionHandler.process(e);
+            }
+        }
+        codesJars.addAll(getCodesJarExportJarFromRoutinesParameterType(RoutinesUtil.getRoutinesParametersFromItem(item)));
         processor.getBuildChildrenJobsAndJoblets().forEach(info -> codesJars
                 .addAll(getCodesJarExportJarFromRoutinesParameterType(RoutinesUtil.getRoutinesParametersFromJobInfo(info))));
         return codesJars;
     }
 
     private static Set<String> getCodesJarExportJarFromRoutinesParameterType(List<RoutinesParameterType> routinesParameters) {
-        return routinesParameters.stream().filter(r -> r.getType() != null).map(
-                r -> CodesJarResourceCache.getCodesJarById(r.getId()).getProperty().getLabel().toLowerCase() + FileExtensions.JAR_FILE_SUFFIX)
+        return routinesParameters.stream().filter(r -> r.getType() != null)
+                .map(r -> CodesJarResourceCache.getCodesJarById(r.getId())).filter(info -> info != null)
+                .map(info -> info.getProperty().getLabel().toLowerCase() + FileExtensions.JAR_FILE_SUFFIX)
                 .collect(Collectors.toSet());
     }
 

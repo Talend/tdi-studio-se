@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.log4j.Level;
 import org.eclipse.core.resources.IFile;
@@ -881,18 +882,11 @@ public class DefaultRunProcessService implements IRunProcessService {
                 initRefPoms(new Project(ref.getReferencedProject()));
             }
             helper.updateRefProjectModules(references, monitor);
-            helper.updateCodeProjects(monitor, true);
+            helper.updateCodeProjects(monitor, true, false, true);
 
             CodesJarM2CacheManager.updateCodesJarProject(monitor);
-            for (CodesJarInfo info : CodesJarResourceCache.getAllCodesJars()) {
-                // if (!info.isInCurrentMainProject()) {
-                // }
-                ITalendProcessJavaProject refCodesJarProject = getExistingTalendCodesJarProject(info);
-                if (refCodesJarProject != null) {
-                    refCodesJarProject.getProject().delete(false, true, monitor);
-                    TalendJavaProjectManager.removeFromCodesJarJavaProjects(info);
-                }
-            }
+            CodesJarResourceCache.getAllCodesJars().stream().filter(info -> getExistingTalendCodesJarProject(info) != null)
+                    .forEach(info -> TalendJavaProjectManager.deleteTalendCodesJarProject(info, false));
         } catch (Exception e) {
             ExceptionHandler.process(e);
         }
@@ -913,6 +907,12 @@ public class DefaultRunProcessService implements IRunProcessService {
             if (CodeM2CacheManager.needUpdateCodeProject(refProject, codeType)) {
                 installRefCodeProject(codeType, refHelper, monitor);
                 CodeM2CacheManager.updateCodeProjectCache(refProject, codeType);
+            } else {
+                ITalendProcessJavaProject codeProject = TalendJavaProjectManager.getExistingTalendCodeProject(codeType,
+                        refHelper.getProjectTechName());
+                if (codeProject != null) {
+                    codeProject.buildWholeCodeProject();
+                }
             }
         }
 
@@ -962,8 +962,14 @@ public class DefaultRunProcessService implements IRunProcessService {
     }
 
     @Override
-    public void removeFromCodesJarJavaProjects(CodesJarInfo info) {
-        TalendJavaProjectManager.removeFromCodesJarJavaProjects(info);
+    public void deleteTalendCodesJarProject(CodesJarInfo info, boolean deleteContent) {
+        TalendJavaProjectManager.deleteTalendCodesJarProject(info, deleteContent);
+    }
+
+    @Override
+    public void deleteTalendCodesJarProject(ERepositoryObjectType type, String projectTechName, String codesJarName,
+            boolean deleteContent) {
+        TalendJavaProjectManager.deleteTalendCodesJarProject(type, projectTechName, codesJarName, deleteContent);
     }
 
     @Override
@@ -1044,6 +1050,29 @@ public class DefaultRunProcessService implements IRunProcessService {
     @Override
     public boolean isExcludeDeletedItems(Property property) {
         return PomIdsHelper.getIfExcludeDeletedItems(property);
+    }
+
+    public void buildCodesForTDM() {
+        IProgressMonitor monitor = new NullProgressMonitor();
+        ERepositoryObjectType.getAllTypesOfCodes().forEach(type -> {
+            try {
+                AggregatorPomsHelper.buildAndInstallCodesProject(monitor, type, false, false);
+            } catch (Exception e) {
+                ExceptionHandler.process(e);
+            }
+        });
+        Set<CodesJarInfo> jarsToUpdate = CodesJarResourceCache.getAllCodesJars().stream()
+                .filter(info -> CodesJarM2CacheManager.needUpdateCodesJarProject(info)).collect(Collectors.toSet());
+        jarsToUpdate.stream().map(info -> getTalendCodesJarJavaProject(info)).forEach(p -> {
+            try {
+                p.buildModules(monitor, null, null);
+            } catch (Exception e) {
+                ExceptionHandler.process(e);
+            }
+        });
+        String currentProjectName = ProjectManager.getInstance().getCurrentProject().getTechnicalLabel();
+        jarsToUpdate.stream().filter(info -> !currentProjectName.equals(info.getProjectTechName()))
+                .forEach(info -> deleteTalendCodesJarProject(info, false));
     }
 
 }

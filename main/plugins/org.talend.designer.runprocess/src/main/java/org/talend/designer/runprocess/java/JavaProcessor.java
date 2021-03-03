@@ -95,6 +95,7 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.PlatformUI;
 import org.talend.commons.CommonsPlugin;
 import org.talend.commons.exception.ExceptionHandler;
+import org.talend.commons.exception.PersistenceException;
 import org.talend.commons.exception.SystemException;
 import org.talend.commons.ui.runtime.exception.RuntimeExceptionHandler;
 import org.talend.commons.utils.generation.JavaUtils;
@@ -122,7 +123,6 @@ import org.talend.core.model.properties.JobletProcessItem;
 import org.talend.core.model.properties.ProcessItem;
 import org.talend.core.model.properties.Property;
 import org.talend.core.model.repository.ERepositoryObjectType;
-import org.talend.core.model.routines.CodesJarInfo;
 import org.talend.core.model.runprocess.IJavaProcessorStates;
 import org.talend.core.model.utils.JavaResourcesHelper;
 import org.talend.core.model.utils.NodeUtil;
@@ -136,6 +136,7 @@ import org.talend.core.runtime.process.LastGenerationInfo;
 import org.talend.core.runtime.process.TalendProcessArgumentConstant;
 import org.talend.core.runtime.process.TalendProcessOptionConstants;
 import org.talend.core.runtime.projectsetting.RuntimeLineageManager;
+import org.talend.core.ui.ITestContainerProviderService;
 import org.talend.core.ui.services.IRulesProviderService;
 import org.talend.core.utils.BitwiseOptionUtils;
 import org.talend.core.utils.CodesJarResourceCache;
@@ -1470,7 +1471,16 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
             });
             // add codesjars of main job
             if (getProperty() != null) {
-                codesJarClassPaths.addAll(getCodesJarClassPaths(getProperty().getItem()));
+                Item item = getProperty().getItem();
+                ITestContainerProviderService testContainerService = ITestContainerProviderService.get();
+                if (testContainerService != null && testContainerService.isTestContainerItem(item)) {
+                    try {
+                        item = testContainerService.getParentJobItem(item);
+                    } catch (PersistenceException e) {
+                        ExceptionHandler.process(e);
+                    }
+                }
+                codesJarClassPaths.addAll(getCodesJarClassPaths(item));
             }
 
             codesJarClassPaths.forEach(s -> basePath.append(s).append(classPathSeparator));
@@ -1535,8 +1545,8 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
             }
         }
         if (routinesParameter != null) {
-            routinesParameter.stream().filter(r -> r.getType() != null).forEach(r -> {
-                CodesJarInfo info = CodesJarResourceCache.getCodesJarById(r.getId());
+            routinesParameter.stream().filter(r -> r.getType() != null).map(r -> CodesJarResourceCache.getCodesJarById(r.getId()))
+                    .filter(info -> info != null).forEach(info -> {
                 Property property = info.getProperty();
                 String projectTechName = info.getProjectTechName();
                 ITalendProcessJavaProject codesJarProject = TalendJavaProjectManager.getExistingTalendCodesJarProject(info);
