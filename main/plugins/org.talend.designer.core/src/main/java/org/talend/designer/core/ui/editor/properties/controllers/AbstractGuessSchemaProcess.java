@@ -62,7 +62,7 @@ public abstract class AbstractGuessSchemaProcess {
 
     private IContext selectContext;
 
-    private String currentProcessEncoding = "UTF-8"; //$NON-NLS-1$
+    protected String currentProcessEncoding = "UTF-8"; //$NON-NLS-1$
 
     public AbstractGuessSchemaProcess(final Property property, final INode node, final IContext selectContext) {
         this.property = property;
