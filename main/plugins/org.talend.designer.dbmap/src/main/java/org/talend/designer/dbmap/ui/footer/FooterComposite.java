@@ -67,6 +67,7 @@ public class FooterComposite extends Composite {
         FormData okFormData = new FormData();
         okFormData.width = 100;
         okButton.setLayoutData(okFormData);
+        okButton.setEnabled(!mapperManager.componentIsReadOnly());
         okButton.addSelectionListener(new SelectionListener() {
 
             public void widgetDefaultSelected(SelectionEvent e) {
