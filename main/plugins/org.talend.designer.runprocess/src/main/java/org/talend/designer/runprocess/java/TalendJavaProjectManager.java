@@ -422,10 +422,10 @@ public class TalendJavaProjectManager {
         talendCodesJarJavaProjects.remove(getCodesJarProjectId(info));
     }
 
-    public static void deleteTalendCodesJarProject(Property property, boolean deleteContent) {
+    public static void deleteTalendCodesJarProject(CodesJarInfo info, boolean deleteContent) {
+        Property property = info.getProperty();
         ERepositoryObjectType type = ERepositoryObjectType.getItemType(property.getItem());
-        String projectTechName = ProjectManager.getInstance().getProject(property).getTechnicalLabel();
-        deleteTalendCodesJarProject(type, projectTechName, property.getLabel(), deleteContent);
+        deleteTalendCodesJarProject(type, info.getProjectTechName(), property.getLabel(), deleteContent);
     }
 
     public static void deleteTalendCodesJarProject(ERepositoryObjectType type, String projectTechName, String codesJarName,
@@ -434,13 +434,11 @@ public class TalendJavaProjectManager {
             String projectId = getCodesJarProjectId(type, projectTechName, codesJarName);
             ITalendProcessJavaProject project = talendCodesJarJavaProjects.get(projectId);
             if (project != null) {
-                IFolder folder = new AggregatorPomsHelper().getCodeFolder(type).getFolder(codesJarName);
-                IFile projectPom = folder.getFile(TalendMavenConstants.POM_FILE_NAME);
-                AggregatorPomsHelper.removeFromParentModules(projectPom);
                 project.getProject().delete(deleteContent, true, null);
             }
             if (deleteContent) {
                 IFolder folder = new AggregatorPomsHelper(projectTechName).getCodeFolder(type).getFolder(codesJarName);
+                AggregatorPomsHelper.removeFromParentModules(folder.getFile(TalendMavenConstants.POM_FILE_NAME));
                 folder.delete(true, false, null);
             }
             talendCodesJarJavaProjects.remove(projectId);

@@ -112,8 +112,9 @@ public class CodesJarChangeListener implements PropertyChangeListener {
                     updateModifiedDateForCodesJar(property.getItem());
                 } else if (needUpdate(property.getItem())) {
                     CodesJarResourceCache.removeCache(property);
-                    CodesJarM2CacheManager.deleteCodesJarProjectCache(CodesJarInfo.create(property));
-                    TalendJavaProjectManager.deleteTalendCodesJarProject(property, true);
+                    CodesJarInfo info = CodesJarInfo.create(property);
+                    CodesJarM2CacheManager.deleteCodesJarProjectCache(info);
+                    TalendJavaProjectManager.deleteTalendCodesJarProject(info, true);
                 }
             }
         }
@@ -190,9 +191,11 @@ public class CodesJarChangeListener implements PropertyChangeListener {
             CodesJarInfo info = CodesJarResourceCache.getCodesJarByInnerCode(innerCodeItem);
             Project project = ProjectManager.getInstance().getProjectFromProjectTechLabel(info.getProjectTechName());
             IRepositoryViewObject obj = ProxyRepositoryFactory.getInstance().getLastVersion(project, info.getProperty().getId());
-            Property codesJarProperty = obj.getProperty();
-            new XmiResourceManager().saveResource(codesJarProperty.eResource());
-            CodesJarResourceCache.addToCache(codesJarProperty);
+            if (obj != null) {
+                Property codesJarProperty = obj.getProperty();
+                new XmiResourceManager().saveResource(codesJarProperty.eResource());
+                CodesJarResourceCache.addToCache(codesJarProperty);
+            }
         }
     }
 

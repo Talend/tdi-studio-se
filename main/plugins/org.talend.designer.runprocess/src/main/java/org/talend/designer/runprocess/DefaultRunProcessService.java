@@ -881,18 +881,11 @@ public class DefaultRunProcessService implements IRunProcessService {
                 initRefPoms(new Project(ref.getReferencedProject()));
             }
             helper.updateRefProjectModules(references, monitor);
-            helper.updateCodeProjects(monitor, true);
+            helper.updateCodeProjects(monitor, true, false, true);
 
             CodesJarM2CacheManager.updateCodesJarProject(monitor);
-            for (CodesJarInfo info : CodesJarResourceCache.getAllCodesJars()) {
-                // if (!info.isInCurrentMainProject()) {
-                // }
-                ITalendProcessJavaProject refCodesJarProject = getExistingTalendCodesJarProject(info);
-                if (refCodesJarProject != null) {
-                    refCodesJarProject.getProject().delete(false, true, monitor);
-                    TalendJavaProjectManager.removeFromCodesJarJavaProjects(info);
-                }
-            }
+            CodesJarResourceCache.getAllCodesJars().stream().filter(info -> getExistingTalendCodesJarProject(info) != null)
+                    .forEach(info -> TalendJavaProjectManager.deleteTalendCodesJarProject(info, false));
         } catch (Exception e) {
             ExceptionHandler.process(e);
         }
@@ -913,6 +906,12 @@ public class DefaultRunProcessService implements IRunProcessService {
             if (CodeM2CacheManager.needUpdateCodeProject(refProject, codeType)) {
                 installRefCodeProject(codeType, refHelper, monitor);
                 CodeM2CacheManager.updateCodeProjectCache(refProject, codeType);
+            } else {
+                ITalendProcessJavaProject codeProject = TalendJavaProjectManager.getExistingTalendCodeProject(codeType,
+                        refHelper.getProjectTechName());
+                if (codeProject != null) {
+                    codeProject.buildWholeCodeProject();
+                }
             }
         }
 
@@ -962,8 +961,14 @@ public class DefaultRunProcessService implements IRunProcessService {
     }
 
     @Override
-    public void removeFromCodesJarJavaProjects(CodesJarInfo info) {
-        TalendJavaProjectManager.removeFromCodesJarJavaProjects(info);
+    public void deleteTalendCodesJarProject(CodesJarInfo info, boolean deleteContent) {
+        TalendJavaProjectManager.deleteTalendCodesJarProject(info, deleteContent);
+    }
+
+    @Override
+    public void deleteTalendCodesJarProject(ERepositoryObjectType type, String projectTechName, String codesJarName,
+            boolean deleteContent) {
+        TalendJavaProjectManager.deleteTalendCodesJarProject(type, projectTechName, codesJarName, deleteContent);
     }
 
     @Override

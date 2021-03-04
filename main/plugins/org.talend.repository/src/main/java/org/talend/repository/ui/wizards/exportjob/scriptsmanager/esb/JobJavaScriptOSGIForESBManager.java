@@ -66,7 +66,6 @@ import org.talend.core.model.properties.Property;
 import org.talend.core.model.properties.RoutineItem;
 import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.core.model.repository.IRepositoryViewObject;
-import org.talend.core.model.routines.CodesJarInfo;
 import org.talend.core.model.utils.JavaResourcesHelper;
 import org.talend.core.repository.constants.FileConstants;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
@@ -387,8 +386,8 @@ public class JobJavaScriptOSGIForESBManager extends JobJavaScriptsManager {
         EList<RoutinesParameterType> routinesParameter = item.getProcess().getParameters().getRoutinesParameter();
         List<URL> codesjarM2Files = new ArrayList<>();
         if (routinesParameter != null) {
-            routinesParameter.stream().filter(r -> r.getType() != null).forEach(r -> {
-                CodesJarInfo info = CodesJarResourceCache.getCodesJarById(r.getId());
+            routinesParameter.stream().filter(r -> r.getType() != null).map(r -> CodesJarResourceCache.getCodesJarById(r.getId()))
+                    .filter(info -> info != null).forEach(info -> {
                 Property property = info.getProperty();
                 String projectTechName = info.getProjectTechName();
                 MavenArtifact artifact = new MavenArtifact();
