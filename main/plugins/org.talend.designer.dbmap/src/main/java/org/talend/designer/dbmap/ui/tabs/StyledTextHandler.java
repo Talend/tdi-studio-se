@@ -73,7 +73,7 @@ public class StyledTextHandler {
      * DOC amaumont Comment method "init".
      */
     private void init() {
-        if (this.contentProposalAdapter == null) {
+        if (this.contentProposalAdapter == null && !mapperManager.componentIsReadOnly()) {
             this.contentProposalAdapter = ProposalUtils.getCommonProposal(styledText);
         }
         addListeners();

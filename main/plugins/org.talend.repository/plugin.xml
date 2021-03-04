@@ -3454,6 +3454,15 @@
                name="TeradataTPTAddDatabaseNameToOptionalTablesMigrationTask"
                version="7.3.1">
        </projecttask>
+        <projecttask
+          beforeLogon="true"
+          breaks="7.3.0"
+          class="org.talend.repository.model.migration.UpdateDaikonCryptoUtilsMigrationTask"
+          id="org.talend.repository.model.migration.UpdateDaikonCryptoUtilsMigrationTask"
+          description="Update Daikon Crypto Utils"
+          name="UpdateDaikonCryptoUtilsMigrationTask"
+          version="7.3.1">
+       </projecttask>
 	   <projecttask
                beforeLogon="false"
                breaks="7.3.0"
@@ -3479,6 +3488,15 @@
               description="set global use dataset api checkbox to false for previous versions"
               id="org.talend.repository.model.migration.spark.SetDatasetCheckBoxGlobalOption"
               name="SetDatasetCheckBoxGlobalOption"
+              version="7.3.1">
+       </projecttask>
+              <projecttask
+              beforeLogon="false"
+              breaks="7.3.0"
+              class="org.talend.repository.model.migration.spark.SetUseLocalTimezone"
+              description="set use local timezone checkbox to true for previous versions"
+              id="org.talend.repository.model.migration.spark.SetUseLocalTimezone"
+              name="SetUseLocalTimezone"
               version="7.3.1">
        </projecttask>
        <projecttask
@@ -3526,6 +3544,24 @@
                name="ChangeDefaultDriver4GreenplumMigrationTask"
                version="7.3.1">
        </projecttask>
+       <projecttask
+             beforeLogon="false"
+             breaks="7.3.0"
+             class="org.talend.repository.model.migration.ChangeFileInputDynamicFieldLength"
+             description="Change the dynamic field length in file input components"
+             id="org.talend.repository.model.migration.ChangeFileInputDynamicFieldLength"
+             name="ChangeFileInputDynamicFieldLength"
+             version="7.3.1">
+       </projecttask>
+       <projecttask
+              beforeLogon="false"
+              breaks="7.3.0"
+              class="org.talend.repository.model.migration.FixUpgradePasswordEncryptionAlg4ItemMigrationTask"
+              description="Fix upgrading password encryption Alg 4 item migration task"
+              id="org.talend.repository.model.migration.FixUpgradePasswordEncryptionAlg4ItemMigrationTask"
+              name="FixUpgradePasswordEncryptionAlg4ItemMigrationTask"
+              version="7.3.1">
+        </projecttask>
    </extension>
 
    <extension

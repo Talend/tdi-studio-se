@@ -70,6 +70,7 @@ if ((metadatas!=null)&&(metadatas.size()>0)) {
 		
 		int dynamic_index = -1;
 		boolean hasDynamic = false;
+		int dynamicColumnlength = 100;
 		List<IMetadataColumn> columnList = metadata.getListColumns();
 		String datePattern = "\"dd-MM-yyyy\"";
 		for(int i=0; columnList!=null && i< columnList.size(); i++) {
@@ -77,12 +78,15 @@ if ((metadatas!=null)&&(metadatas.size()>0)) {
 	            dynamic_index = i+1;
 	            hasDynamic = true;
 	            datePattern= columnList.get(i).getPattern();
+	            if(columnList.get(i).getLength() != null){
+	                dynamicColumnlength = columnList.get(i).getLength();
+	            }
 	            break;
 	        }
 		}
 		
 		class GenerateCodeUtil{
-			public void generateCode(int dynamic_index,int colLen,boolean hasDynamic){
+			public void generateCode(int dynamic_index,int colLen,boolean hasDynamic,int dynamicColumnlength){
 				if(hasDynamic){
 				%>
 					int dynamic_column_count_<%=cid%>=1;
@@ -136,7 +140,7 @@ if ((metadatas!=null)&&(metadatas.size()>0)) {
 					    	dynamicMetadata_<%=cid%>.setDbName(dynamicMetadata_<%=cid%>.getName());
 					    	dynamicMetadata_<%=cid%>.setType("id_String");
 					    	dynamicMetadata_<%=cid%>.setDbType("VARCHAR");
-					    	dynamicMetadata_<%=cid%>.setLength(100);
+					    	dynamicMetadata_<%=cid%>.setLength(<%=dynamicColumnlength%>);
 					    	dynamicMetadata_<%=cid%>.setPrecision(0);
 					    	dynamicMetadata_<%=cid%>.setNullable(true);
 					    	dynamicMetadata_<%=cid%>.setKey(false);
@@ -406,7 +410,7 @@ if ((metadatas!=null)&&(metadatas.size()>0)) {
 				List<IMetadataColumn> listColumns = metadata.getListColumns();
 				int size = listColumns.size();
 				if (conn.getLineStyle().hasConnectionCategory(IConnectionCategory.DATA)) {
-				 	generateCodeUtil.generateCode(dynamic_index,size,hasDynamic);
+				 	generateCodeUtil.generateCode(dynamic_index,size,hasDynamic, dynamicColumnlength);
 					%>
 //
 //end%>
@@ -703,7 +707,7 @@ if ((metadatas!=null)&&(metadatas.size()>0)) {
 		org.apache.poi.xssf.usermodel.XSSFWorkbook workbook_<%=cid%> = null;
 
 		if(source_<%=cid %> instanceof String){
-			workbook_<%=cid%> = (org.apache.poi.xssf.usermodel.XSSFWorkbook) org.apache.poi.ss.usermodel.WorkbookFactory.create(new java.io.File((String)source_<%=cid %>), password_<%=cid%>);
+			workbook_<%=cid%> = (org.apache.poi.xssf.usermodel.XSSFWorkbook) org.apache.poi.ss.usermodel.WorkbookFactory.create(new java.io.File((String)source_<%=cid %>), password_<%=cid%>, true);
 		} else if(source_<%=cid %> instanceof java.io.InputStream) {
      		workbook_<%=cid%> = (org.apache.poi.xssf.usermodel.XSSFWorkbook) org.apache.poi.ss.usermodel.WorkbookFactory.create((java.io.InputStream)source_<%=cid %>, password_<%=cid%>);
 		} else{
@@ -854,7 +858,7 @@ if ((metadatas!=null)&&(metadatas.size()>0)) {
 				List<IMetadataColumn> listColumns = metadata.getListColumns();
 				int size = listColumns.size();
 				if (conn.getLineStyle().hasConnectionCategory(IConnectionCategory.DATA)) {//5
-					generateCodeUtil.generateCode(dynamic_index,size,hasDynamic);
+					generateCodeUtil.generateCode(dynamic_index,size,hasDynamic,dynamicColumnlength);
 					%>
 			String[] temp_row_<%= cid %> = new String[tempRowLength_<%=cid%>];
 <%
@@ -1353,7 +1357,7 @@ if ((metadatas!=null)&&(metadatas.size()>0)) {
     				List<IMetadataColumn> listColumns = metadata.getListColumns();
     				int size = listColumns.size();
     				if (conn.getLineStyle().hasConnectionCategory(IConnectionCategory.DATA)) {//TD256
-						generateCodeUtil.generateCode(dynamic_index,size,hasDynamic);
+						generateCodeUtil.generateCode(dynamic_index,size,hasDynamic,dynamicColumnlength);
 						%>
 					
 		String[] temp_row_<%= cid %> = new String[tempRowLength_<%=cid%>];
