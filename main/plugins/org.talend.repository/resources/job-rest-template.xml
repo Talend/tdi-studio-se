@@ -51,7 +51,7 @@
 
 #if ($endpoint.useContextBean)
 	address="#contextBean">
-#end			
+#end
 		<jaxrs:serviceBeans>
 			<ref component-id="serviceBean" />
 		</jaxrs:serviceBeans>
@@ -163,7 +163,7 @@
 #end
 #if (!$job.dataSources.isEmpty())
 		<property name="dataSourceReferences">
-		    <ref component-id="dataSourceReferenceList" /> 
+		    <ref component-id="dataSourceReferenceList" />
 		</property>
 #end
 	</bean>
@@ -190,6 +190,7 @@
 	<bean id="contextBean" class="${job.className}.ContextBean" factory-method="getContext">
 		<argument value="${endpoint.defaultContext}" />
 		<argument value="${endpoint.address}" />
+		<argument value="${job.className}" />
 	</bean>
 #end
 #if (!$job.dataSources.isEmpty())

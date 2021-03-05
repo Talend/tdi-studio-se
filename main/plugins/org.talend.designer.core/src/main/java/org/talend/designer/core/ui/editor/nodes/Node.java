@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2021 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -2952,7 +2952,7 @@ public class Node extends Element implements IGraphicalNode {
                     if (param != null) {
                         String errorMessage;
                         boolean isContextMode = false;
-                        if (param.getValue() == null || "".equals(param.getValue())) { //$NON-NLS-1$
+                        if (!param.isSelectedFromItemValue()) {
                             errorMessage = Messages.getString("Node.parameterEmpty", param.getDisplayName()); //$NON-NLS-1$
                         } else {
                             errorMessage = Messages.getString("Node.parameterNotExist", param.getDisplayName(), param.getValue()); //$NON-NLS-1$

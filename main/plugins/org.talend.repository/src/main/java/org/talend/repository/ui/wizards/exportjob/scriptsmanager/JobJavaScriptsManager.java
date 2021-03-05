@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2021 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -994,7 +994,7 @@ public class JobJavaScriptsManager extends JobScriptsManager {
                         .getService(ICamelDesignerCoreService.class);
                 if (camelService.isInstanceofCamel(process[0].getItem())) {
                     useBeans = true;
-                    talendProcessJavaProject = service.getTalendCodeJavaProject(ERepositoryObjectType.valueOf("BEANS")); //$NON-NLS-1$
+                    talendProcessJavaProject = service.getTalendCodeJavaProject(ERepositoryObjectType.BEANS);
                 }
             }
             addRoutinesSourceCodes(process, resource, talendProcessJavaProject, useBeans);
@@ -1640,7 +1640,7 @@ public class JobJavaScriptsManager extends JobScriptsManager {
             String jar;
             File classRootFileLocation;
             if (useBeans) {
-                classRootFileLocation = getCodeClassRootFileLocation(ERepositoryObjectType.valueOf("BEANS")); //$NON-NLS-1$
+                classRootFileLocation = getCodeClassRootFileLocation(ERepositoryObjectType.BEANS);
                 includePath = USER_BEANS_PATH;
                 jar = USERBEANS_JAR;
             } else {

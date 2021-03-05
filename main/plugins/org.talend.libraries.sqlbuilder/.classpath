@@ -1,4 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/org.talend.libraries.sqlbuilder.jars"/>
+	<classpathentry kind="output" path="bin"/>
 </classpath>

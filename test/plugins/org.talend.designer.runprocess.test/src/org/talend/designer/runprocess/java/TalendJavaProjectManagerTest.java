@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2021 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -160,6 +160,15 @@ public class TalendJavaProjectManagerTest {
         validateProject(talendJavaProject, true);
 
         assertEquals(TalendMavenConstants.PROJECT_NAME, talendJavaProject.getProject().getName());
+    }
+
+    @Test
+    public void testGetCodeProjectId() {
+        String projectTechName = "testProject";
+        String routinesId = TalendJavaProjectManager.getCodeProjectId(ERepositoryObjectType.ROUTINES, projectTechName);
+        assertEquals(projectTechName + "|ROUTINES", routinesId);
+        String beansId = TalendJavaProjectManager.getCodeProjectId(ERepositoryObjectType.BEANS, projectTechName);
+        assertEquals(projectTechName + "|BEANS", beansId);
     }
 
     @Test

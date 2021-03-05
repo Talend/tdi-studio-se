@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2021 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -187,6 +187,7 @@ public class UIManager extends AbstractUIManager {
             previousSelectedTableView = this.currentSelectedInputTableView;
             setCurrentSelectedInputTableView((InputDataMapTableView) dataMapTableView);
             newSelectedTableView = dataMapTableView;
+            metadataTableEditorView.setReadOnly(mapperManager.componentIsReadOnly());
         } else if (currentZone == Zone.OUTPUTS) {
             metadataTableEditorView = tabFolderEditors.getOutputMetaEditor();
             otherMetadataTableEditorView = tabFolderEditors.getInputMetaEditor();
@@ -194,6 +195,7 @@ public class UIManager extends AbstractUIManager {
             previousSelectedTableView = this.currentSelectedOutputTableView;
             newSelectedTableView = dataMapTableView;
             setCurrentSelectedOutputTableView((OutputDataMapTableView) dataMapTableView);
+            metadataTableEditorView.setReadOnly(mapperManager.componentIsReadOnly());
         }
 
         updateToolbarButtonsStates(currentZone);
@@ -374,16 +376,16 @@ public class UIManager extends AbstractUIManager {
         ToolbarZone toolbar = null;
         if (currentZone == Zone.INPUTS) {
             toolbar = getInputsZone().getToolbar();
-            ((ToolbarInputZone) toolbar).setEnabledRenameAliasButton(currentSelectedInputTableView != null);
-            ((ToolbarInputZone) toolbar).setEnabledRemoveAliasButton(currentSelectedInputTableView != null);
+            ((ToolbarInputZone) toolbar).setEnabledRenameAliasButton(currentSelectedInputTableView != null && !mapperManager.componentIsReadOnly());
+            ((ToolbarInputZone) toolbar).setEnabledRemoveAliasButton(currentSelectedInputTableView != null && !mapperManager.componentIsReadOnly());
             toolbar.setEnabledMinimizeTablesButton(getInputsTablesView().size() > 0);
         } else if (currentZone == Zone.OUTPUTS) {
             toolbar = getOutputsZone().getToolbar();
-            ((ToolbarOutputZone) toolbar).setEnabledRemoveTableButton(currentSelectedOutputTableView != null);
+            ((ToolbarOutputZone) toolbar).setEnabledRemoveTableButton(currentSelectedOutputTableView != null && !mapperManager.componentIsReadOnly());
             toolbar.setEnabledMinimizeTablesButton(getOutputsTablesView().size() > 0);
         }
-        toolbar.setEnabledMoveTableButton(true, isTableViewMoveable(currentZone, true));
-        toolbar.setEnabledMoveTableButton(false, isTableViewMoveable(currentZone, false));
+        toolbar.setEnabledMoveTableButton(true, isTableViewMoveable(currentZone, true) && !mapperManager.componentIsReadOnly());
+        toolbar.setEnabledMoveTableButton(false, isTableViewMoveable(currentZone, false) && !mapperManager.componentIsReadOnly());
     }
 
     private void modifySelectionChangedListener(final Zone currentZone,

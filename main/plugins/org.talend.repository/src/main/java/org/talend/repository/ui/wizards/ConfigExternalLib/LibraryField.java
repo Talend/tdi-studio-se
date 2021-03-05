@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2021 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -28,6 +28,8 @@ import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
 import org.talend.commons.ui.runtime.image.ECoreImage;
 import org.talend.commons.ui.runtime.image.ImageProvider;
+import org.talend.core.model.properties.RoutineItem;
+import org.talend.core.model.properties.RoutinesJarType;
 import org.talend.designer.core.model.utils.emf.component.IMPORTType;
 import org.talend.repository.i18n.Messages;
 
@@ -88,8 +90,7 @@ public class LibraryField extends TableField {
                     final TableItem item = contextTable.getSelection()[0];
                     if (item.getBounds(1).contains(event.x, event.y)) {
                         IMPORTType it = (IMPORTType) getList().get(contextTable.getSelectionIndex());
-                        if ("BeanItem".equals(it.eContainer().eClass().getName())
-                                || "RoutineItem".equals(it.eContainer().eClass().getName())) {
+                        if (it.eContainer() instanceof RoutineItem || it.eContainer() instanceof RoutinesJarType) {
                             it.setREQUIRED(!it.isREQUIRED());
                             setInput(getList());
                         }
