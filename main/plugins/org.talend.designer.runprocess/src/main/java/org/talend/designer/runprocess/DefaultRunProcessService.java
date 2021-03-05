@@ -861,9 +861,9 @@ public class DefaultRunProcessService implements IRunProcessService {
     
     private void deleteRefProjects(Project refProject, AggregatorPomsHelper refHelper) throws Exception {
         IProgressMonitor monitor = new NullProgressMonitor();
-        deleteRefProject(ERepositoryObjectType.ROUTINES, refHelper, monitor);
-        deleteRefProject(ERepositoryObjectType.PIG_UDF, refHelper, monitor);
-        deleteRefProject(ERepositoryObjectType.valueOf("BEANS"), refHelper, monitor); //$NON-NLS-1$
+        ERepositoryObjectType.getAllTypesOfCodes().forEach(codeType -> {
+            deleteRefProject(codeType, refHelper, monitor);
+        }); 
 
     }
     
