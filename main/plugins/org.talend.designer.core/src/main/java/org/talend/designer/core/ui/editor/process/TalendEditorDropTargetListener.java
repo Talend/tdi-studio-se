@@ -2001,7 +2001,10 @@ public class TalendEditorDropTargetListener extends TemplateTransferDropTargetLi
         neededComponents = (List<IComponent>) ComponentUtilities.filterVisibleComponents(neededComponents);
 
 
-        RepositoryComponentSetting compsetting = null;
+        RepositoryComponentSetting compsetting = new RepositoryComponentSetting();
+        compsetting.setInputComponent(rcSetting.getInputComponentName());
+        compsetting.setOutputComponent(rcSetting.getOutPutComponentName());
+        compsetting.setDefaultComponent(rcSetting.getDefaultComponentName());
         String typeName = null;
         if (item instanceof ConnectionItem) {
             ConnectionItem connectionItem = (ConnectionItem) item;
