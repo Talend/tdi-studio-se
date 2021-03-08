@@ -213,6 +213,7 @@ boolean isLog4jEnabled = ("true").equals(ElementParameterParser.getValue(node.ge
 		// -- Send the message --
 		javax.mail.Transport.send(msg_<%=cid %>);
 	} catch(java.lang.Exception e){
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
   		<%if (isDieOnError){%>
 			throw(e);
 		<%}else{%>
@@ -220,7 +221,6 @@ boolean isLog4jEnabled = ("true").equals(ElementParameterParser.getValue(node.ge
 				log.error("<%=cid%> - " + e.toString());
 			<%}%>
   			System.err.println(e.toString());
-  			globalMap.put("<%=cid %>_ERROR_MESSAGE", e.getMessage());
 		<%}%>
 	}finally{
 		props_<%=cid %>.remove("mail.smtp.host");

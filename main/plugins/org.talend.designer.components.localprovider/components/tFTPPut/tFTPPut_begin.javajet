@@ -175,7 +175,6 @@ int nb_file_<%=cid%> = 0;
 			try {
 				c_<%=cid %>.cd(dir);
 			} catch (com.jcraft.jsch.SftpException ignored) {
-globalMap.put("<%=cid%>_ERROR_MESSAGE",ignored.getMessage());
 <%
 				if (isLog4jEnabled) {
 %>

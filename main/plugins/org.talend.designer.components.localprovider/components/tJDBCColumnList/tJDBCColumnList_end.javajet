@@ -27,6 +27,7 @@ globalMap.put("<%=cid%>_ERROR_MESSAGE",e_<%=cid%>.getMessage());
             stmt2_<%=cid%>.close();
         }
     }catch(Exception e2_<%=cid%>){
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e2_<%=cid%>.getMessage());
         <%if(dieOnError){%>
             throw(e2_<%=cid%>);
         <%}else{%>

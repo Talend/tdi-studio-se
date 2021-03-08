@@ -242,6 +242,7 @@ globalMap.put("<%=cid%>_ERROR_MESSAGE",uploadException_<%=cid%>.getMessage());
 		}
 		%>
 	}catch(java.lang.Exception e_<%=cid%>){
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e_<%=cid%>.getMessage());
 		<%
 		if (("true").equals(dieOnError)) {
 		%>
@@ -254,7 +255,6 @@ globalMap.put("<%=cid%>_ERROR_MESSAGE",uploadException_<%=cid%>.getMessage());
 			<%
 			}
 			%>
-			globalMap.put("<%=cid %>_ERROR_MESSAGE", e_<%=cid%>.getMessage());
 			System.err.println(e_<%=cid%>.getMessage());
 		<%
 		}

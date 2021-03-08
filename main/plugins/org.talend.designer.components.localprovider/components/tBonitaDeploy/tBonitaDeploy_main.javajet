@@ -62,6 +62,7 @@ globalMap.put("<%=cid%>_ERROR_MESSAGE",e_<%=cid%>.getMessage());
 						client_<%=cid%>.logout();
 						client_<%=cid%>.close();
 					} catch(java.lang.Exception e_<%=cid%>) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e_<%=cid%>.getMessage());
 						//do nothing,keep quiet
 					}
 				}
@@ -98,6 +99,7 @@ globalMap.put("<%=cid%>_ERROR_MESSAGE",e_<%=cid%>.getMessage());
 					try {
 						client_<%=cid%>.logout();
 					} catch(java.lang.Exception e_<%=cid%>) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e_<%=cid%>.getMessage());
 						//do nothing,keep quiet
 					}
 				}
@@ -158,6 +160,7 @@ globalMap.put("<%=cid%>_ERROR_MESSAGE",le_<%=cid%>.getMessage());
 	}
 %>		
 	} catch (java.lang.Exception e_<%=cid%>) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e_<%=cid%>.getMessage());
 <%
 	if (dieOnError) {
 %>

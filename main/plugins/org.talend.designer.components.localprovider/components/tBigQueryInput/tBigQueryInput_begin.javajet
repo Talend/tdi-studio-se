@@ -120,6 +120,7 @@ globalMap.put("<%=cid%>_ERROR_MESSAGE",e_<%=cid%>.getMessage());
 			}
 	    	%>
 		} catch (java.io.IOException ee_<%=cid%>) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",ee_<%=cid%>.getMessage());
 			<%
 	    	if(isLog4jEnabled){
 			%>

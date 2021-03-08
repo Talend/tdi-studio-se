@@ -31,6 +31,7 @@ imports="
             globalMap.put("<%=cid %>_STATUS", "File truncate OK.");
         }
     }catch(java.lang.Exception e_<%=cid%>){
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e_<%=cid%>.getMessage());
 		<%if(isLog4jEnabled){%>
 			log.error("<%=cid%> - " + e_<%=cid%>.getMessage());
 		<%}%>

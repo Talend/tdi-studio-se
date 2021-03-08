@@ -584,6 +584,7 @@ globalMap.put("<%=cid%>_ERROR_MESSAGE",sqlexp.getMessage());
                     }
                     sqlexp.printStackTrace();
                 } catch(java.lang.Exception exp){
+globalMap.put("<%=cid%>_ERROR_MESSAGE",exp.getMessage());
                 <%dbLog.logPrintedException("exp.getMessage()");%>
                    	if(blob!=null) {
                 		try {

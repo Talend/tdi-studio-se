@@ -145,6 +145,7 @@ globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
 						throw new java.lang.Exception();
 					}
 				} catch (java.lang.Exception ee) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",ee.getMessage());
 					<%
 			    	if(isLog4jEnabled){
 					%>

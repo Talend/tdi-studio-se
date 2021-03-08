@@ -150,6 +150,7 @@ imports="
 	try {
 		fileContentEnCodeStr = java.util.Base64.getMimeEncoder().encodeToString(fileContent.getBytes("UTF-8"));
 	} catch (java.io.UnsupportedEncodingException e) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
 		e.printStackTrace();
 	}	
 %>

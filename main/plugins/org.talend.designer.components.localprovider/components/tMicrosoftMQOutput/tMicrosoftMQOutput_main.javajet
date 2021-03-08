@@ -45,6 +45,7 @@ globalMap.put("<%=cid%>_ERROR_MESSAGE",e_<%=cid%>.getMessage());
 					}
 					%>
 				}catch(java.io.UnsupportedEncodingException ex_<%=cid%>){
+globalMap.put("<%=cid%>_ERROR_MESSAGE",ex_<%=cid%>.getMessage());
 					<%
 					if(dieOnError){
 					%>

@@ -98,6 +98,7 @@ globalMap.put("<%=cid%>_ERROR_MESSAGE",ex.getMessage());
                 		try {
                 			fis.close();
                 		} catch(java.lang.Exception ex) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",ex.getMessage());
                 		<%if(isLog4jEnabled){%>
                 			log.warn("<%=cid%> - " + ex.getMessage());
                 		<%}%>

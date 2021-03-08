@@ -287,9 +287,8 @@ imports="
 						try{
 							ctx_<%=cid%>.getAttributes(dn_<%=cid%>);
 							found = true;
-						}catch(javax.naming.NameNotFoundException nfEx_<%=cid%>)
-						{
-globalMap.put("<%=cid%>_ERROR_MESSAGE",nfEx_<%=cid%>.getMessage());
+						}catch(javax.naming.NameNotFoundException nfEx_<%=cid%>){
+                            globalMap.put("<%=cid%>_ERROR_MESSAGE",nfEx_<%=cid%>.getMessage());
 							<%if(isLog4jEnabled){%>
 								log.warn("<%=cid%> - " + nfEx_<%=cid%>.getMessage());
 							<%}%>

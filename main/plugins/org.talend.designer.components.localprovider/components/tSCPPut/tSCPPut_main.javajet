@@ -49,6 +49,7 @@ imports="
         	globalMap.put("<%=cid %>_STATUS", "No file transfered.");
         }
     }catch(java.lang.Exception e){
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
     		e.printStackTrace();
     		<%if(isLog4jEnabled){%>
                 log.error(e.getMessage());

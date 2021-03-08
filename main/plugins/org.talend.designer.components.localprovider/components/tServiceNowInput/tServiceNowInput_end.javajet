@@ -32,7 +32,6 @@ if(isLog4jEnabled){
 }
 %>
     }catch(org.json.JSONException je_<%=cid%>){
-globalMap.put("<%=cid%>_ERROR_MESSAGE",je_<%=cid%>.getMessage());
     //ignore
     }
 } else {

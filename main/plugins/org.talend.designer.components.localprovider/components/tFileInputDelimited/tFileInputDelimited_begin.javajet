@@ -464,6 +464,7 @@ globalMap.put("<%=cid%>_ERROR_MESSAGE",ex_<%=cid%>.getMessage());
 								zis_<%=cid %> = new java.util.zip.ZipInputStream(new java.io.BufferedInputStream(new java.io.FileInputStream(String.valueOf(filename_<%=cid %>))));
 							}
 						} catch(java.lang.Exception e) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
 							<% if(dieOnError) {%>
 								throw e;
 							<% } else { %>
@@ -471,7 +472,6 @@ globalMap.put("<%=cid%>_ERROR_MESSAGE",ex_<%=cid%>.getMessage());
 									log.error("<%=cid%> - " +e.getMessage());
 								<%}%>
 								System.err.println(e.getMessage());
-								globalMap.put("<%=cid %>_ERROR_MESSAGE", e.getMessage());
 							<% } %>
 						}
 						java.util.zip.ZipEntry entry_<%=cid %> = null;
@@ -480,6 +480,7 @@ globalMap.put("<%=cid%>_ERROR_MESSAGE",ex_<%=cid%>.getMessage());
 							try {
 								entry_<%=cid %> = zis_<%=cid %>.getNextEntry();
 							} catch(java.lang.Exception e) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
 								<% if(dieOnError) {%>
 									throw e;
 								<% } else { %>
@@ -487,7 +488,6 @@ globalMap.put("<%=cid%>_ERROR_MESSAGE",ex_<%=cid%>.getMessage());
 										log.error("<%=cid%> - " +e.getMessage());
 									<%}%>
 									System.err.println(e.getMessage());
-									globalMap.put("<%=cid %>_ERROR_MESSAGE", e.getMessage());
 									break;
 								<% } %>
 							}
@@ -505,6 +505,7 @@ globalMap.put("<%=cid%>_ERROR_MESSAGE",ex_<%=cid%>.getMessage());
 									limit_<%=cid%>
 								<%}%>,<%=random %>, <%= splitRecord%>);
 							} catch(java.lang.Exception e) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
 								<% if(dieOnError) {%>
 									throw e;
 								<% } else { %>
@@ -512,7 +513,6 @@ globalMap.put("<%=cid%>_ERROR_MESSAGE",ex_<%=cid%>.getMessage());
 										log.error("<%=cid%> - " +e.getMessage());
 									<%}%>
 									System.err.println(e.getMessage());
-									globalMap.put("<%=cid %>_ERROR_MESSAGE", e.getMessage());
 								<% } %>
 							}
 					<%
@@ -531,6 +531,7 @@ globalMap.put("<%=cid%>_ERROR_MESSAGE",ex_<%=cid%>.getMessage());
 									limit_<%=cid%>
 								<%}%>,<%=random %>, <%= splitRecord%>);
 						} catch(java.lang.Exception e) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
 							<% if(dieOnError) {%>
 								throw e;
 							<% } else { %>
@@ -538,7 +539,6 @@ globalMap.put("<%=cid%>_ERROR_MESSAGE",ex_<%=cid%>.getMessage());
 									log.error("<%=cid%> - " +e.getMessage());
 								<%}%>
 								System.err.println(e.getMessage());
-								globalMap.put("<%=cid %>_ERROR_MESSAGE", e.getMessage());
 							<% } %>
 						}
 					<%
@@ -592,6 +592,7 @@ globalMap.put("<%=cid%>_ERROR_MESSAGE",ex_<%=cid%>.getMessage());
 										%>
 							
 			    					} catch (java.lang.Exception e) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
 			        					whetherReject_<%=cid%> = true;
 			        					<%
 			        					if (dieOnError) {
@@ -618,7 +619,6 @@ globalMap.put("<%=cid%>_ERROR_MESSAGE",ex_<%=cid%>.getMessage());
 			            						<%=rejectConnName%>.errorMessage = e.getMessage() + " - Line: " + tos_count_<%=node.getUniqueName() %>;
 			            					<%
 			            			} %>
-			            			globalMap.put("<%=cid %>_ERROR_MESSAGE", e.getMessage());
 										<%
 			        					} 
 			        					%>
@@ -1083,6 +1083,7 @@ globalMap.put("<%=cid%>_ERROR_MESSAGE",ex_<%=cid%>.getMessage());
 		        				zis_<%=cid %> = new java.util.zip.ZipInputStream(new java.io.BufferedInputStream(new java.io.FileInputStream(String.valueOf(filename_<%=cid %>))));
 		        			}
 	        			} catch(java.lang.Exception e) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
 	        				<% if(dieOnError) {%>
 								throw e;
 							<% } else { %>
@@ -1090,7 +1091,6 @@ globalMap.put("<%=cid%>_ERROR_MESSAGE",ex_<%=cid%>.getMessage());
 									log.error("<%=cid%> - " + e.getMessage());
 								<%}%>
 								System.err.println(e.getMessage());
-								globalMap.put("<%=cid %>_ERROR_MESSAGE", e.getMessage());
 							<% } %>
 	        			}
 	        			java.util.zip.ZipEntry entry_<%=cid %> = null;
@@ -1099,6 +1099,7 @@ globalMap.put("<%=cid%>_ERROR_MESSAGE",ex_<%=cid%>.getMessage());
 			        		try {
 	        					entry_<%=cid %> = zis_<%=cid %>.getNextEntry();
 	        				} catch(java.lang.Exception e) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
 	        					<% if(dieOnError) {%>
 									throw e;
 								<% } else { %>
@@ -1106,7 +1107,6 @@ globalMap.put("<%=cid%>_ERROR_MESSAGE",ex_<%=cid%>.getMessage());
 										log.error("<%=cid%> - " + e.getMessage());
 									<%}%>
 									System.err.println(e.getMessage());
-									globalMap.put("<%=cid %>_ERROR_MESSAGE", e.getMessage());
 									break;
 								<% } %>
 	        				}
@@ -1292,6 +1292,7 @@ globalMap.put("<%=cid%>_ERROR_MESSAGE",ex_<%=cid%>.getMessage());
 			        csvReader<%=cid %>.setSkipEmptyRecords(<%=removeEmptyRow %>);
 	        
 	    		} catch(java.lang.Exception e) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
 					<% if(dieOnError) {%>
 						throw e;
 					<% } else { %>
@@ -1299,7 +1300,6 @@ globalMap.put("<%=cid%>_ERROR_MESSAGE",ex_<%=cid%>.getMessage());
 							log.error("<%=cid%> - " +e.getMessage());
 						<%}%>
 						System.err.println(e.getMessage());
-						globalMap.put("<%=cid %>_ERROR_MESSAGE", e.getMessage());
 					<% } %>
 	    		}//TD110 end
 	        
@@ -1375,6 +1375,7 @@ globalMap.put("<%=cid%>_ERROR_MESSAGE",ex_<%=cid%>.getMessage());
 									}
 									%>
 	    						} catch (java.lang.Exception e) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
 							        whetherReject_<%=cid%> = true;
         							<%
         							if (dieOnError) {

@@ -210,12 +210,12 @@ try{
     log.info("<%=cid%> - Connection to the server closed.");
 <%}%>
 }catch(Exception e){
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
     <%if(!dieOnError){%>
         <%if(isLog4jEnabled){%>
             log.error("<%=cid%> - " + e.getMessage());
         <%}%>
         System.err.println(e.getMessage());
-        globalMap.put("<%=cid%>" + "_ERROR_MESSAGE",e.getMessage());
     <%}else{%>
         throw e;
     <%}%>

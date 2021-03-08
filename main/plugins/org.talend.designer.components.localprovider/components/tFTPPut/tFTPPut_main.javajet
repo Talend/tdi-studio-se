@@ -128,6 +128,7 @@ try{
                                 globalMap.put("<%=cid %>_CURRENT_FILE_EXISTS",true);
                             }
                         }catch(com.jcraft.jsch.SftpException e_<%=cid%>) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e_<%=cid%>.getMessage());
                             if (e_<%=cid%>.id != 4 &&   // if exception is not resume (normal) pb.
                                 (e_<%=cid%>.getMessage() == null || !e_<%=cid%>.getMessage().startsWith("failed to resume"))) { 
                             <%if(isLog4jEnabled){%>
@@ -156,6 +157,7 @@ try{
                     %>
                         } // end if exception not resume pb
                         }catch(java.lang.Exception e_<%=cid%>){
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e_<%=cid%>.getMessage());
                            if(!(e_<%=cid%> instanceof com.jcraft.jsch.SftpException)) {
                                 msg_<%=cid%>.add("file " + listings<%=cid %>[m<%=cid %>].getAbsolutePath() + " not found?");
 
@@ -172,7 +174,6 @@ try{
                 <%}%>
                 System.err.println("No matches found for mask '" + key<%=cid %> + "'!");
             }
-globalMap.put("<%=cid%>_ERROR_MESSAGE",e_<%=cid%>.getMessage());
                     }
 
 <%

@@ -769,6 +769,7 @@ globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
 						      	  Long runtime = ((Double)(Double.parseDouble(timeStr)*1000)).longValue();
 						      	  globalMap.put("<%=cid%>_RUNTIME", runtime);
 						      }catch(NumberFormatException e){
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
 						      	<%if(isLog4jEnabled){%>
 						      		log.error("<%=cid%> - parse runtime value failed:"+ line);
 						      	<%}%>
@@ -846,6 +847,7 @@ globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
 			try {
 				return Integer.parseInt(logLine.substring(logLine.lastIndexOf("=") + 1).trim());
 			} catch (Exception parseException) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",parseException.getMessage());
 <%
 				if (isLog4jEnabled) {
 %>

@@ -199,6 +199,7 @@ boolean checkDate = (checkDateStr!=null&&!("").equals(checkDateStr))?("true").eq
         try {
             filenameOrStream_<%=cid %> = <%=filenameOrStream %>;
         } catch(java.lang.Exception e_<%=cid%>) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e_<%=cid%>.getMessage());
 <%
 			if (dieOnError) {
 %>
@@ -210,7 +211,6 @@ boolean checkDate = (checkDateStr!=null&&!("").equals(checkDateStr))?("true").eq
 					log.error("<%=cid%> - " + e_<%=cid%>.getMessage());
 				<%}%>
 	            System.err.println(e_<%=cid%>.getMessage());
-	            globalMap.put("<%=cid %>_ERROR_MESSAGE", e_<%=cid%>.getMessage());
 <%
 			}
 %>
@@ -265,6 +265,7 @@ boolean checkDate = (checkDateStr!=null&&!("").equals(checkDateStr))?("true").eq
             xmlEventReader_<%=cid %>.close();
             doc_<%=cid%>= reader_<%=cid%>.read(new java.io.StringReader(xmlStr_<%=cid%>));
         }catch(java.lang.Exception e_<%=cid%>){
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e_<%=cid%>.getMessage());
 <%
             if (dieOnError) {
 %>
@@ -276,7 +277,6 @@ boolean checkDate = (checkDateStr!=null&&!("").equals(checkDateStr))?("true").eq
 						log.error("<%=cid%> - " + e_<%=cid%>.getMessage());
 					<%}%>
                     System.err.println( e_<%=cid%>.getMessage());
-                    globalMap.put("<%=cid %>_ERROR_MESSAGE", e_<%=cid%>.getMessage());
                     isValidFile_<%=cid %> = false;
 <% 
             }
@@ -519,6 +519,7 @@ if ((metadatas!=null)&&(metadatas.size()>0)) {
 %>
             
                 } catch (java.lang.Exception e_<%=cid%>) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e_<%=cid%>.getMessage());
                     whetherReject_<%=cid%> = true;
 <%
                     if (dieOnError) {
@@ -553,7 +554,6 @@ if ((metadatas!=null)&&(metadatas.size()>0)) {
                             <%=rejectConnName%>.errorMessage = e_<%=cid%>.getMessage() + " - Line: " + tos_count_<%=node.getUniqueName() %>;
 <%
                         } %>
-                        globalMap.put("<%=cid %>_ERROR_MESSAGE", e_<%=cid%>.getMessage());
 <%
                     }
 %>

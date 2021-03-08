@@ -124,8 +124,8 @@ imports="
 
                         }
                 //}catch (java.sql.BatchUpdateException e){
-globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
                 }catch (java.sql.SQLException e){
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
                     <% if (isEnableDebug) { %>
                     java.sql.SQLException e2 = e;
                     while (e2 != null) {

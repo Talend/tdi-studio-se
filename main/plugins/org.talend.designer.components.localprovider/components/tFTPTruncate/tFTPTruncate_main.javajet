@@ -65,6 +65,7 @@
 							log.debug("<%=cid%> - '" + filePath<%=cid%>  + "' truncate ok.");
 						<%}%>
 					} catch (com.jcraft.jsch.SftpException se) {
+					    globalMap.put("<%=cid%>_ERROR_MESSAGE",se.getMessage());
                 		globalMap.put("<%=cid %>_CURRENT_STATUS", "File truncate fail.");
     	                throw se;
 					}

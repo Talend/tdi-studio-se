@@ -398,6 +398,7 @@ globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
             	    	}
 
                 }catch (java.sql.BatchUpdateException e){
+                    globalMap.put(currentComponent+"_ERROR_MESSAGE",e.getMessage());
                 	<%if(("true").equals(dieOnError)) {
                 	%>
                 		throw(e);
@@ -415,7 +416,6 @@ globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
 	    	    	}
 					dbLog.logPrintedException("e.getMessage()");
 					%>
-					globalMap.put(currentComponent+"_ERROR_MESSAGE",e.getMessage());
                 	System.err.println(e.getMessage());
                 	<%
                 	}%>

@@ -259,6 +259,7 @@ if (sftp) { // *** sftp *** //
         				<%}%>
 				    	globalMap.put("<%=cid %>_CURRENT_STATUS", "File transfer OK.");
 			      	} catch (com.jcraft.jsch.SftpException e){
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
 
         				if (e.id == com.jcraft.jsch.ChannelSftp.SSH_FX_FAILURE || e.id == com.jcraft.jsch.ChannelSftp.SSH_FX_BAD_MESSAGE) {
 							msg_<%=cid%>.add("file [" + remoteFileName + "] downloaded unsuccessfully.");
@@ -428,6 +429,7 @@ if (sftp) { // *** sftp *** //
                         globalMap.put("<%=cid %>_CURRENT_STATUS", "File transfer OK.");
                         count++;
                     } catch (IOException e) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
                         msg_<%=cid%>.add("file [" + remoteFileName + "] downloaded unsuccessfully.");
                         globalMap.put("<%=cid %>_CURRENT_STATUS", "File transfer fail.");
                         throw e;
@@ -485,6 +487,7 @@ if (sftp) { // *** sftp *** //
                         globalMap.put("<%=cid %>_CURRENT_STATUS", "File transfer OK.");
                         count++;
                     } catch (IOException e) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
                         msg_<%=cid%>.add("file [" + remoteFileName + "] downloaded unsuccessfully.");
                         globalMap.put("<%=cid %>_CURRENT_STATUS", "File transfer fail.");
                         throw e;

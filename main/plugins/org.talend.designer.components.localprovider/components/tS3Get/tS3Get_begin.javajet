@@ -77,6 +77,7 @@ imports="
 		}
 		%>
 	}catch(java.lang.Exception e_<%=cid%>){
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e_<%=cid%>.getMessage());
 		<%
 		if (dieOnError) {
 		%>
@@ -89,7 +90,6 @@ imports="
 			<%
 			}
 			%>
-		globalMap.put("<%=cid %>_ERROR_MESSAGE", e_<%=cid%>.getMessage());
 		System.err.println(e_<%=cid%>.getMessage());
 		<%
 		}
@@ -209,6 +209,7 @@ imports="
 		}
 		%>
 	}catch(java.lang.Exception e_<%=cid%>){
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e_<%=cid%>.getMessage());
 		<%
 		if (dieOnError) {
 		%>
@@ -221,7 +222,6 @@ imports="
 			<%
 			}
 			%>
-		globalMap.put("<%=cid %>_ERROR_MESSAGE", e_<%=cid%>.getMessage());
 		System.err.println(e_<%=cid%>.getMessage());
 		<%
 		}%>

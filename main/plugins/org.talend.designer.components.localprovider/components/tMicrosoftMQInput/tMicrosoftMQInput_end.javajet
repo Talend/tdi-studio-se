@@ -31,6 +31,7 @@ globalMap.put("<%=cid%>_ERROR_MESSAGE",ex_<%=cid%>.getMessage());
 			}
 			%>
 		}catch(ionic.Msmq.MessageQueueException e_<%=cid%>){
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e_<%=cid%>.getMessage());
 			<%
 			if(dieOnError){
 			%>
@@ -47,6 +48,7 @@ globalMap.put("<%=cid%>_ERROR_MESSAGE",ex_<%=cid%>.getMessage());
 			}
 			%>
 		}catch(java.io.UnsupportedEncodingException ex_<%=cid%>){
+globalMap.put("<%=cid%>_ERROR_MESSAGE",ex_<%=cid%>.getMessage());
 			<%
 			if(dieOnError){
 			%>
@@ -64,6 +66,7 @@ globalMap.put("<%=cid%>_ERROR_MESSAGE",ex_<%=cid%>.getMessage());
 		    		msgu_<%=cid%>.close();
 		  		}
 	    	 }catch(ionic.Msmq.MessageQueueException e_<%=cid%>){
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e_<%=cid%>.getMessage());
 				<%
 				if(dieOnError){
 				%>

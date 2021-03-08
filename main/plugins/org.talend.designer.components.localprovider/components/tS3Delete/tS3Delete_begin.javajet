@@ -38,6 +38,7 @@ imports="
 			throw(new RuntimeException("Please set key!"));
 		}
 	}catch(java.lang.Exception e_<%=cid%>){
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e_<%=cid%>.getMessage());
 		<%
 		if (("true").equals(dieOnError)) {
 		%>
@@ -50,7 +51,6 @@ imports="
 			<%
 			}
 			%>
-			globalMap.put("<%=cid %>_ERROR_MESSAGE", e_<%=cid%>.getMessage());
 			System.err.println(e_<%=cid%>.getMessage());
 		<%
 		}

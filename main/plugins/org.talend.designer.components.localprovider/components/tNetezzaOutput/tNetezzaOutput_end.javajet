@@ -123,6 +123,7 @@ globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
 	    	<%
 	    	}%>
 		}catch (java.sql.SQLException e){
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
 			<%if(("true").equals(dieOnError)) {
 			%>
 				throw(e);

@@ -147,6 +147,7 @@ globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
 					<%}%>
 					e.printStackTrace();
 				} catch (java.security.KeyManagementException e) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
 					<%if(isLog4jEnabled){%>
 						log.error("<%=cid%> - " + e.getMessage());
 					<%}%>
@@ -259,11 +260,13 @@ globalMap.put("<%=cid%>_ERROR_MESSAGE",e1.getMessage());
 			<%}%>
 			e1.printStackTrace();
 		} catch (java.io.IOException e) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
 			<%if(isLog4jEnabled){%>
 				log.error("<%=cid%> - " + e.getMessage());
 			<%}%>
 			e.printStackTrace();
 		} catch (java.lang.ClassNotFoundException e) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
 			<%if(isLog4jEnabled){%>
 				log.error("<%=cid%> - " + e.getMessage());
 			<%}%>

@@ -27,17 +27,15 @@ imports="
 		if (<%=cid%>_uploader_input != null) {
 			try {
 				<%=cid%>_uploader_input.close();
-			} catch (IOException e)
-			{
-globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
+			} catch (IOException e){
+                //ignore
 			}
 		}
 		if (<%=cid%>_uploader_output != null) {
 			try {
 				<%=cid%>_uploader_output.close();
-			} catch (IOException e)
-			{
-globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
+			} catch (IOException e){
+               //ignore
 			}
 		}
 	}

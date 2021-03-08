@@ -39,6 +39,7 @@ globalMap.put("<%=cid%>_ERROR_MESSAGE",mre.getMessage());
 	<%
 		} else {%>
 			} catch (javax.mail.MessagingException me) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",me.getMessage());
 				if (!"Cannot load header".equals(me.getMessage())) {
       				throw me;
 				}else{ 

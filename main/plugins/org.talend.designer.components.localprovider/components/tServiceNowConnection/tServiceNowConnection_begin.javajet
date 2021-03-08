@@ -61,6 +61,7 @@ globalMap.put("<%=cid%>_ERROR_MESSAGE",e1_<%=cid%>.getMessage());
 		try {
 			<%=cid%>_response.close();
 		} catch (Exception e2_<%=cid%>) { //Response close errors
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e2_<%=cid%>.getMessage());
 			throw new RuntimeException("Could not close response " + e2_<%=cid%>);
 		}
 	}

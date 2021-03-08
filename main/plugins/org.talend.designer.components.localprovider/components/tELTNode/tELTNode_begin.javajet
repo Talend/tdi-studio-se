@@ -1058,5 +1058,6 @@
 	globalMap.put("<%=cid%>_QUERY", sql_<%=cid%>);
 	globalMap.put("<%=cid%>_NB_LINE", ret_<%=cid%>);
 	<% } else { %>
+	globalMap.put("<%=cid%>_ERROR_MESSAGE","<%=err%>");
 	throw new java.lang.Exception("<%=err%>");
 	<% } %>

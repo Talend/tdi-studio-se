@@ -156,6 +156,7 @@ if (jsEngine_<%=cid%> == null) {
         try {
             filenameOrStream_<%=cid %> = <%=filenameOrStream %>;
         } catch(java.lang.Exception e_<%=cid%>) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e_<%=cid%>.getMessage());
 <%
 			if (dieOnError) {
 %>
@@ -198,6 +199,7 @@ if (jsEngine_<%=cid%> == null) {
 			throw new RuntimeException("fail to parse the json file : " + <%if(!isUseUrl) {%> <%=filenameOrStream %> <%} else {%> <%=urlpath %> <%}%>);
 		}
 	} catch(java.lang.Exception e_<%=cid%>) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e_<%=cid%>.getMessage());
 	<%if (dieOnError) {%>
 		throw e_<%=cid%>;
 	<%} else {%>
@@ -287,6 +289,7 @@ if ((metadatas!=null)&&(metadatas.size()>0)) {
                         }
 %>
                     } catch (java.lang.Exception e) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
                         whetherReject_<%=cid%> = true;
 <%
                         if (dieOnError) {

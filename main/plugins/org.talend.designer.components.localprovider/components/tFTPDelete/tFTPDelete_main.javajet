@@ -83,6 +83,7 @@
 %>
 							 globalMap.put("<%=cid %>_CURRENT_STATUS", "File deleted.");
 						} catch (com.jcraft.jsch.SftpException e_<%=cid %>) {
+						    globalMap.put("<%=cid%>_ERROR_MESSAGE",e_<%=cid %>.getMessage());
 							globalMap.put("<%=cid %>_CURRENT_STATUS", "Deleting file action error");
             	           throw e_<%=cid %>;
                 		}

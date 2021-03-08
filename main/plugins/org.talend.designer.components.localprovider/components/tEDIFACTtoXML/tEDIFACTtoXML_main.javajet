@@ -60,6 +60,7 @@ globalMap.put("<%=cid%>_ERROR_MESSAGE",sE_<%=cid%>.getMessage());
 	}
 %>
 } catch (java.lang.Exception dE_<%=cid%>) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",dE_<%=cid%>.getMessage());
 <%
 	if ("true".equals(dieOnError)) {
 %>
