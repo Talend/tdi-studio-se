@@ -216,6 +216,11 @@ public class GuessSchemaController extends AbstractElementPropertySectionControl
         IElementParameter elementParameterFromField = elem.getElementParameterFromField(EParameterFieldType.MEMO_SQL);
 
         memoSQL = (String) elementParameterFromField.getValue();
+        if (memoSQL == null || TalendQuoteUtils.removeQuotes(memoSQL).trim().isEmpty()) {
+            MessageDialog.open(MessageDialog.INFORMATION, this.btn.getShell(), "",
+                    Messages.getString("GuessSchemaController.emptyQuery"), SWT.NONE);
+            return null;
+        }
         initConnectionParameters();
         if (this.connParameters != null && memoSQL != null) {
             initConnectionParametersWithContext(elem, manager.getDefaultContext());
