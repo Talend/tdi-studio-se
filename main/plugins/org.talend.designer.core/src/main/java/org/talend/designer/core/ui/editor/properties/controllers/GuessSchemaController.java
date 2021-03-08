@@ -86,6 +86,7 @@ import org.talend.core.ui.properties.tab.IDynamicProperty;
 import org.talend.core.ui.services.ISQLBuilderService;
 import org.talend.core.utils.CsvArray;
 import org.talend.core.utils.KeywordsValidator;
+import org.talend.core.utils.TalendQuoteUtils;
 import org.talend.designer.core.i18n.Messages;
 import org.talend.designer.core.model.components.EParameterName;
 import org.talend.designer.core.ui.editor.cmd.ChangeMetadataCommand;
@@ -214,6 +215,11 @@ public class GuessSchemaController extends AbstractElementPropertySectionControl
         IElementParameter elementParameterFromField = elem.getElementParameterFromField(EParameterFieldType.MEMO_SQL);
 
         memoSQL = (String) elementParameterFromField.getValue();
+        if (memoSQL == null || TalendQuoteUtils.removeQuotes(memoSQL).trim().isEmpty()) {
+            MessageDialog.open(MessageDialog.INFORMATION, this.btn.getShell(), "",
+                    Messages.getString("GuessSchemaController.emptyQuery"), SWT.NONE);
+            return null;
+        }
         initConnectionParameters();
         if (this.connParameters != null && memoSQL != null) {
             initConnectionParametersWithContext(elem, manager.getDefaultContext());
