@@ -86,6 +86,15 @@
        </projecttask>
        <projecttask
              beforeLogon="false"
+             breaks="7.3.0"
+             class="org.talend.designer.core.generic.model.migration.RevertJDBCContextModeMappingFileValueMigrationTask"
+             description="Migration task for JDBC connection revert mappingFile context mode"
+             id="org.talend.designer.core.generic.model.migration.RevertJDBCContextModeMappingFileValueMigrationTask"
+             name="RevertJDBCContextModeMappingFileValueMigrationTask"
+             version="7.3.1">
+       </projecttask>
+       <projecttask
+             beforeLogon="false"
              breaks="7.0.1"
              class="org.talend.designer.core.generic.model.migration.DriverJarMigration"
              description="Migration task for Driver Jar"

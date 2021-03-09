@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.gef.commands.Command;
@@ -390,6 +391,11 @@ public class ComponentRefController extends AbstractElementPropertySectionContro
                 }
 
                 refNodes = (List<INode>) node.getProcess().getNodesOfType(referenceComponentName);
+                if(node.getJobletNode() != null) {
+                    List<? extends INode> graphicalNodes = node.getProcess().getGraphicalNodes();
+                    List<String> nodeUniqueNames = graphicalNodes.stream().map(inode->inode.getUniqueName()).collect(Collectors.toList());
+                    refNodes = refNodes.stream().filter(inode->!nodeUniqueNames.contains(inode.getUniqueName())).collect(Collectors.toList());
+                }
             }
         }
         return refNodes;

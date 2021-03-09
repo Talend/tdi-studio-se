@@ -13,22 +13,11 @@
 package org.talend.designer.core.ui.routine;
 
 import org.eclipse.jface.viewers.LabelProvider;
-import org.eclipse.swt.graphics.Image;
-import org.talend.commons.ui.runtime.image.EImage;
-import org.talend.commons.ui.runtime.image.ImageProvider;
 
 /**
  * ggu class global comment. Detailled comment
  */
 public class RoutineRecordLabelProvider extends LabelProvider {
-
-    @Override
-    public Image getImage(Object element) {
-        if (element instanceof RoutineItemRecord && ((RoutineItemRecord) element).hasProblem()) {
-            return ImageProvider.getImage(EImage.ERROR_ICON);
-        }
-        return super.getImage(element);
-    }
 
     @Override
     public String getText(Object element) {

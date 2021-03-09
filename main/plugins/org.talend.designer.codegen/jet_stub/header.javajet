@@ -73,6 +73,9 @@ import pigudf.<%=routine%>;
 import routines.<%=routine%>;
 <%  }
 }%>
+<%for (String codesJar : CodeGeneratorRoutine.getRequiredCodesJarName(process)) {%>
+import <%=codesJar%>;
+<%}%>
 import routines.system.*;
 import routines.system.api.*;
 import java.text.ParseException;

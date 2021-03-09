@@ -12,6 +12,7 @@
 // ============================================================================
 package org.talend.designer.runprocess;
 
+import java.beans.PropertyChangeListener;
 import java.util.List;
 import java.util.Set;
 
@@ -35,8 +36,8 @@ import org.talend.core.model.process.IProcess2;
 import org.talend.core.model.process.JobInfo;
 import org.talend.core.model.properties.Item;
 import org.talend.core.model.properties.Property;
-import org.talend.core.model.properties.RoutineItem;
 import org.talend.core.model.repository.ERepositoryObjectType;
+import org.talend.core.model.routines.CodesJarInfo;
 import org.talend.core.runtime.process.ITalendProcessJavaProject;
 import org.talend.core.runtime.projectsetting.ProjectPreferenceManager;
 import org.talend.designer.core.ui.action.SaveJobBeforeRunAction;
@@ -210,7 +211,7 @@ public class RunProcessService implements IRunProcessService {
      * org.talend.designer.runprocess.IRunProcessService#updateLibraries(org.talend.core.model.properties.RoutineItem)
      */
     @Override
-    public void updateLibraries(RoutineItem routineItem) {
+    public void updateLibraries(Item routineItem) {
         delegateService.updateLibraries(routineItem);
     }
 
@@ -428,8 +429,28 @@ public class RunProcessService implements IRunProcessService {
     }
 
     @Override
+    public ITalendProcessJavaProject getTalendCodesJarJavaProject(CodesJarInfo info) {
+        return delegateService.getTalendCodesJarJavaProject(info);
+    }
+
+    @Override
     public ITalendProcessJavaProject getTalendJobJavaProject(Property property) {
         return delegateService.getTalendJobJavaProject(property);
+    }
+
+    @Override
+    public ITalendProcessJavaProject getExistingTalendJobProject(Property property) {
+        return delegateService.getExistingTalendJobProject(property);
+    }
+
+    @Override
+    public ITalendProcessJavaProject getExistingTalendCodesJarProject(CodesJarInfo info) {
+        return delegateService.getExistingTalendCodesJarProject(info);
+    }
+
+    @Override
+    public PropertyChangeListener addCodesJarChangeListener() {
+        return delegateService.addCodesJarChangeListener();
     }
 
     @Override
@@ -512,6 +533,17 @@ public class RunProcessService implements IRunProcessService {
     @Override
     public boolean isExcludeDeletedItems(Property property) {
         return delegateService.isExcludeDeletedItems(property);
+    }
+
+    @Override
+    public void deleteTalendCodesJarProject(CodesJarInfo info, boolean deleteContent) {
+        delegateService.deleteTalendCodesJarProject(info, deleteContent);
+    }
+
+    @Override
+    public void deleteTalendCodesJarProject(ERepositoryObjectType type, String projectTechName, String codesJarName,
+            boolean deleteContent) {
+        delegateService.deleteTalendCodesJarProject(type, projectTechName, codesJarName, deleteContent);
     }
 
 }
