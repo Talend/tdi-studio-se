@@ -854,9 +854,11 @@ public class DefaultRunProcessService implements IRunProcessService {
     
     private void deleteRefProjects(Project refProject, AggregatorPomsHelper refHelper) throws Exception {
         IProgressMonitor monitor = new NullProgressMonitor();
-        ERepositoryObjectType.getAllTypesOfCodes().forEach(codeType -> {
+        for (ERepositoryObjectType codeType : ERepositoryObjectType.getAllTypesOfCodes()) {
+            // use getAllTypesOfCodes to avoid NPE
+            // the ERepositoryObjectType may not load on current license
             deleteRefProject(codeType, refHelper, monitor);
-        });
+        }
 
     }
     
