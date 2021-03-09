@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2021 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -73,6 +73,7 @@ public class JobSettingsManager {
     private static List<String> moduleValueList;
 
     private static boolean isTeamEdition = PluginChecker.isTeamEdition();
+
 
     public static List<IElementParameter> getJobSettingsParameters(IProcess process) {
         List<IElementParameter> paramList = new ArrayList<IElementParameter>();
@@ -1335,14 +1336,17 @@ public class JobSettingsManager {
 
         static String doAddMark4SpecialChar(String sequence) {
             String filedSeparator = TalendQuoteUtils.removeQuotes(sequence);
-            for (String charStr : METADATA_CHAR) {
-                if (!filedSeparator.contains(charStr)) {
-                    continue;
-                }
-                if("\\".equals(charStr)) {
-                    filedSeparator = addMarkWithChar(filedSeparator, charStr, "\\\\\\", true); //$NON-NLS-1$
-                }else {
-                    filedSeparator = addMarkWithChar(filedSeparator, charStr, "\\\\", true); //$NON-NLS-1$
+            // add only \t for file separator as special case here , to not break something else
+            if (!"\\t".equals(filedSeparator)) {
+                for (String charStr : METADATA_CHAR) {
+                    if (!filedSeparator.contains(charStr)) {
+                        continue;
+                    }
+                    if ("\\".equals(charStr)) {
+                        filedSeparator = addMarkWithChar(filedSeparator, charStr, "\\\\\\", true); //$NON-NLS-1$
+                    } else {
+                        filedSeparator = addMarkWithChar(filedSeparator, charStr, "\\\\", true); //$NON-NLS-1$
+                    }
                 }
             }
             filedSeparator = TalendQuoteUtils.addQuotes(filedSeparator);

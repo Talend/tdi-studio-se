@@ -215,8 +215,8 @@ try{
     };
     error_<%=cid %>.start();
     process_<%=cid %>.waitFor();
-    normal_<%=cid %>.interrupt();
-    error_<%=cid %>.interrupt();
+	normal_<%=cid %>.join();
+	error_<%=cid %>.join();
 
     <%
         if(dieWhenUnnormalTerminated){

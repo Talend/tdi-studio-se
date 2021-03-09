@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2021 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -15,7 +15,6 @@ package org.talend.repository.ui.wizards.ConfigExternalLib;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.emf.common.util.EList;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -30,9 +29,8 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
-import org.talend.commons.ui.runtime.exception.ExceptionHandler;
+import org.talend.commons.exception.ExceptionHandler;
 import org.talend.core.CorePlugin;
-import org.talend.core.model.properties.RoutineItem;
 import org.talend.designer.core.model.utils.emf.component.ComponentFactory;
 import org.talend.designer.core.model.utils.emf.component.IMPORTType;
 import org.talend.repository.i18n.Messages;
@@ -76,9 +74,7 @@ public class ConfigExternalPerlModulePage extends ConfigExternalLibPage {
         libField = new EditPerlRoutineExternalModuleField(
                 Messages.getString("ConfigExternalPerlModulePage.moduleFieldLabel"), composite); //$NON-NLS-1$
 
-        RoutineItem routine = getSelectedRoutine();
-        EList routines = routine.getImports();
-        libField.setInput(routines);
+        libField.setInput(getImports());
 
         setErrorMessage(null); // should not initially have error message
 
@@ -97,7 +93,7 @@ public class ConfigExternalPerlModulePage extends ConfigExternalLibPage {
             @Override
             public void run() {
                 try {
-                    CorePlugin.getDefault().getProxyRepositoryFactory().save(getSelectedRoutine());
+                    CorePlugin.getDefault().getProxyRepositoryFactory().save(getSelectedItem());
                 } catch (Exception e) {
                     ExceptionHandler.process(e);
                 }
@@ -155,8 +151,7 @@ public class ConfigExternalPerlModulePage extends ConfigExternalLibPage {
             ModulePropertyDialog dialog = new ModulePropertyDialog(this.getShell());
             if (dialog.open() == IDialogConstants.OK_ID) {
                 IMPORTType type = dialog.getImportType();
-                RoutineItem routine = getSelectedRoutine();
-                type.setNAME(routine.getProperty().getLabel());
+                type.setNAME(getSelectedItem().getProperty().getLabel());
                 importTypes.add(type);
             }
             return importTypes;

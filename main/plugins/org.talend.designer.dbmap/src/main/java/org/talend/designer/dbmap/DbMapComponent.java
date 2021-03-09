@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2021 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -193,6 +193,13 @@ public class DbMapComponent extends AbstractMapComponent {
                 useAliasInOutputTableEP.setCategory(EComponentCategory.TECHNICAL);
                 useAliasInOutputTableEP.setNumRow(99);
                 useAliasInOutputTableEP.setReadOnly(false);
+                if (getGenerationManager() instanceof OracleGenerationManager) {
+                    boolean disableAlias = Boolean
+                            .valueOf(System.getProperty("elt.oracle.disableColumnAlias", Boolean.FALSE.toString())); //$NON-NLS-1$
+                    if (!disableAlias) {
+                        getGenerationManager().setUseAliasInOutputTable(true);
+                    }
+                }
                 List<IElementParameter> elemParams = (List<IElementParameter>) origNode.getElementParameters();
                 elemParams.add(useAliasInOutputTableEP);
             }

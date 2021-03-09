@@ -71,7 +71,7 @@
                     MODULE="dropbox-core-sdk-2.1.2.jar" MVN="mvn:org.talend.libraries/dropbox-core-sdk-2.1.2/6.3.0" 
                     REQUIRED_IF="USE_EXISTING_CONNECTION == 'false'" />
                <IMPORT NAME="jackson-core"
-                    MODULE="jackson-core-2.10.1.jar" MVN="mvn:com.fasterxml.jackson.core/jackson-core/2.10.1" 
+                    MODULE="jackson-core-2.11.4.jar" MVN="mvn:com.fasterxml.jackson.core/jackson-core/2.11.4" 
                     REQUIRED_IF="USE_EXISTING_CONNECTION == 'false'" />
 		</IMPORTS>
    </CODEGENERATION>

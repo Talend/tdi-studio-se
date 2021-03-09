@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2021 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -13,6 +13,7 @@
 package org.talend.designer.core.model.components;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -1279,6 +1280,23 @@ public class ElementParameter implements IElementParameter {
 
     public Object getTaggedValue(String key) {
         return taggedValues.get(key);
+    }
+
+    public boolean isSelectedFromItemValue() {
+
+        Object[] listItemsValue = this.getListItemsValue();
+        if (listItemsValue == null) {
+            return false;
+        }
+        Object value = this.getValue();
+        if (value == null || "".equals(value)) {
+            return false;
+        }
+
+        if (Arrays.asList(listItemsValue).contains(value)) {
+            return true;
+        }
+        return false;
     }
 
 }

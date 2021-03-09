@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2020 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2021 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -16,6 +16,7 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 import org.talend.commons.utils.Hex;
+import org.talend.core.model.general.ModuleNeeded;
 
 
 /**
@@ -27,7 +28,7 @@ public class UpdateMoudleListInComponentsMigrationTest {
     public void testParseJarNameForHexVaue() {
         String contextA = "context.jdbc_jar\n";
         String encoded_contextA = Hex.encodeHexString(contextA.getBytes());
-        String jar = "mysql-connector-5.1.3\n";
+        String jar = "mysql-connector-5.1.3.jar";
         String encoded_jar = Hex.encodeHexString(jar.getBytes());
         
         String prefix = "mvn:org.talend.libraries/";
@@ -45,7 +46,8 @@ public class UpdateMoudleListInComponentsMigrationTest {
         assertEquals(encoded_contextA, parsedJarName);
         
         parsedJarName = mt_73.parseJarNameForHexVaue(encoded_jar);//be hex jar 
-        assertEquals(Hex.encodeHexString((prefix + jar + suffix).getBytes()), parsedJarName);
+        String mavenUri = new ModuleNeeded(null, jar, null, true).getMavenUri();
+        assertEquals(Hex.encodeHexString(mavenUri.getBytes()), parsedJarName);
         
         jarName = prefix + encoded_jar + suffix;
         parsedJarName = mt_73.parseJarNameForHexVaue(jarName); //contains hex jar
@@ -71,7 +73,7 @@ public class UpdateMoudleListInComponentsMigrationTest {
         
         jarName = prefix + encoded_jar + suffix;
         parsedJarName = mt_74.parseJarNameForHexVaue(encoded_jar); //be hex jar
-        assertEquals(Hex.encodeHexString((prefix + jar + suffix).getBytes()), parsedJarName);
+        assertEquals(Hex.encodeHexString(mavenUri.getBytes()), parsedJarName);
         
         parsedJarName = mt_74.parseJarNameForHexVaue(encodeHexString);// be hex jar with 'mvn:' prefix
         assertEquals(encodeHexString, parsedJarName);

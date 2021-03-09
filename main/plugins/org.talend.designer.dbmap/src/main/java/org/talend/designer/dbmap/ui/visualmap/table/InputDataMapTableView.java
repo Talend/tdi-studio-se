@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2021 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -121,7 +121,7 @@ public class InputDataMapTableView extends DataMapTableView {
             }
 
         });
-        column.setModifiable(true);
+        column.setModifiable(!mapperManager.componentIsReadOnly());
         // column.setWidth(12);
         column.setWidth(65);
         column.setDisplayedValue(""); //$NON-NLS-1$
@@ -163,7 +163,6 @@ public class InputDataMapTableView extends DataMapTableView {
             }
 
         });
-        columnOperator.setModifiable(true);
         columnOperator.setWidth(85);
         final IDbOperatorManager operatorsManager = mapperManager.getCurrentLanguage().getOperatorsManager();
         IDbOperator[] operators = operatorsManager.getOperators();
@@ -219,7 +218,8 @@ public class InputDataMapTableView extends DataMapTableView {
         // typeCombo.setEditable(true);
         columnOperator.setCellEditor(typeComboEditor, CellEditorValueAdapterFactory.getComboAdapterForComboCellEditorImproved());
         columnOperator.setAlignment(ALIGNMENT.CENTER);
-
+        columnOperator.setModifiable(!mapperManager.componentIsReadOnly());
+        
         final TableViewerCreatorColumn columnExpression = new TableViewerCreatorColumn(tableViewerCreatorForColumns);
         columnExpression.setTitle(Messages.getString("InputDataMapTableView.columnTitle.Expr")); //$NON-NLS-1$
         columnExpression.setId(DataMapTableView.ID_EXPRESSION_COLUMN);
@@ -235,7 +235,7 @@ public class InputDataMapTableView extends DataMapTableView {
             }
 
         });
-        columnExpression.setModifiable(true);
+        columnExpression.setModifiable(!mapperManager.componentIsReadOnly());
         columnExpression.setDefaultInternalValue(""); //$NON-NLS-1$
         createExpressionCellEditor(tableViewerCreatorForColumns, columnExpression, new Zone[] { Zone.INPUTS }, false);
         columnExpression.setWeight(COLUMN_EXPRESSION_SIZE_WEIGHT);
@@ -281,7 +281,7 @@ public class InputDataMapTableView extends DataMapTableView {
             refreshLabelForJoinDropDown();
         }
         dropDownItem.addSelectionListener(new DropDownSelectionListener());
-
+        dropDownItem.setEnabled(!mapperManager.componentIsReadOnly());
         return true;
     }
 

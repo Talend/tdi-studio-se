@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2021 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -69,6 +69,15 @@ public class JavaRoutineSynchronizer extends AbstractRoutineSynchronizer {
         syncRoutineItems(getRoutines(true), true);
     }
 
+    @Override
+    public void syncAllInnerCodes() throws SystemException {
+        syncInnerCodeItems(false);
+    }
+
+    @Override
+    public void syncAllInnerCodesForLogOn() throws SystemException {
+        syncInnerCodeItems(true);
+    }
 
     private void syncRoutineItems(Collection<RoutineItem> routineObjects, boolean forceUpdate) throws SystemException {
         for (RoutineItem routineItem : routineObjects) {

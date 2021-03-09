@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2021 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -11,16 +11,6 @@
 //
 // ============================================================================
 package org.talend.repository.ui.wizards.exportjob.scriptsmanager.esb;
-
-import aQute.bnd.header.Attrs;
-import aQute.bnd.osgi.Analyzer;
-import aQute.bnd.osgi.Clazz;
-import aQute.bnd.osgi.Descriptors;
-import aQute.bnd.osgi.FileResource;
-import aQute.bnd.osgi.Jar;
-import aQute.bnd.service.AnalyzerPlugin;
-import aQute.bnd.service.Plugin;
-import aQute.service.reporter.Reporter;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -56,11 +46,10 @@ import org.apache.commons.collections.map.MultiKeyMap;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.emf.common.util.EList;
 import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.exception.PersistenceException;
-import org.talend.commons.runtime.utils.io.FileCopyUtils;
 import org.talend.commons.utils.generation.JavaUtils;
 import org.talend.commons.utils.io.FilesUtils;
 import org.talend.core.CorePlugin;
@@ -77,20 +66,28 @@ import org.talend.core.model.properties.Property;
 import org.talend.core.model.properties.RoutineItem;
 import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.core.model.repository.IRepositoryViewObject;
+import org.talend.core.model.routines.CodesJarInfo;
 import org.talend.core.model.utils.JavaResourcesHelper;
 import org.talend.core.repository.constants.FileConstants;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
+import org.talend.core.runtime.maven.MavenArtifact;
+import org.talend.core.runtime.maven.MavenConstants;
 import org.talend.core.runtime.process.ITalendProcessJavaProject;
 import org.talend.core.runtime.process.LastGenerationInfo;
 import org.talend.core.runtime.repository.build.BuildExportManager;
 import org.talend.core.service.ITaCoKitDependencyService;
 import org.talend.core.ui.branding.IBrandingService;
+import org.talend.core.utils.CodesJarResourceCache;
 import org.talend.designer.core.ICamelDesignerCoreService;
 import org.talend.designer.core.IDesignerCoreService;
 import org.talend.designer.core.model.utils.emf.component.IMPORTType;
 import org.talend.designer.core.model.utils.emf.talendfile.ElementParameterType;
 import org.talend.designer.core.model.utils.emf.talendfile.ElementValueType;
 import org.talend.designer.core.model.utils.emf.talendfile.NodeType;
+import org.talend.designer.core.model.utils.emf.talendfile.RoutinesParameterType;
+import org.talend.designer.maven.model.TalendMavenConstants;
+import org.talend.designer.maven.utils.PomIdsHelper;
+import org.talend.designer.maven.utils.PomUtil;
 import org.talend.designer.runprocess.IProcessor;
 import org.talend.designer.runprocess.IRunProcessService;
 import org.talend.designer.runprocess.ProcessorException;
@@ -98,10 +95,19 @@ import org.talend.designer.runprocess.ProcessorUtilities;
 import org.talend.repository.ProjectManager;
 import org.talend.repository.RepositoryPlugin;
 import org.talend.repository.documentation.ExportFileResource;
-import org.talend.repository.ui.wizards.exportjob.scriptsmanager.JarBuilder;
 import org.talend.repository.ui.wizards.exportjob.scriptsmanager.JobJavaScriptsManager;
 import org.talend.repository.utils.EmfModelUtils;
 import org.talend.repository.utils.TemplateProcessor;
+
+import aQute.bnd.header.Attrs;
+import aQute.bnd.osgi.Analyzer;
+import aQute.bnd.osgi.Clazz;
+import aQute.bnd.osgi.Descriptors;
+import aQute.bnd.osgi.FileResource;
+import aQute.bnd.osgi.Jar;
+import aQute.bnd.service.AnalyzerPlugin;
+import aQute.bnd.service.Plugin;
+import aQute.service.reporter.Reporter;
 
 /**
  * DOC ycbai class global comment. Detailled comment
@@ -389,33 +395,54 @@ public class JobJavaScriptOSGIForESBManager extends JobJavaScriptsManager {
 
     @Override
     protected void addRoutinesResources(ExportFileResource[] processes, ExportFileResource libResource) {
-        File jarFile = new File(getTmpFolder() + File.separatorChar + JavaUtils.ROUTINES_JAR);
-
-        if (routineClassRootFolder == null) {
-            routineClassRootFolder = getCodeClassRootFileLocation(ERepositoryObjectType.ROUTINES);
-            if (routineClassRootFolder == null) {
-                return;
-            }
-            beanClassRootFolder = getCodeClassRootFileLocation(ERepositoryObjectType.BEANS);
-            RepositoryPlugin.getDefault().getRunProcessService().buildCodesJavaProject(new NullProgressMonitor());
+        // codes jars
+        ProcessItem item = (ProcessItem) processes[0].getItem();
+        EList<RoutinesParameterType> routinesParameter = item.getProcess().getParameters().getRoutinesParameter();
+        List<URL> codesjarM2Files = new ArrayList<>();
+        if (routinesParameter != null) {
+            routinesParameter.stream().filter(r -> r.getType() != null).forEach(r -> {
+                CodesJarInfo info = CodesJarResourceCache.getCodesJarById(r.getId());
+                Property property = info.getProperty();
+                String projectTechName = info.getProjectTechName();
+                MavenArtifact artifact = new MavenArtifact();
+                artifact.setGroupId(PomIdsHelper.getCodesJarGroupId(projectTechName, property.getItem()));
+                artifact.setArtifactId(property.getLabel().toLowerCase());
+                artifact.setVersion(PomIdsHelper.getCodesJarVersion(projectTechName));
+                artifact.setType(MavenConstants.TYPE_JAR);
+                try {
+                    codesjarM2Files.add(new File(PomUtil.getArtifactFullPath(artifact)).toURI().toURL());
+                } catch (MalformedURLException e) {
+                    e.printStackTrace();
+                }
+            });
         }
-        if (beanClassRootFolder != null) {
-            FileCopyUtils.copyFolder(beanClassRootFolder, routineClassRootFolder);
-        }
 
-        // make a jar file of system routine classes
+        String projectTechName = ProjectManager.getInstance().getProject(item).getTechnicalLabel();
+
+        // routines.jar
+        MavenArtifact routinesArtifact = new MavenArtifact();
+        routinesArtifact.setGroupId(PomIdsHelper.getCodesGroupId(projectTechName, TalendMavenConstants.DEFAULT_CODE));
+        routinesArtifact.setArtifactId(TalendMavenConstants.DEFAULT_ROUTINES_ARTIFACT_ID);
+        routinesArtifact.setVersion(PomIdsHelper.getCodesVersion(projectTechName));
+        routinesArtifact.setType(MavenConstants.TYPE_JAR);
         try {
-            JarBuilder jarbuilder = new JarBuilder(routineClassRootFolder, jarFile);
-            jarbuilder.setIncludeDir(getRoutinesPaths());
-            Collection<File> includeRoutines = new ArrayList<File>(getRoutineDependince(processes, true, USER_ROUTINES_PATH));
-            includeRoutines.addAll(getRoutineDependince(processes, false, getIncludeRoutinesPath()));
-            jarbuilder.setIncludeRoutines(includeRoutines);
-            jarbuilder.buildJar();
-
-            libResource.addResources(Collections.singletonList(jarFile.toURI().toURL()));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+            codesjarM2Files.add(new File(PomUtil.getArtifactFullPath(routinesArtifact)).toURI().toURL());
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
         }
+        // beans.jar
+        MavenArtifact beansArtifact = new MavenArtifact();
+        beansArtifact.setGroupId(PomIdsHelper.getCodesGroupId(projectTechName, TalendMavenConstants.DEFAULT_BEAN));
+        beansArtifact.setArtifactId(TalendMavenConstants.DEFAULT_BEANS_ARTIFACT_ID);
+        beansArtifact.setVersion(PomIdsHelper.getCodesVersion(projectTechName));
+        beansArtifact.setType(MavenConstants.TYPE_JAR);
+        try {
+            codesjarM2Files.add(new File(PomUtil.getArtifactFullPath(beansArtifact)).toURI().toURL());
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
+
+        libResource.addResources(codesjarM2Files);
     }
 
     protected ExportFileResource getProvidedLibExportFileResource(ExportFileResource[] processes) {

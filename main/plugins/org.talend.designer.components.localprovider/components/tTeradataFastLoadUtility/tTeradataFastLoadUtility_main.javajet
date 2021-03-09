@@ -197,10 +197,8 @@ Thread error_<%=cid %> = new Thread() {
 error_<%=cid %>.start();
 
 process_<%=cid %>.waitFor();
-
-normal_<%=cid %>.interrupt();
-
-error_<%=cid %>.interrupt();
+normal_<%=cid %>.join();
+error_<%=cid %>.join();
 
 globalMap.put("<%=cid %>_EXIT_VALUE", process_<%=cid %>.exitValue());
 
