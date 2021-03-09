@@ -54,11 +54,10 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
-import org.osgi.framework.Bundle;
 import org.eclipse.emf.common.util.EList;
+import org.osgi.framework.Bundle;
 import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.exception.PersistenceException;
 import org.talend.commons.utils.generation.JavaUtils;
@@ -479,13 +478,6 @@ public class JobJavaScriptOSGIForESBManager extends JobJavaScriptsManager {
         routinesArtifact.setVersion(PomIdsHelper.getCodesVersion(projectTechName));
         routinesArtifact.setType(MavenConstants.TYPE_JAR);
         try {
-            JarBuilder jarbuilder = new JarBuilder(routineClassRootFolder, jarFile);
-            jarbuilder.setIncludeDir(getRoutinesPaths());
-            Collection<File> includeRoutines = new ArrayList<File>(getRoutineDependince(processes, true, USER_ROUTINES_PATH));
-            includeRoutines.addAll(getRoutineDependince(processes, false, getIncludeRoutinesPath()));
-            jarbuilder.setIncludeRoutines(includeRoutines);
-            jarbuilder.buildJar();
-            libResource.addResources(Collections.singletonList(jarFile.toURI().toURL()));
             codesjarM2Files.add(new File(PomUtil.getArtifactFullPath(routinesArtifact)).toURI().toURL());
         } catch (MalformedURLException e) {
             e.printStackTrace();
