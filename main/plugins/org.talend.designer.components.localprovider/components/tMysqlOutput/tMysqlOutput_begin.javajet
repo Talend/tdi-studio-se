@@ -15,7 +15,7 @@ imports="
 		java.util.HashMap
 "
 skeleton="../templates/db_output_bulk.skeleton"
-%>sadfas
+%>sadfasasdf
 <%@ include file="@{org.talend.designer.components.localprovider}/components/templates/Log4j/DBLogUtil.javajet"%>
 <%
 	CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
