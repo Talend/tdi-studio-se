@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2021 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -41,7 +41,7 @@ public class RemoveDefaultProxyIPTask extends AbstractJobMigrationTask {
         if (getProject().getLanguage() != ECodeLanguage.JAVA || processType == null) {
             return ExecutionResult.NOTHING_TO_DO;
         }
-        String[] componentsName = new String[] { "tFTPConnection", "tFTPDelete", "tFTPFileExist ", "tFTPFileList ", "tFTPFileProperties", "tFTPGet ", "tFTPPut ", "tFTPRename", "tFTPTruncate", "tFileFetch", "tRSSInput", "tSOAP", "tSetProxy ", "tWebService ", "tWebServiceInput" }; //$NON-NLS-1$ //$NON-NLS-2$
+        String[] componentsName = new String[] { "tFTPConnection", "tFTPDelete", "tFTPFileExist", "tFTPFileList", "tFTPFileProperties", "tFTPGet", "tFTPPut", "tFTPRename", "tFTPTruncate", "tFileFetch", "tRSSInput", "tSOAP", "tSetProxy", "tWebService", "tWebServiceInput" }; //$NON-NLS-1$ //$NON-NLS-2$
         for (String name : componentsName) {
             IComponentFilter filter = new NameComponentFilter(name);
             try {
@@ -49,32 +49,25 @@ public class RemoveDefaultProxyIPTask extends AbstractJobMigrationTask {
                         .<IComponentConversion> asList(new IComponentConversion() {
 
                             public void transform(NodeType node) {
-                                System.out.println("--------------------start-------------");
-								ElementParameterType wrongName = ComponentUtilities.getNodeProperty(node, "UES_PROXY");
-								ElementParameterType useProxy = ComponentUtilities.getNodeProperty(node, "USE_PROXY");
-                                System.out.println("useProxy: " + useProxy);
-                                System.out.println("useProxy.getValue: " + useProxy.getValue());
-								if (wrongName != null) {//$NON-NLS-1$
-								//change wrong property name
-                                    System.out.println("wrong name: " );
+                                ElementParameterType wrongName = ComponentUtilities.getNodeProperty(node, "UES_PROXY");
+                                ElementParameterType useProxy = ComponentUtilities.getNodeProperty(node, "USE_PROXY");
+                                if (wrongName != null) {//$NON-NLS-1$
+                                    //change wrong property name
                                     ComponentUtilities.addNodeProperty(node, "USE_PROXY", "CHECK");//$NON-NLS-1$ //$NON-NLS-2$
-									ComponentUtilities.getNodeProperty(node, "USE_PROXY").setValue(wrongName.getValue());
-									
+                                    ComponentUtilities.getNodeProperty(node, "USE_PROXY").setValue(wrongName.getValue());
+                                    useProxy = ComponentUtilities.getNodeProperty(node, "USE_PROXY");
+
                                 }
                                 if (useProxy == null) {//$NON-NLS-1$
-                                    System.out.println("null use Proxy");
-								//if no "option/checkbox" => no change (to not break any user job already working)
+                                    //if no "option/checkbox" => no change (to not break any user job already working)
                                     return;
                                 }
 
-								ElementParameterType proxyHost = ComponentUtilities.getNodeProperty(node, "PROXY_HOST"); //$NON-NLS-1$
-                                System.out.println("proxyHost: " + proxyHost);
-                                System.out.println("proxyHost.getValue: " + proxyHost.getValue());
+                                ElementParameterType proxyHost =
+                                        ComponentUtilities.getNodeProperty(node, "PROXY_HOST"); //$NON-NLS-1$
                                 if (useProxy.getValue().equals("false") && "\"61.163.92.4\"".equals(proxyHost.getValue())) { //$NON-NLS-1$
-                                    System.out.println("setValue(127.0.0.1)");
                                     proxyHost.setValue("\"127.0.0.1\"");//$NON-NLS-1$
                                 }
-                                System.out.println("--------------------end-------------");
                             }
                         }));
             } catch (PersistenceException e) {
