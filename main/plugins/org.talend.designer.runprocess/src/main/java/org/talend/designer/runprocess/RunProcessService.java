@@ -546,9 +546,4 @@ public class RunProcessService implements IRunProcessService {
         delegateService.deleteTalendCodesJarProject(type, projectTechName, codesJarName, deleteContent);
     }
 
-    @Override
-    public void buildCodesForTDM() {
-        delegateService.buildCodesForTDM();
-    }
-
 }
