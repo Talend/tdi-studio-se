@@ -93,6 +93,7 @@ Export-Package: org.talend.repository,
  org.talend.repository.ui.wizards.newproject,
  org.talend.repository.ui.wizards.newproject.copyfromeclipse,
  org.talend.repository.ui.wizards.routines,
+ org.talend.repository.ui.wizards.routinesjar,
  org.talend.repository.ui.wizards.sqlpattern,
  org.talend.repository.utils
 Bundle-Activator: org.talend.repository.RepositoryPlugin

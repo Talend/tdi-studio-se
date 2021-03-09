@@ -195,6 +195,8 @@ public class Node extends Element implements IGraphicalNode {
     public static final String RETURNS_CHANGED = "returns changed"; //$NON-NLS-1$
 
     public static final String ICON_CHANGE = "iconChange";//$NON-NLS-1$
+    
+    private static final String DATABASE_LABEL = "Database"; //$NON-NLS-1$
 
     public static final int DEFAULT_SIZE = 32;
 
@@ -2952,7 +2954,7 @@ public class Node extends Element implements IGraphicalNode {
                     if (param != null) {
                         String errorMessage;
                         boolean isContextMode = false;
-                        if (param.getValue() == null || "".equals(param.getValue())) { //$NON-NLS-1$
+                        if (!param.isSelectedFromItemValue()) {
                             errorMessage = Messages.getString("Node.parameterEmpty", param.getDisplayName()); //$NON-NLS-1$
                         } else {
                             errorMessage = Messages.getString("Node.parameterNotExist", param.getDisplayName(), param.getValue()); //$NON-NLS-1$
@@ -4000,7 +4002,7 @@ public class Node extends Element implements IGraphicalNode {
                             String currentDbmsId = outputMeta.getDbms();
                             // TDI-21862:when drag/drop a special schema onto a component,need check if this schema's
                             // dbType compatible with this component
-                            if (!typevalue.equals("id_Dynamic") && currentDbmsId != null //$NON-NLS-1$
+                            if (!typevalue.equals("id_Dynamic") && currentDbmsId != null && isShowDBTypeColumn(this)//$NON-NLS-1$
                                     && !TypesManager.checkDBType(currentDbmsId, typevalue, sourceType)) {
                                 String errorMessage = "the schema's dbType not correct for this component"; //$NON-NLS-1$
                                 Problems.add(ProblemStatus.WARNING, this, errorMessage);
@@ -4155,7 +4157,7 @@ public class Node extends Element implements IGraphicalNode {
                             String sourceType = column.getType();
                             String typevalue = column.getTalendType();
                             String currentDbmsId = outputMeta.getDbms();
-                            if (!typevalue.equals("id_Dynamic") && currentDbmsId != null //$NON-NLS-1$
+                            if (!typevalue.equals("id_Dynamic") && currentDbmsId != null && isShowDBTypeColumn(node)//$NON-NLS-1$
                                     && !TypesManager.checkDBType(currentDbmsId, typevalue, sourceType)) {
                                 String errorMessage = "the schema's dbType not correct for this component"; //$NON-NLS-1$
                                 Problems.add(ProblemStatus.WARNING, this, errorMessage);
@@ -4235,7 +4237,7 @@ public class Node extends Element implements IGraphicalNode {
                         String sourceType = column.getType();
                         String typevalue = column.getTalendType();
                         String currentDbmsId = outputMeta.getDbms();
-                        if (!typevalue.equals("id_Dynamic") && currentDbmsId != null //$NON-NLS-1$
+                        if (!typevalue.equals("id_Dynamic") && currentDbmsId != null && isShowDBTypeColumn(this)//$NON-NLS-1$
                                 && !TypesManager.checkDBType(currentDbmsId, typevalue, sourceType)) {
                             String errorMessage = "the schema's dbType not correct for this component"; //$NON-NLS-1$
                             Problems.add(ProblemStatus.WARNING, this, errorMessage);
@@ -4289,6 +4291,24 @@ public class Node extends Element implements IGraphicalNode {
 
             }
         }
+    }
+    
+    private boolean isShowDBTypeColumn(INode node) {
+        boolean hasMappingType = false;
+        boolean eltComponent = isELTComponent();
+        IComponent _component = node.getComponent();
+        boolean isEBCDIC = _component.getName().contains("EBCDIC");
+        if (_component != null && _component.isSupportDbType() || _component.getOriginalFamilyName().startsWith(DATABASE_LABEL)
+                || eltComponent || isEBCDIC) {
+            for (IElementParameter currentParam : getElementParameters()) {
+                if (EParameterFieldType.MAPPING_TYPE.equals(currentParam.getFieldType())) {
+                    hasMappingType = true;
+                    break;
+                }
+            }
+        }
+        
+        return hasMappingType || eltComponent;
     }
 
     @Override

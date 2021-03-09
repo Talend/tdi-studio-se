@@ -87,7 +87,9 @@ skeleton="../templates/db_output_bulk.skeleton"
         dbuser = ElementParameterParser.getValue(previousNode, "__USER__");
         useExistingConn = ("true").equals(ElementParameterParser.getValue(previousNode, "__USE_EXISTING_CONNECTION__"));
     }
-    String whereClause = ElementParameterParser.getValue(node, "__WHERE_CLAUSE__");
+    boolean useWhereTable = ("true").equals(ElementParameterParser.getValue(node, "__USE_WHERE_CONDITIONS_TABLE__"));
+	String whereClause = ElementParameterParser.getValue(node, "__WHERE_CLAUSE__");
+	List<Map<String, String>> whereConditions = (List<Map<String,String>>)ElementParameterParser.getObjectValue(node, "__WHERE_CONDITIONS_TABLE__");
     %>
     String dbUser_<%=cid %> = null;
     <%
@@ -175,52 +177,88 @@ skeleton="../templates/db_output_bulk.skeleton"
 <%
             }
         } else if (("UPDATE").equals(dataAction)){
+%>
+        	boolean useAnd_<%=cid %> = false;
+<%
             if(isDeltaLake){
-            %>
+%>
                 String updateQuery_<%=cid %> = null;
                 if (true)
                 throw new RuntimeException("UPDATE action is not supported by tELTOutput. Please use tDeltaLakeRow.");
-            <%
+<%
             }else if(useUpdateStatement){
 %>
-                String updateQuery_<%=cid %> = select_query_<%=cid %>;
+                StringBuffer updateQuery_<%=cid %> = new StringBuffer(select_query_<%=cid %>);
 <%
-                if(CodeGenerationUtils.hasAlphaNumericCharacter(whereClause)) {
+                if((CodeGenerationUtils.hasAlphaNumericCharacter(whereClause) && (!useWhereTable)) || (useWhereTable && whereConditions.size() > 0)) {
 %>
-                    if (updateQuery_<%=cid %>.toUpperCase().contains(" WHERE ")) {
-                        updateQuery_<%=cid %> += " AND (" + <%=CodeGenerationUtils.replaceAllCrBySpace(whereClause)%> + ")";
+                    if (updateQuery_<%=cid %>.toString().toUpperCase().contains(" WHERE ")) {
+						useAnd_<%=cid %> = true;
+                        updateQuery_<%=cid %>.append(" AND (");
                     } else {
-                        updateQuery_<%=cid %> += " WHERE " + <%=CodeGenerationUtils.replaceAllCrBySpace(whereClause)%>;
+                        updateQuery_<%=cid %>.append(" WHERE ");
                     }
 <%
                 }
             } else {
 %>
-                String updateQuery_<%=cid %> = "UPDATE "+tableName_<%=cid%>+" SET <%=updateSetStmt.toString()%> "
+                StringBuffer updateQuery_<%=cid %> = new StringBuffer("UPDATE "+tableName_<%=cid%>+" SET <%=updateSetStmt.toString()%> ");
 <%
-                if(CodeGenerationUtils.hasAlphaNumericCharacter(whereClause)) {
+                if((CodeGenerationUtils.hasAlphaNumericCharacter(whereClause) && (!useWhereTable)) || (useWhereTable && whereConditions.size() > 0)) {
 %>
-                    +"  WHERE " + <%=CodeGenerationUtils.replaceAllCrBySpace(whereClause)%>
+                    updateQuery_<%=cid %>.append("  WHERE ");
 <%
                 }
+            }
+        	if(!useWhereTable) {
+            	if(CodeGenerationUtils.hasAlphaNumericCharacter(whereClause)) {
 %>
-                ;
-        <%
-            }
-        } else if (("DELETE").equals(dataAction)){
-        %>
-          String deleteQuery_<%=cid %> = "DELETE  FROM "+ tableName_<%=cid%>+" WHERE EXISTS ("+select_query_<%=cid %>+") "
-            <%
-            if(CodeGenerationUtils.hasAlphaNumericCharacter(whereClause)) {
-            %>
-            +"  AND " + <%=CodeGenerationUtils.replaceAllCrBySpace(whereClause)%>
-            <%
-            }
-            %>
-            ;
-        <%
-        }
-        %>
+					updateQuery_<%=cid %>.append(<%=CodeGenerationUtils.replaceAllCrBySpace(whereClause)%>);
+<%
+				}
+			} else {
+				if(whereConditions.size() > 0) {
+					String operator = "\"\"";
+					for(Map<String, String> whereCondition : whereConditions) {
+						String column_condition = whereCondition.get("COLUMN");
+						String function_condition = whereCondition.get("FUNCTION");
+						String value_condition = whereCondition.get("VALUE_SQL");
+%>
+						updateQuery_<%=cid %>.append(<%=operator %> + <%=column_condition %> + " " + <%=function_condition %> + " " + <%=value_condition %>);
+<%
+						operator = "\" AND \"";
+					}
+				}
+			}
+%>
+			if(useAnd_<%=cid %>) {
+				updateQuery_<%=cid %>.append(")");
+			}
+<%
+    	} else if (("DELETE").equals(dataAction)){
+%>
+			StringBuffer deleteQuery_<%=cid %> = new StringBuffer("DELETE  FROM "+ tableName_<%=cid%>+" WHERE EXISTS ("+select_query_<%=cid %>+") ");
+<%
+			if(!useWhereTable) {
+				if(CodeGenerationUtils.hasAlphaNumericCharacter(whereClause)) {
+%>
+        			deleteQuery_<%=cid %>.append("  AND " + <%=CodeGenerationUtils.replaceAllCrBySpace(whereClause)%>);
+<%
+				}
+    		} else {
+    			if(whereConditions.size() > 0) {
+        			for(Map<String, String> whereCondition : whereConditions) {
+						String column_condition = whereCondition.get("COLUMN");
+						String function_condition = whereCondition.get("FUNCTION");
+						String value_condition = whereCondition.get("VALUE_SQL");
+%>
+						deleteQuery_<%=cid %>.append("  AND " + <%=column_condition %> + " " + <%=function_condition %> + " " + <%=value_condition %>);
+<%
+					}
+				}
+			}
+    	}
+%>
 
         int nb_line_<%=cid%> = 0;
         int nb_line_updated_<%=cid%> = 0;
@@ -255,31 +293,31 @@ skeleton="../templates/db_output_bulk.skeleton"
         <%log4jCodeGenerateUtil.logInfo(node,"info",cid+" - Executed successfully.");%>
         System.out.println("--> " + nb_line_inserted_<%=cid%> + " rows inserted. \n");
         pstmt_<%=cid %>.close();
-        <%
-        } else if(("UPDATE").equals(dataAction)){
-        %>
-        System.out.println("Updating with : \n" + updateQuery_<%=cid %> +"\n");
+		<%
+    	} else if(("UPDATE").equals(dataAction)){
+    	%>
+        System.out.println("Updating with : \n" + updateQuery_<%=cid %>.toString() +"\n");
         <%log4jCodeGenerateUtil.logInfo(node,"info",cid+" - Executing SQL:\"+updateQuery_"+ cid +"+\"");%>
-        java.sql.PreparedStatement pstmt_<%=cid %> = conn_<%=cid%>.prepareStatement(updateQuery_<%=cid %>);
+        java.sql.PreparedStatement pstmt_<%=cid %> = conn_<%=cid%>.prepareStatement(updateQuery_<%=cid %>.toString());
         nb_line_updated_<%=cid%> = pstmt_<%=cid %>.executeUpdate();
         <%log4jCodeGenerateUtil.logInfo(node,"info",cid+" - Executed successfully.");%>
-        System.out.println("--> " + nb_line_updated_<%=cid%> + " rows updated. \n");
-        pstmt_<%=cid %>.close();
-        <%
-        } else if (("DELETE").equals(dataAction)){
-        %>
-        System.out.println("Deleting with : \n" + deleteQuery_<%=cid %> +"\n");
-        <%log4jCodeGenerateUtil.logInfo(node,"info",cid+" - Executing SQL:\"+deleteQuery_"+ cid +"+\"");%>
-        java.sql.PreparedStatement pstmt_<%=cid %> = conn_<%=cid%>.prepareStatement(deleteQuery_<%=cid %>);
-        nb_line_deleted_<%=cid%> = pstmt_<%=cid %>.executeUpdate();
-        <%log4jCodeGenerateUtil.logInfo(node,"info",cid+" - Executed successfully.");%>
-        System.out.println("--> " + nb_line_deleted_<%=cid%> + " rows deleted. \n");
-        pstmt_<%=cid %>.close();
-        <%
-        }
-    }
-    // END
-    %>
+    	System.out.println("--> " + nb_line_updated_<%=cid%> + " rows updated. \n");
+    	pstmt_<%=cid %>.close();
+    	<%
+    	} else if (("DELETE").equals(dataAction)){
+		%>
+    	System.out.println("Deleting with : \n" + deleteQuery_<%=cid %>.toString() +"\n");
+		<%log4jCodeGenerateUtil.logInfo(node,"info",cid+" - Executing SQL:\"+deleteQuery_"+ cid +"+\"");%>
+		java.sql.PreparedStatement pstmt_<%=cid %> = conn_<%=cid%>.prepareStatement(deleteQuery_<%=cid %>.toString());
+		nb_line_deleted_<%=cid%> = pstmt_<%=cid %>.executeUpdate();
+		<%log4jCodeGenerateUtil.logInfo(node,"info",cid+" - Executed successfully.");%>
+    	System.out.println("--> " + nb_line_deleted_<%=cid%> + " rows deleted. \n");
+    	pstmt_<%=cid %>.close();
+		<%
+		}
+	}
+	// END
+	%>
 
     <%
     if(!useExistingConn) {

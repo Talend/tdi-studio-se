@@ -840,4 +840,10 @@ public class RowGenProcess extends Element implements IProcess {
         // TODO Auto-generated method stub
         return null;
     }
+
+    @Override
+    public INode getNodeByUniqueName(String uniqueName) {
+        // TODO Auto-generated method stub
+        return null;
+    }
 }

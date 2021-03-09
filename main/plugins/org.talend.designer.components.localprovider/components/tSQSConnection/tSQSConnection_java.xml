@@ -295,14 +295,14 @@
     	<IMPORT NAME="aws-java-sdk-1.11.848.jar" MODULE="aws-java-sdk-1.11.848.jar"
 			MVN="mvn:com.amazonaws/aws-java-sdk/1.11.848"
 			REQUIRED="true" />
-		<IMPORT NAME="jackson-core-2.10.1.jar" MODULE="jackson-core-2.10.1.jar"
-			MVN="mvn:com.fasterxml.jackson.core/jackson-core/2.10.1"
+		<IMPORT NAME="jackson-core-2.11.4.jar" MODULE="jackson-core-2.11.4.jar"
+			MVN="mvn:com.fasterxml.jackson.core/jackson-core/2.11.4"
 			REQUIRED="true" />
-		<IMPORT NAME="jackson-databind-2.10.1.jar" MODULE="jackson-databind-2.10.1.jar"
-			MVN="mvn:com.fasterxml.jackson.core/jackson-databind/2.10.1"
+		<IMPORT NAME="jackson-databind-2.11.4.jar" MODULE="jackson-databind-2.11.4.jar"
+			MVN="mvn:com.fasterxml.jackson.core/jackson-databind/2.11.4"
 			REQUIRED="true" />
-		<IMPORT NAME="jackson-annotations-2.10.1.jar" MODULE="jackson-annotations-2.10.1.jar"
-			MVN="mvn:com.fasterxml.jackson.core/jackson-annotations/2.10.1"
+		<IMPORT NAME="jackson-annotations-2.11.4.jar" MODULE="jackson-annotations-2.11.4.jar"
+			MVN="mvn:com.fasterxml.jackson.core/jackson-annotations/2.11.4"
 			REQUIRED="true" />
 		<IMPORT NAME="httpcore-4.4.13.jar" MODULE="httpcore-4.4.13.jar"
 			MVN="mvn:org.apache.httpcomponents/httpcore/4.4.13"

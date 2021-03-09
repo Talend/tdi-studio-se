@@ -108,7 +108,6 @@ import org.talend.designer.core.ui.editor.connections.Connection;
 import org.talend.designer.core.ui.editor.nodecontainer.NodeContainer;
 import org.talend.designer.core.ui.editor.nodes.Node;
 import org.talend.designer.core.ui.editor.process.Process;
-import org.talend.designer.core.utils.ConnectionUtil;
 import org.talend.designer.core.utils.JavaProcessUtil;
 import org.talend.designer.core.utils.ValidationRulesUtil;
 import org.talend.designer.runprocess.ProcessorUtilities;
@@ -3595,7 +3594,6 @@ public class DataProcess implements IGeneratingProcess {
         duplicatedProcess.setActivate(false);
         ((Process) duplicatedProcess).setGeneratingProcess(this);
         ((Process) duplicatedProcess).setProcessModified(false);
-        ((Process) duplicatedProcess).setNeededRoutines(process.getNeededRoutines());
         ((Process) duplicatedProcess).setEditor(editor);
         List<RoutinesParameterType> routines = null;
         if (process instanceof Process) {
