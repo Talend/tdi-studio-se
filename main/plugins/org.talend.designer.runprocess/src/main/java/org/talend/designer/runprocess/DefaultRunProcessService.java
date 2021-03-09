@@ -25,7 +25,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.apache.log4j.Level;
 import org.eclipse.core.resources.IFile;
@@ -1050,29 +1049,6 @@ public class DefaultRunProcessService implements IRunProcessService {
     @Override
     public boolean isExcludeDeletedItems(Property property) {
         return PomIdsHelper.getIfExcludeDeletedItems(property);
-    }
-
-    public void buildCodesForTDM() {
-        IProgressMonitor monitor = new NullProgressMonitor();
-        ERepositoryObjectType.getAllTypesOfCodes().forEach(type -> {
-            try {
-                AggregatorPomsHelper.buildAndInstallCodesProject(monitor, type, false, false);
-            } catch (Exception e) {
-                ExceptionHandler.process(e);
-            }
-        });
-        Set<CodesJarInfo> jarsToUpdate = CodesJarResourceCache.getAllCodesJars().stream()
-                .filter(info -> CodesJarM2CacheManager.needUpdateCodesJarProject(info)).collect(Collectors.toSet());
-        jarsToUpdate.stream().map(info -> getTalendCodesJarJavaProject(info)).forEach(p -> {
-            try {
-                p.buildModules(monitor, null, null);
-            } catch (Exception e) {
-                ExceptionHandler.process(e);
-            }
-        });
-        String currentProjectName = ProjectManager.getInstance().getCurrentProject().getTechnicalLabel();
-        jarsToUpdate.stream().filter(info -> !currentProjectName.equals(info.getProjectTechName()))
-                .forEach(info -> deleteTalendCodesJarProject(info, false));
     }
 
 }
