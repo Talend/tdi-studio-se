@@ -87,6 +87,9 @@ public class CodesJarChangeListener implements PropertyChangeListener {
             Property property = (Property) newValue;
             if (needUpdate(property.getItem())) {
                 String[] oldFields = (String[]) oldValue;
+                if (oldFields.length == 0) {
+                    return;
+                }
                 String oldName = oldFields[0];
                 String oldVersion = oldFields[1];
                 CodesJarResourceCache.updateCache(null, oldName, oldVersion, property);
