@@ -21,7 +21,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.draw2d.IFigure;
@@ -2001,13 +2000,11 @@ public class TalendEditorDropTargetListener extends TemplateTransferDropTargetLi
 
         neededComponents = (List<IComponent>) ComponentUtilities.filterVisibleComponents(neededComponents);
 
-        RepositoryComponentSetting settingCopy = new RepositoryComponentSetting();
-        settingCopy.setInputComponent(rcSetting.getInputComponentName());
-        settingCopy.setOutputComponent(rcSetting.getOutPutComponentName());
-        settingCopy.setDefaultComponent(rcSetting.getDefaultComponentName());
 
-
-        RepositoryComponentSetting compsetting = null;
+        RepositoryComponentSetting compsetting = new RepositoryComponentSetting();
+        compsetting.setInputComponent(rcSetting.getInputComponentName());
+        compsetting.setOutputComponent(rcSetting.getOutPutComponentName());
+        compsetting.setDefaultComponent(rcSetting.getDefaultComponentName());
         String typeName = null;
         if (item instanceof ConnectionItem) {
             ConnectionItem connectionItem = (ConnectionItem) item;
@@ -2017,22 +2014,28 @@ public class TalendEditorDropTargetListener extends TemplateTransferDropTargetLi
                 DatabaseConnection dbconn = (DatabaseConnection) connection;
                 if (UnifiedComponentUtil.isAdditionalJDBC(dbconn.getProductId())) {
                     typeName = dbconn.getProductId();
+                    String componentKey = UnifiedComponentUtil.getAdditionalJDBC().get(typeName).getComponentKey();
                     compsetting = new RepositoryComponentSetting();
                     compsetting.setInputComponent(
-                            rcSetting.getInputComponentName().replaceFirst("JDBC", StringUtils.deleteWhitespace(typeName)));
+                            rcSetting.getInputComponentName().replaceFirst("JDBC", componentKey));
                     compsetting.setOutputComponent(
-                            rcSetting.getOutPutComponentName().replaceFirst("JDBC", StringUtils.deleteWhitespace(typeName)));
+                            rcSetting.getOutPutComponentName().replaceFirst("JDBC", componentKey));
                     compsetting.setDefaultComponent(
-                            rcSetting.getDefaultComponentName().replaceFirst("JDBC", StringUtils.deleteWhitespace(typeName)));
+                            rcSetting.getDefaultComponentName().replaceFirst("JDBC", componentKey));
                 }
             }
         }
+
+        RepositoryComponentSetting settingCopy = new RepositoryComponentSetting();
+        settingCopy.setInputComponent(compsetting.getInputComponentName());
+        settingCopy.setOutputComponent(compsetting.getOutPutComponentName());
+        settingCopy.setDefaultComponent(compsetting.getDefaultComponentName());
 
         neededComponents = UnifiedComponentUtil.filterUnifiedComponent(settingCopy, neededComponents, typeName);
         // Check if the components in the list neededComponents have the same category that is required by Process.
         IComponent component = chooseOneComponent(extractComponents(neededComponents), settingCopy, quickCreateInput,
                 quickCreateOutput, typeName);
-        store.component = UnifiedComponentUtil.getEmfComponent(compsetting == null ? rcSetting : compsetting, component);
+        store.component = UnifiedComponentUtil.getEmfComponent(compsetting, component);
         store.componentName = rcSetting;
     }
 

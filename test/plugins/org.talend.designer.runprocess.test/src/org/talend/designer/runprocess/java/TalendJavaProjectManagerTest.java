@@ -163,6 +163,15 @@ public class TalendJavaProjectManagerTest {
     }
 
     @Test
+    public void testGetCodeProjectId() {
+        String projectTechName = "testProject";
+        String routinesId = TalendJavaProjectManager.getCodeProjectId(ERepositoryObjectType.ROUTINES, projectTechName);
+        assertEquals(projectTechName + "|ROUTINES", routinesId);
+        String beansId = TalendJavaProjectManager.getCodeProjectId(ERepositoryObjectType.BEANS, projectTechName);
+        assertEquals(projectTechName + "|BEANS", beansId);
+    }
+
+    @Test
     public void testZDeleteEclipseProjectByNatureId() throws Exception {
         ITalendProcessJavaProject routinesProject = TalendJavaProjectManager
                 .getTalendCodeJavaProject(ERepositoryObjectType.ROUTINES);
