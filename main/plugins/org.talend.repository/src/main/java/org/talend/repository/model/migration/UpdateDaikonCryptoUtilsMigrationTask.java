@@ -1,3 +1,15 @@
+// ============================================================================
+//
+// Copyright (C) 2006-2021 Talend Inc. - www.talend.com
+//
+// This source code is available under agreement available at
+// %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
+//
+// You should have received a copy of the agreement
+// along with this program; if not, write to Talend SA
+// 9 rue Pages 92150 Suresnes, France
+//
+// ============================================================================
 package org.talend.repository.model.migration;
 
 import java.nio.file.Path;
@@ -18,6 +30,7 @@ import org.talend.commons.exception.ExceptionHandler;
 import org.talend.core.model.general.Project;
 import org.talend.core.model.migration.AbstractProjectMigrationTask;
 import org.talend.designer.maven.tools.AggregatorPomsHelper;
+import org.talend.designer.maven.tools.BuildCacheManager;
 
 /*
  * Created by bhe on Sep 29, 2020
@@ -53,6 +66,7 @@ public class UpdateDaikonCryptoUtilsMigrationTask extends AbstractProjectMigrati
                 LOGGER.info("modules: " + model.getModules() + ", isRegeneratePoms: " + isRegeneratePoms);
                 if (isRegeneratePoms) {
                     pomHelper.syncAllPomsWithoutProgress(new NullProgressMonitor());
+                    BuildCacheManager.getInstance().clearAllCodesCache();
                     return ExecutionResult.SUCCESS_NO_ALERT;
                 }
                 return ExecutionResult.NOTHING_TO_DO;
@@ -84,3 +98,4 @@ public class UpdateDaikonCryptoUtilsMigrationTask extends AbstractProjectMigrati
         return false;
     }
 }
+
