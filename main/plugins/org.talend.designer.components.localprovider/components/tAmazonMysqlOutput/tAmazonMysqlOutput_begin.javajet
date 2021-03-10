@@ -121,6 +121,9 @@ if(columnList != null && columnList.size() > 0) {
 %>
 
 <%@ include file="@{org.talend.designer.components.localprovider}/components/templates/DB/Output/CheckKeysForUpdateAndDelete.javajet"%>
+<%@ include file="@{org.talend.designer.components.localprovider}/components/templates/DB/Output/CheckKeysForUpdateOnDuplicateKey.javajet"%>
+
+
 
 int nb_line_<%=cid%> = 0;
 int nb_line_update_<%=cid%> = 0;
