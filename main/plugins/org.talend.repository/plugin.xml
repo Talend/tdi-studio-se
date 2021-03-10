@@ -3583,6 +3583,15 @@
               name="FixUpgradePasswordEncryptionAlg4ItemMigrationTask"
               version="7.3.1">
         </projecttask>
+		<projecttask
+              beforeLogon="false"
+              breaks="7.3.0"
+              class="org.talend.repository.model.migration.RemoveDefaultProxyIPTask"
+              description="Replace the unUsed proxy IP to 127.0.0.1"
+              id="org.talend.repository.model.migration.RemoveDefaultProxyIPTask"
+              name="RemoveDefaultProxyIPTask"
+              version="7.3.1">
+        </projecttask>
    </extension>
 
    <extension
