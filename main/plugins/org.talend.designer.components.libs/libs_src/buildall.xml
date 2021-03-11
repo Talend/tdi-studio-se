@@ -3,7 +3,6 @@
 
 	<target name="buildall">
 		<ant antfile="filecopy/build.xml" target="process" inheritall="no" />
-		<ant antfile="talend_file_enhanced_20070724/build.xml" target="process" inheritall="no" />
 		<ant antfile="sugarCRMManagement/build.xml" target="process" inheritall="no" />
 		<ant antfile="TalendSAX/build.xml" target="process" inheritall="no" />
 	</target>
