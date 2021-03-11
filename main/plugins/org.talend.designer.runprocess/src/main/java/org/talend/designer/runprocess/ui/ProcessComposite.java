@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2021 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -15,12 +15,9 @@ package org.talend.designer.runprocess.ui;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.lang.reflect.InvocationTargetException;
-import java.text.DateFormat;
 import java.text.MessageFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -1086,13 +1083,15 @@ public class ProcessComposite extends ScrolledComposite implements IDynamicPrope
             List<INode> nodeList = (List<INode>) process.getGraphicalNodes();
             for (INode node : nodeList) {
                 for (Connection connection : (List<Connection>) node.getOutgoingConnections()) {
-                    ConnectionTrace traceNode = connection.getConnectionTrace();
-                    if (traceNode == null) {
-                        continue;
-                    }
-                    traceNode.setPropertyValue(EParameterName.TRACES_SHOW_ENABLE.getName(), false);
-                    if (connection != null && connection.checkTraceShowEnable()) {
-                        connection.setPropertyValue(EParameterName.TRACES_SHOW_ENABLE.getName(), false);
+                    if(connection != null) {
+                        ConnectionTrace traceNode = connection.getConnectionTrace();
+                        if (traceNode == null) {
+                            continue;
+                        }
+                        traceNode.setPropertyValue(EParameterName.TRACES_SHOW_ENABLE.getName(), false);
+                        if (connection.checkTraceShowEnable()) {
+                              connection.setPropertyValue(EParameterName.TRACES_SHOW_ENABLE.getName(), false);
+                        }
                     }
                 }
             }

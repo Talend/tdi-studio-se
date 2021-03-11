@@ -65,6 +65,5 @@ skeleton="../templates/sqlpattern.skeleton"
 globalMap.put("<%=cid %>_NB_LINE",stmt_<%=cid%>.getUpdateCount());
 globalMap.put("<%=cid %>_NB_LINE_MERGED",stmt_<%=cid%>.getUpdateCount());
 
-//System.out.println("number of rows: " + String.valueOf(stmt_<%=cid%>.getUpdateCount()));
 stmt_<%=cid%>.close();
 

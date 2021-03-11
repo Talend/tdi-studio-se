@@ -15,12 +15,17 @@ import java.util.logging.Logger;
 
 import javax.wsdl.xml.WSDLLocator;
 
-import org.apache.commons.httpclient.Credentials;
-import org.apache.commons.httpclient.HostConfiguration;
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.UsernamePasswordCredentials;
-import org.apache.commons.httpclient.auth.AuthScope;
-import org.apache.commons.httpclient.methods.GetMethod;
+import org.apache.http.HttpHost;
+import org.apache.http.HttpResponse;
+import org.apache.http.auth.AuthScope;
+import org.apache.http.auth.UsernamePasswordCredentials;
+import org.apache.http.client.CredentialsProvider;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpRequestBase;
+import org.apache.http.impl.client.BasicCredentialsProvider;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.impl.client.HttpClients;
 import org.xml.sax.InputSource;
 
 /**
@@ -49,10 +54,10 @@ public class WSDLLocatorImpl implements WSDLLocator {
     }
 
     public InputSource getBaseInputSource() {
-        GetMethod get = createGetMethod(wsdlUri);
+        HttpRequestBase get = createGetMethod(wsdlUri);
         try {
-            httpClient.executeMethod(get);
-            InputStream is = get.getResponseBodyAsStream();
+            HttpResponse response = httpClient.execute(get);
+            InputStream is = response.getEntity().getContent();
             inputStreams.add(is);
             return new InputSource(is);
         } catch (IOException ex) {
@@ -64,9 +69,9 @@ public class WSDLLocatorImpl implements WSDLLocator {
         try {
             URL url = getURL(parentLocation, importLocation);
             latestImportUri = url.toExternalForm();
-            GetMethod get = createGetMethod(latestImportUri);
-            httpClient.executeMethod(get);
-            InputStream is = get.getResponseBodyAsStream();
+            HttpRequestBase get = createGetMethod(latestImportUri);
+            HttpResponse response = httpClient.execute(get);
+            InputStream is = response.getEntity().getContent();
             inputStreams.add(is);
             return new InputSource(is);
         } catch (MalformedURLException ex) {
@@ -110,36 +115,44 @@ public class WSDLLocatorImpl implements WSDLLocator {
         inputStreams.clear();
     }
 
-    private GetMethod createGetMethod(String uri) {
-        GetMethod get = new GetMethod(uri);
+    private HttpRequestBase createGetMethod(String uri) {
+        HttpGet get = new HttpGet(uri);
         if (configuration.getCookie() != null) {
-            get.setRequestHeader(HTTP_HEADER_COOKIE, configuration.getCookie());
+            get.setHeader(HTTP_HEADER_COOKIE, configuration.getCookie());
         }
 
         return get;
     }
 
     private HttpClient createHttpClient() {
-        HttpClient httpClient = new HttpClient();
+        HttpClientBuilder builder = HttpClients.custom();
+        CredentialsProvider credentialsProvider = null;
         if (configuration.getProxyServer() != null) {
-            HostConfiguration hostConfiguration = new HostConfiguration();
-            hostConfiguration.setProxy(configuration.getProxyServer(), configuration.getProxyPort());
-            httpClient.setHostConfiguration(hostConfiguration);
+            builder.setProxy(new HttpHost(configuration.getProxyServer(), configuration.getProxyPort()));
         }
 
         if (configuration.getUsername() != null) {
-            Credentials credentials = new UsernamePasswordCredentials(configuration.getUsername(), configuration.getPassword());
-
-            httpClient.getState().setCredentials(AuthScope.ANY, credentials);
+            if (credentialsProvider == null) {
+                credentialsProvider = new BasicCredentialsProvider();
+            }
+            credentialsProvider
+                    .setCredentials(AuthScope.ANY,
+                            new UsernamePasswordCredentials(configuration.getUsername(), configuration.getPassword()));
         }
 
         if (configuration.getProxyUsername() != null) {
-            Credentials credentials = new UsernamePasswordCredentials(configuration.getProxyUsername(),
-                    configuration.getProxyPassword());
-
-            httpClient.getState().setProxyCredentials(AuthScope.ANY, credentials);
-            httpClient.getHostConfiguration().setProxy(configuration.getProxyServer(), configuration.getProxyPort());
+            if (credentialsProvider == null) {
+                credentialsProvider = new BasicCredentialsProvider();
+            }
+            credentialsProvider
+                    .setCredentials(new AuthScope(configuration.getProxyServer(), configuration.getProxyPort()),
+                            new UsernamePasswordCredentials(configuration.getProxyUsername(),
+                                    configuration.getProxyPassword()));
+            builder.setProxy(new HttpHost(configuration.getProxyServer(), configuration.getProxyPort()));
         }
-        return httpClient;
+        if (credentialsProvider != null) {
+            builder.setDefaultCredentialsProvider(credentialsProvider);
+        }
+        return builder.build();
     }
 }

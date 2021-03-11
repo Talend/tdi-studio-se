@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2021 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -2416,7 +2416,6 @@ public abstract class DataMapTableView extends Composite implements IDataMapTabl
     public abstract boolean toolbarNeedToHaveRightStyle();
 
     public abstract boolean hasDropDownToolBarItem();
-
     /**
      * DOC amaumont Comment method "parseExpression".
      *
@@ -2427,7 +2426,9 @@ public abstract class DataMapTableView extends Composite implements IDataMapTabl
     private void parseExpression(ModifiedBeanEvent event, TableViewerCreator tableViewerCreator, ITableEntry tableEntry) {
         if (event.column == tableViewerCreator.getColumn(DataMapTableView.ID_EXPRESSION_COLUMN)) {
             mapperManager.getUiManager().parseExpression(tableEntry.getExpression(), tableEntry, false, false, false);
-            mapperManager.getUiManager().refreshBackground(false, false);
+            if (headerComposite != null && !headerComposite.isDisposed()) {
+                mapperManager.getUiManager().refreshBackground(false, false);
+            }
         }
     }
 
@@ -3354,6 +3355,14 @@ public abstract class DataMapTableView extends Composite implements IDataMapTabl
         public void keyPressed(KeyEvent e) {
             // System.out.println("e.character=" + e.character);
             // System.out.println("keyCode=" + e.keyCode);
+            // TUP-29766
+            if (WindowSystem.isBigSurOrLater() && e.character == '\t') {
+                ITableEntry currentModifiedEntry = textTarget.getCurrentEntry();
+                currentModifiedEntry.setExpression(ControlUtils.getText(textWidget));
+                viewer.getTable().deselectAll();
+                viewer.refresh(currentModifiedEntry);
+                return;
+            }
 
             boolean ctrl = (e.stateMask & SWT.CTRL) != 0;
             boolean altgr = (e.stateMask & SWT.ALT) != 0;

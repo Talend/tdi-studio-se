@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2021 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -147,6 +147,9 @@ public class ComponentsUtils {
                     && componentDefinition.getFamilies()[0] != null
                     && componentDefinition.getFamilies()[0].contains("JDBC")) {
                 jdbcDefinitions.add(componentDefinition);
+            }
+            if (UnifiedComponentUtil.JDBC_COMPONENT_BLACKLIST.contains(componentDefinition.getName())) {
+                continue;
             }
             loadComponents(components, componentDefinition);
         }

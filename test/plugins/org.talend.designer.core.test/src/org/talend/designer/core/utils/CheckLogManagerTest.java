@@ -20,6 +20,7 @@ import org.talend.core.model.process.EParameterFieldType;
 import org.talend.core.model.process.IElementParameter;
 import org.talend.core.model.process.INode;
 import org.talend.core.model.process.IProcess;
+import org.talend.core.runtime.process.TalendProcessOptionConstants;
 import org.talend.core.ui.component.ComponentsFactoryProvider;
 import org.talend.designer.core.model.components.DummyComponent;
 import org.talend.designer.core.model.components.ElementParameter;
@@ -57,7 +58,7 @@ public class CheckLogManagerTest {
             nodeParams.add(storageConfigurationParam);
 
             Set<ModuleNeeded> neededLibraries1 = CorePlugin.getDefault().getDesignerCoreService()
-                    .getNeededLibrariesForProcess(processbig, false);
+                    .getNeededLibrariesForProcess(processbig, TalendProcessOptionConstants.MODULES_DEFAULT);
             boolean selectLog4j2 = Log4jPrefsSettingManager.getInstance().isSelectLog4j2();
 
             List<String> modules4log4j = new ArrayList<>();

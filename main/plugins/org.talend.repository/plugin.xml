@@ -58,6 +58,12 @@
             isReadAction="true"
             level="12"
             name="Read routine"/>
+      <Action
+            class="org.talend.repository.ui.actions.routines.AssignRoutinesToJarAction"
+            id="org.talend.repositorys.actions.assignoutine"
+            level="10"
+            name="Assign Routines to">
+      </Action>
 
        <Action
             class="org.talend.repository.ui.actions.sqlpattern.ReadSqlpatternAction"
@@ -133,6 +139,12 @@
             isEditAction="false"
             isReadAction="false"
             name="Export Items"/>
+      <Action
+            class="org.talend.repository.ui.actions.routinesjar.CreateRoutinesJarAction"
+            id="org.talend.repository.actions.createroutinesjar"
+            level="10"
+            name="Create Routine Jar">
+      </Action>
    </extension>
    <extension
          point="org.eclipse.ui.views.properties.tabbed.propertyContributor">
@@ -3472,6 +3484,15 @@
                name="TeradataTPTAddDatabaseNameToOptionalTablesMigrationTask"
                version="7.3.1">
        </projecttask>
+       <projecttask
+          beforeLogon="true"
+          breaks="7.3.0"
+          class="org.talend.repository.model.migration.UpdateDaikonCryptoUtilsMigrationTask"
+          id="org.talend.repository.model.migration.UpdateDaikonCryptoUtilsMigrationTask"
+          description="Update Daikon Crypto Utils"
+          name="UpdateDaikonCryptoUtilsMigrationTask"
+          version="7.3.1">
+       </projecttask>
 	   <projecttask
                beforeLogon="false"
                breaks="7.3.0"
@@ -3508,6 +3529,15 @@
               name="SetDatasetCheckBoxGlobalOption"
               version="7.4.1">
        </projecttask>
+              <projecttask
+              beforeLogon="false"
+              breaks="7.3.0"
+              class="org.talend.repository.model.migration.spark.SetUseLocalTimezone"
+              description="set use local timezone checkbox to true for previous versions"
+              id="org.talend.repository.model.migration.spark.SetUseLocalTimezone"
+              name="SetUseLocalTimezone"
+              version="7.4.1">
+       </projecttask>
        <projecttask
               beforeLogon="false"
               breaks="7.4.0"
@@ -3526,6 +3556,69 @@
                name="SpecialUpdateELTDefaultNameMigrationTask"
                version="7.4.1">
        </projecttask>
+       <projecttask
+             beforeLogon="false"
+             breaks="7.4.0"
+             class="org.talend.repository.model.migration.ChangeTMatchGroupConfidentWeightTypeTask"
+             description="change the type of Confident Weight and keep the part of integer only"
+             id="org.talend.repository.model.migration.ChangeTMatchGroupConfidentWeightTypeTask"
+             name="ChangeTMatchGroupConfidentWeightTypeTask"
+             version="7.4.1">
+       </projecttask>
+   	   <projecttask
+               beforeLogon="false"
+               breaks="7.3.0"
+               class="org.talend.repository.model.migration.UncheckUseExtraParameterMigrationTask"
+               description="Uncheck Use Extra Parameters in tGPGDecrypt"
+               id="org.talend.repository.model.migration.UncheckUseExtraParameterMigrationTask"
+               name="UncheckUseExtraParameterMigrationTask"
+               version="7.3.1">
+       </projecttask>
+       <projecttask
+               beforeLogon="false"
+               breaks="7.3.0"
+               class="org.talend.repository.model.migration.ChangeDefaultDriver4GreenplumMigrationTask"
+               description="Change default driver and version for Greenplum components"
+               id="org.talend.repository.model.migration.ChangeDefaultDriver4GreenplumMigrationTask"
+               name="ChangeDefaultDriver4GreenplumMigrationTask"
+               version="7.3.1">
+       </projecttask>
+       <projecttask
+             beforeLogon="false"
+             breaks="7.3.0"
+             class="org.talend.repository.model.migration.ChangeFileInputDynamicFieldLength"
+             description="Change the dynamic field length in file input components"
+             id="org.talend.repository.model.migration.ChangeFileInputDynamicFieldLength"
+             name="ChangeFileInputDynamicFieldLength"
+             version="7.3.1">
+       </projecttask>
+       <projecttask
+              beforeLogon="false"
+              breaks="7.3.0"
+              class="org.talend.repository.model.migration.FixUpgradePasswordEncryptionAlg4ItemMigrationTask"
+              description="Fix upgrading password encryption Alg 4 item migration task"
+              id="org.talend.repository.model.migration.FixUpgradePasswordEncryptionAlg4ItemMigrationTask"
+              name="FixUpgradePasswordEncryptionAlg4ItemMigrationTask"
+              version="7.3.1">
+        </projecttask>
+        <projecttask
+             beforeLogon="false"
+             breaks="7.4.0"
+             class="org.talend.repository.model.migration.SpecialUpdateELTEnableColumnAliasMigrationTask"
+             description="Update ELT to enable oracle column alias"
+             id="org.talend.repository.model.migration.SpecialUpdateELTEnableColumnAliasMigrationTask"
+             name="SpecialUpdateELTEnableColumnAliasMigrationTask"
+             version="7.4.1">
+	    </projecttask>
+		<projecttask
+              beforeLogon="false"
+              breaks="7.3.0"
+              class="org.talend.repository.model.migration.RemoveDefaultProxyIPTask"
+              description="Replace the unUsed proxy IP to 127.0.0.1"
+              id="org.talend.repository.model.migration.RemoveDefaultProxyIPTask"
+              name="RemoveDefaultProxyIPTask"
+              version="7.3.1">
+        </projecttask>
    </extension>
 
    <extension

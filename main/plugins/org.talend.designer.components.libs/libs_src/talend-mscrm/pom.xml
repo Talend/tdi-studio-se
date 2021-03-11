@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.talend.components</groupId>
 	<artifactId>talend-mscrm</artifactId>
-	<version>3.4-20201104</version>
+	<version>3.4-20201208</version>
 	<packaging>jar</packaging>
 	
 	<name>talend-mscrm</name>
@@ -62,9 +62,15 @@
 			<version>4.4.9</version>
 		</dependency>
 		<dependency>
-    		<groupId>org.apache.axis2</groupId>
-    		<artifactId>axis2-transport-http</artifactId>
-    		<version>${axis2.version}</version>
+			<groupId>org.apache.axis2</groupId>
+			<artifactId>axis2-transport-http</artifactId>
+			<version>${axis2.version}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>commons-httpclient</groupId>
+					<artifactId>commons-httpclient</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		
 		<dependency>

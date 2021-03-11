@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2021 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -388,6 +388,8 @@ public enum EParameterName {
     UNIFIED_COMPONENTS("Database"),
 
     ACTIVE_DATABASE_DELIMITED_IDENTIFIERS("Active database delimited identifiers"), //$NON-NLS-1$
+
+    USE_ALIAS_IN_OUTPUT_TABLE("Use alias in output table"), //$NON-NLS-1$
 
     // for tDataprepRun
     PREPARATION_ID("PREPARATION_ID");

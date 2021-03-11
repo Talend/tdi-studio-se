@@ -42,7 +42,7 @@ if(("false").equals(ElementParameterParser.getValue(node,"__ADVANCED_USE__"))) {
 	        boolean winAuth = ("true").equals(ElementParameterParser.getValue(node,"__WIN_AUTH__"));
 	        String domain = ElementParameterParser.getValue(node,"__DOMAIN__");
 	        
-	        boolean useProxy = ("true").equals(ElementParameterParser.getValue(node,"__UES_PROXY__"));
+	        boolean useProxy = ("true").equals(ElementParameterParser.getValue(node,"__USE_PROXY__"));
 	        String proxuHost = ElementParameterParser.getValue(node,"__PROXY_HOST__");
 	        String proxyPort = ElementParameterParser.getValue(node,"__PROXY_PORT__");
 	        String proxuUser = ElementParameterParser.getValue(node,"__PROXY_USERNAME__");

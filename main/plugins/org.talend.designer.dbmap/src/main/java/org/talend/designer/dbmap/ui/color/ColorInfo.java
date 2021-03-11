@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2021 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -51,6 +51,7 @@ public enum ColorInfo {
     COLOR_BACKGROUND_WARNING_EXPRESSION_CELL(255, 190, 150), // light orange
     COLOR_FOREGROUND_ERROR_EXPRESSION_CELL(255, 255, 255), // red
     COLOR_BACKGROUND_VALID_EXPRESSION_CELL(255, 255, 255), // white
+    COLOR_BACKGROUND_TRANSPRENT(0, 0, 0, 0), // transparent
 
     COLOR_DRAGGING_INSERTION_INDICATOR(0, 78, 152),
 
@@ -63,12 +64,21 @@ public enum ColorInfo {
 
     private int blue;
 
+    private int alpha = 255;
+
     private int systemColor = -1;
 
     private ColorInfo(int red, int green, int blue) {
         this.red = red;
         this.green = green;
         this.blue = blue;
+    }
+
+    private ColorInfo(int red, int green, int blue, int alpha) {
+        this.red = red;
+        this.green = green;
+        this.blue = blue;
+        this.alpha = alpha;
     }
 
     // private ColorInfo(int systemColor) {
@@ -85,6 +95,10 @@ public enum ColorInfo {
 
     public int getRed() {
         return this.red;
+    }
+
+    public int getAlpha() {
+        return this.alpha;
     }
 
     public RGB getRGB() {

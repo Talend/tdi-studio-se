@@ -132,7 +132,7 @@ int tmp_batchUpdateCount_<%=cid%> = 0;
 int deletedCount_<%=cid%>=0;
 int updatedCount_<%=cid%>=0;
 int insertedCount_<%=cid%>=0;
-
+int rowsToCommitCount_<%=cid%>=0;
 String tableName_<%=cid%> = <%=table%>;
 boolean whetherReject_<%=cid%> = false;
 

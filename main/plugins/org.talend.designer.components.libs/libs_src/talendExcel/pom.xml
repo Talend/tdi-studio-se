@@ -4,7 +4,7 @@
 
 	<groupId>org.talend.components</groupId>
 	<artifactId>talendExcel</artifactId>
-	<version>1.8-20201113</version>
+	<version>1.10-20210113</version>
 	<packaging>jar</packaging>
 
 	<name>talendExcel</name>

@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2021 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -20,7 +20,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.IWorkspaceRunnable;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -74,7 +73,6 @@ import org.talend.designer.core.ui.editor.cmd.ChangeValuesFromRepository;
 import org.talend.designer.core.ui.editor.cmd.LoadProjectSettingsCommand;
 import org.talend.designer.core.ui.editor.process.Process;
 import org.talend.designer.core.ui.views.properties.WidgetFactory;
-import org.talend.designer.core.utils.ConnectionUtil;
 import org.talend.designer.core.utils.DetectContextVarsUtils;
 import org.talend.metadata.managment.ui.wizard.metadata.ShowAddedContextdialog;
 import org.talend.repository.UpdateRepositoryUtils;
@@ -222,6 +220,7 @@ public abstract class AbstractJobSettingsPage extends ProjectSettingPage {
                 } else {
                     MessageDialog.openInformation(getShell(), getDisplayName(),
                             "Connection has been deleted ,change to build in automaticlly");
+                    elem.setPropertyValue("REPOSITORY_PROPERTY_TYPE", "");
                     ChangeValuesFromRepository changeValuesFromRepository1 = new ChangeValuesFromRepository(elem, null,
                             getPropertyTypeName(), EmfComponent.BUILTIN);
                     changeValuesFromRepository1.execute();

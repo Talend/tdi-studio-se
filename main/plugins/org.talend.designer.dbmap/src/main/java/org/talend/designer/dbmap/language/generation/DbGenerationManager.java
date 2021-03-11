@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2021 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -12,8 +12,8 @@
 // ============================================================================
 package org.talend.designer.dbmap.language.generation;
 
-import static java.util.Optional.ofNullable;
-import static java.util.stream.Collectors.toList;
+import static java.util.Optional.*;
+import static java.util.stream.Collectors.*;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -61,6 +61,7 @@ import org.talend.designer.dbmap.language.IJoinType;
 import org.talend.designer.dbmap.language.operator.IDbOperator;
 import org.talend.designer.dbmap.language.operator.IDbOperatorManager;
 import org.talend.designer.dbmap.model.tableentry.TableEntryLocation;
+import org.talend.designer.dbmap.utils.DBMapHelper;
 import org.talend.designer.dbmap.utils.DataMapExpressionParser;
 
 /**
@@ -94,6 +95,8 @@ public abstract class DbGenerationManager {
     protected DataMapExpressionParser parser;
 
     private Boolean useDelimitedIdentifiers;
+
+    private Boolean useAliasInOutputTable;
 
     protected Set<String> subQueryTable = new HashSet<String>();
 
@@ -355,9 +358,11 @@ public abstract class DbGenerationManager {
                     // break;
                     // }
                     // }
+                    boolean added = false;
                     if (!DEFAULT_TAB_SPACE_STRING.equals(this.tabSpaceString)) {
                         expression += DbMapSqlConstants.SPACE + DbMapSqlConstants.AS + DbMapSqlConstants.SPACE
                                 + getAliasOf(dbMapEntry.getName());
+                        added = true;
                     }
                     String exp = replaceVariablesForExpression(component, expression);
                     String columnSegment = exp;
@@ -369,7 +374,14 @@ public abstract class DbGenerationManager {
                     }
                     if (expression != null && expression.trim().length() > 0) {
                         appendSqlQuery(sb, exp);
-                        queryColumnsName += exp;
+                        String alias = exp;
+                        if (!added && isUseAliasInOutputTable()) {
+                            String name = DbMapSqlConstants.SPACE + DbMapSqlConstants.AS + DbMapSqlConstants.SPACE
+                                    + getAliasOf(dbMapEntry.getName());
+                            appendSqlQuery(sb, name);
+                            alias = getAliasOf(dbMapEntry.getName());
+                        }
+                        queryColumnsName += alias;
                         queryColumnsSegments.add(columnSegment);
                     } else {
                         appendSqlQuery(sb, DbMapSqlConstants.LEFT_COMMENT);
@@ -872,7 +884,7 @@ public abstract class DbGenerationManager {
     }
 
     protected void checkParameters(DbMapComponent component) {
-        checkUseDelimitedIdentifiers(component);
+        checkSpecialParameters(component);
     }
 
     protected boolean checkUseUpdateStatement(DbMapComponent dbMapComponent, String outputTableName) {
@@ -907,7 +919,7 @@ public abstract class DbGenerationManager {
                 .collect(toList());
     }
 
-    protected void checkUseDelimitedIdentifiers(DbMapComponent component) {
+    protected void checkSpecialParameters(DbMapComponent component) {
         /**
          * in elt related component javajets(like tELTMSSqlMap_main.javajet), they don't get DbGenerationManager by
          * DbMapComponent#getGenerationManager() while they construct a new manager manually, so some parameters may not
@@ -921,6 +933,18 @@ public abstract class DbGenerationManager {
                 Object value = activeDelimitedIdentifiersEP.getValue();
                 if (value != null) {
                     setUseDelimitedIdentifiers(Boolean.valueOf(value.toString()));
+                }
+            }
+        }
+
+        if (this.useAliasInOutputTable == null) {
+            this.useAliasInOutputTable = false;
+            IElementParameter useAliasInOutputTableEP = component
+                    .getElementParameter(EParameterName.USE_ALIAS_IN_OUTPUT_TABLE.getName());
+            if (useAliasInOutputTableEP != null) {
+                Object value = useAliasInOutputTableEP.getValue();
+                if (value != null) {
+                    setUseAliasInOutputTable(Boolean.valueOf(value.toString()));
                 }
             }
         }
@@ -990,6 +1014,10 @@ public abstract class DbGenerationManager {
                 querySegments.set(i, segment);
             }
         }
+    }
+
+    protected boolean needAlias(List<IMetadataColumn> columns, ExternalDbMapEntry dbMapEntry, String expression) {
+        return false;
     }
 
     protected void appendSqlQuery(StringBuilder sb, String value) {
@@ -1692,10 +1720,10 @@ public abstract class DbGenerationManager {
                         }
                     }
                 }
-
                 String schemaNoQuote = TalendTextUtils.removeQuotes(schemaValue);
                 boolean hasSchema = !"".equals(schemaNoQuote);
                 if (hasSchema) {
+                    schemaValue = handledParameterValues(schemaValue);
                     handledTableName = schemaValue + "+\".\"+";
                 }
                 handledTableName = handledTableName + tableValue;
@@ -1704,6 +1732,28 @@ public abstract class DbGenerationManager {
         }
         return tableName;
 
+    }
+
+    protected String handledParameterValues(String originalValue) {
+        List<String> paramValues = new ArrayList<String>();
+        DBMapHelper.convertContextParameterValue(paramValues, originalValue);
+        if (paramValues.size() > 0) {
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < paramValues.size(); i++) {
+                String paramValue = paramValues.get(i);
+                if (ContextParameterUtils.isContainContextParam(paramValue)) {
+                    sb.append(paramValue);
+                } else {
+                    sb.append("\"" + paramValue + "\"");//$NON-NLS-1$//$NON-NLS-2$
+                }
+                if (i < paramValues.size() - 1) {
+                    sb.append(" + \".\" + "); //$NON-NLS-1$
+                }
+            }
+            return sb.toString();
+        } else {
+            return originalValue;
+        }
     }
 
     protected String getColumnName(IConnection conn, String name) {
@@ -1769,6 +1819,14 @@ public abstract class DbGenerationManager {
 
     public void setUseDelimitedIdentifiers(boolean useDelimitedIdentifiers) {
         this.useDelimitedIdentifiers = useDelimitedIdentifiers;
+    }
+
+    public boolean isUseAliasInOutputTable() {
+        return Boolean.TRUE.equals(this.useAliasInOutputTable);
+    }
+
+    public void setUseAliasInOutputTable(boolean useAliasInOutputTable) {
+        this.useAliasInOutputTable = useAliasInOutputTable;
     }
 
     public boolean isConditionChecked(DbMapComponent component, ExternalDbMapTable inputTable) {

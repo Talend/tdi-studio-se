@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2019 Talend Inc. - www.talend.com
+ * Copyright (C) 2006-2021 Talend Inc. - www.talend.com
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,16 +16,16 @@
 package org.talend.sdk.component.studio;
 
 import static java.util.stream.Collectors.joining;
-import static org.apache.xbean.asm7.ClassWriter.COMPUTE_FRAMES;
-import static org.apache.xbean.asm7.Opcodes.ACC_PUBLIC;
-import static org.apache.xbean.asm7.Opcodes.ACC_SUPER;
-import static org.apache.xbean.asm7.Opcodes.ALOAD;
-import static org.apache.xbean.asm7.Opcodes.ARETURN;
-import static org.apache.xbean.asm7.Opcodes.DUP;
-import static org.apache.xbean.asm7.Opcodes.INVOKESPECIAL;
-import static org.apache.xbean.asm7.Opcodes.NEW;
-import static org.apache.xbean.asm7.Opcodes.RETURN;
-import static org.apache.xbean.asm7.Opcodes.V1_8;
+import static org.apache.xbean.asm9.ClassWriter.COMPUTE_FRAMES;
+import static org.apache.xbean.asm9.Opcodes.ACC_PUBLIC;
+import static org.apache.xbean.asm9.Opcodes.ACC_SUPER;
+import static org.apache.xbean.asm9.Opcodes.ALOAD;
+import static org.apache.xbean.asm9.Opcodes.ARETURN;
+import static org.apache.xbean.asm9.Opcodes.DUP;
+import static org.apache.xbean.asm9.Opcodes.INVOKESPECIAL;
+import static org.apache.xbean.asm9.Opcodes.NEW;
+import static org.apache.xbean.asm9.Opcodes.RETURN;
+import static org.apache.xbean.asm9.Opcodes.V1_8;
 import static org.apache.ziplock.JarLocation.jarLocation;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -49,10 +49,10 @@ import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.xbean.asm7.AnnotationVisitor;
-import org.apache.xbean.asm7.ClassWriter;
-import org.apache.xbean.asm7.MethodVisitor;
-import org.apache.xbean.asm7.Type;
+import org.apache.xbean.asm9.AnnotationVisitor;
+import org.apache.xbean.asm9.ClassWriter;
+import org.apache.xbean.asm9.MethodVisitor;
+import org.apache.xbean.asm9.Type;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;

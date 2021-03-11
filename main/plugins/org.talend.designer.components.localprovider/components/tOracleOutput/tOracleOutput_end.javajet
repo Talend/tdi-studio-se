@@ -192,6 +192,7 @@ imports="
     } else { // dataAction equals "INSERT" or "UPDATE" or "DELETE"
     	if (useBatch) {
         %>
+        if(batchSizeCounter_<%=cid%> > 0) {
             try {
             	if (pstmt_<%=cid %> != null) {
 					<%dbLog.batch().executeTry(dbLog.str(dataAction));%>
@@ -243,7 +244,9 @@ imports="
     	    	}
     	    	%>
     	    	+= (tmp_batchUpdateCount_<%=cid%>!=-1?tmp_batchUpdateCount_<%=cid%>:0);
+				rowsToCommitCount_<%=cid%> += (tmp_batchUpdateCount_<%=cid%>!=-1?tmp_batchUpdateCount_<%=cid%>:0);
             }
+        }
         <%
         }
        	%>
@@ -270,11 +273,15 @@ imports="
 	if(!useExistingConnection){
 		if(!("").equals(commitEvery) && !("0").equals(commitEvery)){
 		%>
-		if(commitCounter_<%=cid%> > 0) {
-			<%dbLog.commit().commitTry(null, dbLog.var("commitCounter"));%>
-		    conn_<%=cid%>.commit();
-			<%dbLog.commit().commitDone(null);%>
+		if(commitCounter_<%=cid%> > 0 && rowsToCommitCount_<%=cid%> != 0) {
+			<%dbLog.commit().commitTry(null, dbLog.var("rowsToCommitCount"));%>
 		}
+		conn_<%=cid%>.commit();
+		if(commitCounter_<%=cid%> > 0 && rowsToCommitCount_<%=cid%> != 0) {
+			<%dbLog.commit().commitDone(null);%>
+			rowsToCommitCount_<%=cid%> = 0;
+		}
+		commitCounter_<%=cid%> = 0;
 		<%
 		}
 		%>
@@ -285,7 +292,6 @@ imports="
    	<%
 	}
     %>
-
 
 	<%@ include file="../templates/DB/Output/DBOutputEndGlobalVars.javajet"%>
 

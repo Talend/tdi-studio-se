@@ -79,7 +79,13 @@ public class ExcelTool {
 
     private boolean isTrackAllColumns = false;
 
+    private boolean isTruncateExceedingCharacters = false;
+
+    private static final int CELL_CHARACTERS_LIMIT = 32767;
+
     private String password = null;
+    
+    private Map<CellStyle, CellStyle> existedOriginToClone;
 
     public ExcelTool() {
         cellStylesMapping = new HashMap<>();
@@ -264,6 +270,9 @@ public class ExcelTool {
 
     private CellStyle getPreCellStyle() {
         if (preSheet != null && isAbsY && keepCellFormat) {
+            if(existedOriginToClone==null) {
+                existedOriginToClone = new HashMap<>();
+            }
             CellStyle preCellStyle;
             if (preCell == null) {
                 preCellStyle = preSheet.getColumnStyle(curCell.getColumnIndex());
@@ -271,8 +280,12 @@ public class ExcelTool {
                 preCellStyle = preCell.getCellStyle();
             }
 
-            CellStyle targetCellStyle = wb.createCellStyle();
-            targetCellStyle.cloneStyleFrom(preCellStyle);
+            CellStyle targetCellStyle = existedOriginToClone.get(preCellStyle);
+            if(targetCellStyle==null) {
+                targetCellStyle = wb.createCellStyle();
+                targetCellStyle.cloneStyleFrom(preCellStyle);
+                existedOriginToClone.put(preCellStyle, targetCellStyle);
+            }
 
             return targetCellStyle;
 
@@ -300,7 +313,10 @@ public class ExcelTool {
 
     public void addCellValue(String stringValue) {
         addCell();
-        curCell.setCellValue(stringValue);
+        String value = isTruncateExceedingCharacters && stringValue != null && stringValue.length() > CELL_CHARACTERS_LIMIT
+                ? stringValue.substring(0, CELL_CHARACTERS_LIMIT)
+                        : stringValue;
+        curCell.setCellValue(value);
         curCell.setCellStyle(getNormalCellStyle());
     }
 
@@ -335,6 +351,9 @@ public class ExcelTool {
                 preWb.close();
             }
         } finally {
+            if(existedOriginToClone!=null) {
+                existedOriginToClone = null;
+            }
             if (outputStream != null) {
                 outputStream.close();
             }
@@ -365,6 +384,9 @@ public class ExcelTool {
                 fs.writeFilesystem(fileOutput);
             }
         } finally {
+            if(existedOriginToClone!=null) {
+                existedOriginToClone = null;
+            }
             wb.close();
             if(preWb != null){
                 preWb.close();
@@ -394,6 +416,10 @@ public class ExcelTool {
 
     public void setPasswordProtection(String password) {
         this.password = password;
+    }
+
+    public void setTruncateExceedingCharacters(boolean isTruncateExceedingCharacters) {
+        this.isTruncateExceedingCharacters = isTruncateExceedingCharacters;
     }
 
 }

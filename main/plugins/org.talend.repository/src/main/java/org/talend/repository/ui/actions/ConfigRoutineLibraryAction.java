@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2021 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -20,9 +20,9 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IWorkbench;
 import org.talend.commons.ui.runtime.image.ECoreImage;
 import org.talend.commons.ui.runtime.image.ImageProvider;
-import org.talend.core.GlobalServiceRegister;
 import org.talend.core.model.repository.ERepositoryObjectType;
-import org.talend.designer.core.ICamelDesignerCoreService;
+import org.talend.core.model.routines.RoutinesUtil;
+import org.talend.repository.i18n.Messages;
 import org.talend.repository.model.RepositoryNode;
 import org.talend.repository.ui.wizards.ConfigExternalLib.ConfigExternalLibWizard;
 
@@ -50,43 +50,34 @@ public class ConfigRoutineLibraryAction extends AContextualAction {
      */
     @Override
     public void init(TreeViewer viewer, IStructuredSelection selection) {
-        boolean canWork = selection.size() == 1;
-        if (canWork) {
-            for (Object o : selection.toArray()) {
-                if (o instanceof RepositoryNode) {
-                    RepositoryNode node = (RepositoryNode) o;
-                    switch (node.getType()) {
-                    case REPOSITORY_ELEMENT:
-                        ERepositoryObjectType beanType = null;
-
-                        if (GlobalServiceRegister.getDefault().isServiceRegistered(ICamelDesignerCoreService.class)) {
-                            ICamelDesignerCoreService service = (ICamelDesignerCoreService) GlobalServiceRegister.getDefault()
-                                    .getService(ICamelDesignerCoreService.class);
-                            beanType = service.getBeansType();
-                        }
-                        if (beanType != null && node.getObjectType() == beanType) {
-                            setText("Edit Bean Libraries");
-                        } else {
-                            String label = org.talend.repository.i18n.Messages
-                                    .getString("ConfigRoutineLibraryAction.actionLabel"); //$NON-NLS-1$
-                            setText(label);
-                        }
-
-                        if (node.getObjectType() == ERepositoryObjectType.ROUTINES
-                                || (beanType != null && node.getObjectType() == beanType)) {
-                            // IRepositoryViewObject repObj = node.getObject();
-                            // IProxyRepositoryFactory repFactory = ProxyRepositoryFactory.getInstance();
-                            // ERepositoryStatus status = repFactory.getStatus(repObj);
-                            // boolean isEditable = status.isPotentiallyEditable() || status.isEditable();
-                            canWork = true;
-                        } else {
-                            canWork = false;
-                        }
-                        break;
-                    default:
-                        canWork = false;
-                        break;
+        boolean canWork = false;
+        if (selection.size() == 1) {
+            Object o = selection.getFirstElement();
+            if (o instanceof RepositoryNode) {
+                RepositoryNode node = (RepositoryNode) o;
+                switch (node.getType()) {
+                case REPOSITORY_ELEMENT:
+                    ERepositoryObjectType type = node.getObjectType();
+                    String label = null;
+                    if (type == ERepositoryObjectType.BEANS) {
+                        label = "Edit Bean Libraries"; //$NON-NLS-1$
+                    } else if (type == ERepositoryObjectType.BEANSJAR) {
+                        label = "Edit Bean Jar Libraries"; //$NON-NLS-1$
+                    } else if (type == ERepositoryObjectType.ROUTINESJAR) {
+                        label = "Edit Routine Jar Libraries"; //$NON-NLS-1$
+                    } else if (type == ERepositoryObjectType.ROUTINES) {
+                        label = Messages.getString("ConfigRoutineLibraryAction.actionLabel"); //$NON-NLS-1$
                     }
+                    setText(label);
+                    if (ERepositoryObjectType.getAllTypesOfCodesJar().contains(type)) {
+                        canWork = true;
+                    } else if (ERepositoryObjectType.getAllTypesOfCodes().contains(type)) {
+                        canWork = !RoutinesUtil.isInnerCodes(node.getObject().getProperty());
+                    }
+                    break;
+                default:
+                    canWork = false;
+                    break;
                 }
             }
         }

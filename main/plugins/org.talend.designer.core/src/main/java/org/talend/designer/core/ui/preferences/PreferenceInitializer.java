@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2021 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -173,6 +173,8 @@ public class PreferenceInitializer extends AbstractPreferenceInitializer {
 
         store.setDefault(ITalendCorePrefConstants.NEXUS_TIMEOUT, 20000);
         store.setDefault(ITalendCorePrefConstants.NEXUS_REFRESH_FREQUENCY, 0);
+
+        store.setDefault(ITalendCorePrefConstants.NEXUS_SHARE_LIBS, false);
 
         if (!CommonUIPlugin.isFullyHeadless()) {
             Display display = Display.getDefault();

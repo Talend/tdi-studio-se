@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2021 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -67,6 +67,7 @@ public class FooterComposite extends Composite {
         FormData okFormData = new FormData();
         okFormData.width = 100;
         okButton.setLayoutData(okFormData);
+        okButton.setEnabled(!mapperManager.componentIsReadOnly());
         okButton.addSelectionListener(new SelectionListener() {
 
             public void widgetDefaultSelected(SelectionEvent e) {

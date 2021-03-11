@@ -107,7 +107,7 @@
 
         <PARAMETER NAME="PROXY_HOST" FIELD="TEXT"
             NUM_ROW="56" SHOW_IF="USE_PROXY == 'true'" REPOSITORY_VALUE="PROXY_HOST">
-            <DEFAULT>"61.163.92.4"</DEFAULT>
+            <DEFAULT>"127.0.0.1"</DEFAULT>
         </PARAMETER>
         <PARAMETER NAME="PROXY_PORT" FIELD="TEXT"
             NUM_ROW="57" SHOW_IF="USE_PROXY == 'true'" REPOSITORY_VALUE="PROXY_PORT">
@@ -281,13 +281,17 @@
                 BundleID="org.apache.servicemix.bundles.wsdl4j"
                 REQUIRED="true"
             />
-            <IMPORT
-                NAME="commons-httpclient"
-                MODULE="commons-httpclient-3.1.jar"
-                MVN="mvn:commons-httpclient/commons-httpclient/3.1"
-                UrlPath="platform:/plugin/org.talend.libraries.apache.http/lib/commons-httpclient-3.1.jar"
-                REQUIRED="true"
+            <IMPORT 
+                NAME="httpclient-4.5.12" 
+                MODULE="httpclient-4.5.12.jar" 
+                MVN="mvn:org.apache.httpcomponents/httpclient/4.5.12" 
+                REQUIRED="true" 
             />
+            <IMPORT 
+                NAME="httpcore-4.4.13" 
+                MODULE="httpcore-4.4.13.jar" 
+                MVN="mvn:org.apache.httpcomponents/httpcore/4.4.13" 
+                REQUIRED="true" />
             <IMPORT
                 NAME="commons-logging"
                 MODULE="commons-logging-1.1.1.jar"
@@ -323,8 +327,8 @@
             />
             <IMPORT
                 NAME="talend-ws"
-                MODULE="talend-ws-1.0.2-20201106.jar"
-                MVN="mvn:org.talend.components/talend-ws/1.0.2-20201106"
+                MODULE="talend-ws-1.0.3-20201222.jar"
+                MVN="mvn:org.talend.components/talend-ws/1.0.3-20201222"
                 REQUIRED="true"
             />
 

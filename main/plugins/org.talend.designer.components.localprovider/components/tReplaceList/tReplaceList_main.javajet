@@ -64,7 +64,8 @@ if (metadatas != null && metadatas.size() > 0) {
 						String search<%=cid%> = String.valueOf(o);
 						if(replace_<%=cid%>.get(o)==null||replace_<%=cid%>.get(o).getClass().getSimpleName() .equals("<%=testType%>")){
 							String replace<%=cid%> = (null!=replace_<%=cid%>.get(o))?String.valueOf(replace_<%=cid%>.get(o)):"";
-							inputFlow_<%=cid%>_<%=columnName%> = inputFlow_<%=cid%>_<%=columnName%>.replaceAll(<%if(("true").equals(columnOption.get("CASE_INSENSITIVE"))) {%>"(?i)" + <%}%>search<%=cid%>,replace<%=cid%>);
+							final String searchPattern<%=cid%> = <%if(("true").equals(columnOption.get("CASE_INSENSITIVE"))) {%>"(?i)" + <%}%>java.util.regex.Pattern.quote(search<%=cid%>);
+							inputFlow_<%=cid%>_<%=columnName%> = inputFlow_<%=cid%>_<%=columnName%>.replaceAll(searchPattern<%=cid%>,replace<%=cid%>);
 						}
 					}
 				}

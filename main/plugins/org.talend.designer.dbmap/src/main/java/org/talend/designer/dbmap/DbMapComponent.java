@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2021 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -181,6 +181,29 @@ public class DbMapComponent extends AbstractMapComponent {
                 elemParams.add(activeDelimitedIdentifiersEP);
             }
             activeDelimitedIdentifiersEP.setValue(getGenerationManager().isUseDelimitedIdentifiers());
+
+            //
+            IElementParameter useAliasInOutputTableEP = origNode
+                    .getElementParameter(EParameterName.USE_ALIAS_IN_OUTPUT_TABLE.getName());
+            if (useAliasInOutputTableEP == null) {
+                useAliasInOutputTableEP = new ElementParameter(origNode);
+                useAliasInOutputTableEP.setShow(false);
+                useAliasInOutputTableEP.setFieldType(EParameterFieldType.CHECK);
+                useAliasInOutputTableEP.setName(EParameterName.USE_ALIAS_IN_OUTPUT_TABLE.getName());
+                useAliasInOutputTableEP.setCategory(EComponentCategory.TECHNICAL);
+                useAliasInOutputTableEP.setNumRow(99);
+                useAliasInOutputTableEP.setReadOnly(false);
+                if (getGenerationManager() instanceof OracleGenerationManager) {
+                    boolean disableAlias = Boolean
+                            .valueOf(System.getProperty("elt.oracle.disableColumnAlias", Boolean.FALSE.toString())); //$NON-NLS-1$
+                    if (!disableAlias) {
+                        getGenerationManager().setUseAliasInOutputTable(true);
+                    }
+                }
+                List<IElementParameter> elemParams = (List<IElementParameter>) origNode.getElementParameters();
+                elemParams.add(useAliasInOutputTableEP);
+            }
+            useAliasInOutputTableEP.setValue(getGenerationManager().isUseAliasInOutputTable());
         }
         mapperMain.loadModelFromInternalData();
         metadataListOut = mapperMain.getMetadataListOut();
@@ -612,6 +635,7 @@ public class DbMapComponent extends AbstractMapComponent {
                 throw new IllegalArgumentException(Messages.getString("DbMapComponent.unknowValue") + value); //$NON-NLS-1$
             }
             updateUseDelimitedIdentifiersStatus();
+            updateUseAliasInOutputTableStatus();
         }
 
         return generationManager;
@@ -621,6 +645,7 @@ public class DbMapComponent extends AbstractMapComponent {
     public void setOriginalNode(INode originalNode) {
         super.setOriginalNode(originalNode);
         updateUseDelimitedIdentifiersStatus();
+        updateUseAliasInOutputTableStatus();
     }
 
     private void updateUseDelimitedIdentifiersStatus() {
@@ -639,6 +664,25 @@ public class DbMapComponent extends AbstractMapComponent {
                 }
             }
             generationManager.setUseDelimitedIdentifiers(activeDelimitedIdentifiers);
+        }
+    }
+
+    private void updateUseAliasInOutputTableStatus() {
+        if (generationManager == null) {
+            return;
+        }
+        INode oriNode = getOriginalNode();
+        if (oriNode != null) {
+            IElementParameter useAliasInOutputTableEP = oriNode
+                    .getElementParameter(EParameterName.USE_ALIAS_IN_OUTPUT_TABLE.getName());
+            boolean useAliasInOutputTable = false;
+            if (useAliasInOutputTableEP != null) {
+                Object value = useAliasInOutputTableEP.getValue();
+                if (value != null) {
+                    useAliasInOutputTable = Boolean.valueOf(value.toString());
+                }
+            }
+            generationManager.setUseAliasInOutputTable(useAliasInOutputTable);
         }
     }
 

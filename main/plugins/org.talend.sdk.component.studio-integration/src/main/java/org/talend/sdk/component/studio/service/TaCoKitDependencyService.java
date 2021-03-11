@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2006-2020 Talend Inc. - www.talend.com
+ * Copyright (C) 2006-2021 Talend Inc. - www.talend.com
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
  * the License. You may obtain a copy of the License at
@@ -22,13 +22,16 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.eclipse.swt.graphics.Image;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.talend.core.model.components.IComponent;
 import org.talend.core.model.properties.Item;
+import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.core.service.ITaCoKitDependencyService;
 import org.talend.sdk.component.studio.ComponentModel;
 import org.talend.sdk.component.studio.util.TaCoKitUtil;
+import org.talend.sdk.component.studio.util.TaCokitImageUtil;
 
 public class TaCoKitDependencyService implements ITaCoKitDependencyService {
 
@@ -38,7 +41,7 @@ public class TaCoKitDependencyService implements ITaCoKitDependencyService {
             "component-runtime-design-extension-", "component-runtime-di-", "component-runtime-impl-",
             "component-runtime-manager-", "component-spi-", "container-core-", "geronimo-annotation_1.3_spec-",
             "geronimo-json_1.1_spec-", "geronimo-jsonb_1.0_spec-", "johnzon-core-", "johnzon-jsonb-", "johnzon-mapper-",
-            "slf4j-api-", "slf4j-log4j12-", "xbean-asm7-shaded-", "xbean-finder-shaded-", "xbean-reflect-");
+            "slf4j-api-", "slf4j-log4j12-", "xbean-asm9-shaded-", "xbean-finder-shaded-", "xbean-reflect-");
 
     /**
      * @param components
@@ -59,7 +62,9 @@ public class TaCoKitDependencyService implements ITaCoKitDependencyService {
                     .filter(jar -> TACOKIT_JARS_BLACKLIST.stream().noneMatch(tck -> jar.contains(tck)))
                     .collect(Collectors.toSet());
             if (ComponentModel.class.isInstance(component)) {
-                tckDeps.addAll(deps);
+                // we keep plugin in original classloader classpath (intent for microservices spring boot)
+                final String pluginPrefix = ((ComponentModel) component).getId().getPlugin() + "-";
+                tckDeps.addAll(deps.stream().filter(dep -> !dep.startsWith(pluginPrefix)).collect(Collectors.toSet()));
             } else {
                 diDeps.addAll(deps);
             }
@@ -82,6 +87,14 @@ public class TaCoKitDependencyService implements ITaCoKitDependencyService {
     @Override
     public boolean hasTaCoKitComponents(final Stream<IComponent> components) {
         return TaCoKitUtil.hasTaCoKitComponents(components);
+    }
+
+    @Override
+    public Image getTaCoKitImageByRepositoryType(ERepositoryObjectType repObjType) {
+        if (!TaCoKitUtil.isTaCoKitType(repObjType)) {
+            return null;
+        }
+        return TaCokitImageUtil.getTaCoKitImageByRepositoryType(repObjType);
     }
 
 }

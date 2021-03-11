@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2021 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -16,12 +16,14 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.eclipse.core.resources.IBuildConfiguration;
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IncrementalProjectBuilder;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -104,6 +106,11 @@ public class TalendProcessJavaProject implements ITalendProcessJavaProject {
             //
         }
         return this.javaProject;
+    }
+
+    @Override
+    public boolean exists() {
+        return javaProject != null && javaProject.exists();
     }
 
     @Override
@@ -371,13 +378,17 @@ public class TalendProcessJavaProject implements ITalendProcessJavaProject {
     @Override
     public void buildWholeCodeProject() {
         try {
-            NullProgressMonitor monitor = new NullProgressMonitor();
+            IProgressMonitor monitor = new NullProgressMonitor();
             IProject project = getProject();
             if (!project.isSynchronized(IResource.DEPTH_INFINITE)) {
                 project.refreshLocal(IResource.DEPTH_INFINITE, monitor);
             }
-            project.build(IncrementalProjectBuilder.FULL_BUILD, monitor);
-            project.build(IncrementalProjectBuilder.INCREMENTAL_BUILD, monitor);
+            ResourcesPlugin.getWorkspace().build(new IBuildConfiguration[] { getProject().getActiveBuildConfig() },
+                    IncrementalProjectBuilder.FULL_BUILD, true, monitor);
+            ResourcesPlugin.getWorkspace().build(new IBuildConfiguration[] { getProject().getActiveBuildConfig() },
+                    IncrementalProjectBuilder.INCREMENTAL_BUILD, true, monitor);
+            // project.build(IncrementalProjectBuilder.FULL_BUILD, monitor);
+            // project.build(IncrementalProjectBuilder.INCREMENTAL_BUILD, monitor);
         } catch (CoreException e) {
             ExceptionHandler.process(e);
         }

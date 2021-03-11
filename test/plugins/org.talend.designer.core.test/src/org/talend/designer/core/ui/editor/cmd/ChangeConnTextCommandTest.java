@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2021 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -192,6 +192,31 @@ public class ChangeConnTextCommandTest {
         Assert.assertEquals(connection.getName(), "context.ODS_Schema.ODS_EGY_TBT_REF_INDICATEUR");
         Assert.assertEquals(nodeInput.getElementParameter("ELT_SCHEMA_NAME").getValue(),
                 TalendTextUtils.addQuotes("context.ODS_Schema"));
+        Assert.assertEquals(nodeInput.getElementParameter("ELT_TABLE_NAME").getValue(),
+                TalendTextUtils.addQuotes("ODS_EGY_TBT_REF_INDICATEUR"));
+    }
+
+    @Test
+    public void testConnectionRenameLinkNameTUP_29072_2() {
+        init4ConnectionRenameLinkName();
+
+        nodeInput.getElementParameter("ELT_SCHEMA_NAME").setValue(TalendTextUtils.addQuotes("context.DWH_Schema"));
+        nodeInput.getElementParameter("ELT_TABLE_NAME").setValue(TalendTextUtils.addQuotes("ODS_EGY_TBT_REF_INDICATEUR"));
+
+        connection = new Connection(nodeInput, nodeMap, EConnectionType.TABLE, EConnectionType.TABLE.getName(), "tELTInput_1",
+                "context.ODS_Schema.ODS_EGY_TBT_REF_INDICATEUR", "tInput_1", false);
+
+        Assert.assertEquals(nodeInput.getElementParameter("ELT_SCHEMA_NAME").getValue(),
+                TalendTextUtils.addQuotes("context.DWH_Schema"));
+        Assert.assertEquals(nodeInput.getElementParameter("ELT_TABLE_NAME").getValue(),
+                TalendTextUtils.addQuotes("ODS_EGY_TBT_REF_INDICATEUR"));
+
+        ChangeConnTextCommand command = new ChangeConnTextCommand(connection, "context.ODS_Schema");
+        command.execute();
+
+        Assert.assertEquals(connection.getName(), "context.ODS_Schema");
+        Assert.assertEquals(nodeInput.getElementParameter("ELT_SCHEMA_NAME").getValue(),
+                TalendTextUtils.addQuotes("context.DWH_Schema"));
         Assert.assertEquals(nodeInput.getElementParameter("ELT_TABLE_NAME").getValue(),
                 TalendTextUtils.addQuotes("ODS_EGY_TBT_REF_INDICATEUR"));
     }

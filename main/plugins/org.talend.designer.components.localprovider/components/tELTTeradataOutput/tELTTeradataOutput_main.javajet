@@ -19,6 +19,16 @@ imports="
 <%
 	CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
 	INode node = (INode)codeGenArgument.getArgument();
+	
+	boolean useAlias = false;
+	List<IConnection> inConnections = (List<IConnection>) node.getIncomingConnections();
+      if(inConnections != null && inConnections.size() > 0 && inConnections.get(0) != null) {
+        IConnection inConnection = inConnections.get(0);
+        INode sourceNode = inConnection.getSource();
+        if(sourceNode!=null){
+           useAlias = "true".equals(ElementParameterParser.getValue(sourceNode, "__USE_ALIAS_IN_OUTPUT_TABLE__"));
+        }
+    }
 
 	boolean isLog4jEnabled = ("true").equals(ElementParameterParser.getValue(node.getProcess(), "__LOG4J_ACTIVATE__"));
 	String cid = node.getUniqueName();
@@ -27,19 +37,23 @@ imports="
 	    public String transform(String content){
 	           String result = null;
 	           content = content.trim();
-	           String[] splitArr = content.split("\\s");
-	           int lgth = splitArr.length;
-	           if(lgth > 1){// has expr alias
-	             result = "src." + splitArr[lgth - 1];
-	           }else{
-	             int index = content.indexOf(".");
-	             if(index != -1){
-	                 result = "src" + content.substring(index);
-	             }else{
-	                 result = content;
-	             }
-	           }
-	           return result;
+	      <%if(!useAlias){%>
+               String[] splitArr = content.split("\\s");
+               int lgth = splitArr.length;
+               if(lgth > 1){// has expr alias
+                 result = "src." + splitArr[lgth - 1];
+               }else{
+                 int index = content.indexOf(".");
+                 if(index != -1){
+                 result = "src" + content.substring(index);
+               }else{
+                 result = content;
+               }
+             }
+               return result;
+	       <%}else{%>
+	           return "src." + content;
+	       <%}%>
 	    }
 	}
    StrUtils_<%= cid %> strUtil_<%= cid %> = new StrUtils_<%= cid %>();
@@ -97,8 +111,9 @@ imports="
 	        queryBandList = (List<Map<String,String>>)ElementParameterParser.getObjectValue(previousNode, "__QUERY_BAND_PARAMETERS__");
         }
 
+		boolean useWhereTable = ("true").equals(ElementParameterParser.getValue(previousNode, "__USE_WHERE_CONDITIONS_TABLE__"));
         String whereClause = ElementParameterParser.getValue(node, "__WHERE_CLAUSE__");
-
+		List<Map<String, String>> whereConditions = (List<Map<String,String>>)ElementParameterParser.getObjectValue(node, "__WHERE_CONDITIONS_TABLE__");
 %>
 
 <%
@@ -276,38 +291,72 @@ try{
 	<%log4jCodeGenerateUtil.logInfo(node,"error",cid+" - Fail to create PreparedStatement with SQL: \"+insertQuery_"+ cid +"+\"");%>
 	throw e;
 }
-	<%
+<%
 	}else if (("UPDATE").equals(dataAction)){
-	%>
+%>
+		StringBuffer updateQuery_<%=cid %> = new StringBuffer("UPDATE "+tableName_<%=cid%>+" FROM (" + select_query_<%=cid %> + ") src SET <%=updateSetStmt.toString()%>");
+<%
+		if(!useWhereTable) {
+			if(CodeGenerationUtils.hasAlphaNumericCharacter(whereClause)) {
+%>
+				updateQuery_<%=cid %>.append("  WHERE " + <%=CodeGenerationUtils.replaceAllCrBySpace(whereClause)%>);
+<%
+			}
+		} else {
+			if(whereConditions.size() > 0) {
+%>
+				updateQuery_<%=cid %>.append(" WHERE ");
+<%
+				String operator = "\"\"";
+				for(Map<String, String> whereCondition : whereConditions) {
+					String column_condition = whereCondition.get("COLUMN");
+					String function_condition = whereCondition.get("FUNCTION");
+					String value_condition = whereCondition.get("VALUE_SQL");
+%>
+					updateQuery_<%=cid %>.append(<%=operator %> + <%=column_condition %> + " " + <%=function_condition %> + " " + <%=value_condition %>);
+<%
+					operator = "\" AND \"";
+				}
+			}
+		}
+%>
+		try{
+			pstmt_<%=cid %> = conn_<%=cid%>.prepareStatement(updateQuery_<%=cid %>.toString());
+		} catch (Exception e){
+			<%log4jCodeGenerateUtil.logInfo(node,"error",cid+" - Fail to create PreparedStatement with SQL: \"+updateQuery_"+ cid +"+\"");%>
+			throw e;
+		}
 
-String updateQuery_<%=cid %> = "UPDATE "+tableName_<%=cid%>+" FROM (" + select_query_<%=cid %> + ") src SET <%=updateSetStmt.toString()%>"
-<%if(CodeGenerationUtils.hasAlphaNumericCharacter(whereClause)) {%>
-+" WHERE " + <%=CodeGenerationUtils.replaceAllCrBySpace(whereClause)%>
-<%}%>
-;
-try{
-	pstmt_<%=cid %> = conn_<%=cid%>.prepareStatement(updateQuery_<%=cid %>);
-} catch (Exception e){
-	<%log4jCodeGenerateUtil.logInfo(node,"error",cid+" - Fail to create PreparedStatement with SQL: \"+updateQuery_"+ cid +"+\"");%>
-	throw e;
-}
-
-
-	<%
+<%
 	}else if (("DELETE").equals(dataAction)){
-	%>
-
-String deleteQuery_<%=cid %> = "DELETE  FROM "+ tableName_<%=cid%>+" WHERE EXISTS ("+select_query_<%=cid %>+") "
-<%if(CodeGenerationUtils.hasAlphaNumericCharacter(whereClause)) {%>
-+"  AND " + <%=CodeGenerationUtils.replaceAllCrBySpace(whereClause)%>
-<%}%>
-;
-try {
-	pstmt_<%=cid %> = conn_<%=cid%>.prepareStatement(deleteQuery_<%=cid %>);
-} catch (Exception e){
-	<%log4jCodeGenerateUtil.logInfo(node,"error",cid+" - Fail to create PreparedStatement with SQL: \"+deleteQuery_"+ cid +"+\"");%>
-	throw e;
-}
+%>
+		StringBuffer deleteQuery_<%=cid %> = new StringBuffer("DELETE  FROM "+ tableName_<%=cid%>+" WHERE EXISTS ("+select_query_<%=cid %>+") ");
+<%
+		if(!useWhereTable) {
+			if(CodeGenerationUtils.hasAlphaNumericCharacter(whereClause)) {
+%>
+				deleteQuery_<%=cid %>.append("  AND " + <%=CodeGenerationUtils.replaceAllCrBySpace(whereClause)%>);
+<%			
+			}
+		} else {
+			if(whereConditions.size() > 0) {
+				for(Map<String, String> whereCondition : whereConditions) {
+					String column_condition = whereCondition.get("COLUMN");
+					String function_condition = whereCondition.get("FUNCTION");
+					String value_condition = whereCondition.get("VALUE_SQL");
+%>
+					deleteQuery_<%=cid %>.append("  AND " + <%=column_condition %> + " " + <%=function_condition %> + " " + <%=value_condition %>);
+<%
+				}
+			}
+		}
+%>
+		try {
+			pstmt_<%=cid %> = conn_<%=cid%>.prepareStatement(deleteQuery_<%=cid %>.toString());
+		} catch (Exception e){
+			<%log4jCodeGenerateUtil.logInfo(node,"error",cid+" - Fail to create PreparedStatement with SQL: \"+deleteQuery_"+ cid +"+\"");%>
+			throw e;
+		}
 
 
 	<%
@@ -339,7 +388,7 @@ if(dbtable != null && columnList != null){
 	}else if(("UPDATE").equals(dataAction)){
 
 	%>
-		System.out.println("Updating with : \n" + updateQuery_<%=cid %> +"\n");
+		System.out.println("Updating with : \n" + updateQuery_<%=cid %>.toString() +"\n");
 		try{
 			<%log4jCodeGenerateUtil.logInfo(node,"info",cid+" - Executing SQL: \"+updateQuery_"+ cid +"+\"");%>
 			nb_line_updated_<%=cid%> = pstmt_<%=cid %>.executeUpdate();
@@ -353,7 +402,7 @@ if(dbtable != null && columnList != null){
 	<%
 	}else if (("DELETE").equals(dataAction)){
 		%>
-		System.out.println("Deleting with : \n" + deleteQuery_<%=cid %> +"\n");
+		System.out.println("Deleting with : \n" + deleteQuery_<%=cid %>.toString() +"\n");
 		try{
 			<%log4jCodeGenerateUtil.logInfo(node,"info",cid+" - Executing SQL: \"+deleteQuery_"+ cid +"+\"");%>
 			nb_line_deleted_<%=cid%> = pstmt_<%=cid %>.executeUpdate();
