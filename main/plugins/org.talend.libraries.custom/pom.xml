@@ -23,7 +23,6 @@
               <goal>copy</goal>
             </goals>
             <configuration>
-              <stripVersion>true</stripVersion>
               <outputDirectory>${project.basedir}/lib</outputDirectory>
               <artifactItems>
                 <artifactItem>
