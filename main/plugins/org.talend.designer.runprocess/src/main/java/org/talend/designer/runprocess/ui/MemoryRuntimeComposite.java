@@ -701,8 +701,9 @@ public class MemoryRuntimeComposite extends ScrolledComposite implements IDynami
                             continue;
                         }
                         traceNode.setPropertyValue(EParameterName.TRACES_SHOW_ENABLE.getName(), false);
-                        connection.setPropertyValue(EParameterName.TRACES_SHOW_ENABLE.getName(), false);
-                        connection.setPropertyValue(EParameterName.TRACES_CONNECTION_ENABLE.getName(), false);
+                        if (connection.checkTraceShowEnable()) {
+                        	connection.setPropertyValue(EParameterName.TRACES_SHOW_ENABLE.getName(), false);
+                        }
                     }
                 }
             }
