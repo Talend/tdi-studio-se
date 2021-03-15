@@ -123,17 +123,17 @@ public class JobJavaScriptOSGIForESBManager extends JobJavaScriptsManager {
     protected static final char MANIFEST_ITEM_SEPARATOR = ',';
 
     protected static final String OSGI_EXCLUDE_PROP_FILENAME = "osgi-exclude.properties"; ////$NON-NLS-1$
-    
-    private boolean ENABLE_CACHE = StringUtils.equals(System.getProperty("enable.manifest.cache", "true"), "true");
+
+    private boolean ENABLE_CACHE = StringUtils.equals(System.getProperty("enable.manifest.cache", "false"), "true");
 
     @SuppressWarnings("serial")
     private static final Collection<String> EXCLUDED_MODULES = new ArrayList<String>() {
+
         {
             File propFile = null;
             File esbConfigurationLocation = EsbConfigUtils.getEclipseEsbFolder();
-            
-            if (esbConfigurationLocation != null && esbConfigurationLocation.exists()
-                    && esbConfigurationLocation.isDirectory()) {
+
+            if (esbConfigurationLocation != null && esbConfigurationLocation.exists() && esbConfigurationLocation.isDirectory()) {
                 propFile = new File(esbConfigurationLocation.getAbsolutePath(), OSGI_EXCLUDE_PROP_FILENAME);
             }
 
@@ -142,11 +142,10 @@ public class JobJavaScriptOSGIForESBManager extends JobJavaScriptsManager {
                 if (propFile != null && propFile.exists() && propFile.isFile()) {
                     is = new FileInputStream(propFile);
                 } else {
-                    is = RepositoryPlugin.getDefault().getBundle()
-                            .getEntry("/resources/" + OSGI_EXCLUDE_PROP_FILENAME)
+                    is = RepositoryPlugin.getDefault().getBundle().getEntry("/resources/" + OSGI_EXCLUDE_PROP_FILENAME)
                             .openStream();
                 }
-    
+
                 if (is != null) {
                     final Properties p = new Properties();
                     p.load(is);
@@ -447,7 +446,7 @@ public class JobJavaScriptOSGIForESBManager extends JobJavaScriptsManager {
 
     private List<ExportFileResource> cleanupResources(Stream<IComponent> components, List<ExportFileResource> resources, ITaCoKitDependencyService service) {
         Set<String> tckOnly = service.getTaCoKitOnlyDependencies(components);
-        //final List<ExportFileResource> rmResources = new ArrayList<>();
+        // final List<ExportFileResource> rmResources = new ArrayList<>();
         //This code is nicer but have to reiterate after, so not so efficient
 //        List<URL> rmDeps = resources.stream()
 //                .filter(rf -> "lib".equals(rf.getDirectoryName()))
@@ -901,8 +900,6 @@ public class JobJavaScriptOSGIForESBManager extends JobJavaScriptsManager {
 
     private static final String TEMPLATE_BLUEPRINT_JOB = "/resources/job-template.xml"; //$NON-NLS-1$
 
-    private Analyzer analyzer = new Analyzer();
-
     private void createJobBundleBlueprintConfig(ProcessItem processItem, IProcess process, File targetFile) throws IOException {
         TemplateProcessor.processTemplate("JOB_BLUEPRINT_CONFIG", //$NON-NLS-1$
                 collectJobInfo(processItem, process), targetFile, JobJavaScriptOSGIForESBManager.class.getClassLoader()
@@ -972,12 +969,8 @@ public class JobJavaScriptOSGIForESBManager extends JobJavaScriptsManager {
         Manifest manifest = null;
         try {
             manifest = analyzer.calcManifest();
-            if(ENABLE_CACHE) {
-                filterPackagesCache(manifest, imports);
-            }else {
-                filterImportPackages(manifest);
-            }
-            
+            filterPackagesCache(manifest, imports);
+
         } catch (IOException e) {
             throw e;
         } catch (Exception e) {
@@ -1026,7 +1019,6 @@ public class JobJavaScriptOSGIForESBManager extends JobJavaScriptsManager {
 
                 if (dependencyCacheMap == null || dependencyCacheMap.get(key) == null) {
                     Jar bin = new Jar(jarFile);
-                    al.clear();
                     al.setJar(bin);
                     // al.setProperty(Analyzer.IMPORT_PACKAGE, "*;resolution:=optional");
                     // bin.putResource(relativePath, new FileResource(jarFile));
@@ -1039,6 +1031,7 @@ public class JobJavaScriptOSGIForESBManager extends JobJavaScriptsManager {
 //                    }
                     Domain d = Domain.domain(manifest);
                     Parameters imports = d.getImportPackage();
+                    Parameters privates = d.getPrivatePackage();
 
                     String privatePackageString = manifest.getMainAttributes().getValue(Analyzer.PRIVATE_PACKAGE);
                     String importPackageString = manifest.getMainAttributes().getValue(Analyzer.IMPORT_PACKAGE);
@@ -1050,7 +1043,7 @@ public class JobJavaScriptOSGIForESBManager extends JobJavaScriptsManager {
 
                     List<Object> infos = new ArrayList<>();
                     infos.add(imports.keyList());
-                    infos.add(privatePackageString);
+                    infos.add(privates.keyList());
                     infos.add(relativePath);
 
                     if (dependencyCacheMap == null) {
@@ -1093,72 +1086,30 @@ public class JobJavaScriptOSGIForESBManager extends JobJavaScriptsManager {
     }
 
     private List<String> bundleClasspathKeys = new ArrayList<>();
-    
-    private void filterImportPackages(Manifest manifest) {
 
-        // remove import packages which are present in private packages
-
-        List<String> privatePackages = new ArrayList<String>(); 
-        String privatePackagesString = manifest.getMainAttributes().getValue(Analyzer.PRIVATE_PACKAGE);
-        if (privatePackagesString != null) {
-            String [] packages = privatePackagesString.split(",");
-            for (String p : packages) {
-                privatePackages.add(p);
-            }
-        }
-        
-        StringBuilder fileterdImportPackage = new StringBuilder();
-        String importPackagesString = manifest.getMainAttributes().getValue(Analyzer.IMPORT_PACKAGE);
-        if (importPackagesString != null) {
-            String [] packages = importPackagesString.split(",");
-            for (String p : packages) {
-                String importPackage = p.split(";")[0];
-                if (!privatePackages.contains(importPackage) || importPackage.startsWith("routines")) {
-                    fileterdImportPackage.append(p).append(",");
-                }
-            }
-        }
-        
-        String str = fileterdImportPackage.toString();
-        if (str != null && str.length() > 0 && str.endsWith(",")) {
-            str = str.substring(0, str.length() - 1);
-        }
-        manifest.getMainAttributes().putValue(Analyzer.IMPORT_PACKAGE, str);
-    }
-
+    @SuppressWarnings("unchecked")
     private void filterPackagesCache(Manifest manifest, Set<String> imports) {
 
-//        List<String> bundleClasspaths = null;
-//        if (manifest.getMainAttributes().getValue(Analyzer.BUNDLE_CLASSPATH) == null) {
-//            bundleClasspaths = new ArrayList<>();
-//        } else {
-//            bundleClasspaths = Stream.of(manifest.getMainAttributes().getValue(Analyzer.BUNDLE_CLASSPATH).split(","))
-//                    .collect(Collectors.toList());
-//        }
-//        
-//        manifest.getMainAttributes().putValue(Analyzer.BUNDLE_CLASSPATH, String.join(",", bundleClasspaths));
-
-        Set<String> privateNonRepetitivePackages = null;
-
-        if (manifest.getMainAttributes().getValue(Analyzer.PRIVATE_PACKAGE) == null) {
-            privateNonRepetitivePackages = new HashSet<>();
-        } else {
-            privateNonRepetitivePackages = Stream.of(manifest.getMainAttributes().getValue(Analyzer.PRIVATE_PACKAGE).split(","))
-                    .collect(Collectors.toSet());
+        if (!ENABLE_CACHE) {
+            bundleClasspathKeys.clear();
         }
-        
-        Set<String> importNonRepetitivePackages = null;
-        
-        if (manifest.getMainAttributes().getValue(Analyzer.IMPORT_PACKAGE) == null) {
-            importNonRepetitivePackages = new HashSet<>();
-        } else {
-            importNonRepetitivePackages = imports.stream().map(v -> {
-                if (!StringUtils.endsWith(v, RESOLUTION_OPTIONAL)) {
-                    return v + RESOLUTION_OPTIONAL;
-                        }
-                        return v;
-                    }).collect(Collectors.toSet());
-        }
+
+        Domain domain = Domain.domain(manifest);
+        Parameters calculatedImports = domain.getImportPackage();
+        Parameters calculatedPrivates = domain.getPrivatePackage();
+
+        Set<String> privateNonRepetitivePackages = new HashSet<>(calculatedPrivates.keySet());
+
+        Set<String> importNonRepetitivePackages = new HashSet<>(calculatedImports.keySet());
+
+        importNonRepetitivePackages.addAll(imports);
+
+        importNonRepetitivePackages = importNonRepetitivePackages.stream().map(v -> {
+            if (!StringUtils.endsWith(v, RESOLUTION_OPTIONAL)) {
+                return v + RESOLUTION_OPTIONAL;
+            }
+            return v;
+        }).collect(Collectors.toSet());
 
         int size = bundleClasspathKeys.size();
 
@@ -1176,10 +1127,9 @@ public class JobJavaScriptOSGIForESBManager extends JobJavaScriptsManager {
                 return v;
             }).collect(Collectors.toSet()));
 
-            Collections.addAll(privateNonRepetitivePackages, infos.get(1).toString().split(","));
-            // bundleClasspaths.add(infos.get(2));
+            privateNonRepetitivePackages.addAll((List<String>) infos.get(1));
         }
-        
+
         importNonRepetitivePackages.remove("routines.system");
         importNonRepetitivePackages.remove("routines.system" + RESOLUTION_OPTIONAL);
 
@@ -1195,14 +1145,14 @@ public class JobJavaScriptOSGIForESBManager extends JobJavaScriptsManager {
                 fileterdImportPackage.add(p);
             }
         }
-        
+
         manifest.getMainAttributes().putValue(Analyzer.PRIVATE_PACKAGE, String.join(",", privateNonRepetitivePackages));
         manifest.getMainAttributes().putValue(Analyzer.IMPORT_PACKAGE, String.join(",", fileterdImportPackage));
     }
 
     protected Analyzer createAnalyzer(ExportFileResource libResource, ProcessItem processItem) throws IOException {
+        Analyzer analyzer = new Analyzer();
         Jar bin = new Jar(classesLocation);
-        analyzer.clear();
         analyzer.setJar(bin);
 
         final String bundleName = processItem.getProperty().getLabel();
@@ -1243,18 +1193,18 @@ public class JobJavaScriptOSGIForESBManager extends JobJavaScriptsManager {
 
                 File dependencyFile = new File(FilesUtils.getFileRealPath(url.getPath()));
                 String relativePath = libResource.getDirectoryName() + PATH_SEPARATOR + dependencyFile.getName();
-                
+
                 bundleClasspathKeys.add(dependencyFile.length() + dependencyFile.getName());
                 bundleClasspath.append(MANIFEST_ITEM_SEPARATOR).append(relativePath);
-                
+
                 // analyzer.addClasspath(new File(url.getPath()));
                 // Add dynamic library declaration in manifest
                 if (relativePath.toLowerCase().endsWith(DLL_FILE) || relativePath.toLowerCase().endsWith(SO_FILE)) {
                     bundleNativeCode.append(libResource.getDirectoryName() + PATH_SEPARATOR + dependencyFile.getName()).append(
                             OSGI_OS_CODE);
                 }
-                
-                //If don't want to enable this feature just comment out
+
+                // If don't want to enable this feature just comment out
                 if (ENABLE_CACHE && cacheManifest(url, relativePath)) {
                     continue;
                 }
@@ -1445,8 +1395,8 @@ public class JobJavaScriptOSGIForESBManager extends JobJavaScriptsManager {
                         imports.addAll(importCompiler(service, subjobInfo.getProcessItem()));
                     }
                 }
-	        }
-    	}
+            }
+        }
         return imports;
     }
     
@@ -1455,7 +1405,8 @@ public class JobJavaScriptOSGIForESBManager extends JobJavaScriptsManager {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         ByteArrayOutputStream err = new ByteArrayOutputStream();
         try {
-            org.eclipse.jdt.core.compiler.batch.BatchCompiler.compile(src + " -1.7 -nowarn -maxProblems 100000 ", new PrintWriter(out),
+            org.eclipse.jdt.core.compiler.batch.BatchCompiler.compile(src + " -1.7 -nowarn -maxProblems 100000 ",
+                    new PrintWriter(out),
                     new PrintWriter(err), null);
             String errString = new String(err.toByteArray());
             String[] errBlocks = errString.split("----------");
