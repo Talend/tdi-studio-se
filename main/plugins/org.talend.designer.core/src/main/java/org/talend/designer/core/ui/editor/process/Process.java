@@ -4943,6 +4943,11 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
 
     @Override
     public INode getNodeByUniqueName(String uniqueName) {
-        return getGeneratingNodes().stream().filter(n -> n.getUniqueName().equals(uniqueName)).findAny().orElse(null);
+        for (INode node : getGeneratingNodes()) {
+            if (node.getUniqueName().equals(uniqueName)) {
+                return node;
+            }
+        }
+        return null;
     }
 }

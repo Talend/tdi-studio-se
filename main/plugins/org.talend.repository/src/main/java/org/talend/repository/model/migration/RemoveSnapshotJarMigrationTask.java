@@ -30,6 +30,7 @@ import org.talend.core.model.general.Project;
 import org.talend.core.model.migration.AbstractProjectMigrationTask;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
 import org.talend.designer.maven.tools.AggregatorPomsHelper;
+import org.talend.designer.maven.tools.BuildCacheManager;
 
 /*
  * Created by bhe on Sep 29, 2020
@@ -65,6 +66,7 @@ public class RemoveSnapshotJarMigrationTask extends AbstractProjectMigrationTask
                 LOGGER.info("modules: " + model.getModules() + ", isRegeneratePoms: " + isRegeneratePoms);
                 if (isRegeneratePoms) {
                     pomHelper.syncAllPomsWithoutProgress(new NullProgressMonitor());
+                    BuildCacheManager.getInstance().clearAllCodesCache();
                     return ExecutionResult.SUCCESS_NO_ALERT;
                 }
                 return ExecutionResult.NOTHING_TO_DO;

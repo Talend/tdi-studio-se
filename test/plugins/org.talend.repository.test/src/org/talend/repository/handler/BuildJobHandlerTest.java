@@ -263,7 +263,7 @@ public class BuildJobHandlerTest {
                 assertNotNull("No child job dependency in lib folder", dependencyEntry);
             }
             if (jobItem == jobWithJobletItem) {
-                String dependencyFromJoblet = "commons-beanutils-1.9.2.jar";
+                String dependencyFromJoblet = "commons-beanutils-1.9.4.jar";
                 ZipEntry dependencyEntry = zip.getEntry("lib/" + dependencyFromJoblet);
                 assertNotNull("No joblet dependency in lib folder", dependencyEntry);
             }
