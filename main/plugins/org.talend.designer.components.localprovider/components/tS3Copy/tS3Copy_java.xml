@@ -402,6 +402,18 @@
     	  <DEFAULT>100</DEFAULT>
     	</PARAMETER>
 
+    	<PARAMETER NAME="CANNED_ACCESS_CONTROL_LIST" FIELD="OPENED_LIST" NUM_ROW="100" DYNAMIC_SETTINGS="true">
+    	  <ITEMS DEFAULT="NONE">
+    	    <ITEM NAME="NONE" VALUE="&quot;NONE&quot;" />
+    	    <ITEM NAME="PRIVATE" VALUE="&quot;Private&quot;" />
+    	    <ITEM NAME="PUBLIC_READ" VALUE="&quot;PublicRead&quot;" />
+    	    <ITEM NAME="PUBLIC_READ_WRITE" VALUE="&quot;PublicReadWrite&quot;" />
+    	    <ITEM NAME="AWS_EXEC_READ" VALUE="&quot;AwsExecRead&quot;" />
+    	    <ITEM NAME="AUTHENTICATED_READ" VALUE="&quot;AuthenticatedRead&quot;" />
+    	    <ITEM NAME="BUCKET_OWNER_READ" VALUE="&quot;BucketOwnerRead&quot;" />
+            <ITEM NAME="BUCKET_OWNER_FULL_CONTROL" VALUE="&quot;BucketOwnerFullControl&quot;" />
+    	  </ITEMS>
+    	</PARAMETER>
     </ADVANCED_PARAMETERS>
 
    <CODEGENERATION>

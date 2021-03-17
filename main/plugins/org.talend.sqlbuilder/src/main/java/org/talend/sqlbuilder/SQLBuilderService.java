@@ -49,9 +49,6 @@ public class SQLBuilderService implements ISQLBuilderService {
             Object abstractMultiPageTalendEditor) {
         OpenSQLBuilderDialogJob openDialogJob = new OpenSQLBuilderDialogJob(connParameters, composite, elem, propertyName,
                 commandStack, (AbstractElementPropertySectionController) abstractElementPropertySectionController);
-        IWorkbenchSiteProgressService siteps = (IWorkbenchSiteProgressService) ((AbstractMultiPageTalendEditor) abstractMultiPageTalendEditor)
-                .getSite().getAdapter(IWorkbenchSiteProgressService.class);
-        siteps.showInDialog(composite.getShell(), openDialogJob);
         openDialogJob.schedule();
     }
 

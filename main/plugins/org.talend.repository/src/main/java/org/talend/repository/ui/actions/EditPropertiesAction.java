@@ -23,6 +23,7 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IPackageFragment;
@@ -356,7 +357,9 @@ public class EditPropertiesAction extends AContextualAction {
             }
 
             if (isInnerCode && codeJarinfo != null) {
-                CodesJarM2CacheManager.updateCodesJarProject(codeJarinfo.getProperty());
+                CodesJarM2CacheManager.updateCodesJarProject(codeJarinfo.getProperty(), true);
+            } else if (property.getItem() instanceof RoutineItem) {
+                talendProcessJavaProject.buildModules(new NullProgressMonitor(), null, null);
             }
 
         } catch (Exception e) {
@@ -417,17 +420,18 @@ public class EditPropertiesAction extends AContextualAction {
                 switch (node.getType()) {
                 case REPOSITORY_ELEMENT:
                     if (node.getObjectType() == ERepositoryObjectType.BUSINESS_PROCESS
-                            || node.getObjectType() == ERepositoryObjectType.PROCESS
-                            || node.getObjectType() == ERepositoryObjectType.ROUTINESJAR
-                            || node.getObjectType() == ERepositoryObjectType.BEANSJAR) {
+                            || node.getObjectType() == ERepositoryObjectType.PROCESS) {
                         canWork = true;
                     } else if (node.getObjectType() == ERepositoryObjectType.ROUTINES) {
                         Item item = node.getObject().getProperty().getItem();
                         if (item instanceof RoutineItem) {
-                            canWork = !((RoutineItem) item).isBuiltIn();
+                            canWork = !((RoutineItem) item).isBuiltIn() && !RoutinesUtil.isInnerCodes(item.getProperty());
                         } else {
                             canWork = false;
                         }
+                    } else if (node.getObjectType() == ERepositoryObjectType.ROUTINESJAR
+                            || node.getObjectType() == ERepositoryObjectType.BEANSJAR) {
+                        canWork = false;
                     } else if (node.getObjectType() == ERepositoryObjectType.SQLPATTERNS) {
                         Item item = node.getObject().getProperty().getItem();
                         if (item instanceof SQLPatternItem) {
@@ -443,7 +447,8 @@ public class EditPropertiesAction extends AContextualAction {
                             canWork = false;
                         }
                     } else {
-                        canWork = isInstanceofCamelRoutes(node.getObjectType()) || isInstanceofCamelBeans(node.getObjectType());
+                        canWork = isInstanceofCamelRoutes(node.getObjectType()) || (isInstanceofCamelBeans(
+                                node.getObjectType()) && !RoutinesUtil.isInnerCodes(node.getObject().getProperty()));
                     }
                     break;
                 default:

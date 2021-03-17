@@ -148,6 +148,7 @@ public class ComponentsUtils {
                     && componentDefinition.getFamilies()[0].contains("JDBC")) {
                 jdbcDefinitions.add(componentDefinition);
             }
+
             loadComponents(components, componentDefinition);
         }
 
@@ -205,7 +206,7 @@ public class ComponentsUtils {
         // if the component is not needed in the current branding,
         // and that this one IS a specific component for code generation,
         // hide it
-        if (hiddenComponent
+        if (UnifiedComponentUtil.JDBC_COMPONENT_BLACKLIST.contains(currentComponent.getName()) || hiddenComponent
                 && (currentComponent.getOriginalFamilyName().contains("Technical") || currentComponent.isTechnical())) {
             currentComponent.setVisible(false);
             currentComponent.setTechnical(true);
