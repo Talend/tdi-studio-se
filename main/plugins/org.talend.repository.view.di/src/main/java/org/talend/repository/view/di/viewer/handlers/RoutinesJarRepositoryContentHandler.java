@@ -21,7 +21,6 @@ import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.exception.PersistenceException;
 import org.talend.commons.ui.runtime.image.ECoreImage;
 import org.talend.commons.ui.runtime.image.IImage;
-import org.talend.core.model.general.Project;
 import org.talend.core.model.properties.Item;
 import org.talend.core.model.properties.PropertiesPackage;
 import org.talend.core.model.properties.Property;
@@ -30,8 +29,8 @@ import org.talend.core.model.repository.AbstractRepositoryContentHandler;
 import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.core.model.repository.IRepositoryViewObject;
 import org.talend.core.model.repository.RepositoryViewObject;
+import org.talend.core.model.routines.CodesJarInfo;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
-import org.talend.repository.ProjectManager;
 import org.talend.repository.model.IRepositoryNode.ENodeType;
 import org.talend.repository.model.IRepositoryNode.EProperties;
 import org.talend.repository.model.RepositoryNode;
@@ -82,10 +81,8 @@ public class RoutinesJarRepositoryContentHandler extends AbstractRepositoryConte
             return;
         }
         try {
-            Project project = ProjectManager.getInstance()
-                    .getProjectFromProjectTechLabel(ProjectManager.getInstance().getProject(property).getTechnicalLabel());
-            List<IRepositoryViewObject> innerRoutinesObj = ProxyRepositoryFactory.getInstance().getAllInnerCodes(project, type,
-                    property);
+            List<IRepositoryViewObject> innerRoutinesObj = ProxyRepositoryFactory.getInstance()
+                    .getAllInnerCodes(CodesJarInfo.create(property));
             for (IRepositoryViewObject innerRoutineObj : innerRoutinesObj) {
                 Property innerRoutineProperty = innerRoutineObj.getProperty();
                 RepositoryNode innerRoutineNode = new RepositoryNode(new RepositoryViewObject(innerRoutineProperty),

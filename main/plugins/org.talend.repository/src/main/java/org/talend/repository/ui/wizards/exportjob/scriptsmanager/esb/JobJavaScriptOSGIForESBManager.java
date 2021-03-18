@@ -450,19 +450,17 @@ public class JobJavaScriptOSGIForESBManager extends JobJavaScriptsManager {
         if (routinesParameter != null) {
             routinesParameter.stream().filter(r -> r.getType() != null).map(r -> CodesJarResourceCache.getCodesJarById(r.getId()))
                     .filter(info -> info != null).forEach(info -> {
-                Property property = info.getProperty();
-                String projectTechName = info.getProjectTechName();
-                MavenArtifact artifact = new MavenArtifact();
-                artifact.setGroupId(PomIdsHelper.getCodesJarGroupId(projectTechName, property.getItem()));
-                artifact.setArtifactId(property.getLabel().toLowerCase());
-                artifact.setVersion(PomIdsHelper.getCodesJarVersion(projectTechName));
-                artifact.setType(MavenConstants.TYPE_JAR);
-                try {
-                    codesjarM2Files.add(new File(PomUtil.getArtifactFullPath(artifact)).toURI().toURL());
-                } catch (MalformedURLException e) {
-                    e.printStackTrace();
-                }
-            });
+                        MavenArtifact artifact = new MavenArtifact();
+                        artifact.setGroupId(PomIdsHelper.getCodesJarGroupId(info));
+                        artifact.setArtifactId(info.getLabel().toLowerCase());
+                        artifact.setVersion(PomIdsHelper.getCodesJarVersion(info.getProjectTechName()));
+                        artifact.setType(MavenConstants.TYPE_JAR);
+                        try {
+                            codesjarM2Files.add(new File(PomUtil.getArtifactFullPath(artifact)).toURI().toURL());
+                        } catch (MalformedURLException e) {
+                            e.printStackTrace();
+                        }
+                    });
         }
 
         String projectTechName = ProjectManager.getInstance().getProject(item).getTechnicalLabel();

@@ -231,9 +231,7 @@ public class TalendJavaProjectManager {
     }
 
     public static String getCodesJarProjectId(CodesJarInfo info) {
-        Property codesJarProperty = info.getProperty();
-        return getCodesJarProjectId(ERepositoryObjectType.getItemType(codesJarProperty.getItem()), info.getProjectTechName(),
-                codesJarProperty.getLabel());
+        return getCodesJarProjectId(info.getType(), info.getProjectTechName(), info.getLabel());
     }
 
     public static String getCodesJarProjectId(ERepositoryObjectType codeType, String projectTechName, String codesJarName) {
@@ -276,10 +274,9 @@ public class TalendJavaProjectManager {
     }
 
     public static ITalendProcessJavaProject getTalendCodesJarJavaProject(CodesJarInfo info) {
-        Property property = info.getProperty();
         String projectTechName = info.getProjectTechName();
-        ERepositoryObjectType type = ERepositoryObjectType.getItemType(property.getItem());
-        String codesJarName = property.getLabel();
+        ERepositoryObjectType type = info.getType();
+        String codesJarName = info.getLabel();
         String codeProjectId = getCodesJarProjectId(type, projectTechName, codesJarName);
         ITalendProcessJavaProject codesJarJavaProject = talendCodesJarJavaProjects.get(codeProjectId);
         if (codesJarJavaProject == null || codesJarJavaProject.getProject() == null
@@ -288,7 +285,7 @@ public class TalendJavaProjectManager {
                 IProgressMonitor monitor = new NullProgressMonitor();
                 IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
                 AggregatorPomsHelper helper = new AggregatorPomsHelper(projectTechName);
-                IFolder codeProjectFolder = helper.getCodesJarFolder(property);
+                IFolder codeProjectFolder = helper.getCodesJarFolder(info);
                 // cleanUpCodeProject(monitor, codeProjectFolder);
                 IProject codeProject = root.getProject((projectTechName + "_" + type.name() + "_" + codesJarName).toUpperCase()); //$NON-NLS-1$ //$NON-NLS-2$
                 if (!codeProject.exists() || TalendCodeProjectUtil.needRecreate(monitor, codeProject)) {
@@ -423,9 +420,7 @@ public class TalendJavaProjectManager {
     }
 
     public static void deleteTalendCodesJarProject(CodesJarInfo info, boolean deleteContent) {
-        Property property = info.getProperty();
-        ERepositoryObjectType type = ERepositoryObjectType.getItemType(property.getItem());
-        deleteTalendCodesJarProject(type, info.getProjectTechName(), property.getLabel(), deleteContent);
+        deleteTalendCodesJarProject(info.getType(), info.getProjectTechName(), info.getLabel(), deleteContent);
     }
 
     public static void deleteTalendCodesJarProject(ERepositoryObjectType type, String projectTechName, String codesJarName,
