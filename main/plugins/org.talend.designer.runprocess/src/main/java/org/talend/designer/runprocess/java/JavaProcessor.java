@@ -147,6 +147,7 @@ import org.talend.designer.core.DesignerPlugin;
 import org.talend.designer.core.IDesignerCoreService;
 import org.talend.designer.core.ISyntaxCheckableEditor;
 import org.talend.designer.core.model.components.EParameterName;
+import org.talend.designer.core.model.utils.emf.talendfile.NodeType;
 import org.talend.designer.core.model.utils.emf.talendfile.ProcessType;
 import org.talend.designer.core.model.utils.emf.talendfile.RoutinesParameterType;
 import org.talend.designer.core.runprocess.Processor;
@@ -1639,6 +1640,17 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
                         if (BuildJobConstants.ESB_CXF_COMPONENTS.contains(node.getComponent().getName())) {
                             hasCXFComponent = true;
                             break out;
+                        }
+                    }
+                    //check child job
+                    Set<JobInfo> buildChildrenJobs = getBuildChildrenJobs();
+                    for(JobInfo jobInfo:buildChildrenJobs) {
+                        List<? extends NodeType> generatingNodes = jobInfo.getProcessItem().getProcess().getNode();
+                        for (NodeType inode : generatingNodes) {
+                            if (BuildJobConstants.ESB_CXF_COMPONENTS.contains(inode.getComponentName())) {
+                                hasCXFComponent = true;
+                                break out;
+                            }
                         }
                     }
                     break;
