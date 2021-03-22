@@ -67,7 +67,8 @@
 		}
 	}
 	boolean isLog4jEnabled = ("true").equals(ElementParameterParser.getValue(node.getProcess(), "__LOG4J_ACTIVATE__"));
-	
+	boolean dieonerror = ("true").equals(ElementParameterParser.getValue(node, "__DIE_ON_ERROR__"));
+
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	
         ILanguage currentLanguage = LanguageProvider.getJavaLanguage();
@@ -426,6 +427,14 @@
 		} // T_TM_M_291
 		
 		
+		%>
+
+            <%
+            if (!dieonerror) {
+            %>
+                try { // anchor
+            <%
+            } // close dieonerror if check
 		%>
         // ###############################
         // # Input tables (lookups)
@@ -1358,13 +1367,7 @@
             
         } // for (ExternalMapperTable externalTable : inputTables) {  // T_TM_M_261
         boolean atLeastOneInputTableWithInnerJoin = !inputTablesWithInnerJoin.isEmpty();
-        boolean dieonerror = ("true").equals(ElementParameterParser.getValue(node, "__DIE_ON_ERROR__"));
 
-		if (!dieonerror) {
-		%>
-			try {
-		<%
-		}
         %>// ###############################
         <%
 
