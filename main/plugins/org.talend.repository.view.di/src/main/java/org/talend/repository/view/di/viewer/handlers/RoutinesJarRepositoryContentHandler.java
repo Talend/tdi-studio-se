@@ -77,7 +77,8 @@ public class RoutinesJarRepositoryContentHandler extends AbstractRepositoryConte
     public void addNode(ERepositoryObjectType type, RepositoryNode recBinNode, IRepositoryViewObject repositoryObject,
             RepositoryNode node) {
         Property property = repositoryObject.getProperty();
-        if (type != ERepositoryObjectType.ROUTINESJAR || !(property.getItem() instanceof RoutinesJarItem)) {
+        if (type != ERepositoryObjectType.ROUTINESJAR
+                || (property.getItem() != null && !(property.getItem() instanceof RoutinesJarItem))) {
             return;
         }
         try {
