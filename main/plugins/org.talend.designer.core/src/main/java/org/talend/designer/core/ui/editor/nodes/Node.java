@@ -4854,8 +4854,11 @@ public class Node extends Element implements IGraphicalNode {
      */
     @Override
     public boolean checkIfCanBeStart() {
-        // tELTSAPMap component is more like a input component than ELT component as it output a flow stream.
-        if (isELTSAPMapComponent()) {
+        // tCollectAndCheck can be start node now in BD jobs
+    	if ("tCollectAndCheck".equals(this.getComponent().getName())) {
+    		return true;
+    	} else if (isELTSAPMapComponent()) {
+    		// tELTSAPMap component is more like a input component than ELT component as it output a flow stream.
             if (!isThereConditionLink() && isOnMainBranch()) {
                 return true;
             }

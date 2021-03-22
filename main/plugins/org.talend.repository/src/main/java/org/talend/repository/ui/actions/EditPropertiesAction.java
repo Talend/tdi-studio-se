@@ -420,17 +420,18 @@ public class EditPropertiesAction extends AContextualAction {
                 switch (node.getType()) {
                 case REPOSITORY_ELEMENT:
                     if (node.getObjectType() == ERepositoryObjectType.BUSINESS_PROCESS
-                            || node.getObjectType() == ERepositoryObjectType.PROCESS
-                            || node.getObjectType() == ERepositoryObjectType.ROUTINESJAR
-                            || node.getObjectType() == ERepositoryObjectType.BEANSJAR) {
+                            || node.getObjectType() == ERepositoryObjectType.PROCESS) {
                         canWork = true;
                     } else if (node.getObjectType() == ERepositoryObjectType.ROUTINES) {
                         Item item = node.getObject().getProperty().getItem();
                         if (item instanceof RoutineItem) {
-                            canWork = !((RoutineItem) item).isBuiltIn();
+                            canWork = !((RoutineItem) item).isBuiltIn() && !RoutinesUtil.isInnerCodes(item.getProperty());
                         } else {
                             canWork = false;
                         }
+                    } else if (node.getObjectType() == ERepositoryObjectType.ROUTINESJAR
+                            || node.getObjectType() == ERepositoryObjectType.BEANSJAR) {
+                        canWork = false;
                     } else if (node.getObjectType() == ERepositoryObjectType.SQLPATTERNS) {
                         Item item = node.getObject().getProperty().getItem();
                         if (item instanceof SQLPatternItem) {
@@ -446,7 +447,8 @@ public class EditPropertiesAction extends AContextualAction {
                             canWork = false;
                         }
                     } else {
-                        canWork = isInstanceofCamelRoutes(node.getObjectType()) || isInstanceofCamelBeans(node.getObjectType());
+                        canWork = isInstanceofCamelRoutes(node.getObjectType()) || (isInstanceofCamelBeans(
+                                node.getObjectType()) && !RoutinesUtil.isInnerCodes(node.getObject().getProperty()));
                     }
                     break;
                 default:
