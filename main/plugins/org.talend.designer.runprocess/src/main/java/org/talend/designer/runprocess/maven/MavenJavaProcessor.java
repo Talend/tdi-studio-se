@@ -60,7 +60,6 @@ import org.talend.designer.maven.tools.AggregatorPomsHelper;
 import org.talend.designer.maven.tools.BuildCacheManager;
 import org.talend.designer.maven.tools.creator.CreateMavenJobPom;
 import org.talend.designer.maven.utils.MavenProjectUtils;
-import org.talend.designer.maven.utils.PomIdsHelper;
 import org.talend.designer.maven.utils.PomUtil;
 import org.talend.designer.runprocess.ProcessorException;
 import org.talend.designer.runprocess.ProcessorUtilities;
@@ -210,7 +209,14 @@ public class MavenJavaProcessor extends JavaProcessor {
             jobName = basePrcess.getName();
             jobVersion = basePrcess.getVersion();
         }
-        String jarName = JavaResourcesHelper.getJobJarName(jobName, jobVersion);
+        String jarName = null;
+        if (process instanceof Process) {
+        	jarName = JavaResourcesHelper.getJobJarName(jobName, jobVersion, ((Process) process).getProperty());
+        }
+        else {
+        	jarName = JavaResourcesHelper.getJobJarName(jobName, jobVersion);
+        }
+
         String exportJar = libPrefixPath + jarName + FileExtensions.JAR_FILE_SUFFIX;
 
         if (!isMainJob || isMainJob && !ProcessorUtilities.hasLoopDependency()) {
@@ -219,18 +225,7 @@ public class MavenJavaProcessor extends JavaProcessor {
                 if (jobInfo.isTestContainer()) {
                     continue;
                 }
-                
-                String childJobName = null;
-                String childJarName = null;
-                if (jobInfo.getProcessItem() != null && jobInfo.getProcessItem().getProperty() !=null 
-                		&& "OSGI".equals(jobInfo.getProcessItem().getProperty().getAdditionalProperties().get(TalendProcessArgumentConstant.ARG_BUILD_TYPE))) {
-                	childJobName = jobInfo.getJobName() + "-bundle";
-                	childJarName = childJobName + "-" + PomIdsHelper.getJobVersion(jobInfo.getProcessItem().getProperty());
-                } else {
-                	childJobName = jobInfo.getJobName();
-                	childJarName = JavaResourcesHelper.getJobJarName(childJobName, jobInfo.getJobVersion());
-                }
-                
+                String childJarName = JavaResourcesHelper.getJobJarName(jobInfo);
                 if (!childJarName.equals(jarName)) {
                     exportJar += classPathSeparator + libPrefixPath + childJarName + FileExtensions.JAR_FILE_SUFFIX;
                 }
@@ -239,7 +234,7 @@ public class MavenJavaProcessor extends JavaProcessor {
         // for loop dependency, add main classPath
         JobInfo mainJobInfo = ProcessorUtilities.getMainJobInfo();
         if (!isMainJob && ProcessorUtilities.hasLoopDependency() && mainJobInfo != null) {
-            String mainJobName = JavaResourcesHelper.getJobJarName(mainJobInfo.getJobName(), mainJobInfo.getJobVersion());
+            String mainJobName = JavaResourcesHelper.getJobJarName(mainJobInfo);
             exportJar += classPathSeparator + libPrefixPath + mainJobName + FileExtensions.JAR_FILE_SUFFIX;
         }
         return exportJar;
@@ -474,7 +469,7 @@ public class MavenJavaProcessor extends JavaProcessor {
 
     private IFile deleteExistedJobJarFile(final ITalendProcessJavaProject talendJavaProject) throws CoreException {
         IFile jobJarFile;
-        String jobJarName = JavaResourcesHelper.getJobJarName(property.getLabel(), property.getVersion())
+        String jobJarName = JavaResourcesHelper.getJobJarName(property)
                 + FileExtensions.JAR_FILE_SUFFIX;
         jobJarFile = talendJavaProject.getTargetFolder().getFile(jobJarName);
         if (jobJarFile != null && jobJarFile.exists()) {
