@@ -3545,7 +3545,7 @@ public abstract class DataMapTableView extends Composite implements IDataMapTabl
                         // after extendedTableModel remove/add reset back the original customSized
                         boolean isCustom = DataMapTableView.this.customSized;
                         try {
-                            DataMapTableView.this.customSized = false;
+                            DataMapTableView.this.customSized = true;
                             extendedTableModel.removeAll(copyedAllList);
                             for (IMetadataColumn metaColumnToAdd : columns) {
                                 String label = metaColumnToAdd.getLabel();
@@ -3560,6 +3560,9 @@ public abstract class DataMapTableView extends Composite implements IDataMapTabl
                             oldMappingMap.clear();
                         } finally {
                             DataMapTableView.this.customSized = isCustom;
+                        }
+                        if (canBeResizedAtPreferedSize()) {
+                            changeSize(getPreferredSize(true, false, false), true, true);
                         }
                         return value;
                     }
