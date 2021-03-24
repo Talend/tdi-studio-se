@@ -20,6 +20,8 @@ import java.util.List;
 import org.apache.commons.lang.StringUtils;
 import org.talend.commons.exception.PersistenceException;
 import org.talend.commons.ui.runtime.exception.ExceptionHandler;
+import org.talend.core.database.EDatabase4DriverClassName;
+import org.talend.core.database.EDatabaseTypeName;
 import org.talend.core.database.conn.DatabaseConnStrUtil;
 import org.talend.core.model.metadata.builder.connection.DatabaseConnection;
 import org.talend.core.model.migration.AbstractItemMigrationTask;
@@ -29,8 +31,6 @@ import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
 
 public class ChangeGreenplumDefaultDriverMigrationTask extends AbstractItemMigrationTask {
-
-    public final static String DRIVERT_CLASS = "com.pivotal.jdbc.GreenplumDriver";
 
     @Override
     public Date getOrder() {
@@ -50,12 +50,12 @@ public class ChangeGreenplumDefaultDriverMigrationTask extends AbstractItemMigra
         ConnectionItem connectionItem = (ConnectionItem) item;
         DatabaseConnection connection = (DatabaseConnection) connectionItem.getConnection();
         if (connection != null) {
-            if (StringUtils.equals(connection.getDatabaseType(), "Greenplum")) {
+            if (StringUtils.equals(connection.getDatabaseType(), EDatabaseTypeName.GREENPLUM.getDbType())) {
                 if (StringUtils.isNotBlank(connection.getDriverClass())
                         && StringUtils.isNotBlank(connection.getURL())) {
                     String urlString = DatabaseConnStrUtil.getURLString(false, connection);
                     connection.setURL(urlString);
-                    connection.setDriverClass(DRIVERT_CLASS);
+                    connection.setDriverClass(EDatabase4DriverClassName.GREENPLUM.getDriverClass());
                     try {
                         ProxyRepositoryFactory.getInstance().save(item);
                     } catch (PersistenceException e) {
