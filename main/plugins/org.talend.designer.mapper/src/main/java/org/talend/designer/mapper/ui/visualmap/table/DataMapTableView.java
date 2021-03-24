@@ -2426,7 +2426,9 @@ public abstract class DataMapTableView extends Composite implements IDataMapTabl
     private void parseExpression(ModifiedBeanEvent event, TableViewerCreator tableViewerCreator, ITableEntry tableEntry) {
         if (event.column == tableViewerCreator.getColumn(DataMapTableView.ID_EXPRESSION_COLUMN)) {
             mapperManager.getUiManager().parseExpression(tableEntry.getExpression(), tableEntry, false, false, false);
-            mapperManager.getUiManager().refreshBackground(false, false);
+            if (headerComposite != null && !headerComposite.isDisposed()) {
+                mapperManager.getUiManager().refreshBackground(false, false);
+            }
         }
     }
 

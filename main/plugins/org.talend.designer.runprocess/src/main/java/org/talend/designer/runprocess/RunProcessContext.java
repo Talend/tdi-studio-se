@@ -1811,9 +1811,6 @@ public class RunProcessContext {
 
     public void setMemoryRunning(boolean isMemoryRunning) {
         this.isMemoryRunning = isMemoryRunning;
-        if (isMemoryRunning) {
-            setMonitorTrace(true);
-        }
     }
 
     private void showSparkStreamingData(String data) {

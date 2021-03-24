@@ -19,10 +19,13 @@ import java.util.Map;
 import org.apache.commons.lang.StringUtils;
 import org.talend.core.model.metadata.IMetadataColumn;
 import org.talend.core.model.metadata.IMetadataTable;
+import org.talend.core.model.metadata.MetadataToolHelper;
 import org.talend.core.model.process.IElementParameter;
 import org.talend.core.model.process.IExternalNode;
 import org.talend.core.model.process.INode;
 import org.talend.core.service.IScdComponentService;
+import org.talend.designer.core.model.components.EParameterName;
+import org.talend.designer.core.model.components.EmfComponent;
 
 /**
  * created by wchen on Jun 15, 2017 Detailled comment
@@ -35,9 +38,14 @@ public class ScdComponentService implements IScdComponentService {
         if (externalNode instanceof ScdComponent) {
             if (!"REJECT".equals(table.getTableName())) {
                 List<String> additionalColumns = new ArrayList<String>();
+                List<String> repositoryColums = new ArrayList<String>();
                 IElementParameter surrogateKey = node.getElementParameter(ScdParameterConstants.SURROGATE_KEY);
-                if (!StringUtils.isEmpty(String.valueOf(surrogateKey.getValue()))) {
-                    additionalColumns.add(String.valueOf(surrogateKey.getValue()));
+                String surrogateKeyValue = String.valueOf(surrogateKey.getValue());
+                if (!StringUtils.isEmpty(surrogateKeyValue)) {
+                    additionalColumns.add(surrogateKeyValue);
+                    if (checkIfRepositorySchemaColumn(node, surrogateKeyValue)) {
+                        repositoryColums.add(surrogateKeyValue);
+                    }
                 }
 
                 IElementParameter elementParameter = node.getElementParameter(ScdParameterConstants.L2_FIELDS_PARAM_NAME);
@@ -67,6 +75,10 @@ public class ScdComponentService implements IScdComponentService {
                     for (IMetadataColumn column : table.getListColumns()) {
                         if (additionalColumns.contains(column.getLabel())) {
                             column.setCustom(true);
+                            if (!repositoryColums.isEmpty() && repositoryColums.contains(column.getLabel())) {
+                                // column from repository schema to ignore custom sort
+                                column.setIgnoreCustomSort(true);
+                            }
                         }
                     }
                 }
@@ -85,6 +97,22 @@ public class ScdComponentService implements IScdComponentService {
             }
         }
         return columns;
+    }
+
+    private boolean checkIfRepositorySchemaColumn(INode node, String columnName) {
+        IElementParameter schemaTypeParam = node.getElementParameter(EParameterName.SCHEMA_TYPE.getName());
+        IElementParameter schemaRepoParam = node.getElementParameter(EParameterName.REPOSITORY_SCHEMA_TYPE.getName());
+        if (schemaTypeParam == null || schemaRepoParam == null || !EmfComponent.REPOSITORY.equals(schemaTypeParam.getValue())
+                || StringUtils.isBlank(schemaRepoParam.getValue().toString())) {
+            return false;
+        }
+        IMetadataTable repositoryTable = MetadataToolHelper.getMetadataFromRepository(schemaRepoParam.getValue().toString());
+        IMetadataColumn column = repositoryTable.getColumn(columnName);
+        if (column != null) {
+            return true;
+        }
+
+        return false;
     }
 
 }

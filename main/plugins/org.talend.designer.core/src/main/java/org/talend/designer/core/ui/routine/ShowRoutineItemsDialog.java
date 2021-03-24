@@ -31,6 +31,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Shell;
 import org.talend.core.model.general.Project;
 import org.talend.core.model.properties.Property;
+import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.designer.core.i18n.Messages;
 
 /**
@@ -38,53 +39,55 @@ import org.talend.designer.core.i18n.Messages;
  */
 public class ShowRoutineItemsDialog extends Dialog {
 
-    private Map<Project, List<Property>> allRoutineItems = null;
+    private Map<Project, List<Property>> allItems = null;
 
-    private List<RoutineItemRecord> existedRoutinesRecord = null;
+    private List<RoutineItemRecord> existedRecords = null;
 
-    private boolean system;
+    private ERepositoryObjectType type;
 
-    private TreeViewer routineViewer;
+    private TreeViewer viewer;
 
     private List<Property> selectedItems = new ArrayList<Property>();
 
     private ShowRoutineItemsLabelProvider labelProvider;
 
-    public ShowRoutineItemsDialog(Shell parentShell, Map<Project, List<Property>> allRoutineItems,
-            List<RoutineItemRecord> existedRoutinesRecord, boolean system) {
+    public ShowRoutineItemsDialog(Shell parentShell, Map<Project, List<Property>> allItems, List<RoutineItemRecord> currentRecords,
+            ERepositoryObjectType type) {
         super(parentShell);
-        this.allRoutineItems = allRoutineItems;
-        this.existedRoutinesRecord = existedRoutinesRecord;
-        this.system = system;
+        this.allItems = allItems;
+        this.existedRecords = currentRecords;
+        this.type = type;
     }
 
     @Override
     protected void configureShell(Shell newShell) {
         super.configureShell(newShell);
-        if (system) {
-            newShell.setText(Messages.getString("ShowRoutineItemsDialog.systemTitle")); //$NON-NLS-1$
-        } else {
-            newShell.setText(Messages.getString("ShowRoutineItemsDialog.title")); //$NON-NLS-1$
+        if (type == ERepositoryObjectType.ROUTINES) {
+            newShell.setText(Messages.getString("ShowGlobalRoutineItemsDialog.title")); //$NON-NLS-1$
+        } else if (type == ERepositoryObjectType.ROUTINESJAR) {
+            newShell.setText(Messages.getString("ShowRoutinesJarItemsDialog.title")); //$NON-NLS-1$
+        } else if (type == ERepositoryObjectType.BEANSJAR) {
+            newShell.setText(Messages.getString("ShowBeansJarItemsDialog.title")); //$NON-NLS-1$
         }
     }
 
     @Override
     protected Control createDialogArea(Composite parent) {
         Composite composite = (Composite) super.createDialogArea(parent);
-        routineViewer = new TreeViewer(composite);
+        viewer = new TreeViewer(composite);
 
-        labelProvider = new ShowRoutineItemsLabelProvider(allRoutineItems, existedRoutinesRecord);
+        labelProvider = new ShowRoutineItemsLabelProvider(allItems, existedRecords);
 
-        routineViewer.setContentProvider(labelProvider);
-        routineViewer.setLabelProvider(labelProvider);
-        routineViewer.setInput(allRoutineItems);
-        routineViewer.setFilters(new ViewerFilter[] { new ShowRoutineItemsViewerFilter(allRoutineItems, system) });
+        viewer.setContentProvider(labelProvider);
+        viewer.setLabelProvider(labelProvider);
+        viewer.setInput(allItems);
+        viewer.setFilters(new ViewerFilter[] { new ShowRoutineItemsViewerFilter(allItems) });
         GridData layoutData = new GridData(GridData.FILL_BOTH);
         layoutData.heightHint = 150;
         layoutData.widthHint = 200;
-        routineViewer.getTree().setLayoutData(layoutData);
+        viewer.getTree().setLayoutData(layoutData);
 
-        routineViewer.addSelectionChangedListener(new ISelectionChangedListener() {
+        viewer.addSelectionChangedListener(new ISelectionChangedListener() {
 
             public void selectionChanged(SelectionChangedEvent event) {
                 updateButtons();
@@ -100,9 +103,9 @@ public class ShowRoutineItemsDialog extends Dialog {
         return createContents;
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("rawtypes")
     private void updateButtons() {
-        IStructuredSelection selection = (IStructuredSelection) routineViewer.getSelection();
+        IStructuredSelection selection = (IStructuredSelection) viewer.getSelection();
         boolean enabled = !selection.isEmpty();
         Iterator iterator = selection.iterator();
         while (iterator.hasNext()) {
@@ -118,11 +121,11 @@ public class ShowRoutineItemsDialog extends Dialog {
         }
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     @Override
     protected void okPressed() {
         selectedItems.clear();
-        List list = ((IStructuredSelection) routineViewer.getSelection()).toList();
+        List list = ((IStructuredSelection) viewer.getSelection()).toList();
         selectedItems.addAll(list);
         super.okPressed();
     }

@@ -25,7 +25,8 @@ imports="
 	if((partSizeMb == null) || "".equals(partSizeMb) || "\"\"".equals(partSizeMb)) {
 			partSizeMb = "100";
 	}
-	
+	final String cannedACL = ElementParameterParser.getValue(node, "__CANNED_ACCESS_CONTROL_LIST__");
+	final boolean enableCannedACL = (cannedACL != null) && (!cannedACL.isEmpty()) && !("\"NONE\"".equals(cannedACL));
 	%>
 	<%@ include file="../tS3Connection/S3Client.javajet" %>
 	try{
@@ -73,7 +74,14 @@ imports="
     		if(objectMetadata_<%=cid%> != null) {
     				putRequest_<%=cid%>.setNewObjectMetadata(objectMetadata_<%=cid%>);
     		}
-    		
+    		<%if (enableCannedACL) {%>
+				    {
+				      final String cannedACLChoice = <%= cannedACL %>;
+				      if (cannedACLChoice != null && (!cannedACLChoice.isEmpty()) && !("NONE".equals(cannedACLChoice))) {
+				          putRequest_<%=cid%>.setCannedAccessControlList(com.amazonaws.services.s3.model.CannedAccessControlList.valueOf(cannedACLChoice));
+				      }
+				    }
+			<%}%>
     		<%@ include file="../tS3Put/set_kms.javajet"%>
     		
     		conn_<%=cid%>.copyObject(putRequest_<%=cid%>);
@@ -96,7 +104,15 @@ imports="
     				}
     				
     				<%@ include file="../tS3Put/set_kms.javajet"%>
-    				
+    		
+    		<%if (enableCannedACL) {%>
+			    {
+				   final String cannedACLChoice = <%= cannedACL %>;
+				   if (cannedACLChoice != null && (!cannedACLChoice.isEmpty()) && !("NONE".equals(cannedACLChoice))) {
+				       putRequest_<%=cid%>.withCannedACL(com.amazonaws.services.s3.model.CannedAccessControlList.valueOf(cannedACLChoice));
+				   }
+			    }
+			<%}%>
             com.amazonaws.services.s3.model.InitiateMultipartUploadResult initResult_<%=cid%> = conn_<%=cid%>.initiateMultipartUpload(putRequest_<%=cid%>);
             
             long bytePosition_<%=cid%> = 0;
