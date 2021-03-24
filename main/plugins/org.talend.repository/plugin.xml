@@ -400,6 +400,17 @@
    </extension>
    <extension
          point="org.talend.core.migrationTask">
+         
+  <projecttask
+        beforeLogon="true"
+        breaks="7.3.1"
+        class="org.talend.repository.model.migration.spark.AddKafkaExtraInfo"
+        description="Add key, partition and topic to the output schema of tKafkaInput components"
+        id="org.talend.repository.model.migration.spark.AddKafkaExtraInfo"
+        name="AddKafkaExtraInfo"
+        version="7.3.1">                     
+  </projecttask>
+  
   <projecttask
         beforeLogon="true"
         breaks="5.1.1"

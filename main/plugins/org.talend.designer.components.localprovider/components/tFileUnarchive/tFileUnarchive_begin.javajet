@@ -97,10 +97,10 @@
                 util_<%=cid %>.output(outputPath_<%=cid %>, filename_<%=cid %>, isDirectory_<%=cid%>, is_<%=cid%>);
 
                 <% if (extractPath == true) {%>
-                java.io.File f = new java.io.File(outputPath_<%=cid %>+"/"+ filename_<%=cid %>);
+                java.io.File f = new java.io.File(outputPath_<%=cid %>, filename_<%=cid %>);
                 f.setLastModified(entry_<%=cid %>.getModTime().getTime());
                 <%} else {%>
-                java.io.File unzippedFile = new java.io.File(outputPath_<%=cid %> + util_<%=cid %>.getEntryName(filename_<%=cid %>));
+                java.io.File unzippedFile = new java.io.File(outputPath_<%=cid %>, util_<%=cid %>.getEntryName(filename_<%=cid %>));
                 unzippedFile.setLastModified(entry_<%=cid %>.getModTime().getTime());
                 <% }%>
             }
@@ -141,10 +141,10 @@
                 util_<%=cid %>.output(outputPath_<%=cid %>, filename_<%=cid %>, isDirectory_<%=cid%>, is_<%=cid%>);
 
                 <% if (extractPath == true) {%>
-                       java.io.File f = new java.io.File(outputPath_<%=cid %>+"/"+ filename_<%=cid %>);
+                       java.io.File f = new java.io.File(outputPath_<%=cid %>, filename_<%=cid %>);
                        f.setLastModified(entry_<%=cid %>.getModTime().getTime());
                        <%} else {%>
-                       java.io.File unzippedFile = new java.io.File(outputPath_<%=cid %> + util_<%=cid %>.getEntryName(filename_<%=cid %>));
+                       java.io.File unzippedFile = new java.io.File(outputPath_<%=cid %>, util_<%=cid %>.getEntryName(filename_<%=cid %>));
                        unzippedFile.setLastModified(entry_<%=cid %>.getModTime().getTime());
                  <% }%>
 
