@@ -3465,7 +3465,9 @@ public class Node extends Element implements IGraphicalNode {
             }
         } else if ((Boolean) getPropertyValue(EParameterName.STARTABLE.getName())) {
             for (INodeConnector connector : getConnectorsFromType(EConnectionType.FLOW_MAIN)) {
-                if (connector.isShow() && (connector.getMaxLinkInput() == 0) && (connector.getMaxLinkOutput() != 0)) {
+                if (connector.isShow() && (connector.getMaxLinkInput() == 0) && (connector.getMaxLinkOutput() != 0) 
+                    && !"TJDBCRowProperties".equals(getComponentProperties().getClass().getSimpleName())
+                    && !"TJDBCCommitProperties".equals(getComponentProperties().getClass().getSimpleName())) {
                     if ((getCurrentActiveLinksNbOutput(EConnectionType.FLOW_MAIN) == 0)
                             && (getCurrentActiveLinksNbOutput(EConnectionType.FLOW_MERGE) == 0)
                             && (getCurrentActiveLinksNbOutput(EConnectionType.FLOW_REF) == 0)
