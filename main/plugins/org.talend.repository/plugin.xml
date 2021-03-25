@@ -400,6 +400,17 @@
    </extension>
    <extension
          point="org.talend.core.migrationTask">
+         
+  <projecttask
+        beforeLogon="true"
+        breaks="7.3.1"
+        class="org.talend.repository.model.migration.spark.AddKafkaExtraInfo"
+        description="Add key, partition and topic to the output schema of tKafkaInput components"
+        id="org.talend.repository.model.migration.spark.AddKafkaExtraInfo"
+        name="AddKafkaExtraInfo"
+        version="7.3.1">                     
+  </projecttask>
+  
   <projecttask
         beforeLogon="true"
         breaks="5.1.1"
@@ -3591,6 +3602,15 @@
              id="org.talend.repository.model.migration.ChangeFileInputDynamicFieldLength"
              name="ChangeFileInputDynamicFieldLength"
              version="7.3.1">
+       </projecttask>
+       <projecttask
+             beforeLogon="false"
+             breaks="7.4.0"
+             class="org.talend.repository.model.migration.ChangeGreenplumDefaultDriverMigrationTask"
+             description="change Greenplum default driver"
+             id="org.talend.repository.model.migration.ChangeGreenplumDefaultDriverMigrationTask"
+             name="ChangeGreenplumDefaultDriverMigrationTask"
+             version="7.4.1">
        </projecttask>
        <projecttask
               beforeLogon="false"
