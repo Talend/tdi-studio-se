@@ -21,6 +21,7 @@ import org.talend.sdk.component.server.front.model.ConfigTypeNode;
 import org.talend.sdk.component.server.front.model.ConfigTypeNodes;
 import org.talend.sdk.component.studio.Lookups;
 import org.talend.sdk.component.studio.metadata.migration.TaCoKitMigrationManager;
+import org.talend.sdk.component.studio.util.TaCoKitUtil;
 
 /**
  * DOC cmeng class global comment. Detailled comment
@@ -156,17 +157,17 @@ public class TaCoKitCache {
         return configTypeNodeMapCache;
     }
 
-    public ConfigTypeNode findConfigTypeNodeById(String familyName, final String configurationType) {
+    public ConfigTypeNode findDatastoreConfigTypeNodeByName(String name) {
         if (familyConfigTypes == null) {
             fillFamilyConfig();
         }
-        final ConfigTypeNode familyConfig = familyConfigTypes.get(familyName);
+        final ConfigTypeNode familyConfig = familyConfigTypes.get(name);
         if (familyConfig == null) {
             return null;
         }
         for (final String edge : familyConfig.getEdges()) {
             final ConfigTypeNode node = getConfigTypeNodeMap().get(edge);
-            if (node != null && configurationType.equals(node.getConfigurationType())) {
+            if (node != null && TaCoKitUtil.CONFIG_NODE_ID_DATASTORE.equals(node.getConfigurationType())) {
                 return node;
             }
         }

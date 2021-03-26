@@ -79,7 +79,8 @@ import org.talend.utils.io.FilesUtils;
  * DOC cmeng class global comment. Detailled comment
  */
 public class TaCoKitUtil {
-
+    public static final String CONFIG_NODE_ID_DATASTORE = "datastore";
+    public static final String CONFIG_NODE_ID_DATASET = "dataset";
     /**
      * Get ConnectionItem from specified project
      *
@@ -546,16 +547,38 @@ public class TaCoKitUtil {
         return false;
     }
     
-    public static Map<String, PropertyDefinitionDecorator> getVirtualComponentDataStoreProperties(ComponentModel component) {
+    public static Map<String, PropertyDefinitionDecorator> getComponentDataStoreProperties(ComponentModel component) {
         final Map<String, PropertyDefinitionDecorator> tree = new HashMap<>();
         TaCoKitCache cache = Lookups.taCoKitCache();
-        ConfigTypeNode configTypeNode = cache.findConfigTypeNodeById(component.getDetail().getId().getFamily(), "datastore");
+        ConfigTypeNode configTypeNode = cache.findDatastoreConfigTypeNodeByName(component.getDetail().getId().getFamily());
         if (configTypeNode != null && configTypeNode.getProperties() != null) {
             final Collection<PropertyDefinitionDecorator> properties = PropertyDefinitionDecorator
                     .wrap(configTypeNode.getProperties());
             properties.forEach(p -> tree.put(p.getPath(), p));
         }
         return tree;
+    }
+    
+    public static boolean isDataStorePath(Map<String, PropertyDefinitionDecorator> datastoreProperties,
+            String testPath) {
+        Set<String> pathSet = getPossibleDataStorePath(testPath);
+        for (String path : pathSet) {
+            if (datastoreProperties.containsKey(path)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private static Set<String> getPossibleDataStorePath(String testPath) {
+        Set<String> pathSet = new HashSet<String>();
+        pathSet.add(testPath);
+
+        String[] array = testPath.split("\\.");
+        if (array.length == 4) {
+            pathSet.add(array[0] + "." + array[3]);
+        }
+        return pathSet;
     }
 
     public static void checkM2TacokitStatus() throws Exception {

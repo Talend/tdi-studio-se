@@ -65,20 +65,25 @@ mgr_<%=cid%>.findPlugin("<%=family.toLowerCase()%>")
     .forEach(actionMeta_<%=cid%> -> {
         Object result_<%=cid%> = actionMeta_<%=cid%>.getInvoker().apply(null);
         org.talend.sdk.component.api.service.connection.CloseConnectionObject cco_<%=cid%> = (org.talend.sdk.component.api.service.connection.CloseConnectionObject) result_<%=cid%>;
-
-        org.talend.sdk.component.api.context.RuntimeContext runtimeContext_<%=cid%> = new org.talend.sdk.component.api.context.RuntimeContext() {
-
-            @Override
-            public Object getConnection() {
-                Object con_<%=cid%> = globalMap.get("conn_<%=connection%>");
-                if(con_<%=cid%>==null) {
-                    throw new RuntimeException("can't find the connection object");
+        Object con_<%=cid%> = globalMap.get("conn_<%=connection%>");
+        if(con_<%=cid%>==null) {
+            throw new RuntimeException("can't find the connection object");
+        }
+        
+        Class<?> current_<%=cid%> = cco_<%=cid%>.getClass();
+        while (current_<%=cid%> != null && current_<%=cid%> != Object.class) {
+            java.util.stream.Stream.of(current_<%=cid%>.getDeclaredFields()).filter(f_<%=cid%> -> f_<%=cid%>.isAnnotationPresent(org.talend.sdk.component.api.service.connection.Connection.class)).forEach(f_<%=cid%> -> {
+                if (!f_<%=cid%>.isAccessible()) {
+                    f_<%=cid%>.setAccessible(true);
                 }
-                return con_<%=cid%>;
-            }
-
-        };
-
-        cco_<%=cid%>.setRuntimeContext(runtimeContext_<%=cid%>);
+                try {
+                    f_<%=cid%>.set(cco_<%=cid%>, con_<%=cid%>);
+                } catch (final IllegalAccessException e_<%=cid%>) {
+                    throw new IllegalStateException(e_<%=cid%>);
+                }
+            });
+            current_<%=cid%> = current_<%=cid%>.getSuperclass();
+        }
+        
         boolean r_<%=cid%> = cco_<%=cid%>.close();
     });

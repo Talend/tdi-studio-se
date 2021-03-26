@@ -67,27 +67,31 @@
     %>
     try {
         java.lang.reflect.Field field_<%=cid%> = processorImpl_<%=cid%>.getClass().getSuperclass().getDeclaredField("delegate");
-        field_<%=cid%>.setAccessible(true);
-        Object v_<%=cid%> = field_<%=cid%>.get(processorImpl_<%=cid%>);
-        if (v_<%=cid%> instanceof org.talend.sdk.component.api.context.RuntimeContextInjector) {
-            org.talend.sdk.component.api.context.RuntimeContext runtimeContext_<%=cid%> = new org.talend.sdk.component.api.context.RuntimeContext() {
-
-                @Override
-                public Object getConnection() {
-                    Object con_<%=cid%> = globalMap.get("conn_<%=connection%>");
-                    if(con_<%=cid%>==null) {
-                        throw new RuntimeException("can't find the connection object");
-                    }
-                    return con_<%=cid%>;
-                }
-
-            };
-
-            ((org.talend.sdk.component.api.context.RuntimeContextInjector) v_<%=cid%>).setRuntimeContext(runtimeContext_<%=cid%>);
+        if (!field_<%=cid%>.isAccessible()) {
+            field_<%=cid%>.setAccessible(true);
         }
-        field_<%=cid%>.setAccessible(false);
+        Object v_<%=cid%> = field_<%=cid%>.get(processorImpl_<%=cid%>);
+        Object con_<%=cid%> = globalMap.get("conn_<%=connection%>");
+        if(con_<%=cid%>==null) {
+            throw new RuntimeException("can't find the connection object");
+        }
+        
+        Class<?> current_<%=cid%> = v_<%=cid%>.getClass();
+        while (current_<%=cid%> != null && current_<%=cid%> != Object.class) {
+            java.util.stream.Stream.of(current_<%=cid%>.getDeclaredFields()).filter(f_<%=cid%> -> f_<%=cid%>.isAnnotationPresent(org.talend.sdk.component.api.service.connection.Connection.class)).forEach(f_<%=cid%> -> {
+                if (!f_<%=cid%>.isAccessible()) {
+                    f_<%=cid%>.setAccessible(true);
+                }
+                try {
+                    f_<%=cid%>.set(v_<%=cid%>, con_<%=cid%>);
+                } catch (final IllegalAccessException e_<%=cid%>) {
+                    throw new IllegalStateException(e_<%=cid%>);
+                }
+            });
+            current_<%=cid%> = current_<%=cid%>.getSuperclass();
+        }
     } catch (Exception e_<%=cid%>) {
-        System.out.println(e_<%=cid%>);
+        throw e_<%=cid%>;
     }
     <%
     //{

@@ -12,14 +12,10 @@
  */
 package org.talend.sdk.component.studio;
 
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.talend.sdk.component.server.front.model.ComponentDetail;
-import org.talend.sdk.component.server.front.model.ConfigTypeNode;
-import org.talend.sdk.component.studio.metadata.TaCoKitCache;
-import org.talend.sdk.component.studio.model.parameter.PropertyDefinitionDecorator;
 
 public class VirtualComponentRegister {
 
