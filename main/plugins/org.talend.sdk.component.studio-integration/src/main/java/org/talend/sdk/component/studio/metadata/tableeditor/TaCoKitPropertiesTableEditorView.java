@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2021 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -10,14 +10,13 @@
 // 9 rue Pages 92150 Suresnes, France
 //
 // ============================================================================
-package org.talend.designer.core.ui.editor.properties.macrowidgets.tableeditor;
+package org.talend.sdk.component.studio.metadata.tableeditor;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.ColorCellEditor;
@@ -35,13 +34,11 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableItem;
 import org.talend.commons.ui.runtime.image.EImage;
 import org.talend.commons.ui.runtime.image.ImageProvider;
-import org.talend.commons.ui.runtime.swt.tableviewer.TableViewerCreatorNotModifiable.LAYOUT_MODE;
 import org.talend.commons.ui.runtime.swt.tableviewer.behavior.CellEditorValueAdapter;
 import org.talend.commons.ui.runtime.swt.tableviewer.behavior.ColumnCellModifier;
 import org.talend.commons.ui.runtime.swt.tableviewer.behavior.IColumnColorProvider;
 import org.talend.commons.ui.runtime.swt.tableviewer.behavior.IColumnLabelProvider;
-import org.talend.commons.ui.swt.advanced.dataeditor.AbstractDataTableEditorView;
-import org.talend.commons.ui.swt.advanced.dataeditor.ExtendedToolbarView;
+import org.talend.commons.ui.runtime.swt.tableviewer.data.ModifiedObjectInfo;
 import org.talend.commons.ui.swt.proposal.TextCellEditorWithProposal;
 import org.talend.commons.ui.swt.tableviewer.TableViewerCreator;
 import org.talend.commons.ui.swt.tableviewer.TableViewerCreatorColumn;
@@ -49,13 +46,10 @@ import org.talend.commons.ui.swt.tableviewer.celleditor.EditableComboBoxCellEdit
 import org.talend.commons.ui.swt.tableviewer.tableeditor.CheckboxTableEditorContent;
 import org.talend.commons.ui.utils.image.ColorUtils;
 import org.talend.commons.utils.data.bean.IBeanPropertyAccessors;
-import org.talend.core.GlobalServiceRegister;
-import org.talend.core.PluginChecker;
 import org.talend.core.model.metadata.IEbcdicConstant;
 import org.talend.core.model.metadata.IMetadataColumn;
 import org.talend.core.model.metadata.IMetadataTable;
 import org.talend.core.model.metadata.IRuleConstant;
-import org.talend.core.model.metadata.ISAPConstant;
 import org.talend.core.model.metadata.MetadataToolHelper;
 import org.talend.core.model.process.EParameterFieldType;
 import org.talend.core.model.process.IConnection;
@@ -64,112 +58,34 @@ import org.talend.core.model.process.IElementParameter;
 import org.talend.core.model.process.INode;
 import org.talend.core.model.process.IProcess;
 import org.talend.core.model.process.IProcess2;
-import org.talend.core.model.properties.EbcdicConnectionItem;
-import org.talend.core.runtime.maven.MavenArtifact;
-import org.talend.core.runtime.maven.MavenUrlHelper;
-import org.talend.core.service.IEBCDICProviderService;
-import org.talend.core.service.ISAPProviderService;
 import org.talend.core.ui.metadata.celleditor.ModuleListCellEditor;
 import org.talend.core.ui.metadata.celleditor.RuleCellEditor;
 import org.talend.core.ui.metadata.celleditor.SchemaCellEditor;
 import org.talend.core.ui.metadata.celleditor.SchemaXPathQuerysCellEditor;
 import org.talend.core.ui.metadata.editor.AbstractMetadataTableEditorView;
 import org.talend.core.ui.proposal.TalendProposalProvider;
-import org.talend.core.utils.TalendQuoteUtils;
 import org.talend.designer.core.model.FakeElement;
 import org.talend.designer.core.model.components.EParameterName;
 import org.talend.designer.core.model.components.ElementParameter;
-import org.talend.designer.core.ui.celleditor.PatternCellEditor;
-import org.talend.designer.core.ui.celleditor.PatternPropertyCellEditor;
 import org.talend.designer.core.ui.editor.nodes.Node;
 import org.talend.designer.core.ui.editor.properties.controllers.NumberLimitTextController;
+import org.talend.designer.core.ui.editor.properties.macrowidgets.tableeditor.PropertiesTableEditorModel;
+import org.talend.designer.core.ui.editor.properties.macrowidgets.tableeditor.PropertiesTableEditorView;
 import org.talend.designer.core.ui.event.CheckColumnSelectionListener;
+import org.talend.sdk.component.studio.util.TaCoKitUtil;
 
 /**
- * MetadataTableEditorView2 must be used.
+ * created by hcyi on Mar 17, 2021
+ * Detailled comment
  *
- * $Id: MetadataTableEditorView.java 801 2006-11-30 16:28:36Z amaumont $
- *
- * @param <B>
  */
-public class PropertiesTableEditorView<B> extends AbstractDataTableEditorView<B> {
+public class TaCoKitPropertiesTableEditorView<B> extends PropertiesTableEditorView<B> {
 
-    private final String SINGLE = "SINGLE";
-
-    private final String STRUCTURE = "STRUCTURE";
-
-    /**
-     * DOC amaumont MetadataTableEditorView constructor comment.
-     *
-     * @param parent
-     * @param style
-     * @param model
-     */
-    public PropertiesTableEditorView(Composite parent, int style, PropertiesTableEditorModel model) {
-        super(parent, style, model);
-    }
-
-    /**
-     * DOC amaumont MetadataTableEditorView constructor comment.
-     *
-     * @param parentComposite
-     * @param mainCompositeStyle
-     * @param readOnly
-     * @param toolbarVisible
-     * @param labelVisible TODO
-     * @param extendedTableModel
-     */
-    public PropertiesTableEditorView(Composite parentComposite, int mainCompositeStyle, PropertiesTableEditorModel model,
+    public TaCoKitPropertiesTableEditorView(Composite parentComposite, int mainCompositeStyle, PropertiesTableEditorModel model,
             boolean toolbarVisible, boolean labelVisible) {
-        super(parentComposite, mainCompositeStyle, model, model.getElemParameter().isReadOnly(), toolbarVisible, labelVisible);
+        super(parentComposite, mainCompositeStyle, model, toolbarVisible, labelVisible);
     }
 
-    /**
-     * DOC amaumont MetadataTableEditorView constructor comment.
-     *
-     * @param parentComposite
-     * @param mainCompositeStyle
-     */
-    public PropertiesTableEditorView(Composite parentComposite, int mainCompositeStyle) {
-        super(parentComposite, mainCompositeStyle);
-    }
-
-    public void setMetadataTableEditor(PropertiesTableEditorModel model) {
-        setExtendedTableModel(model);
-    }
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see org.talend.commons.ui.swt.advanced.dataeditor.AbstractDataTableEditorView#initToolBar()
-     */
-    @Override
-    protected ExtendedToolbarView initToolBar() {
-        return new PropertiesTableToolbarEditorView(getMainComposite(), SWT.NONE, this.getExtendedTableViewer(),
-                (PropertiesTableEditorModel) getExtendedTableModel());
-    }
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see
-     * org.talend.commons.ui.swt.advanced.dataeditor.AbstractDataTableEditorView#setTableViewerCreatorOptions(org.talend
-     * .commons.ui.swt.tableviewer.TableViewerCreator)
-     */
-    @Override
-    protected void setTableViewerCreatorOptions(TableViewerCreator<B> newTableViewerCreator) {
-        super.setTableViewerCreatorOptions(newTableViewerCreator);
-        newTableViewerCreator.setLayoutMode(LAYOUT_MODE.DEFAULT);
-        newTableViewerCreator.setLazyLoad(TableViewerCreator.getRecommandLazyLoad());
-    }
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see
-     * org.talend.commons.ui.swt.extended.macrotable.AbstractExtendedTableViewer#createColumns(org.talend.commons.ui
-     * .swt.tableviewer.TableViewerCreator, org.eclipse.swt.widgets.Table)
-     */
     @SuppressWarnings("unchecked")
     @Override
     protected void createColumns(final TableViewerCreator<B> tableViewerCreator, final Table table) {
@@ -208,7 +124,6 @@ public class PropertiesTableEditorView<B> extends AbstractDataTableEditorView<B>
                 column.setModifiable(true);
                 column.setMinimumWidth(100);
                 column.setWeight(20);
-
                 switch (currentParam.getFieldType()) {
                 case CONTEXT_PARAM_NAME_LIST:
                 case CLOSED_LIST:
@@ -217,6 +132,7 @@ public class PropertiesTableEditorView<B> extends AbstractDataTableEditorView<B>
                 case CONNECTION_LIST:
                 case DBTYPE_LIST:
                 case COMPONENT_LIST:
+                case TACOKIT_VALUE_SELECTION:
                 case PREV_COLUMN_LIST:
                     final ComboBoxCellEditor cellEditor = new ComboBoxCellEditor(table, currentParam.getListItemsDisplayName());
                     final IElementParameter copyOfTmpParam = currentParam;
@@ -251,18 +167,27 @@ public class PropertiesTableEditorView<B> extends AbstractDataTableEditorView<B>
                         public Object getCellEditorTypedValue(CellEditor cellEditor, Object originalTypedValue) {
                             CCombo combo = (CCombo) cellEditor.getControl();
                             int rowNumber = ((Table) combo.getParent()).getSelectionIndex();
+                            TaCoKitUtil.updateElementParameter(element, copyOfTmpParam, rowNumber);
                             String[] listToDisplay = getItemsToDisplay(element, copyOfTmpParam, rowNumber);
                             if (!Arrays.equals(listToDisplay, ((ComboBoxCellEditor) cellEditor).getItems())) {
                                 ((ComboBoxCellEditor) cellEditor).setItems(listToDisplay);
                             }
                             Object returnedValue = 0;
+                            boolean find = false;
                             if (originalTypedValue != null) {
                                 String[] namesSet = listToDisplay;
                                 for (int j = 0; j < namesSet.length; j++) {
                                     if (namesSet[j].equals(originalTypedValue)) {
                                         returnedValue = j;
+                                        find = true;
                                         break;
                                     }
+                                }
+                                // if not find , then fill the first.
+                                if (!find && namesSet.length > 0) {
+                                    ModifiedObjectInfo modifiedObjectInfo = tableViewerCreator.getModifiedObjectInfo();
+                                    Object bean = modifiedObjectInfo.getCurrentModifiedBean();
+                                    ((Map<String, Object>) bean).put(items[curCol], listToDisplay[0]);
                                 }
                             }
                             return returnedValue;
@@ -321,16 +246,16 @@ public class PropertiesTableEditorView<B> extends AbstractDataTableEditorView<B>
                     column.setCellEditor(editCellEditor);
                     break;
                 case MODULE_LIST:
-                    column.setModifiable((param.getElement() instanceof FakeElement || !param.isRepositoryValueUsed()) && (!param.isReadOnly())
-                            && (!currentParam.isReadOnly()));
+                    column.setModifiable((param.getElement() instanceof FakeElement || !param.isRepositoryValueUsed())
+                            && (!param.isReadOnly()) && (!currentParam.isReadOnly()));
                     ModuleListCellEditor moduleEditor = new ModuleListCellEditor(table, currentParam, param);
                     moduleEditor.setTableEditorView(this);
                     column.setCellEditor(moduleEditor);
                     column.setLabelProvider(new ModuleTableLabelProvider());
                     break;
                 case COLOR:
-                    column.setModifiable((!param.isRepositoryValueUsed()) && (!param.isReadOnly())
-                            && (!currentParam.isReadOnly()));
+                    column.setModifiable(
+                            (!param.isRepositoryValueUsed()) && (!param.isReadOnly()) && (!currentParam.isReadOnly()));
                     // column.setDisplayedValue("");
 
                     column.setLabelProvider(null);
@@ -376,8 +301,8 @@ public class PropertiesTableEditorView<B> extends AbstractDataTableEditorView<B>
                     });
                     break;
                 case CHECK:
-                    column.setModifiable((!param.isRepositoryValueUsed()) && (!param.isReadOnly())
-                            && (!currentParam.isReadOnly()));
+                    column.setModifiable(
+                            (!param.isRepositoryValueUsed()) && (!param.isReadOnly()) && (!currentParam.isReadOnly()));
                     CheckColumnSelectionListener tableColumnSelectionListener = new CheckColumnSelectionListener(column,
                             tableViewerCreator, currentParam);
                     if (!currentParam.isReadOnly()) {
@@ -398,8 +323,8 @@ public class PropertiesTableEditorView<B> extends AbstractDataTableEditorView<B>
                     break;
                 case SCHEMA_TYPE:
                 case SCHEMA_REFERENCE:
-                    column.setModifiable((!param.isRepositoryValueUsed()) && (!param.isReadOnly())
-                            && (!currentParam.isReadOnly()));
+                    column.setModifiable(
+                            (!param.isRepositoryValueUsed()) && (!param.isReadOnly()) && (!currentParam.isReadOnly()));
                     final INode node = (INode) element;
                     // List<IMetadataTable> tables = node.getMetadataList();
 
@@ -415,15 +340,7 @@ public class PropertiesTableEditorView<B> extends AbstractDataTableEditorView<B>
                                     IMetadataTable metadataTable = MetadataToolHelper.getMetadataTableFromNodeTableName(node,
                                             value);
                                     if (metadataTable != null) {
-                                        if (isEBCDICNode(node)) {
-                                            if (isRepositorySchemaLine(node, valueMap)) {
-                                                return "Repository (" + metadataTable.getTableName() + ")"; //$NON-NLS-1$ //$NON-NLS-2$
-                                            } else {
-                                                return "Built-In (" + metadataTable.getTableName() + ")"; //$NON-NLS-1$ //$NON-NLS-2$
-                                            }
-                                        } else {
-                                            return metadataTable.getTableName();
-                                        }
+                                        return metadataTable.getTableName();
                                     } else {
                                         return value;
                                     }
@@ -440,69 +357,11 @@ public class PropertiesTableEditorView<B> extends AbstractDataTableEditorView<B>
                     column.setCellEditor(schemaEditor);
                     break;
 
-                case SAP_SCHEMA_TYPE:
-                    column.setModifiable((!param.isRepositoryValueUsed()) && (!param.isReadOnly())
-                            && (!currentParam.isReadOnly()));
-                    final INode sapNode = (INode) element;
-
-                    column.setLabelProvider(new IColumnLabelProvider() {
-
-                        @Override
-                        public String getLabel(Object bean) {
-                            if (bean instanceof Map) {
-                                Map<String, Object> valueMap = (Map<String, Object>) bean;
-                                String value = (String) valueMap.get(IEbcdicConstant.FIELD_SCHEMA);
-                                if (value != null && !"".equals(value)) { //$NON-NLS-1$
-                                    IMetadataTable metadataTable = MetadataToolHelper.getMetadataTableFromNodeTableName(sapNode,
-                                            value);
-                                    if (metadataTable != null) {
-                                        if (isEBCDICNode(sapNode)) {
-                                            if (isRepositorySchemaLine(sapNode, valueMap)) {
-                                                return "Repository (" + metadataTable.getTableName() + ")"; //$NON-NLS-1$ //$NON-NLS-2$
-                                            } else {
-                                                return "Built-In (" + metadataTable.getTableName() + ")"; //$NON-NLS-1$ //$NON-NLS-2$
-                                            }
-                                        } else if (isSAPNode(sapNode)) {
-                                            Object type = valueMap.get(ISAPConstant.TYPE);
-                                            if (type instanceof Integer) {
-                                                return "";
-                                            }
-                                            if (type.toString().equals(SINGLE) || type.toString().equals(STRUCTURE)) {
-                                                List<IMetadataColumn> columns = metadataTable.getListColumns(true);
-                                                StringBuffer values = new StringBuffer();
-                                                values.append(metadataTable.getTableName() + ":");
-                                                if (metadataTable.getListColumns(true).size() > 0) {
-                                                    for (IMetadataColumn column : columns) {
-                                                        values.append(column.getDefault() + ",");
-                                                    }
-                                                    String ret = values.toString();
-                                                    return ret.substring(0, ret.length() - 1);
-                                                }
-                                            } else {
-                                                return metadataTable.getTableName();
-                                            }
-                                        } else {
-                                            return metadataTable.getTableName();
-                                        }
-                                    } else {
-                                        return value;
-                                    }
-                                }
-                            }
-                            return ""; //$NON-NLS-1$
-                        }
-                    });
-
-                    schemaEditor = new SchemaCellEditor(table, sapNode);
-                    schemaEditor.setTableEditorView(this);
-                    column.setCellEditor(schemaEditor);
-                    break;
-
                 // hywang add for feature 6484
                 case RULE_TYPE:
                     column.setTitle("Rule"); //$NON-NLS-1$
-                    column.setModifiable((!param.isRepositoryValueUsed()) && (!param.isReadOnly())
-                            && (!currentParam.isReadOnly()));
+                    column.setModifiable(
+                            (!param.isRepositoryValueUsed()) && (!param.isReadOnly()) && (!currentParam.isReadOnly()));
                     final INode node1 = (INode) element;
                     column.setLabelProvider(new IColumnLabelProvider() {
 
@@ -531,8 +390,8 @@ public class PropertiesTableEditorView<B> extends AbstractDataTableEditorView<B>
 
                 case SCHEMA_XPATH_QUERYS:
 
-                    column.setModifiable((!param.isRepositoryValueUsed()) && (!param.isReadOnly())
-                            && (!currentParam.isReadOnly()));
+                    column.setModifiable(
+                            (!param.isRepositoryValueUsed()) && (!param.isReadOnly()) && (!currentParam.isReadOnly()));
                     final INode node2 = (INode) element;
                     SchemaXPathQuerysCellEditor schemaXPathEditor = new SchemaXPathQuerysCellEditor(table, node2);
                     schemaXPathEditor.setTableEditorView(this);
@@ -540,30 +399,28 @@ public class PropertiesTableEditorView<B> extends AbstractDataTableEditorView<B>
 
                     break;
 
-
-                case MULTI_PATTERN:
-                    column.setModifiable(true);
-                    PatternCellEditor patternEditor = new PatternCellEditor(table,element);
-                    patternEditor.setTableEditorView(this);
-                    column.setCellEditor(patternEditor);
-                    break;
-
-                case PATTERN_PROPERTY:
-                    column.setModifiable(true);
-                    PatternPropertyCellEditor patternPropertyEditor = new PatternPropertyCellEditor(table,element);
-                    patternPropertyEditor.setTableEditorView(this);
-                    column.setCellEditor(patternPropertyEditor);
-                    break;
+                // case MULTI_PATTERN:
+                // column.setModifiable(true);
+                // PatternCellEditor patternEditor = new PatternCellEditor(table, element);
+                // patternEditor.setTableEditorView(this);
+                // column.setCellEditor(patternEditor);
+                // break;
+                //
+                // case PATTERN_PROPERTY:
+                // column.setModifiable(true);
+                // PatternPropertyCellEditor patternPropertyEditor = new PatternPropertyCellEditor(table, element);
+                // patternPropertyEditor.setTableEditorView(this);
+                // column.setCellEditor(patternPropertyEditor);
+                // break;
 
                 default: // TEXT
                     TextCellEditor tcEditor = null;
                     if (((i == 0) && (param.isBasedOnSchema() || param.isBasedOnSubjobStarts()))
                             || (param.isRepositoryValueUsed()) || (param.isReadOnly()) || currentParam.isReadOnly()) {
                         // read only cell
-                        if (!param.getElement().isReadOnly()
-                                && (param.getName().equals("HADOOP_ADVANCED_PROPERTIES")
-                                        || param.getName().equals("SPARK_ADVANCED_PROPERTIES") || param.getName().equals(
-                                        "HBASE_PARAMETERS"))) {
+                        if (!param.getElement().isReadOnly() && (param.getName().equals("HADOOP_ADVANCED_PROPERTIES")
+                                || param.getName().equals("SPARK_ADVANCED_PROPERTIES")
+                                || param.getName().equals("HBASE_PARAMETERS"))) {
                             if (currentParam.isNoContextAssist()) {
                                 tcEditor = new TextCellEditor(table);
                             } else {
@@ -584,8 +441,8 @@ public class PropertiesTableEditorView<B> extends AbstractDataTableEditorView<B>
                     }
                     if (tcEditor != null) {
                         column.setCellEditor(tcEditor);
-                        column.setModifiable((!param.isRepositoryValueUsed()) && (!param.isReadOnly())
-                                && (!currentParam.isReadOnly()));
+                        column.setModifiable(
+                                (!param.isRepositoryValueUsed()) && (!param.isReadOnly()) && (!currentParam.isReadOnly()));
                     }
                 }
                 // for all kinds of column, check if read only or not when edit the field.
@@ -645,8 +502,8 @@ public class PropertiesTableEditorView<B> extends AbstractDataTableEditorView<B>
                         if (param.getName().equals("HADOOP_ADVANCED_PROPERTIES")
                                 || param.getName().equals("SPARK_ADVANCED_PROPERTIES")
                                 || param.getName().equals("HBASE_PARAMETERS")) {
-                            if (valueMap.get("BUILDIN") == null || valueMap.get("BUILDIN") != null
-                                    && valueMap.get("BUILDIN").equals("")) {
+                            if (valueMap.get("BUILDIN") == null
+                                    || valueMap.get("BUILDIN") != null && valueMap.get("BUILDIN").equals("")) {
                                 return Display.getCurrent().getSystemColor(SWT.COLOR_GRAY);
                             }
                         }
@@ -700,10 +557,16 @@ public class PropertiesTableEditorView<B> extends AbstractDataTableEditorView<B>
                             case CONNECTION_LIST:
                             case LOOKUP_COLUMN_LIST:
                             case PREV_COLUMN_LIST:
+                            case TACOKIT_VALUE_SELECTION:
+                                String[] listItems = tmpParam.getListItemsDisplayName();
+                                if (!Arrays.asList(listItems).contains(value)) {
+                                    TaCoKitUtil.fillDefaultItemsList(tmpParam, value);
+                                }
                             case DBTYPE_LIST:
                                 if (hideValue) {
                                     return "";//$NON-NLS-1$
                                 }
+                                // /TaCoKitUtil.updateElementParameter(element, tmpParam);
                                 String[] namesSet = tmpParam.getListItemsDisplayName();
                                 if (namesSet.length == 0) {
                                     return tmpParam.getDefaultClosedListValue();
@@ -789,6 +652,7 @@ public class PropertiesTableEditorView<B> extends AbstractDataTableEditorView<B>
                     public void set(B bean, Object value) {
                         Object finalValue = value;
                         IElementParameter tmpParam = (IElementParameter) itemsValue[curCol];
+
                         // TODO should test if this parameter is contained in any other show if / not show if, etc..
                         boolean included = false;
                         for (Object object : param.getListItemsValue()) {
@@ -831,6 +695,7 @@ public class PropertiesTableEditorView<B> extends AbstractDataTableEditorView<B>
                         case CONNECTION_LIST:
                         case LOOKUP_COLUMN_LIST:
                         case PREV_COLUMN_LIST:
+                        case TACOKIT_VALUE_SELECTION:
                             isNeedReCheck = true;
                             if (value instanceof String) {
                                 Object[] itemNames = ((IElementParameter) itemsValue[curCol]).getListItemsDisplayName();
@@ -874,39 +739,40 @@ public class PropertiesTableEditorView<B> extends AbstractDataTableEditorView<B>
                             }
                             break;
                         case NUMBERLIMITTEXT:
-                            
-                            if(value==null||StringUtils.isBlank(value.toString()) ) {
-                                finalValue ="0";
+
+                            if (value == null || StringUtils.isBlank(value.toString())) {
+                                finalValue = "0";
                                 break;
                             }
-                            String finalStrValue=value.toString();
-                            if(finalStrValue.startsWith(NumberLimitTextController.CONTEXPREFIX)||NumberLimitTextController.CONTEXPREFIX.startsWith(finalStrValue)) {
-                              //context mode no any limit
-                              finalValue =value;
-                              break;
-                            }else if(finalStrValue.length()>=9){
-                                //keep 6 digit after the Decimal point
-                                finalStrValue =finalStrValue.trim().substring(0, 8);
-                            }else if(finalStrValue.contains("-")) {
-                                //'-' is invalid input 
-                                finalStrValue =finalStrValue.trim().replaceAll("-", "");
+                            String finalStrValue = value.toString();
+                            if (finalStrValue.startsWith(NumberLimitTextController.CONTEXPREFIX)
+                                    || NumberLimitTextController.CONTEXPREFIX.startsWith(finalStrValue)) {
+                                // context mode no any limit
+                                finalValue = value;
+                                break;
+                            } else if (finalStrValue.length() >= 9) {
+                                // keep 6 digit after the Decimal point
+                                finalStrValue = finalStrValue.trim().substring(0, 8);
+                            } else if (finalStrValue.contains("-")) {
+                                // '-' is invalid input
+                                finalStrValue = finalStrValue.trim().replaceAll("-", "");
                             }
 
                             try {
-                                double num=Double.valueOf(finalStrValue);
-                                if(num>1||num<0) {
-                                    finalValue="1";
+                                double num = Double.valueOf(finalStrValue);
+                                if (num > 1 || num < 0) {
+                                    finalValue = "1";
                                     break;
-                                }else if(num<0) {
-                                    finalValue="0";
+                                } else if (num < 0) {
+                                    finalValue = "0";
                                     break;
                                 }
-                                finalValue=finalStrValue;
+                                finalValue = finalStrValue;
                             } catch (Exception e1) {
                                 // any exception then reset result be 0
-                                finalValue="0";
+                                finalValue = "0";
                             }
-                            
+
                         default:
                         }
                         ((Map<String, Object>) bean).put(items[curCol], finalValue);
@@ -941,124 +807,6 @@ public class PropertiesTableEditorView<B> extends AbstractDataTableEditorView<B>
         }
     }
 
-    private boolean isEBCDICNode(INode node) {
-        if (PluginChecker.isEBCDICPluginLoaded()) {
-            IEBCDICProviderService service = GlobalServiceRegister.getDefault().getService(
-                    IEBCDICProviderService.class);
-            if (service != null) {
-                return service.isEbcdicNode(node);
-            }
-        }
-        return false;
-    }
-
-    private boolean isSAPNode(INode node) {
-        if (PluginChecker.isSAPWizardPluginLoaded()) {
-            ISAPProviderService service = GlobalServiceRegister.getDefault().getService(
-                    ISAPProviderService.class);
-            if (service != null) {
-                return service.isSAPNode(node);
-            }
-        }
-        return false;
-    }
-
-    private boolean isRepositorySchemaLine(INode node, Map<String, Object> lineValue) {
-        if (PluginChecker.isEBCDICPluginLoaded()) {
-            IEBCDICProviderService service = GlobalServiceRegister.getDefault().getService(
-                    IEBCDICProviderService.class);
-            if (service != null) {
-                EbcdicConnectionItem repositoryItem = service.getRepositoryItem(node);
-                return repositoryItem != null && service.isRepositorySchemaLine(node, lineValue);
-            }
-        }
-        return false;
-    }
-
-    public PropertiesTableToolbarEditorView getToolBar() {
-        return (PropertiesTableToolbarEditorView) getExtendedToolbar();
-    }
-
-    public PropertiesTableEditorModel getModel() {
-        return (PropertiesTableEditorModel) getExtendedTableModel();
-    }
-
-    protected void resetValuesIfNeeded(IElement element, IElementParameter mainParam, Map<String, Object> currentLine) {
-        List<Map<String, Object>> tableValues = (List<Map<String, Object>>) mainParam.getValue();
-        int rowNumber = tableValues.indexOf(currentLine);
-        if (rowNumber != -1) {
-            for (Object item : mainParam.getListItemsValue()) {
-                if (item instanceof IElementParameter) {
-                    IElementParameter curParam = (IElementParameter) item;
-                    switch (curParam.getFieldType()) {
-                    case CLOSED_LIST:
-                        String[] itemsToDisplay = getItemsToDisplay(element, curParam, rowNumber);
-                        Object currentValue = currentLine.get(curParam.getName());
-                        String currentDisplay = null;
-                        if (currentValue instanceof Integer) {
-                            if (((Integer) currentValue) < curParam.getListItemsDisplayName().length && (Integer)currentValue >= 0) {
-                                currentDisplay = curParam.getListItemsDisplayName()[(Integer) currentValue];
-                            }
-                        } else if (currentValue instanceof String) {
-                            int index = ArrayUtils.indexOf(curParam.getListItemsValue(), currentValue);
-                            if (index != -1) {
-                                currentDisplay = curParam.getListItemsDisplayName()[index];
-                            }
-                        }
-
-                        if (currentDisplay != null) {
-                            // if the current displayed shouldn't be used anymore, reset the value.
-                            if (!ArrayUtils.contains(itemsToDisplay, currentDisplay)) {
-                                String newValue = ""; //$NON-NLS-1$
-                                if (itemsToDisplay.length > 0) {
-                                    int index = ArrayUtils.indexOf(curParam.getListItemsDisplayName(), itemsToDisplay[0]);
-                                    newValue = (String) curParam.getListItemsValue()[index];
-                                }
-                                currentLine.put(curParam.getName(), newValue);
-                            }
-                        }else if(itemsToDisplay.length >0){
-                        	  currentLine.put(curParam.getName(), 0);
-                        }
-                        break;
-                    default:
-                    }
-
-                }
-            }
-        }
-    }
-
-    /**
-     * DOC nrousseau Comment method "getItemsToDisplay".
-     *
-     * @param element
-     * @param param
-     * @param rowNumber
-     * @return
-     */
-    protected String[] getItemsToDisplay(final IElement element, final IElementParameter param, int rowNumber) {
-        if (param instanceof ElementParameter) {
-            ((ElementParameter) param).setCurrentRow(rowNumber);
-        }
-        String[] originalList = param.getListItemsDisplayName();
-        List<String> stringToDisplay = new ArrayList<String>();
-        String[] itemsShowIf = param.getListItemsShowIf();
-        if (itemsShowIf != null && (itemsShowIf.length > 0)) {
-            String[] itemsNotShowIf = param.getListItemsNotShowIf();
-            for (int i = 0; i < originalList.length; i++) {
-                if (param.isShow(itemsShowIf[i], itemsNotShowIf[i], element.getElementParameters())) {
-                    stringToDisplay.add(originalList[i]);
-                }
-            }
-        } else {
-            for (String element2 : originalList) {
-                stringToDisplay.add(element2);
-            }
-        }
-        String[] listToDisplay = stringToDisplay.toArray(new String[0]);
-        return listToDisplay;
-    }
-
     class ModuleTableLabelProvider implements IColumnLabelProvider {
 
         private final String[] KEYS = new String[] { "drivers", "JAR_NAME" };
@@ -1077,16 +825,4 @@ public class PropertiesTableEditorView<B> extends AbstractDataTableEditorView<B>
             return "newLine";
         }
     }
-
-    protected static String getModuleName(String jarPath) {
-        if (jarPath != null) {
-            jarPath = TalendQuoteUtils.removeQuotes(jarPath);
-            if (jarPath.startsWith(MavenUrlHelper.MVN_PROTOCOL)) {
-                MavenArtifact art = MavenUrlHelper.parseMvnUrl(jarPath);
-                return art.getFileName();
-            }
-        }
-        return jarPath;
-    }
-
 }

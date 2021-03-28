@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2021 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -10,7 +10,7 @@
 // 9 rue Pages 92150 Suresnes, France
 //
 // ============================================================================
-package org.talend.designer.core.ui.editor.properties.controllers;
+package org.talend.sdk.component.studio.ui.composite.controller;
 
 import java.beans.PropertyChangeEvent;
 import java.util.ArrayList;
@@ -20,13 +20,13 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang.ArrayUtils;
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.ComboBoxCellEditor;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.custom.CLabel;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.FormAttachment;
@@ -41,8 +41,6 @@ import org.talend.commons.ui.swt.tableviewer.TableViewerCreator;
 import org.talend.commons.utils.data.list.IListenableListListener;
 import org.talend.commons.utils.data.list.ListenableListEvent;
 import org.talend.core.CorePlugin;
-import org.talend.core.GlobalServiceRegister;
-import org.talend.core.ITDQPatternService;
 import org.talend.core.model.process.EConnectionType;
 import org.talend.core.model.process.EParameterFieldType;
 import org.talend.core.model.process.IConnection;
@@ -59,34 +57,23 @@ import org.talend.designer.core.model.FakeElement;
 import org.talend.designer.core.model.components.EParameterName;
 import org.talend.designer.core.ui.editor.connections.Connection;
 import org.talend.designer.core.ui.editor.nodes.Node;
+import org.talend.designer.core.ui.editor.properties.controllers.ColumnListController;
+import org.talend.designer.core.ui.editor.properties.controllers.ComponentListController;
+import org.talend.designer.core.ui.editor.properties.controllers.ConnectionListController;
+import org.talend.designer.core.ui.editor.properties.controllers.TableController;
 import org.talend.designer.core.ui.editor.properties.macrowidgets.tableeditor.PropertiesTableEditorModel;
-import org.talend.designer.core.ui.editor.properties.macrowidgets.tableeditor.PropertiesTableEditorView;
 import org.talend.designer.core.ui.editor.properties.macrowidgets.tableeditor.PropertiesTableToolbarEditorView;
 import org.talend.designer.runprocess.ItemCacheManager;
+import org.talend.sdk.component.studio.metadata.tableeditor.TaCoKitPropertiesTableEditorView;
 
 /**
- * DOC yzhang class global comment. Detailled comment <br/>
- *
- * $Id: TableController.java 1 2006-12-14 下午05:44:30 +0000 (下午05:44:30) yzhang $
+ * created by hcyi on Mar 16, 2021
+ * Detailled comment
  *
  */
-public class TableController extends AbstractElementPropertySectionController {
+public class TaCoKitTableController extends TableController {
 
-    /**
-     *
-     */
-    private static final int MIN_NUMBER_ROWS = 1;
-
-    protected static final String TOOLBAR_NAME = "_TABLE_VIEW_TOOLBAR_NAME_"; //$NON-NLS-1$
-
-    private ITDQPatternService dqPatternService = null;
-
-    /**
-     * DOC yzhang TableController constructor comment.
-     *
-     * @param dtp
-     */
-    public TableController(IDynamicProperty dp) {
+    public TaCoKitTableController(IDynamicProperty dp) {
         super(dp);
     }
 
@@ -107,7 +94,7 @@ public class TableController extends AbstractElementPropertySectionController {
         PropertiesTableEditorModel<Map<String, Object>> tableEditorModel = new PropertiesTableEditorModel<Map<String, Object>>();
 
         tableEditorModel.setData(elem, param, getProcess(elem, part));
-        PropertiesTableEditorView<Map<String, Object>> tableEditorView = new PropertiesTableEditorView<Map<String, Object>>(
+        TaCoKitPropertiesTableEditorView<Map<String, Object>> tableEditorView = new TaCoKitPropertiesTableEditorView<Map<String, Object>>(
                 parentComposite, SWT.NONE, tableEditorModel, !param.isBasedOnSchema(), false);
         tableEditorView.getExtendedTableViewer().setCommandStack(getCommandStack());
         boolean editable = !param.isReadOnly() && (elem instanceof FakeElement || !param.isRepositoryValueUsed());
@@ -206,8 +193,8 @@ public class TableController extends AbstractElementPropertySectionController {
             } else {
                 formData.right = new FormAttachment(100, -ITabbedPropertyConstants.HSPACE);
             }
-            formData.left = new FormAttachment((((nbInRow - numInRow) * MAX_PERCENT) / nbInRow), currentLabelWidth2
-                    + ITabbedPropertyConstants.HSPACE);
+            formData.left = new FormAttachment((((nbInRow - numInRow) * MAX_PERCENT) / nbInRow),
+                    currentLabelWidth2 + ITabbedPropertyConstants.HSPACE);
 
             formData = (FormData) labelLabel2.getLayoutData();
             formData.right = new FormAttachment(mainComposite, 0);
@@ -215,17 +202,9 @@ public class TableController extends AbstractElementPropertySectionController {
 
             return labelLabel2;
         }
-
         return mainComposite;
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see
-     * org.talend.designer.core.ui.editor.properties.controllers.AbstractElementPropertySectionController#estimateRowSize
-     * (org.eclipse.swt.widgets.Composite, org.talend.core.model.process.IElementParameter)
-     */
     @Override
     public int estimateRowSize(Composite subComposite, IElementParameter param) {
         PropertiesTableEditorModel<Map<String, Object>> tableEditorModel = new PropertiesTableEditorModel<Map<String, Object>>();
@@ -233,7 +212,7 @@ public class TableController extends AbstractElementPropertySectionController {
         updateTableValues(param);
 
         tableEditorModel.setData(elem, param, part.getProcess());
-        PropertiesTableEditorView<Map<String, Object>> tableEditorView = new PropertiesTableEditorView<Map<String, Object>>(
+        TaCoKitPropertiesTableEditorView<Map<String, Object>> tableEditorView = new TaCoKitPropertiesTableEditorView<Map<String, Object>>(
                 subComposite, SWT.NONE, tableEditorModel, !param.isBasedOnSchema(), false);
         tableEditorView.getExtendedTableViewer().setCommandStack(getCommandStack());
         tableEditorView.setReadOnly(param.isReadOnly());
@@ -254,26 +233,9 @@ public class TableController extends AbstractElementPropertySectionController {
         return ySize2 + ITabbedPropertyConstants.VSPACE;
     }
 
-    /**
-     * ftang Comment method "getNumberRows".
-     *
-     * @param param
-     * @return
-     */
-    protected final int getNumberLines(IElementParameter param) {
-        int numlines = param.getNbLines();
-        return numlines < MIN_NUMBER_ROWS ? MIN_NUMBER_ROWS : numlines;
-    }
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see java.beans.PropertyChangeListener#propertyChange(java.beans.PropertyChangeEvent)
-     */
     @Override
     public void propertyChange(PropertyChangeEvent arg0) {
         // TODO Auto-generated method stub
-
     }
 
     @Override
@@ -310,7 +272,8 @@ public class TableController extends AbstractElementPropertySectionController {
                         IElementParameter columnParam = (IElementParameter) element;
                         if (columnParam.getFieldType() == EParameterFieldType.COLUMN_LIST
                                 || columnParam.getFieldType() == EParameterFieldType.PREV_COLUMN_LIST
-                                || columnParam.getFieldType() == EParameterFieldType.LOOKUP_COLUMN_LIST) {
+                                || columnParam.getFieldType() == EParameterFieldType.LOOKUP_COLUMN_LIST
+                                || param.getFieldType() == EParameterFieldType.TACOKIT_VALUE_SELECTION) {
                             for (Map<String, Object> columnMap : values) {
                                 Object column = columnMap.get(columnParam.getName());
                                 if (column == null || "".equals(column)) { //$NON-NLS-1$
@@ -324,117 +287,12 @@ public class TableController extends AbstractElementPropertySectionController {
                                 }
                             }
                         }
-
-                        if (columnParam.getFieldType() == EParameterFieldType.CLOSED_LIST) {
-                            overideDQPatternList(columnParam);
-                        }
                     }
                 }
             }
         }
     }
 
-    /**
-     * Overide default pattern list value by them which comes from DQ repository view
-     *
-     * @param param the element parameter
-     * @param dqPatternService extended service for DQ pattern retrievement.
-     * @return
-     */
-    private void overideDQPatternList(IElementParameter param) {
-        // For dq patterns
-        if (isDQPatternList(param)) {
-            if (dqPatternService == null) { // get pattern service
-                dqPatternService = getDQPatternService();
-            }
-            if (dqPatternService != null && elem instanceof Node) {
-                Node node = (Node) elem;
-                IElementParameter typeParam = node.getElementParameter("TYPE"); //$NON-NLS-1$
-                // Customized value
-                Object[] customizedValue = param.getListItemsValue();
-                String[] customizedDisplayCodeName = param.getListItemsDisplayCodeName();
-                String[] customizedDisplayName = param.getListItemsDisplayName();
-                String[] customizedNotShowIfs = param.getListItemsNotShowIf();
-                String[] customizedShowIfs = param.getListItemsShowIf();
-                dqPatternService.overridePatternList(typeParam, param);
-                // Add the customized value:
-                param.setListItemsValue(mergeWithoutDuplicate(param.getListItemsValue(), customizedValue));
-                param.setListItemsDisplayCodeName((String[]) mergeWithoutDuplicate(param.getListItemsDisplayCodeName(),
-                        customizedDisplayCodeName));
-                param.setListItemsDisplayName((String[]) mergeWithoutDuplicate(param.getListItemsDisplayName(),
-                        customizedDisplayName));
-                param.setListItemsNotShowIf(mergeWithDuplicate(new String[param.getListItemsShowIf().length],
-                        customizedNotShowIfs));
-                param.setListItemsShowIf(mergeWithDuplicate(new String[param.getListItemsShowIf().length], customizedShowIfs));
-            }
-        }
-    }
-
-    /**
-     * Adds all the elements of "b" arrays into "a" array without the duplicate one in "a", and return "a".
-     *
-     * @param a
-     * @param b
-     * @return
-     */
-    private Object[] mergeWithoutDuplicate(Object[] a, Object[] b) {
-        if (b == null || b.length == 0) {
-            return a;
-        }
-        for (Object valueB : b) {
-            if (!ArrayUtils.contains(a, valueB)) {
-                a = ArrayUtils.add(a, valueB);
-            }
-        }
-        return a;
-    }
-
-    private String[] mergeWithDuplicate(String[] a, String[] b) {
-        if (b == null || b.length == 0) {
-            return a;
-        }
-        for (String valueB : b) {
-            a = (String[]) ArrayUtils.add(a, valueB);
-        }
-        return a;
-    }
-
-    private boolean isDQPatternList(IElementParameter param) {
-        String paramName = param.getName();
-        boolean isPatternList = StringUtils.equals(paramName, "DEFAULT_PATTERN"); //$NON-NLS-1$
-        return isPatternList;
-
-    }
-
-    private ITDQPatternService getDQPatternService() {
-        ITDQPatternService service = null;
-        try {
-            service = GlobalServiceRegister.getDefault().getService(ITDQPatternService.class);
-        } catch (RuntimeException e) {
-            // nothing to do
-        }
-        return service;
-    }
-
-    protected final void updateTableValues(IElementParameter param) {
-        if (elem instanceof Node) {
-            DbTypeListController.updateDbTypeList((Node) elem, null);
-            ModuleListController.updateModuleList((Node) elem);
-        } else if (elem instanceof Connection) {
-            DbTypeListController.updateDbTypeList(((Connection) elem).getSource(), null);
-        }
-        updateColumnList(param);
-        updateContextList(param);
-        updateConnectionList(param);
-        updateComponentList(param);
-        // updateSubjobStarts(elem, param);
-    }
-
-    /**
-     * DOC nrousseau Comment method "updateSubjobStarts".
-     *
-     * @param param
-     */
     public static void updateSubjobStarts(IElement element, IElementParameter param) {
         if (!param.isBasedOnSubjobStarts() || !(element instanceof Node)) {
             return;
@@ -491,10 +349,12 @@ public class TableController extends AbstractElementPropertySectionController {
                     IElementParameter tmpParam = (IElementParameter) itemsValue[j];
                     if (tmpParam.getFieldType() == EParameterFieldType.COLUMN_LIST
                             || tmpParam.getFieldType() == EParameterFieldType.PREV_COLUMN_LIST
-                            || tmpParam.getFieldType() == EParameterFieldType.LOOKUP_COLUMN_LIST) {
+                            || tmpParam.getFieldType() == EParameterFieldType.LOOKUP_COLUMN_LIST
+                            || tmpParam.getFieldType() == EParameterFieldType.TACOKIT_VALUE_SELECTION) {
                         if ((j + 1) >= colList.size()) {
                             break;
                         }
+                        // TaCoKitUtil.updateElementParameter(elem, tmpParam);
                         TableViewerCreatorColumnNotModifiable column = (TableViewerCreatorColumnNotModifiable) colList.get(j + 1);
                         CellEditor cellEditor = column.getCellEditor();
                         String[] oldItems = null;
@@ -502,6 +362,18 @@ public class TableController extends AbstractElementPropertySectionController {
                             CCombo combo = (CCombo) cellEditor.getControl();
                             oldItems = combo.getItems();
                             combo.setItems(tmpParam.getListItemsDisplayName());
+                            combo.addSelectionListener(new SelectionAdapter() {
+
+                                @Override
+                                public void widgetSelected(SelectionEvent e) {
+                                    String[] namesSet = combo.getItems();
+                                    int selected = combo.getSelectionIndex();
+                                    // PropertyChangeCommand command = new PropertyChangeCommand(elem,
+                                    // tmpParam.getName(),
+                                    // namesSet[selected]);
+                                    // executeCommand(command);
+                                }
+                            });
                         }
                         List<Map<String, Object>> paramValues = (List<Map<String, Object>>) param.getValue();
                         String[] items = param.getListItemsDisplayCodeName();
@@ -511,8 +383,8 @@ public class TableController extends AbstractElementPropertySectionController {
                             if (o instanceof Integer) {
                                 Integer nb = (Integer) o;
                                 if ((nb >= oldItems.length) || (nb == -1)) {
-                                    nb = new Integer(tmpParam.getIndexOfItemFromList((String) tmpParam
-                                            .getDefaultClosedListValue()));
+                                    nb = new Integer(
+                                            tmpParam.getIndexOfItemFromList((String) tmpParam.getDefaultClosedListValue()));
                                     currentLine.put(items[j], nb);
                                 } else {
                                     nb = new Integer(tmpParam.getIndexOfItemFromList(oldItems[nb]));
@@ -567,8 +439,8 @@ public class TableController extends AbstractElementPropertySectionController {
                             if (o instanceof Integer) {
                                 Integer nb = (Integer) o;
                                 if ((nb >= oldItems.length) || (nb == -1)) {
-                                    nb = new Integer(tmpParam.getIndexOfItemFromList((String) tmpParam
-                                            .getDefaultClosedListValue()));
+                                    nb = new Integer(
+                                            tmpParam.getIndexOfItemFromList((String) tmpParam.getDefaultClosedListValue()));
                                     currentLine.put(items[j], nb);
                                 } else {
                                     nb = new Integer(tmpParam.getIndexOfItemFromList(oldItems[nb]));
@@ -621,8 +493,8 @@ public class TableController extends AbstractElementPropertySectionController {
                             if (o instanceof Integer) {
                                 Integer nb = (Integer) o;
                                 if ((nb >= oldItems.length) || (nb == -1)) {
-                                    nb = new Integer(tmpParam.getIndexOfItemFromList((String) tmpParam
-                                            .getDefaultClosedListValue()));
+                                    nb = new Integer(
+                                            tmpParam.getIndexOfItemFromList((String) tmpParam.getDefaultClosedListValue()));
                                     currentLine.put(items[j], nb);
                                 } else {
                                     nb = new Integer(tmpParam.getIndexOfItemFromList(oldItems[nb]));
@@ -660,11 +532,11 @@ public class TableController extends AbstractElementPropertySectionController {
             return;
         }
         IElementParameter jobElemParam = processTypeParam.getChildParameters().get(EParameterName.PROCESS_TYPE_PROCESS.getName());
-        IElementParameter jobVersionParam = processTypeParam.getChildParameters().get(
-                EParameterName.PROCESS_TYPE_VERSION.getName());
+        IElementParameter jobVersionParam = processTypeParam.getChildParameters()
+                .get(EParameterName.PROCESS_TYPE_VERSION.getName());
 
-        IElementParameter contextElemParam = processTypeParam.getChildParameters().get(
-                EParameterName.PROCESS_TYPE_CONTEXT.getName());
+        IElementParameter contextElemParam = processTypeParam.getChildParameters()
+                .get(EParameterName.PROCESS_TYPE_CONTEXT.getName());
         // get context list
         String processId = (String) jobElemParam.getValue();
         String contextName = (String) contextElemParam.getValue();
@@ -820,7 +692,6 @@ public class TableController extends AbstractElementPropertySectionController {
             case CONNECTION_LIST:
             case LOOKUP_COLUMN_LIST:
             case PREV_COLUMN_LIST:
-            case TACOKIT_VALUE_SELECTION:
                 line.put(items[i], new Integer(tmpParam.getIndexOfItemFromList((String) tmpParam.getDefaultClosedListValue())));
                 break;
             default: // TEXT or CHECK or COLOR (means String or Boolean)
@@ -830,12 +701,6 @@ public class TableController extends AbstractElementPropertySectionController {
         return line;
     }
 
-    /**
-     *
-     * ggu Comment method "revertAllButton".
-     *
-     * if flag is false, will set the button for unenabled state. (bug 3740)
-     */
     private void revertToolBarButtonState(boolean flag) {
 
         PropertiesTableToolbarEditorView toolBar = (PropertiesTableToolbarEditorView) hashCurControls.get(TOOLBAR_NAME);
@@ -848,33 +713,5 @@ public class TableController extends AbstractElementPropertySectionController {
                 }
             }
         }
-    }
-
-    /**
-     *
-     * DOC YeXiaowei Comment method "isNeedAddAllButton".
-     *
-     * @param param
-     * @return
-     */
-    public static boolean isNeedAddAllButton(IElementParameter param) {
-        Object[] itemsValue = param.getListItemsValue();
-        IElementParameter tmpParam;
-        // enable the "add all" button works when the COLUMN_LIST in the table no matter its position is the first or
-        // not
-        if (itemsValue.length > 0) {
-            boolean b = false;
-            for (Object element : itemsValue) {
-                tmpParam = (IElementParameter) element;
-                if (tmpParam != null) {
-                    b = tmpParam.getFieldType() == EParameterFieldType.COLUMN_LIST;
-                    if (b) {
-                        return true;
-                    }
-                }
-            }
-        }
-        return false;
-
     }
 }
