@@ -15,9 +15,11 @@ package org.talend.sdk.component.studio;
 import java.util.List;
 
 import org.eclipse.jface.resource.ImageDescriptor;
+import org.talend.core.model.process.EComponentCategory;
 import org.talend.core.model.process.IElementParameter;
 import org.talend.core.model.process.INode;
 import org.talend.core.model.properties.ProcessItem;
+import org.talend.designer.core.model.components.ElementParameter;
 import org.talend.designer.runprocess.ItemCacheManager;
 import org.talend.sdk.component.server.front.model.ComponentDetail;
 import org.talend.sdk.component.server.front.model.ComponentIndex;
@@ -25,6 +27,7 @@ import org.talend.sdk.component.server.front.model.ConfigTypeNode;
 import org.talend.sdk.component.server.front.model.ConfigTypeNodes;
 import org.talend.sdk.component.studio.metadata.TaCoKitCache;
 import org.talend.sdk.component.studio.model.parameter.ElementParameterCreator;
+import org.talend.sdk.component.studio.util.TaCoKitConst;
 import org.talend.sdk.component.studio.util.TaCoKitUtil;
 
 public class VirtualComponentModel extends ComponentModel {
@@ -73,7 +76,24 @@ public class VirtualComponentModel extends ComponentModel {
         ElementParameterCreator creator = new ElementParameterCreator(this, detail,
                 configTypeNode == null ? null : configTypeNode.getProperties(), node, reportPath, isCatcherAvailable);
         List<IElementParameter> parameters = (List<IElementParameter>) creator.createParameters();
+        //connection and close runtime need plugin name to fetch plugin object in runtime
+        parameters.add(createPluginNameParameter(node));
         return parameters;
+    }
+    
+    /**
+     * Create {@link TaCoKitConst#TACOKIT_COMPONENT_PLUGIN_NAME} parameter. This parameter is used during code generation to know
+     * which component runtime to use
+     */
+    private ElementParameter createPluginNameParameter(final INode node) {
+        final ElementParameter parameter = new ElementParameter(node);
+        parameter.setName(TaCoKitConst.TACOKIT_COMPONENT_PLUGIN_NAME);
+        parameter.setValue(detail.getId().getPlugin());
+        parameter.setCategory(EComponentCategory.TECHNICAL);
+        parameter.setReadOnly(true);
+        parameter.setRequired(false);
+        parameter.setShow(false);
+        return parameter;
     }
     
     public boolean isShowPropertyParameter() {
