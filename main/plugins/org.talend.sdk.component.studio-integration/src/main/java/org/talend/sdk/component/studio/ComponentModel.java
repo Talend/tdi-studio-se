@@ -176,7 +176,7 @@ public class ComponentModel extends AbstractBasicComponent implements IAdditiona
      * @return
      */
     private List<ECodePart> createCodePartList() {
-        return Collections.unmodifiableList(ETaCoKitComponentType.input.equals(getTaCoKitComponentType())
+        return Collections.unmodifiableList(ETaCoKitComponentType.input.equals(getTaCoKitComponentType()) || ETaCoKitComponentType.standalone.equals(getTaCoKitComponentType())
                 ? Arrays.asList(ECodePart.BEGIN, ECodePart.END, ECodePart.FINALLY)
                 : (useLookup()
                 ?
