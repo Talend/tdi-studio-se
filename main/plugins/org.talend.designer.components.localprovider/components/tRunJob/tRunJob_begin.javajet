@@ -239,6 +239,7 @@ try {
 		        boolean isJobTest = ProcessorUtilities.isJobTest(node.getProcess().getId(),context,null);
 				if(isJobTest&&ProcessorUtilities.isCIMode()) {
 					 ProcessorUtilities.setExportConfig(false);
+					 ProcessorUtilities.setDynamicJobAndCITest(true);
 				}
 				
 				try {
@@ -255,6 +256,7 @@ try {
 					if(isJobTest&&ProcessorUtilities.isCIMode()) {
 				    	ProcessorUtilities.setExportConfig(oldInterpreter, oldCodeLocation, oldLibraryPath, oldExportConfig,
                     oldExportTimestamp);
+                        ProcessorUtilities.setDynamicJobAndCITest(false);
 			    	}
 			    }
 			    
