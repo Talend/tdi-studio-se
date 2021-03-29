@@ -39,7 +39,7 @@ if(node == null) {
 }
 final String cid = node.getUniqueName();
 final String originalName = (String)node.getElementParameter(EParameterName.COMPONENT_NAME.getName()).getValue();
-final String family = (String)node.getElementParameter(EParameterName.FAMILY.getName()).getValue();
+final String plugin = (String)node.getElementParameter("___TACOKIT_COMPONENT_PLUGIN_NAME___").getValue();
 final String version = (String)node.getElementParameter(EParameterName.VERSION.getName()).getValue();
 %>
 
@@ -50,7 +50,7 @@ if (mgr_<%=cid%>.getContainer().findAll().isEmpty()) {
 
 <%@include file="../configuration.javajet"%>
 
-mgr_<%=cid%>.findPlugin("<%=family.toLowerCase()%>")
+mgr_<%=cid%>.findPlugin("<%=plugin%>")
     .get()
     .get(org.talend.sdk.component.runtime.manager.ContainerComponentRegistry.class)
     .getServices()

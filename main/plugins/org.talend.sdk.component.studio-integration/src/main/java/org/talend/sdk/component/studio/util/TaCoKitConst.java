@@ -32,11 +32,20 @@ public class TaCoKitConst {
 
     public static final String GUESS_SCHEMA_COMPONENT_NAME = "tTaCoKitGuessSchema"; //$NON-NLS-1$
 
+    //TODO remove it and replace by TACOKIT_COMPONENT_PLUGIN_NAME
     /**
      * DON'T modify the value, otherwise please also modify it in tTaCoKitGuessSchema_begin.javajet
      */
     public static final String GUESS_SCHEMA_PARAMETER_PLUGIN_NAME =
             "___TACOKIT_GUESS_SCHEMA_PARAMETER_PLUGIN_NAME___"; //$NON-NLS-1$
+    
+    /**
+     * DON'T modify the value, otherwise please also modify it in connection_begin.javajet and close_begin.javajet
+     * In fact, the same meaning with GUESS_SCHEMA_PARAMETER_PLUGIN_NAME, but not sure if that is stored in .item or any location, 
+     * so keep duplicated now
+     */
+    public static final String TACOKIT_COMPONENT_PLUGIN_NAME =
+            "___TACOKIT_COMPONENT_PLUGIN_NAME___";
 
     /**
      * DON'T modify the value, otherwise please also modify it in tTaCoKitGuessSchema_begin.javajet
