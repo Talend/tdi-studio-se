@@ -48,6 +48,7 @@ import org.talend.sdk.component.server.front.model.SimplePropertyDefinition;
 import org.talend.sdk.component.studio.ComponentModel;
 import org.talend.sdk.component.studio.Lookups;
 import org.talend.sdk.component.studio.VirtualComponentModel;
+import org.talend.sdk.component.studio.i18n.Messages;
 import org.talend.sdk.component.studio.model.connector.ConnectorCreatorFactory;
 import org.talend.sdk.component.studio.util.TaCoKitUtil;
 import org.talend.sdk.studio.process.TaCoKitNode;
@@ -150,7 +151,7 @@ public class ElementParameterCreator {
         if (TaCoKitUtil.isSupportUseExistConnection(component) && Metadatas.MAIN_FORM.equals(form)) {
             Level connectionLevel = new Level();
             connectionLevel.setHeight(1);
-            if (this.isShowPropertyParameter()) {
+            if (isShowPropertyParameter()) {
                 updateParameterForComponentList();
                 Layout useExistConnectionLayout = new Layout(USE_EXISTING_CONNECTION);
                 useExistConnectionLayout.setPosition(1);
@@ -423,24 +424,16 @@ public class ElementParameterCreator {
     }
 
     private void updateParameterForComponentList() {
-        Map<String, PropertyDefinitionDecorator> datastoreProperties = TaCoKitUtil
-                .getVirtualComponentDataStoreProperties(component);
+        Map<String, PropertyDefinitionDecorator> datastoreProperties = TaCoKitUtil.getComponentDataStoreProperties(component);
         for (IElementParameter param : parameters) {
-            if (datastoreProperties.containsKey(param.getName()) || datastoreProperties
-                    .containsKey(param.getName().replace("configuration.dataSet.datastore", "configuration"))) {
-                String value = param.getShowIf();
-                if (StringUtils.isEmpty(value)) {
-                    value = "USE_EXISTING_CONNECTION == 'false'";
-                } else {
-                    value = value + " && USE_EXISTING_CONNECTION == 'false'";
-                }
-                param.setShowIf(value);
+            if (TaCoKitUtil.isDataStorePath(datastoreProperties, param.getName())) {
+                updateShowIfValue4ComponentList(param);
             }
         }
         final ElementParameter parameter = new ElementParameter(node);
         parameter.setName(USE_EXISTING_CONNECTION);
         parameter.setValue(false);
-        parameter.setDisplayName("USE_EXISTING_CONNECTION");
+        parameter.setDisplayName(Messages.getString("ElementParameterCreator.userExistConnectionLabel"));
         parameter.setFieldType(EParameterFieldType.CHECK);
         parameter.setCategory(EComponentCategory.BASIC);
         parameter.setNumRow(15);
@@ -453,7 +446,7 @@ public class ElementParameterCreator {
         final ElementParameter connectionParameter = new ElementParameter(node);
         connectionParameter.setName(CONNECTION);
         connectionParameter.setValue("");
-        connectionParameter.setDisplayName("Component List");
+        connectionParameter.setDisplayName(Messages.getString("ElementParameterCreator.connectionLabel"));
         connectionParameter.setFieldType(EParameterFieldType.COMPONENT_LIST);
         connectionParameter.setCategory(EComponentCategory.BASIC);
         connectionParameter.setNumRow(15);
@@ -464,6 +457,16 @@ public class ElementParameterCreator {
         connectionParameter.setDynamicSettings(true);
         connectionParameter.setShowIf("USE_EXISTING_CONNECTION == 'true'");
         parameters.add(connectionParameter);
+    }
+    
+    private void updateShowIfValue4ComponentList(IElementParameter parameter) {
+        String value = parameter.getShowIf();
+        if (StringUtils.isEmpty(value)) {
+            value = "USE_EXISTING_CONNECTION == 'false'";
+        } else {
+            value = "(" + value + ")" + " && USE_EXISTING_CONNECTION == 'false'";
+        }
+        parameter.setShowIf(value);
     }
 
     /**
@@ -537,6 +540,9 @@ public class ElementParameterCreator {
         parameter.setValue("");
         parameter.setNumRow(1);
         parameter.setShow(!findConfigurationTypes().isEmpty());
+        if (TaCoKitUtil.isSupportUseExistConnection(component)) {
+            updateShowIfValue4ComponentList(parameter);
+        }
 
         final ElementParameter propertyType = new ElementParameter(node);
         propertyType.setCategory(EComponentCategory.BASIC);
@@ -559,6 +565,9 @@ public class ElementParameterCreator {
         propertyType.setContext("FLOW");
         propertyType.setSerialized(true);
         propertyType.setParentParameter(parameter);
+        if (TaCoKitUtil.isSupportUseExistConnection(component)) {
+            updateShowIfValue4ComponentList(parameter);
+        }
 
         final ElementParameter repositoryType = new ElementParameter(node);
         repositoryType.setCategory(EComponentCategory.BASIC);
@@ -578,7 +587,9 @@ public class ElementParameterCreator {
         repositoryType.setContext("FLOW");
         repositoryType.setSerialized(true);
         repositoryType.setParentParameter(parameter);
-
+        if (TaCoKitUtil.isSupportUseExistConnection(component)) {
+            updateShowIfValue4ComponentList(parameter);
+        }
         parameters.add(parameter);
     }
 

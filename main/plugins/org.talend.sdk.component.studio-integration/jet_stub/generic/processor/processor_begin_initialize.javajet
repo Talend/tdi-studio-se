@@ -58,11 +58,8 @@
                                                                                  .orElseThrow(() -> new IllegalArgumentException("Can't find <%=family%>#<%=originalName%>"));
     
     <%
-    //TODO check it after studio add these parameters in ui and model
-    boolean useExistedConnection = true;
+    boolean useExistedConnection = "true".equals(ElementParameterParser.getValue(node,"__USE_EXISTING_CONNECTION__"));
     String connection = ElementParameterParser.getValue(node,"__CONNECTION__");
-    //TODO for test only, remove it later
-    connection = "NetSuiteConnection_1";
     if(useExistedConnection) {//}
     %>
     try {
