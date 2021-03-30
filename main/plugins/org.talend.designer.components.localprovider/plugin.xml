@@ -2600,12 +2600,6 @@
             uripath="platform:/plugin/org.talend.libraries.hadoop.hdp.2.2/lib/tezServer/commons-beanutils-1.7.0.jar">
         </libraryNeeded>
         <libraryNeeded
-            id="commons-beanutils-core-1.9.4.jar"
-            name="commons-beanutils-core-1.9.4.jar" mvn_uri="mvn:commons-beanutils/commons-beanutils-core/1.9.4"
-            context="plugin:org.talend.libraries.hadoop.hdp.2.2"
-            uripath="platform:/plugin/org.talend.libraries.hadoop.hdp.2.2/lib/tezServer/commons-beanutils-core-1.9.4.jar">
-        </libraryNeeded>
-        <libraryNeeded
             id="commons-compress-1.4.1.jar"
             name="commons-compress-1.4.1.jar" mvn_uri="mvn:org.apache.commons/commons-compress/1.4.1"
             context="plugin:org.talend.libraries.hadoop.hdp.2.2"
