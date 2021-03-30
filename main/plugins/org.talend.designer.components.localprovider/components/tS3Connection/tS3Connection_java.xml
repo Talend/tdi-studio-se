@@ -41,7 +41,7 @@
       FIELD="TEXT"
       NUM_ROW="15"
       REQUIRED="true"
-      SHOW_IF="INHERIT_CREDENTIALS == 'false'"
+      SHOW_IF="CREDENTIAL_PROVIDER == 'STATIC_CREDENTIALS'"
     >
       <DEFAULT>""</DEFAULT>
     </PARAMETER>
@@ -51,20 +51,24 @@
       FIELD="PASSWORD"
       NUM_ROW="15"
       REQUIRED="true"
-      SHOW_IF="INHERIT_CREDENTIALS == 'false'"
+      SHOW_IF="CREDENTIAL_PROVIDER == 'STATIC_CREDENTIALS'"
     >
       <DEFAULT>""</DEFAULT>
     </PARAMETER>
-    
+
     <PARAMETER
-      NAME="INHERIT_CREDENTIALS"
-      FIELD="CHECK"
-      NUM_ROW="16"
-      REQUIRED="true"
+       NAME="CREDENTIAL_PROVIDER"
+       FIELD="CLOSED_LIST"
+       NUM_ROW="16"
+       REQUIRED="true"
     >
-      <DEFAULT>false</DEFAULT>
+      <ITEMS DEFAULT="STATIC_CREDENTIALS"> <!-- It's just a basic one -->
+        <ITEM NAME="STATIC_CREDENTIALS" VALUE="STATIC_CREDENTIALS" SHOW_IF="true" />
+        <ITEM NAME="WEB_TOKEN" VALUE="WEB_TOKEN" SHOW_IF="true" />
+        <ITEM NAME="INHERIT_CREDENTIALS" VALUE="INHERIT_CREDENTIALS" SHOW_IF="true" />
+      </ITEMS>
     </PARAMETER>
-    
+
     <PARAMETER
       NAME="ASSUME_ROLE"
       FIELD="CHECK"
@@ -162,7 +166,7 @@
 	    FIELD="CLOSED_LIST" 
 	    RAW="true" 
 	    NUM_ROW="30"
-	    SHOW_IF="isShow[KEY_TYPE] AND (KEY_TYPE == 'SYMMETRIC_MASTER_KEY')" 
+	    SHOW_IF="isShow[KEY_TYPE] AND (KEY_TYPE == 'SYMMETRIC_MASTER_KEY')"
 	    REQUIRED="true" 
 	    GROUP="ENCRYPT_GROUP"
 	 >
