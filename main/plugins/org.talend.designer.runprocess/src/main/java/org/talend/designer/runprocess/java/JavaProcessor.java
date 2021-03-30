@@ -147,6 +147,7 @@ import org.talend.designer.core.DesignerPlugin;
 import org.talend.designer.core.IDesignerCoreService;
 import org.talend.designer.core.ISyntaxCheckableEditor;
 import org.talend.designer.core.model.components.EParameterName;
+import org.talend.designer.core.model.utils.emf.talendfile.NodeType;
 import org.talend.designer.core.model.utils.emf.talendfile.ProcessType;
 import org.talend.designer.core.model.utils.emf.talendfile.RoutinesParameterType;
 import org.talend.designer.core.runprocess.Processor;
@@ -1551,26 +1552,26 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
         if (routinesParameter != null) {
             routinesParameter.stream().filter(r -> r.getType() != null).map(r -> CodesJarResourceCache.getCodesJarById(r.getId()))
                     .filter(info -> info != null).forEach(info -> {
-                Property property = info.getProperty();
-                String projectTechName = info.getProjectTechName();
-                ITalendProcessJavaProject codesJarProject = TalendJavaProjectManager.getExistingTalendCodesJarProject(info);
-                if (info.isInCurrentMainProject() && codesJarProject != null) {
-                    // TODO or no need to use project classpath at all, just use m2 path for all?
-                    IPath codesJarOutputPath = codesJarProject.getOutputFolder().getLocation();
-                    classPaths.add(getClassPath(codesJarOutputPath));
-                } else {
-                    MavenArtifact artifact = new MavenArtifact();
-                    artifact.setGroupId(PomIdsHelper.getCodesJarGroupId(projectTechName, property.getItem()));
-                    artifact.setArtifactId(property.getLabel().toLowerCase());
-                    artifact.setVersion(PomIdsHelper.getCodesJarVersion(projectTechName));
-                    artifact.setType(MavenConstants.TYPE_JAR);
-                    // !!!FIXME!!!
-                    // it might not work for cxf related jobs since it use relative path for job execution ref TUP-22972
-                    // need to use relative path for m2 jar path based on execution path
-                    // or check if codesjars are already in temp/lib folder, if yes, can use this relative path
-                    classPaths.add(PomUtil.getArtifactFullPath(artifact));
-                }
-            });
+                        ITalendProcessJavaProject codesJarProject = TalendJavaProjectManager
+                                .getExistingTalendCodesJarProject(info);
+                        if (info.isInCurrentMainProject() && codesJarProject != null) {
+                            // TODO or no need to use project classpath at all, just use m2 path for all?
+                            IPath codesJarOutputPath = codesJarProject.getOutputFolder().getLocation();
+                            classPaths.add(getClassPath(codesJarOutputPath));
+                        } else {
+                            MavenArtifact artifact = new MavenArtifact();
+                            artifact.setGroupId(PomIdsHelper.getCodesJarGroupId(info));
+                            artifact.setArtifactId(info.getLabel().toLowerCase());
+                            artifact.setVersion(PomIdsHelper.getCodesJarVersion(info.getProjectTechName()));
+                            artifact.setType(MavenConstants.TYPE_JAR);
+                            // !!!FIXME!!!
+                            // it might not work for cxf related jobs since it use relative path for job execution ref
+                            // TUP-22972
+                            // need to use relative path for m2 jar path based on execution path
+                            // or check if codesjars are already in temp/lib folder, if yes, can use this relative path
+                            classPaths.add(PomUtil.getArtifactFullPath(artifact));
+                        }
+                    });
         }
         return classPaths;
     }
@@ -1643,6 +1644,18 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
                         if (BuildJobConstants.ESB_CXF_COMPONENTS.contains(node.getComponent().getName())) {
                             hasCXFComponent = true;
                             break out;
+                        }
+                    }
+                    
+                  //check child job
+                    Set<JobInfo> buildChildrenJobs = getBuildChildrenJobs();
+                    for(JobInfo jobInfo:buildChildrenJobs) {
+                        List<? extends NodeType> generatingNodes = jobInfo.getProcessItem().getProcess().getNode();
+                        for (NodeType inode : generatingNodes) {
+                            if (BuildJobConstants.ESB_CXF_COMPONENTS.contains(inode.getComponentName())) {
+                                hasCXFComponent = true;
+                                break out;
+                            }
                         }
                     }
                     break;

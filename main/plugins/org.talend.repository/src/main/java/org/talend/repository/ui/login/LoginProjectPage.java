@@ -1368,7 +1368,23 @@ public class LoginProjectPage extends AbstractLoginActionPage {
                 errorManager.setAuthException(null);
                 errorManager.setHasAuthException(false);
                 fillConnectionsList(new NullProgressMonitor());
-                onConnectionSelected(new NullProgressMonitor(), hasAuthException);
+                boolean forceRefresh = hasAuthException;
+                ConnectionBean connection = getConnection();
+                if (connection != null && !LoginHelper.isRemotesConnection(connection)) {
+                    /**
+                     * In case user delete project in manage connection dialog
+                     */
+                    forceRefresh = true;
+                }
+                onConnectionSelected(new NullProgressMonitor(), forceRefresh);
+            } else {
+                ConnectionBean connection = getConnection();
+                if (connection != null && !LoginHelper.isRemotesConnection(connection)) {
+                    /**
+                     * In case user delete project in manage connection dialog
+                     */
+                    onConnectionSelected(new NullProgressMonitor(), true);
+                }
             }
             // setStatusArea();
         } catch (Exception e1) {
