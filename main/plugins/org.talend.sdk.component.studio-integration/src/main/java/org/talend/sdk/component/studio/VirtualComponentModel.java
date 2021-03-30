@@ -92,8 +92,8 @@ public class VirtualComponentModel extends ComponentModel {
     private ElementParameter createPluginNameParameter(final INode node) {
         final ElementParameter parameter = new ElementParameter(node);
         parameter.setName(TaCoKitConst.TACOKIT_COMPONENT_PLUGIN_NAME);
-        parameter.setValue(detail.getId().getPlugin());
-        parameter.setFieldType(EParameterFieldType.CHECK);
+        parameter.setValue(this.getPluginName());
+        parameter.setFieldType(EParameterFieldType.TEXT);
         parameter.setCategory(EComponentCategory.TECHNICAL);
         parameter.setReadOnly(true);
         parameter.setRequired(false);
