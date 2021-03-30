@@ -26,6 +26,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
 import org.talend.commons.exception.ExceptionHandler;
 import org.talend.core.GlobalServiceRegister;
 import org.talend.core.model.components.IComponent;
@@ -49,9 +50,9 @@ import org.talend.sdk.component.server.front.model.ComponentId;
 import org.talend.sdk.component.server.front.model.ComponentIndex;
 import org.talend.sdk.component.server.front.model.ComponentIndices;
 import org.talend.sdk.component.server.front.model.ConfigTypeNode;
+import org.talend.sdk.component.server.front.model.SimplePropertyDefinition;
 import org.talend.sdk.component.studio.ComponentModel;
 import org.talend.sdk.component.studio.Lookups;
-import org.talend.sdk.component.studio.TaCoKitGenericProvider;
 import org.talend.sdk.component.studio.VirtualComponentRegister;
 import org.talend.sdk.component.studio.metadata.model.TaCoKitConfigurationModel;
 import org.talend.sdk.component.studio.metadata.model.TaCoKitConfigurationModel.ValueModel;
@@ -139,7 +140,13 @@ public class TaCoKitDragAndDropHandler extends AbstractDragAndDropServiceHandler
      */
     private String computeKey(final TaCoKitConfigurationModel model, String parameterId, String component) throws Exception {
         if (VirtualComponentRegister.getInstance().isVirtualComponentName(component)) {
-            return parameterId;
+            List<SimplePropertyDefinition> propertiesList = model.getConfigTypeNode().getProperties();
+            for (SimplePropertyDefinition p: propertiesList) {
+                if (StringUtils.equals(parameterId, p.getPath())) {
+                    return parameterId;
+                }
+            }
+            return null;
         } else {
             final Map<String, PropertyDefinitionDecorator> tree = retrieveProperties(component);
             Optional<String> configPath = findConfigPath(tree, model, parameterId);
@@ -186,6 +193,9 @@ public class TaCoKitDragAndDropHandler extends AbstractDragAndDropServiceHandler
     }
 
     private ComponentDetail retrieveDetail(final String component) {
+        if (VirtualComponentRegister.getInstance().isVirtualComponentName(component)) {
+            return VirtualComponentRegister.getInstance().getComponentDetailByName(component);
+        }
         final ComponentIndices indices = client().getIndex(language());
         final ComponentId id = indices.getComponents().stream().map(ComponentIndex::getId)
                 .filter(i -> component.equals(TaCoKitUtil.getFullComponentName(i.getFamily(), i.getName())))

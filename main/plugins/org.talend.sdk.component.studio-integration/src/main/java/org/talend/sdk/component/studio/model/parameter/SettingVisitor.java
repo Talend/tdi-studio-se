@@ -260,10 +260,6 @@ public class SettingVisitor implements PropertyVisitor {
                 final TaCoKitElementParameter valueSelection = visitTextAreaSelection(node);
                 settings.put(valueSelection.getName(), valueSelection);
                 break;
-            case COMPONENT_LIST:
-                final TaCoKitElementParameter componentListSelection = visitComponentListSelection(node);
-                settings.put(componentListSelection.getName(), componentListSelection);
-                break;
             default:
                 final IElementParameter text;
                 if (node.getProperty().getPlaceholder() == null) {
@@ -510,14 +506,6 @@ public class SettingVisitor implements PropertyVisitor {
     }
 
     private TextAreaSelectionParameter visitTextAreaSelection(final PropertyNode node) {
-        final SuggestionsAction action = createSuggestionsAction(node);
-        final TextAreaSelectionParameter parameter = new TextAreaSelectionParameter(element, action);
-        commonSetup(parameter, node);
-        return parameter;
-    }
-    
-    //TODO --KK
-    private TextAreaSelectionParameter visitComponentListSelection(final PropertyNode node) {
         final SuggestionsAction action = createSuggestionsAction(node);
         final TextAreaSelectionParameter parameter = new TextAreaSelectionParameter(element, action);
         commonSetup(parameter, node);

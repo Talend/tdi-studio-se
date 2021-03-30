@@ -121,7 +121,7 @@ abstract class AbstractConnectorCreator implements ConnectorCreator {
         createRejectConnector().ifPresent(connectors::add);
         INodeConnector connector = createIterateConnector();
         if (connector != null) {
-            connectors.add(createIterateConnector());  
+            connectors.add(connector);  
         }
         connectors.addAll(createStandardConnectors());
         connectors.addAll(createRestConnectors());

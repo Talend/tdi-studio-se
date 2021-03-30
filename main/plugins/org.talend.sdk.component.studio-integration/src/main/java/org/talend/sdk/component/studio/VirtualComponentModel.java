@@ -44,7 +44,10 @@ public class VirtualComponentModel extends ComponentModel {
     @Override
     public String getName() {
         if (isMadeByTalend()) {
-            return "t" + TaCoKitUtil.getFullComponentName(index.getId().getFamily(), modelType.getDisplayName());
+            if (isNetSuiteComponent(index)) {
+                return TaCoKitConst.COMPONENT_NAME_PREFIX + TaCoKitUtil.getFullComponentName(getProcessedNetSuiteFamilyName(index), modelType.getDisplayName());
+            }
+            return TaCoKitConst.COMPONENT_NAME_PREFIX + TaCoKitUtil.getFullComponentName(index.getId().getFamily(), modelType.getDisplayName());
         }
         return TaCoKitUtil.getFullComponentName(index.getId().getFamily(), modelType.getDisplayName());
     }
@@ -77,11 +80,11 @@ public class VirtualComponentModel extends ComponentModel {
         ElementParameterCreator creator = new ElementParameterCreator(this, detail,
                 configTypeNode == null ? null : configTypeNode.getProperties(), node, reportPath, isCatcherAvailable);
         List<IElementParameter> parameters = (List<IElementParameter>) creator.createParameters();
-        //connection and close runtime need plugin name to fetch plugin object in runtime
+        // connection and close runtime need plugin name to fetch plugin object in runtime
         parameters.add(createPluginNameParameter(node));
         return parameters;
     }
-    
+
     /**
      * Create {@link TaCoKitConst#TACOKIT_COMPONENT_PLUGIN_NAME} parameter. This parameter is used during code generation to know
      * which component runtime to use
@@ -90,14 +93,14 @@ public class VirtualComponentModel extends ComponentModel {
         final ElementParameter parameter = new ElementParameter(node);
         parameter.setName(TaCoKitConst.TACOKIT_COMPONENT_PLUGIN_NAME);
         parameter.setValue(detail.getId().getPlugin());
-        parameter.setFieldType(EParameterFieldType.CHECK);
+        parameter.setFieldType(EParameterFieldType.TEXT);
         parameter.setCategory(EComponentCategory.TECHNICAL);
         parameter.setReadOnly(true);
         parameter.setRequired(false);
         parameter.setShow(false);
         return parameter;
     }
-    
+
     public boolean isShowPropertyParameter() {
         if (modelType == VirtualComponentModelType.CLOSE) {
             return false;
@@ -137,12 +140,34 @@ public class VirtualComponentModel extends ComponentModel {
     public String getComponentId() {
         return detail.getId().getId() + this.modelType.getDisplayName();
     }
-    
+
     public static String getDefaultConnectionName(ComponentIndex index) {
         if (TaCoKitUtil.isTaCoKitComponentMadeByTalend(index)) {
-            return "t" + TaCoKitUtil.getFullComponentName(index.getId().getFamily(), VirtualComponentModelType.CONNECTION.getDisplayName());
+            if (isNetSuiteComponent(index)) {
+                return TaCoKitConst.COMPONENT_NAME_PREFIX + TaCoKitUtil.getFullComponentName(getProcessedNetSuiteFamilyName(index),
+                        VirtualComponentModelType.CONNECTION.getDisplayName());
+            }
+            return TaCoKitConst.COMPONENT_NAME_PREFIX + TaCoKitUtil.getFullComponentName(index.getId().getFamily(),
+                    VirtualComponentModelType.CONNECTION.getDisplayName());
         }
         return TaCoKitUtil.getFullComponentName(index.getId().getFamily(), VirtualComponentModelType.CONNECTION.getDisplayName());
+    }
+
+    private static boolean isNetSuiteComponent(ComponentIndex index) {
+        if ("NetSuite".equals(index.getId().getFamily())) {
+            return true;
+        }
+        return false;
+    }
+
+    private static String getProcessedNetSuiteFamilyName(ComponentIndex index) {
+        StringBuffer sb = new StringBuffer();
+        sb.append(index.getId().getFamily());
+        String name = index.getId().getName();
+        if (name.startsWith("V2019")) {
+            sb.append("V2019");
+        }
+        return sb.toString();
     }
 
     public enum VirtualComponentModelType {
