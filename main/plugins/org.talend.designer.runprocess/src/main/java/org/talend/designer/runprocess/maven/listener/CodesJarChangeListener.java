@@ -103,7 +103,7 @@ public class CodesJarChangeListener implements PropertyChangeListener {
                 if (isLabelChanged) {
                     CodesJarM2CacheManager.deleteCodesJarProjectCache(CodesJarInfo.create(property));
                 }
-                CodesJarM2CacheManager.updateCodesJarProject(property, isLabelChanged);
+                CodesJarM2CacheManager.updateCodesJarProject(CodesJarInfo.create(property), isLabelChanged);
             } else if (RoutinesUtil.isInnerCodes(property)) {
                 updateModifiedDateForCodesJar(property.getItem());
             }
@@ -179,6 +179,9 @@ public class CodesJarChangeListener implements PropertyChangeListener {
 
         RoutineItem codeItem = (RoutineItem) property.getItem();
         CodesJarInfo info = CodesJarResourceCache.getCodesJarByInnerCode(codeItem);
+        if (info == null) {
+            return;
+        }
         if (GlobalServiceRegister.getDefault().isServiceRegistered(IRunProcessService.class)) {
             IRunProcessService runProcessService = GlobalServiceRegister.getDefault().getService(IRunProcessService.class);
             if (runProcessService != null) {
@@ -196,10 +199,7 @@ public class CodesJarChangeListener implements PropertyChangeListener {
             }
         }
 
-        if (info.getProperty() != null) {
-            CodesJarM2CacheManager.updateCodesJarProject(info.getProperty(), false);
-        }
-
+        CodesJarM2CacheManager.updateCodesJarProject(info, false);
     }
 
     private void updateModifiedDateForCodesJar(Item item) throws Exception {
@@ -207,7 +207,7 @@ public class CodesJarChangeListener implements PropertyChangeListener {
             RoutineItem innerCodeItem = (RoutineItem) item;
             CodesJarInfo info = CodesJarResourceCache.getCodesJarByInnerCode(innerCodeItem);
             Project project = ProjectManager.getInstance().getProjectFromProjectTechLabel(info.getProjectTechName());
-            IRepositoryViewObject obj = ProxyRepositoryFactory.getInstance().getLastVersion(project, info.getProperty().getId());
+            IRepositoryViewObject obj = ProxyRepositoryFactory.getInstance().getLastVersion(project, info.getId());
             if (obj != null) {
                 Property codesJarProperty = obj.getProperty();
                 new XmiResourceManager().saveResource(codesJarProperty.eResource());

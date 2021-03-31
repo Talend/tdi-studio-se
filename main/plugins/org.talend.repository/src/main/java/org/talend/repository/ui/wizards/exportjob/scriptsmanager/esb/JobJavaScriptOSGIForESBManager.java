@@ -450,19 +450,17 @@ public class JobJavaScriptOSGIForESBManager extends JobJavaScriptsManager {
         if (routinesParameter != null) {
             routinesParameter.stream().filter(r -> r.getType() != null).map(r -> CodesJarResourceCache.getCodesJarById(r.getId()))
                     .filter(info -> info != null).forEach(info -> {
-                Property property = info.getProperty();
-                String projectTechName = info.getProjectTechName();
-                MavenArtifact artifact = new MavenArtifact();
-                artifact.setGroupId(PomIdsHelper.getCodesJarGroupId(projectTechName, property.getItem()));
-                artifact.setArtifactId(property.getLabel().toLowerCase());
-                artifact.setVersion(PomIdsHelper.getCodesJarVersion(projectTechName));
-                artifact.setType(MavenConstants.TYPE_JAR);
-                try {
-                    codesjarM2Files.add(new File(PomUtil.getArtifactFullPath(artifact)).toURI().toURL());
-                } catch (MalformedURLException e) {
-                    e.printStackTrace();
-                }
-            });
+                        MavenArtifact artifact = new MavenArtifact();
+                        artifact.setGroupId(PomIdsHelper.getCodesJarGroupId(info));
+                        artifact.setArtifactId(info.getLabel().toLowerCase());
+                        artifact.setVersion(PomIdsHelper.getCodesJarVersion(info.getProjectTechName()));
+                        artifact.setType(MavenConstants.TYPE_JAR);
+                        try {
+                            codesjarM2Files.add(new File(PomUtil.getArtifactFullPath(artifact)).toURI().toURL());
+                        } catch (MalformedURLException e) {
+                            e.printStackTrace();
+                        }
+                    });
         }
 
         String projectTechName = ProjectManager.getInstance().getProject(item).getTechnicalLabel();
@@ -1104,6 +1102,12 @@ public class JobJavaScriptOSGIForESBManager extends JobJavaScriptsManager {
         importNonRepetitivePackages.remove("javax.annotation");
         importNonRepetitivePackages.remove("javax.annotation" + RESOLUTION_OPTIONAL);
         importNonRepetitivePackages.add("javax.annotation;version=\"[1.3,2)\"" + RESOLUTION_OPTIONAL);
+        
+        // TESB-32507 make  org.talend.esb.authorization.xacml.rt.pep not optional
+        if (importNonRepetitivePackages.contains("org.talend.esb.authorization.xacml.rt.pep" + RESOLUTION_OPTIONAL))  {
+            importNonRepetitivePackages.remove("org.talend.esb.authorization.xacml.rt.pep" + RESOLUTION_OPTIONAL);
+            importNonRepetitivePackages.add("org.talend.esb.authorization.xacml.rt.pep");
+        }
 
         Set<String> fileterdImportPackage = new HashSet<>();
 
