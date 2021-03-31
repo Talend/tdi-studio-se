@@ -128,10 +128,10 @@ if ((metadatas!=null)&&(metadatas.size()>0)) {//A1
                             if(column.getTalendType().equals("id_Dynamic")){
                                 if(advancedSeparator){
 %>
-                                routines.system.DynamicUtils.writeValuesToStringBuilder(<%=conn.getName() %>.<%=column.getLabel() %>, sb_<%=cid %>, OUT_DELIM_<%=cid %>, <%= thousandsSeparator %>, <%= decimalSeparator %>);
+                                routines.system.DynamicUtils.writeValuesToStringBuilder(<%=conn.getName() %>.<%=column.getLabel() %>, sb_<%=cid %>, OUT_DELIM_<%=cid %>, <%= thousandsSeparator %>, <%= decimalSeparator %>, java.nio.charset.Charset.forName(<%=encoding %>));
 <%
 							    }else{%>
-							    routines.system.DynamicUtils.writeValuesToStringBuilder(<%=conn.getName() %>.<%=column.getLabel() %>, sb_<%=cid %>, OUT_DELIM_<%=cid %>);
+							    routines.system.DynamicUtils.writeValuesToStringBuilder(<%=conn.getName() %>.<%=column.getLabel() %>, sb_<%=cid %>, OUT_DELIM_<%=cid %>, java.nio.charset.Charset.forName(<%=encoding %>));
 							    <%}
                             }else{
                             %>
