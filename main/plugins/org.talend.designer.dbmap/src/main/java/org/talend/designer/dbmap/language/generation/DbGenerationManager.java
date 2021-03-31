@@ -656,7 +656,7 @@ public abstract class DbGenerationManager {
             if (eltSchemaNameParam != null && eltSchemaNameParam.getValue() != null) {
                 String schema = TalendQuoteUtils.removeQuotesIfExist(String.valueOf(eltSchemaNameParam.getValue()));
                 if (org.apache.commons.lang.StringUtils.isNotEmpty(schema)) {
-                    targetSchemaTable = schema + DbMapSqlConstants.DOT + outTableName;
+                    targetSchemaTable = schema + DbMapSqlConstants.DOT + targetSchemaTable;
                 }
             }
 
