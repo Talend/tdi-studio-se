@@ -93,7 +93,12 @@
 						<artifactId>commons-compress</artifactId>
 						<version>1.19</version>
 					</dependency>
-				</dependencies>
+					<dependency>
+		              	<groupId>commons-codec</groupId>
+						<artifactId>commons-codec</artifactId>
+						<version>1.15</version>
+		            </dependency>
+					</dependencies>
                 <executions>
                     <execution>
                         <phase>package</phase>
@@ -133,6 +138,11 @@
 								<artifactId>commons-compress</artifactId>
 								<version>1.19</version>
 							</dependency>
+							<dependency>
+				              	<groupId>commons-codec</groupId>
+								<artifactId>commons-codec</artifactId>
+								<version>1.15</version>
+				            </dependency>
 						</dependencies>
                         <executions>
                             <execution>
@@ -318,6 +328,13 @@
 				<plugin>
 					<groupId>org.talend.ci</groupId>
 					<artifactId>osgihelper-maven-plugin</artifactId>
+					<dependencies>
+						<dependency>
+							<groupId>commons-codec</groupId>
+							<artifactId>commons-codec</artifactId>
+							<version>1.15</version>
+						</dependency>
+					</dependencies>
 					<executions>
 					  <execution>
 						<id>osgi-helper</id>

@@ -66,8 +66,13 @@
 				            <dependency>
 								<groupId>org.apache.commons</groupId>
 								<artifactId>commons-compress</artifactId>
-							<version>1.19</version>
-						</dependency>
+								<version>1.19</version>
+							</dependency>
+							<dependency>
+				              	<groupId>commons-codec</groupId>
+								<artifactId>commons-codec</artifactId>
+								<version>1.15</version>
+				            </dependency>
 						</dependencies>
 						<executions>
 							<execution>
@@ -109,6 +114,13 @@
 								</goals>
 							</execution>
 						</executions>
+						<dependencies>
+							<dependency>
+				              	<groupId>commons-codec</groupId>
+								<artifactId>commons-codec</artifactId>
+								<version>1.15</version>
+				            </dependency>
+						</dependencies>
 					</plugin>
 				</plugins>
 			</build>
