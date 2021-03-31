@@ -37,7 +37,7 @@ public class TableActionParameter extends AbstractActionParameter {
         final List<Pair<String, String>> parameters = new ArrayList<>();
         if (value != null) {
             int rowNumber = getRowNumber();
-            if (rowNumber <= value.size()) {
+            if (rowNumber >= 0 && rowNumber <= value.size()) {
                 final Map<String, Object> row = value.get(rowNumber);
                 for (Map.Entry<String, Object> entry : row.entrySet()) {
                     if (entry.getKey().endsWith(getParameter())) {
@@ -68,7 +68,7 @@ public class TableActionParameter extends AbstractActionParameter {
         final List<Map<String, Object>> value = (List<Map<String, Object>>) elementParameter.getValue();
         if (value != null) {
             int rowNumber = getRowNumber();
-            if (rowNumber <= value.size()) {
+            if (rowNumber >= 0 && rowNumber <= value.size()) {
                 final Map<String, Object> row = value.get(rowNumber);
                 for (Map.Entry<String, Object> entry : row.entrySet()) {
                     if (entry.getKey().endsWith(getParameter())) {

@@ -27,7 +27,7 @@ public abstract class AbstractActionParameter implements IActionParameter {
      */
     private final String parameter;
 
-    protected int rowNumber;
+    protected int rowNumber = -1;
 
     protected boolean missingRequired;
 
