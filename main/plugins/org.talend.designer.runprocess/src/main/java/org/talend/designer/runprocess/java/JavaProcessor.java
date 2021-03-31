@@ -1329,6 +1329,7 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
         final String rootWorkingDir = getRootWorkingDir(false);
 
         StringBuffer basePath = new StringBuffer(50);
+
         if (isExportConfig() || isRunAsExport() || isLinuxTargetPlatform()) {
             // current path.
             basePath.append('.');
@@ -1488,7 +1489,9 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
         }
 
         StringBuffer libPath = new StringBuffer();
+
         if (isExportConfig() || isRunAsExport() || isLinuxTargetPlatform()) {
+          
             boolean hasLibPrefix = libPrefixPath.length() > 0;
             for (ModuleNeeded neededModule : neededModules) {
                 if (hasLibPrefix) {
@@ -1580,7 +1583,7 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
 
         Set<JobInfo> infos = getBuildChildrenJobs();
         for (JobInfo jobInfo : infos) {
-            String childJarName = JavaResourcesHelper.getJobFolderName(jobInfo.getJobName(), jobInfo.getJobVersion());
+            String childJarName = JavaResourcesHelper.getJobFolderName(jobInfo);
             exportJar += classPathSeparator + rootWorkingDir + childJarName + FileExtensions.JAR_FILE_SUFFIX;
         }
         return exportJar;
