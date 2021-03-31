@@ -130,24 +130,23 @@ int nb_file_<%=cid%> = 0;
 		
 			String passphrase_<%=cid %> = decryptedPassphrase_<%=cid%>;
 			public String getPassphrase() { return passphrase_<%=cid %>; }
-			public String getPassword() { return null; } 
 			public boolean promptPassword(String arg0) { return true; } 
 			public boolean promptPassphrase(String arg0) { return true; } 
 			public boolean promptYesNo(String arg0) { return true; } 
-      		public void showMessage(String arg0) { } 
-      
+      		public void showMessage(String arg0) { }
+
 			public String[] promptKeyboardInteractive(String destination, String name, String instruction, String[] prompt,
-        	boolean[] echo) {
-        	
-        	<%
-        	passwordFieldName = "__PASSWORD__";
-        	%> 
-        	
-        	<%@ include file="@{org.talend.designer.components.localprovider}/components/templates/password.javajet"%>
-        	
-        		String[] password_<%=cid%> = {decryptedPassword_<%=cid%>};
-        		return password_<%=cid%>;
-      		}
+				boolean[] echo) {
+				return new String[] {getPassword()};
+			}
+
+			public String getPassword() {
+				<% passwordFieldName = "__PASSWORD__"; %>
+
+				<%@ include file="@{org.talend.designer.components.localprovider}/components/templates/password.javajet"%>
+
+				return decryptedPassword_<%=cid%>;
+			}
 		};
 		final com.jcraft.jsch.UserInfo defaultUserInfo_<%=cid%> = new MyUserInfo_<%=cid %>();
 		
