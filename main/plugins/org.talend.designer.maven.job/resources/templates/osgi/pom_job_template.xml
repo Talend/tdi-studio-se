@@ -87,6 +87,13 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-assembly-plugin</artifactId>
+                <dependencies>
+						<dependency>
+			              	<groupId>commons-codec</groupId>
+							<artifactId>commons-codec</artifactId>
+							<version>1.15</version>
+			            </dependency>
+					</dependencies>
                 <executions>
                     <execution>
                         <phase>package</phase>
@@ -120,6 +127,13 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-assembly-plugin</artifactId>
+                        <dependencies>
+						<dependency>
+			              	<groupId>commons-codec</groupId>
+							<artifactId>commons-codec</artifactId>
+							<version>1.15</version>
+			            </dependency>
+					</dependencies>
                         <executions>
                             <execution>
                                 <phase>package</phase>
@@ -304,6 +318,13 @@
 				<plugin>
 					<groupId>org.talend.ci</groupId>
 					<artifactId>osgihelper-maven-plugin</artifactId>
+					<dependencies>
+						<dependency>
+							<groupId>commons-codec</groupId>
+							<artifactId>commons-codec</artifactId>
+							<version>1.15</version>
+						</dependency>
+					</dependencies>
 					<executions>
 					  <execution>
 						<id>osgi-helper</id>
