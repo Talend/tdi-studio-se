@@ -1,150 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<feature
-      id="org.talend.repository.feature"
-      label="Repository Feature"
-      version="7.4.1.qualifier"
-      provider-name=".Talend SA.">
 
-   <description url="http://www.talend.com/online/featuresdescription.html#repository-feature">
-      Complete description about this feature at http://www.talend.com/online/featuresdescription.html#repository-feature
-   </description>
-
-   <copyright url="http://www.talend.com/online/copyright.txt">
-      Copyright Talend 2006, 2007
-   </copyright>
-
-   <license>
-      The licence are describe in branding feature
-   </license>
-
-   <url>
-      <update label="CORE Talend update site for milestones" url="http://talendforge.org/core/updatesite/testing/"/>
-      <discovery label="Talend web site" url="http://www.talend.com"/>
-   </url>
-
-   <requires>
-      <import plugin="biz.aQute.bndlib" version="0.0.0" match="greaterOrEqual"/>
-      <import plugin="org.eclipse.core.net" version="0.0.0" match="greaterOrEqual"/>
-   </requires>
-
-   <plugin
-         id="org.talend.registration"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.talend.registration.nl"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         fragment="true"
-         unpack="false"/>
-
-   <plugin
-         id="org.talend.repository"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.talend.repository.items.importexport"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.talend.repository.items.importexport.nl"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         fragment="true"
-         unpack="false"/>
-
-   <plugin
-         id="org.talend.repository.items.importexport.ui"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.talend.repository.items.importexport.ui.nl"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         fragment="true"
-         unpack="false"/>
-
-   <plugin
-         id="org.talend.repository.localprovider"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.talend.repository.localprovider.nl"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         fragment="true"
-         unpack="false"/>
-
-   <plugin
-         id="org.talend.repository.metadata"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.talend.repository.metadata.nl"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         fragment="true"
-         unpack="false"/>
-
-   <plugin
-         id="org.talend.repository.nl"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         fragment="true"
-         unpack="false"/>
-
-   <plugin
-         id="org.talend.repository.view"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.talend.repository.view.di"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.talend.repository.view.di.nl"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         fragment="true"
-         unpack="false"/>
-
-   <plugin
-         id="org.talend.repository.view.nl"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         fragment="true"
-         unpack="false"/>
-
+<feature id="org.talend.repository.feature" label="Repository Feature" version="7.4.1.qualifier" provider-name=".Talend SA."> 
+  <description url="http://www.talend.com/online/featuresdescription.html#repository-feature">Complete description about this feature at http://www.talend.com/online/featuresdescription.html#repository-feature</description>  
+  <copyright url="http://www.talend.com/online/copyright.txt">Copyright Talend 2006, 2007</copyright>  
+  <license>The licence are describe in branding feature</license>  
+  <url> 
+    <update label="CORE Talend update site for milestones" url="http://talendforge.org/core/updatesite/testing/"/>  
+    <discovery label="Talend web site" url="http://www.talend.com"/> 
+  </url>  
+  <requires>
+    <import plugin="biz.aQute.bndlib" version="0.0.0" match="greaterOrEqual"/>
+    <import plugin="org.eclipse.core.net" version="0.0.0" match="greaterOrEqual"/>
+  </requires>  
+  <plugin id="org.talend.designer.documentation" download-size="0" install-size="0" version="0.0.0" unpack="false"/>
+  <plugin id="org.talend.designer.documentation.nl" download-size="0" install-size="0" version="0.0.0" fragment="true" unpack="false"/>
+  <plugin id="org.talend.registration" download-size="0" install-size="0" version="0.0.0" unpack="false"/>
+  <plugin id="org.talend.registration.nl" download-size="0" install-size="0" version="0.0.0" fragment="true" unpack="false"/>
+  <plugin id="org.talend.repository" download-size="0" install-size="0" version="0.0.0" unpack="false"/>
+  <plugin id="org.talend.repository.items.importexport" download-size="0" install-size="0" version="0.0.0" unpack="false"/>
+  <plugin id="org.talend.repository.items.importexport.nl" download-size="0" install-size="0" version="0.0.0" fragment="true" unpack="false"/>
+  <plugin id="org.talend.repository.items.importexport.ui" download-size="0" install-size="0" version="0.0.0" unpack="false"/>
+  <plugin id="org.talend.repository.items.importexport.ui.nl" download-size="0" install-size="0" version="0.0.0" fragment="true" unpack="false"/>
+  <plugin id="org.talend.repository.localprovider" download-size="0" install-size="0" version="0.0.0" unpack="false"/>
+  <plugin id="org.talend.repository.localprovider.nl" download-size="0" install-size="0" version="0.0.0" fragment="true" unpack="false"/>
+  <plugin id="org.talend.repository.metadata" download-size="0" install-size="0" version="0.0.0" unpack="false"/>
+  <plugin id="org.talend.repository.metadata.nl" download-size="0" install-size="0" version="0.0.0" fragment="true" unpack="false"/>
+  <plugin id="org.talend.repository.nl" download-size="0" install-size="0" version="0.0.0" fragment="true" unpack="false"/>
+  <plugin id="org.talend.repository.view" download-size="0" install-size="0" version="0.0.0" unpack="false"/>
+  <plugin id="org.talend.repository.view.di" download-size="0" install-size="0" version="0.0.0" unpack="false"/>
+  <plugin id="org.talend.repository.view.di.nl" download-size="0" install-size="0" version="0.0.0" fragment="true" unpack="false"/>
+  <plugin id="org.talend.repository.view.nl" download-size="0" install-size="0" version="0.0.0" fragment="true" unpack="false"/>
 </feature>
