@@ -15,11 +15,16 @@
 
   <properties>
     <component-runtime.version>1.31.0</component-runtime.version>
+    <commons-lang3.version>3.11</commons-lang3.version>
     <mockito.version>2.23.0</mockito.version>
+    <oro.version>2.0.8</oro.version>
+    <log4j.version>1.2.17</log4j.version>
     <system-rules.version>1.16.0</system-rules.version>
     <common-io.version>2.5</common-io.version>
     <commons-lang.version>2.6</commons-lang.version>
     <junit5.version>5.7.0</junit5.version>
+    <commons-cli.version>1.4</commons-cli.version>
+    <slf4j.version>1.7.25</slf4j.version>
     <xbean.version>4.18</xbean.version>
   </properties>
 
@@ -50,10 +55,59 @@
 
   <dependencies>
     <dependency>
-        <groupId>org.talend.studio</groupId>
-        <artifactId>studio-tck_sdk-dependencies</artifactId>
-        <version>${project.version}</version>
-        <type>pom</type>
+      <groupId>org.talend.sdk.component</groupId>
+      <artifactId>component-server-model</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.talend.sdk.component</groupId>
+      <artifactId>component-form-core</artifactId>
+      <exclusions>
+        <exclusion>
+          <groupId>org.talend.sdk.component</groupId>
+          <artifactId>component-form-model</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+
+    <dependency>
+      <groupId>org.asciidoctor</groupId>
+      <artifactId>asciidoctorj</artifactId>
+      <version>2.4.2</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-lang3</artifactId>
+      <version>${commons-lang3.version}</version>
+      <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>oro</groupId>
+      <artifactId>oro</artifactId>
+      <version>${oro.version}</version>
+      <scope>provided</scope>
+    </dependency>
+
+    <dependency> <!-- needed by tomcat-websocket -->
+      <groupId>org.apache.tomcat</groupId>
+      <artifactId>tomcat-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.tomcat</groupId>
+      <artifactId>tomcat-websocket</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.geronimo.specs</groupId>
+      <artifactId>geronimo-json_1.1_spec</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.geronimo.specs</groupId>
+      <artifactId>geronimo-jsonb_1.0_spec</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.johnzon</groupId>
+      <artifactId>johnzon-jsonb</artifactId>
     </dependency>
 
     <!-- Test Dependencies -->
