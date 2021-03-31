@@ -37,7 +37,7 @@ public abstract class ToolbarZone {
 
     private Composite composite;
 
-    private MapperManager mapperManager;
+    protected MapperManager mapperManager;
 
     private ToolBar toolBarActions;
 

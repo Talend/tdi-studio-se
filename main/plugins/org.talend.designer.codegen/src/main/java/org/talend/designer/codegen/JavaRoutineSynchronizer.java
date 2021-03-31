@@ -69,6 +69,15 @@ public class JavaRoutineSynchronizer extends AbstractRoutineSynchronizer {
         syncRoutineItems(getRoutines(true), true);
     }
 
+    @Override
+    public void syncAllInnerCodes() throws SystemException {
+        syncInnerCodeItems(false);
+    }
+
+    @Override
+    public void syncAllInnerCodesForLogOn() throws SystemException {
+        syncInnerCodeItems(true);
+    }
 
     private void syncRoutineItems(Collection<RoutineItem> routineObjects, boolean forceUpdate) throws SystemException {
         for (RoutineItem routineItem : routineObjects) {

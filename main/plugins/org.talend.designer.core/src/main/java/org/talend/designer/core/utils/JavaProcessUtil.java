@@ -27,15 +27,21 @@ import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.emf.common.util.EList;
 import org.talend.commons.exception.ExceptionHandler;
+import org.talend.commons.exception.PersistenceException;
 import org.talend.commons.runtime.service.ITaCoKitService;
+import org.talend.commons.utils.generation.JavaUtils;
+import org.talend.commons.utils.resource.FileExtensions;
 import org.talend.core.CorePlugin;
+import org.talend.core.GlobalServiceRegister;
 import org.talend.core.hadoop.IHadoopClusterService;
 import org.talend.core.hadoop.repository.HadoopRepositoryUtil;
+import org.talend.core.language.ECodeLanguage;
 import org.talend.core.model.components.EComponentType;
 import org.talend.core.model.general.ModuleNeeded;
 import org.talend.core.model.process.EParameterFieldType;
@@ -49,19 +55,25 @@ import org.talend.core.model.process.JobInfo;
 import org.talend.core.model.process.ProcessUtils;
 import org.talend.core.model.properties.Item;
 import org.talend.core.model.properties.ProcessItem;
+import org.talend.core.model.routines.RoutinesUtil;
 import org.talend.core.model.utils.ContextParameterUtils;
 import org.talend.core.model.utils.TalendTextUtils;
-import org.talend.core.runtime.maven.MavenArtifact;
 import org.talend.core.runtime.maven.MavenConstants;
 import org.talend.core.runtime.maven.MavenUrlHelper;
 import org.talend.core.runtime.process.LastGenerationInfo;
 import org.talend.core.runtime.process.TalendProcessOptionConstants;
+import org.talend.core.ui.ITestContainerProviderService;
 import org.talend.core.utils.BitwiseOptionUtils;
+import org.talend.core.utils.CodesJarResourceCache;
 import org.talend.designer.core.IDesignerCoreService;
 import org.talend.designer.core.model.components.EParameterName;
 import org.talend.designer.core.model.components.EmfComponent;
+import org.talend.designer.core.model.utils.emf.talendfile.RoutinesParameterType;
 import org.talend.designer.core.model.utils.emf.talendfile.impl.ElementParameterTypeImpl;
+import org.talend.designer.core.ui.editor.process.Process;
 import org.talend.designer.maven.utils.MavenVersionHelper;
+import org.talend.designer.runprocess.IProcessor;
+import org.talend.designer.runprocess.IRunProcessService;
 import org.talend.designer.runprocess.ItemCacheManager;
 import org.talend.librariesmanager.model.ModulesNeededProvider;
 import org.talend.repository.ui.utils.Log4jPrefsSettingManager;
@@ -72,6 +84,9 @@ import org.talend.repository.ui.utils.UpdateLog4jJarUtils;
  */
 public class JavaProcessUtil {
 
+    /**
+     * get All needed modules of current or sub jobs but without codesjar module of joblet
+     */
     public static Set<ModuleNeeded> getNeededModules(final IProcess process, int options) {
         List<ModuleNeeded> modulesNeeded = new ArrayList<ModuleNeeded>();
         // see bug 4939: making tRunjobs work loop will cause a error of "out of memory"
@@ -106,7 +121,7 @@ public class JavaProcessUtil {
             if (!module.getModuleName().contains(".")) { //$NON-NLS-1$
                 it.remove();
             } else {
-                String coordinate = getCoordinate(module);
+                String coordinate = MavenUrlHelper.getCoordinate(module.getMavenUri());
                 
                 if (dedupModulesList.contains(coordinate)) {
                     if (module.isMrRequired() && previousModule != null
@@ -130,36 +145,6 @@ public class JavaProcessUtil {
         return new HashSet<ModuleNeeded>(modulesNeeded);
     }
 
-    public static String getCoordinate(ModuleNeeded module) {
-        String mavenUri = module.getMavenUri();
-        if (!MavenUrlHelper.isMvnUrl(mavenUri)) {
-            mavenUri = MavenUrlHelper.generateMvnUrlForJarName(mavenUri);
-        }
-        MavenArtifact artifact = MavenUrlHelper.parseMvnUrl(mavenUri);
-        
-        String groupId = artifact.getGroupId();
-        String artifactId = artifact.getArtifactId();
-        String type = artifact.getType();
-        String version = artifact.getVersion();
-        String classifier = artifact.getClassifier();
-        
-        String separator = ":"; //$NON-NLS-1$
-        String coordinate = groupId + separator + artifactId;
-        if (StringUtils.isNotBlank(type)) {
-            coordinate += separator + type;
-        }
-        if (StringUtils.isNotBlank(classifier)) {
-            coordinate += separator + classifier;
-        }
-        if (StringUtils.isNotBlank(version)) {
-            if (version.endsWith("-SNAPSHOT")) {
-                version = version.substring(0, version.indexOf("-SNAPSHOT"));
-            }
-            coordinate += separator + version;
-        }
-        return coordinate;
-    }
-    
     // for MapReduce job, if the jar on Xml don't set MRREQUIRED="true", shouldn't add it to
     // DistributedCache
     public static Set<String> getNeededLibraries(final IProcess process, int options) {
@@ -222,7 +207,8 @@ public class JavaProcessUtil {
             if (item == null) {
                 addDefault = true;
             } else if (item instanceof ProcessItem) {
-                modulesNeeded.addAll(ModulesNeededProvider.getModulesNeededForProcess((ProcessItem) item, process));
+                modulesNeeded.addAll(ModulesNeededProvider.getCodesModulesNeededForProcess((ProcessItem) item, process,
+                        BitwiseOptionUtils.containOption(options, TalendProcessOptionConstants.MODULES_WITH_CODESJAR)));
             }
         } else {
             addDefault = true;
@@ -945,4 +931,70 @@ public class JavaProcessUtil {
         }
         return false;
     }
+
+    @Deprecated
+    public static List<String> getCodesExportJars(IProcess process) {
+        if (process instanceof Process && GlobalServiceRegister.getDefault().isServiceRegistered(IRunProcessService.class)) {
+            IRunProcessService service = GlobalServiceRegister.getDefault().getService(IRunProcessService.class);
+            IProcessor processor = service.createCodeProcessor(process, ((Process) process).getProperty(), ECodeLanguage.JAVA,
+                    true);
+            if (processor != null) {
+                return new ArrayList<>(getCodesExportJars(processor));
+            }
+        }
+        List<String> codesJars = new ArrayList<>();
+        // add routines always.
+        codesJars.add(JavaUtils.ROUTINES_JAR);
+
+        // Beans
+        if (ProcessUtils.isRequiredBeans(process)) {
+            codesJars.add(JavaUtils.BEANS_JAR);
+        }
+
+        // codesjar
+        if (process instanceof Process) {
+            codesJars.addAll(getCodesJarExportJarFromRoutinesParameterType(((Process) process).getRoutineDependencies()));
+        }
+        return codesJars;
+    }
+
+    public static Set<String> getCodesExportJars(IProcessor processor) {
+        Set<String> codesJars = new HashSet<>();
+        // add routines always.
+        codesJars.add(JavaUtils.ROUTINES_JAR);
+
+        // Beans
+        if (ProcessUtils.isRequiredBeans(processor.getProcess())) {
+            codesJars.add(JavaUtils.BEANS_JAR);
+        }
+
+        // codesjar
+        codesJars.addAll(getCodesJarExportJarsWithChildren(processor));
+        return codesJars;
+    }
+
+    private static Set<String> getCodesJarExportJarsWithChildren(IProcessor processor) {
+        Set<String> codesJars = new HashSet<>();
+        Item item = processor.getProperty().getItem();
+        ITestContainerProviderService testContainerService = ITestContainerProviderService.get();
+        if (testContainerService != null && testContainerService.isTestContainerItem(item)) {
+            try {
+                item = testContainerService.getParentJobItem(item);
+            } catch (PersistenceException e) {
+                ExceptionHandler.process(e);
+            }
+        }
+        codesJars.addAll(getCodesJarExportJarFromRoutinesParameterType(RoutinesUtil.getRoutinesParametersFromItem(item)));
+        processor.getBuildChildrenJobsAndJoblets().forEach(info -> codesJars
+                .addAll(getCodesJarExportJarFromRoutinesParameterType(RoutinesUtil.getRoutinesParametersFromJobInfo(info))));
+        return codesJars;
+    }
+
+    private static Set<String> getCodesJarExportJarFromRoutinesParameterType(List<RoutinesParameterType> routinesParameters) {
+        return routinesParameters.stream().filter(r -> r.getType() != null)
+                .map(r -> CodesJarResourceCache.getCodesJarById(r.getId())).filter(info -> info != null)
+                .map(info -> info.getLabel().toLowerCase() + FileExtensions.JAR_FILE_SUFFIX)
+                .collect(Collectors.toSet());
+    }
+
 }

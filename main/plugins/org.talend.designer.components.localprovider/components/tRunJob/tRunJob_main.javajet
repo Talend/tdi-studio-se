@@ -480,11 +480,7 @@ String inputConnName = null;
 		%>
 		obj_<%=cid%> = <%=value %>;
 		if(obj_<%=cid%>!=null) {
-			if (obj_<%=cid %>.getClass().getName().equals("java.util.Date")) {
-				paraList_<%=cid %>.add("--context_param <%=name %>=" + ((java.util.Date) obj_<%=cid %>).getTime());
-			} else {
-				paraList_<%=cid %>.add("--context_param <%=name %>=" + RuntimeUtils.tRunJobConvertContext(obj_<%=cid%>));
-			}
+			paraList_<%=cid %>.add("--context_param <%=name %>=" + RuntimeUtils.tRunJobConvertContext(obj_<%=cid%>));
 		} else {
 			paraList_<%=cid %>.add("--context_param <%=name %>=" + NULL_VALUE_EXPRESSION_IN_COMMAND_STRING_FOR_CHILD_JOB_ONLY);
 		}
