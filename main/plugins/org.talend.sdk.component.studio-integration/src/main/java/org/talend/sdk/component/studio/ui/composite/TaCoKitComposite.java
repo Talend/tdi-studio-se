@@ -349,6 +349,7 @@ public class TaCoKitComposite extends MissingSettingsMultiThreadDynamicComposite
 
     protected Control addWidget(final Composite parent, final IElementParameter parameter, final Control previous) {
         EParameterFieldType fieldType = parameter.getFieldType();
+        // Use tacokit table controller but still keep TABLE type for the parameter.
         if (EParameterFieldType.TABLE == parameter.getFieldType()) {
             fieldType = EParameterFieldType.TACOKIT_TABLE;
         }

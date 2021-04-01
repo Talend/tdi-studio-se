@@ -40,7 +40,6 @@ import org.talend.commons.ui.runtime.swt.tableviewer.behavior.CellEditorValueAda
 import org.talend.commons.ui.runtime.swt.tableviewer.behavior.ColumnCellModifier;
 import org.talend.commons.ui.runtime.swt.tableviewer.behavior.IColumnColorProvider;
 import org.talend.commons.ui.runtime.swt.tableviewer.behavior.IColumnLabelProvider;
-import org.talend.commons.ui.swt.advanced.dataeditor.AbstractDataTableEditorView;
 import org.talend.commons.ui.swt.advanced.dataeditor.ExtendedToolbarView;
 import org.talend.commons.ui.swt.proposal.TextCellEditorWithProposal;
 import org.talend.commons.ui.swt.tableviewer.TableViewerCreator;
@@ -92,7 +91,7 @@ import org.talend.designer.core.ui.event.CheckColumnSelectionListener;
  *
  * @param <B>
  */
-public class PropertiesTableEditorView<B> extends AbstractDataTableEditorView<B> {
+public class PropertiesTableEditorView<B> extends AbstractPropertiesTableEditorView<B> {
 
     private final String SINGLE = "SINGLE";
 
@@ -218,6 +217,7 @@ public class PropertiesTableEditorView<B> extends AbstractDataTableEditorView<B>
                 case DBTYPE_LIST:
                 case COMPONENT_LIST:
                 case PREV_COLUMN_LIST:
+                case TACOKIT_VALUE_SELECTION:
                     final ComboBoxCellEditor cellEditor = new ComboBoxCellEditor(table, currentParam.getListItemsDisplayName());
                     final IElementParameter copyOfTmpParam = currentParam;
                     ((CCombo) cellEditor.getControl()).setEditable(false);
@@ -249,23 +249,8 @@ public class PropertiesTableEditorView<B> extends AbstractDataTableEditorView<B>
 
                         @Override
                         public Object getCellEditorTypedValue(CellEditor cellEditor, Object originalTypedValue) {
-                            CCombo combo = (CCombo) cellEditor.getControl();
-                            int rowNumber = ((Table) combo.getParent()).getSelectionIndex();
-                            String[] listToDisplay = getItemsToDisplay(element, copyOfTmpParam, rowNumber);
-                            if (!Arrays.equals(listToDisplay, ((ComboBoxCellEditor) cellEditor).getItems())) {
-                                ((ComboBoxCellEditor) cellEditor).setItems(listToDisplay);
-                            }
-                            Object returnedValue = 0;
-                            if (originalTypedValue != null) {
-                                String[] namesSet = listToDisplay;
-                                for (int j = 0; j < namesSet.length; j++) {
-                                    if (namesSet[j].equals(originalTypedValue)) {
-                                        returnedValue = j;
-                                        break;
-                                    }
-                                }
-                            }
-                            return returnedValue;
+                            return getComboBoxCellEditorTypedValue(tableViewerCreator, element, copyOfTmpParam, cellEditor,
+                                    items[curCol], originalTypedValue);
                         };
                     });
                     break;
@@ -700,6 +685,8 @@ public class PropertiesTableEditorView<B> extends AbstractDataTableEditorView<B>
                             case CONNECTION_LIST:
                             case LOOKUP_COLUMN_LIST:
                             case PREV_COLUMN_LIST:
+                            case TACOKIT_VALUE_SELECTION:
+                                fillDefaultItemsList(tmpParam, value);
                             case DBTYPE_LIST:
                                 if (hideValue) {
                                     return "";//$NON-NLS-1$
@@ -831,6 +818,7 @@ public class PropertiesTableEditorView<B> extends AbstractDataTableEditorView<B>
                         case CONNECTION_LIST:
                         case LOOKUP_COLUMN_LIST:
                         case PREV_COLUMN_LIST:
+                        case TACOKIT_VALUE_SELECTION:
                             isNeedReCheck = true;
                             if (value instanceof String) {
                                 Object[] itemNames = ((IElementParameter) itemsValue[curCol]).getListItemsDisplayName();
@@ -975,10 +963,6 @@ public class PropertiesTableEditorView<B> extends AbstractDataTableEditorView<B>
         return false;
     }
 
-    public PropertiesTableToolbarEditorView getToolBar() {
-        return (PropertiesTableToolbarEditorView) getExtendedToolbar();
-    }
-
     public PropertiesTableEditorModel getModel() {
         return (PropertiesTableEditorModel) getExtendedTableModel();
     }
@@ -1089,4 +1073,29 @@ public class PropertiesTableEditorView<B> extends AbstractDataTableEditorView<B>
         return jarPath;
     }
 
+    @Override
+    protected Object getComboBoxCellEditorTypedValue(final TableViewerCreator<B> tableViewerCreator, IElement element,
+            IElementParameter currentParam, CellEditor cellEditor, String currentKey, Object originalTypedValue) {
+        CCombo combo = (CCombo) cellEditor.getControl();
+        int rowNumber = ((Table) combo.getParent()).getSelectionIndex();
+        String[] listToDisplay = getItemsToDisplay(element, currentParam, rowNumber);
+        if (!Arrays.equals(listToDisplay, ((ComboBoxCellEditor) cellEditor).getItems())) {
+            ((ComboBoxCellEditor) cellEditor).setItems(listToDisplay);
+        }
+        Object returnedValue = 0;
+        if (originalTypedValue != null) {
+            String[] namesSet = listToDisplay;
+            for (int j = 0; j < namesSet.length; j++) {
+                if (namesSet[j].equals(originalTypedValue)) {
+                    returnedValue = j;
+                    break;
+                }
+            }
+        }
+        return returnedValue;
+    }
+
+    @Override
+    protected void fillDefaultItemsList(IElementParameter currentParam, Object originalValue) {
+    }
 }
