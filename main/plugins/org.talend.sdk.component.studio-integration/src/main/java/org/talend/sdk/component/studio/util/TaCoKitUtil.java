@@ -536,11 +536,11 @@ public class TaCoKitUtil {
         if (component != null && component.getDetail() != null && component.getDetail().getActions() != null) {
             boolean isSupport = false;
             for (ActionReference action : component.getDetail().getActions()) {
-//                if (TaCoKitConst.CREATE_CONNECTION_ATCION_NAME.equals(action.getName())
-//                        || TaCoKitConst.CLOSE_CONNECTION_ATCION_NAME.equals(action.getName())) {
+                if (TaCoKitConst.CREATE_CONNECTION_ATCION_NAME.equals(action.getName())
+                        || TaCoKitConst.CLOSE_CONNECTION_ATCION_NAME.equals(action.getName())) {
                     isSupport = true;
                     break;
-//                }
+                }
             }
             if (isSupport && component instanceof VirtualComponentModel) {
                 if (((VirtualComponentModel) component).getModelType() == VirtualComponentModelType.CONNECTION) {

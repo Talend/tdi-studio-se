@@ -61,4 +61,9 @@ mgr_<%=cid%>.findPlugin("<%=plugin%>")
         Object connnection_<%=cid%> = actionMeta_<%=cid%>.getInvoker().apply(configuration_<%=cid%>);
 
         globalMap.put("conn_<%=cid%>", connnection_<%=cid%>);
+        
+        <%for(String passwordKey : passwordKeys) {%>
+        configuration_<%=cid%>.put("<%=passwordKey%>", "securityFakePassword");
+        <%}%>
+        globalMap.put("configuration_<%=cid%>", configuration_<%=cid%>);
     });
