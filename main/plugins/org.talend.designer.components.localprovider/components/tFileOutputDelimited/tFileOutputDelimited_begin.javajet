@@ -255,8 +255,7 @@ if ((metadatas!=null)&&(metadatas.size()>0)) {//A1
                                                null
                                             <%
                                        }
-                                     %>
-                                    );
+                                     %>, java.nio.charset.Charset.forName(<%=encoding %>));
                                 }
                             <%
                             }else{

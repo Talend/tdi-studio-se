@@ -567,8 +567,7 @@ if(("false").equals(ElementParameterParser.getValue(node,"__CSV_OPTION__"))) {
                                            null
                                         <%
                                    }
-                                 %>
-                                );
+                                 %>, java.nio.charset.Charset.forName(<%=encoding %>));
                             }
                             <%
                             }else{
