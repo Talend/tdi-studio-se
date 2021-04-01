@@ -63,7 +63,7 @@ public abstract class AbstractActionParameter implements IActionParameter {
 
     protected boolean isUseExistConnection(TaCoKitElementParameter parameter) {
         IElement element = parameter.getElement();
-        if (element.getElementParameters() != null) {
+        if (element != null && element.getElementParameters() != null) {
             for (int i = 0; i < element.getElementParameters().size(); i++) {
                 ElementParameter ele = (ElementParameter) element.getElementParameters().get(i);
                 if (TaCoKitConst.PARAMETER_USE_EXISTING_CONNECTION.equals(ele.getName())) {
@@ -78,7 +78,7 @@ public abstract class AbstractActionParameter implements IActionParameter {
 
     protected String getUseExistConnectionName(TaCoKitElementParameter parameter) {
         IElement element = parameter.getElement();
-        if (element.getElementParameters() != null) {
+        if (element != null && element.getElementParameters() != null) {
             for (int i = 0; i < element.getElementParameters().size(); i++) {
                 ElementParameter ele = (ElementParameter) element.getElementParameters().get(i);
                 if (TaCoKitConst.PARAMETER_CONNECTION.equals(ele.getName())) {
