@@ -53,7 +53,7 @@ public class ChangeGreenplumDefaultDriverMigrationTask extends AbstractItemMigra
         if (connection != null) {
             if (StringUtils.equals(connection.getDatabaseType(), EDatabaseTypeName.GREENPLUM.getDbType())) {
                 if (StringUtils.isBlank(connection.getDbVersionString())) {
-                    connection.setDbVersionString(EDatabaseVersion4Drivers.GREENPLUM_PSQL.getVersionDisplay());
+                    connection.setDbVersionString(EDatabaseVersion4Drivers.GREENPLUM_PSQL.getVersionValue());
                     try {
                         ProxyRepositoryFactory.getInstance().save(item);
                     } catch (PersistenceException e) {
