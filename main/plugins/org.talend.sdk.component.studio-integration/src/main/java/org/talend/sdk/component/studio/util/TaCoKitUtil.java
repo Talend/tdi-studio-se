@@ -12,6 +12,8 @@
  */
 package org.talend.sdk.component.studio.util;
 
+import static org.talend.sdk.component.studio.model.parameter.PropertyDefinitionDecorator.PATH_SEPARATOR;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
@@ -32,6 +34,7 @@ import java.util.Set;
 import java.util.Stack;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
@@ -79,8 +82,6 @@ import org.talend.utils.io.FilesUtils;
  * DOC cmeng class global comment. Detailled comment
  */
 public class TaCoKitUtil {
-    public static final String CONFIG_NODE_ID_DATASTORE = "datastore";
-    public static final String CONFIG_NODE_ID_DATASET = "dataset";
     /**
      * Get ConnectionItem from specified project
      *
@@ -528,17 +529,23 @@ public class TaCoKitUtil {
         return components.anyMatch(ComponentModel.class::isInstance);
     }
     
+    /**
+     * Check the component whether support use exist connection or not
+     * @param component
+     * @return
+     */
     public static boolean isSupportUseExistConnection(ComponentModel component) {
         if (component != null && component.getDetail() != null && component.getDetail().getActions() != null) {
             boolean isSupport = false;
-            for (ActionReference action: component.getDetail().getActions()) {
-                //if ("CLOSE_CONNECTION".equals(action.getName())) {
-                isSupport = true;
-                break;
-                //}
+            for (ActionReference action : component.getDetail().getActions()) {
+                if (TaCoKitConst.CREATE_CONNECTION_ATCION_NAME.equals(action.getName())
+                        || TaCoKitConst.CLOSE_CONNECTION_ATCION_NAME.equals(action.getName())) {
+                    isSupport = true;
+                    break;
+                }
             }
             if (isSupport && component instanceof VirtualComponentModel) {
-                if (((VirtualComponentModel)component).getModelType() == VirtualComponentModelType.CONNECTION) {
+                if (((VirtualComponentModel) component).getModelType() == VirtualComponentModelType.CONNECTION) {
                     isSupport = false;
                 }
             }
@@ -547,6 +554,11 @@ public class TaCoKitUtil {
         return false;
     }
     
+    /**
+     *  Get component datasotre properties
+     * @param component
+     * @return
+     */
     public static Map<String, PropertyDefinitionDecorator> getComponentDataStoreProperties(ComponentModel component) {
         final Map<String, PropertyDefinitionDecorator> tree = new HashMap<>();
         TaCoKitCache cache = Lookups.taCoKitCache();
@@ -558,29 +570,39 @@ public class TaCoKitUtil {
         }
         return tree;
     }
-    
-    public static boolean isDataStorePath(Map<String, PropertyDefinitionDecorator> datastoreProperties,
-            String testPath) {
-        Set<String> pathSet = getPossibleDataStorePath(testPath);
-        for (String path : pathSet) {
-            if (datastoreProperties.containsKey(path)) {
-                return true;
+
+    /**
+     *  Check the path is datastore path or not
+     * @param model
+     * @param path
+     * @return
+     */
+    public static boolean isDataStorePath(ComponentModel model, String path) {
+        return getDataStorePath(model, path) == null ? false : true;
+    }
+
+    /**
+     *  Get current path in datastore
+     * @param model
+     * @param path
+     * @return
+     */
+    public static String getDataStorePath(ComponentModel model, String path) {
+        Map<String, PropertyDefinitionDecorator> datastoreProperties = TaCoKitUtil.getComponentDataStoreProperties(model);
+        if (datastoreProperties.containsKey(path)) {
+            return path;
+        }
+        String configPath = Lookups.taCoKitCache().getConfigurationPath(model.getDetail().getId().getFamily(), model.getDetail().getProperties());
+        String datastorePath = Lookups.taCoKitCache().getDatastorePath(model.getDetail().getId().getFamily(), model.getDetail().getProperties());
+        if (configPath != null && datastorePath != null) {
+            String replacedPath = path.replaceFirst(configPath, datastorePath);
+            if (datastoreProperties.containsKey(replacedPath)) {
+                return replacedPath;
             }
         }
-        return false;
+        return null;
     }
-
-    private static Set<String> getPossibleDataStorePath(String testPath) {
-        Set<String> pathSet = new HashSet<String>();
-        pathSet.add(testPath);
-
-        String[] array = testPath.split("\\.");
-        if (array.length == 4) {
-            pathSet.add(array[0] + "." + array[3]);
-        }
-        return pathSet;
-    }
-
+    
     public static void checkM2TacokitStatus() throws Exception {
         File studioConfigFile = PathUtils.getStudioConfigFile();
         Properties configuration = PathUtils.readProperties(studioConfigFile);
@@ -746,5 +768,18 @@ public class TaCoKitUtil {
             this.type = type;
         }
 
+    }
+
+    public static String findModelRoot(final Map<String, String> values) {
+        List<String> possibleRoots = values.keySet().stream()
+            .filter(key -> key.contains(PATH_SEPARATOR))
+            .map(key -> key.substring(0, key.indexOf(PATH_SEPARATOR)))
+            .distinct()
+            .collect(Collectors.toList());
+    
+        if (possibleRoots.size() != 1) {
+            throw new IllegalStateException("Multiple roots found. Can't guess correct one: " + possibleRoots);
+        }
+        return possibleRoots.get(0);
     }
 }

@@ -50,6 +50,7 @@ import org.talend.sdk.component.studio.Lookups;
 import org.talend.sdk.component.studio.VirtualComponentModel;
 import org.talend.sdk.component.studio.i18n.Messages;
 import org.talend.sdk.component.studio.model.connector.ConnectorCreatorFactory;
+import org.talend.sdk.component.studio.util.TaCoKitConst;
 import org.talend.sdk.component.studio.util.TaCoKitUtil;
 import org.talend.sdk.studio.process.TaCoKitNode;
 
@@ -57,10 +58,6 @@ import org.talend.sdk.studio.process.TaCoKitNode;
  * Creates {@link ComponentModel} {@link ElementParameter} list
  */
 public class ElementParameterCreator {
-
-    private static final String USE_EXISTING_CONNECTION = "USE_EXISTING_CONNECTION";
-
-    private static final String CONNECTION = "CONNECTION";
 
     private final INode node;
 
@@ -153,18 +150,18 @@ public class ElementParameterCreator {
             connectionLevel.setHeight(1);
             if (isShowPropertyParameter()) {
                 updateParameterForComponentList();
-                Layout useExistConnectionLayout = new Layout(USE_EXISTING_CONNECTION);
+                Layout useExistConnectionLayout = new Layout(TaCoKitConst.PARAMETER_USE_EXISTING_CONNECTION);
                 useExistConnectionLayout.setPosition(1);
                 useExistConnectionLayout.setHeight(1);
                 connectionLevel.getColumns().add(useExistConnectionLayout);
 
-                Layout connectionLayout = new Layout(CONNECTION);
+                Layout connectionLayout = new Layout(TaCoKitConst.PARAMETER_CONNECTION);
                 connectionLayout.setPosition(2);
                 connectionLayout.setHeight(1);
                 connectionLevel.getColumns().add(connectionLayout);
             } else {
                 addParameterForClose();
-                Layout connectionLayout = new Layout(CONNECTION);
+                Layout connectionLayout = new Layout(TaCoKitConst.PARAMETER_CONNECTION);
                 connectionLayout.setPosition(2);
                 connectionLayout.setHeight(1);
                 connectionLevel.getColumns().add(connectionLayout);
@@ -410,7 +407,7 @@ public class ElementParameterCreator {
 
     private void addParameterForClose() {
         final ElementParameter connectionParameter = new ElementParameter(node);
-        connectionParameter.setName(CONNECTION);
+        connectionParameter.setName(TaCoKitConst.PARAMETER_CONNECTION);
         connectionParameter.setValue("");
         connectionParameter.setDisplayName("Component List");
         connectionParameter.setFieldType(EParameterFieldType.COMPONENT_LIST);
@@ -424,14 +421,13 @@ public class ElementParameterCreator {
     }
 
     private void updateParameterForComponentList() {
-        Map<String, PropertyDefinitionDecorator> datastoreProperties = TaCoKitUtil.getComponentDataStoreProperties(component);
         for (IElementParameter param : parameters) {
-            if (TaCoKitUtil.isDataStorePath(datastoreProperties, param.getName())) {
+            if (TaCoKitUtil.isDataStorePath(component, param.getName())) {
                 updateShowIfValue4ComponentList(param);
             }
         }
         final ElementParameter parameter = new ElementParameter(node);
-        parameter.setName(USE_EXISTING_CONNECTION);
+        parameter.setName(TaCoKitConst.PARAMETER_USE_EXISTING_CONNECTION);
         parameter.setValue(false);
         parameter.setDisplayName(Messages.getString("ElementParameterCreator.userExistConnectionLabel"));
         parameter.setFieldType(EParameterFieldType.CHECK);
@@ -444,7 +440,7 @@ public class ElementParameterCreator {
         parameters.add(parameter);
 
         final ElementParameter connectionParameter = new ElementParameter(node);
-        connectionParameter.setName(CONNECTION);
+        connectionParameter.setName(TaCoKitConst.PARAMETER_CONNECTION);
         connectionParameter.setValue("");
         connectionParameter.setDisplayName(Messages.getString("ElementParameterCreator.connectionLabel"));
         connectionParameter.setFieldType(EParameterFieldType.COMPONENT_LIST);

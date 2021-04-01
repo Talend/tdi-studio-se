@@ -12,16 +12,21 @@
  */
 package org.talend.sdk.component.studio.metadata;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.talend.core.model.components.IComponent;
 import org.talend.core.model.repository.ERepositoryObjectType;
+import org.talend.sdk.component.server.front.model.ComponentDetail;
 import org.talend.sdk.component.server.front.model.ConfigTypeNode;
 import org.talend.sdk.component.server.front.model.ConfigTypeNodes;
+import org.talend.sdk.component.server.front.model.SimplePropertyDefinition;
 import org.talend.sdk.component.studio.Lookups;
+import org.talend.sdk.component.studio.VirtualComponentModel;
 import org.talend.sdk.component.studio.metadata.migration.TaCoKitMigrationManager;
-import org.talend.sdk.component.studio.util.TaCoKitUtil;
+import org.talend.sdk.component.studio.util.TaCoKitConst;
 
 /**
  * DOC cmeng class global comment. Detailled comment
@@ -43,6 +48,14 @@ public class TaCoKitCache {
     private Map<String, ConfigTypeNode> familyConfigTypes;
 
     private Map<ERepositoryObjectType, ConfigTypeNode> repTypeNodeMap;
+    
+    private static final Map<String, VirtualComponentModel> VIRTUAL_COMPONENT_NAME_CACHE = new HashMap<String, VirtualComponentModel>();
+
+    private static final Map<String, VirtualComponentModel> VIRTUAL_COMPONENT_ID_CACHE = new HashMap<String, VirtualComponentModel>();
+    
+    private static final Map<String, String> COMPONENT_DATASTORE_PATH_CACHE = new HashMap<String, String>();
+    
+    private static final Map<String, String> COMPONENT_CONFIGURATION_PATH_CACHE = new HashMap<String, String>();
 
     public TaCoKitCache() {
         repTypeNodeMap = new HashMap<>();
@@ -167,11 +180,78 @@ public class TaCoKitCache {
         }
         for (final String edge : familyConfig.getEdges()) {
             final ConfigTypeNode node = getConfigTypeNodeMap().get(edge);
-            if (node != null && TaCoKitUtil.CONFIG_NODE_ID_DATASTORE.equals(node.getConfigurationType())) {
+            if (node != null && TaCoKitConst.CONFIG_NODE_ID_DATASTORE.equals(node.getConfigurationType())) {
                 return node;
             }
         }
         return null;
+    }
+    
+    public void registeVirtualComponent(VirtualComponentModel component) {
+        VIRTUAL_COMPONENT_NAME_CACHE.put(component.getName(), component);
+        VIRTUAL_COMPONENT_ID_CACHE.put(component.getComponentId(), component);
+    }
+
+    public boolean isVirtualComponentName(String componentName) {
+        if (VIRTUAL_COMPONENT_NAME_CACHE.containsKey(componentName)) {
+            return true;
+        }
+        return false;
+    }
+
+    public boolean isVirtualComponentId(String componentId) {
+        if (VIRTUAL_COMPONENT_ID_CACHE.containsKey(componentId)) {
+            return true;
+        }
+        return false;
+    }
+
+    public ComponentDetail getComponentDetailByName(String componentName) {
+        if (VIRTUAL_COMPONENT_NAME_CACHE.containsKey(componentName)) {
+            return VIRTUAL_COMPONENT_NAME_CACHE.get(componentName).getDetail();
+        }
+        return null;
+    }
+
+    public ComponentDetail getComponentDetailById(String componentId) {
+        if (VIRTUAL_COMPONENT_NAME_CACHE.containsKey(componentId)) {
+            return VIRTUAL_COMPONENT_ID_CACHE.get(componentId).getDetail();
+        }
+        return null;
+    }
+    
+    public String getDatastorePath(String componentFamily, Collection<SimplePropertyDefinition> properties) {
+        if (!COMPONENT_DATASTORE_PATH_CACHE.containsKey(componentFamily)) {
+            boolean isFound = false;
+            for (SimplePropertyDefinition p : properties) {
+                if (StringUtils.equalsIgnoreCase(TaCoKitConst.CONFIG_NODE_ID_DATASTORE, p.getName())) {
+                    COMPONENT_DATASTORE_PATH_CACHE.put(componentFamily, p.getPath());
+                    isFound = true;
+                    break;
+                }
+            }
+            if (!isFound) {
+                for (SimplePropertyDefinition p : properties) {
+                    if (StringUtils.equalsIgnoreCase(TaCoKitConst.CONFIG_NODE_ID_CONNECTION, p.getName())) {
+                        COMPONENT_DATASTORE_PATH_CACHE.put(componentFamily, p.getPath());
+                        break;
+                    }
+                }
+            }
+        }
+        return COMPONENT_DATASTORE_PATH_CACHE.get(componentFamily);
+    }
+    
+    public String getConfigurationPath(String componentFamily, Collection<SimplePropertyDefinition> properties) {
+        if (!COMPONENT_CONFIGURATION_PATH_CACHE.containsKey(componentFamily)) {
+            for (SimplePropertyDefinition p : properties) {
+                if (StringUtils.equalsIgnoreCase(TaCoKitConst.CONFIG_NODE_ID_CONFIGURATION, p.getName())) {
+                    COMPONENT_CONFIGURATION_PATH_CACHE.put(componentFamily, p.getPath());
+                    break;
+                }
+            }
+        }
+        return COMPONENT_CONFIGURATION_PATH_CACHE.get(componentFamily);
     }
     
     public IComponent getTaCoKitGuessSchemaComponent() {
@@ -196,5 +276,9 @@ public class TaCoKitCache {
         if (configTypeNodeMapCache != null) {
             configTypeNodeMapCache.clear();
         }
+        VIRTUAL_COMPONENT_NAME_CACHE.clear();
+        VIRTUAL_COMPONENT_ID_CACHE.clear();
+        COMPONENT_DATASTORE_PATH_CACHE.clear();
+        COMPONENT_CONFIGURATION_PATH_CACHE.clear();
     }
 }

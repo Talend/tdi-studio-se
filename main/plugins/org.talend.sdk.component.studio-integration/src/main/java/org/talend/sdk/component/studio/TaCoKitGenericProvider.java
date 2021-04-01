@@ -39,7 +39,6 @@ import org.talend.sdk.component.server.front.model.ComponentDetail;
 import org.talend.sdk.component.server.front.model.ComponentIndex;
 import org.talend.sdk.component.server.front.model.ConfigTypeNodes;
 import org.talend.sdk.component.studio.VirtualComponentModel.VirtualComponentModelType;
-import org.talend.sdk.component.studio.enums.ETaCoKitComponentType;
 import org.talend.sdk.component.studio.lang.Pair;
 import org.talend.sdk.component.studio.service.ComponentService;
 import org.talend.sdk.component.studio.util.TaCoKitConst;
@@ -108,16 +107,16 @@ public class TaCoKitGenericProvider implements IGenericProvider {
         }
     }
     
-
-    private VirtualComponentModel createCloseConnectionComponent(final ComponentIndex index, final ComponentDetail detail, final ConfigTypeNodes configTypeNodes,String reportPath, boolean isCatcherAvailable, Set<String> createdFamiliySet) {
+    private VirtualComponentModel createCloseConnectionComponent(final ComponentIndex index, final ComponentDetail detail,
+            final ConfigTypeNodes configTypeNodes, String reportPath, boolean isCatcherAvailable, Set<String> createdFamiliySet) {
         boolean isSupport = false;
         VirtualComponentModel model = null;
         if (detail != null && detail.getActions() != null) {
-            for (ActionReference action: detail.getActions()) {
-                //if ("CLOSE_CONNECTION".equals(action.getName())) {
+            for (ActionReference action : detail.getActions()) {
+                if (TaCoKitConst.CLOSE_CONNECTION_ATCION_NAME.equals(action.getName())) {
                     isSupport = true;
                     break;
-                //}
+                }
             }
         }
         if (isSupport && !createdFamiliySet.contains(index.getId().getFamily())) {
@@ -130,39 +129,42 @@ public class TaCoKitGenericProvider implements IGenericProvider {
             if (imageDesc == null) {
                 imageDesc = ComponentService.DEFAULT_IMAGE;
             }
-            model = new VirtualComponentModel(index, detail, configTypeNodes, imageDesc, reportPath, isCatcherAvailable, VirtualComponentModelType.CLOSE); 
-            VirtualComponentRegister.getInstance().registeVirtualComponent(model);
+            model = new VirtualComponentModel(index, detail, configTypeNodes, imageDesc, reportPath, isCatcherAvailable,
+                    VirtualComponentModelType.CLOSE);
+            Lookups.taCoKitCache().registeVirtualComponent(model);
             createdFamiliySet.add(index.getId().getFamily());
         }
 
         return model;
     }
-    private VirtualComponentModel createConnectionComponent(final ComponentIndex index, final ComponentDetail detail, final ConfigTypeNodes configTypeNodes,String reportPath,boolean isCatcherAvailable, Set<String> createdFamiliySet) {
+
+    private VirtualComponentModel createConnectionComponent(final ComponentIndex index, final ComponentDetail detail,
+            final ConfigTypeNodes configTypeNodes, String reportPath, boolean isCatcherAvailable, Set<String> createdFamiliySet) {
         boolean isSupport = false;
         VirtualComponentModel model = null;
         if (detail != null && detail.getActions() != null) {
-            for (ActionReference action: detail.getActions()) {
-                //if ("CLOSE_CONNECTION".equals(action.getName())) {
+            for (ActionReference action : detail.getActions()) {
+                if (TaCoKitConst.CREATE_CONNECTION_ATCION_NAME.equals(action.getName())) {
                     isSupport = true;
                     break;
-                //}
+                }
             }
         }
         if (isSupport && !createdFamiliySet.contains(index.getId().getFamily())) {
             ImageDescriptor imageDesc = null;
-          try {
-              imageDesc = TaCokitImageUtil.getConnectionImage(detail.getId().getFamilyId());
-          } catch (Exception e) {
-              ExceptionHandler.process(e);
-          }
-          if (imageDesc == null) {
-              imageDesc = ComponentService.DEFAULT_IMAGE;
-          }
-          model = new VirtualComponentModel(index, detail, configTypeNodes, imageDesc, reportPath, isCatcherAvailable, VirtualComponentModelType.CONNECTION); 
-          VirtualComponentRegister.getInstance().registeVirtualComponent(model);
-          createdFamiliySet.add(index.getId().getFamily());
-      }
-
+            try {
+                imageDesc = TaCokitImageUtil.getConnectionImage(detail.getId().getFamilyId());
+            } catch (Exception e) {
+                ExceptionHandler.process(e);
+            }
+            if (imageDesc == null) {
+                imageDesc = ComponentService.DEFAULT_IMAGE;
+            }
+            model = new VirtualComponentModel(index, detail, configTypeNodes, imageDesc, reportPath, isCatcherAvailable,
+                    VirtualComponentModelType.CONNECTION);
+            Lookups.taCoKitCache().registeVirtualComponent(model);
+            createdFamiliySet.add(index.getId().getFamily());
+        }
         return model;
     }
 
@@ -170,7 +172,5 @@ public class TaCoKitGenericProvider implements IGenericProvider {
     public List<?> addPaletteEntry() {
         return emptyList();
     }
-    
-    
-    
+ 
 }

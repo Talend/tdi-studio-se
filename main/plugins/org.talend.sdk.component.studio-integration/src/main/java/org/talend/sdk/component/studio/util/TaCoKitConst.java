@@ -80,4 +80,20 @@ public class TaCoKitConst {
     public static final String MAVEN_INF = "MAVEN-INF"; //$NON-NLS-1$
 
     public static final String TALEND_INF = "TALEND-INF"; //$NON-NLS-1$
+
+    public static final String PARAMETER_USE_EXISTING_CONNECTION = "USE_EXISTING_CONNECTION";
+
+    public static final String PARAMETER_CONNECTION = "CONNECTION";
+
+    public static final String CONFIG_NODE_ID_DATASTORE = "datastore";
+
+    public static final String CONFIG_NODE_ID_DATASET = "dataset";
+    
+    public static final String CONFIG_NODE_ID_CONFIGURATION = "configuration";
+    
+    public static final String CONFIG_NODE_ID_CONNECTION="connection";
+    
+    public static final String CLOSE_CONNECTION_ATCION_NAME = "CLOSE_CONNECTION";
+    
+    public static final String CREATE_CONNECTION_ATCION_NAME = "CREATE_CONNECTION";
 }

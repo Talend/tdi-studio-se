@@ -47,7 +47,6 @@ import org.talend.sdk.component.server.front.model.SimplePropertyDefinition;
 import org.talend.sdk.component.studio.ComponentModel;
 import org.talend.sdk.component.studio.GAV;
 import org.talend.sdk.component.studio.Lookups;
-import org.talend.sdk.component.studio.VirtualComponentRegister;
 import org.talend.sdk.component.studio.model.parameter.Metadatas;
 import org.talend.sdk.component.studio.mvn.Mvn;
 import org.talend.sdk.component.studio.util.TaCoKitUtil;
@@ -213,8 +212,8 @@ public class ComponentService {
      * @return ComponentDetail
      */
     public Optional<ComponentDetail> getDetail(final String componentName) {
-        if (VirtualComponentRegister.getInstance().isVirtualComponentName(componentName)) {
-            return Optional.of(VirtualComponentRegister.getInstance().getComponentDetailByName(componentName));
+        if (Lookups.taCoKitCache().isVirtualComponentName(componentName)) {
+            return Optional.of(Lookups.taCoKitCache().getComponentDetailByName(componentName));
         }
         final ComponentIndices indices = getComponentIndex();
         final Optional<ComponentId> id = indices.getComponents().stream()
@@ -232,8 +231,8 @@ public class ComponentService {
     }
 
     public ComponentDetail getDetailById(final String id) {
-        if (VirtualComponentRegister.getInstance().isVirtualComponentId(id)) {
-            return VirtualComponentRegister.getInstance().getComponentDetailById(id);
+        if (Lookups.taCoKitCache().isVirtualComponentId(id)) {
+            return Lookups.taCoKitCache().getComponentDetailById(id);
         }
         final ComponentDetailList detailList = client().getDetail(language(), new String[] { id });
         if (detailList.getDetails().size() != 1) {

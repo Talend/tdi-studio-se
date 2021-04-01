@@ -13,7 +13,6 @@
 package org.talend.sdk.component.studio.metadata.handler;
 
 import static org.talend.core.model.metadata.designerproperties.RepositoryToComponentProperty.addQuotesIfNecessary;
-import static org.talend.sdk.component.studio.model.parameter.PropertyDefinitionDecorator.PATH_SEPARATOR;
 import static org.talend.sdk.component.studio.util.TaCoKitUtil.isEmpty;
 
 import java.util.ArrayList;
@@ -24,7 +23,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.talend.commons.exception.ExceptionHandler;
@@ -53,7 +51,6 @@ import org.talend.sdk.component.server.front.model.ConfigTypeNode;
 import org.talend.sdk.component.server.front.model.SimplePropertyDefinition;
 import org.talend.sdk.component.studio.ComponentModel;
 import org.talend.sdk.component.studio.Lookups;
-import org.talend.sdk.component.studio.VirtualComponentRegister;
 import org.talend.sdk.component.studio.metadata.model.TaCoKitConfigurationModel;
 import org.talend.sdk.component.studio.metadata.model.TaCoKitConfigurationModel.ValueModel;
 import org.talend.sdk.component.studio.metadata.node.ITaCoKitRepositoryNode;
@@ -139,38 +136,38 @@ public class TaCoKitDragAndDropHandler extends AbstractDragAndDropServiceHandler
      * @throws Exception Exception should be handled by ExceptionHandler
      */
     private String computeKey(final TaCoKitConfigurationModel model, String parameterId, String component) throws Exception {
-        if (VirtualComponentRegister.getInstance().isVirtualComponentName(component)) {
+        if (Lookups.taCoKitCache().isVirtualComponentName(component)) {
             List<SimplePropertyDefinition> propertiesList = model.getConfigTypeNode().getProperties();
-            for (SimplePropertyDefinition p: propertiesList) {
-                if (StringUtils.equals(parameterId, p.getPath())) {
-                    return parameterId;
+            if (TaCoKitConst.CONFIG_NODE_ID_DATASTORE.equalsIgnoreCase(model.getConfigTypeNode().getConfigurationType())) {
+                for (SimplePropertyDefinition p : propertiesList) {
+                    if (StringUtils.equals(parameterId, p.getPath())) {
+                        return parameterId;
+                    }
+                }
+            } else {
+                ComponentDetail detail = retrieveDetail(component);
+                String configPath = Lookups.taCoKitCache().getConfigurationPath(component, detail.getProperties());
+                String datastorePath = Lookups.taCoKitCache().getDatastorePath(component, detail.getProperties());
+                if (datastorePath != null && configPath != null) {
+                    String parameterIdInDateset = parameterId.replace(configPath, datastorePath);
+                    for (SimplePropertyDefinition p : propertiesList) {
+                        if (StringUtils.equals(parameterIdInDateset, p.getPath())) {
+                            return parameterIdInDateset;
+                        }
+                    }
                 }
             }
             return null;
         } else {
             final Map<String, PropertyDefinitionDecorator> tree = retrieveProperties(component);
             Optional<String> configPath = findConfigPath(tree, model, parameterId);
-            String modelRoot = findModelRoot(model);
+            String modelRoot = TaCoKitUtil.findModelRoot(model.getProperties());
             if (configPath.isPresent()) {
                 return parameterId.replace(configPath.get(), modelRoot);
             } else {
                 return null;
             }
         }
-    }
-
-    private String findModelRoot(final TaCoKitConfigurationModel model) {
-        final Map<String, String> values = model.getProperties();
-        List<String> possibleRoots = values.keySet().stream()
-            .filter(key -> key.contains(PATH_SEPARATOR))
-            .map(key -> key.substring(0, key.indexOf(PATH_SEPARATOR)))
-            .distinct()
-            .collect(Collectors.toList());
-
-        if (possibleRoots.size() != 1) {
-            throw new IllegalStateException("Multiple roots found. Can't guess correct one: " + possibleRoots);
-        }
-        return possibleRoots.get(0);
     }
 
     private Map<String, PropertyDefinitionDecorator> retrieveProperties(final String component) {
@@ -193,8 +190,8 @@ public class TaCoKitDragAndDropHandler extends AbstractDragAndDropServiceHandler
     }
 
     private ComponentDetail retrieveDetail(final String component) {
-        if (VirtualComponentRegister.getInstance().isVirtualComponentName(component)) {
-            return VirtualComponentRegister.getInstance().getComponentDetailByName(component);
+        if (Lookups.taCoKitCache().isVirtualComponentName(component)) {
+            return Lookups.taCoKitCache().getComponentDetailByName(component);
         }
         final ComponentIndices indices = client().getIndex(language());
         final ComponentId id = indices.getComponents().stream().map(ComponentIndex::getId)
