@@ -67,12 +67,34 @@
     		<%@ include file="@{org.talend.designer.components.localprovider}/components/templates/password.javajet"%>
 
 			com.amazonaws.auth.AWSCredentials credentials_<%=cid%> = new com.amazonaws.auth.BasicAWSCredentials(<%=accessKey%>,decryptedPassword_<%=cid%>);
-			com.amazonaws.auth.AWSCredentialsProvider credentialsProvider_<%=cid%> = new com.amazonaws.internal.AWSStaticCredentialsProvider(credentials_<%=cid%>);
+			com.amazonaws.auth.AWSCredentialsProvider credentialsProvider_<%=cid%> = new com.amazonaws.auth.AWSStaticCredentialsProvider(credentials_<%=cid%>);
 		<%
         } else if ("WEB_TOKEN".equals(settingCredentialProvider)) {
-	    %>
-            com.amazonaws.auth.AWSCredentialsProvider credentialsProvider_<%=cid%> = com.amazonaws.auth.WebIdentityTokenCredentialsProvider.create();
-		<%
+            String webTokenFile = ElementParameterParser.getValue(node, "__WEB_IDENTITY_TOKEN_FILE__");
+            String webTokenArn = ElementParameterParser.getValue(node, "__WEB_TOKEN_ARN__");
+            String webTokenSessionName = ElementParameterParser.getValue(node, "__WEB_TOKEN_ROLE_SESSION_NAME__");
+        %>
+            com.amazonaws.auth.AWSCredentialsProvider credentialsProvider_<%=cid%> = com.amazonaws.auth.WebIdentityTokenCredentialsProvider
+                .builder()
+            <%
+                if (webTokenFile != null && !webTokenFile.isEmpty()) {
+            %>
+                .webIdentityTokenFile(<%=webTokenFile%>)
+            <%
+                }
+                if (webTokenArn != null && !webTokenArn.isEmpty()) {
+            %>
+                .roleArn(<%=webTokenArn%>)
+            <%
+                }
+                if (webTokenSessionName != null && !webTokenSessionName.isEmpty()) {
+            %>
+                .roleSessionName(<%=webTokenSessionName%>)
+            <%
+                }
+            %>
+                .build();
+        <%
         } else if ("INHERIT_CREDENTIALS".equals(settingCredentialProvider)) {
 	    %>
             com.amazonaws.auth.AWSCredentialsProvider credentialsProvider_<%=cid%> = new com.amazonaws.auth.EC2ContainerCredentialsProviderWrapper();
@@ -355,7 +377,7 @@
 			credentialsProvider_<%=cid%> = new com.amazonaws.auth.AWSStaticCredentialsProvider(roleSessionCredentials_<%=cid%>);
 
 		<%
-		}
+	    } // end if (assumeRole)
 		%>
 		<% if(encrypt) { %>
 			com.amazonaws.services.s3.AmazonS3 conn_<%=cid%> = com.amazonaws.services.s3.AmazonS3EncryptionClientBuilder.standard()

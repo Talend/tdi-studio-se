@@ -78,11 +78,38 @@
         <ITEM NAME="INHERIT_CREDENTIALS" VALUE="INHERIT_CREDENTIALS" SHOW_IF="true" />
       </ITEMS>
     </PARAMETER>
-    
+
+    <PARAMETER
+      NAME="WEB_IDENTITY_TOKEN_FILE"
+      FIELD="FILE"
+      NUM_ROW="22"
+      REQUIRED="false"
+      GROUP="WEB_IDENTITY_TOKEN"
+      SHOW_IF="CREDENTIAL_PROVIDER == 'WEB_TOKEN'"
+    />
+
+    <PARAMETER
+      NAME="WEB_TOKEN_ARN"
+      FIELD="TEXT"
+      NUM_ROW="23"
+      REQUIRED="false"
+      GROUP="WEB_IDENTITY_TOKEN"
+      SHOW_IF="CREDENTIAL_PROVIDER == 'WEB_TOKEN'"
+    />
+
+    <PARAMETER
+      NAME="WEB_TOKEN_ROLE_SESSION_NAME"
+      FIELD="TEXT"
+      NUM_ROW="24"
+      REQUIRED="false"
+      GROUP="WEB_IDENTITY_TOKEN"
+      SHOW_IF="CREDENTIAL_PROVIDER == 'WEB_TOKEN'"
+    />
+
     <PARAMETER
       NAME="ASSUME_ROLE"
       FIELD="CHECK"
-      NUM_ROW="22"
+      NUM_ROW="25"
       REQUIRED="true"
       GROUP="CONNECTION_CONFIG"
       SHOW_IF="(USE_EXISTING_CONNECTION == 'false')" 
@@ -93,7 +120,7 @@
     <PARAMETER
       NAME="ARN"
       FIELD="TEXT"
-      NUM_ROW="23"
+      NUM_ROW="26"
       REQUIRED="true"
       GROUP="CONNECTION_CONFIG"
       SHOW_IF="isShow[ASSUME_ROLE] AND (ASSUME_ROLE == 'true')"
@@ -104,7 +131,7 @@
     <PARAMETER
       NAME="ROLE_SESSION_NAME"
       FIELD="TEXT"
-      NUM_ROW="24"
+      NUM_ROW="27"
       REQUIRED="true"
       GROUP="CONNECTION_CONFIG"
       SHOW_IF="isShow[ASSUME_ROLE] AND (ASSUME_ROLE == 'true')"
@@ -115,7 +142,7 @@
     <PARAMETER
       NAME="SESSION_DURATION"
       FIELD="TEXT"
-      NUM_ROW="25"
+      NUM_ROW="28"
       GROUP="CONNECTION_CONFIG"
       SHOW_IF="isShow[ASSUME_ROLE] AND (ASSUME_ROLE == 'true')"
     >

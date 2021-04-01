@@ -70,9 +70,36 @@
     </PARAMETER>
 
     <PARAMETER
+      NAME="WEB_IDENTITY_TOKEN_FILE"
+      FIELD="FILE"
+      NUM_ROW="17"
+      REQUIRED="false"
+      GROUP="WEB_IDENTITY_TOKEN"
+      SHOW_IF="CREDENTIAL_PROVIDER == 'WEB_TOKEN'"
+    />
+
+    <PARAMETER
+      NAME="WEB_TOKEN_ARN"
+      FIELD="TEXT"
+      NUM_ROW="18"
+      REQUIRED="false"
+      GROUP="WEB_IDENTITY_TOKEN"
+      SHOW_IF="CREDENTIAL_PROVIDER == 'WEB_TOKEN'"
+    />
+
+    <PARAMETER
+      NAME="WEB_TOKEN_ROLE_SESSION_NAME"
+      FIELD="TEXT"
+      NUM_ROW="19"
+      REQUIRED="false"
+      GROUP="WEB_IDENTITY_TOKEN"
+      SHOW_IF="CREDENTIAL_PROVIDER == 'WEB_TOKEN'"
+    />
+
+    <PARAMETER
       NAME="ASSUME_ROLE"
       FIELD="CHECK"
-      NUM_ROW="17"
+      NUM_ROW="20"
       REQUIRED="true"
     >
       <DEFAULT>false</DEFAULT>
@@ -81,7 +108,7 @@
     <PARAMETER
       NAME="ARN"
       FIELD="TEXT"
-      NUM_ROW="18"
+      NUM_ROW="21"
       REQUIRED="true"
       SHOW_IF="ASSUME_ROLE == 'true'"
     >
@@ -91,7 +118,7 @@
     <PARAMETER
       NAME="ROLE_SESSION_NAME"
       FIELD="TEXT"
-      NUM_ROW="19"
+      NUM_ROW="22"
       REQUIRED="true"
       SHOW_IF="ASSUME_ROLE == 'true'"
     >
@@ -101,7 +128,7 @@
     <PARAMETER
       NAME="SESSION_DURATION"
       FIELD="TEXT"
-      NUM_ROW="20"
+      NUM_ROW="23"
       SHOW_IF="ASSUME_ROLE == 'true'"
     >
       <DEFAULT>15</DEFAULT>
