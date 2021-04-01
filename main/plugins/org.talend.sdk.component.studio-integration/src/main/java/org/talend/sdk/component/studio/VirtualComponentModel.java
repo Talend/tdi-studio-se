@@ -26,7 +26,6 @@ import org.talend.sdk.component.server.front.model.ComponentDetail;
 import org.talend.sdk.component.server.front.model.ComponentIndex;
 import org.talend.sdk.component.server.front.model.ConfigTypeNode;
 import org.talend.sdk.component.server.front.model.ConfigTypeNodes;
-import org.talend.sdk.component.studio.metadata.TaCoKitCache;
 import org.talend.sdk.component.studio.model.parameter.ElementParameterCreator;
 import org.talend.sdk.component.studio.util.TaCoKitConst;
 import org.talend.sdk.component.studio.util.TaCoKitUtil;
@@ -75,8 +74,7 @@ public class VirtualComponentModel extends ComponentModel {
                 manager.checkNodeMigration(processItem, getName());
             }
         }
-        TaCoKitCache cache = Lookups.taCoKitCache();
-        ConfigTypeNode configTypeNode = cache.findDatastoreConfigTypeNodeByName(detail.getId().getFamily());
+        ConfigTypeNode configTypeNode = Lookups.taCoKitCache().findDatastoreConfigTypeNodeByName(detail.getId().getFamily());
         ElementParameterCreator creator = new ElementParameterCreator(this, detail,
                 configTypeNode == null ? null : configTypeNode.getProperties(), node, reportPath, isCatcherAvailable);
         List<IElementParameter> parameters = (List<IElementParameter>) creator.createParameters();

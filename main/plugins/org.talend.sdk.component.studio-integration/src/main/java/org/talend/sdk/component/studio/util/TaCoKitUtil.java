@@ -12,8 +12,6 @@
  */
 package org.talend.sdk.component.studio.util;
 
-import static org.talend.sdk.component.studio.model.parameter.PropertyDefinitionDecorator.PATH_SEPARATOR;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
@@ -34,7 +32,6 @@ import java.util.Set;
 import java.util.Stack;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
@@ -66,6 +63,7 @@ import org.talend.sdk.component.server.front.model.ActionReference;
 import org.talend.sdk.component.server.front.model.ComponentIndex;
 import org.talend.sdk.component.server.front.model.ConfigTypeNode;
 import org.talend.sdk.component.server.front.model.ConfigTypeNodes;
+import org.talend.sdk.component.server.front.model.SimplePropertyDefinition;
 import org.talend.sdk.component.studio.ComponentModel;
 import org.talend.sdk.component.studio.Lookups;
 import org.talend.sdk.component.studio.VirtualComponentModel;
@@ -538,11 +536,11 @@ public class TaCoKitUtil {
         if (component != null && component.getDetail() != null && component.getDetail().getActions() != null) {
             boolean isSupport = false;
             for (ActionReference action : component.getDetail().getActions()) {
-                if (TaCoKitConst.CREATE_CONNECTION_ATCION_NAME.equals(action.getName())
-                        || TaCoKitConst.CLOSE_CONNECTION_ATCION_NAME.equals(action.getName())) {
+//                if (TaCoKitConst.CREATE_CONNECTION_ATCION_NAME.equals(action.getName())
+//                        || TaCoKitConst.CLOSE_CONNECTION_ATCION_NAME.equals(action.getName())) {
                     isSupport = true;
                     break;
-                }
+//                }
             }
             if (isSupport && component instanceof VirtualComponentModel) {
                 if (((VirtualComponentModel) component).getModelType() == VirtualComponentModelType.CONNECTION) {
@@ -592,12 +590,35 @@ public class TaCoKitUtil {
         if (datastoreProperties.containsKey(path)) {
             return path;
         }
-        String configPath = Lookups.taCoKitCache().getConfigurationPath(model.getDetail().getId().getFamily(), model.getDetail().getProperties());
-        String datastorePath = Lookups.taCoKitCache().getDatastorePath(model.getDetail().getId().getFamily(), model.getDetail().getProperties());
+        String configPath = TaCoKitUtil.getConfigurationPath(model.getDetail().getProperties());
+        String datastorePath = TaCoKitUtil.getDatastorePath(model.getDetail().getProperties());
         if (configPath != null && datastorePath != null) {
-            String replacedPath = path.replaceFirst(configPath, datastorePath);
+            String replacedPath = path.replaceFirst(datastorePath, configPath);
             if (datastoreProperties.containsKey(replacedPath)) {
                 return replacedPath;
+            }
+        }
+        return null;
+    }
+    
+    public static String getDatastorePath(Collection<SimplePropertyDefinition> properties) {
+        for (SimplePropertyDefinition p : properties) {
+            if (StringUtils.equalsIgnoreCase(TaCoKitConst.CONFIG_NODE_ID_DATASTORE, p.getName())) {
+                return p.getPath();
+            }
+        }
+        for (SimplePropertyDefinition p : properties) {
+            if (StringUtils.equalsIgnoreCase(TaCoKitConst.CONFIG_NODE_ID_CONNECTION, p.getName())) {
+                return p.getPath();
+            }
+        }
+        return null;
+    }
+    
+    public static String getConfigurationPath(Collection<SimplePropertyDefinition> properties) {
+        for (SimplePropertyDefinition p : properties) {
+            if (StringUtils.equalsIgnoreCase(TaCoKitConst.CONFIG_NODE_ID_CONFIGURATION, p.getName())) {
+                return p.getPath();
             }
         }
         return null;
@@ -768,18 +789,5 @@ public class TaCoKitUtil {
             this.type = type;
         }
 
-    }
-
-    public static String findModelRoot(final Map<String, String> values) {
-        List<String> possibleRoots = values.keySet().stream()
-            .filter(key -> key.contains(PATH_SEPARATOR))
-            .map(key -> key.substring(0, key.indexOf(PATH_SEPARATOR)))
-            .distinct()
-            .collect(Collectors.toList());
-    
-        if (possibleRoots.size() != 1) {
-            throw new IllegalStateException("Multiple roots found. Can't guess correct one: " + possibleRoots);
-        }
-        return possibleRoots.get(0);
     }
 }
