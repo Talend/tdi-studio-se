@@ -67,6 +67,8 @@ mgr_<%=cid%>.findPlugin("<%=plugin%>")
             throw new RuntimeException("can't find the connection object");
         }
         
+        globalMap.remove("conn_<%=connection%>");
+        
         Class<?> current_<%=cid%> = cco_<%=cid%>.getClass();
         while (current_<%=cid%> != null && current_<%=cid%> != Object.class) {
             java.util.stream.Stream.of(current_<%=cid%>.getDeclaredFields()).filter(f_<%=cid%> -> f_<%=cid%>.isAnnotationPresent(org.talend.sdk.component.api.service.connection.Connection.class)).forEach(f_<%=cid%> -> {
