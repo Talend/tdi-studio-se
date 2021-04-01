@@ -20,9 +20,7 @@ import java.util.List;
 import org.apache.commons.lang.StringUtils;
 import org.talend.commons.exception.PersistenceException;
 import org.talend.commons.ui.runtime.exception.ExceptionHandler;
-import org.talend.core.database.EDatabase4DriverClassName;
 import org.talend.core.database.EDatabaseTypeName;
-import org.talend.core.database.conn.DatabaseConnStrUtil;
 import org.talend.core.database.conn.version.EDatabaseVersion4Drivers;
 import org.talend.core.model.metadata.builder.connection.DatabaseConnection;
 import org.talend.core.model.migration.AbstractItemMigrationTask;
@@ -55,7 +53,7 @@ public class ChangeGreenplumDefaultDriverMigrationTask extends AbstractItemMigra
 
             if (StringUtils.equals(connection.getDatabaseType(), EDatabaseTypeName.GREENPLUM.getDbType())) {
                 if (StringUtils.isBlank(connection.getDbVersionString())) {
-                    connection.setDbVersionString(EDatabaseVersion4Drivers.GREENPLUM_PSQL.getVersionDisplay());
+                    connection.setDbVersionString(EDatabaseVersion4Drivers.GREENPLUM_PSQL.getVersionValue());
                     try {
                         ProxyRepositoryFactory.getInstance().save(item);
                     } catch (PersistenceException e) {
