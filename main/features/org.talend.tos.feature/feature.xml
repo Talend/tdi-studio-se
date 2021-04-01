@@ -1,32 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<feature
-      id="org.talend.tos.feature"
-      label="Tos feature"
-      version="7.4.1.qualifier"
-      provider-name=".Talend SA.">
 
-   <description url="http://www.example.com/description">
-      [Enter Feature Description here.]
-   </description>
-
-   <copyright url="http://www.example.com/copyright">
-      [Enter Copyright Description here.]
-   </copyright>
-
-   <license>
-      [Enter License Description here.]
-   </license>
-
-   <requires>
-      <import feature="org.talend.help.feature" version="0.0.0" match="greaterOrEqual"/>
-      <import feature="org.talend.tos.core.feature" version="0.0.0" match="greaterOrEqual"/>
-   </requires>
-
-   <plugin
-         id="org.talend.designer.tutorials"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
+<feature id="org.talend.tos.feature" label="Tos feature" version="7.4.1.qualifier" provider-name=".Talend SA."> 
+  <description url="http://www.example.com/description">[Enter Feature Description here.]</description>  
+  <copyright url="http://www.example.com/copyright">[Enter Copyright Description here.]</copyright>  
+  <license>[Enter License Description here.]</license>  
+  <requires>
+    <import feature="org.talend.designer.business.feature" version="0.0.0" match="greaterOrEqual"/>
+    <import feature="org.talend.help.feature" version="0.0.0" match="greaterOrEqual"/>
+    <import feature="org.talend.sbi.feature" version="0.0.0" match="greaterOrEqual"/>
+    <import feature="org.talend.spagic.feature" version="0.0.0" match="greaterOrEqual"/>
+    <import feature="org.talend.tos.core.feature" version="0.0.0" match="greaterOrEqual"/>
+  </requires>  
+  <plugin id="org.talend.designer.tutorials" download-size="0" install-size="0" version="0.0.0" unpack="false"/>
 </feature>

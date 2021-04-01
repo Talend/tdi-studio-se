@@ -1,40 +1,35 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<feature
-      id="org.talend.tos.core.feature"
-      label="Feature"
-      version="7.4.1.qualifier">
 
-   <description url="http://www.example.com/description">
-      [Enter Feature Description here.]
-   </description>
-
-   <copyright url="http://www.example.com/copyright">
-      [Enter Copyright Description here.]
-   </copyright>
-
-   <license url="http://www.example.com/license">
-      [Enter License Description here.]
-   </license>
-
-   <requires>
-      <import feature="org.talend.commons.feature" version="0.0.0" match="greaterOrEqual"/>
-      <import feature="org.talend.core.feature" version="0.0.0" match="greaterOrEqual"/>
-      <import feature="org.talend.designer.feature" version="0.0.0" match="greaterOrEqual"/>
-      <import feature="org.talend.rcp.feature" version="0.0.0" match="greaterOrEqual"/>
-      <import feature="org.talend.repository.feature" version="0.0.0" match="greaterOrEqual"/>
-      <import feature="org.talend.tos.components.feature" version="0.0.0" match="greaterOrEqual"/>
-      <import feature="org.talend.updates.feature" version="0.0.0" match="greaterOrEqual"/>
-      <import plugin="javax.transaction" version="0.0.0" match="greaterOrEqual"/>
-      <import plugin="javax.xml.rpc" version="0.0.0" match="greaterOrEqual"/>
-      <import plugin="org.apache.axis" version="0.0.0" match="greaterOrEqual"/>
-      <import plugin="org.apache.log4j" version="0.0.0" match="greaterOrEqual"/>
-      <import plugin="org.eclipse.core.runtime" version="0.0.0" match="greaterOrEqual"/>
-      <import plugin="org.eclipse.ui" version="0.0.0" match="greaterOrEqual"/>
-      <import plugin="org.eclipse.xsd" version="0.0.0" match="greaterOrEqual"/>
-      <import plugin="org.talend.commons.ui" version="0.0.0" match="greaterOrEqual"/>
-      <import plugin="org.talend.core" version="0.0.0" match="greaterOrEqual"/>
-      <import plugin="org.talend.designer.core" version="0.0.0" match="greaterOrEqual"/>
-      <import plugin="org.talend.repository" version="0.0.0" match="greaterOrEqual"/>
-   </requires>
-
+<feature id="org.talend.tos.core.feature" label="Feature" version="7.4.1.qualifier"> 
+  <description url="http://www.example.com/description">[Enter Feature Description here.]</description>  
+  <copyright url="http://www.example.com/copyright">[Enter Copyright Description here.]</copyright>  
+  <license url="http://www.example.com/license">[Enter License Description here.]</license>  
+  <requires>
+    <import feature="org.talend.commons.feature" version="0.0.0" match="greaterOrEqual"/>
+    <import feature="org.talend.core.feature" version="0.0.0" match="greaterOrEqual"/>
+    <import feature="org.talend.designer.feature" version="0.0.0" match="greaterOrEqual"/>
+    <import feature="org.talend.hadoop.distribution.feature" version="0.0.0" match="greaterOrEqual"/>
+    <import feature="org.talend.rcp.feature" version="0.0.0" match="greaterOrEqual"/>
+    <import feature="org.talend.repository.feature" version="0.0.0" match="greaterOrEqual"/>
+    <import feature="org.talend.tos.components.feature" version="0.0.0" match="greaterOrEqual"/>
+    <import feature="org.talend.updates.feature" version="0.0.0" match="greaterOrEqual"/>
+    <import plugin="javax.transaction" version="0.0.0" match="greaterOrEqual"/>
+    <import plugin="javax.xml.rpc" version="0.0.0" match="greaterOrEqual"/>
+    <import plugin="org.apache.axis" version="0.0.0" match="greaterOrEqual"/>
+    <import plugin="org.apache.log4j" version="0.0.0" match="greaterOrEqual"/>
+    <import plugin="org.eclipse.core.runtime" version="0.0.0" match="greaterOrEqual"/>
+    <import plugin="org.eclipse.ui" version="0.0.0" match="greaterOrEqual"/>
+    <import plugin="org.eclipse.xsd" version="0.0.0" match="greaterOrEqual"/>
+    <import plugin="org.talend.commons.ui" version="0.0.0" match="greaterOrEqual"/>
+    <import plugin="org.talend.core" version="0.0.0" match="greaterOrEqual"/>
+    <import plugin="org.talend.designer.core" version="0.0.0" match="greaterOrEqual"/>
+    <import plugin="org.talend.repository" version="0.0.0" match="greaterOrEqual"/>
+  </requires>  
+  <plugin id="org.talend.libraries.json" download-size="0" install-size="0" version="0.0.0"/>
+  <plugin id="org.talend.repository.ftp" download-size="0" install-size="0" version="0.0.0" unpack="false"/>
+  <plugin id="org.talend.repository.ftp.nl" download-size="0" install-size="0" version="0.0.0" fragment="true" unpack="false"/>
+  <plugin id="org.talend.repository.json" download-size="0" install-size="0" version="0.0.0" unpack="false"/>
+  <plugin id="org.talend.repository.json.nl" download-size="0" install-size="0" version="0.0.0" fragment="true" unpack="false"/>
+  <plugin id="org.talend.repository.mdm" download-size="0" install-size="0" version="0.0.0" unpack="false"/>
+  <plugin id="org.talend.repository.mdm.nl" download-size="0" install-size="0" version="0.0.0" fragment="true" unpack="false"/>
 </feature>

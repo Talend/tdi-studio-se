@@ -1,238 +1,58 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<feature
-      id="org.talend.tos.components.feature"
-      label="Components-feature"
-      version="7.4.1.qualifier">
 
-   <description url="http://www.example.com/description">
-      [Enter Feature Description here.]
-   </description>
-
-   <copyright url="http://www.example.com/copyright">
-      [Enter Copyright Description here.]
-   </copyright>
-
-   <license url="http://www.example.com/license">
-      [Enter License Description here.]
-   </license>
-
-   <requires>
-      <import feature="org.talend.esb.tooling.ws.consumer.feature" version="0.0.0" match="greaterOrEqual"/>
-      <import plugin="biz.aQute.bnd.annotation" version="0.0.0" match="greaterOrEqual"/>
-      <import plugin="javax.wsdl" version="0.0.0" match="greaterOrEqual"/>
-      <import plugin="joda-time" version="0.0.0" match="greaterOrEqual"/>
-      <import plugin="org.eclipse.help.ui" version="0.0.0" match="greaterOrEqual"/>
-      <import plugin="jaxb-api" version="0.0.0" match="greaterOrEqual"/>
-   </requires>
-
-   <plugin
-         id="org.talend.components.api"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.talend.components.api.service.osgi"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.talend.components.common"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.talend.components.common-oauth"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.talend.components.jdbc.definition"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.talend.designer.abstractmap"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.talend.designer.abstractmap.nl"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         fragment="true"
-         unpack="false"/>
-
-   <plugin
-         id="org.talend.designer.alfrescooutput"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.talend.designer.alfrescooutput.nl"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         fragment="true"
-         unpack="false"/>
-
-   <plugin
-         id="org.talend.designer.components.exchange"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"/>
-
-   <plugin
-         id="org.talend.designer.components.exchange.nl"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         fragment="true"
-         unpack="false"/>
-
-   <plugin
-         id="org.talend.designer.components.localprovider"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"/>
-
-   <plugin
-         id="org.talend.designer.core.generic"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.talend.designer.dbmap"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.talend.designer.gefabstractmap"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.talend.designer.gefabstractmap.nl"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         fragment="true"
-         unpack="false"/>
-
-   <plugin
-         id="org.talend.designer.mapper"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.talend.designer.mapper.nl"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         fragment="true"
-         unpack="false"/>
-
-   <plugin
-         id="org.talend.designer.rowgenerator"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.talend.designer.rowgenerator.nl"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         fragment="true"
-         unpack="false"/>
-
-   <plugin
-         id="org.talend.designer.unifiedcomponent"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.talend.designer.webservice"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.talend.designer.webservice.nl"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         fragment="true"
-         unpack="false"/>
-
-   <plugin
-         id="org.talend.designer.xmlmap"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.talend.designer.xmlmap.nl"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         fragment="true"
-         unpack="false"/>
-
-   <plugin
-         id="org.talend.expressionbuilder"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.talend.expressionbuilder.nl"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         fragment="true"
-         unpack="false"/>
-
-   <plugin
-         id="org.talend.repository.generic"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.talend.sdk.component.studio-integration"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
+<feature id="org.talend.tos.components.feature" label="Components-feature" version="7.4.1.qualifier"> 
+  <description url="http://www.example.com/description">[Enter Feature Description here.]</description>  
+  <copyright url="http://www.example.com/copyright">[Enter Copyright Description here.]</copyright>  
+  <license url="http://www.example.com/license">[Enter License Description here.]</license>  
+  <requires>
+    <import feature="org.talend.esb.tooling.ws.consumer.feature" version="0.0.0" match="greaterOrEqual"/>
+    <import plugin="biz.aQute.bnd.annotation" version="0.0.0" match="greaterOrEqual"/>
+    <import plugin="javax.wsdl" version="0.0.0" match="greaterOrEqual"/>
+    <import plugin="joda-time" version="0.0.0" match="greaterOrEqual"/>
+    <import plugin="org.eclipse.help.ui" version="0.0.0" match="greaterOrEqual"/>
+    <import plugin="jaxb-api" version="0.0.0" match="greaterOrEqual"/>
+  </requires>
+  <plugin id="org.talend.components.api" download-size="0" install-size="0" version="0.0.0" unpack="false"/>
+  <plugin id="org.talend.components.api.service.osgi" download-size="0" install-size="0" version="0.0.0" unpack="false"/>
+  <plugin id="org.talend.components.azurestorage" download-size="0" install-size="0" version="0.0.0" unpack="false"/>
+  <plugin id="org.talend.components.common" download-size="0" install-size="0" version="0.0.0" unpack="false"/>
+  <plugin id="org.talend.components.common-oauth" download-size="0" install-size="0" version="0.0.0" unpack="false"/>
+  <plugin id="org.talend.components.googledrive" download-size="0" install-size="0" version="0.0.0" unpack="false"/>
+  <plugin id="org.talend.components.jdbc.definition" download-size="0" install-size="0" version="0.0.0" unpack="false"/>
+  <plugin id="org.talend.components.jira" download-size="0" install-size="0" version="0.0.0" unpack="false"/>
+  <plugin id="org.talend.components.marketo" download-size="0" install-size="0" version="0.0.0" unpack="false"/>
+  <plugin id="org.talend.components.netsuite" download-size="0" install-size="0" version="0.0.0" unpack="false"/>
+  <plugin id="org.talend.components.salesforce.definition" download-size="0" install-size="0" version="0.0.0" unpack="false"/>
+  <plugin id="org.talend.components.snowflake.definition" download-size="0" install-size="0" version="0.0.0" unpack="false"/>
+  <plugin id="org.talend.components.splunk" download-size="0" install-size="0" version="0.0.0" unpack="false"/>
+  <plugin id="org.talend.designer.abstractmap" download-size="0" install-size="0" version="0.0.0" unpack="false"/>
+  <plugin id="org.talend.designer.abstractmap.nl" download-size="0" install-size="0" version="0.0.0" fragment="true" unpack="false"/>
+  <plugin id="org.talend.designer.alfrescooutput" download-size="0" install-size="0" version="0.0.0" unpack="false"/>
+  <plugin id="org.talend.designer.alfrescooutput.nl" download-size="0" install-size="0" version="0.0.0" fragment="true" unpack="false"/>
+  <plugin id="org.talend.designer.components.exchange" download-size="0" install-size="0" version="0.0.0"/>
+  <plugin id="org.talend.designer.components.exchange.nl" download-size="0" install-size="0" version="0.0.0" fragment="true" unpack="false"/>
+  <plugin id="org.talend.designer.components.localprovider" download-size="0" install-size="0" version="0.0.0"/>
+  <plugin id="org.talend.designer.core.generic" download-size="0" install-size="0" version="0.0.0" unpack="false"/>
+  <plugin id="org.talend.designer.dbmap" download-size="0" install-size="0" version="0.0.0" unpack="false"/>
+  <plugin id="org.talend.designer.filemultischemas" download-size="0" install-size="0" version="0.0.0" unpack="false"/>
+  <plugin id="org.talend.designer.fileoutputxml" download-size="0" install-size="0" version="0.0.0" unpack="false"/>
+  <plugin id="org.talend.designer.fileoutputxml.nl" download-size="0" install-size="0" version="0.0.0" fragment="true" unpack="false"/>
+  <plugin id="org.talend.designer.gefabstractmap" download-size="0" install-size="0" version="0.0.0" unpack="false"/>
+  <plugin id="org.talend.designer.gefabstractmap.nl" download-size="0" install-size="0" version="0.0.0" fragment="true" unpack="false"/>
+  <plugin id="org.talend.designer.mapper" download-size="0" install-size="0" version="0.0.0" unpack="false"/>
+  <plugin id="org.talend.designer.mapper.nl" download-size="0" install-size="0" version="0.0.0" fragment="true" unpack="false"/>
+  <plugin id="org.talend.designer.rowgenerator" download-size="0" install-size="0" version="0.0.0" unpack="false"/>
+  <plugin id="org.talend.designer.rowgenerator.nl" download-size="0" install-size="0" version="0.0.0" fragment="true" unpack="false"/>
+  <plugin id="org.talend.designer.scd" download-size="0" install-size="0" version="0.0.0" unpack="false"/>
+  <plugin id="org.talend.designer.scd.nl" download-size="0" install-size="0" version="0.0.0" fragment="true" unpack="false"/>
+  <plugin id="org.talend.designer.spss" download-size="0" install-size="0" version="0.0.0" unpack="false"/>
+  <plugin id="org.talend.designer.unifiedcomponent" download-size="0" install-size="0" version="0.0.0" unpack="false"/>
+  <plugin id="org.talend.designer.webservice" download-size="0" install-size="0" version="0.0.0" unpack="false"/>
+  <plugin id="org.talend.designer.webservice.nl" download-size="0" install-size="0" version="0.0.0" fragment="true" unpack="false"/>
+  <plugin id="org.talend.designer.xmlmap" download-size="0" install-size="0" version="0.0.0" unpack="false"/>
+  <plugin id="org.talend.designer.xmlmap.nl" download-size="0" install-size="0" version="0.0.0" fragment="true" unpack="false"/>
+  <plugin id="org.talend.expressionbuilder" download-size="0" install-size="0" version="0.0.0" unpack="false"/>
+  <plugin id="org.talend.expressionbuilder.nl" download-size="0" install-size="0" version="0.0.0" fragment="true" unpack="false"/>
+  <plugin id="org.talend.repository.generic" download-size="0" install-size="0" version="0.0.0" unpack="false"/>
+  <plugin id="org.talend.sdk.component.studio-integration" download-size="0" install-size="0" version="0.0.0" unpack="false"/>
 </feature>
