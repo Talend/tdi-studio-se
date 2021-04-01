@@ -13,6 +13,7 @@
 package org.talend.sdk.component.studio.metadata.handler;
 
 import static org.talend.core.model.metadata.designerproperties.RepositoryToComponentProperty.addQuotesIfNecessary;
+import static org.talend.sdk.component.studio.model.parameter.PropertyDefinitionDecorator.PATH_SEPARATOR;
 import static org.talend.sdk.component.studio.util.TaCoKitUtil.isEmpty;
 
 import java.util.ArrayList;
@@ -23,6 +24,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.talend.commons.exception.ExceptionHandler;
@@ -149,7 +151,7 @@ public class TaCoKitDragAndDropHandler extends AbstractDragAndDropServiceHandler
                 String configPath = Lookups.taCoKitCache().getConfigurationPath(component, detail.getProperties());
                 String datastorePath = Lookups.taCoKitCache().getDatastorePath(component, detail.getProperties());
                 if (datastorePath != null && configPath != null) {
-                    String parameterIdInDateset = parameterId.replace(configPath, datastorePath);
+                    String parameterIdInDateset = parameterId.replaceFirst(configPath, datastorePath);
                     for (SimplePropertyDefinition p : propertiesList) {
                         if (StringUtils.equals(parameterIdInDateset, p.getPath())) {
                             return parameterIdInDateset;
@@ -161,13 +163,26 @@ public class TaCoKitDragAndDropHandler extends AbstractDragAndDropServiceHandler
         } else {
             final Map<String, PropertyDefinitionDecorator> tree = retrieveProperties(component);
             Optional<String> configPath = findConfigPath(tree, model, parameterId);
-            String modelRoot = TaCoKitUtil.findModelRoot(model.getProperties());
+            String modelRoot = findModelRoot(model.getProperties());
             if (configPath.isPresent()) {
                 return parameterId.replace(configPath.get(), modelRoot);
             } else {
                 return null;
             }
         }
+    }
+    
+    private String findModelRoot(final Map<String, String> values) {
+        List<String> possibleRoots = values.keySet().stream()
+            .filter(key -> key.contains(PATH_SEPARATOR))
+            .map(key -> key.substring(0, key.indexOf(PATH_SEPARATOR)))
+            .distinct()
+            .collect(Collectors.toList());
+    
+        if (possibleRoots.size() != 1) {
+            throw new IllegalStateException("Multiple roots found. Can't guess correct one: " + possibleRoots);
+        }
+        return possibleRoots.get(0);
     }
 
     private Map<String, PropertyDefinitionDecorator> retrieveProperties(final String component) {

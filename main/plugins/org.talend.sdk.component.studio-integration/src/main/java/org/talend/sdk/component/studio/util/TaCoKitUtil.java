@@ -12,8 +12,6 @@
  */
 package org.talend.sdk.component.studio.util;
 
-import static org.talend.sdk.component.studio.model.parameter.PropertyDefinitionDecorator.PATH_SEPARATOR;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
@@ -34,7 +32,6 @@ import java.util.Set;
 import java.util.Stack;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
@@ -768,18 +765,5 @@ public class TaCoKitUtil {
             this.type = type;
         }
 
-    }
-
-    public static String findModelRoot(final Map<String, String> values) {
-        List<String> possibleRoots = values.keySet().stream()
-            .filter(key -> key.contains(PATH_SEPARATOR))
-            .map(key -> key.substring(0, key.indexOf(PATH_SEPARATOR)))
-            .distinct()
-            .collect(Collectors.toList());
-    
-        if (possibleRoots.size() != 1) {
-            throw new IllegalStateException("Multiple roots found. Can't guess correct one: " + possibleRoots);
-        }
-        return possibleRoots.get(0);
     }
 }
