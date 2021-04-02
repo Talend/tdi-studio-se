@@ -3,7 +3,7 @@ if(("UPDATE").equals(dataAction) || ("INSERT_OR_UPDATE").equals(dataAction) || (
     int updateKeyCount = 0;
     if(stmtStructure != null) {
         for(Column column : stmtStructure) {
-            if(column.isUpdateKey() && !column.isDynamic()) {
+            if(column.isUpdateKey()) {
                 updateKeyCount++;
             }
         }
@@ -37,7 +37,7 @@ if(("UPDATE").equals(dataAction) || ("INSERT_OR_UPDATE").equals(dataAction) || (
     int deleteKeyCount = 0;
     if(stmtStructure != null) {
         for(Column column : stmtStructure) {
-            if(column.isDeleteKey() && !column.isDynamic()) {
+            if(column.isDeleteKey()) {
                 deleteKeyCount++;
             }
         }

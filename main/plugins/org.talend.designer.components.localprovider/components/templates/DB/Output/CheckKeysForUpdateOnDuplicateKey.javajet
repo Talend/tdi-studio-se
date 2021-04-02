@@ -3,7 +3,7 @@ if ("INSERT_ON_DUPLICATE_KEY_UPDATE".equals(dataAction)) {
     int updateKeyCount = 0;
     if(stmtStructure != null) {
         for(Column column : stmtStructure) {
-            if(column.isUpdateKey() && !column.isDynamic()) {
+            if(column.isUpdateKey()) {
                 updateKeyCount++;
             }
         }
