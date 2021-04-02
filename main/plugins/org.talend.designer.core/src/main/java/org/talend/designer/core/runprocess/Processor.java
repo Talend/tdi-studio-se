@@ -784,13 +784,6 @@ public abstract class Processor implements IProcessor, IEclipseProcessor, Talend
         return false;
     }
 
-    protected boolean isLinuxTargetPlatform() {
-        if (targetPlatform != null && Platform.OS_LINUX.equals(targetPlatform.toLowerCase())) {
-            return true;
-        }
-        return false;
-    }
-
     public boolean shouldRunAsExport() {
         return false; // by default, for standard job, run in .Java project
     }
