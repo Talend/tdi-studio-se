@@ -93,7 +93,7 @@ public class TaCoKitConst {
     
     public static final String CONFIG_NODE_ID_CONNECTION="connection";
     
-    public static final String CLOSE_CONNECTION_ATCION_NAME = "CLOSE_CONNECTION";
+    public static final String CLOSE_CONNECTION_ATCION_NAME = "close_connection";
     
-    public static final String CREATE_CONNECTION_ATCION_NAME = "CREATE_CONNECTION";
+    public static final String CREATE_CONNECTION_ATCION_NAME = "create_connection";
 }

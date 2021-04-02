@@ -54,6 +54,7 @@ import javax.websocket.Session;
 import javax.websocket.WebSocketContainer;
 
 import org.apache.tomcat.websocket.Constants;
+import org.talend.sdk.component.server.front.model.ActionList;
 import org.talend.sdk.component.server.front.model.ComponentDetail;
 import org.talend.sdk.component.server.front.model.ComponentDetailList;
 import org.talend.sdk.component.server.front.model.ComponentIndex;
@@ -339,6 +340,10 @@ public class WebSocketClient implements AutoCloseable {
                 return new ComponentDetailList(emptyList());
             }
             return root.sendAndWait("/v1/get/component/details", "/component/details?language=" + language + Stream.of(identifiers).map(i -> "identifiers=" + i).collect(Collectors.joining("&", "&", "")), null, ComponentDetailList.class, true);
+        }
+        
+        public ActionList getActionList(final String family) {
+            return root.sendAndWait("/v1/get/component/action/index/", "/component/action/index?family=" + family, null, ActionList.class, true);
         }
 
         public Stream<Pair<ComponentIndex, ComponentDetail>> details(final String language) {

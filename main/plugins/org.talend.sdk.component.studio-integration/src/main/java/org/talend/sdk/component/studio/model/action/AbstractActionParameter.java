@@ -12,16 +12,8 @@
  */
 package org.talend.sdk.component.studio.model.action;
 
-import org.apache.commons.lang3.StringUtils;
-import org.talend.core.model.process.IElement;
-import org.talend.core.model.process.IElementParameter;
 import org.talend.core.model.process.INode;
-import org.talend.core.model.process.IProcess;
-import org.talend.designer.core.model.components.ElementParameter;
-import org.talend.designer.core.ui.editor.nodes.Node;
-import org.talend.sdk.component.studio.ComponentModel;
 import org.talend.sdk.component.studio.model.parameter.TaCoKitElementParameter;
-import org.talend.sdk.component.studio.util.TaCoKitConst;
 import org.talend.sdk.component.studio.util.TaCoKitUtil;
 
 public abstract class AbstractActionParameter implements IActionParameter {
@@ -62,67 +54,22 @@ public abstract class AbstractActionParameter implements IActionParameter {
     }
 
     protected boolean isUseExistConnection(TaCoKitElementParameter parameter) {
-        IElement element = parameter.getElement();
-        if (element != null && element.getElementParameters() != null) {
-            for (int i = 0; i < element.getElementParameters().size(); i++) {
-                ElementParameter ele = (ElementParameter) element.getElementParameters().get(i);
-                if (TaCoKitConst.PARAMETER_USE_EXISTING_CONNECTION.equals(ele.getName())) {
-                    if (ele.getValue() != null && Boolean.parseBoolean(ele.getValue().toString())) {
-                        return true;
-                    }
-                }
-            }
+        if (parameter.getElement() instanceof INode) {
+            return TaCoKitUtil.isUseExistConnection((INode) parameter.getElement());
         }
         return false;
     }
 
-    protected String getUseExistConnectionName(TaCoKitElementParameter parameter) {
-        IElement element = parameter.getElement();
-        if (element != null && element.getElementParameters() != null) {
-            for (int i = 0; i < element.getElementParameters().size(); i++) {
-                ElementParameter ele = (ElementParameter) element.getElementParameters().get(i);
-                if (TaCoKitConst.PARAMETER_CONNECTION.equals(ele.getName())) {
-                    if (ele.getValue() == null || StringUtils.isEmpty(ele.getValue().toString())) {
-                        return null;
-                    } else {
-                        return ele.getValue().toString();
-                    }
-                }
-            }
+    protected Object getParameterValueFromConnection(TaCoKitElementParameter parameter, String parameterName) {
+        if (parameter.getElement() instanceof INode) {
+            return TaCoKitUtil.getParameterValueFromConnection((INode) parameter.getElement(), parameterName);
         }
         return null;
     }
 
-    protected String getParameterValueFromConnection(TaCoKitElementParameter parameter, String parameterName) {
-        String connectionName = getUseExistConnectionName(parameter);
-        if (connectionName != null && parameter.getElement() instanceof Node) {
-            Node node = (Node) parameter.getElement();
-            IProcess process = node.getProcess();
-            INode connectionNode = process.getNodeByUniqueName(connectionName);
-            if (connectionNode != null) {
-                String datastoreName = TaCoKitUtil.getDataStorePath((ComponentModel) node.getComponent(), parameter.getName());
-                IElementParameter param = connectionNode.getElementParameter(datastoreName);
-                if (param != null) {
-                    return param.getValue() == null ? "" : String.valueOf(param.getValue());
-                } else {
-                    throw new IllegalArgumentException("Can't find parameter:" + parameterName);
-                }
-            } else {
-                throw new IllegalArgumentException("Can't find connection node:" + connectionName);
-            }
-        }
-        return "";
-    }
-
     protected boolean isDataStoreParameter(TaCoKitElementParameter parameter) {
-        if (parameter.getElement() instanceof Node) {
-            Node node = (Node) parameter.getElement();
-            if (node.getComponent() instanceof ComponentModel) {
-                ComponentModel model = (ComponentModel) node.getComponent();
-                if (TaCoKitUtil.isDataStorePath(model, parameter.getName())) {
-                    return true;
-                }
-            }
+        if (parameter.getElement() instanceof INode) {
+            return TaCoKitUtil.isDataStoreParameter((INode) parameter.getElement(), parameter.getName());
         }
         return false;
     }

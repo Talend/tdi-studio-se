@@ -150,32 +150,9 @@ public class ElementParameterCreator {
             connectionLevel.setHeight(1);
             if (isShowPropertyParameter()) {
                 updateParameterForComponentList();
-                Layout useExistConnectionLayout = new Layout(TaCoKitConst.PARAMETER_USE_EXISTING_CONNECTION);
-                useExistConnectionLayout.setPosition(1);
-                useExistConnectionLayout.setHeight(1);
-                connectionLevel.getColumns().add(useExistConnectionLayout);
-
-                Layout connectionLayout = new Layout(TaCoKitConst.PARAMETER_CONNECTION);
-                connectionLayout.setPosition(2);
-                connectionLayout.setHeight(1);
-                connectionLevel.getColumns().add(connectionLayout);
             } else {
                 addParameterForClose();
-                Layout connectionLayout = new Layout(TaCoKitConst.PARAMETER_CONNECTION);
-                connectionLayout.setPosition(2);
-                connectionLayout.setHeight(1);
-                connectionLevel.getColumns().add(connectionLayout);
             }
-            int minPoistion = Integer.MAX_VALUE;
-            for (int i = 0; i < layout.getLevels().size(); i++) {
-                Level l = layout.getLevels().get(i);
-                if (minPoistion > l.getPosition()) {
-                    minPoistion = l.getPosition();
-                }
-                l.setPosition(l.getPosition() + 1);
-            }
-            connectionLevel.setPosition(minPoistion);
-            layout.getLevels().add(0, connectionLevel);
         }
         final EComponentCategory category = Metadatas.MAIN_FORM.equals(form) ? BASIC : ADVANCED;
         final LayoutParameter layoutParameter = new LayoutParameter(node, layout, category);
@@ -432,7 +409,7 @@ public class ElementParameterCreator {
         parameter.setDisplayName(Messages.getString("ElementParameterCreator.userExistConnectionLabel"));
         parameter.setFieldType(EParameterFieldType.CHECK);
         parameter.setCategory(EComponentCategory.BASIC);
-        parameter.setNumRow(15);
+        parameter.setNumRow(1);
         parameter.setReadOnly(false);
         parameter.setRequired(false);
         parameter.setShow(true);
@@ -445,7 +422,6 @@ public class ElementParameterCreator {
         connectionParameter.setDisplayName(Messages.getString("ElementParameterCreator.connectionLabel"));
         connectionParameter.setFieldType(EParameterFieldType.COMPONENT_LIST);
         connectionParameter.setCategory(EComponentCategory.BASIC);
-        connectionParameter.setNumRow(15);
         connectionParameter.setFilter(VirtualComponentModel.getDefaultConnectionName(component.getIndex()));
         connectionParameter.setReadOnly(false);
         connectionParameter.setRequired(false);

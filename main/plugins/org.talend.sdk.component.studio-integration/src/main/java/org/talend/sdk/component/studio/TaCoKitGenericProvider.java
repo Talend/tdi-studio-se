@@ -34,11 +34,13 @@ import org.talend.core.prefs.ITalendCorePrefConstants;
 import org.talend.core.ui.component.ComponentsFactoryProvider;
 import org.talend.designer.core.model.components.EmfComponent;
 import org.talend.repository.ProjectManager;
-import org.talend.sdk.component.server.front.model.ActionReference;
+import org.talend.sdk.component.server.front.model.ActionItem;
+import org.talend.sdk.component.server.front.model.ActionList;
 import org.talend.sdk.component.server.front.model.ComponentDetail;
 import org.talend.sdk.component.server.front.model.ComponentIndex;
 import org.talend.sdk.component.server.front.model.ConfigTypeNodes;
 import org.talend.sdk.component.studio.VirtualComponentModel.VirtualComponentModelType;
+import org.talend.sdk.component.studio.enums.ETaCoKitComponentType;
 import org.talend.sdk.component.studio.lang.Pair;
 import org.talend.sdk.component.studio.service.ComponentService;
 import org.talend.sdk.component.studio.util.TaCoKitConst;
@@ -90,15 +92,16 @@ public class TaCoKitGenericProvider implements IGenericProvider {
                 if (imageDesc == null) {
                     imageDesc = ComponentService.DEFAULT_IMAGE;
                 }
-                IComponent baseComponentModel = new ComponentModel(index, detail, configTypes, imageDesc, reportPath, isCatcherAvailable);
+                ComponentModel baseComponentModel = new ComponentModel(index, detail, configTypes, imageDesc, reportPath, isCatcherAvailable);
                 components.add(baseComponentModel);
                 
-                if ("input".equals(detail.getType())) {
-                    IComponent connectionModel = createConnectionComponent(index, detail, configTypes, reportPath, isCatcherAvailable, createdConnectionFamiliySet);
+                if (ETaCoKitComponentType.input.equals(baseComponentModel.getTaCoKitComponentType())) {
+                    ActionList actionList = Lookups.taCoKitCache().getActionList(index.getFamilyDisplayName());
+                    IComponent connectionModel = createConnectionComponent(index, detail, configTypes, reportPath, isCatcherAvailable, createdConnectionFamiliySet, actionList);
                     if (connectionModel != null) {
                         components.add(connectionModel);
                     }
-                    IComponent closeModel = createCloseConnectionComponent(index, detail, configTypes, reportPath, isCatcherAvailable, createdCloseFamiliySet);
+                    IComponent closeModel = createCloseConnectionComponent(index, detail, configTypes, reportPath, isCatcherAvailable, createdCloseFamiliySet, actionList);
                     if (closeModel != null) {
                         components.add(closeModel);
                     }   
@@ -108,12 +111,12 @@ public class TaCoKitGenericProvider implements IGenericProvider {
     }
     
     private VirtualComponentModel createCloseConnectionComponent(final ComponentIndex index, final ComponentDetail detail,
-            final ConfigTypeNodes configTypeNodes, String reportPath, boolean isCatcherAvailable, Set<String> createdFamiliySet) {
+            final ConfigTypeNodes configTypeNodes, String reportPath, boolean isCatcherAvailable, Set<String> createdFamiliySet, ActionList actionList) {
         boolean isSupport = false;
         VirtualComponentModel model = null;
-        if (detail != null && detail.getActions() != null) {
-            for (ActionReference action : detail.getActions()) {
-                if (TaCoKitConst.CLOSE_CONNECTION_ATCION_NAME.equals(action.getName())) {
+        if (actionList != null && actionList.getItems() != null) {
+            for (ActionItem action : actionList.getItems()) {
+                if (TaCoKitConst.CLOSE_CONNECTION_ATCION_NAME.equals(action.getType())) {
                     isSupport = true;
                     break;
                 }
@@ -139,12 +142,12 @@ public class TaCoKitGenericProvider implements IGenericProvider {
     }
 
     private VirtualComponentModel createConnectionComponent(final ComponentIndex index, final ComponentDetail detail,
-            final ConfigTypeNodes configTypeNodes, String reportPath, boolean isCatcherAvailable, Set<String> createdFamiliySet) {
+            final ConfigTypeNodes configTypeNodes, String reportPath, boolean isCatcherAvailable, Set<String> createdFamiliySet, ActionList actionList) {
         boolean isSupport = false;
         VirtualComponentModel model = null;
-        if (detail != null && detail.getActions() != null) {
-            for (ActionReference action : detail.getActions()) {
-                if (TaCoKitConst.CREATE_CONNECTION_ATCION_NAME.equals(action.getName())) {
+        if (actionList != null && actionList.getItems() != null) {
+            for (ActionItem action : actionList.getItems()) {
+                if (TaCoKitConst.CREATE_CONNECTION_ATCION_NAME.equals(action.getType())) {
                     isSupport = true;
                     break;
                 }

@@ -46,6 +46,9 @@ import org.talend.commons.utils.system.EnvironmentUtils;
 import org.talend.core.model.components.ComponentCategory;
 import org.talend.core.model.components.IComponent;
 import org.talend.core.model.general.Project;
+import org.talend.core.model.process.IElementParameter;
+import org.talend.core.model.process.INode;
+import org.talend.core.model.process.IProcess;
 import org.talend.core.model.properties.ConnectionItem;
 import org.talend.core.model.properties.Item;
 import org.talend.core.model.properties.ProcessItem;
@@ -56,9 +59,13 @@ import org.talend.core.runtime.maven.MavenArtifact;
 import org.talend.core.runtime.maven.MavenConstants;
 import org.talend.core.runtime.maven.MavenUrlHelper;
 import org.talend.core.ui.component.ComponentsFactoryProvider;
+import org.talend.designer.core.model.components.ElementParameter;
 import org.talend.designer.core.model.utils.emf.talendfile.NodeType;
+import org.talend.designer.core.ui.editor.nodes.Node;
 import org.talend.designer.core.utils.UnifiedComponentUtil;
 import org.talend.repository.ProjectManager;
+import org.talend.sdk.component.server.front.model.ActionItem;
+import org.talend.sdk.component.server.front.model.ActionList;
 import org.talend.sdk.component.server.front.model.ActionReference;
 import org.talend.sdk.component.server.front.model.ComponentIndex;
 import org.talend.sdk.component.server.front.model.ConfigTypeNode;
@@ -73,6 +80,7 @@ import org.talend.sdk.component.studio.metadata.WizardRegistry;
 import org.talend.sdk.component.studio.metadata.model.TaCoKitConfigurationModel;
 import org.talend.sdk.component.studio.model.parameter.PropertyDefinitionDecorator;
 import org.talend.sdk.component.studio.model.parameter.PropertyNode;
+import org.talend.sdk.component.studio.model.parameter.TaCoKitElementParameter;
 import org.talend.updates.runtime.utils.PathUtils;
 import org.talend.utils.io.FilesUtils;
 
@@ -533,23 +541,24 @@ public class TaCoKitUtil {
      * @return
      */
     public static boolean isSupportUseExistConnection(ComponentModel component) {
-        if (component != null && component.getDetail() != null && component.getDetail().getActions() != null) {
-            boolean isSupport = false;
-            for (ActionReference action : component.getDetail().getActions()) {
-                if (TaCoKitConst.CREATE_CONNECTION_ATCION_NAME.equals(action.getName())
-                        || TaCoKitConst.CLOSE_CONNECTION_ATCION_NAME.equals(action.getName())) {
+        boolean isSupport = false;
+        ActionList actionList = Lookups.taCoKitCache().getActionList(component.getIndex().getFamilyDisplayName());
+        if (actionList != null) {
+            for (ActionItem action : actionList.getItems()) {
+                if (TaCoKitConst.CREATE_CONNECTION_ATCION_NAME.equals(action.getType())
+                        || TaCoKitConst.CLOSE_CONNECTION_ATCION_NAME.equals(action.getType())) {
                     isSupport = true;
                     break;
                 }
             }
-            if (isSupport && component instanceof VirtualComponentModel) {
-                if (((VirtualComponentModel) component).getModelType() == VirtualComponentModelType.CONNECTION) {
-                    isSupport = false;
-                }
-            }
-            return isSupport;
         }
-        return false;
+
+        if (isSupport && component instanceof VirtualComponentModel) {
+            if (((VirtualComponentModel) component).getModelType() == VirtualComponentModelType.CONNECTION) {
+                isSupport = false;
+            }
+        }
+        return isSupport;
     }
     
     /**
@@ -567,6 +576,66 @@ public class TaCoKitUtil {
             properties.forEach(p -> tree.put(p.getPath(), p));
         }
         return tree;
+    }
+    
+    public static boolean isUseExistConnection(INode node) {
+        if (node!= null) {
+            for (int i = 0; i < node.getElementParameters().size(); i++) {
+                ElementParameter ele = (ElementParameter) node.getElementParameters().get(i);
+                if (TaCoKitConst.PARAMETER_USE_EXISTING_CONNECTION.equals(ele.getName())) {
+                    if (ele.getValue() != null && Boolean.parseBoolean(ele.getValue().toString())) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+    
+    public static String getUseExistConnectionName(INode node) {
+        if (node != null) {
+            for (int i = 0; i < node.getElementParameters().size(); i++) {
+                ElementParameter ele = (ElementParameter) node.getElementParameters().get(i);
+                if (TaCoKitConst.PARAMETER_CONNECTION.equals(ele.getName())) {
+                    if (ele.getValue() == null || StringUtils.isEmpty(ele.getValue().toString())) {
+                        return null;
+                    } else {
+                        return ele.getValue().toString();
+                    }
+                }
+            }
+        }
+        return null;
+    }
+    
+    public static Object getParameterValueFromConnection(INode node, String parameterName) {
+        String connectionName = getUseExistConnectionName(node);
+        if (connectionName != null) {
+            IProcess process = node.getProcess();
+            INode connectionNode = process.getNodeByUniqueName(connectionName);
+            if (connectionNode != null) {
+                String datastoreName = TaCoKitUtil.getDataStorePath((ComponentModel) node.getComponent(), parameterName);
+                IElementParameter param = connectionNode.getElementParameter(datastoreName);
+                if (param != null) {
+                    return param.getValue();
+                } else {
+                    throw new IllegalArgumentException("Can't find parameter:" + parameterName);
+                }
+            } else {
+                throw new IllegalArgumentException("Can't find connection node:" + connectionName);
+            }
+        }
+        return null;
+    }
+    
+    public static boolean isDataStoreParameter(INode node, String parameterName) {
+        if (node.getComponent() instanceof ComponentModel) {
+            ComponentModel model = (ComponentModel) node.getComponent();
+            if (TaCoKitUtil.isDataStorePath(model, parameterName)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**

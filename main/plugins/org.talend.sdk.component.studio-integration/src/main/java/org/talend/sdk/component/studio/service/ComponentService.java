@@ -37,6 +37,7 @@ import org.eclipse.swt.graphics.ImageData;
 import org.talend.commons.ui.runtime.image.EImage;
 import org.talend.commons.ui.runtime.image.ImageProvider;
 import org.talend.core.runtime.maven.MavenConstants;
+import org.talend.sdk.component.server.front.model.ActionList;
 import org.talend.sdk.component.server.front.model.ComponentDetail;
 import org.talend.sdk.component.server.front.model.ComponentDetailList;
 import org.talend.sdk.component.server.front.model.ComponentId;
@@ -246,6 +247,10 @@ public class ComponentService {
             index = client().getIndex(language());
         }
         return index;
+    }
+    
+    public ActionList getActionList(final String family) {
+        return client().getActionList(family);
     }
 
     private V1Component client() {

@@ -17,6 +17,7 @@ import java.util.Map;
 
 import org.talend.core.model.components.IComponent;
 import org.talend.core.model.repository.ERepositoryObjectType;
+import org.talend.sdk.component.server.front.model.ActionList;
 import org.talend.sdk.component.server.front.model.ComponentDetail;
 import org.talend.sdk.component.server.front.model.ConfigTypeNode;
 import org.talend.sdk.component.server.front.model.ConfigTypeNodes;
@@ -49,6 +50,8 @@ public class TaCoKitCache {
     private static final Map<String, VirtualComponentModel> VIRTUAL_COMPONENT_NAME_CACHE = new HashMap<String, VirtualComponentModel>();
 
     private static final Map<String, VirtualComponentModel> VIRTUAL_COMPONENT_ID_CACHE = new HashMap<String, VirtualComponentModel>();
+    
+    private static final Map<String, ActionList> ACTION_LIST_CACHE = new HashMap<String, ActionList>();
 
 
     public TaCoKitCache() {
@@ -214,6 +217,14 @@ public class TaCoKitCache {
         return null;
     }
     
+    public ActionList getActionList(String family) {
+        if (!ACTION_LIST_CACHE.containsKey(family)) {
+            ActionList action = Lookups.service().getActionList(family);
+            ACTION_LIST_CACHE.put(family, action);
+        }
+        return ACTION_LIST_CACHE.get(family);
+    }
+    
     public IComponent getTaCoKitGuessSchemaComponent() {
         return this.tacokitGuessSchemaComponent;
     }
@@ -238,5 +249,6 @@ public class TaCoKitCache {
         }
         VIRTUAL_COMPONENT_NAME_CACHE.clear();
         VIRTUAL_COMPONENT_ID_CACHE.clear();
+        ACTION_LIST_CACHE.clear();
     }
 }
