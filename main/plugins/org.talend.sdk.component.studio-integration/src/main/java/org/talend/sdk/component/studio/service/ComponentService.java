@@ -250,7 +250,7 @@ public class ComponentService {
     }
     
     public ActionList getActionList(final String family) {
-        return client().getActionList(family);
+        return Lookups.client().v1().action().getActionList(family);
     }
 
     private V1Component client() {

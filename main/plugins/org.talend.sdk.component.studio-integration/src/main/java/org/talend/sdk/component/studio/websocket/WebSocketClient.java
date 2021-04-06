@@ -292,6 +292,10 @@ public class WebSocketClient implements AutoCloseable {
         public <T> T execute(final Class<T> expectedResponse, final String family, final String type, final String action, final Map<String, String> payload) {
             return root.sendAndWait("/v1/post/action/execute", "/action/execute?family=" + family + "&type=" + type + "&action=" + action, payload, expectedResponse, true);
         }
+        
+        public ActionList getActionList(final String family) {
+            return root.sendAndWait("/v1/get/action/index/", "/action/index?family=" + family, null, ActionList.class, true);
+        }
     }
 
     public static class V1Documentation {
@@ -342,10 +346,6 @@ public class WebSocketClient implements AutoCloseable {
             return root.sendAndWait("/v1/get/component/details", "/component/details?language=" + language + Stream.of(identifiers).map(i -> "identifiers=" + i).collect(Collectors.joining("&", "&", "")), null, ComponentDetailList.class, true);
         }
         
-        public ActionList getActionList(final String family) {
-            return root.sendAndWait("/v1/get/component/action/index/", "/component/action/index?family=" + family, null, ActionList.class, true);
-        }
-
         public Stream<Pair<ComponentIndex, ComponentDetail>> details(final String language) {
             final List<ComponentIndex> components = getIndex(language).getComponents();
             // create bundles
