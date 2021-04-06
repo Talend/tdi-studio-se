@@ -7,6 +7,7 @@ imports="
 	org.talend.designer.runprocess.ProcessorException
 	java.util.Map
 	java.util.List
+	java.util.Date
 "
 %>
 <%
@@ -230,16 +231,35 @@ try {
 			%>
 				childJob_commandLine_<%=cid%> = new java.util.ArrayList<String>();
 				<%
-			commandLine = ProcessorUtilities.getCommandLine("win32", false, true, childJobIds[i], context,org.talend.designer.runprocess.IProcessor.NO_STATISTICS,org.talend.designer.runprocess.IProcessor.NO_TRACES, use_custom_jvm_setting, codeOptions);
-			
-			    // remove the frontal 2 lines
-			    if (commandLine.length > 0 && ProcessorUtilities.isExportConfig()){
-					int tmpSize = commandLine.length - 2;
-					String[] tmp = new String[tmpSize];
-					System.arraycopy(commandLine, 2, tmp, 0, tmpSize);
-					commandLine = tmp;
+				String oldInterpreter = ProcessorUtilities.getInterpreter();
+		        String oldCodeLocation = ProcessorUtilities.getCodeLocation();
+		        String oldLibraryPath = ProcessorUtilities.getLibraryPath();
+		        boolean oldExportConfig = ProcessorUtilities.isExportConfig();
+		        Date oldExportTimestamp = ProcessorUtilities.getExportTimestamp();
+		        boolean isJobTest = ProcessorUtilities.isJobTest(node.getProcess().getId(),context,null);
+				if(isJobTest&&ProcessorUtilities.isCIMode()) {
+					 ProcessorUtilities.setExportConfig(false);
+					 ProcessorUtilities.setDynamicJobAndCITest(true);
 				}
 				
+				try {
+			    	commandLine = ProcessorUtilities.getCommandLine("win32", false, true, childJobIds[i], context,org.talend.designer.runprocess.IProcessor.NO_STATISTICS,org.talend.designer.runprocess.IProcessor.NO_TRACES, use_custom_jvm_setting, codeOptions);
+			    
+				    // remove the frontal 2 lines
+				    if (commandLine.length > 0 && ProcessorUtilities.isExportConfig()){
+						int tmpSize = commandLine.length - 2;
+						String[] tmp = new String[tmpSize];
+						System.arraycopy(commandLine, 2, tmp, 0, tmpSize);
+						commandLine = tmp;
+					}
+				} finally {
+					if(isJobTest&&ProcessorUtilities.isCIMode()) {
+				    	ProcessorUtilities.setExportConfig(oldInterpreter, oldCodeLocation, oldLibraryPath, oldExportConfig,
+                    oldExportTimestamp);
+                        ProcessorUtilities.setDynamicJobAndCITest(false);
+			    	}
+			    }
+			    
 				boolean isCP = false;
 				
 				for (int j = 0; j < commandLine.length; j++) {
