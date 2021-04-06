@@ -389,7 +389,7 @@ public class ElementParameterCreator {
         connectionParameter.setDisplayName("Component List");
         connectionParameter.setFieldType(EParameterFieldType.COMPONENT_LIST);
         connectionParameter.setCategory(EComponentCategory.BASIC);
-        connectionParameter.setNumRow(15);
+        connectionParameter.setNumRow(1);
         connectionParameter.setFilter(VirtualComponentModel.getDefaultConnectionName(component.getIndex()));
         connectionParameter.setReadOnly(false);
         connectionParameter.setRequired(false);
@@ -418,14 +418,15 @@ public class ElementParameterCreator {
 
         final ElementParameter connectionParameter = new ElementParameter(node);
         connectionParameter.setName(TaCoKitConst.PARAMETER_CONNECTION);
-        connectionParameter.setValue("");
         connectionParameter.setDisplayName(Messages.getString("ElementParameterCreator.connectionLabel"));
         connectionParameter.setFieldType(EParameterFieldType.COMPONENT_LIST);
         connectionParameter.setCategory(EComponentCategory.BASIC);
         connectionParameter.setFilter(VirtualComponentModel.getDefaultConnectionName(component.getIndex()));
         connectionParameter.setReadOnly(false);
-        connectionParameter.setRequired(false);
+        connectionParameter.setRequired(true);
+        connectionParameter.setNumRow(1);
         connectionParameter.setShow(true);
+        connectionParameter.setValue("");
         connectionParameter.setDynamicSettings(true);
         connectionParameter.setShowIf("USE_EXISTING_CONNECTION == 'true'");
         parameters.add(connectionParameter);

@@ -92,10 +92,10 @@ public class TaCoKitGenericProvider implements IGenericProvider {
                 if (imageDesc == null) {
                     imageDesc = ComponentService.DEFAULT_IMAGE;
                 }
-                ComponentModel baseComponentModel = new ComponentModel(index, detail, configTypes, imageDesc, reportPath, isCatcherAvailable);
-                components.add(baseComponentModel);
+                ComponentModel componentModel = new ComponentModel(index, detail, configTypes, imageDesc, reportPath, isCatcherAvailable);
+                components.add(componentModel);
                 
-                if (ETaCoKitComponentType.input.equals(baseComponentModel.getTaCoKitComponentType())) {
+                if (ETaCoKitComponentType.input.equals(componentModel.getTaCoKitComponentType())) {
                     ActionList actionList = Lookups.taCoKitCache().getActionList(index.getFamilyDisplayName());
                     IComponent connectionModel = createConnectionComponent(index, detail, configTypes, reportPath, isCatcherAvailable, createdConnectionFamiliySet, actionList);
                     if (connectionModel != null) {
