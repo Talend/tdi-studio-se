@@ -114,9 +114,9 @@
 	  <IMPORT NAME="Talend_CSV" MODULE="talendcsv.jar" MVN="mvn:org.talend.libraries/talendcsv/6.0.0" UrlPath="platform:/plugin/org.talend.libraries.csv/lib/talendcsv.jar" REQUIRED="true" />
 
 	  <IMPORT NAME="jasperreports" MODULE="jasperreports-6.15.0.jar" MVN="mvn:net.sf.jasperreports/jasperreports/6.15.0" REQUIRED="true" />
-	  <IMPORT NAME="jackson-core" MODULE="jackson-core-2.10.1.jar" MVN="mvn:com.fasterxml.jackson.core/jackson-core/2.10.1" REQUIRED="true" />
-	  <IMPORT NAME="jackson-databind" MODULE="jackson-databind-2.10.1.jar" MVN="mvn:com.fasterxml.jackson.core/jackson-databind/2.10.1" REQUIRED="true" />
-	  <IMPORT NAME="jackson-annotations" MODULE="jackson-annotations-2.10.1.jar" MVN="mvn:com.fasterxml.jackson.core/jackson-annotations/2.10.1" REQUIRED="true" />
+	  <IMPORT NAME="jackson-core" MODULE="jackson-core-2.11.4.jar" MVN="mvn:com.fasterxml.jackson.core/jackson-core/2.11.4" REQUIRED="true" />
+	  <IMPORT NAME="jackson-databind" MODULE="jackson-databind-2.11.4.jar" MVN="mvn:com.fasterxml.jackson.core/jackson-databind/2.11.4" REQUIRED="true" />
+	  <IMPORT NAME="jackson-annotations" MODULE="jackson-annotations-2.11.4.jar" MVN="mvn:com.fasterxml.jackson.core/jackson-annotations/2.11.4" REQUIRED="true" />
 	  <IMPORT NAME="commons-beanutils" MODULE="commons-beanutils-1.9.4.jar" MVN="mvn:commons-beanutils/commons-beanutils/1.9.4" REQUIRED="true" />
 	  <IMPORT NAME="Itext" MODULE="itext-2.1.7.js8.jar" MVN="mvn:com.lowagie/itext/2.1.7.js8" REQUIRED="true" />
 	  <IMPORT NAME="CommonsDigester" MODULE="commons-digester-2.1.jar" MVN="mvn:commons-digester/commons-digester/2.1" REQUIRED="true" />

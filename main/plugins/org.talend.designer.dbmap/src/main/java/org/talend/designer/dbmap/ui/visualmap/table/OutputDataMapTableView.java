@@ -100,7 +100,7 @@ public class OutputDataMapTableView extends DataMapTableView {
             }
 
         });
-        column.setModifiable(true);
+        column.setModifiable(!mapperManager.componentIsReadOnly());
         column.setDefaultInternalValue(""); //$NON-NLS-1$
         createExpressionCellEditor(tableViewerCreatorForColumns, column, new Zone[] { Zone.INPUTS, Zone.OUTPUTS }, false);
         column.setWeight(COLUMN_EXPRESSION_SIZE_WEIGHT);
@@ -122,6 +122,7 @@ public class OutputDataMapTableView extends DataMapTableView {
 
         });
         column.setWeight(COLUMN_NAME_SIZE_WEIGHT);
+        column.setModifiable(!mapperManager.componentIsReadOnly());
     }
 
     /*
@@ -168,7 +169,7 @@ public class OutputDataMapTableView extends DataMapTableView {
         tableViewerCreatorForWhereClauses.setAdjustWidthValue(WindowSystem.isGTK() ? -20 : ADJUST_WIDTH_VALUE);
         List<FilterTableEntry> whereEntries = ((OutputTable) getDataMapTable()).getWhereFilterEntries();
         tableViewerCreatorForWhereClauses.init(whereEntries);
-
+        tableViewerCreatorForWhereClauses.setReadOnly(mapperManager.componentIsReadOnly());
         /**
          * create otherFiltersTable
          */
@@ -203,6 +204,7 @@ public class OutputDataMapTableView extends DataMapTableView {
                 }
             }
         };
+        entendedTableViewerForOtherClauses.setReadOnly(mapperManager.componentIsReadOnly());
         ((ExtendedTableViewerForFilters) entendedTableViewerForOtherClauses).createFiltersTable();
         TableViewerCreator tableViewerCreatorForOtherClauses = entendedTableViewerForOtherClauses.getTableViewerCreator();
         tableViewerCreatorForOtherClauses.setAdjustWidthValue(WindowSystem.isGTK() ? -20 : ADJUST_WIDTH_VALUE);
@@ -237,6 +239,7 @@ public class OutputDataMapTableView extends DataMapTableView {
         itemDropDown.setToolTipText(Messages.getString("DataMapTableView.buttonTooltip.addFilterRow")); //$NON-NLS-1$
         itemDropDown.setImage(ImageProviderMapper.getImage(ImageInfo.ADD_FILTER_ICON));
         menu = new Menu(this);
+        itemDropDown.setEnabled(!mapperManager.componentIsReadOnly());
         itemDropDown.addSelectionListener(new SelectionAdapter() {
 
             @Override
@@ -260,6 +263,7 @@ public class OutputDataMapTableView extends DataMapTableView {
 
             }
         });
+        addWhereClauses.setEnabled(!mapperManager.componentIsReadOnly());
 
         MenuItem addOtherClauses = new MenuItem(menu, SWT.PUSH);
         addOtherClauses.setText(Messages.getString("DataMapTableView.buttonTooltip.menu.addOtherClauses")); //$NON-NLS-1$
@@ -273,6 +277,7 @@ public class OutputDataMapTableView extends DataMapTableView {
 
             }
         });
+        addOtherClauses.setEnabled(!mapperManager.componentIsReadOnly());
     }
 
     @Override
@@ -375,6 +380,7 @@ public class OutputDataMapTableView extends DataMapTableView {
             newTableViewerCreator.setBorderVisible(false);
             newTableViewerCreator.setLayoutMode(LAYOUT_MODE.FILL_HORIZONTAL);
             newTableViewerCreator.setKeyboardManagementForCellEdition(false);
+            newTableViewerCreator.setReadOnly(mapperManager.componentIsReadOnly());
             // tableViewerCreatorForColumns.setUseCustomItemColoring(this.getDataMapTable() instanceof
             // AbstractInOutTable);
             newTableViewerCreator.setFirstColumnMasked(true);
@@ -399,7 +405,7 @@ public class OutputDataMapTableView extends DataMapTableView {
                 }
 
             });
-            column.setModifiable(true);
+            column.setModifiable(!mapperManager.componentIsReadOnly());
             column.setDefaultInternalValue(""); //$NON-NLS-1$
             setTextCellEditor(createExpressionCellEditor(tableViewerCreatorForFilters, column, new Zone[] { Zone.INPUTS,
                     Zone.OUTPUTS }, true));
@@ -414,36 +420,38 @@ public class OutputDataMapTableView extends DataMapTableView {
             column.setWidth(16);
             column.setMoveable(false);
             column.setResizable(false);
-            ButtonPushImageTableEditorContent buttonImage = new ButtonPushImageTableEditorContent() {
+            column.setModifiable(!mapperManager.componentIsReadOnly());
+            if (!mapperManager.componentIsReadOnly()) {
+                ButtonPushImageTableEditorContent buttonImage = new ButtonPushImageTableEditorContent() {
 
-                /*
-                 * (non-Javadoc)
-                 *
-                 * @see
-                 * org.talend.commons.ui.swt.tableviewer.tableeditor.ButtonImageTableEditorContent#selectionEvent(org
-                 * .talend .commons.ui.swt.tableviewer.TableViewerCreatorColumn, java.lang.Object)
-                 */
-                @Override
-                protected void selectionEvent(TableViewerCreatorColumnNotModifiable column, Object bean) {
-                    ExtendedTableRemoveCommand removeCommand = new ExtendedTableRemoveCommand(bean,
-                            ExtendedTableViewerForFilters.this.getExtendedTableModel());
-                    mapperManager.removeTableEntry((ITableEntry) bean);
-                    mapperManager.executeCommand(removeCommand);
-                    tableViewerCreatorForFilters.getTableViewer().refresh();
-                    List list = tableViewerCreatorForFilters.getInputList();
-                    updateGridDataHeightForTableConstraints(getTable());
-                    if (list != null && list.size() == 0) {
-                        showTableConstraints(false, getTableViewerCreator());
-                    } else {
-                        showTableConstraints(true, getTableViewerCreator());
+                    /*
+                     * (non-Javadoc)
+                     *
+                     * @see
+                     * org.talend.commons.ui.swt.tableviewer.tableeditor.ButtonImageTableEditorContent#selectionEvent(org
+                     * .talend .commons.ui.swt.tableviewer.TableViewerCreatorColumn, java.lang.Object)
+                     */
+                    @Override
+                    protected void selectionEvent(TableViewerCreatorColumnNotModifiable column, Object bean) {
+                        ExtendedTableRemoveCommand removeCommand = new ExtendedTableRemoveCommand(bean,
+                                ExtendedTableViewerForFilters.this.getExtendedTableModel());
+                        mapperManager.removeTableEntry((ITableEntry) bean);
+                        mapperManager.executeCommand(removeCommand);
+                        tableViewerCreatorForFilters.getTableViewer().refresh();
+                        List list = tableViewerCreatorForFilters.getInputList();
+                        updateGridDataHeightForTableConstraints(getTable());
+                        if (list != null && list.size() == 0) {
+                            showTableConstraints(false, getTableViewerCreator());
+                        } else {
+                            showTableConstraints(true, getTableViewerCreator());
+                        }
+
                     }
 
-                }
-
-            };
-            buttonImage.setImage(ImageProvider.getImage(EImage.MINUS_ICON));
-            column.setTableEditorContent(buttonImage);
-
+                };
+                buttonImage.setImage(ImageProvider.getImage(EImage.MINUS_ICON));
+                column.setTableEditorContent(buttonImage);
+            }
         }
 
         public void createFiltersTable() {

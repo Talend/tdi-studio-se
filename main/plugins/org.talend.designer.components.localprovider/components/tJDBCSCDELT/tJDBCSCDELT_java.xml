@@ -394,6 +394,7 @@
       NAME="MAPPING"
       FIELD="MAPPING_TYPE"
       NUM_ROW="100"
+      REPOSITORY_VALUE="MAPPING"
     >
       <DEFAULT>mysql_id</DEFAULT>
     </PARAMETER>

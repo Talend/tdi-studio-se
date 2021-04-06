@@ -31,4 +31,5 @@ public class RoutinesContentProvider extends AbstractCodeContentProvider {
 
         return projectNode.getRootRepositoryNode(ERepositoryObjectType.ROUTINES);
     }
+
 }

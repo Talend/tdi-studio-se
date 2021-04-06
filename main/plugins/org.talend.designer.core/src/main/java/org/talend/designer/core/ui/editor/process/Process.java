@@ -271,10 +271,6 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
 
     private List<byte[]> externalInnerContents = new ArrayList<byte[]>();
 
-    private Set<String> neededRoutines;
-
-    private Set<String> neededPigudf;
-
     private static final String SOURCE_JAVA_PIGUDF = "pigudf";
 
     private String componentsType;
@@ -1841,8 +1837,11 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
         }
     }
 
+    @SuppressWarnings("unchecked")
     protected void checkRoutineDependencies() {
+        boolean init = false;
         if (routinesDependencies == null) {
+            init = true;
             routinesDependencies = new ArrayList<RoutinesParameterType>();
         }
         try {
@@ -1863,17 +1862,15 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
             Iterator<RoutinesParameterType> iterator = routinesDependencies.iterator();
             while (iterator.hasNext()) {
                 RoutinesParameterType routine = iterator.next();
-                if (!allRoutinesSet.contains(routine.getName())) {
+                if (routine.getType() == null && !allRoutinesSet.contains(routine.getName())) {
                     iterator.remove();
                 }
             }
             List<String> possibleRoutines = new ArrayList<String>();
             List<String> routinesToAdd = new ArrayList<String>();
             String additionalString = LanguageManager.getCurrentLanguage() == ECodeLanguage.JAVA ? "." : "";
-            List<String> routinesAlreadySetup = new ArrayList<String>();
-            for (RoutinesParameterType routine : routinesDependencies) {
-                routinesAlreadySetup.add(routine.getName());
-            }
+            List<String> routinesAlreadySetup = routinesDependencies.stream().filter(r -> r.getName() != null)
+                    .map(r -> r.getName()).collect(Collectors.toList());
             for (Project project : referenceProjects) {
                 List<IRepositoryViewObject> refRoutines = factory.getAll(project, ERepositoryObjectType.ROUTINES);
                 for (IRepositoryViewObject object : refRoutines) {
@@ -1980,6 +1977,14 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
                     }
                 }
             }
+            if (init) {
+                if (getProcessType() != null && getProcessType().getParameters() != null
+                        && getProcessType().getParameters().getRoutinesParameter() != null) {
+                    EList<RoutinesParameterType> allRoutines = getProcessType().getParameters().getRoutinesParameter();
+                    routinesDependencies
+                            .addAll(allRoutines.stream().filter(r -> r.getType() != null).collect(Collectors.toList()));
+                }
+            }
         } catch (PersistenceException e) {
             ExceptionHandler.process(e);
         }
@@ -2058,7 +2063,7 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
             for (Object o : process.getParameters().getRoutinesParameter()) {
                 RoutinesParameterType type = (RoutinesParameterType) o;
                 if (StringUtils.equals(type.getId(), routineType.getId())
-                        || StringUtils.equals(type.getName(), routineType.getName())) {
+                        || (type.getName() != null && StringUtils.equals(type.getName(), routineType.getName()))) {
                     found = true;
                     break;
                 }
@@ -2077,7 +2082,8 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
             for (RoutinesParameterType type : routinesParameters) {
                 found = false;
                 for (RoutinesParameterType existedType : routinesDependencies) {
-                    if (type.getId().equals(existedType.getId()) || type.getName().equals(existedType.getName())) {
+                    if (type.getId().equals(existedType.getId())
+                            || (type.getName() != null && type.getName().equals(existedType.getName()))) {
                         found = true;
                         break;
                     }
@@ -4696,7 +4702,15 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
 
     @Override
     public Set<String> getNeededRoutines() {
-        return getNeededCodeItem(neededRoutines, ERepositoryObjectType.ROUTINES);
+        Set<String> neededRoutines = new HashSet<>();
+        neededRoutines.addAll(getNeededCodeItem(neededRoutines, ERepositoryObjectType.ROUTINES));
+        // neededRoutines.addAll(getNeededCodeItem(neededRoutines, ERepositoryObjectType.ROUTINESJAR));
+        return neededRoutines;
+    }
+
+    // TODO add a new API to get all needed codesjar
+    public Set<Property> getNeededCodesJars() {
+        return null;
     }
 
     private Set<String> getNeededCodeItem(Set<String> neededCodeItem, ERepositoryObjectType itemType) {
@@ -4712,7 +4726,7 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
         Iterator<RoutinesParameterType> iterator = routinesDependencies.iterator();
         while (iterator.hasNext()) {
             RoutinesParameterType routine = iterator.next();
-            if (StringUtils.isEmpty(routine.getId()) || StringUtils.isEmpty(routine.getName())) {
+            if (StringUtils.isEmpty(routine.getId()) || (routine.getType() == null && StringUtils.isEmpty(routine.getName()))) {
                 iterator.remove();
             }
         }
@@ -4722,7 +4736,9 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
 
         Set<String> listRoutines = new HashSet<String>();
         for (RoutinesParameterType routine : routinesDependencies) {
-            listRoutines.add(routine.getName());
+            if (routine.getName() != null) {
+                listRoutines.add(routine.getName());
+            }
         }
 
         IJobletProviderService jobletService = null;
@@ -4812,14 +4828,6 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
             // }
             node.setPropertyValue(EParameterName.REPAINT.getName(), Boolean.TRUE);
         }
-    }
-
-    public void setNeededRoutines(Set<String> neededRoutines) {
-        this.neededRoutines = neededRoutines;
-    }
-
-    public void setNeededPigudf(Set<String> neededPigudf) {
-        this.neededPigudf = neededPigudf;
     }
 
     public List<RoutinesParameterType> getRoutineDependencies() {
@@ -4935,6 +4943,11 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
 
     @Override
     public INode getNodeByUniqueName(String uniqueName) {
-        return getGeneratingNodes().stream().filter(n -> n.getUniqueName().equals(uniqueName)).findAny().orElse(null);
+        for (INode node : getGeneratingNodes()) {
+            if (node.getUniqueName().equals(uniqueName)) {
+                return node;
+            }
+        }
+        return null;
     }
 }

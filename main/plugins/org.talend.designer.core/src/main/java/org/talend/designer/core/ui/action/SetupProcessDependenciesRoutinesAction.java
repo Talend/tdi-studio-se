@@ -14,14 +14,17 @@ package org.talend.designer.core.ui.action;
 
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.window.Window;
 import org.eclipse.ui.PlatformUI;
+import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.exception.PersistenceException;
 import org.talend.commons.runtime.model.repository.ERepositoryStatus;
-import org.talend.commons.ui.runtime.exception.ExceptionHandler;
 import org.talend.commons.ui.runtime.image.ECoreImage;
 import org.talend.commons.ui.runtime.image.ImageProvider;
 import org.talend.core.CorePlugin;
@@ -32,17 +35,18 @@ import org.talend.core.model.properties.ProcessItem;
 import org.talend.core.model.relationship.RelationshipItemBuilder;
 import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
+import org.talend.core.runtime.process.ITalendProcessJavaProject;
 import org.talend.core.ui.IJobletProviderService;
-import org.talend.designer.core.DesignerPlugin;
 import org.talend.designer.core.i18n.Messages;
 import org.talend.designer.core.model.utils.emf.talendfile.ProcessType;
 import org.talend.designer.core.model.utils.emf.talendfile.RoutinesParameterType;
 import org.talend.designer.core.model.utils.emf.talendfile.TalendFileFactory;
 import org.talend.designer.core.ui.routine.RoutineItemRecord;
 import org.talend.designer.core.ui.routine.SetupProcessDependenciesRoutinesDialog;
+import org.talend.designer.maven.utils.MavenProjectUtils;
+import org.talend.designer.runprocess.IRunProcessService;
 import org.talend.repository.ProjectManager;
 import org.talend.repository.model.IProxyRepositoryFactory;
-import org.talend.repository.model.IRepositoryService;
 import org.talend.repository.model.RepositoryNode;
 import org.talend.repository.ui.actions.AContextualAction;
 
@@ -54,7 +58,7 @@ public class SetupProcessDependenciesRoutinesAction extends AContextualAction {
     public SetupProcessDependenciesRoutinesAction() {
         super();
 
-        String text2 = Messages.getString("SetupProcessDependenciesRoutinesAction.title"); //$NON-NLS-1$
+        String text2 = Messages.getString("SetupProcessDependenciesRoutinesAction.actiontitle"); //$NON-NLS-1$
         this.setText(text2);
         this.setToolTipText(text2);
         this.setImageDescriptor(ImageProvider.getImageDesc(ECoreImage.ROUTINE_ICON));
@@ -84,7 +88,8 @@ public class SetupProcessDependenciesRoutinesAction extends AContextualAction {
                     canWork = true;
                 } else if (node.getObjectType() != ERepositoryObjectType.PROCESS
                         && node.getObjectType() != ERepositoryObjectType.JOBLET
-                        && node.getObjectType() != ERepositoryObjectType.PROCESS_ROUTE) {
+                        && node.getObjectType() != ERepositoryObjectType.PROCESS_ROUTE
+                        && node.getObjectType() != ERepositoryObjectType.PROCESS_ROUTELET) {
                     canWork = false;
                 }
                 break;
@@ -93,9 +98,6 @@ public class SetupProcessDependenciesRoutinesAction extends AContextualAction {
             }
             if (canWork && node.getObject() != null
                     && ProxyRepositoryFactory.getInstance().getStatus(node.getObject()) == ERepositoryStatus.DELETED) {
-                canWork = false;
-            }
-            if (canWork && !ProjectManager.getInstance().isInCurrentMainProject(node)) {
                 canWork = false;
             }
 
@@ -117,11 +119,12 @@ public class SetupProcessDependenciesRoutinesAction extends AContextualAction {
         }
         RepositoryNode node = (RepositoryNode) obj;
         boolean readonly = false;
-        IRepositoryService service = DesignerPlugin.getDefault().getRepositoryService();
-        IProxyRepositoryFactory repFactory = service.getProxyRepositoryFactory();
+        ProxyRepositoryFactory repFactory = ProxyRepositoryFactory.getInstance();
         ERepositoryStatus status = repFactory.getStatus(node.getObject());
         if (!repFactory.isPotentiallyEditable(node.getObject()) || status == ERepositoryStatus.LOCK_BY_OTHER
-                || status == ERepositoryStatus.LOCK_BY_USER) {
+                || status == ERepositoryStatus.LOCK_BY_USER || !ProjectManager.getInstance().isInCurrentMainProject(node)
+                || (ERepositoryObjectType.TEST_CONTAINER != null
+                        && node.getObjectType().equals(ERepositoryObjectType.TEST_CONTAINER))) {
             readonly = true;
         }
         Item item = node.getObject().getProperty().getItem();
@@ -130,16 +133,25 @@ public class SetupProcessDependenciesRoutinesAction extends AContextualAction {
             ProcessType process = processItem.getProcess();
 
             SetupProcessDependenciesRoutinesDialog dialog = new SetupProcessDependenciesRoutinesDialog(PlatformUI.getWorkbench()
-                    .getDisplay().getActiveShell(), process, readonly);
+                    .getDisplay().getActiveShell(), processItem, readonly);
             if (dialog.open() == Window.OK && !readonly) {
                 process.getParameters().getRoutinesParameter().clear();
 
                 createRoutinesDependencies(process, dialog.getSystemRoutines());
-                createRoutinesDependencies(process, dialog.getUserRoutines());
+                createRoutinesDependencies(process, dialog.getGlobalRoutines());
+                createRoutinesDependencies(process, dialog.getRoutinesJars());
+                createRoutinesDependencies(process, dialog.getBeansJars());
                 try {
                     CorePlugin.getDefault().getRepositoryService().getProxyRepositoryFactory().save(processItem);
+                    if (GlobalServiceRegister.getDefault().isServiceRegistered(IRunProcessService.class)) {
+                        IRunProcessService runService = GlobalServiceRegister.getDefault().getService(IRunProcessService.class);
+                        ITalendProcessJavaProject jobProject = runService.getExistingTalendJobProject(processItem.getProperty());
+                        if (jobProject != null) {
+                            MavenProjectUtils.updateMavenProject(new NullProgressMonitor(), jobProject.getProject());
+                        }
+                    }
                     RelationshipItemBuilder.getInstance().addOrUpdateItem(processItem);
-                } catch (PersistenceException e) {
+                } catch (PersistenceException | CoreException e) {
                     ExceptionHandler.process(e);
                 }
             }
@@ -148,12 +160,14 @@ public class SetupProcessDependenciesRoutinesAction extends AContextualAction {
             ProcessType process = jobProcessItem.getJobletProcess();
 
             SetupProcessDependenciesRoutinesDialog dialog = new SetupProcessDependenciesRoutinesDialog(PlatformUI.getWorkbench()
-                    .getDisplay().getActiveShell(), process, readonly);
+                    .getDisplay().getActiveShell(), jobProcessItem, readonly);
             if (dialog.open() == Window.OK && !readonly) {
                 process.getParameters().getRoutinesParameter().clear();
 
                 createRoutinesDependencies(process, dialog.getSystemRoutines());
-                createRoutinesDependencies(process, dialog.getUserRoutines());
+                createRoutinesDependencies(process, dialog.getGlobalRoutines());
+                createRoutinesDependencies(process, dialog.getRoutinesJars());
+                createRoutinesDependencies(process, dialog.getBeansJars());
                 try {
                     CorePlugin.getDefault().getRepositoryService().getProxyRepositoryFactory().save(jobProcessItem);
                     IJobletProviderService jobletService = (IJobletProviderService) GlobalServiceRegister.getDefault()
@@ -169,6 +183,7 @@ public class SetupProcessDependenciesRoutinesAction extends AContextualAction {
         }
     }
 
+    @SuppressWarnings("unchecked")
     private void createRoutinesDependencies(ProcessType process, List<RoutineItemRecord> routineRecords) {
         if (routineRecords == null) {
             return;
@@ -176,18 +191,28 @@ public class SetupProcessDependenciesRoutinesAction extends AContextualAction {
         for (RoutineItemRecord r : routineRecords) {
             List<RoutinesParameterType> routinesDependencies = process.getParameters().getRoutinesParameter();
             boolean found = false;
-            for (RoutinesParameterType type : routinesDependencies) {
-                // if (r.isSystem() == type.isSystem()) {
-                if (type.getId().equals(r.getId()) || type.getName().equals(r.getName())) {
+            for (RoutinesParameterType parameter : routinesDependencies) {
+                if (r.getType() == null && parameter.getType() == null) {
+                    if (parameter.getId().equals(r.getId())
+                            || (parameter.getName() != null && parameter.getName().equals(r.getName()))) {
+                        found = true;
+                        break;
+                    }
+                    continue;
+                }
+                if (r.getType() != null && r.getType().equals(parameter.getType()) && parameter.getId().equals(r.getId())) {
                     found = true;
                     break;
                 }
-                // }
             }
             if (!found) {
                 RoutinesParameterType itemRecordType = TalendFileFactory.eINSTANCE.createRoutinesParameterType();
-                itemRecordType.setName(r.getName());
+                // won't store name for codejar
+                if (StringUtils.isBlank(r.getType())) {
+                    itemRecordType.setName(r.getName());
+                }
                 itemRecordType.setId(r.getId());
+                itemRecordType.setType(r.getType());
                 process.getParameters().getRoutinesParameter().add(itemRecordType);
             }
         }

@@ -148,6 +148,7 @@ public class ComponentsUtils {
                     && componentDefinition.getFamilies()[0].contains("JDBC")) {
                 jdbcDefinitions.add(componentDefinition);
             }
+
             loadComponents(components, componentDefinition);
         }
 
@@ -205,7 +206,7 @@ public class ComponentsUtils {
         // if the component is not needed in the current branding,
         // and that this one IS a specific component for code generation,
         // hide it
-        if (hiddenComponent
+        if (UnifiedComponentUtil.JDBC_COMPONENT_BLACKLIST.contains(currentComponent.getName()) || hiddenComponent
                 && (currentComponent.getOriginalFamilyName().contains("Technical") || currentComponent.isTechnical())) {
             currentComponent.setVisible(false);
             currentComponent.setTechnical(true);
@@ -410,7 +411,8 @@ public class ComponentsUtils {
                 boolean isEnumProperty = EParameterFieldType.CLOSED_LIST.equals(fieldType) && storedValue != null
                         && storedValue instanceof Enum;
                 if (EParameterFieldType.NAME_SELECTION_AREA.equals(fieldType) || EParameterFieldType.JSON_TABLE.equals(fieldType)
-                        || EParameterFieldType.CHECK.equals(fieldType) || isNameProperty || isEnumProperty) {
+                        || EParameterFieldType.CHECK.equals(fieldType) || EParameterFieldType.MAPPING_TYPE.equals(fieldType)
+                        || isNameProperty || isEnumProperty) {
                     // Disable context support for those filed types and name parameter.
                     param.setSupportContext(false);
                 } else {

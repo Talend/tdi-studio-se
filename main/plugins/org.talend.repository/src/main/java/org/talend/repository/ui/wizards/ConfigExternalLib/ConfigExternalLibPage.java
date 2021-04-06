@@ -12,11 +12,13 @@
 // ============================================================================
 package org.talend.repository.ui.wizards.ConfigExternalLib;
 
+import org.eclipse.emf.common.util.EList;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.WizardPage;
 import org.talend.commons.runtime.model.repository.ERepositoryStatus;
 import org.talend.core.model.properties.Item;
 import org.talend.core.model.properties.RoutineItem;
+import org.talend.core.model.properties.RoutinesJarItem;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
 import org.talend.repository.model.IProxyRepositoryFactory;
 import org.talend.repository.model.RepositoryNode;
@@ -94,6 +96,21 @@ public abstract class ConfigExternalLibPage extends WizardPage {
         RepositoryNode node = getSelectedRepositoryNode();
         Item item = node.getObject().getProperty().getItem();
         return (RoutineItem) item;
+    }
+
+    public Item getSelectedItem() {
+        return getSelectedRepositoryNode().getObject().getProperty().getItem();
+    }
+
+    public EList getImports() {
+        Item item = getSelectedItem();
+        if (item instanceof RoutineItem) {
+            return ((RoutineItem) item).getImports();
+        }
+        if (item instanceof RoutinesJarItem) {
+            return ((RoutinesJarItem) item).getRoutinesJarType().getImports();
+        }
+        return null;
     }
 
 }

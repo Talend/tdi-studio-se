@@ -16,7 +16,6 @@
   </requires>  
   <plugin id="org.talend.libraries.apache" download-size="0" install-size="0" version="0.0.0"/>
   <plugin id="org.talend.libraries.apache.axis2" download-size="0" install-size="0" version="0.0.0"/>
-  <plugin id="org.talend.libraries.apache.batik" download-size="0" install-size="0" version="0.0.0"/>
   <plugin id="org.talend.libraries.apache.chemistry" download-size="0" install-size="0" version="0.0.0"/>
   <plugin id="org.talend.libraries.apache.common" download-size="0" install-size="0" version="0.0.0"/>
   <plugin id="org.talend.libraries.apache.cxf" download-size="0" install-size="0" version="0.0.0"/>
