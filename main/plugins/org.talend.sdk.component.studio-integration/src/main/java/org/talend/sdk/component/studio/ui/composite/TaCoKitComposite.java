@@ -247,7 +247,9 @@ public class TaCoKitComposite extends MissingSettingsMultiThreadDynamicComposite
             previousComposite = connectionComposite;            
             if (useExistConnectionParameter != null) {
                 Control connectionControl = addWidget(connectionComposite, useExistConnectionParameter, null);
-                addWidget(connectionComposite, connectionParameter, connectionControl);
+                if (doShow(connectionParameter)) {
+                    addWidget(connectionComposite, connectionParameter, connectionControl);
+                }
             } else {
                 addWidget(connectionComposite, connectionParameter, null);
             }         
