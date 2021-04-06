@@ -64,6 +64,7 @@ import org.talend.core.model.repository.RepositoryManager;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
 import org.talend.core.repository.ui.editor.RepositoryEditorInput;
 import org.talend.core.ui.services.IOpenJobScriptActionService;
+import org.talend.core.ui.token.RepositoryOldItemsTokenCollector;
 import org.talend.designer.codegen.ICodeGeneratorService;
 import org.talend.designer.codegen.ISQLPatternSynchronizer;
 import org.talend.designer.codegen.ITalendSynchronizer;
@@ -216,6 +217,8 @@ public class OpenExistVersionProcessWizard extends Wizard {
             // processObject.getProperty().setVersion(originalVersion);
             if (lastVersion) {
                 lockObject(processObject);
+            } else {
+                RepositoryOldItemsTokenCollector.record(node.getObject().getRepositoryObjectType().getLabel());
             }
             ERepositoryStatus status = node.getObject().getRepositoryStatus();
             boolean isLocked = false;

@@ -37,6 +37,7 @@ import org.talend.core.model.repository.RepositoryManager;
 import org.talend.core.model.resources.ResourceItem;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
 import org.talend.core.service.IResourcesDependenciesService;
+import org.talend.core.ui.token.RepositoryOldItemsTokenCollector;
 import org.talend.expressionbuilder.ExpressionPersistance;
 import org.talend.repository.ProjectManager;
 import org.talend.repository.model.IProxyRepositoryFactory;
@@ -172,6 +173,8 @@ public class OpenAnotherVersionResrouceWizard extends Wizard {
 			repoObject.getProperty().setVersion(originalVersion);
 			if (lastVersion) {
 				lockObject(repoObject);
+            } else {
+                RepositoryOldItemsTokenCollector.record(node.getObject().getRepositoryObjectType().getLabel());
 			}
 //			ERepositoryStatus status = node.getObject().getRepositoryStatus();
 //			boolean isLocked = false;
