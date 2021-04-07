@@ -44,6 +44,7 @@ final String version = (String)node.getElementParameter(EParameterName.VERSION.g
 %>
 
 final org.talend.sdk.component.runtime.manager.ComponentManager mgr_<%=cid%> = org.talend.sdk.component.runtime.manager.ComponentManager.instance();
+mgr_<%=cid%>.setMapperBuilder(new org.talend.sdk.component.runtime.manager.input.MapperBuilder(org.talend.sdk.component.runtime.input.ObjectConverter.IDENTITY));
 if (mgr_<%=cid%>.getContainer().findAll().isEmpty()) {
     mgr_<%=cid%>.autoDiscoverPlugins(false, true);
 }
@@ -54,7 +55,7 @@ final org.talend.sdk.component.runtime.record.RecordConverters.MappingMetaRegist
 
 final org.talend.sdk.component.runtime.input.Mapper tempMapper_<%=cid%> = mgr_<%=cid%>.findMapper("<%=family%>", "<%=originalName%>", <%=version%>, configuration_<%=cid%>)
     .orElseThrow(() -> new IllegalArgumentException("Can't find <%=family%>#<%=originalName%>"));
-
+    
 int nbLineInput_<%=cid%> = 0;
 
 org.talend.sdk.component.runtime.di.JobStateAware.init(tempMapper_<%=cid%>, globalMap);
@@ -95,25 +96,31 @@ final javax.json.JsonBuilderFactory jsonBuilderFactory_<%=cid%> = javax.json.Jso
 final org.talend.sdk.component.api.service.record.RecordBuilderFactory recordBuilderMapper_<%=cid%> = org.talend.sdk.component.api.service.record.RecordBuilderFactory.class.cast(servicesMapper_<%=cid%>
                                                                                                                         .get(org.talend.sdk.component.api.service.record.RecordBuilderFactory.class));
 final org.talend.sdk.component.runtime.record.RecordConverters converters_<%=cid%> = new org.talend.sdk.component.runtime.record.RecordConverters();
-final Class outputType_<%=cid%> = <%=output%>.getClass();
+
+final Class<?> outputType_<%=cid%> = <%=output%>.getClass();
+
+final org.apache.johnzon.mapper.Mapper mapperJson_<%=cid%> = new org.apache.johnzon.mapper.MapperBuilder().build();
 
 Object data_<%=cid%>;
 while ((data_<%=cid%> = input_<%=cid%>.next()) != null) {
     nbLineInput_<%=cid%>++;
     globalMap.put("<%=cid %>_NB_LINE", nbLineInput_<%=cid%>);
-    final String jsonValueMapper_<%=cid%>;
-    if (javax.json.JsonValue.class.isInstance(data_<%=cid%>)) {
-        <%=output%> = jsonb_<%=cid%>.fromJson(javax.json.JsonValue.class.cast(data_<%=cid%>).toString(), <%=output%>.getClass());
-    } else if (org.talend.sdk.component.api.record.Record.class.isInstance(data_<%=cid%>)) {
+
+    if (javax.json.JsonStructure.class.isInstance(data_<%=cid%>)) {
+        <%=output%> = mapperJson_<%=cid%>.readObject((javax.json.JsonStructure) data_<%=cid%>, outputType_<%=cid%>);
+    } 
+    else if (org.talend.sdk.component.api.record.Record.class.isInstance(data_<%=cid%>)) {
         <%=output%> = <%=output%>.getClass().cast(converters_<%=cid%>.toType(
-            registry_<%=cid%>,
-            data_<%=cid%>,
-            <%=output%>.getClass(),
+            registry_<%=cid%>, 
+            (org.talend.sdk.component.api.record.Record) data_<%=cid%>,
+            outputType_<%=cid%>,
             () -> jsonBuilderFactory_<%=cid%>,
             () -> jsonProvider_<%=cid%>,
             () -> jsonb_<%=cid%>,
             () -> recordBuilderMapper_<%=cid%>,
             registry_metadata_<%=cid%>));
-    } else {
-        <%=output%> = jsonb_<%=cid%>.fromJson(jsonb_<%=cid%>.toJson(data_<%=cid%>), <%=output%>.getClass());
+    } 
+    else {
+        final String jsonValueMapper_<%=cid%> = jsonb_<%=cid%>.toJson(data_<%=cid%>);
+        <%=output%> = jsonb_<%=cid%>.fromJson(jsonValueMapper_<%=cid%>, <%=output%>.getClass());
     }
