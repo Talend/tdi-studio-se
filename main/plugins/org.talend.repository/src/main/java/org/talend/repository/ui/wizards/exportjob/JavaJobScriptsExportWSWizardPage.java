@@ -956,6 +956,10 @@ public class JavaJobScriptsExportWSWizardPage extends JavaJobScriptsExportWizard
             if (contextNames.size() > 0) {
                 contextCombo.select(0);
             }
+            String defaultCon = item.getProcess().getDefaultContext();
+            if(defaultCon != null && contextNames.contains(defaultCon)) {
+                contextCombo.select(contextNames.indexOf(defaultCon));
+            }
         }
 
         if (log4jLevelCombo != null) {
