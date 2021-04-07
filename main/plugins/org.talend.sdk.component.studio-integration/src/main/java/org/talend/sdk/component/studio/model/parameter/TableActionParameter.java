@@ -72,7 +72,13 @@ public class TableActionParameter extends AbstractActionParameter {
                 final Map<String, Object> row = value.get(rowNumber);
                 for (Map.Entry<String, Object> entry : row.entrySet()) {
                     if (entry.getKey().endsWith(getParameter())) {
-                        return StringUtils.isBlank((String) entry.getValue());
+                        Object obj = entry.getValue();
+                        if (obj == null) {
+                            return true;
+                        } else if (obj instanceof Integer) {
+                            return Integer.parseInt(obj.toString()) == 0;
+                        }
+                        return StringUtils.isBlank(obj.toString());
                     }
                 }
             }

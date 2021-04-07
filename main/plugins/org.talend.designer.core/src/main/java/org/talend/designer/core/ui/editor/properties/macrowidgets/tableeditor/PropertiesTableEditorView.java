@@ -831,7 +831,7 @@ public class PropertiesTableEditorView<B> extends AbstractPropertiesTableEditorV
                                         index = j;
                                     }
                                 }
-                                if (value != null && (index >= 0)) {
+                                if (value != null && (index >= 0) && itemValues.length > 0) {
                                     finalValue = itemValues[new Integer(index)];
                                 }
                             }
