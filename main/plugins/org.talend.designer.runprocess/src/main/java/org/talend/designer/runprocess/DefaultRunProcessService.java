@@ -841,17 +841,23 @@ public class DefaultRunProcessService implements IRunProcessService {
             if (info.equals(mainJobInfo)) {
                 continue;
             }
-            childPoms.add(info.getPomFile());
 
             // copy source code to the main project
             IFile codeFile = info.getCodeFile();
             IPath refPath = codeFile.getProjectRelativePath();
             IFolder targetFolder = mainProject.getFolder(refPath.removeLastSegments(1));
+
             if (!targetFolder.exists()) {
                 targetFolder.create(true, false, progressMonitor);
             }
+            if (codeFile.getLocation().removeLastSegments(1).equals(targetFolder.getLocation())) {
+                continue;
+            }
+
             FilesUtils.copyDirectory(new File(codeFile.getLocation().toPortableString()),
                     new File(targetFolder.getLocation().toPortableString()));
+
+            childPoms.add(info.getPomFile());
         }
 
         PomUtil.updateMainJobDependencies(mainJobInfo.getPomFile(), childPoms, childJobDependencies, progressMonitor);
