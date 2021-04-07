@@ -24,6 +24,7 @@ import org.talend.components.api.properties.ComponentProperties;
 import org.talend.core.model.metadata.builder.connection.Connection;
 import org.talend.core.model.utils.AbstractDragAndDropServiceHandler;
 import org.talend.repository.generic.model.genericMetadata.GenericConnection;
+import org.talend.repository.generic.model.genericMetadata.GenericMetadataFactory;
 
 /**
  * created by hcyi on Feb 22, 2016 Detailled comment
@@ -37,17 +38,12 @@ public class GenericDragAndDropHandlerTest {
 
     @Test
     public void testIsGenericRepositoryValue() {
-        Connection connection = mock(Connection.class);
-        AbstractDragAndDropServiceHandler abstractDragAndDropServiceHandler = mock(AbstractDragAndDropServiceHandler.class);
-        List<ComponentProperties> componentProsList = new ArrayList<>();
-        boolean isGenericRepositoryValue = abstractDragAndDropServiceHandler.isGenericRepositoryValue(componentProsList,
-                "paramName1");//$NON-NLS-1$
-        assertEquals(false, isGenericRepositoryValue);
-
-        connection = mock(GenericConnection.class);
-        GenericDragAndDropHandler genericDragAndDropHandler = mock(GenericDragAndDropHandler.class);
-        when(genericDragAndDropHandler.canHandle(connection)).thenReturn(true);
-        isGenericRepositoryValue = genericDragAndDropHandler.isGenericRepositoryValue(null, "paramName2");//$NON-NLS-1$
+        Connection connection = GenericMetadataFactory.eINSTANCE.createGenericConnection();
+        GenericDragAndDropHandler genericDragAndDropHandler = new GenericDragAndDropHandler();
+        assertEquals(false, genericDragAndDropHandler.canHandle(connection));
+        connection.setCompProperties("test");
+        assertEquals(true, genericDragAndDropHandler.canHandle(connection));
+        boolean isGenericRepositoryValue = genericDragAndDropHandler.isGenericRepositoryValue(null, "paramName2");//$NON-NLS-1$
         assertEquals(false, isGenericRepositoryValue);
 
         // PowerMockito.mockStatic(ComponentsUtils.class);
