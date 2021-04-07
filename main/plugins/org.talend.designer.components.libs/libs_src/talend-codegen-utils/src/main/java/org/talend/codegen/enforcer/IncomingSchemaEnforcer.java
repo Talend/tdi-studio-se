@@ -38,6 +38,8 @@ import org.talend.daikon.avro.AvroUtils;
 import org.talend.daikon.avro.LogicalTypeUtils;
 import org.talend.daikon.avro.SchemaConstants;
 
+import static org.talend.codegen.DiSchemaConstants.TALEND6_COLUMN_TALEND_TYPE;
+
 /**
  * <b>You should almost certainly not be using this class.</b>
  *
@@ -59,11 +61,6 @@ public class IncomingSchemaEnforcer {
      * Dynamic column position possible value, which means schema doesn't have dynamic column
      */
     private static final int NO_DYNAMIC_COLUMN = -1;
-
-    /**
-     * The number of milliseconds in one day
-     */
-    private static final long ONE_DAY = 1000 * 60 * 60 * 24;
 
     /**
      * The design-time schema from the Studio that determines how incoming java column data will be interpreted.
@@ -156,6 +153,22 @@ public class IncomingSchemaEnforcer {
      */
     public void addDynamicField(String name, String diType, String logicalType, String fieldPattern, String description,
             boolean isNullable) {
+        addDynamicField(name, diType, logicalType, fieldPattern, description, null, isNullable);
+    }
+
+    /**
+     * Recreates dynamic field from parameters retrieved from DI dynamic metadata
+     *
+     * @param name dynamic field name
+     * @param diType di column type
+     * @param logicalType dynamic field logical type; could be null
+     * @param fieldPattern dynamic field date format
+     * @param description dynamic field description
+     * @param dbType original database type used for this field in source data storage; may be null
+     * @param isNullable defines whether dynamic field may contain <code>null</code> value
+     */
+    public void addDynamicField(String name, String diType, String logicalType, String fieldPattern, String description,
+            String dbType, boolean isNullable) {
         if (!needsInitDynamicColumns())
             return;
         Schema fieldSchema = diToAvro(diType, logicalType);
@@ -168,11 +181,15 @@ public class IncomingSchemaEnforcer {
         if ("id_Date".equals(diType) && fieldPattern != null) {
             field.addProp(SchemaConstants.TALEND_COLUMN_PATTERN, fieldPattern);
         }
+        field.addProp(TALEND6_COLUMN_TALEND_TYPE, diType);
+        if (dbType != null) {
+            field.addProp(SchemaConstants.TALEND_COLUMN_DB_TYPE, dbType);
+        }
         dynamicFields.add(field);
     }
 
     public void addIncomingNodeField(String name, String className) {
-        String diType = "id_String";
+        String diType;
         switch (className) {
         case "java.lang.String":
             diType = "id_String";
@@ -206,6 +223,7 @@ public class IncomingSchemaEnforcer {
             break;
         case "java.lang.Date":
             diType = "id_Date";
+            break;
         default:
             diType = "id_String";
         }
@@ -281,7 +299,7 @@ public class IncomingSchemaEnforcer {
 
         // Copy all of the fields that were initialized from dynamic columns into the runtime Schema.
         boolean dynamicFieldsAdded = false;
-        List<Schema.Field> fields = new ArrayList<Schema.Field>();
+        List<Schema.Field> fields = new ArrayList<>();
         for (Schema.Field designField : designSchema.getFields()) {
             // Replace the dynamic column by all of its contents.
             if (designField.pos() == dynamicColumnPosition) {
@@ -404,7 +422,7 @@ public class IncomingSchemaEnforcer {
         Object avroValue = null;
 
         // TODO(rskraba): This is pretty rough -- fix with a general type conversion strategy.
-        String talendType = field.getProp(DiSchemaConstants.TALEND6_COLUMN_TALEND_TYPE);
+        String talendType = field.getProp(TALEND6_COLUMN_TALEND_TYPE);
         String javaClass = fieldSchema.getProp(SchemaConstants.JAVA_CLASS_FLAG);
 
         // TODO(igonchar): This is wrong. However I left it as is. We have to fix it after release

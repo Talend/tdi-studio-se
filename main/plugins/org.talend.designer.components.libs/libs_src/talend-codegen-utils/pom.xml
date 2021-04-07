@@ -7,9 +7,9 @@
 	<groupId>org.talend.libraries</groupId>
 	<artifactId>talend-codegen-utils</artifactId>
 	<!-- release for revert version of library -->
-	<version>0.28.0</version>
+	<version>0.28.2-SNAPSHOT</version>
 	<packaging>jar</packaging>
-	
+
 	<properties>
 		<avro.version>1.8.0</avro.version>
 		<components.version>0.25.0-SNAPSHOT</components.version>
@@ -19,13 +19,13 @@
 		<java-formatter.plugin.version>0.1.0</java-formatter.plugin.version>
 		<formatter.plugin.version>1.6.0-SNAPSHOT</formatter.plugin.version>
 		<mockito.version>2.2.15</mockito.version>
-		<jacoco.plugin.version>0.7.8</jacoco.plugin.version>
-		<maven.compiler.source>1.7</maven.compiler.source>
-		<maven.compiler.target>1.7</maven.compiler.target>
+		<jacoco.plugin.version>0.8.5</jacoco.plugin.version>
+		<maven.compiler.source>1.8</maven.compiler.source>
+		<maven.compiler.target>1.8</maven.compiler.target>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<talend.nexus.url>https://artifacts-oss.talend.com</talend.nexus.url>
 	</properties>
-	
+
 	<repositories>
 		<repository>
 			<id>talend_nexus</id>
@@ -65,7 +65,7 @@
 			<url>${talend.nexus.url}/nexus/content/repositories/TalendOpenSourceRelease/</url>
 		</pluginRepository>
 	</pluginRepositories>
-	
+
 	<dependencies>
 		<dependency>
 			<groupId>org.talend.components</groupId>
@@ -104,7 +104,7 @@
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
-	
+
 	<dependencyManagement>
 		<dependencies>
 			<dependency>
@@ -119,7 +119,7 @@
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
-	
+
 	<build>
 		<plugins>
 			<plugin>
@@ -163,7 +163,7 @@
 							<goal>validate</goal>
 						</goals>
 					</execution>
-				</executions>				
+				</executions>
 			</plugin>
 		</plugins>
 	</build>

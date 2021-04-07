@@ -69,7 +69,7 @@ if(hasInput){
 	    	}
 	   	}
    	}
-   	
+
    	boolean hasValidInput = inputConn!=null;
     if (hasValidInput) {
         List<IMetadataColumn> input_columnList = inputConn.getMetadataTable().getListColumns();
@@ -120,6 +120,7 @@ if(hasInput){
                             dm_<%=cid%>.getLogicalType(),
                             dm_<%=cid%>.getFormat(),
                             dm_<%=cid%>.getDescription(),
+                            dm_<%=cid%>.getDbType(),
                             dm_<%=cid%>.isNullable());
                 }
                 incomingEnforcer_<%=cid%>.createRuntimeSchema();
@@ -162,7 +163,7 @@ if(hasInput){
         // There will be a ClassCastException if the output component does
         // not implement WriterWithFeedback, but permits outgoing
         // connections.
-        
+
         ComponentProperties componentProps = node.getComponentProperties();
 		ProcessPropertiesGenerator generator = new ProcessPropertiesGenerator(cid, component);
         List<Component.CodegenPropInfo> propsToProcess = component.getCodegenPropInfos(componentProps);
@@ -179,14 +180,14 @@ if(hasInput){
     			}
 			} // property
 		} // propInfo
-        
+
         %>
         
         org.apache.avro.generic.IndexedRecord data_<%=cid%> = null;
         if (incomingEnforcer_<%=cid%> != null) {
             data_<%=cid%> = incomingEnforcer_<%=cid%>.getCurrentRecord();
         }
-        
+
         <%
         boolean isParallelize ="true".equalsIgnoreCase(ElementParameterParser.getValue(node, "__PARALLELIZE__"));
         if (isParallelize) {
@@ -201,7 +202,7 @@ if(hasInput){
         if (writer_<%=cid%> != null && data_<%=cid%> != null) {
         	writer_<%=cid%>.write(data_<%=cid%>);
         }
-        
+
         nb_line_<%=cid %>++;
         <%if(hasMainOutput){
             %>
