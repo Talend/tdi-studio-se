@@ -357,7 +357,7 @@ public class EditPropertiesAction extends AContextualAction {
             }
 
             if (isInnerCode && codeJarinfo != null) {
-                CodesJarM2CacheManager.updateCodesJarProject(codeJarinfo.getProperty(), true);
+                CodesJarM2CacheManager.updateCodesJarProject(codeJarinfo, true);
             } else if (property.getItem() instanceof RoutineItem) {
                 talendProcessJavaProject.buildModules(new NullProgressMonitor(), null, null);
             }

@@ -3561,6 +3561,9 @@ public abstract class DataMapTableView extends Composite implements IDataMapTabl
                         } finally {
                             DataMapTableView.this.customSized = isCustom;
                         }
+                        if (canBeResizedAtPreferedSize()) {
+                            changeSize(getPreferredSize(true, false, false), true, true);
+                        }
                         return value;
                     }
                 }

@@ -180,6 +180,13 @@ final java.util.Map<String, String> registry_metadata_<%=cid%> = new java.util.H
                     }
                     key = keyBuilder.toString();
                 }
+                // Do not put in configuration hidden parameters
+                if (!p.isShow(params) && !key.endsWith("__version")) {
+                %>
+                // <%=key%> is hidden, skipping.
+                <%
+                    continue;
+                }
                 String value = null;
                 if(p.getFieldType() == EParameterFieldType.PASSWORD) {
                     value = ElementParameterParser.getPasswordValue(node, p.getVariableName());
