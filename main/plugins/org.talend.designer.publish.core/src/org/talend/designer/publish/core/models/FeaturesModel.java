@@ -123,7 +123,7 @@ public class FeaturesModel extends BaseModel {
         Document document = XmlUtils.getSecureDocumentBuilderFactory().newDocumentBuilder().newDocument();
 
         Element features = document.createElement("features");
-        features.setAttribute("xmlns", "http://karaf.apache.org/xmlns/features/v1.0.0");
+        features.setAttribute("xmlns", "http://karaf.apache.org/xmlns/features/v1.6.0");
         features.setAttribute("name", getArtifactId());
         document.appendChild(features);
 
@@ -153,6 +153,7 @@ public class FeaturesModel extends BaseModel {
             // add config
             Element config = document.createElement("config");
             config.setAttribute("name", configName);
+            config.setAttribute("override", "true");
             StringBuilder sb = new StringBuilder("talendcontext=\"");
             for (int i = 0; i < contextList.length; i++) {
                 if (i != 0) {
@@ -168,6 +169,7 @@ public class FeaturesModel extends BaseModel {
             for (Map.Entry<String, Map<String, String>> context : contexts.entrySet()) {
                 Element config = document.createElement("config");
                 config.setAttribute("name", name + ".talendcontext." + context.getKey());
+                config.setAttribute("override", "true");
                 StringBuilder sb = new StringBuilder("\n");
                 for (Map.Entry<String, String> property : context.getValue().entrySet()) {
                     sb.append(property.getKey());

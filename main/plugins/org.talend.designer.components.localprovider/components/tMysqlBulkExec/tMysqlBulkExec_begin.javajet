@@ -81,11 +81,16 @@ java.sql.Connection conn_<%=cid%> = null;
 		<%
 		if(dbproperties == null || ("\"\"").equals(dbproperties) || ("").equals(dbproperties)) {
 		%>
-			String url_<%=cid%> = "<%=jdbcURL%>://" + <%=host%> + ":" + <%=port%> + "/" + <%=dbName%>;
+			String url_<%=cid%> = "<%=jdbcURL%>://" + <%=host%> + ":" + <%=port%> + "/" + <%=dbName%> + "?allowLoadLocalInfile=true";
 		<%
 		} else {
 		%>
-			String url_<%=cid%> = "<%=jdbcURL%>://" + <%=host%> + ":" + <%=port%> + "/" + <%=dbName%> + "?" + <%=dbproperties%>;
+			<%
+				String localFileParam = "\"\"";
+				if (!(dbproperties.contains("allowLoadLocalInfile"))) {
+				localFileParam = "\"&allowLoadLocalInfile=true\"" ;
+			} %>
+			String url_<%=cid%> = "<%=jdbcURL%>://" + <%=host%> + ":" + <%=port%> + "/" + <%=dbName%> + "?" + <%=dbproperties%> + <%=localFileParam %>;
 		<%
 		}
 		String passwordFieldName = "__PASS__";

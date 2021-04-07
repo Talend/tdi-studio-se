@@ -42,6 +42,8 @@ boolean convertToUppercase = ("true").equals(ElementParameterParser.getValue(nod
 boolean isEnableDebug = ("true").equals(ElementParameterParser.getValue(node,"__ENABLE_DEBUG_MODE__"));
 boolean useBatchSize = ("true").equals(ElementParameterParser.getValue(node,"__USE_BATCH_SIZE__"));
 String batchSize=ElementParameterParser.getValue(node,"__BATCH_SIZE__");
+boolean useAlternateSchema = "true".equals(ElementParameterParser.getValue(node, "__USE_ALTERNATE_SCHEMA__"));
+String alternateSchema = ElementParameterParser.getValue(node, "__ALTERNATE_SCHEMA__");
 
 String rejectConnName = null;
 IConnection rejectConn = null;
@@ -64,6 +66,7 @@ int nb_line_rejected_<%=cid%> = 0;
 int deletedCount_<%=cid%> = 0;
 int updatedCount_<%=cid%> = 0;
 int insertedCount_<%=cid%> = 0;
+int rowsToCommitCount_<%=cid%>=0;
 int rejectedCount_<%=cid%> = 0;
 <%
 getManager(dbmsId, cid, node);
@@ -113,39 +116,7 @@ if(stmtStructure!=null) {
 }
 %>
 
-<%
-if(("UPDATE").equals(dataAction) || ("INSERT_OR_UPDATE").equals(dataAction) || ("UPDATE_OR_INSERT").equals(dataAction)) {
-    int updateKeyCount = 0;
-    if(stmtStructure != null) {
-        for(Column column : stmtStructure) {
-            if(column.isUpdateKey() && !column.isDynamic()) {
-                updateKeyCount++;
-            }
-        }
-        %>
-        int updateKeyCount_<%=cid%> = <%=updateKeyCount%>;
-        if(updateKeyCount_<%=cid%> < 1) {
-            throw new RuntimeException("For update, Schema must have a key");
-        }
-        <%
-    }
-} else if(("DELETE").equals(dataAction)) {
-    int deleteKeyCount = 0;
-    if(stmtStructure != null) {
-        for(Column column : stmtStructure) {
-            if(column.isDeleteKey() && !column.isDynamic()) {
-                deleteKeyCount++;
-            }
-        }
-        %>
-        int deleteKeyCount_<%=cid%> = <%=deleteKeyCount%>;
-        if(deleteKeyCount_<%=cid%> < 1) {
-            throw new RuntimeException("For delete, Schema must have a key");
-        }
-        <%
-    }
-}
-%>
+<%@ include file="@{org.talend.designer.components.localprovider}/components/templates/DB/Output/CheckKeysForUpdateAndDelete.javajet"%>
 
 
 boolean whetherReject_<%=cid%> = false;
@@ -157,10 +128,17 @@ String useExistingConn = ElementParameterParser.getValue(node,"__USE_EXISTING_CO
 if(("true").equals(useExistingConn)) {
     String connection = ElementParameterParser.getValue(node,"__CONNECTION__");
     String conn = "conn_" + connection;
-    String tableschema = "tableschema_" + connection;
+	if(useAlternateSchema) {%>
+		dbschema_<%=cid%> = <%=alternateSchema%>;
+	<%
+	} else {
+		String tableschema = "tableschema_" + connection;
+	%>
+		dbschema_<%=cid%> = (String)globalMap.get("<%=tableschema%>");
+	<%
+	}
     String username = "username_" + connection;
     %>
-    dbschema_<%=cid%> = (String)globalMap.get("<%=tableschema%>");
     conn_<%=cid%> = (java.sql.Connection)globalMap.get("<%=conn%>");
     dbUser_<%=cid %> = (String)globalMap.get("<%=username%>");
     <%dbLog.conn().useExistConn("conn_"+cid+".getMetaData().getURL()", "conn_"+cid+".getMetaData().getUserName()");%>

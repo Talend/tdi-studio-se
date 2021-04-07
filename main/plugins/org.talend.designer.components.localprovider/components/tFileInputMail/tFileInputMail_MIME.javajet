@@ -192,8 +192,12 @@
 					if(("true").equals(mailChecked_<%=cid %>[i_<%=cid%>])){
 						String[] sa_<%=cid%> = msg_<%=cid %>.getHeader(part_<%=cid%>);
 						String tempStr_<%=cid%>="";
-						for(int i=0;i<sa_<%=cid%>.length;i++){
-							tempStr_<%=cid%>=tempStr_<%=cid%>+sa_<%=cid%>[i] + sep_<%=cid%>;
+						if(sa_<%=cid%>!=null){
+							for(int i=0;i<sa_<%=cid%>.length;i++){
+								tempStr_<%=cid%>=tempStr_<%=cid%>+sa_<%=cid%>[i] + sep_<%=cid%>;
+							}
+						}else{
+							tempStr_<%=cid%>=null;
 						}
 						list_<%=cid%>.add(decode_<%=cid%>.decode(tempStr_<%=cid%>));
 					}else{
@@ -208,7 +212,7 @@
                 void saveAttachment(javax.mail.Part mpart) throws IOException, javax.mail.MessagingException {
                     if (mpart.getFileName() != null && (
                             mpart.getDisposition() == null ||
-                            (mpart.getDisposition().equals(javax.mail.Part.ATTACHMENT) || mpart.getDisposition().equals(javax.mail.Part.INLINE))
+                            (mpart.getDisposition().equalsIgnoreCase(javax.mail.Part.ATTACHMENT) || mpart.getDisposition().equalsIgnoreCase(javax.mail.Part.INLINE))
                     )) {
                         String attachFileName = javax.mail.internet.MimeUtility.decodeText(mpart.getFileName());
 
@@ -218,19 +222,18 @@
                         }
                         path = path + attachFileName;
                         <% if(isLog4jEnabled){ %>
-                                log.info("<%= cid %> - Extracted attachment: '" + attachFileName + "'.");
+                                log.info("<%= cid %> - Extracting attachment: '" + attachFileName + "'.");
                         <% } %>
-
                         java.io.File attachFile = new java.io.File(path);
-                        java.io.BufferedOutputStream out = new java.io.BufferedOutputStream(new java.io.FileOutputStream(attachFile));
-                        java.io.BufferedInputStream in = new java.io.BufferedInputStream(mpart.getInputStream());
-                        int buffer = 0;
-                        while ((buffer = in.read()) != -1) {
-                            out.write(buffer);
+                        try (java.io.BufferedOutputStream out = new java.io.BufferedOutputStream(new java.io.FileOutputStream(attachFile));
+                            java.io.BufferedInputStream in = new java.io.BufferedInputStream(mpart.getInputStream())){
+                            byte[] buffer = new byte[8192];
+                            int bytesRead = 0;
+                            while ((bytesRead = in.read(buffer)) > 0) {
+                                out.write(buffer, 0, bytesRead);
+                            }
                             out.flush();
                         }
-                        out.close();
-                        in.close();
                     }
                 }
 

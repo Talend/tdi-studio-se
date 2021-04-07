@@ -308,7 +308,7 @@ public class MavenVersionManagementProjectSettingPage extends AbstractVersionMan
         applyVersionButton.setText(Messages.getString("VersionManagementDialog.applyVersion")); //$NON-NLS-1$
 
         subjobs = new Button(option, SWT.NONE);
-        subjobs.setText(Messages.getString("VersionManagementDialog.subjob")); //$NON-NLS-1$
+        subjobs.setText(Messages.getString("VersionManagementDialog.subjob2")); //$NON-NLS-1$
         subjobs.setEnabled(false);
 
         eachVersionButton = new Button(option, SWT.RADIO);

@@ -41,7 +41,7 @@
           </ITEMS>
         </PARAMETER>
 		<PARAMETER NAME="PROXY_HOST" FIELD="TEXT" NUM_ROW="56">
-			<DEFAULT>"61.163.92.4"</DEFAULT>
+			<DEFAULT>"127.0.0.1"</DEFAULT>
 		</PARAMETER>
 		<PARAMETER NAME="PROXY_PORT" FIELD="TEXT" NUM_ROW="57">
 			<DEFAULT>"8080"</DEFAULT>
@@ -78,7 +78,7 @@
     </ADVANCED_PARAMETERS>
     <CODEGENERATION>
         <IMPORTS>
-            <IMPORT NAME="talend-proxy" MODULE="talend-proxy-1.0.0.jar" MVN="mvn:org.talend.components.lib/talend-proxy/1.0.0" REQUIRED_IF="(PROXY_GLOBAL == 'false')" />
+            <IMPORT NAME="talend-proxy" MODULE="talend-proxy-1.0.1.jar" MVN="mvn:org.talend.components.lib/talend-proxy/1.0.1" REQUIRED_IF="(PROXY_GLOBAL == 'false')" />
             <IMPORT NAME="apache-commons-lang3" MODULE="apache-commons-lang3-3.9.jar" MVN="mvn:org.apache.commons/commons-lang3/3.9" REQUIRED_IF="(PROXY_GLOBAL == 'false')" />
         </IMPORTS>
     </CODEGENERATION>

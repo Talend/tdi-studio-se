@@ -28,6 +28,7 @@ import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.talend.commons.exception.CommonExceptionHandler;
 import org.talend.repository.i18n.Messages;
@@ -273,6 +274,10 @@ public abstract class AbstractLoginActionPage extends AbstractActionPage {
 
         protected List<StyleRange> errStyleRange;
 
+        protected Throwable authException;
+
+        protected boolean hasAuthException = false;
+
         public void clearAllMessages() {
             errMessage = null;
             warnMessage = null;
@@ -280,7 +285,9 @@ public abstract class AbstractLoginActionPage extends AbstractActionPage {
             errStyleRange = null;
             warnStyleRange = null;
             infoStyleRange = null;
-            loginDialog.clearErrorMessage();
+            Display.getDefault().syncExec(() -> loginDialog.clearErrorMessage());
+            authException = null;
+            hasAuthException = false;
         }
 
         public void hideAllMessages() {
@@ -294,7 +301,7 @@ public abstract class AbstractLoginActionPage extends AbstractActionPage {
         public void setErrMessage(String errMessage, List<StyleRange> errStyleRange) {
             this.errMessage = errMessage;
             this.errStyleRange = errStyleRange;
-            loginDialog.setErrorMessage(errMessage, errStyleRange);
+            showErrorMessage();
         }
 
         public void setErrMessage(String errMessage) {
@@ -308,7 +315,7 @@ public abstract class AbstractLoginActionPage extends AbstractActionPage {
         public void setWarnMessage(String warnMessage, List<StyleRange> warnStyleRange) {
             this.warnMessage = warnMessage;
             this.warnStyleRange = warnStyleRange;
-            loginDialog.setWarnMessage(warnMessage, warnStyleRange);
+            showErrorMessage();
         }
 
         public void setWarnMessage(String warnMessage) {
@@ -322,7 +329,7 @@ public abstract class AbstractLoginActionPage extends AbstractActionPage {
         public void setInfoMessage(String infoMessage, List<StyleRange> infoStyleRange) {
             this.infoMessage = infoMessage;
             this.infoStyleRange = infoStyleRange;
-            loginDialog.setInfoMessage(infoMessage, infoStyleRange);
+            showErrorMessage();
         }
 
         public void setInfoMessage(String infoMessage) {
@@ -349,6 +356,30 @@ public abstract class AbstractLoginActionPage extends AbstractActionPage {
                 hasError = true;
             }
             return hasError;
+        }
+
+        public boolean hasWarn() {
+            boolean hasWarn = false;
+            if (this.warnMessage != null && !this.warnMessage.isEmpty()) {
+                hasWarn = true;
+            }
+            return hasWarn;
+        }
+
+        public Throwable getAuthException() {
+            return authException;
+        }
+
+        public void setAuthException(Throwable authException) {
+            this.authException = authException;
+        }
+
+        public boolean isHasAuthException() {
+            return hasAuthException;
+        }
+
+        public void setHasAuthException(boolean hasAuthException) {
+            this.hasAuthException = hasAuthException;
         }
 
     }

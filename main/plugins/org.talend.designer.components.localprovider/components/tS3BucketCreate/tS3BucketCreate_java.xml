@@ -111,7 +111,6 @@
       NAME="SESSION_DURATION"
       FIELD="TEXT"
       NUM_ROW="25"
-      REQUIRED="true"
       GROUP="CONNECTION_CONFIG"
       SHOW_IF="isShow[ASSUME_ROLE] AND (ASSUME_ROLE == 'true')"
     >
@@ -218,19 +217,122 @@
     <PARAMETER
       NAME="SET_STS_ENDPOINT"
       FIELD="CHECK"
-      NUM_ROW="35"
+      NUM_ROW="40"
+      NB_LINES="5"
+      GROUP="ASSUME_ROLE_CONFIG"
       SHOW_IF="isShow[ASSUME_ROLE] AND (ASSUME_ROLE == 'true')"
     >
     </PARAMETER>
+    
 	<PARAMETER
       NAME="STS_ENDPOINT"
       FIELD="TEXT"
-      NUM_ROW="35"
-      REQUIRED="true"
-      SHOW_IF="isShow[ASSUME_ROLE] AND (ASSUME_ROLE == 'true') AND (SET_STS_ENDPOINT == 'true')"
+      NUM_ROW="40"
+      GROUP="ASSUME_ROLE_CONFIG"
+      SHOW_IF="isShow[SET_STS_ENDPOINT] AND (SET_STS_ENDPOINT == 'true')"
     >
       <DEFAULT>""</DEFAULT>
-    </PARAMETER>    	
+    </PARAMETER>
+    
+    <PARAMETER
+      NAME="SIGNING_REGION"
+      FIELD="OPENED_LIST"
+      NUM_ROW="41"
+      GROUP="ASSUME_ROLE_CONFIG"
+      REQUIRED="true"
+      SHOW_IF="isShow[ASSUME_ROLE] AND (ASSUME_ROLE == 'true')"
+    >
+      <ITEMS DEFAULT="DEFAULT">
+       	<ITEM NAME="DEFAULT" VALUE="DEFAULT" />
+        <ITEM NAME="GovCloud" VALUE="&quot;us-gov-west-1&quot;" />
+        <ITEM NAME="US_EAST_1" VALUE="&quot;us-east-1&quot;" />
+        <ITEM NAME="US_WEST_1" VALUE="&quot;us-west-1&quot;" />
+        <ITEM NAME="US_WEST_2" VALUE="&quot;us-west-2&quot;" />
+        <ITEM NAME="US_EAST_2" VALUE="&quot;us-east-2&quot;" />
+        <ITEM NAME="SA_EAST_1" VALUE="&quot;sa-east-1&quot;" />
+        <ITEM NAME="EU_WEST_1" VALUE="&quot;eu-west-1&quot;" />
+        <ITEM NAME="EU_CENTRAL_1" VALUE="&quot;eu-central-1&quot;" />
+        <ITEM NAME="EU_WEST_2" VALUE="&quot;eu-west-2&quot;" />
+        <ITEM NAME="EU_WEST_3" VALUE="&quot;eu-west-3&quot;" />
+        <ITEM NAME="EU_NORTH_1" VALUE="&quot;eu-north-1&quot;" />
+        <ITEM NAME="CN_NORTH_1" VALUE="&quot;cn-north-1&quot;" />
+        <ITEM NAME="CN_NORTHWEST_1" VALUE="&quot;cn-northwest-1&quot;" />
+        <ITEM NAME="AP_EAST_1" VALUE="&quot;ap-east-1&quot;" />
+        	<ITEM NAME="AP_SOUTHEAST_1" VALUE="&quot;ap-southeast-1&quot;" />
+        <ITEM NAME="AP_SOUTHEAST_2" VALUE="&quot;ap-southeast-2&quot;" />
+        <ITEM NAME="AP_NORTHEAST_1" VALUE="&quot;ap-northeast-1&quot;" />
+        <ITEM NAME="AP_NORTHEAST_2" VALUE="&quot;ap-northeast-2&quot;" />
+       	<ITEM NAME="AP_SOUTH_1" VALUE="&quot;ap-south-1&quot;" />
+        <ITEM NAME="CA_CENTRAL_1" VALUE="&quot;ca-central-1&quot;" />
+   	</ITEMS>
+    </PARAMETER>
+    
+    <PARAMETER
+      NAME="EXTERNALID"
+      FIELD="TEXT"
+      NUM_ROW="43"
+      GROUP="ASSUME_ROLE_CONFIG"
+      SHOW_IF="isShow[ASSUME_ROLE] AND (ASSUME_ROLE == 'true')"
+    >
+      <DEFAULT>""</DEFAULT>
+    </PARAMETER>
+    
+    <PARAMETER
+      NAME="SERIALNUMBER"
+      FIELD="TEXT"
+      NUM_ROW="44"
+      GROUP="ASSUME_ROLE_CONFIG"
+      SHOW_IF="isShow[ASSUME_ROLE] AND (ASSUME_ROLE == 'true')"
+    >
+      <DEFAULT>""</DEFAULT>
+    </PARAMETER>
+    
+     <PARAMETER
+      NAME="TOKENCODE"
+      FIELD="TEXT"
+      NUM_ROW="45"
+      GROUP="ASSUME_ROLE_CONFIG"
+      SHOW_IF="isShow[ASSUME_ROLE] AND (ASSUME_ROLE == 'true')"
+    >
+      <DEFAULT>""</DEFAULT>
+    </PARAMETER>
+    
+    <PARAMETER
+      NAME="TAGS"
+      FIELD="TABLE"
+      NUM_ROW="46"
+      GROUP="ASSUME_ROLE_CONFIG"
+      SHOW_IF="isShow[ASSUME_ROLE] AND (ASSUME_ROLE == 'true')"
+    >
+      <ITEMS>
+      	<ITEM NAME="TAG_KEY" FIELD="TEXT" />
+      	<ITEM NAME="TAG_VALUE" FIELD="TEXT" />
+      	<ITEM NAME="TAG_TRANSITIVE" FIELD="CHECK" VALUE="FALSE"/>
+      </ITEMS>
+    </PARAMETER>
+    
+    <PARAMETER
+      NAME="POLICY_TABLE"
+      FIELD="TABLE"
+      NUM_ROW="47"
+      GROUP="ASSUME_ROLE_CONFIG"
+      SHOW_IF="isShow[ASSUME_ROLE] AND (ASSUME_ROLE == 'true')"
+    >
+   		<ITEMS>
+    		<ITEM NAME="POLICY_ARN" VALUE="" />
+   		</ITEMS>
+    </PARAMETER>
+    
+    <PARAMETER
+      NAME="POLICY"
+      FIELD="MEMO"
+      NUM_ROW="48"
+      GROUP="ASSUME_ROLE_CONFIG"
+      NB_LINES="15"
+      SHOW_IF="isShow[ASSUME_ROLE] AND (ASSUME_ROLE == 'true')"
+    >
+      <DEFAULT>""</DEFAULT>
+    </PARAMETER>   	
 
     <PARAMETER NAME="ACCESS_CONTROL_LIST" FIELD="CHECK" NUM_ROW="87">
         <DEFAULT>false</DEFAULT>
@@ -245,38 +347,48 @@
         </ITEMS>
     </PARAMETER>
 
+    <PARAMETER NAME="CANNED_ACCESS_CONTROL_LIST" FIELD="OPENED_LIST" NUM_ROW="100" DYNAMIC_SETTINGS="true">
+      <ITEMS DEFAULT="NONE">
+        <ITEM NAME="NONE" VALUE="&quot;NONE&quot;" />
+        <ITEM NAME="PRIVATE" VALUE="&quot;Private&quot;" />
+        <ITEM NAME="PUBLIC_READ" VALUE="&quot;PublicRead&quot;" />
+        <ITEM NAME="PUBLIC_READ_WRITE" VALUE="&quot;PublicReadWrite&quot;" />
+        <ITEM NAME="AWS_EXEC_READ" VALUE="&quot;AwsExecRead&quot;" />
+        <ITEM NAME="AUTHENTICATED_READ" VALUE="&quot;AuthenticatedRead&quot;" />
+        <ITEM NAME="LOG_DELIVERY_WRITE" VALUE="&quot;LogDeliveryWrite&quot;" />
+      </ITEMS>
+    </PARAMETER>
+
     </ADVANCED_PARAMETERS>
 
    <CODEGENERATION>
     <IMPORTS>
-       <IMPORT NAME="aws-java-sdk-1.11.406.jar" MODULE="aws-java-sdk-1.11.406.jar"
-			MVN="mvn:com.amazonaws/aws-java-sdk/1.11.406"
+       <IMPORT NAME="aws-java-sdk-1.11.848.jar" MODULE="aws-java-sdk-1.11.848.jar"
+			MVN="mvn:com.amazonaws/aws-java-sdk/1.11.848"
 			REQUIRED_IF="USE_EXISTING_CONNECTION == 'false'" />
-		<IMPORT NAME="jackson-core-2.9.9.jar" MODULE="jackson-core-2.9.9.jar"
-			MVN="mvn:com.fasterxml.jackson.core/jackson-core/2.9.9"
+		<IMPORT NAME="jackson-core-2.11.4.jar" MODULE="jackson-core-2.11.4.jar"
+			MVN="mvn:com.fasterxml.jackson.core/jackson-core/2.11.4"
 			REQUIRED_IF="USE_EXISTING_CONNECTION == 'false'" />
-		<IMPORT NAME="jackson-databind-2.9.9.jar" MODULE="jackson-databind-2.9.9.jar"
-			MVN="mvn:com.fasterxml.jackson.core/jackson-databind/2.9.9"
+		<IMPORT NAME="jackson-databind-2.11.4.jar" MODULE="jackson-databind-2.11.4.jar"
+			MVN="mvn:com.fasterxml.jackson.core/jackson-databind/2.11.4"
 			REQUIRED_IF="USE_EXISTING_CONNECTION == 'false'" />
-		<IMPORT NAME="jackson-annotations-2.9.0.jar" MODULE="jackson-annotations-2.9.0.jar"
-			MVN="mvn:com.fasterxml.jackson.core/jackson-annotations/2.9.0"
+		<IMPORT NAME="jackson-annotations-2.11.4.jar" MODULE="jackson-annotations-2.11.4.jar"
+			MVN="mvn:com.fasterxml.jackson.core/jackson-annotations/2.11.4"
 			REQUIRED_IF="USE_EXISTING_CONNECTION == 'false'" />
-		<IMPORT NAME="httpcore-4.4.9.jar" MODULE="httpcore-4.4.9.jar"
-			MVN="mvn:org.apache.httpcomponents/httpcore/4.4.9"
+		<IMPORT NAME="httpcore-4.4.13.jar" MODULE="httpcore-4.4.13.jar"
+			MVN="mvn:org.apache.httpcomponents/httpcore/4.4.13"
 			REQUIRED_IF="USE_EXISTING_CONNECTION == 'false'" />
-		<IMPORT NAME="httpclient-4.5.5.jar" MODULE="httpclient-4.5.5.jar"
-			MVN="mvn:org.apache.httpcomponents/httpclient/4.5.5"
+		<IMPORT NAME="httpclient-4.5.12.jar" MODULE="httpclient-4.5.12.jar"
+			MVN="mvn:org.apache.httpcomponents/httpclient/4.5.12"
 			REQUIRED_IF="USE_EXISTING_CONNECTION == 'false'" />
 		<IMPORT NAME="joda-time-2.8.1.jar" MODULE="joda-time-2.8.1.jar"
 			MVN="mvn:joda-time/joda-time/2.8.1"
 			REQUIRED_IF="USE_EXISTING_CONNECTION == 'false'" />
-		<IMPORT NAME="commons-logging-1.1.3.jar" MODULE="commons-logging-1.1.3.jar"
-			MVN="mvn:commons-logging/commons-logging/1.1.3"
-			UrlPath="platform:/plugin/org.talend.libraries.apache.common/lib/commons-logging-1.1.3.jar"
+		<IMPORT NAME="commons-logging-1.2.jar" MODULE="commons-logging-1.2.jar"
+			MVN="mvn:commons-logging/commons-logging/1.2"
 			REQUIRED_IF="USE_EXISTING_CONNECTION == 'false'" />
-		<IMPORT NAME="commons-codec-1.6.jar" MODULE="commons-codec-1.6.jar"
-			MVN="mvn:org.talend.libraries/commons-codec-1.6/6.0.0"
-			UrlPath="platform:/plugin/org.talend.libraries.apache.common/lib/commons-codec-1.6.jar"
+		<IMPORT NAME="commons-codec-1.14.jar" MODULE="commons-codec-1.14.jar"
+			MVN="mvn:commons-codec/commons-codec/1.14"
 			REQUIRED_IF="USE_EXISTING_CONNECTION == 'false'" />
     </IMPORTS>
    </CODEGENERATION>

@@ -17,6 +17,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -70,6 +71,7 @@ import org.talend.daikon.serialize.PostDeserializeSetup;
 import org.talend.daikon.serialize.SerializerDeserializer;
 import org.talend.designer.core.generic.constants.IGenericConstants;
 import org.talend.designer.core.generic.model.Component;
+import org.talend.designer.core.generic.model.GenericComponent;
 import org.talend.designer.core.generic.model.GenericElementParameter;
 import org.talend.designer.core.generic.model.GenericNodeConnector;
 import org.talend.designer.core.generic.model.GenericTableUtils;
@@ -80,6 +82,8 @@ import org.talend.designer.core.model.components.AbstractBasicComponent;
 import org.talend.designer.core.model.components.EParameterName;
 import org.talend.designer.core.model.components.ElementParameter;
 import org.talend.designer.core.model.components.ElementParameterDefaultValue;
+import org.talend.designer.core.model.components.UnifiedJDBCBean;
+import org.talend.designer.core.utils.UnifiedComponentUtil;
 import org.talend.metadata.managment.ui.wizard.context.MetadataContextPropertyValueEvaluator;
 
 /**
@@ -134,11 +138,23 @@ public class ComponentsUtils {
             components.clear();
         }
 
+        // for additional JDBC components
+        Set<ComponentDefinition> jdbcDefinitions = new HashSet<ComponentDefinition>();
         // Load components from service
         Set<ComponentDefinition> componentDefinitions = service.getAllComponents();
         for (ComponentDefinition componentDefinition : componentDefinitions) {
+            if (componentDefinition.getFamilies() != null && componentDefinition.getFamilies().length > 0
+                    && componentDefinition.getFamilies()[0] != null
+                    && componentDefinition.getFamilies()[0].contains("JDBC")) {
+                jdbcDefinitions.add(componentDefinition);
+            }
+
             loadComponents(components, componentDefinition);
         }
+
+        // load additional jdbc component
+        loadAdditionalJDBCComponents(components, jdbcDefinitions);
+
         componentsList.addAll(components);
     }
 
@@ -158,40 +174,83 @@ public class ComponentsUtils {
         }
     }
 
-    private static void loadComponent(Set<IComponent> componentsList, ComponentDefinition componentDefinition, String paletteType) {
+    private static void loadComponent(Set<IComponent> componentsList, ComponentDefinition componentDefinition,
+            String paletteType) {
         try {
             Component currentComponent = new Component(componentDefinition, paletteType);
-
-            Collection<IComponentFactoryFilter> filters = ComponentsFactoryProviderManager.getInstance().getProviders();
-            boolean hiddenComponent = false;
-            for (IComponentFactoryFilter filter : filters) {
-                if (!filter.isAvailable(currentComponent.getName())) {
-                    hiddenComponent = true;
-                    break;
-                }
-            }
-
-            // if the component is not needed in the current branding,
-            // and that this one IS NOT a specific component for code generation
-            // just don't load it
-            if (hiddenComponent
-                    && !(currentComponent.getOriginalFamilyName().contains("Technical") || currentComponent.isTechnical())) {
-                return;
-            }
-
-            // if the component is not needed in the current branding,
-            // and that this one IS a specific component for code generation,
-            // hide it
-            if (hiddenComponent
-                    && (currentComponent.getOriginalFamilyName().contains("Technical") || currentComponent.isTechnical())) {
-                currentComponent.setVisible(false);
-                currentComponent.setTechnical(true);
-            }
-
-            componentsList.add(currentComponent);
+            afterCreateComponent(componentsList, currentComponent);
         } catch (BusinessException e) {
             ExceptionHandler.process(e);
         }
+    }
+
+    private static void afterCreateComponent(Set<IComponent> componentsList, Component currentComponent) {
+
+        Collection<IComponentFactoryFilter> filters = ComponentsFactoryProviderManager.getInstance().getProviders();
+        boolean hiddenComponent = false;
+        for (IComponentFactoryFilter filter : filters) {
+            if (!filter.isAvailable(currentComponent.getName())) {
+                hiddenComponent = true;
+                break;
+            }
+        }
+
+        // if the component is not needed in the current branding,
+        // and that this one IS NOT a specific component for code generation
+        // just don't load it
+        if (hiddenComponent
+                && !(currentComponent.getOriginalFamilyName().contains("Technical") || currentComponent.isTechnical())) {
+            return;
+        }
+
+        // if the component is not needed in the current branding,
+        // and that this one IS a specific component for code generation,
+        // hide it
+        if (UnifiedComponentUtil.JDBC_COMPONENT_BLACKLIST.contains(currentComponent.getName()) || hiddenComponent
+                && (currentComponent.getOriginalFamilyName().contains("Technical") || currentComponent.isTechnical())) {
+            currentComponent.setVisible(false);
+            currentComponent.setTechnical(true);
+        }
+
+        componentsList.add(currentComponent);
+
+    }
+
+    private static void loadAdditionalJDBCComponents(Set<IComponent> componentsList, Set<ComponentDefinition> compDefinitions) {
+        Map<String, UnifiedJDBCBean> jdbcMap = UnifiedComponentUtil.getAdditionalJDBC();
+        if (jdbcMap.keySet().isEmpty()) {
+            return;
+        }
+        for (ComponentDefinition definition : compDefinitions) {
+            List<String> supportedProducts = definition.getSupportedProducts();
+            if (supportedProducts == null) {
+                return;
+            }
+            for (String productType : supportedProducts) {
+                List<String> paletteTypes = GenericComponentCategoryFactory.getPaletteTypes(productType);
+                if (paletteTypes == null) {
+                    continue;
+                }
+                for (String paletteType : paletteTypes) {
+                    for (UnifiedJDBCBean bean : jdbcMap.values()) {
+                        try {
+                            // filter unsupported components
+                            if (UnifiedComponentUtil.isUnsupportedComponent(definition.getName(), bean)) {
+                                continue;
+                            }
+                            GenericComponent currentComponent = new GenericComponent(definition, paletteType,
+                                    definition.getName().replace("JDBC", bean.getComponentKey()));
+                            // available for jdbc avoid TDI license blacklist
+                            componentsList.add(currentComponent);
+                        } catch (BusinessException e) {
+                            ExceptionHandler.process(e);
+                        }
+                    }
+                }
+            }
+
+        }
+
     }
 
     public static List<ElementParameter> getParametersFromForm(IElement element, Form form) {
@@ -346,10 +405,14 @@ public class ComponentsUtils {
             } else if (widgetProperty instanceof Property) {
                 Property property = (Property) widgetProperty;
                 param.setRequired(property.isRequired());
-                param.setValue(getParameterValue(element, property, fieldType, parameterName));
+                Object storedValue = getParameterValue(element, property, fieldType, parameterName);
+                param.setValue(storedValue);
                 boolean isNameProperty = IGenericConstants.NAME_PROPERTY.equals(param.getParameterName());
+                boolean isEnumProperty = EParameterFieldType.CLOSED_LIST.equals(fieldType) && storedValue != null
+                        && storedValue instanceof Enum;
                 if (EParameterFieldType.NAME_SELECTION_AREA.equals(fieldType) || EParameterFieldType.JSON_TABLE.equals(fieldType)
-                        || EParameterFieldType.CHECK.equals(fieldType) || isNameProperty) {
+                        || EParameterFieldType.CHECK.equals(fieldType) || EParameterFieldType.MAPPING_TYPE.equals(fieldType)
+                        || isNameProperty || isEnumProperty) {
                     // Disable context support for those filed types and name parameter.
                     param.setSupportContext(false);
                 } else {
@@ -883,21 +946,6 @@ public class ComponentsUtils {
                 propertyParameter.setShow(false);
             }
         }
-        IElementParameter parent = refPara.getParentParameter();
-        Widget parentWidget = null;
-        if (parent != null) {
-            parentWidget = ((GenericElementParameter) parent).getWidget();
-        }
-        for (IElementParameter param : refPara.getElement().getElementParameters()) {
-            if (param instanceof GenericElementParameter) {
-                widget.setHidden();
-                if (param.getName().startsWith("connection")) {
-                    param.setShow(false);
-                    continue;
-                }
-                param.setShow(parentWidget == null ? !widget.isHidden() : !parentWidget.isHidden() && !widget.isHidden());
-            }
-        }
     }
 
     public static void setPropertiesPepositoryValue(ComponentProperties componentProperties, String paramName) {
@@ -915,5 +963,26 @@ public class ComponentsUtils {
             }
         }
 
+    }
+
+    public static NamedThing getNameThingFromComponentPropertiesByName(Properties properties, String name) {
+        if (properties == null || StringUtils.isBlank(name)) {
+            return null;
+        }
+        NamedThing nameThing = null;
+        for (NamedThing thing : properties.getProperties()) {
+            if (name.equals(thing.getName())) {
+                nameThing = thing;
+                break;
+            }
+            if (thing instanceof Properties) {
+                Properties childProperties = (Properties) thing;
+                nameThing = getNameThingFromComponentPropertiesByName(childProperties, name);
+                if (nameThing != null) {
+                    break;
+                }
+            }
+        }
+        return nameThing;
     }
 }

@@ -14,6 +14,7 @@ package org.talend.designer.core.ui.views.contexts;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.util.Collections;
 import java.util.Set;
 
 import org.eclipse.swt.widgets.Composite;
@@ -109,7 +110,7 @@ public class ContextsView extends AbstractContextView implements PropertyChangeL
                 created = true;
             } else {
                 Set<String> addedContext = ConnectionContextHelper.checkAndAddContextVariables(contextItem, contextSet,
-                        contextManager, false);
+                        contextManager, false, Collections.EMPTY_MAP);
                 if (addedContext != null && addedContext.size() > 0) {
                     ConnectionContextHelper.addContextVarForJob(process, contextItem, addedContext);
                     created = true;

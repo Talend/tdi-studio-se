@@ -12,16 +12,15 @@
 // ============================================================================
 package org.talend.repository.imports;
 
-import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
+import org.talend.commons.utils.io.FilesUtils;
 import org.talend.core.repository.constants.FileConstants;
 
 /**
@@ -29,11 +28,7 @@ import org.talend.core.repository.constants.FileConstants;
  */
 public class ZipToFileUtil {
 
-    private ZipInputStream zipIn;
-
     private ZipOutputStream zipOut;
-
-    private ZipEntry zipEntry;
 
     private static int bufSize;
 
@@ -91,37 +86,10 @@ public class ZipToFileUtil {
     }
 
     public void unZip(String unZipfileName) {
-        FileOutputStream fileOut;
-        File file;
-        String pathPrefix = "/";
         try {
-            this.zipIn = new ZipInputStream(new BufferedInputStream(new FileInputStream(unZipfileName)));
-            // if (unZipfileName.indexOf("/") == 0) {
-            // pathPrefix = unZipfileName.substring(0, unZipfileName.lastIndexOf("/"));
-            // } else {
-            pathPrefix = unZipfileName.substring(0, unZipfileName.lastIndexOf("/"));
-            pathPrefix = pathPrefix + "/";
-            // }
-            while ((this.zipEntry = this.zipIn.getNextEntry()) != null) {
-                file = new File(pathPrefix + this.zipEntry.getName());
-                if (this.zipEntry.isDirectory()) {
-                    file.mkdirs();
-                } else {
-                    // if the file do not exist, create it
-                    File parent = file.getParentFile();
-                    if (!parent.exists()) {
-                        parent.mkdirs();
-                    }
-                    fileOut = new FileOutputStream(file);
-                    while ((this.readedBytes = this.zipIn.read(this.buf)) > 0) {
-                        fileOut.write(this.buf, 0, this.readedBytes);
-                    }
-                    fileOut.close();
-                }
-                this.zipIn.closeEntry();
-            }
-        } catch (IOException ioe) {
-            ioe.printStackTrace();
+            FilesUtils.unzip(unZipfileName, new File(unZipfileName).getParent());
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 

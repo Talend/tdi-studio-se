@@ -420,7 +420,7 @@ public class StatsAndLogsHelper extends Utils {
         param.setFieldType(EParameterFieldType.TEXT);
         param.setCategory(EComponentCategory.STATSANDLOGS);
         param.setNumRow(53);
-        param.setRepositoryValue(EConnectionParameterName.GENERIC_URL.getDisplayName()); //$NON-NLS-1$
+        param.setRepositoryValue(EConnectionParameterName.GENERIC_URL.getDisplayName()); 
         param.setShowIf("(ON_DATABASE_FLAG == 'true') and (ON_STATCATCHER_FLAG == 'true' or ON_LOGCATCHER_FLAG == 'true' or ON_METERCATCHER_FLAG == 'true') and (DB_TYPE=='JDBC')"); //$NON-NLS-1$
         paramList.add(param);
 
@@ -432,7 +432,10 @@ public class StatsAndLogsHelper extends Utils {
             String moduleName = module.getModuleName();
             if (moduleName != null) {
                 moduleNameList.add(moduleName);
-                moduleValueList.add(TalendTextUtils.addQuotes(moduleName));
+                String moduleValue = TalendTextUtils.addQuotes(module.getMavenUri());
+                if (!moduleValueList.contains(moduleValue)) {
+                    moduleValueList.add(moduleValue);
+                }
             }
         }
         Comparator<String> comprarator = new IgnoreCaseComparator();
@@ -457,7 +460,7 @@ public class StatsAndLogsHelper extends Utils {
         param.setValue(new ArrayList<Map<String, Object>>());
         param.setCategory(EComponentCategory.STATSANDLOGS);
         param.setNumRow(54);
-        param.setRepositoryValue(EConnectionParameterName.GENERIC_DRIVER_JAR.getDisplayName()); //$NON-NLS-1$
+        param.setRepositoryValue(EConnectionParameterName.GENERIC_DRIVER_JAR.getDisplayName()); 
         param.setShowIf("(ON_DATABASE_FLAG == 'true') and (ON_STATCATCHER_FLAG == 'true' or ON_LOGCATCHER_FLAG == 'true' or ON_METERCATCHER_FLAG == 'true') and (DB_TYPE=='JDBC')"); //$NON-NLS-1$
         paramList.add(param);
 
@@ -469,7 +472,7 @@ public class StatsAndLogsHelper extends Utils {
         param.setFieldType(EParameterFieldType.TEXT);
         param.setCategory(EComponentCategory.STATSANDLOGS);
         param.setNumRow(57);
-        param.setRepositoryValue(EConnectionParameterName.GENERIC_DRIVER_CLASS.getDisplayName()); //$NON-NLS-1$
+        param.setRepositoryValue(EConnectionParameterName.GENERIC_DRIVER_CLASS.getDisplayName()); 
         param.setShowIf("(ON_DATABASE_FLAG == 'true') and (ON_STATCATCHER_FLAG == 'true' or ON_LOGCATCHER_FLAG == 'true' or ON_METERCATCHER_FLAG == 'true') and (DB_TYPE=='JDBC')"); //$NON-NLS-1$
         paramList.add(param);
 
@@ -494,7 +497,8 @@ public class StatsAndLogsHelper extends Utils {
         param.setCategory(EComponentCategory.STATSANDLOGS);
         param.setNumRow(53);
         param.setRepositoryValue("PORT"); //$NON-NLS-1$
-        param.setShowIf("(ON_DATABASE_FLAG == 'true') and (ON_STATCATCHER_FLAG == 'true' or ON_LOGCATCHER_FLAG == 'true' or ON_METERCATCHER_FLAG == 'true') and (DB_TYPE!='SQLITE' and DB_TYPE!='ACCESS' and DB_TYPE!='FIREBIRD' and DB_TYPE!='OCLE_OCI'  and DB_TYPE!='JDBC')"); //$NON-NLS-1$
+        param.setShowIf(
+                "(ON_DATABASE_FLAG == 'true') and (ON_STATCATCHER_FLAG == 'true' or ON_LOGCATCHER_FLAG == 'true' or ON_METERCATCHER_FLAG == 'true') and (DB_TYPE!='SQLITE' and DB_TYPE!='ACCESS' and DB_TYPE!='FIREBIRD' and DB_TYPE!='OCLE_OCI'  and DB_TYPE!='JDBC' and DB_TYPE!='TERADATA')"); //$NON-NLS-1$
         paramList.add(param);
 
         // dbName

@@ -1,18 +1,18 @@
-<%@ jet 
+<%@ jet
 imports="
 	org.talend.core.model.process.ElementParameterParser
 	org.talend.core.model.process.INode
 	org.talend.designer.codegen.config.CodeGeneratorArgument
-	
+
 	java.util.List
 	java.util.Map
-" 
+"
 %>
 	<%
     CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
     INode node = (INode)codeGenArgument.getArgument();
     String cid = node.getUniqueName();
-    
+
     String accessKey = ElementParameterParser.getValue(node, "__ACCESS_KEY__");
 
 	String useExistingConn = ElementParameterParser.getValue(node,"__USE_EXISTING_CONNECTION__");
@@ -21,19 +21,36 @@ imports="
 	String delimiter=ElementParameterParser.getValue(node,"__DELIMITER__");
 	String dieOnError = ElementParameterParser.getValue(node, "__DIE_ON_ERROR__");
 	boolean isLog4jEnabled = ("true").equals(ElementParameterParser.getValue(node.getProcess(), "__LOG4J_ACTIVATE__"));
-	
-	%>
+	String connection = ElementParameterParser.getValue(node,"__CONNECTION__");
+	String authType = ElementParameterParser.getValue(node, "__AUTH_TYPE__");
+	List<Map<String, String>> buckets = (List<Map<String,String>>)ElementParameterParser.getObjectValue(node, "__BUCKETS__");
+	boolean listInBucketList = "true".equals(ElementParameterParser.getValue(node,"__LIST_IN_BUCKET_LIST__"));
+	String objects_prefix=ElementParameterParser.getValue(node,"__OBJECTS_PREFIX__");
+
+  if(("true").equals(useExistingConn)) {
+		List< ? extends INode> nodes =  node.getProcess().getNodesOfType("tGSConnection");
+		for (INode ne : nodes) {
+			if (connection.equals(ne.getUniqueName())) {
+				authType = ElementParameterParser.getValue(ne, "__AUTH_TYPE__");
+        break;
+			}
+		}
+	}
+%>
 	int nb_line_<%=cid%> = 0;
+<%
+if ("USER_ACCOUNT_HMAC".equals(authType)){
+%>
+
 	org.jets3t.service.impl.rest.httpclient.GoogleStorageService service_<%=cid%> = null;
 	try {
 	<%
 	if(("true").equals(useExistingConn)) {
-		String connection = ElementParameterParser.getValue(node,"__CONNECTION__");
 		%>
 		service_<%=cid%> = (org.jets3t.service.impl.rest.httpclient.GoogleStorageService)globalMap.get("service_<%=connection%>");
 		<%
 		if(isLog4jEnabled){
-		%>	
+		%>
 			log.info("<%=cid%> - Get an free connection from " + "<%=connection%>" + ".");
 		<%
 		}
@@ -48,15 +65,12 @@ imports="
 	   <%@ include file="@{org.talend.designer.components.localprovider}/components/templates/password.javajet"%>
 
 		org.jets3t.service.security.GSCredentials credentials_<%=cid%> = new org.jets3t.service.security.GSCredentials(<%=accessKey%>,decryptedPassword_<%=cid%>);
-	
+
 		service_<%=cid%> = new org.jets3t.service.impl.rest.httpclient.GoogleStorageService(credentials_<%=cid%>," <%=GoogleTracker%>",null);
 		service_<%=cid%>.getAccountOwner();
-	<%		
+	<%
 	}
-	List<Map<String, String>> buckets = (List<Map<String,String>>)ElementParameterParser.getObjectValue(node, "__BUCKETS__");
-	boolean listInBucketList = "true".equals(ElementParameterParser.getValue(node,"__LIST_IN_BUCKET_LIST__"));
 	if(!listInBucketList){
-		String objects_prefix=ElementParameterParser.getValue(node,"__OBJECTS_PREFIX__");
 		if(isSpecifyprojectID){
 		%>
 			org.jets3t.service.model.GSBucket[] buckets_<%=cid%>=service_<%=cid%>.listAllBuckets(<%=projectID%>);
@@ -157,3 +171,74 @@ imports="
 	<%
 	}
 	%>
+<% } else {
+  String gsProjectID=ElementParameterParser.getValue(node,"__GS_PROJECT_ID__");
+%>
+	<%@ include file="@{org.talend.designer.components.localprovider}/components/templates/googleStorageConnection.javajet"%>
+	<%
+	if(!listInBucketList){
+		%>
+		com.google.api.gax.paging.Page<com.google.cloud.storage.Bucket> buckets_<%=cid%> = storage_<%=cid%>.list();
+		for (com.google.cloud.storage.Bucket bucket_<%=cid%> : buckets_<%=cid%>.iterateAll()) {
+			String currentBucketName_<%=cid%> = bucket_<%=cid%>.getName();
+			com.google.cloud.storage.Storage.BlobListOption blobListOptionPrefix_<%=cid%> = com.google.cloud.storage.Storage.BlobListOption.prefix(<%=objects_prefix%>);
+			com.google.cloud.storage.Storage.BlobListOption blobListOptionDelimiter_<%=cid%> = com.google.cloud.storage.Storage.BlobListOption.delimiter(<%=delimiter%>);
+
+			com.google.api.gax.paging.Page<com.google.cloud.storage.Blob> allBlobs_<%=cid%> = bucket_<%=cid%>.list(blobListOptionPrefix_<%=cid%>, blobListOptionDelimiter_<%=cid%>);
+	<%
+	} else if(buckets.size()>0){
+	%>
+		java.util.List<java.util.Map<String,String>> list_<%=cid%> = new java.util.ArrayList<java.util.Map<String,String>>();
+		<%
+		for(int i=0;i<buckets.size();i++){
+			Map<String, String> map=buckets.get(i);
+			String bucket_name =map.get("BUCKET_NAME");
+			String object_prefix =map.get("OBJECT_PREFIX");
+			String object_delimiter =map.get("OBJECT_DELIMITER");
+			%>
+			java.util.Map<String,String> map_<%=cid %>_<%=i %> = new java.util.HashMap<String,String>();
+			map_<%=cid %>_<%=i %>.put("BUCKET_NAME",<%=bucket_name%>);
+			<%
+			if(object_prefix!=null && object_prefix.trim().length()>0){
+			%>
+				map_<%=cid %>_<%=i %>.put("OBJECT_PREFIX",<%=object_prefix%>);
+			<%
+			}
+			if(object_delimiter!=null && object_delimiter.trim().length()>0){
+			%>
+				map_<%=cid %>_<%=i %>.put("OBJECT_DELIMITER",<%=object_delimiter%>);
+			<%
+			}
+			%>
+			list_<%=cid%>.add(map_<%=cid %>_<%=i %>);
+		<%
+		}
+		%>
+		for (java.util.Map<String, String> map_<%=cid %>: list_<%=cid%>) {
+			String currentBucketName_<%=cid%>=map_<%=cid %>.get("BUCKET_NAME");
+
+			com.google.cloud.storage.Bucket currentBucket_<%=cid%> = storage_<%=cid%>.get(currentBucketName_<%=cid%>);
+
+			com.google.cloud.storage.Storage.BlobListOption blobListOptionPrefix_<%=cid%> = com.google.cloud.storage.Storage.BlobListOption.prefix(map_<%=cid %>.get("OBJECT_PREFIX"));
+			com.google.cloud.storage.Storage.BlobListOption blobListOptionDelimiter_<%=cid%> = com.google.cloud.storage.Storage.BlobListOption.delimiter(map_<%=cid %>.get("OBJECT_DELIMITER"));
+
+			com.google.api.gax.paging.Page<com.google.cloud.storage.Blob> allBlobs_<%=cid%> = currentBucket_<%=cid%>.list(blobListOptionPrefix_<%=cid%>, blobListOptionDelimiter_<%=cid%>);
+	<%
+	}
+	%>
+	<%
+	if(!listInBucketList || buckets.size()>0){
+	%>
+		for (com.google.cloud.storage.Blob blob_<%=cid%> : allBlobs_<%=cid%>.iterateAll()) {
+			if (blob_<%=cid%>.isDirectory()){
+				continue;
+			}
+			nb_line_<%=cid%>++;
+			globalMap.put("<%=cid%>_CURRENT_BUCKET", currentBucketName_<%=cid%>);
+			globalMap.put("<%=cid%>_CURRENT_KEY", blob_<%=cid%>.getName());
+	<%
+	}
+	%>
+<%
+}
+%>

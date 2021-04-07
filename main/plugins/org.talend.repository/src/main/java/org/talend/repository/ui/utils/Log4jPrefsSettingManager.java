@@ -163,20 +163,14 @@ public class Log4jPrefsSettingManager {
     }
 
     public boolean isLog4jEnable() {
-        if (!org.talend.core.PluginChecker.isCoreTISPluginLoaded()) {
-            return false;
-        }
-        if (Log4jUtil.isEnable() && Boolean.parseBoolean(getValueOfPreNode(Log4jPrefsConstants.LOG4J_ENABLE_NODE))) {
+        if (Boolean.parseBoolean(getValueOfPreNode(Log4jPrefsConstants.LOG4J_ENABLE_NODE))) {
             return true;
         }
         return false;
     }
 
     public boolean isSelectLog4j2() {
-        if (!org.talend.core.PluginChecker.isCoreTISPluginLoaded()) {
-            return false;
-        }
-        if (Log4jUtil.isEnable() && Boolean.parseBoolean(getValueOfPreNode(Log4jPrefsConstants.LOG4J_SELECT_VERSION2))) {
+        if (Boolean.parseBoolean(getValueOfPreNode(Log4jPrefsConstants.LOG4J_SELECT_VERSION2))) {
             return true;
         }
         return false;

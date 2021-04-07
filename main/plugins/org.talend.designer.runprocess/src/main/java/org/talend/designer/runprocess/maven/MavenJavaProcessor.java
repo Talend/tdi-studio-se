@@ -20,6 +20,7 @@ import java.util.Set;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IResource;
@@ -72,6 +73,8 @@ import org.talend.repository.model.IProxyRepositoryFactory;
  *
  */
 public class MavenJavaProcessor extends JavaProcessor {
+
+    private static final Logger LOGGER = Logger.getLogger(MavenJavaProcessor.class);
 
     protected String windowsClasspath, unixClasspath;
 
@@ -389,8 +392,9 @@ public class MavenJavaProcessor extends JavaProcessor {
         if (!isMainJob && isGoalInstall) {
             if (!buildCacheManager.isJobBuild(getProperty())) {
                 deleteExistedJobJarFile(talendJavaProject);
-                if ("ROUTE".equalsIgnoreCase(getBuildType(getProperty())) && project != null &&
-                		ERepositoryObjectType.PROCESS.equals(ERepositoryObjectType.getType(getProperty()))) {
+                String buildType = getBuildType(getProperty());
+                if (("ROUTE".equalsIgnoreCase(buildType) || "OSGI".equalsIgnoreCase(buildType) || "STANDALONE".equalsIgnoreCase(buildType)) &&
+                		project != null && ERepositoryObjectType.PROCESS.equals(ERepositoryObjectType.getType(getProperty()))) {
                     // TESB-23870
                     // child routes job project must be compiled explicitly for
                     // correct child job manifest generation during OSGi packaging
@@ -407,9 +411,16 @@ public class MavenJavaProcessor extends JavaProcessor {
             return;
         }
         if (isMainJob) {
+            String threadParam = "-T 1C";
+            if (buildCacheManager.containsMultipleVersionModules()) {
+                threadParam = "-T 1";
+            }
+            if (LOGGER.isInfoEnabled()) {
+                LOGGER.info("build, threadParam: " + threadParam);
+            }
             final Map<String, Object> argumentsMap = new HashMap<String, Object>();
             argumentsMap.put(TalendProcessArgumentConstant.ARG_GOAL, TalendMavenConstants.GOAL_INSTALL);
-            argumentsMap.put(TalendProcessArgumentConstant.ARG_PROGRAM_ARGUMENTS, "-T 1C -f " // $NON-NLS-1$
+            argumentsMap.put(TalendProcessArgumentConstant.ARG_PROGRAM_ARGUMENTS, threadParam + " -f " // $NON-NLS-1$
                     + BuildCacheManager.BUILD_AGGREGATOR_POM_NAME + " -P " + (packagingAndAssembly() ? "" : "!")
                     + TalendMavenConstants.PROFILE_PACKAGING_AND_ASSEMBLY + ",!" + TalendMavenConstants.PROFILE_SIGNATURE); // $NON-NLS-1$  //$NON-NLS-2$
             // install all subjobs

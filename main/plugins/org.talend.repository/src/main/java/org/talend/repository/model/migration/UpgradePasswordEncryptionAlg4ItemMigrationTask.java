@@ -20,6 +20,7 @@ import java.util.List;
 import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.runtime.model.emf.EmfHelper;
 import org.talend.commons.utils.PasswordEncryptUtil;
+import org.talend.core.GlobalServiceRegister;
 import org.talend.core.model.components.ComponentCategory;
 import org.talend.core.model.components.IComponent;
 import org.talend.core.model.metadata.builder.connection.Connection;
@@ -37,6 +38,7 @@ import org.talend.core.model.properties.Item;
 import org.talend.core.model.properties.JobletProcessItem;
 import org.talend.core.model.properties.ProcessItem;
 import org.talend.core.model.repository.ERepositoryObjectType;
+import org.talend.core.service.INOSQLService;
 import org.talend.core.ui.component.ComponentsFactoryProvider;
 import org.talend.designer.core.model.utils.emf.talendfile.ContextParameterType;
 import org.talend.designer.core.model.utils.emf.talendfile.ContextType;
@@ -114,9 +116,33 @@ public class UpgradePasswordEncryptionAlg4ItemMigrationTask extends UnifyPasswor
                 modified = updateLDAPSchemaConnection((LDAPSchemaConnection) connection);
             } else if (connection instanceof SAPConnection) {
                 modified = updateSAPConnection((SAPConnection) connection);
+            } else if (isNoSqlConnection(connection)) {
+                modified = updateNoSqlConnection(connection);
             }
         }
         return modified;
+    }
+    
+    protected boolean updateNoSqlConnection(Connection connection) throws Exception {
+        INOSQLService service = null;
+        if (GlobalServiceRegister.getDefault().isServiceRegistered(INOSQLService.class)) {
+            service = (INOSQLService) GlobalServiceRegister.getDefault().getService(INOSQLService.class);
+            if (service != null) {
+                return service.updateNoSqlConnection(connection);
+            }
+        }
+        return false;
+    }
+    
+    private boolean isNoSqlConnection(Connection connection) {
+        INOSQLService service = null;
+        if (GlobalServiceRegister.getDefault().isServiceRegistered(INOSQLService.class)) {
+            service = (INOSQLService) GlobalServiceRegister.getDefault().getService(INOSQLService.class);
+            if (service != null) {
+                return service.isNoSQLConnection(connection);
+            }
+        }
+        return false;
     }
 
     protected boolean updateDatabaseConnection(DatabaseConnection dbConnection) throws Exception {
@@ -252,7 +278,7 @@ public class UpgradePasswordEncryptionAlg4ItemMigrationTask extends UnifyPasswor
                 if (p instanceof ElementParameterType) {
                     ElementParameterType param = (ElementParameterType) p;
                     // variable name used for Stat&Logs
-                    if ("PASS".equals(param.getName())) { //$NON-NLS-1$
+                    if ("PASS".equals(param.getName()) || EParameterFieldType.PASSWORD.getName().equals(param.getField())) { //$NON-NLS-1$
                         if (reencryptValueIfNeeded(param)) {
                             modified = true;
                         }
@@ -351,6 +377,12 @@ public class UpgradePasswordEncryptionAlg4ItemMigrationTask extends UnifyPasswor
         list.add(ERepositoryObjectType.METADATA_LDAP_SCHEMA);
         list.add(ERepositoryObjectType.METADATA_MDMCONNECTION);
         list.add(ERepositoryObjectType.METADATA_SAPCONNECTIONS);
+        if (GlobalServiceRegister.getDefault().isServiceRegistered(INOSQLService.class)) {
+            INOSQLService nosqlService = (INOSQLService) GlobalServiceRegister.getDefault().getService(INOSQLService.class);
+            if (nosqlService != null) {
+                list.add(nosqlService.getNOSQLRepositoryType());
+            }
+        }
         return list;
     }
 

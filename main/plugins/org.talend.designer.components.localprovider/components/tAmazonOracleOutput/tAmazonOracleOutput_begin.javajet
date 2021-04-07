@@ -46,6 +46,10 @@ String batchSize=ElementParameterParser.getValue(node,"__BATCH_SIZE__");
 
 boolean useExistingConnection = "true".equals(ElementParameterParser.getValue(node,"__USE_EXISTING_CONNECTION__"));
 
+boolean useAlternateSchema = "true".equals(ElementParameterParser.getValue(node, "__USE_ALTERNATE_SCHEMA__"));
+
+String alternateSchema = ElementParameterParser.getValue(node, "__ALTERNATE_SCHEMA__");
+
 String rejectConnName = null;
 List<? extends IConnection> rejectConns = node.getOutgoingConnections("REJECT");
 if(rejectConns != null && rejectConns.size() > 0) {
@@ -140,39 +144,8 @@ for(Column column : stmtStructure) {
 }
 %>
 
-<%
-if(("UPDATE").equals(dataAction) || ("INSERT_OR_UPDATE").equals(dataAction) || ("UPDATE_OR_INSERT").equals(dataAction)) {
-    int updateKeyCount = 0;
-    if(stmtStructure != null) {
-        for(Column column : stmtStructure) {
-            if(column.isUpdateKey() && !column.isDynamic()) {
-                updateKeyCount++;
-            }
-        }
-        %>
-        int updateKeyCount_<%=cid%> = <%=updateKeyCount%>;
-        if(updateKeyCount_<%=cid%> < 1) {
-            throw new RuntimeException("For update, Schema must have a key");
-        }
-        <%
-    }
-} else if(("DELETE").equals(dataAction)) {
-    int deleteKeyCount = 0;
-    if(stmtStructure != null) {
-        for(Column column : stmtStructure) {
-            if(column.isDeleteKey() && !column.isDynamic()) {
-                deleteKeyCount++;
-            }
-        }
-        %>
-        int deleteKeyCount_<%=cid%> = <%=deleteKeyCount%>;
-        if(deleteKeyCount_<%=cid%> < 1) {
-            throw new RuntimeException("For delete, Schema must have a key");
-        }
-        <%
-    }
-}
-%>
+<%@ include file="@{org.talend.designer.components.localprovider}/components/templates/DB/Output/CheckKeysForUpdateAndDelete.javajet"%>
+
 int nb_line_<%=cid%> = 0;
 int nb_line_update_<%=cid%> = 0;
 int nb_line_inserted_<%=cid%> = 0;
@@ -184,6 +157,7 @@ int tmp_batchUpdateCount_<%=cid%> = 0;
 int deletedCount_<%=cid%>=0;
 int updatedCount_<%=cid%>=0;
 int insertedCount_<%=cid%>=0;
+int rowsToCommitCount_<%=cid%>=0;
 int rejectedCount_<%=cid%>=0;
 
 boolean whetherReject_<%=cid%> = false;
@@ -198,14 +172,22 @@ if(useExistingConnection) {
 	String connection = ElementParameterParser.getValue(node,"__CONNECTION__");
 	String conn = "conn_" + connection;
 	String schema = "dbschema_" + connection;
+	if(useAlternateSchema) {
 	%>
-	dbschema_<%=cid%> = (String)globalMap.get("<%=schema%>");
+		dbschema_<%=cid%> = <%=alternateSchema%>;
+	<%
+	} else {
+	%>
+		dbschema_<%=cid%> = (String)globalMap.get("<%=schema%>");
+	<%
+	}
+	%>
 	conn_<%=cid%> = (java.sql.Connection)globalMap.get("<%=conn%>");
 	<%dbLog.conn().useExistConn("conn_"+cid+".getMetaData().getURL()", "conn_"+cid+".getMetaData().getUserName()");%>
 	<%
 } else {
     %>
-	<%if("ORACLE_11".equals(dbVersion) || "ORACLE_12".equals(dbVersion) || "ORACLE_18".equals(dbVersion)){%>
+	<%if("ORACLE_11".equals(dbVersion) || "ORACLE_12".equals(dbVersion) || "ORACLE_18".equals(dbVersion) ){%>
 		java.lang.Class.forName("oracle.jdbc.OracleDriver");
 		<%dbLog.conn().logJDBCDriver(dbLog.str("oracle.jdbc.OracleDriver"));%>
 	<%}else {%>

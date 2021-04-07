@@ -43,7 +43,8 @@ import org.talend.updates.runtime.storage.AbstractFeatureStorage;
  * DOC cmeng  class global comment. Detailled comment
  */
 public class TaCoKitUpdateService implements ITaCoKitUpdateService {
-
+    private static final org.apache.log4j.Logger LOGGER = org.apache.log4j.Logger.getLogger(TaCoKitUpdateService.class);
+    
     @Override
     public ITaCoKitCarFeature generateExtraFeature(File file, IProgressMonitor monitor) throws Exception {
         TaCoKitCar car = new TaCoKitCar(file);
@@ -70,6 +71,15 @@ public class TaCoKitUpdateService implements ITaCoKitUpdateService {
 
     @Override
     public ICarInstallationResult installCars(Collection<File> files, boolean share, IProgressMonitor monitor) throws Exception {
+        return installCars(files, share, false, monitor);
+    }
+    
+    @Override
+    public ICarInstallationResult deployCars(Collection<File> files, boolean share, IProgressMonitor monitor) throws Exception {
+        return installCars(files, share, true, monitor);
+    }
+    
+    private ICarInstallationResult installCars(Collection<File> files, boolean share, boolean isDeployCommand, IProgressMonitor monitor) throws Exception {
         if (monitor == null) {
             monitor = new NullProgressMonitor();
         }
@@ -88,6 +98,7 @@ public class TaCoKitUpdateService implements ITaCoKitUpdateService {
                 try {
                     carFeature = generateExtraFeature(carFile, monitor);
                     carFeature.setShareEnable(share);
+                    carFeature.setDeployCommand(isDeployCommand);
                 } catch (Exception e) {
                     ExceptionHandler.process(e);
                 }
@@ -157,8 +168,14 @@ public class TaCoKitUpdateService implements ITaCoKitUpdateService {
                             break;
                         }
                     } else {
-                        throw new Exception(Messages.getString(
-                                "TaCoKitUpdateService.progress.installingFeatures.current.cantInstall", carFeature.getName())); //$NON-NLS-1$
+                        if (InstallationStatus.Status.INSTALLED.equals(carFeature.getInstallationStatus(monitor).getStatus())) {
+                            LOGGER.info(Messages.getString("TaCoKitUpdateService.progress.installingFeatures.current.installed", //$NON-NLS-1$
+                                    carFeature.getName(), carFeature.getVersion()));
+                        } else {
+                            throw new Exception(
+                                    Messages.getString("TaCoKitUpdateService.progress.installingFeatures.current.cantInstall", //$NON-NLS-1$
+                                            carFeature.getName()));
+                        }
                     }
                 } catch (InterruptedException e) {
                     throw e;

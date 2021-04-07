@@ -195,6 +195,10 @@ class DBDataActionLogUtil extends BasicLogUtil{
 		}
 	}
 	
+	public void sqlDebugPrint(String sql){
+		debug(str("'"), sql, str("'."));
+	}
+	
 	public void sqlExecuteTry(String sql){
 		debug(str("Executing '"), sql, str("'."));
 	}

@@ -12,6 +12,8 @@
 // ============================================================================
 package org.talend.designer.dbmap.language.teradata;
 
+import java.util.List;
+
 import org.talend.designer.dbmap.language.operator.DbOperator;
 import org.talend.designer.dbmap.language.operator.DbOperatorValues;
 import org.talend.designer.dbmap.language.operator.IDbOperator;
@@ -22,18 +24,21 @@ import org.talend.designer.dbmap.language.operator.IDbOperator;
 public class TeradataDbOperatorValues extends DbOperatorValues {
 
     protected void init1() {
-        operators.add(getDefaultOperator());
+        initOperators(operators);
+    }
+    
+    protected void initOperators(List<IDbOperator> operators) {
+    	operators.add(getDefaultOperator());
         //operators.add(new DbOperator("EQUAL", "EQ")); //$NON-NLS-1$
         //
-        operators.add(new DbOperator("DIFFERENT", "NE")); //$NON-NLS-1$ //$NON-NLS-2$
-        operators.add(new DbOperator("STRICTLY_INFERIOR", "LT")); //$NON-NLS-1$ //$NON-NLS-2$
-        operators.add(new DbOperator("INFERIOR_OR_EQUAL", "LE")); //$NON-NLS-1$ //$NON-NLS-2$
-        operators.add(new DbOperator("SUPERIOR", "GT")); //$NON-NLS-1$ //$NON-NLS-2$
-        operators.add(new DbOperator("SUPERIOR_OR_EQUAL", "GE")); //$NON-NLS-1$ //$NON-NLS-2$
-
+        operators.add(new DbOperator("DIFFERENT", "<>")); //$NON-NLS-1$ //$NON-NLS-2$
+        operators.add(new DbOperator("STRICTLY_INFERIOR", "<")); //$NON-NLS-1$ //$NON-NLS-2$
+        operators.add(new DbOperator("INFERIOR_OR_EQUAL", "<=")); //$NON-NLS-1$ //$NON-NLS-2$
+        operators.add(new DbOperator("SUPERIOR", ">")); //$NON-NLS-1$ //$NON-NLS-2$
+        operators.add(new DbOperator("SUPERIOR_OR_EQUAL", ">=")); //$NON-NLS-1$ //$NON-NLS-2$
     }
 
     public IDbOperator getDefaultOperator() {
-        return new DbOperator("EQUAL", "EQ"); //$NON-NLS-1$  //$NON-NLS-2$
+        return new DbOperator("EQUAL", "="); //$NON-NLS-1$  //$NON-NLS-2$
     }
 }

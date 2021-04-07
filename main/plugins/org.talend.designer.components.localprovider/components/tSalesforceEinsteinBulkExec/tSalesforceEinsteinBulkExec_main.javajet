@@ -55,7 +55,7 @@ imports="
         <%
         if(useExistingConn){
         %>
-        	Object sharedConn_<%=cid%> = globalMap.get("<%= connection %>" + "_Connection");
+        	Object sharedConn_<%=cid%> = globalMap.get("<%= connection %>" + "_connection");
         	if(sharedConn_<%=cid%> != null){
         		if(sharedConn_<%=cid%> instanceof com.sforce.soap.partner.PartnerConnection){
         			connectorConfig_<%= cid %> = ((com.sforce.soap.partner.PartnerConnection)sharedConn_<%=cid%>).getConfig();

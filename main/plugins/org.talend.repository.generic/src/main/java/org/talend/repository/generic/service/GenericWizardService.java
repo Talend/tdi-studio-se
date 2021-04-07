@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.ImageData;
@@ -33,11 +34,18 @@ import org.talend.components.api.wizard.ComponentWizard;
 import org.talend.components.api.wizard.ComponentWizardDefinition;
 import org.talend.components.api.wizard.WizardImageType;
 import org.talend.core.GlobalServiceRegister;
+import org.talend.core.PluginChecker;
+import org.talend.core.database.EDatabaseTypeName;
+import org.talend.core.model.components.IComponent;
+import org.talend.core.model.metadata.Dbms;
 import org.talend.core.model.metadata.IMetadataTable;
+import org.talend.core.model.metadata.MetadataTalendType;
 import org.talend.core.model.metadata.builder.connection.Connection;
+import org.talend.core.model.metadata.builder.connection.DatabaseConnection;
 import org.talend.core.model.metadata.builder.connection.MetadataTable;
 import org.talend.core.model.process.EComponentCategory;
 import org.talend.core.model.process.Element;
+import org.talend.core.model.process.IElement;
 import org.talend.core.model.process.INode;
 import org.talend.core.model.properties.ConnectionItem;
 import org.talend.core.model.properties.Item;
@@ -45,15 +53,26 @@ import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.core.runtime.services.IGenericDBService;
 import org.talend.core.runtime.services.IGenericWizardService;
 import org.talend.core.utils.ReflectionUtils;
+import org.talend.core.utils.TalendQuoteUtils;
+import org.talend.daikon.NamedThing;
+import org.talend.daikon.properties.Properties;
 import org.talend.daikon.properties.presentation.Form;
+import org.talend.daikon.properties.property.Property;
+import org.talend.designer.core.IUnifiedComponentService;
+import org.talend.designer.core.generic.model.GenericComponent;
 import org.talend.designer.core.generic.model.GenericElementParameter;
+import org.talend.designer.core.generic.model.GenericTableUtils;
 import org.talend.designer.core.generic.utils.ComponentsUtils;
 import org.talend.designer.core.generic.utils.SchemaUtils;
 import org.talend.designer.core.model.components.ElementParameter;
+import org.talend.designer.core.model.components.UnifiedJDBCBean;
+import org.talend.designer.core.ui.editor.nodes.Node;
+import org.talend.designer.core.utils.UnifiedComponentUtil;
 import org.talend.repository.generic.action.GenericAction;
 import org.talend.repository.generic.internal.IGenericWizardInternalService;
 import org.talend.repository.generic.internal.service.GenericWizardInternalService;
 import org.talend.repository.generic.model.genericMetadata.SubContainer;
+import org.talend.repository.generic.ui.DBDynamicComposite;
 import org.talend.repository.generic.ui.DynamicComposite;
 import org.talend.repository.generic.util.GenericConnectionUtil;
 import org.talend.repository.generic.util.RepTypeMappingManager;
@@ -341,6 +360,165 @@ public class GenericWizardService implements IGenericWizardService {
             defaultAction = new GenericAction(editWizard);
         }
         return defaultAction;
+    }
+
+    @Override
+    public void loadAdditionalJDBC() {
+        // restrict additional JDBC for EE
+        if (!PluginChecker.isTIS()) {
+            return;
+        }
+        // load additional JDBC configuration json
+        ComponentWizardDefinition jdbcDefinition = null;
+        Set<ComponentWizardDefinition> wizardDefinitions = internalService.getComponentService().getTopLevelComponentWizards();
+        jdbcDefinition = wizardDefinitions.stream().filter(definition -> "JDBC".equals(definition.getName())).findFirst().get();
+        if (jdbcDefinition == null) {
+            return;
+        }
+
+        InputStream inputStream = jdbcDefinition.getClass().getClassLoader().getResourceAsStream("support_extra_db.json");
+        UnifiedComponentUtil.loadAdditionalJDBC(inputStream);
+
+    }
+
+    @Override
+    public List<String> getAllAdditionalJDBCTypes() {
+        return new ArrayList<String>(UnifiedComponentUtil.getAdditionalJDBC().keySet());
+    }
+
+    @Override
+    public boolean getIfAdditionalJDBCDBType(String dbType) {
+        Map<String, UnifiedJDBCBean> additionalJDBC = UnifiedComponentUtil.getAdditionalJDBC();
+        return additionalJDBC.get(dbType) != null;
+    }
+
+    @Override
+    public void initAdditonalJDBCConnectionValue(DatabaseConnection connection, Composite dynamicForm, String dbType, String propertyId) {
+        if (!(dynamicForm instanceof DBDynamicComposite)) {
+            return;
+        }
+        DBDynamicComposite dynamicFormComposite = (DBDynamicComposite) dynamicForm;
+        Map<String, UnifiedJDBCBean> additionalJDBC = UnifiedComponentUtil.getAdditionalJDBC();
+        // set new form first, otherwise would keep before value
+        ComponentWizard componentWizard = internalService.getComponentWizard("JDBC", propertyId);
+        if (componentWizard != null) {
+            dynamicFormComposite.setForm(componentWizard.getForms().get(0));
+        }
+
+        Dbms mysqlDbms = MetadataTalendType.getDefaultDbmsFromProduct(EDatabaseTypeName.MYSQL.getProduct().toUpperCase());
+        if (additionalJDBC.get(dbType) != null) {
+            // additional jdbc
+            Properties componentProperties = dynamicFormComposite.getForm().getProperties();
+            UnifiedJDBCBean bean = additionalJDBC.get(dbType);
+            connection.setProductId(dbType);
+            connection.setUsername(null);
+            connection.setPassword(null);
+            connection.setURL(bean.getUrl());
+            connection.setDriverClass(bean.getDriverClass());
+            // add quotes for driver jar path
+            List<String> jarPaths = new ArrayList<String>();
+            for (String jar : bean.getPaths()) {
+                String quotedJarPath = TalendQuoteUtils.addQuotesIfNotExist(jar);
+                if (StringUtils.isNotBlank(quotedJarPath)) {
+                    jarPaths.add(quotedJarPath);
+                }
+            }
+            String driverJarPaths = GenericTableUtils.getDriverJarPaths(jarPaths);
+            if (StringUtils.isNotBlank(driverJarPaths)) {
+                connection.setDriverJarPath(driverJarPaths);
+            }
+            UnifiedJDBCBean unifiedJDBCBean = additionalJDBC.get(dbType);
+            Dbms dbms = MetadataTalendType.getDefaultDbmsFromProduct(unifiedJDBCBean.getDatabaseId());
+            String dbmsId = null;
+            if (dbms != null && dbms.getProduct().equals(unifiedJDBCBean.getDatabaseId())) {
+                dbmsId = dbms.getId();
+            } else {
+                // avoid not found return default one
+                dbmsId = mysqlDbms.getId();
+            }
+            if (StringUtils.isNotBlank(dbmsId)) {
+                connection.setDbmsId(dbmsId);
+                NamedThing thing = componentProperties.getProperty("mappingFile");
+                if (thing != null) {
+                    Property property = (Property) thing;
+                    property.setValue(dbmsId);
+                }
+            }
+            Map<String, Object> map = new HashMap<String, Object>();
+            map.put("jdbcUrl", TalendQuoteUtils.addQuotes(bean.getUrl()));
+            map.put("driverClass", TalendQuoteUtils.addQuotes(bean.getDriverClass()));
+            map.put("drivers", jarPaths);
+            UnifiedComponentUtil.setCompPropertiesForJDBC(componentProperties, map);
+        } else {
+            // set to empty original jdbc for switch dbtype
+            connection.setUsername(null);
+            connection.setPassword(null);
+            connection.setURL(null);
+            connection.setDriverClass(null);
+            connection.setDriverJarPath(null);
+            if (mysqlDbms != null && StringUtils.isNotBlank(mysqlDbms.getId())) {
+                connection.setDbmsId(mysqlDbms.getId());
+                NamedThing thing = dynamicFormComposite.getForm().getProperties().getProperty("mappingFile");
+                if (thing != null) {
+                    Property property = (Property) thing;
+                    property.setValue(mysqlDbms.getId());
+                }
+            }
+        }
+        dynamicFormComposite.resetParameters(true);
+        dynamicFormComposite.refresh();
+    }
+
+    @Override
+    public String getDatabseNameByNode(IElement node) {
+        if (node != null && node instanceof Node) {
+            Node editorNode = (Node) node;
+            if (editorNode.getDelegateComponent() != null) {
+                // get database
+                IComponent delegateComponent = editorNode.getDelegateComponent();
+                String emfComponent = editorNode.getComponent().getDisplayName();
+                if (UnifiedComponentUtil.isDelegateComponent(delegateComponent)) {
+                    IUnifiedComponentService service = GlobalServiceRegister.getDefault()
+                            .getService(IUnifiedComponentService.class);
+                    return service.getUnifiedCompDisplayName(delegateComponent, emfComponent);
+                }
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public String getDefinitionName4AdditionalJDBC(IElement element) {
+        if (!(element instanceof Node)) {
+            return null;
+        }
+        Node node = (Node) element;
+        String databaseName = this.getDatabseNameByNode(node);
+        if (StringUtils.isNotBlank(databaseName) && UnifiedComponentUtil.isAdditionalJDBC(databaseName)) {
+            IComponent component = node.getComponent();
+            if (component instanceof GenericComponent) {
+                GenericComponent genericComp = (GenericComponent) component;
+                return genericComp.getComponentDefinition().getName();
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public Dbms getDbms4AdditionalJDBC(String typeName) {
+        if (!UnifiedComponentUtil.isAdditionalJDBC(typeName)) {
+            return null;
+        }
+        UnifiedJDBCBean unifiedJDBCBean = UnifiedComponentUtil.getAdditionalJDBC().get(typeName);
+        if (unifiedJDBCBean != null) {
+            String databaseId = unifiedJDBCBean.getDatabaseId();
+            Dbms dbms = MetadataTalendType.getDefaultDbmsFromProduct(databaseId);
+            if (databaseId.equals(dbms.getProduct())) {
+                // avoid not found return default one
+                return dbms;
+            }
+        }
+        return null;
     }
 
 }

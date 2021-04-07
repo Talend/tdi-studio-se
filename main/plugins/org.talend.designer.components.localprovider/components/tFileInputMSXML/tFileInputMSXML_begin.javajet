@@ -307,17 +307,17 @@ java.util.HashMap<String,String> xmlNameSpaceMap_<%=cid %> = nsTool_<%=cid %>.xm
 org.dom4j.XPath x_<%=cid %> = doc_<%=cid %>.createXPath(nsTool_<%=cid %>.addDefaultNSPrefix(rootpath_<%=cid %>,rootpath_<%=cid %>));  
 x_<%=cid %>.setNamespaceURIs(xmlNameSpaceMap_<%=cid %>);
 
-java.util.List<org.dom4j.Element> nodeList_<%=cid %> = (java.util.List<org.dom4j.Element>)x_<%=cid %>.selectNodes(doc_<%=cid %>);	
+java.util.List<org.dom4j.Node> nodeList_<%=cid %> = (java.util.List<org.dom4j.Node>)x_<%=cid %>.selectNodes(doc_<%=cid %>);	
 XML_API_<%=cid %> xml_api_<%=cid %> = new XML_API_<%=cid %>();
 String str_<%=cid %> = "";
 org.dom4j.Node node_<%=cid %> = null;
 boolean isSingleNode_<%=cid %> = true;
 Object obj_<%=cid %> = null;
 
-for (org.dom4j.Element loop_<%=cid %>: nodeList_<%=cid %>) {
+for (org.dom4j.Node loop_<%=cid %>: nodeList_<%=cid %>) {
 
 <%	if(!ignoreOrder){//order %>
-	java.util.Iterator<org.dom4j.Element> it_<%=cid %> = loop_<%=cid %>.elementIterator();
+	java.util.Iterator<org.dom4j.Element> it_<%=cid %> = ((org.dom4j.Element)loop_<%=cid %>).elementIterator();
 	
 	while(it_<%=cid%>.hasNext()){
 		nb_line_<%=cid %>++;
@@ -328,17 +328,17 @@ for (org.dom4j.Element loop_<%=cid %>: nodeList_<%=cid %>) {
 
 		org.dom4j.Element temp_<%=cid %> = it_<%=cid %>.next();
 <%	}else{ // out of order%>
-	java.util.List<java.util.Map<String,org.dom4j.Element>> resultList_<%=cid %> = new java.util.ArrayList<java.util.Map<String,org.dom4j.Element>>();
+	java.util.List<java.util.Map<String,org.dom4j.Node>> resultList_<%=cid %> = new java.util.ArrayList<java.util.Map<String,org.dom4j.Node>>();
 <%
 		for(IConnection conn : connections){
 			if (conn.getLineStyle().hasConnectionCategory(IConnectionCategory.MAIN)){
 %>
 	org.dom4j.XPath groupPath_<%=conn.getName() %> = loop_<%=cid %>.createXPath(nsTool_<%=cid %>.addDefaultNSPrefix(query_<%=conn.getName() %>,rootpath_<%=cid %>));
 	groupPath_<%=conn.getName() %>.setNamespaceURIs(xmlNameSpaceMap_<%=cid %>);
-	java.util.List<org.dom4j.Element> groupList_<%=conn.getName() %> = (java.util.List<org.dom4j.Element>)groupPath_<%=conn.getName() %>.selectNodes(loop_<%=cid %>);
+	java.util.List<org.dom4j.Node> groupList_<%=conn.getName() %> = (java.util.List<org.dom4j.Node>)groupPath_<%=conn.getName() %>.selectNodes(loop_<%=cid %>);
 	if(groupList_<%=conn.getName() %>!=null && groupList_<%=conn.getName() %>.size()>0){
-		for(org.dom4j.Element ele_<%=cid %> : groupList_<%=conn.getName() %>){
-			java.util.Map<String, org.dom4j.Element> map = new java.util.HashMap<String,org.dom4j.Element>();
+		for(org.dom4j.Node ele_<%=cid %> : groupList_<%=conn.getName() %>){
+			java.util.Map<String, org.dom4j.Node> map = new java.util.HashMap<String,org.dom4j.Node>();
 			map.put("<%=conn.getName()%>", ele_<%=cid %>);
 			resultList_<%=cid %>.add(map);
 		}
@@ -347,7 +347,7 @@ for (org.dom4j.Element loop_<%=cid %>: nodeList_<%=cid %>) {
 			}
 		}
 %>
-	for(java.util.Map<String,org.dom4j.Element> tempMap_<%=cid %> : resultList_<%=cid %> ){
+	for(java.util.Map<String,org.dom4j.Node> tempMap_<%=cid %> : resultList_<%=cid %> ){
 <%
 	}
 // ***dom4j end and sax begin*** //
@@ -476,7 +476,7 @@ looper_<%=cid%>.parse(<%=filename %>);
 					}else{ //out of order
 %>
 	if(tempMap_<%=cid %>.get("<%=conn.getName() %>") != null){
-		org.dom4j.Element temp_<%=cid %> = tempMap_<%=cid %>.get("<%=conn.getName() %>");
+		org.dom4j.Element temp_<%=cid %> = (org.dom4j.Element)tempMap_<%=cid %>.get("<%=conn.getName() %>");
 <%
 					}
 				}else{

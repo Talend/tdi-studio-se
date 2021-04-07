@@ -7,6 +7,7 @@ imports="
 	org.talend.designer.runprocess.ProcessorException
 	java.util.Map
 	java.util.List
+	java.util.Date
 "
 %>
 <%
@@ -33,7 +34,7 @@ String childJobName;
 int jobNamePosition;
 boolean isLog4jEnabled = ("true").equals(ElementParameterParser.getValue(node.getProcess(), "__LOG4J_ACTIVATE__"));
 if(isLog4jEnabled){
-	codeOptions = new String[] {"\"--father_pid=\"+pid", "\"--root_pid=\"+rootPid", "\"--father_node="+ cid + "\"", "\"--log4jLevel=\"+ log4jLevel", "(\"--monitoring=\"+ enableLogStash)"};
+	codeOptions = new String[] {"\"--father_pid=\"+pid", "\"--root_pid=\"+rootPid", "\"--father_node="+ cid + "\"", "\"--log4jLevel=\"+ log4jLevel", "(\"--audit.enabled=\"+ enableLogStash)"};
 } else {
 	codeOptions = new String[] {"\"--father_pid=\"+pid", "\"--root_pid=\"+rootPid", "\"--father_node="+ cid + "\""};
 }
@@ -203,6 +204,8 @@ class DealChildJobLibrary_<%=cid%> {
 	}
 	
 	JVMArgumentHelper_<%=cid%> jvm_argument_helper_<%=cid%> = new JVMArgumentHelper_<%=cid%>();
+	
+	String audit_jar_path_<%=cid%> = System.getProperty("classpath.extended");
 	<%
 }
 try {
@@ -228,42 +231,99 @@ try {
 			%>
 				childJob_commandLine_<%=cid%> = new java.util.ArrayList<String>();
 				<%
-			commandLine = ProcessorUtilities.getCommandLine("win32", false, true, childJobIds[i], context,org.talend.designer.runprocess.IProcessor.NO_STATISTICS,org.talend.designer.runprocess.IProcessor.NO_TRACES, use_custom_jvm_setting, codeOptions);
-			
-			    // remove the frontal 2 lines
-			    if (commandLine.length > 0 && ProcessorUtilities.isExportConfig()){
-					int tmpSize = commandLine.length - 2;
-					String[] tmp = new String[tmpSize];
-					System.arraycopy(commandLine, 2, tmp, 0, tmpSize);
-					commandLine = tmp;
+				String oldInterpreter = ProcessorUtilities.getInterpreter();
+		        String oldCodeLocation = ProcessorUtilities.getCodeLocation();
+		        String oldLibraryPath = ProcessorUtilities.getLibraryPath();
+		        boolean oldExportConfig = ProcessorUtilities.isExportConfig();
+		        Date oldExportTimestamp = ProcessorUtilities.getExportTimestamp();
+		        boolean isJobTest = ProcessorUtilities.isJobTest(node.getProcess().getId(),context,null);
+				if(isJobTest&&ProcessorUtilities.isCIMode()) {
+					 ProcessorUtilities.setExportConfig(false);
+					 ProcessorUtilities.setDynamicJobAndCITest(true);
+				}
+				
+				try {
+			    	commandLine = ProcessorUtilities.getCommandLine("win32", false, true, childJobIds[i], context,org.talend.designer.runprocess.IProcessor.NO_STATISTICS,org.talend.designer.runprocess.IProcessor.NO_TRACES, use_custom_jvm_setting, codeOptions);
+			    
+				    // remove the frontal 2 lines
+				    if (commandLine.length > 0 && ProcessorUtilities.isExportConfig()){
+						int tmpSize = commandLine.length - 2;
+						String[] tmp = new String[tmpSize];
+						System.arraycopy(commandLine, 2, tmp, 0, tmpSize);
+						commandLine = tmp;
+					}
+				} finally {
+					if(isJobTest&&ProcessorUtilities.isCIMode()) {
+				    	ProcessorUtilities.setExportConfig(oldInterpreter, oldCodeLocation, oldLibraryPath, oldExportConfig,
+                    oldExportTimestamp);
+                        ProcessorUtilities.setDynamicJobAndCITest(false);
+			    	}
 			    }
-			    for (int j = 0; j < commandLine.length; j++) {
-				  // commandLine[j] = commandLine[j].replace("\n", "");
-				  if (j == 0){
-				    %>
-				    childJob_commandLine_<%=cid%>.add("<%=commandLine[j]%>");
-				    <%
+			    
+				boolean isCP = false;
+				
+				for (int j = 0; j < commandLine.length; j++) {
+					// commandLine[j] = commandLine[j].replace("\n", "");
+					if (j == 0){
+					%>
+					childJob_commandLine_<%=cid%>.add("<%=commandLine[j]%>");
+					
+					final java.util.List<String> cc_<%=cid%>_<%=i%> = childJob_commandLine_<%=cid%>;
+					if(enableLogStash){
+						System.getProperties().stringPropertyNames().stream()
+							.filter(it -> it.startsWith("audit."))
+							.forEach(key -> cc_<%=cid%>_<%=i%>.add("-D" + key + "=" + System.getProperty(key)));
+					}
+							
+					System.getProperties().stringPropertyNames().stream()
+						.filter(it -> it.startsWith("runtime.lineage.") || "classpath.extended".equals(it))
+						.forEach(key -> cc_<%=cid%>_<%=i%>.add("-D" + key + "=" + System.getProperty(key)));
+					<%
 				  } else if (j > 0){
 				    if (commandLine[j].indexOf("\"") >= 0){
 				    	if(commandLine[j].indexOf(".jar")>=0){
 				    %>
-				      		jvm_argument_helper_<%=cid%>.addArgumentsTo(childJob_commandLine_<%=cid%>, dealChildJobLibrary_<%=cid %>.replaceJarPathsFromCrcMap(<%=commandLine[j] %>).replaceAll(";",classpathSeparator_<%=cid%>));
+				    		String classpath_<%=cid %>_<%=i %>_<%=j %> = <%=commandLine[j] %>;
+				    		<%if(isCP && (commandLine[j].endsWith(":\"") || commandLine[j].endsWith(";\""))) {%>
+				    		if(audit_jar_path_<%=cid %>!=null && !audit_jar_path_<%=cid %>.isEmpty()) {
+				      			classpath_<%=cid %>_<%=i %>_<%=j %> += audit_jar_path_<%=cid %>;
+				      		}
+				      		<%}%>
+				      		jvm_argument_helper_<%=cid%>.addArgumentsTo(childJob_commandLine_<%=cid%>, dealChildJobLibrary_<%=cid %>.replaceJarPathsFromCrcMap(classpath_<%=cid %>_<%=i %>_<%=j %>).replaceAll(";",classpathSeparator_<%=cid%>));
 				    <%
 				    	}else{
 				    %>
 				    		jvm_argument_helper_<%=cid%>.addArgumentsTo(childJob_commandLine_<%=cid%>, <%=commandLine[j] %>.replaceAll(";",classpathSeparator_<%=cid%>));
 				    <%
 				    	}
+				    	
+				    	if("\"-cp\"".equals(commandLine[j]) || "\"-classpath\"".equals(commandLine[j])) {
+			    			isCP = true;
+			    		} else {
+			    			isCP = false;
+			    		}
 				    }else{
 				    	if(commandLine[j].indexOf(".jar")>=0){
 				    %>
-				    		jvm_argument_helper_<%=cid%>.addArgumentsTo(childJob_commandLine_<%=cid%>, dealChildJobLibrary_<%=cid %>.replaceJarPathsFromCrcMap("<%=commandLine[j] %>").replaceAll(";",classpathSeparator_<%=cid%>));
+				    		String classpath_<%=cid %>_<%=i %>_<%=j %> = "<%=commandLine[j] %>";
+				    		<%if(isCP && (commandLine[j].endsWith(":") || commandLine[j].endsWith(";"))) {%>
+				    		if(audit_jar_path_<%=cid %>!=null && !audit_jar_path_<%=cid %>.isEmpty()) {
+				      			classpath_<%=cid %>_<%=i %>_<%=j %> += audit_jar_path_<%=cid %>;
+				      		}
+				      		<%}%>
+				    		jvm_argument_helper_<%=cid%>.addArgumentsTo(childJob_commandLine_<%=cid%>, dealChildJobLibrary_<%=cid %>.replaceJarPathsFromCrcMap(classpath_<%=cid %>_<%=i %>_<%=j %>).replaceAll(";",classpathSeparator_<%=cid%>));
 				    <%
 				    	}else{
 				    %>
 				    		jvm_argument_helper_<%=cid%>.addArgumentsTo(childJob_commandLine_<%=cid%>, "<%=commandLine[j] %>".replaceAll(";",classpathSeparator_<%=cid%>));
 				    <%
 				    	}
+				    	
+				    	if("-cp".equals(commandLine[j]) || "-classpath".equals(commandLine[j])) {
+			    			isCP = true;
+			    		} else {
+			    			isCP = false;
+			    		}
 				    }
 				  }
 				}

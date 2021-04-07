@@ -99,6 +99,7 @@ import org.talend.core.model.temp.ECodePart;
 import org.talend.core.model.utils.SQLPatternUtils;
 import org.talend.core.model.utils.TalendTextUtils;
 import org.talend.core.prefs.ITalendCorePrefConstants;
+import org.talend.core.runtime.util.ComponentsLocationProvider;
 import org.talend.core.ui.branding.IBrandingService;
 import org.talend.core.ui.component.ComponentsFactoryProvider;
 import org.talend.core.ui.component.settings.ComponentsSettingsHelper;
@@ -163,6 +164,7 @@ import org.talend.librariesmanager.prefs.LibrariesManagerUtils;
  */
 public class EmfComponent extends AbstractBasicComponent {
 
+
     private static Logger log = Logger.getLogger(EmfComponent.class);
 
     private static final String EQUALS = "=="; //$NON-NLS-1$
@@ -176,9 +178,9 @@ public class EmfComponent extends AbstractBasicComponent {
     private boolean isLoaded, areHadoopLibsLoaded, areHadoopLibsImported, areHadoopDistribsLoaded,
             areHadoopDistribsImported = false;
 
-    private String hadoopDistribsCacheVersion = "";
+    private String hadoopDistribsCacheVersion = ""; //$NON-NLS-1$
 
-    private String hadoopLibCacheVersion = "";
+    private String hadoopLibCacheVersion = ""; //$NON-NLS-1$
 
     private COMPONENTType compType;
 
@@ -207,6 +209,38 @@ public class EmfComponent extends AbstractBasicComponent {
     private static final boolean ADVANCED_PROPERTY = true;
 
     private static final boolean NORMAL_PROPERTY = false;
+
+    private static final String SIMPLE = "simple"; //$NON-NLS-1$
+    
+    private static final String[] CAMEL_LANGUAGE_DISPLAY_NAMES = {
+            "JavaScript", //$NON-NLS-1$
+            "JSonPath", //$NON-NLS-1$
+            "JXPath", //$NON-NLS-1$
+            "Property", //$NON-NLS-1$
+            "Simple", //$NON-NLS-1$
+            "XPath", //$NON-NLS-1$
+            "XQuery" //$NON-NLS-1$
+          };
+    
+    private static final String[] CAMEL_LANGUAGE_ITEM_VALUES = {
+            "javaScript", //$NON-NLS-1$
+            "jsonpath", //$NON-NLS-1$
+            "jxpath", //$NON-NLS-1$
+            "property", //$NON-NLS-1$
+            "simple", //$NON-NLS-1$
+            "xpath", //$NON-NLS-1$
+            "xquery" //$NON-NLS-1$
+          };
+    
+    private static final String[] CAMEL_LANGUAGE_DISPLAY_CODE_NAMES = {
+            "JAVASCRIPT", //$NON-NLS-1$
+            "JSONPATH", //$NON-NLS-1$
+            "JXPATH", //$NON-NLS-1$
+            "PROPERTY", //$NON-NLS-1$
+            "SIMPLE", //$NON-NLS-1$
+            "XPATH", //$NON-NLS-1$
+            "XQUERY" //$NON-NLS-1$
+          };
 
     private ResourceBundle resourceBundle;
 
@@ -322,7 +356,9 @@ public class EmfComponent extends AbstractBasicComponent {
             String label = ComponentFilesNaming.getInstance().getBundleName(currentComp.getName(),
                     installPath.substring(installPath.lastIndexOf(IComponentsFactory.COMPONENTS_INNER_FOLDER)));
 
-            if (currentProvider.isUseLocalProvider()) {
+            if (currentProvider instanceof ComponentsLocationProvider) {
+            	return currentProvider.getResourceBundle(label);
+            } else if (currentProvider.isUseLocalProvider()) {
                 // if the component use local provider as storage (for user / ecosystem components)
                 // then get the bundle resource from the current main component provider.
 
@@ -431,6 +467,7 @@ public class EmfComponent extends AbstractBasicComponent {
         initializePropertyParameters(listParam);
         checkSchemaParameter(listParam, node);
         addViewParameters(listParam, node);
+        addRouteExpressionParameters(listParam, node);
         addDocParameters(listParam, node);
         addSqlPatternParameters(listParam, node);
         addValidationRulesParameters(listParam, node);
@@ -1000,6 +1037,68 @@ public class EmfComponent extends AbstractBasicComponent {
         }
         param.setDefaultValue(param.getValue());
         listParam.add(param);
+    }
+    
+    //rename for route break points
+    public void addRouteExpressionParameters(final List<ElementParameter> listParam, INode node) {
+        // fix for headless issue
+        if (!ComponentCategory.CATEGORY_4_CAMEL.getName().equals(getPaletteType()) || !PluginChecker.isRouteletLoaded()) {
+            return;
+        }
+        
+        ElementParameter param = new ElementParameter(node);
+        param.setName(EParameterName.ACTIVEBREAKPOINT.getName());
+        param.setDisplayName(EParameterName.ACTIVEBREAKPOINT.getDisplayName());
+        param.setFieldType(EParameterFieldType.CHECK);
+        param.setCategory(EComponentCategory.BREAKPOINT_CAMEL);
+        param.setNumRow(13);
+        param.setValue(false);
+        param.setContextMode(false);
+        param.setDefaultValue(param.getValue());
+        listParam.add(param);
+        
+        param = new ElementParameter(node);
+        param.setName(EParameterName.ROUTE_BREAKPOINT_LANGUAGES.getName());
+        param.setDisplayName(EParameterName.ROUTE_BREAKPOINT_LANGUAGES.getDisplayName());
+        param.setFieldType(EParameterFieldType.CLOSED_LIST);
+        param.setCategory(EComponentCategory.BREAKPOINT_CAMEL);
+        param.setNumRow(14);
+        
+        param.setListItemsValue(CAMEL_LANGUAGE_ITEM_VALUES);
+        param.setListItemsDisplayCodeName(CAMEL_LANGUAGE_DISPLAY_CODE_NAMES);
+        param.setListItemsDisplayName(CAMEL_LANGUAGE_DISPLAY_NAMES);
+        param.setListRepositoryItems(new String[CAMEL_LANGUAGE_ITEM_VALUES.length]);
+        param.setListItemsShowIf(new String[CAMEL_LANGUAGE_ITEM_VALUES.length]);
+        param.setListItemsNotShowIf(new String[CAMEL_LANGUAGE_ITEM_VALUES.length]);
+        param.setListItemsReadOnlyIf(new String[CAMEL_LANGUAGE_ITEM_VALUES.length]);
+        param.setListItemsNotReadOnlyIf(new String[CAMEL_LANGUAGE_ITEM_VALUES.length]);
+        param.setValue(SIMPLE);
+        param.setContextMode(false);
+        param.setDefaultValue(SIMPLE);
+        listParam.add(param);
+
+        
+        param = new ElementParameter(node);
+        param.setName(EParameterName.ROUTE_BREAKPOINT_EXPRESSION.getName());
+        param.setDisplayName(EParameterName.ROUTE_BREAKPOINT_EXPRESSION.getDisplayName());
+        param.setFieldType(EParameterFieldType.TEXT);
+        param.setCategory(EComponentCategory.BREAKPOINT_CAMEL);
+        param.setNumRow(15);
+        param.setReadOnly(false);
+        param.setRequired(false);
+        param.setValue("\"\""); //$NON-NLS-1$
+        param.setDefaultValue(param.getValue());
+        listParam.add(param);
+
+        param = new ElementParameter(node);
+        param.setName(EParameterName.ROUTE_BREAKPOINT_EXAMPLE.getName());
+        param.setDisplayName(EParameterName.ROUTE_BREAKPOINT_EXAMPLE.getDisplayName());
+        param.setValue("Example: Lauguages=Simple, Expression=\"${body} contains 'Camel'\""); //$NON-NLS-1$
+        param.setFieldType(EParameterFieldType.LABEL);
+        param.setCategory(EComponentCategory.BREAKPOINT_CAMEL);
+        param.setNumRow(16);
+        listParam.add(param);
+        
     }
 
     public void addMainParameters(final List<ElementParameter> listParam, INode node) {
@@ -1668,8 +1767,8 @@ public class EmfComponent extends AbstractBasicComponent {
 
                     for (DistributionVersionModule versionModule : that.getVersionModules()) {
                         IMPORTType importType = ComponentFactory.eINSTANCE.createIMPORTType();
-                        importType.setMODULEGROUP(versionModule.moduleGrop.getModuleName());
-                        importType.setMRREQUIRED(versionModule.moduleGrop.isMrRequired());
+                        importType.setMODULEGROUP(versionModule.moduleGroup.getModuleName());
+                        importType.setMRREQUIRED(versionModule.moduleGroup.isMrRequired());
                         importType.setREQUIREDIF(versionModule.getModuleRequiredIf().getConditionString());
                         ModulesNeededProvider.collectModuleNeeded(node.getComponent() != null ? node.getComponent().getName()
                                 : "", importType, hadoopDistributionImportNeedsList); //$NON-NLS-1$
@@ -2578,6 +2677,14 @@ public class EmfComponent extends AbstractBasicComponent {
                 case PATTERN_PROPERTY:
                     newParam.setFieldType(EParameterFieldType.PATTERN_PROPERTY);
                     break;
+                case NUMBERLIMITTEXT:
+                    newParam.setFieldType(EParameterFieldType.NUMBERLIMITTEXT);
+                    if (item.getVALUE() == null || item.getVALUE().equals("")) { //$NON-NLS-1$
+                        newParam.setValue(""); //$NON-NLS-1$
+                    } else {
+                        newParam.setValue(item.getVALUE());
+                    }
+                    break;
                 default: // TEXT by default
                     newParam.setFieldType(EParameterFieldType.TEXT);
                     if (item.getVALUE() == null || item.getVALUE().equals("")) { //$NON-NLS-1$
@@ -3140,8 +3247,9 @@ public class EmfComponent extends AbstractBasicComponent {
         List<String> moduleNames = new ArrayList<String>();
         if (!isAlreadyLoad) {
             IMPORTSType imports = compType.getCODEGENERATION().getIMPORTS();
+            List<IMPORTType> importTypes = new ArrayList<IMPORTType>();
             if (imports != null) {
-                List<IMPORTType> importTypes = ImportModuleManager.getInstance().getImportTypes(imports);
+                importTypes.addAll(ImportModuleManager.getInstance().getImportTypes(imports));
                 for (IMPORTType importType : importTypes) {
                     ModulesNeededProvider.collectModuleNeeded(this.getName(), importType, componentImportNeedsList);
                 }
@@ -3184,8 +3292,8 @@ public class EmfComponent extends AbstractBasicComponent {
                                     if (msg.startsWith(Messages.KEY_NOT_FOUND_PREFIX)) {
                                         msg = Messages.getString("modules.required"); //$NON-NLS-1$
                                     }
-                                    ModuleNeeded componentImportNeeds = new ModuleNeeded(this.getName(), valueIndex, msg, true,
-                                            new ArrayList(), null, null);
+                                    ModuleNeeded componentImportNeeds = new ModuleNeeded(this.getName(), valueIndex, msg, isRequired(importTypes, valueIndex),
+                                            new ArrayList(), getRequiredIF(importTypes, valueIndex), null);
                                     componentImportNeeds.setShow(false);
                                     componentImportNeedsList.add(componentImportNeeds);
                                 }
@@ -3287,6 +3395,27 @@ public class EmfComponent extends AbstractBasicComponent {
         }
 
         return componentImportNeedsList;
+    }
+    
+    private boolean isRequired(List<IMPORTType> importTypes, String valueIndex) {
+        for(IMPORTType type : importTypes) {
+            if(type.getMODULE().equals(valueIndex)) {
+                return type.isREQUIRED();
+            }
+        }
+        return true;
+    }
+    
+    private String getRequiredIF(List<IMPORTType> importTypes, String valueIndex) {
+        for(IMPORTType type : importTypes) {
+            if(type.getMODULE().equals(valueIndex)) {
+                String reIF = type.getREQUIREDIF();
+                if(reIF != null && reIF.length() > 0) {
+                    return reIF;
+                }
+            }
+        }
+        return null;
     }
 
     protected void initBundleID(IMPORTType importType, ModuleNeeded componentImportNeeds) {
@@ -3515,14 +3644,8 @@ public class EmfComponent extends AbstractBasicComponent {
 
     private ArrayList<ECodePart> createCodePartList() {
         ArrayList<ECodePart> theCodePartList = new ArrayList<ECodePart>();
-        String applicationPath;
-        try {
-            applicationPath = FileLocator.getBundleFile(Platform.getBundle(bundleName)).getPath();
-            applicationPath = (new Path(applicationPath)).toPortableString();
-        } catch (IOException e2) {
-            ExceptionHandler.process(e2);
-            return (ArrayList<ECodePart>) Collections.EMPTY_LIST;
-        }
+        String applicationPath = ComponentBundleToPath.getPathFromBundle(bundleName);
+        applicationPath = (new Path(applicationPath)).toPortableString();
         File dirChildFile = new File(applicationPath + uriString);
         File dirFile = dirChildFile.getParentFile();
         final String extension = "." + LanguageManager.getCurrentLanguage().getName() + "jet"; //$NON-NLS-1$ //$NON-NLS-2$
@@ -3988,6 +4111,7 @@ public class EmfComponent extends AbstractBasicComponent {
             optionMap.put(XMLResource.OPTION_USE_PARSER_POOL, new XMLParserPoolImpl());
             optionMap.put(XMLResource.OPTION_USE_XML_NAME_TO_FEATURE_MAP, new HashMap());
             optionMap.put(XMLResource.OPTION_USE_DEPRECATED_METHODS, Boolean.FALSE);
+            optionMap.put(XMLResource.OPTION_RECORD_UNKNOWN_FEATURE,Boolean.TRUE);
             optionMapSoftRef = new SoftReference<Map>(optionMap);
         }
         return optionMap;
@@ -4256,7 +4380,7 @@ public class EmfComponent extends AbstractBasicComponent {
 
     @Override
     public String getTemplateFolder() {
-        return getPathSource() + "/" + getName();
+        return getPathSource() + "/" + getName(); //$NON-NLS-1$
     }
 
     @Override

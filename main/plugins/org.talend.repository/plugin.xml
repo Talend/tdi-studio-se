@@ -58,6 +58,12 @@
             isReadAction="true"
             level="12"
             name="Read routine"/>
+      <Action
+            class="org.talend.repository.ui.actions.routines.AssignRoutinesToJarAction"
+            id="org.talend.repositorys.actions.assignoutine"
+            level="10"
+            name="Assign Routines to">
+      </Action>
 
        <Action
             class="org.talend.repository.ui.actions.sqlpattern.ReadSqlpatternAction"
@@ -133,6 +139,12 @@
             isEditAction="false"
             isReadAction="false"
             name="Export Items"/>
+      <Action
+            class="org.talend.repository.ui.actions.routinesjar.CreateRoutinesJarAction"
+            id="org.talend.repository.actions.createroutinesjar"
+            level="10"
+            name="Create Routine Jar">
+      </Action>
    </extension>
    <extension
          point="org.eclipse.ui.views.properties.tabbed.propertyContributor">
@@ -388,6 +400,17 @@
    </extension>
    <extension
          point="org.talend.core.migrationTask">
+         
+ <projecttask
+        beforeLogon="true"
+        breaks="7.3.1"
+        class="org.talend.repository.model.migration.spark.AddKafkaExtraInfo"
+        description="Add key, partition and topic to the output schema of tKafkaInput components"
+        id="org.talend.repository.model.migration.spark.AddKafkaExtraInfo"
+        name="AddKafkaExtraInfo"
+        version="7.3.1">                     
+  </projecttask>
+         
   <projecttask
         beforeLogon="true"
         breaks="5.1.1"
@@ -1258,6 +1281,14 @@
              name="Clean all folders from project"
              version="5.1.2">
        </projecttask>
+        <projecttask
+             beforeLogon="true"
+             breaks="7.3.1"
+             class="org.talend.repository.model.migration.RemoveMetadataInPomsFolder"
+             id="org.talend.repository.model.migration.RemoveMetadataInPomsFolder"
+             name="Clean all metadata in poms folder"
+             version="7.3.1">
+       </projecttask>
        <projecttask
              beforeLogon="true"
              breaks="5.1.1"
@@ -1602,6 +1633,14 @@
               id="org.talend.repository.model.migration.ChangeMSSQLDBVersionMigrationTask"
               name="Change MSSQL DBVersion"
               version="6.3.0">
+        </projecttask>
+         <projecttask
+              beforeLogon="false"
+              breaks="7.3.0"
+              class="org.talend.repository.model.migration.ChangeMSSQLDBDefaultVersionMigrationTask"
+              id="org.talend.repository.model.migration.ChangeMSSQLDBDefaultVersionMigrationTask"
+              name="Change MSSQL Default DBVersion"
+              version="7.3.1">
         </projecttask>
         <projecttask
               beforeLogon="false"
@@ -3096,15 +3135,6 @@
         <projecttask
               beforeLogon="false"
               breaks="7.1.0"
-              class="org.talend.repository.model.migration.spark.UseSqlDateTypeInDataframesTask"
-              description="Keep Date type for component impacted by change from Date to Timestamp"
-              id="org.talend.repository.model.migration.spark.UseSqlDateTypeInDataframesTask"
-              name="UseSqlDateTypeInDataframesTask"
-              version="7.1.1">
-        </projecttask>
-        <projecttask
-              beforeLogon="false"
-              breaks="7.1.0"
               class="org.talend.repository.model.migration.MySQLDefaultDBVersion"
               description="If job doesn't have DB version, it will be set to v5"
               id="org.talend.repository.model.migration.MySQLDefaultDBVersion"
@@ -3274,7 +3304,314 @@
                id="org.talend.repository.model.migration.OracleSPAutomappingDateToTimestampTask"
                name="oracleSPAutomappingDateToTimestampTask"
                version="7.3.1">
+       </projecttask>
+       <projecttask
+               beforeLogon="false"
+               breaks="7.2.1"
+               class="org.talend.repository.model.migration.CleanLoginAndPasswordForRedshiftSqlForSSO"
+               description="Set login and password as empty strings if connection use SSO"
+               id="org.talend.repository.model.migration.CleanLoginAndPasswordForRedshiftSqlForSSO"
+               name="cleanLoginAndPasswordForRedshiftSqlForSSO"
+               version="7.3.1">
         </projecttask>
+        <projecttask
+              beforeLogon="false"
+              breaks="7.3.0"
+              class="org.talend.repository.model.migration.SAPBAPIParameterTypeMigrationTask"
+              description="adjust the tsapbapi ui"
+              id="org.talend.repository.model.migration.SAPBAPIParameterTypeMigrationTask"
+              name="SAPBAPIParameterTypeMigrationTask"
+              version="7.3.1">
+        </projecttask>
+        <projecttask
+              beforeLogon="false"
+              breaks="7.3.0"
+              class="org.talend.repository.model.migration.ChangeCDCTypeForOracle18TDI43319"
+              description="Change CDC Type for Oracle 18"
+              id="org.talend.repository.model.migration.ChangeCDCTypeForOracle18TDI43319"
+              name="ChangeCDCTypeForOracle18TDI43319"
+              version="7.3.1">
+        </projecttask>
+        <projecttask
+              beforeLogon="false"
+              breaks="7.3.0"
+              class="org.talend.repository.model.migration.ChangeDefaultValueTDI36397"
+              description="Add check box to enable batch mode"
+              id="org.talend.repository.model.migration.ChangeDefaultValueTDI36397"
+              name="ChangeDefaultValueTDI36397"
+              version="7.3.1">
+        </projecttask>
+        <projecttask
+              beforeLogon="false"
+              breaks="7.3.0"
+              class="org.talend.repository.model.migration.ChangeDBVersionValue4BonitaComponentsTDI43395"
+              description="change db version values for bonita"
+              id="org.talend.repository.model.migration.ChangeDBVersionValue4BonitaComponentsTDI43395"
+              name="ChangeDBVersionValue4BonitaComponentsTDI43395"
+              version="7.3.1">
+        </projecttask>
+        <projecttask
+              beforeLogon="true"
+              breaks="7.3.0"
+              class="org.talend.repository.model.migration.RemovePigudfModulesMigrationTask"
+              description="Remove pigudf modules"
+              id="org.talend.repository.model.migration.RemovePigudfModulesMigrationTask"
+              name="RemovePigudfModulesMigrationTask"
+              version="7.3.1">
+        </projecttask>
+        <projecttask
+             beforeLogon="false"
+             breaks="7.3.0"
+             class="org.talend.repository.model.migration.RenameSQLDWHMigrationTask"
+             description="Rename tSQLDWHXXX components to tAzureSynapseXXX"
+             id="org.talend.repository.model.migration.RenameSQLDWHMigrationTask"
+             name="RenameSQLDWHMigrationTask"
+             version="7.3.1">
+       </projecttask>
+       <projecttask
+             beforeLogon="false"
+             breaks="7.3.0"
+             class="org.talend.repository.model.migration.ChangeDefaultLoadMethod4tSynapseBulkExec"
+             description="Change Azure synapse bulk exec default load method"
+             id="org.talend.repository.model.migration.ChangeDefaultLoadMethod4tSynapseBulkExec"
+             name="ChangeDefaultLoadMethod4tSynapseBulkExec"
+             version="7.3.1">
+       </projecttask>
+       <projecttask
+              beforeLogon="false"
+              breaks="7.3.0"
+              class="org.talend.repository.model.migration.CreateContextLinkMigrationTask"
+              description="Create context link file"
+              id="org.talend.repository.model.migration.CreateContextLinkMigrationTask"
+              name="CreateContextLinkMigrationTask"
+              version="7.3.1">
+       </projecttask>
+       <projecttask
+              beforeLogon="false"
+              breaks="7.3.0"
+              class="org.talend.repository.model.migration.ChangeDefaultDriverForMSSqlMigrationTask"
+              description="Change default value of driver list in MSSql components"
+              id="org.talend.repository.model.migration.ChangeDefaultDriverForMSSqlMigrationTask"
+              name="ChangeDefaultDriverForMSSqlMigrationTask"
+              version="7.3.1">
+        </projecttask>       
+        <projecttask
+              beforeLogon="false"
+              breaks="7.3.0"
+              class="org.talend.repository.model.migration.GoogleStorageSetDefaultAuthTypeMigrationTask"
+              description="Change default value of auth type for Google Storage components"
+              id="org.talend.repository.model.migration.GoogleStorageSetDefaultAuthTypeMigrationTask"
+              name="GoogleStorageSetDefaultAuthTypeMigrationTask"
+              version="7.3.1">
+        </projecttask>
+
+        <projecttask
+             beforeLogon="false"
+             breaks="7.3.0"
+             class="org.talend.repository.model.migration.RenameEXAMigrationTask"
+             description="Rename tEXAXXX components to tExasolXXX"
+             id="org.talend.repository.model.migration.RenameEXAMigrationTask"
+             name="RenameEXAMigrationTask"
+             version="7.3.1">
+       </projecttask>
+       <projecttask
+               beforeLogon="false"
+               breaks="7.3.0"
+               class="org.talend.repository.model.migration.BigQuerySetDefaultAuthTypeForGSMigrationTask"
+               description="Change default value of auth type in BigQuery components which use GCS"
+               id="org.talend.repository.model.migration.BigQuerySetDefaultAuthTypeForGSMigrationTask"
+               name="BigQuerySetDefaultAuthTypeForGSMigrationTask"
+               version="7.3.1">
+       </projecttask>
+       <projecttask
+              beforeLogon="false"
+              breaks="7.3.0"
+              class="org.talend.repository.model.migration.spark.UpdateSeparatorAndEscapeForDatasetAPI"
+              description="change separator and escape to work with dataset API"
+              id="org.talend.repository.model.migration.spark.UpdateSeparatorAndEscapeForDatasetAPI"
+              name="UpdateSeparatorAndEscapeForDatasetAPI"
+              version="7.3.1">                     
+       </projecttask>
+       <projecttask
+              beforeLogon="true"
+              breaks="7.3.1"
+              class="org.talend.repository.model.migration.spark.RefactoDeltaMergeOption"
+              description="refacto for deltalake output xml"
+              id="org.talend.repository.model.migration.spark.RefactoDeltaMergeOption"
+              name="RefactoDeltaMergeOption"
+              version="7.3.1">                     
+       </projecttask>
+       <projecttask
+               beforeLogon="false"
+               breaks="6.4.0"
+               class="org.talend.repository.model.migration.CheckAzureBlobStorageKeepRemoteDirJavajetToTCOMPv0"
+               description="Add checkbox with not default value for Javajet component to be migrated for TCOMPv0"
+               id="org.talend.repository.model.migration.CheckAzureBlobStorageKeepRemoteDirJavajetToTCOMPv0"
+               name="CheckAzureBlobStorageKeepRemoteDirJavajetToTCOMPv0"
+               version="7.3.1">
+       </projecttask>
+       <projecttask
+              beforeLogon="false"
+              breaks="7.3.0"
+              class="org.talend.repository.model.migration.SetDefaultPartSizeForTGSPutMigrationTask"
+              description="Set default value of part size for Google Storage Put component to 0"
+              id="org.talend.repository.model.migration.SetDefaultPartSizeForTGSPutMigrationTask"
+              name="SetDefaultPartSizeForTGSPutMigrationTask"
+              version="7.3.1">
+       </projecttask>
+       <projecttask
+              beforeLogon="false"
+              breaks="7.2.0"
+              class="org.talend.repository.model.migration.spark.SetGlobalTimestampOptionForPreviousVersions"
+              description="set global timestamp option to true for older studio"
+              id="org.talend.repository.model.migration.spark.SetGlobalTimestampOptionForPreviousVersions"
+              name="SetGlobalTimestampOptionForPreviousVersions"
+              version="7.2.1">
+       </projecttask>
+       <projecttask
+               beforeLogon="false"
+               breaks="7.3.0"
+               class="org.talend.repository.model.migration.TeradataTPTAddDatabaseNameToOptionalTablesMigrationTask"
+               description="Append database name to optional TPT attributes Log and Error tables"
+               id="org.talend.repository.model.migration.TeradataTPTAddDatabaseNameToOptionalTablesMigrationTask"
+               name="TeradataTPTAddDatabaseNameToOptionalTablesMigrationTask"
+               version="7.3.1">
+       </projecttask>
+        <projecttask
+          beforeLogon="true"
+          breaks="7.3.0"
+          class="org.talend.repository.model.migration.UpdateDaikonCryptoUtilsMigrationTask"
+          id="org.talend.repository.model.migration.UpdateDaikonCryptoUtilsMigrationTask"
+          description="Update Daikon Crypto Utils"
+          name="UpdateDaikonCryptoUtilsMigrationTask"
+          version="7.3.1">
+       </projecttask>
+	   <projecttask
+               beforeLogon="false"
+               breaks="7.3.0"
+               class="org.talend.repository.model.migration.UncheckTrustAllMigrationTask"
+               description="Uncheck Trust all server in tFileFetch"
+               id="org.talend.repository.model.migration.UncheckTrustAllMigrationTask"
+               name="UncheckTrustAllMigrationTask"
+               version="7.3.1">
+       </projecttask>
+       <projecttask
+          beforeLogon="true"
+          breaks="7.3.0"
+          class="org.talend.repository.model.migration.RemoveSnapshotJarMigrationTask"
+          id="org.talend.repository.model.migration.RemoveSnapshotJarMigrationTask"
+          description="Regnerate all poms"
+          name="RemoveSnapshotJarMigrationTask"
+          version="7.3.1">
+       </projecttask>
+       <projecttask
+              beforeLogon="false"
+              breaks="7.3.0"
+              class="org.talend.repository.model.migration.spark.SetDatasetCheckBoxGlobalOption"
+              description="set global use dataset api checkbox to false for previous versions"
+              id="org.talend.repository.model.migration.spark.SetDatasetCheckBoxGlobalOption"
+              name="SetDatasetCheckBoxGlobalOption"
+              version="7.3.1">
+       </projecttask>
+              <projecttask
+              beforeLogon="false"
+              breaks="7.3.0"
+              class="org.talend.repository.model.migration.spark.SetUseLocalTimezone"
+              description="set use local timezone checkbox to true for previous versions"
+              id="org.talend.repository.model.migration.spark.SetUseLocalTimezone"
+              name="SetUseLocalTimezone"
+              version="7.3.1">
+       </projecttask>
+       <projecttask
+              beforeLogon="false"
+              breaks="7.3.0"
+              class="org.talend.repository.model.migration.ChangeELTPostgresDbVersionMigrationTask"
+              description="Change the tELTPostgresqlMap DB_VERSION to old version if DB_VERSION is not set"
+              id="org.talend.repository.model.migration.ChangeELTPostgresDbVersionMigrationTask"
+              name="ChangeELTPostgresDbVersionMigrationTask"
+              version="7.3.1">
+       </projecttask>
+       <projecttask
+               beforeLogon="false"
+               breaks="7.3.0"
+               class="org.talend.repository.model.migration.SpecialUpdateELTDefaultNameMigrationTask"
+               description="Update ELT default table name or schema name"
+               id="org.talend.repository.model.migration.SpecialUpdateELTDefaultNameMigrationTask"
+               name="SpecialUpdateELTDefaultNameMigrationTask"
+               version="7.3.1">
+       </projecttask>
+       <projecttask
+             beforeLogon="false"
+             breaks="7.3.0"
+             class="org.talend.repository.model.migration.ChangeTMatchGroupConfidentWeightTypeTask"
+             description="change the type of Confident Weight and keep the part of integer only"
+             id="org.talend.repository.model.migration.ChangeTMatchGroupConfidentWeightTypeTask"
+             name="ChangeTMatchGroupConfidentWeightTypeTask"
+             version="7.3.1">
+       </projecttask>
+   	   <projecttask
+               beforeLogon="false"
+               breaks="7.3.0"
+               class="org.talend.repository.model.migration.UncheckUseExtraParameterMigrationTask"
+               description="Uncheck Use Extra Parameters in tGPGDecrypt"
+               id="org.talend.repository.model.migration.UncheckUseExtraParameterMigrationTask"
+               name="UncheckUseExtraParameterMigrationTask"
+               version="7.3.1">
+       </projecttask>
+       <projecttask
+               beforeLogon="false"
+               breaks="7.3.0"
+               class="org.talend.repository.model.migration.ChangeDefaultDriver4GreenplumMigrationTask"
+               description="Change default driver and version for Greenplum components"
+               id="org.talend.repository.model.migration.ChangeDefaultDriver4GreenplumMigrationTask"
+               name="ChangeDefaultDriver4GreenplumMigrationTask"
+               version="7.3.1">
+       </projecttask>
+       <projecttask
+             beforeLogon="false"
+             breaks="7.3.0"
+             class="org.talend.repository.model.migration.ChangeFileInputDynamicFieldLength"
+             description="Change the dynamic field length in file input components"
+             id="org.talend.repository.model.migration.ChangeFileInputDynamicFieldLength"
+             name="ChangeFileInputDynamicFieldLength"
+             version="7.3.1">
+       </projecttask>
+       <projecttask
+             beforeLogon="false"
+             breaks="7.3.0"
+             class="org.talend.repository.model.migration.SpecialUpdateELTEnableColumnAliasMigrationTask"
+             description="Update ELT to enable oracle column alias"
+             id="org.talend.repository.model.migration.SpecialUpdateELTEnableColumnAliasMigrationTask"
+             name="SpecialUpdateELTEnableColumnAliasMigrationTask"
+             version="7.3.1">
+       </projecttask>
+       <projecttask
+              beforeLogon="false"
+              breaks="7.3.0"
+              class="org.talend.repository.model.migration.FixUpgradePasswordEncryptionAlg4ItemMigrationTask"
+              description="Fix upgrading password encryption Alg 4 item migration task"
+              id="org.talend.repository.model.migration.FixUpgradePasswordEncryptionAlg4ItemMigrationTask"
+              name="FixUpgradePasswordEncryptionAlg4ItemMigrationTask"
+              version="7.3.1">
+        </projecttask>
+		<projecttask
+              beforeLogon="false"
+              breaks="7.3.0"
+              class="org.talend.repository.model.migration.RemoveDefaultProxyIPTask"
+              description="Replace the unUsed proxy IP to 127.0.0.1"
+              id="org.talend.repository.model.migration.RemoveDefaultProxyIPTask"
+              name="RemoveDefaultProxyIPTask"
+              version="7.3.1">
+        </projecttask>
+       <projecttask
+              beforeLogon="false"
+              breaks="7.3.0"
+              class="org.talend.repository.model.migration.AddAndSetDBVersionValueCosmosDB"
+              description="Add DB Version list to CosmosDB family components and set default value to 'MONGODB_3_2_X'"
+              id="org.talend.repository.model.migration.AddAndSetDBVersionValueCosmosDB"
+              name="AddAndSetDBVersionValueCosmosDB"
+              version="7.3.1">
+       </projecttask>
    </extension>
 
    <extension
@@ -3363,7 +3700,23 @@
         name="log4j-jcl-2.12.1.jar"
         mvn_uri="mvn:org.apache.logging.log4j/log4j-jcl/2.12.1"
         uripath="platform:/plugin/org.talend.libraries.apache/lib/log4j-jcl-2.12.1.jar">
-      </libraryNeeded>          
+      </libraryNeeded>  
+      
+      <libraryNeeded
+        context="plugin:org.talend.libraries.apache"
+        id="log4j-1.2-api-2.12.1.jar"
+        name="log4j-1.2-api-2.12.1.jar"
+        mvn_uri="mvn:org.apache.logging.log4j/log4j-1.2-api/2.12.1"
+        uripath="platform:/plugin/org.talend.libraries.apache/lib/log4j-1.2-api-2.12.1.jar">
+      </libraryNeeded>
+      
+      <libraryNeeded
+        context="plugin:org.talend.librariesmanager"
+        id="slf4j-api-1.7.25.jar"
+        name="slf4j-api-1.7.25.jar"
+        mvn_uri="mvn:org.slf4j/slf4j-api/1.7.25"
+        uripath="platform:/plugin/org.talend.librariesmanager/lib/slf4j-api-1.7.25.jar">
+      </libraryNeeded>         
    </extension>
    <!--
    <extension
@@ -3443,9 +3796,6 @@
       <initializer
             class="org.talend.repository.preference.initializer.MavenVersionManagementProjectSettingPageInitializer">
       </initializer>
-      <initializer
-            class="org.talend.repository.preference.initializer.ArtifactRepositoryShareSettingPageInitializer">
-      </initializer>
    </extension>
    <extension
          point="org.talend.repository.projectsetting_page">
@@ -3517,6 +3867,15 @@
       </page>
       <page
             category="general"
+            class="org.talend.repository.preference.ArtifactProxySettingPage"
+            id="org.talend.repository.preference.ArtifactProxySettingPage"
+            title="%projectSetting.ArtifactProxy">
+            <tester
+               class="org.talend.repository.preference.ArtifactProxySettingPageTester">
+         </tester>
+      </page>
+      <page
+            category="general"
             class="org.talend.repository.preference.MetadataTalendTypePreferencePage"
             id="org.talend.repository.preference.MetadataTalendTypePreferencePage"
             title="%projectSetting.talendType">
@@ -3566,14 +3925,6 @@
             title="%projectSetting.deploymentConfiguration">
          <tester
                class="org.talend.repository.preference.MavenDeploymentConfigurationProjectSettingPageTester">
-         </tester>
-      </page>
-      <page
-            class="org.talend.repository.preference.ArtifactRepositoryShareSettingPage"
-            id="projectsetting.RepositoryShare"
-            title="%projectsetting.RepositoryShare">
-         <tester
-               class="org.talend.repository.preference.ArtifactRepositoryShareSettingPageTester">
          </tester>
       </page>
    </extension>

@@ -994,7 +994,7 @@ public class JobJavaScriptsManager extends JobScriptsManager {
                         .getService(ICamelDesignerCoreService.class);
                 if (camelService.isInstanceofCamel(process[0].getItem())) {
                     useBeans = true;
-                    talendProcessJavaProject = service.getTalendCodeJavaProject(ERepositoryObjectType.valueOf("BEANS")); //$NON-NLS-1$
+                    talendProcessJavaProject = service.getTalendCodeJavaProject(ERepositoryObjectType.BEANS);
                 }
             }
             addRoutinesSourceCodes(process, resource, talendProcessJavaProject, useBeans);
@@ -1640,7 +1640,7 @@ public class JobJavaScriptsManager extends JobScriptsManager {
             String jar;
             File classRootFileLocation;
             if (useBeans) {
-                classRootFileLocation = getCodeClassRootFileLocation(ERepositoryObjectType.valueOf("BEANS")); //$NON-NLS-1$
+                classRootFileLocation = getCodeClassRootFileLocation(ERepositoryObjectType.BEANS);
                 includePath = USER_BEANS_PATH;
                 jar = USERBEANS_JAR;
             } else {
@@ -1668,37 +1668,6 @@ public class JobJavaScriptsManager extends JobScriptsManager {
             ExceptionHandler.process(e);
             return Collections.emptyList();
         }
-    }
-
-    protected List<URL> getPigudfResource(ExportFileResource[] process, boolean needResouece) {
-        List<URL> urlList = new ArrayList<URL>();
-        if (PluginChecker.isPigudfPluginLoaded() && needResouece) {
-            // make a jar file of PIG UDF classes
-            try {
-                Collection<File> routineDependince = getRoutineDependince(process, false, USER_PIGUDF_PATH);
-                if (!routineDependince.isEmpty()) {
-
-                    File jarFile = new File(getSystemTempFolder().getAbsolutePath() + File.separatorChar + USERPIGUDF_JAR);
-
-                    File classRootFileLocation = getCodeClassRootFileLocation(ERepositoryObjectType.PIG_UDF);
-                    if (classRootFileLocation == null) {
-                        return Collections.emptyList();
-                    }
-                    JarBuilder jarbuilder = new JarBuilder(classRootFileLocation, jarFile);
-
-                    jarbuilder.setIncludeDir(Collections.singleton(USER_PIGUDF_PATH));
-                    jarbuilder.setIncludeRoutines(routineDependince);
-                    jarbuilder.setExcludeDir(Arrays.asList(SYSTEM_ROUTINES_PATH, USER_ROUTINES_PATH, // remove all
-                            USER_BEANS_PATH, USER_PIGUDF_PATH));
-                    jarbuilder.buildJar();
-                    urlList.add(jarFile.toURI().toURL());
-                }
-            } catch (Exception e) {
-                ExceptionHandler.process(e);
-                return Collections.emptyList();
-            }
-        }
-        return urlList;
     }
 
     protected Collection<File> getRoutineDependince(ExportFileResource[] process, boolean system, String type) {
@@ -1772,9 +1741,6 @@ public class JobJavaScriptsManager extends JobScriptsManager {
         } else {
             Set<String> allRoutinesNames = new HashSet<String>();
             ERepositoryObjectType objectType = ERepositoryObjectType.ROUTINES;
-            if (USER_PIGUDF_PATH.equals(type)) {
-                objectType = ERepositoryObjectType.PIG_UDF;
-            }
 
             if (ERepositoryObjectType.ROUTINES == objectType) {
                 for (ExportFileResource resource : process) {
@@ -1787,18 +1753,8 @@ public class JobJavaScriptsManager extends JobScriptsManager {
                     }
 
                 }
-            } else {
-                for (ExportFileResource resource : process) {
-                    if (resource.getItem() instanceof ProcessItem) {
-                        Set<String> routinesNeededForJob = LastGenerationInfo.getInstance().getPigudfNeededWithSubjobPerJob(
-                                resource.getItem().getProperty().getId(), resource.getItem().getProperty().getVersion());
-                        if (routinesNeededForJob != null) {
-                            allRoutinesNames.addAll(routinesNeededForJob);
-                        }
-                    }
-
-                }
             }
+
             if (allRoutinesNames.isEmpty()) {
                 toReturn.addAll(RoutinesUtil.getCurrentSystemRoutines());
             } else {
@@ -2034,26 +1990,6 @@ public class JobJavaScriptsManager extends JobScriptsManager {
 
     protected boolean isExcludedLib(ModuleNeeded module) {
         return false; // default, no exclued lib
-    }
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see
-     * org.talend.repository.ui.wizards.exportjob.scriptsmanager.JobScriptsManager#getExportPigudfResources(org.talend
-     * .repository.documentation.ExportFileResource[])
-     */
-    @Override
-    public URL getExportPigudfResources(ExportFileResource[] process) throws ProcessorException {
-        List<ExportFileResource> list = new ArrayList<ExportFileResource>();
-        ExportFileResource libResource = new ExportFileResource(null, ""); //$NON-NLS-1$
-        // for pigudf
-        List<URL> resource = getPigudfResource(process, isOptionChoosed(ExportChoice.needPigudf));
-        if (!resource.isEmpty()) {
-            return resource.get(0);
-        }
-        return null;
-
     }
 
     public List<File> getLibPath(boolean isSpecialMR) {

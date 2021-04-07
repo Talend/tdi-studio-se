@@ -437,7 +437,7 @@
 		NUM_ROW="50"
 		REPOSITORY_VALUE="DRIVER"
 		SHOW_IF="(DBTYPE=='MSSQL') and (USE_EXISTING_CONNECTION == 'false')">
-		<ITEMS DEFAULT="JTDS">
+		<ITEMS DEFAULT="MSSQL_PROP">
 			<ITEM NAME="JTDS" VALUE="JTDS" />
 			<ITEM NAME="MSSQL_PROP" VALUE="MSSQL_PROP"/>
 		</ITEMS>
@@ -472,7 +472,6 @@
 		<ITEMS DEFAULT="MYSQL_8">
 			<ITEM NAME="MYSQL_8" VALUE="MYSQL_8" />
 			<ITEM NAME="MYSQL_5" VALUE="MYSQL_5" />
-			<ITEM NAME="MYSQL_4" VALUE="MYSQL_4" />
 			<ITEM NAME="MARIADB" VALUE="MARIADB" />
 		</ITEMS>
 	</PARAMETER>
@@ -607,11 +606,12 @@
       SHOW_IF="(DBTYPE=='SYBASE') and (USE_EXISTING_CONNECTION == 'true')"
     />
     
-    <PARAMETER NAME="DB_SYBASE_VERSION" FIELD="CLOSED_LIST" NUM_ROW="50"
+    <PARAMETER NAME="DB_SYBASE_VERSION" FIELD="CLOSED_LIST" NUM_ROW="50" REPOSITORY_VALUE="DB_VERSION"
 		SHOW_IF="(USE_EXISTING_CONNECTION == 'false')AND(DBTYPE=='SYBASE')">
 		<ITEMS DEFAULT="SYBSEIQ_16">
 			<ITEM NAME="SYBSEIQ_12_15" VALUE="SYBSEIQ_12_15" />
 			<ITEM NAME="SYBSEIQ_16" VALUE="SYBSEIQ_16" />
+			<ITEM NAME="SYBSEIQ_16_SA" VALUE="SYBSEIQ_16_SA" />
 		</ITEMS>
 	</PARAMETER>
 	<!--Sybase configuration end-->
@@ -684,7 +684,7 @@
 	<PARAMETER
       NAME="CONNECTION_EXASOL"
       FIELD="COMPONENT_LIST"
-      FILTER="tEXAConnection"
+      FILTER="tExasolConnection"
 	  REQUIRED="true"
       NUM_ROW="30"
       SHOW_IF="(DBTYPE=='EXASOL') and (USE_EXISTING_CONNECTION == 'true')"
@@ -779,6 +779,7 @@
       <DEFAULT IF="DBTYPE=='EXASOL'">Exasol_id</DEFAULT>
       <DEFAULT IF="DBTYPE=='REDSHIFT'">redshift_id</DEFAULT>
       <DEFAULT IF="DBTYPE=='SNOWFLAKE'">snowflake_id</DEFAULT>
+      <DEFAULT IF="DBTYPE=='SYBASE'">sybase_id</DEFAULT>
       <DEFAULT>mysql_id</DEFAULT>
     </PARAMETER>
 
@@ -806,7 +807,11 @@
         <DEFAULT IF="((DBTYPE!='AS400') AND (DBTYPE!='MSSQL'))">""</DEFAULT>
         <DEFAULT IF="(DBTYPE=='AS400') OR (DBTYPE=='MSSQL')">"prompt=false"</DEFAULT>
     </PARAMETER>
-    
+
+    <PARAMETER NAME="MSSQL_ACTIVE_DIR_AUTH" FIELD="CHECK" NUM_ROW="12" SHOW_IF="(USE_EXISTING_CONNECTION == 'false') AND (DBTYPE=='MSSQL') AND (MSSQL_DRIVER=='MSSQL_PROP')">
+        <DEFAULT>false</DEFAULT>
+    </PARAMETER>
+
     <PARAMETER
       NAME="NOTE"
       FIELD="LABEL"
@@ -855,18 +860,25 @@
 		<IMPORT NAME="Driver_MaxDB" MODULE="sapdbc.jar" MVN="mvn:org.talend.libraries/sapdbc/6.0.0"  REQUIRED_IF="DBTYPE=='MAXDB'" />
 		<IMPORT NAME="Driver-MSSQL" MODULE="jtds-1.3.1-patch-20190523.jar" MVN="mvn:net.sourceforge.jtds/jtds/1.3.1-patch-20190523" REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false') AND (DBTYPE=='MSSQL') AND (MSSQL_DRIVER=='JTDS')" />
 		<IMPORT NAME="Driver-MSSQL-prop" MODULE="mssql-jdbc.jar" MVN="mvn:org.talend.libraries/mssql-jdbc/6.0.0"  REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false') AND (DBTYPE=='MSSQL') AND (MSSQL_DRIVER=='MSSQL_PROP')" />
-		<IMPORT NAME="Driver-MYSQL4" MODULE="mysql-connector-java-3.1.14-bin.jar" MVN="mvn:org.talend.libraries/mysql-connector-java-3.1.14-bin/6.0.0"  REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false') and (DBTYPE=='MYSQL') and (DB_MYSQL_VERSION=='MYSQL_4')"/>
+		<IMPORT NAME="adal4j" MODULE="adal4j-1.6.5.jar" MVN="mvn:com.microsoft.azure/adal4j/1.6.5"  REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false') AND (DBTYPE=='MSSQL') AND (MSSQL_DRIVER=='MSSQL_PROP') AND (MSSQL_ACTIVE_DIR_AUTH == 'true')" />
+		<IMPORT NAME="commons-lang3" MODULE="commons-lang3-3.10.jar" MVN="mvn:org.apache.commons/commons-lang3/3.10"  REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false') AND (DBTYPE=='MSSQL') AND (MSSQL_DRIVER=='MSSQL_PROP') AND (MSSQL_ACTIVE_DIR_AUTH == 'true')" />
+		<IMPORT NAME="commons-codec" MODULE="commons-codec-1.14.jar" MVN="mvn:commons-codec/commons-codec/1.14"  REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false') AND (DBTYPE=='MSSQL') AND (MSSQL_DRIVER=='MSSQL_PROP') AND (MSSQL_ACTIVE_DIR_AUTH == 'true')" />
+		<IMPORT NAME="gson" MODULE="gson-2.8.6.jar" MVN="mvn:com.google.code.gson/gson/2.8.6"  REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false') AND (DBTYPE=='MSSQL') AND (MSSQL_DRIVER=='MSSQL_PROP') AND (MSSQL_ACTIVE_DIR_AUTH == 'true')" />
+		<IMPORT NAME="oauth2-oidc-sdk" MODULE="oauth2-oidc-sdk-6.5.jar" MVN="mvn:com.nimbusds/oauth2-oidc-sdk/6.5"  REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false') AND (DBTYPE=='MSSQL') AND (MSSQL_DRIVER=='MSSQL_PROP') AND (MSSQL_ACTIVE_DIR_AUTH == 'true')" />
+		<IMPORT NAME="json-smart" MODULE="json-smart-2.3.jar" MVN="mvn:net.minidev/json-smart/2.3"  REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false') AND (DBTYPE=='MSSQL') AND (MSSQL_DRIVER=='MSSQL_PROP') AND (MSSQL_ACTIVE_DIR_AUTH == 'true')" />
+		<IMPORT NAME="nimbus-jose-jwt" MODULE="nimbus-jose-jwt-8.11.jar" MVN="mvn:com.nimbusds/nimbus-jose-jwt/8.11"  REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false') AND (DBTYPE=='MSSQL') AND (MSSQL_DRIVER=='MSSQL_PROP') AND (MSSQL_ACTIVE_DIR_AUTH == 'true')" />
+		<IMPORT NAME="javax.mail" MODULE="javax.mail-1.6.2.jar" MVN="mvn:com.sun.mail/javax.mail/1.6.2"  REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false') AND (DBTYPE=='MSSQL') AND (MSSQL_DRIVER=='MSSQL_PROP') AND (MSSQL_ACTIVE_DIR_AUTH == 'true')" />
 		<IMPORT NAME="Driver-MYSQL5" MODULE="mysql-connector-java-5.1.30-bin.jar" MVN="mvn:org.talend.libraries/mysql-connector-java-5.1.30-bin/6.0.0"  REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false') and (DBTYPE=='MYSQL') and (DB_MYSQL_VERSION=='MYSQL_5')"/>
-		<IMPORT NAME="Driver-MYSQL8"  MODULE="mysql-connector-java-8.0.12.jar" MVN="mvn:mysql/mysql-connector-java/8.0.12" REQUIRED_IF="(DB_MYSQL_VERSION == 'MYSQL_8') AND (USE_EXISTING_CONNECTION == 'false') AND (DBTYPE=='MYSQL')" />
-		<IMPORT NAME="Driver-MARIADB"  MODULE="mariadb-java-client-2.2.1.jar" MVN="mvn:org.mariadb.jdbc/mariadb-java-client/2.2.1"  REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false') and (DBTYPE=='MYSQL') and (DB_MYSQL_VERSION=='MARIADB')" />
+		<IMPORT NAME="Driver-MYSQL8"  MODULE="mysql-connector-java-8.0.18.jar" MVN="mvn:mysql/mysql-connector-java/8.0.18" REQUIRED_IF="(DB_MYSQL_VERSION == 'MYSQL_8') AND (USE_EXISTING_CONNECTION == 'false') AND (DBTYPE=='MYSQL')" />
+		<IMPORT NAME="Driver-MARIADB"  MODULE="mariadb-java-client-2.5.3.jar" MVN="mvn:org.mariadb.jdbc/mariadb-java-client/2.5.3"  REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false') and (DBTYPE=='MYSQL') and (DB_MYSQL_VERSION=='MARIADB')" />
         <IMPORT NAME="Driver-Oracle8i" MODULE="ojdbc12.jar" MVN="mvn:org.talend.libraries/ojdbc12/6.0.0"  REQUIRED_IF="(DBTYPE=='DBORACLE') AND (DB_VERSION == 'ORACLE_8') AND (USE_EXISTING_CONNECTION == 'false')" />
         <IMPORT NAME="Driver-Oracle9i" MODULE="ojdbc14-9i.jar" MVN="mvn:org.talend.libraries/ojdbc14-9i/6.0.0"  REQUIRED_IF="(DBTYPE=='DBORACLE') AND (DB_VERSION == 'ORACLE_9') AND (USE_EXISTING_CONNECTION == 'false')" />
         <IMPORT NAME="Driver-Oracle10g" MODULE="ojdbc14.jar" MVN="mvn:org.talend.libraries/ojdbc14/6.0.0"  REQUIRED_IF="(DBTYPE=='DBORACLE') AND (DB_VERSION == 'ORACLE_10') AND (USE_EXISTING_CONNECTION == 'false')" />
         <IMPORT NAME="Driver-Oracle11g" MODULE="ojdbc6.jar" MVN="mvn:org.talend.libraries/ojdbc6/6.0.0"  REQUIRED_IF="(DBTYPE=='DBORACLE') AND (DB_VERSION == 'ORACLE_11') AND (USE_EXISTING_CONNECTION == 'false')" />
         <IMPORT NAME="Driver-Oracle12c" MODULE="ojdbc7.jar" MVN="mvn:org.talend.libraries/ojdbc7/6.0.0"  REQUIRED_IF="(DBTYPE=='DBORACLE') AND (DB_VERSION == 'ORACLE_12') AND (USE_EXISTING_CONNECTION == 'false')" />
-        <IMPORT NAME="Driver-Oracle18c" MODULE="ojdbc8-12.2.0.1.jar"  MVN="mvn:com.oracle.jdbc/ojdbc8/12.2.0.1"  REQUIRED_IF="(DBTYPE=='DBORACLE') AND (DB_VERSION == 'ORACLE_18') AND (USE_EXISTING_CONNECTION == 'false')" />
+        <IMPORT NAME="ORACLE_18"        MODULE="ojdbc8-19.3.0.0.jar" MVN="mvn:com.oracle.ojdbc/ojdbc8/19.3.0.0" REQUIRED_IF="(DBTYPE=='DBORACLE') AND (DB_VERSION == 'ORACLE_18') AND (USE_EXISTING_CONNECTION == 'false')" />
 		<IMPORT NAME="Driver-POSTGRESQL" MODULE="postgresql-8.4-703.jdbc4.jar" MVN="mvn:postgresql/postgresql/8.4-703.jdbc4" REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false') AND ((((DBTYPE=='POSTGRE') or (DBTYPE=='POSTGREPLUS')) AND (DB_POSTGRE_VERSION =='PRIOR_TO_V9')) or (DBTYPE=='GREENPLUM'))" />
-		<IMPORT NAME="Driver-Postgres9" MODULE="postgresql-42.2.5.jar" MVN="mvn:org.postgresql/postgresql/42.2.5" REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false') AND (((DBTYPE=='POSTGRE') or (DBTYPE=='POSTGREPLUS')) AND (DB_POSTGRE_VERSION =='V9_X'))" />
+		<IMPORT NAME="Driver-Postgres9" MODULE="postgresql-42.2.14.jar" MVN="mvn:org.postgresql/postgresql/42.2.14" REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false') AND (((DBTYPE=='POSTGRE') or (DBTYPE=='POSTGREPLUS')) AND (DB_POSTGRE_VERSION =='V9_X'))" />
 		<IMPORT NAME="Driver-FIREBIRD" MODULE="jaybird-full-2.1.1.jar" MVN="mvn:org.talend.libraries/jaybird-full-2.1.1/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.jdbc.firebird/lib/jaybird-full-2.1.1.jar" REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false') AND (DBTYPE=='FIREBIRD')" />
 		<IMPORT NAME="Driver-HSQLDb" MODULE="hsqldb.jar" MVN="mvn:org.talend.libraries/hsqldb/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.jdbc.hsql/lib/hsqldb.jar" REQUIRED_IF="DBTYPE=='HSQLDB'"/>
 		<IMPORT NAME="Driver-INFORMIX-JDBC" MODULE="ifxjdbc.jar" MVN="mvn:org.talend.libraries/ifxjdbc/6.0.0"  REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false') AND (DBTYPE=='INFORMIX')" />
@@ -883,6 +895,7 @@
 		<IMPORT NAME="Driver-SQLITE-JDBC-NESTED" MODULE="sqlitejdbc-v056.jar" MVN="mvn:org.talend.libraries/sqlitejdbc-v056/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.jdbc.sqlite3/lib/sqlitejdbc-v056.jar" REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false') AND (DBTYPE=='SQLITE')" />
 		<IMPORT NAME="Driver-SYBASE-JCONN3" MODULE="jconn3.jar" MVN="mvn:org.talend.libraries/jconn3/6.0.0" BundleID="" REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false') AND (DBTYPE=='SYBASE') AND (DB_SYBASE_VERSION == 'SYBSEIQ_12_15')" />
 		<IMPORT NAME="Driver-SYBASE-JCONN4" MODULE="jconn4.jar" MVN="mvn:org.talend.libraries/jconn4/6.0.0" BundleID="" REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false') AND (DBTYPE=='SYBASE') AND (DB_SYBASE_VERSION == 'SYBSEIQ_16')" />
+		<IMPORT NAME="Driver-SqlAnywhere" MODULE="sajdbc4.jar" MVN="mvn:sap.jdbc4.sqlanywhere/sajdbc4/17.0.0"  BundleID="" REQUIRED_IF = "(DB_VERSION == 'SYBSEIQ_16_SA') AND (USE_EXISTING_CONNECTION == 'false')" />
 		<IMPORT NAME="Driver-Teradata_jdbc" MODULE="terajdbc4-16.20.00.02.jar" MVN="mvn:com.teradata/terajdbc4/16.20.00.02"   REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false') AND (DBTYPE=='TERADATA')" />
 		<IMPORT NAME="Driver-Teradata_config" MODULE="tdgssconfig-16.20.00.02.jar" MVN="mvn:com.teradata/tdgssconfig/16.20.00.02"   REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false') AND (DBTYPE=='TERADATA')" />
 		<IMPORT NAME="Driver-Netezza" MODULE="nzjdbc.jar" MVN="mvn:org.talend.libraries/nzjdbc/6.0.0"  REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false') AND (DBTYPE=='NETEZZA')" />
@@ -898,9 +911,9 @@
 		<IMPORT NAME="Driver-VERTICA_7.0.1" MODULE="vertica-jdbc-7.0.1-0.jar" MVN="mvn:org.talend.libraries/vertica-jdbc-7.0.1-0/6.0.0"   REQUIRED_IF="(DBTYPE=='VERTICA') and (USE_EXISTING_CONNECTION == 'false') and (DB_VERTICA_VERSION=='VERTICA_7_0_X')" />
   		<IMPORT NAME="Driver-VERTICA_7.1.2" MODULE="vertica-jdbc-7.1.2-0.jar" MVN="mvn:org.talend.libraries/vertica-jdbc-7.1.2-0/6.0.0" REQUIRED_IF="(DBTYPE=='VERTICA') and (USE_EXISTING_CONNECTION == 'false') and (DB_VERTICA_VERSION=='VERTICA_7_1_X')" />
   		<IMPORT NAME="Driver-EXASolution" MODULE="exajdbc-6.0.9302.jar" MVN="mvn:org.talend.libraries/exajdbc-6.0.9302/6.3.0"  REQUIRED_IF="(DBTYPE=='EXASOL') and (USE_EXISTING_CONNECTION == 'false')" />
-		<IMPORT NAME="Driver-Redshift" MODULE="redshift-jdbc42-no-awssdk-1.2.32.1056.jar" MVN="mvn:com.amazon.redshift/redshift-jdbc42-no-awssdk/1.2.32.1056" REQUIRED_IF="(DBTYPE=='REDSHIFT') and (USE_EXISTING_CONNECTION == 'false')" />
-		<IMPORT NAME="Driver-Snowflake" MODULE="snowflake-jdbc-3.9.0.jar" MVN="mvn:net.snowflake/snowflake-jdbc/3.9.0"  REQUIRED_IF="(DBTYPE=='SNOWFLAKE') and (USE_EXISTING_CONNECTION == 'false')" />
-		<IMPORT NAME="Driver-VERTICA_9.0" MODULE="vertica-jdbc-9.0.0-0.jar" MVN="mvn:org.talend.libraries/vertica-jdbc-9.0.0-0/6.0.0"   REQUIRED_IF="(DBTYPE=='VERTICA') and (USE_EXISTING_CONNECTION == 'false') and (DB_VERTICA_VERSION=='VERTICA_9_0')"/>
+		<IMPORT NAME="Driver-Redshift" MODULE="redshift-jdbc42-no-awssdk-1.2.37.1061.jar" MVN="mvn:com.amazon.redshift/redshift-jdbc42-no-awssdk/1.2.37.1061" REQUIRED_IF="(DBTYPE=='REDSHIFT') and (USE_EXISTING_CONNECTION == 'false')" />
+		<IMPORT NAME="Driver-Snowflake" MODULE="snowflake-jdbc-3.12.11.jar" MVN="mvn:net.snowflake/snowflake-jdbc/3.12.11"  REQUIRED_IF="(DBTYPE=='SNOWFLAKE') and (USE_EXISTING_CONNECTION == 'false')" />
+		<IMPORT NAME="Driver-VERTICA_9.0" MODULE="vertica-jdbc-9.3.1-0.jar" MVN="mvn:com.vertica/vertica-jdbc/9.3.1-0"   REQUIRED_IF="(DBTYPE=='VERTICA') and (USE_EXISTING_CONNECTION == 'false') and (DB_VERTICA_VERSION=='VERTICA_9_0')"/>
      </IMPORTS>
    </CODEGENERATION>
 

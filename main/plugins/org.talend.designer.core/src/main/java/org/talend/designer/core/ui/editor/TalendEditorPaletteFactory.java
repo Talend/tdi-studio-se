@@ -76,6 +76,7 @@ import org.talend.designer.core.IPaletteFilter;
 import org.talend.designer.core.IUnifiedComponentService;
 import org.talend.designer.core.i18n.Messages;
 import org.talend.designer.core.model.components.ComponentHit;
+import org.talend.designer.core.model.components.StitchPseudoComponent;
 import org.talend.designer.core.model.process.AbstractProcessProvider;
 import org.talend.designer.core.model.process.GenericProcessProvider;
 import org.talend.designer.core.ui.editor.nodes.Node;
@@ -508,6 +509,8 @@ public final class TalendEditorPaletteFactory {
             componentSet.addAll(componentAll);
         }
 
+        componentSet.addAll(getStitchPseudoComponents(lowerCasedKeyword));
+
         addDelegateComponents(compFac, componentSet, lowerCasedKeyword);
 
         List<IComponent> relatedComponents = null;
@@ -524,7 +527,22 @@ public final class TalendEditorPaletteFactory {
         return relatedComponents;
     }
 
-    protected static List<IComponent> sortResultsBasedOnRecentlyUsed(List<IComponent> relatedComponents) {
+    private static List<IComponent> getStitchPseudoComponents(String lowerCasedKeyword) {
+        List<IComponent> componentList = new ArrayList<>();
+        for (StitchPseudoComponent compo : StitchDataLoaderConstants.getIntegrationSourceList()) {
+            if (lowerCasedKeyword == null || compo.getName().toLowerCase().contains(lowerCasedKeyword)) {
+                componentList.add(compo);
+            }
+        }
+        for (StitchPseudoComponent compo : StitchDataLoaderConstants.getDataWarehouseList()) {
+            if (lowerCasedKeyword == null || compo.getName().toLowerCase().contains(lowerCasedKeyword)) {
+                componentList.add(compo);
+            }
+        }
+        return componentList;
+    }
+
+	protected static List<IComponent> sortResultsBasedOnRecentlyUsed(List<IComponent> relatedComponents) {
         if (relatedComponents == null || relatedComponents.isEmpty()) {
             return relatedComponents;
         }
@@ -652,7 +670,7 @@ public final class TalendEditorPaletteFactory {
                 LinkedHashSet<IComponent> delegateCompSet = new LinkedHashSet<IComponent>();
                 List<IComponent> delegateComponents = new ArrayList<IComponent>(service.getDelegateComponents(paletteType));
                 addComponentsByNameFilter(compFac, delegateCompSet, delegateComponents, lowerCasedKeyword);
-                componentSet.addAll(delegateComponents);
+                componentSet.addAll(delegateCompSet);
             }
 
         }

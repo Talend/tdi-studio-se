@@ -15,8 +15,6 @@ package org.talend.designer.runprocess.java;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
-import java.net.URL;
-import java.util.EnumMap;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
@@ -26,26 +24,21 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
-import org.talend.commons.utils.io.FilesUtils;
 import org.talend.commons.utils.resource.FileExtensions;
 import org.talend.core.CorePlugin;
 import org.talend.core.model.process.IContext;
 import org.talend.core.model.process.IContextParameter;
 import org.talend.core.model.properties.ProcessItem;
-import org.talend.core.model.properties.Property;
 import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.core.prefs.ITalendCorePrefConstants;
-import org.talend.core.runtime.process.ITalendProcessJavaProject;
 import org.talend.core.runtime.process.TalendProcessArgumentConstant;
 import org.talend.designer.core.model.utils.emf.talendfile.ContextParameterType;
 import org.talend.designer.core.model.utils.emf.talendfile.ContextType;
 import org.talend.designer.core.runprocess.Processor;
 import org.talend.designer.runprocess.IProcessor;
 import org.talend.designer.runprocess.ProcessorException;
-import org.talend.repository.documentation.ExportFileResource;
 import org.talend.repository.ui.wizards.exportjob.JavaJobScriptsExportWSWizardPage.JobExportType;
 import org.talend.repository.ui.wizards.exportjob.scriptsmanager.BuildJobManager;
-import org.talend.repository.ui.wizards.exportjob.scriptsmanager.JobScriptsManager;
 import org.talend.repository.ui.wizards.exportjob.scriptsmanager.JobScriptsManager.ExportChoice;
 import org.talend.repository.ui.wizards.exportjob.scriptsmanager.JobScriptsManagerFactory;
 import org.talend.utils.files.FileUtils;
@@ -158,43 +151,6 @@ public class ExportProcessorHelper {
         }
     }
 
-    public void exportPigudf(IProcessor processor, Property property, int statisticsPort, int tracePort)
-            throws ProcessorException {
-        // build java project
-        ITalendProcessJavaProject pigudfProject = CorePlugin.getDefault().getRunProcessService().getTalendCodeJavaProject(ERepositoryObjectType.PIG_UDF);
-        try {
-            pigudfProject.buildModules(new NullProgressMonitor(), null, null);
-        } catch (Exception e) {
-            throw new ProcessorException(e.getMessage());
-        }
-
-        Map<ExportChoice, Object> exportChoiceMap = new EnumMap<ExportChoice, Object>(ExportChoice.class);
-        exportChoiceMap.put(ExportChoice.needPigudf, true);
-        ProcessItem processItem = (ProcessItem) property.getItem();
-        ExportFileResource fileResource = new ExportFileResource(processItem, property.getLabel());
-        ExportFileResource[] exportFileResources = new ExportFileResource[] { fileResource };
-
-        JobScriptsManager jobScriptsManager = JobScriptsManagerFactory.createManagerInstance(exportChoiceMap, processor
-                .getContext().getName(), JobScriptsManager.ALL_ENVIRONMENTS, statisticsPort, tracePort, JobExportType.POJO);
-        URL url = jobScriptsManager.getExportPigudfResources(exportFileResources);
-
-        if (url == null) {
-            return;
-        }
-        File file = new File(url.getFile());
-        File libFolder = JavaProcessorUtilities.getJavaProjectLibFolder();
-        if (libFolder == null) {
-            return;
-        }
-        File target = new File(libFolder.getAbsolutePath() + property.getLabel() + "_" + property.getVersion() + "_"
-                + file.getName());
-        try {
-            FilesUtils.copyFile(file, target);
-        } catch (IOException e) {
-            throw new ProcessorException(e.getMessage());
-        }
-
-    }
 
     /**
      *

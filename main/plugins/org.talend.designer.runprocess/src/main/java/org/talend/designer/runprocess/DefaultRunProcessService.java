@@ -12,6 +12,7 @@
 // ============================================================================
 package org.talend.designer.runprocess;
 
+import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -43,7 +44,10 @@ import org.eclipse.jface.preference.IPersistentPreferenceStore;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.osgi.framework.Bundle;
+import org.osgi.service.prefs.Preferences;
 import org.talend.commons.exception.ExceptionHandler;
+import org.talend.commons.utils.io.FilesUtils;
+import org.talend.commons.utils.workbench.resources.ResourceUtils;
 import org.talend.core.CorePlugin;
 import org.talend.core.GlobalServiceRegister;
 import org.talend.core.IESBService;
@@ -58,15 +62,14 @@ import org.talend.core.model.process.IContext;
 import org.talend.core.model.process.IProcess;
 import org.talend.core.model.process.IProcess2;
 import org.talend.core.model.process.JobInfo;
-import org.talend.core.model.process.ProcessUtils;
 import org.talend.core.model.properties.Item;
 import org.talend.core.model.properties.ProjectReference;
 import org.talend.core.model.properties.Property;
-import org.talend.core.model.properties.RoutineItem;
 import org.talend.core.model.relationship.Relation;
 import org.talend.core.model.relationship.RelationshipItemBuilder;
 import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.core.model.repository.IRepositoryViewObject;
+import org.talend.core.model.routines.CodesJarInfo;
 import org.talend.core.model.runprocess.data.PerformanceData;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
 import org.talend.core.repository.utils.Log4jUtil;
@@ -79,9 +82,13 @@ import org.talend.core.runtime.projectsetting.ProjectPreferenceManager;
 import org.talend.core.service.IESBMicroService;
 import org.talend.core.service.IESBRouteService;
 import org.talend.core.ui.ITestContainerProviderService;
+import org.talend.core.utils.CodesJarResourceCache;
+import org.talend.designer.core.ui.editor.process.Process;
 import org.talend.designer.maven.model.TalendMavenConstants;
 import org.talend.designer.maven.tools.AggregatorPomsHelper;
 import org.talend.designer.maven.tools.BuildCacheManager;
+import org.talend.designer.maven.tools.CodeM2CacheManager;
+import org.talend.designer.maven.tools.CodesJarM2CacheManager;
 import org.talend.designer.maven.tools.MavenPomSynchronizer;
 import org.talend.designer.maven.tools.ProjectPomManager;
 import org.talend.designer.maven.utils.PomIdsHelper;
@@ -92,6 +99,7 @@ import org.talend.designer.runprocess.java.TalendJavaProjectManager;
 import org.talend.designer.runprocess.language.SyntaxCheckerFactory;
 import org.talend.designer.runprocess.mapreduce.MapReduceJavaProcessor;
 import org.talend.designer.runprocess.maven.MavenJavaProcessor;
+import org.talend.designer.runprocess.maven.listener.CodesJarChangeListener;
 import org.talend.designer.runprocess.prefs.RunProcessPrefsConstants;
 import org.talend.designer.runprocess.spark.SparkJavaProcessor;
 import org.talend.designer.runprocess.storm.StormJavaProcessor;
@@ -101,7 +109,6 @@ import org.talend.repository.ProjectManager;
 import org.talend.repository.RepositoryWorkUnit;
 import org.talend.repository.constants.Log4jPrefsConstants;
 import org.talend.repository.ui.utils.Log4jPrefsSettingManager;
-import org.talend.utils.io.FilesUtils;
 
 /**
  * DOC amaumont class global comment. Detailled comment <br/>
@@ -118,6 +125,8 @@ public class DefaultRunProcessService implements IRunProcessService {
     private static final String RESOURCE_LOG_FILE_PATH = "log/log4j.properties_template";
 
     private static final String RESOURCE_COMMONLOG_FILE_PATH = "log/common-logging.properties_template";
+
+    private static final String LOG4J_VERSION2_FILEPATH = "log/log4j2.properties_template"; //$NON-NLS-1$
 
     /*
      * (non-Javadoc)
@@ -238,14 +247,6 @@ public class DefaultRunProcessService implements IRunProcessService {
         if (GlobalServiceRegister.getDefault().isServiceRegistered(IESBMicroService.class)) {
             microService = GlobalServiceRegister.getDefault().getService(IESBMicroService.class);
 
-            if (ProcessorUtilities.isExportJobAsMicroService()) {
-                if (microService != null) {
-                    IProcessor processor = microService.createJavaProcessor(process, property, filenameFromLabel, false);
-                    if (processor != null) {
-                        return processor;
-                    }
-                }
-            }
             if (property != null && property.getAdditionalProperties() != null
                     && "REST_MS".equals(property.getAdditionalProperties().get(TalendProcessArgumentConstant.ARG_BUILD_TYPE))) {
                 if (microService != null) {
@@ -295,7 +296,7 @@ public class DefaultRunProcessService implements IRunProcessService {
             return new MavenJavaProcessor(process, property, filenameFromLabel);
         } else {
             if (property != null) {
-                if (!ProcessorUtilities.isGeneratePomOnly()) {
+                // if (!ProcessorUtilities.isGeneratePomOnly()) {
                     // for esb type only
                     boolean servicePart = false;
                     List<Relation> relations = RelationshipItemBuilder.getInstance().getItemsRelatedTo(property.getId(),
@@ -337,7 +338,7 @@ public class DefaultRunProcessService implements IRunProcessService {
                             return soapService.createOSGIJavaProcessor(process, property, filenameFromLabel);
                         }
                     }
-                }
+                // }
                 return new MavenJavaProcessor(process, property, filenameFromLabel);
             } else {
                 return new MavenJavaProcessor(process, property, filenameFromLabel);
@@ -396,7 +397,7 @@ public class DefaultRunProcessService implements IRunProcessService {
      * org.talend.designer.runprocess.IRunProcessService#updateLibraries(org.talend.core.model.properties.RoutineItem)
      */
     @Override
-    public void updateLibraries(RoutineItem routineItem) {
+    public void updateLibraries(Item routineItem) {
         Set<ModuleNeeded> modulesForRoutine = ModulesNeededProvider.updateModulesNeededForRoutine(routineItem);
         File libDir = getJavaProjectLibFolder().getLocation().toFile();
         if (libDir == null) {
@@ -577,11 +578,26 @@ public class DefaultRunProcessService implements IRunProcessService {
             Log4jPrefsSettingManager.getInstance().createTalendLog4jPrefs(Log4jPrefsConstants.LOG4J_ENABLE_NODE,
                     Log4jUtil.isEnable() ? Boolean.TRUE.toString() : Boolean.FALSE.toString());
             Log4jPrefsSettingManager.getInstance().createTalendLog4jPrefs(Log4jPrefsConstants.LOG4J_CONTENT_NODE,
-                    getLogTemplate(RESOURCE_LOG_FILE_PATH));
+                    getLogTemplate(LOG4J_VERSION2_FILEPATH));
             Log4jPrefsSettingManager.getInstance().createTalendLog4jPrefs(Log4jPrefsConstants.COMMON_LOGGING_NODE,
                     getLogTemplate(RESOURCE_COMMONLOG_FILE_PATH));
             Log4jPrefsSettingManager.getInstance().createTalendLog4jPrefs(Log4jPrefsConstants.LOG4J_SELECT_VERSION2,
-                    Boolean.FALSE.toString());
+                    Boolean.TRUE.toString());
+            Log4jPrefsSettingManager.getInstance().createTalendLog4jPrefs(Log4jPrefsConstants.LOG4J_IS_NEW_PROJECT,
+                    Boolean.TRUE.toString());
+        } else {
+            Preferences log4j2SelectedPreferences = Log4jPrefsSettingManager.getInstance()
+                    .getLog4jPreferences(Log4jPrefsConstants.LOG4J_SELECT_VERSION2, false);
+            if (log4j2SelectedPreferences == null) {
+                Log4jPrefsSettingManager.getInstance().createTalendLog4jPrefs(Log4jPrefsConstants.LOG4J_SELECT_VERSION2,
+                        Boolean.FALSE.toString());
+            }
+            Preferences log4jIsNewProjectPreferences = Log4jPrefsSettingManager.getInstance()
+                    .getLog4jPreferences(Log4jPrefsConstants.LOG4J_IS_NEW_PROJECT, false);
+            if (log4jIsNewProjectPreferences == null) {
+                Log4jPrefsSettingManager.getInstance().createTalendLog4jPrefs(Log4jPrefsConstants.LOG4J_IS_NEW_PROJECT,
+                        Boolean.FALSE.toString());
+            }
         }
         // if directly init or modify log4j,need handle with the log4j under .setting/,if not,means execute or export
         // job,need to copy the latest log4j from .setting/ to /java/src
@@ -708,6 +724,12 @@ public class DefaultRunProcessService implements IRunProcessService {
     }
 
     @Override
+    public IFolder getJavaProjectExternalResourcesFolder(IProcess process) {
+        ITalendProcessJavaProject talendProject = getTalendJobJavaProject(((Process) process).getProperty());
+        return talendProject.getExternalResourcesFolder();        
+    }
+    
+    @Override
     public void updateProjectPomWithTemplate() {
         try {
             ProjectPomManager manager = new ProjectPomManager();
@@ -752,8 +774,30 @@ public class DefaultRunProcessService implements IRunProcessService {
     }
 
     @Override
+    public ITalendProcessJavaProject getTalendCodesJarJavaProject(CodesJarInfo info) {
+        return TalendJavaProjectManager.getTalendCodesJarJavaProject(info);
+    }
+
+    @Override
     public ITalendProcessJavaProject getTalendJobJavaProject(Property property) {
         return TalendJavaProjectManager.getTalendJobJavaProject(property);
+    }
+
+    @Override
+    public ITalendProcessJavaProject getExistingTalendJobProject(Property property) {
+        return TalendJavaProjectManager.getExistingTalendJobProject(property);
+    }
+
+    @Override
+    public ITalendProcessJavaProject getExistingTalendCodesJarProject(CodesJarInfo info) {
+        return TalendJavaProjectManager.getExistingTalendCodesJarProject(info);
+    }
+
+    @Override
+    public PropertyChangeListener addCodesJarChangeListener() {
+        CodesJarChangeListener listener = new CodesJarChangeListener();
+        ProxyRepositoryFactory.getInstance().addPropertyChangeListener(new CodesJarChangeListener());
+        return listener;
     }
 
     @Override
@@ -794,18 +838,8 @@ public class DefaultRunProcessService implements IRunProcessService {
     }
 
     @Override
-    public void buildCodesJavaProject(IProgressMonitor monitor) {
-        try {
-            AggregatorPomsHelper.buildAndInstallCodesProject(monitor, ERepositoryObjectType.ROUTINES);
-            if (ProcessUtils.isRequiredPigUDFs(null)) {
-                AggregatorPomsHelper.buildAndInstallCodesProject(monitor, ERepositoryObjectType.PIG_UDF);
-            }
-            if (ProcessUtils.isRequiredBeans(null)) {
-                AggregatorPomsHelper.buildAndInstallCodesProject(monitor, ERepositoryObjectType.valueOf("BEANS")); //$NON-NLS-1$
-            }
-        } catch (Exception e) {
-            ExceptionHandler.process(e);
-        }
+    public void buildCodesJavaProject(IProgressMonitor monitor, Set<CodesJarInfo> toUpdate) {
+        AggregatorPomsHelper.buildCodesProject(monitor, toUpdate);
     }
 
     @Override
@@ -825,16 +859,24 @@ public class DefaultRunProcessService implements IRunProcessService {
      */
     @Override
     public void initializeRootPoms(IProgressMonitor monitor) {
+        if (isCIMode()) {
+            return;
+        }
         try {
             AggregatorPomsHelper helper = new AggregatorPomsHelper();
             helper.installRootPom(false);
+            // won't do for CI since all needed modules are already shared to Nexus
             AggregatorPomsHelper.updateAllCodesProjectNeededModules(monitor);
             List<ProjectReference> references = ProjectManager.getInstance().getCurrentProject().getProjectReferenceList(true);
             for (ProjectReference ref : references) {
                 initRefPoms(new Project(ref.getReferencedProject()));
             }
             helper.updateRefProjectModules(references, monitor);
-            helper.updateCodeProjects(monitor, true);
+            helper.updateCodeProjects(monitor, true, false, true);
+
+            CodesJarM2CacheManager.updateCodesJarProjectForLogon(monitor);
+            CodesJarResourceCache.getAllCodesJars().stream().filter(info -> getExistingTalendCodesJarProject(info) != null)
+                    .forEach(info -> TalendJavaProjectManager.deleteTalendCodesJarProject(info, false));
         } catch (Exception e) {
             ExceptionHandler.process(e);
         }
@@ -851,14 +893,17 @@ public class DefaultRunProcessService implements IRunProcessService {
 
         // install ref codes project.
         IProgressMonitor monitor = new NullProgressMonitor();
-        installRefCodeProject(ERepositoryObjectType.ROUTINES, refHelper, monitor);
-
-        if (ProcessUtils.isRequiredPigUDFs(null, refProject)) {
-            installRefCodeProject(ERepositoryObjectType.PIG_UDF, refHelper, monitor);
-        }
-
-        if (ProcessUtils.isRequiredBeans(null, refProject)) {
-            installRefCodeProject(ERepositoryObjectType.valueOf("BEANS"), refHelper, monitor); //$NON-NLS-1$
+        for (ERepositoryObjectType codeType : ERepositoryObjectType.getAllTypesOfCodes()) {
+            if (CodeM2CacheManager.needUpdateCodeProject(refProject, codeType)) {
+                installRefCodeProject(codeType, refHelper, monitor);
+                CodeM2CacheManager.updateCodeProjectCache(refProject, codeType);
+            } else {
+                ITalendProcessJavaProject codeProject = TalendJavaProjectManager.getExistingTalendCodeProject(codeType,
+                        refHelper.getProjectTechName());
+                if (codeProject != null) {
+                    codeProject.buildWholeCodeProject();
+                }
+            }
         }
 
         deleteRefProjects(refProject, refHelper);
@@ -882,9 +927,11 @@ public class DefaultRunProcessService implements IRunProcessService {
     
     private void deleteRefProjects(Project refProject, AggregatorPomsHelper refHelper) throws Exception {
         IProgressMonitor monitor = new NullProgressMonitor();
-        deleteRefProject(ERepositoryObjectType.ROUTINES, refHelper, monitor);
-        deleteRefProject(ERepositoryObjectType.PIG_UDF, refHelper, monitor);
-        deleteRefProject(ERepositoryObjectType.valueOf("BEANS"), refHelper, monitor); //$NON-NLS-1$
+        for (ERepositoryObjectType codeType : ERepositoryObjectType.getAllTypesOfCodes()) {
+            // use getAllTypesOfCodes to avoid NPE
+            // the ERepositoryObjectType may not load on current license
+            deleteRefProject(codeType, refHelper, monitor);
+        }
 
     }
     
@@ -902,6 +949,17 @@ public class DefaultRunProcessService implements IRunProcessService {
             codeProject.getProject().delete(false, true, monitor);
             TalendJavaProjectManager.removeFromCodeJavaProjects(codeType, projectTechName);
         }
+    }
+
+    @Override
+    public void deleteTalendCodesJarProject(CodesJarInfo info, boolean deleteContent) {
+        TalendJavaProjectManager.deleteTalendCodesJarProject(info, deleteContent);
+    }
+
+    @Override
+    public void deleteTalendCodesJarProject(ERepositoryObjectType type, String projectTechName, String codesJarName,
+            boolean deleteContent) {
+        TalendJavaProjectManager.deleteTalendCodesJarProject(type, projectTechName, codesJarName, deleteContent);
     }
 
     @Override
@@ -935,17 +993,23 @@ public class DefaultRunProcessService implements IRunProcessService {
             if (info.equals(mainJobInfo)) {
                 continue;
             }
-            childPoms.add(info.getPomFile());
 
             // copy source code to the main project
             IFile codeFile = info.getCodeFile();
             IPath refPath = codeFile.getProjectRelativePath();
             IFolder targetFolder = mainProject.getFolder(refPath.removeLastSegments(1));
+
             if (!targetFolder.exists()) {
-                targetFolder.create(true, false, progressMonitor);
+                ResourceUtils.createFolder(targetFolder);
             }
+            if (codeFile.getLocation().removeLastSegments(1).equals(targetFolder.getLocation())) {
+                continue;
+            }
+
             FilesUtils.copyDirectory(new File(codeFile.getLocation().toPortableString()),
                     new File(targetFolder.getLocation().toPortableString()));
+
+            childPoms.add(info.getPomFile());
         }
 
         PomUtil.updateMainJobDependencies(mainJobInfo.getPomFile(), childPoms, childJobDependencies, progressMonitor);
@@ -961,6 +1025,21 @@ public class DefaultRunProcessService implements IRunProcessService {
             PomUtil.checkJobRelatedJobletDependencies(mainJobObject.getProperty(), RelationshipItemBuilder.JOB_RELATION,
                     childJobDependencies, itemChecked, progressMonitor);
         }
+    }
+
+    @Override
+    public boolean isSelectLog4j2() {
+        return Log4jPrefsSettingManager.getInstance().isSelectLog4j2();
+    }
+
+    @Override
+    public boolean isCIMode() {
+        return ProcessorUtilities.isCIMode();
+    }
+
+    @Override
+    public boolean isExcludeDeletedItems(Property property) {
+        return PomIdsHelper.getIfExcludeDeletedItems(property);
     }
 
 }

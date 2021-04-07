@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>org.talend.studio</groupId>
 		<artifactId>parent-pom</artifactId>
-		<version>7.3.1-SNAPSHOT</version>
+		<version>7.3.1-PATCH</version>
 		<relativePath />
 	</parent>
 	<artifactId>tdi-studio-se</artifactId>
@@ -71,6 +71,7 @@
 		<module>main/features/org.talend.tos.feature</module>
 		<module>main/features/org.talend.tos.components.feature</module>
 		<module>main/features/org.talend.tos.libraries.feature</module>
+		<module>main/features/org.talend.help.tos.components.feature</module>
 		<module>main/plugins/org.talend.designer.core.generic</module>
 		<module>main/plugins/org.talend.repository.generic</module>
 		<module>main/plugins/org.talend.designer.abstractmap</module>

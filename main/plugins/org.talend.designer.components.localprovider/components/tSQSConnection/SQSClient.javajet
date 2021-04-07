@@ -13,9 +13,18 @@
 	boolean assumeRole = "true".equals(ElementParameterParser.getValue(node, "__ASSUME_ROLE__"));
 	String arn = ElementParameterParser.getValue(node,"__ARN__");
 	String roleSessionName = ElementParameterParser.getValue(node,"__ROLE_SESSION_NAME__");
+	String externalId = ElementParameterParser.getValue(node,"__EXTERNALID__");
+	String serialNumber = ElementParameterParser.getValue(node,"__SERIALNUMBER__");
+	String tokenCode = ElementParameterParser.getValue(node,"__TOKENCODE__");
+	List<Map<String, String>> tagInfoList = (List<Map<String, String>>)ElementParameterParser.getObjectValue(node, "__TAGS__");
+	List<Map<String, String>> policyList = (List<Map<String, String>>)ElementParameterParser.getObjectValue(node, "__POLICY_TABLE__");
+	String policyJson = ElementParameterParser.getValue(node,"__POLICY__");
 	
 	boolean setStsEndpoint = "true".equals(ElementParameterParser.getValue(node,"__SET_STS_ENDPOINT__"));
 	String stsEndpoint = ElementParameterParser.getValue(node,"__STS_ENDPOINT__");
+	String signingRegion = ElementParameterParser.getValue(node,"__SIGNING_REGION__");
+	
+	boolean set_signingRegion = (signingRegion!=null && !signingRegion.isEmpty() && !"DEFAULT".equalsIgnoreCase(signingRegion));
 	
 	String sessionDuration = ElementParameterParser.getValue(node,"__SESSION_DURATION__");
 	if(sessionDuration == null || sessionDuration.isEmpty()) {
@@ -54,7 +63,7 @@
 		<%
 		} else {
 		%>
-		com.amazonaws.auth.AWSCredentialsProvider credentialsProvider_<%=cid%> = new com.amazonaws.auth.InstanceProfileCredentialsProvider();
+		com.amazonaws.auth.AWSCredentialsProvider credentialsProvider_<%=cid%> = new com.amazonaws.auth.EC2ContainerCredentialsProviderWrapper();
 		<%
 		}
 		%>
@@ -98,22 +107,115 @@
 			}
 		}
 		if(assumeRole) {
+			int policyListSize = policyList.size();
+			int tagInfoListSize = tagInfoList.size();
 		%>
+			int policyListSize_<%=cid%> = <%=policyListSize%>;
+			int tagInfoListSize_<%=cid%> = <%=tagInfoListSize%>;
 			int sessionDurationSeconds_<%=cid%> = <%=sessionDuration%> * 60;
-			com.amazonaws.auth.STSAssumeRoleSessionCredentialsProvider.Builder stsBuilder_<%=cid%> = 
-					new com.amazonaws.auth.STSAssumeRoleSessionCredentialsProvider.Builder(<%=arn%>, <%=roleSessionName%>).withLongLivedCredentialsProvider(credentialsProvider_<%=cid%>)
-					.withRoleSessionDurationSeconds(sessionDurationSeconds_<%=cid%>);
-					
-			<%
-			if(setStsEndpoint) {
+			List<com.amazonaws.services.securitytoken.model.PolicyDescriptorType> policyArnList_<%=cid%> = null;
+    			
+    		<%
+				if(policyListSize > 0){
+	        %>
+	                policyArnList_<%=cid%> = new java.util.ArrayList<com.amazonaws.services.securitytoken.model.PolicyDescriptorType>();
+	        <%
+	        		for(int policyListIndex = 0; policyListIndex < policyListSize; policyListIndex++){
+	        			String policyArn = policyList.get(policyListIndex).get("POLICY_ARN");
+	        %>
+	        			policyArnList_<%=cid%>.add(new com.amazonaws.services.securitytoken.model.PolicyDescriptorType().withArn(<%=policyArn%>));
+	        <%
+	        		}
+	        	}
+        	%>
+    		List<com.amazonaws.services.securitytoken.model.Tag> tagList_<%=cid%> = null;
+    		List<String> tranTagKeys_<%=cid%> = null;
+    		
+    		<%
+	        	if(tagInfoListSize > 0){
+	        %>
+	        		tagList_<%=cid%> = new java.util.ArrayList<com.amazonaws.services.securitytoken.model.Tag>();
+	        		tranTagKeys_<%=cid%> = new java.util.ArrayList<String>();
+	        <%
+	        		for(int tagInfoListIndex = 0; tagInfoListIndex < tagInfoListSize; tagInfoListIndex++){
+	        			String tagKey = tagInfoList.get(tagInfoListIndex).get("TAG_KEY");
+	        			String tagValue = tagInfoList.get(tagInfoListIndex).get("TAG_VALUE");
+	        			String tagTransitive = tagInfoList.get(tagInfoListIndex).get("TAG_TRANSITIVE");
+	        %>
+	        			tagList_<%=cid%>.add(new com.amazonaws.services.securitytoken.model.Tag().withKey(<%=tagKey%>).withValue(<%=tagValue%>));
+	       	<%
+	        			if("true".equals(tagTransitive)) {
+	        %>
+	        				tranTagKeys_<%=cid%>.add(<%=tagKey%>);
+	        <%
+	        			}
+	        		}
+				}
 			%>
-				stsBuilder_<%=cid%>.withServiceEndpoint(<%=stsEndpoint%>);
-			<%
-			}
-			%>
-			stsBuilder_<%=cid%>.withClientConfiguration(cc_<%=cid%>);
 			
-			credentialsProvider_<%=cid%> = stsBuilder_<%=cid%>.build();
+			com.amazonaws.services.securitytoken.AWSSecurityTokenService stsClient_<%=cid%> = 
+					com.amazonaws.services.securitytoken.AWSSecurityTokenServiceClientBuilder.standard()
+					.withCredentials(credentialsProvider_<%=cid%>)
+					.withClientConfiguration(cc_<%=cid%>)
+					<%if(setStsEndpoint && stsEndpoint != null && !stsEndpoint.isEmpty()){%>
+					
+						<%if(set_signingRegion){%>
+						.withEndpointConfiguration(new com.amazonaws.client.builder.AwsClientBuilder.EndpointConfiguration(<%=stsEndpoint%>, <%=signingRegion%>))
+						<%}else{%>
+						.withEndpointConfiguration(new com.amazonaws.client.builder.AwsClientBuilder.EndpointConfiguration(<%=stsEndpoint%>, null))
+						<%}%>
+						
+					<%}else{%>
+					
+						<%if(set_signingRegion){%>
+						.withRegion(<%=signingRegion%>)
+						<%}else{%>
+						.withRegion(com.amazonaws.regions.Regions.US_EAST_1)
+						<%}%>
+						
+					<%}%>
+					.build();
+					
+					
+			com.amazonaws.services.securitytoken.model.AssumeRoleRequest assumeRoleRequest_<%=cid%> = 
+					new com.amazonaws.services.securitytoken.model.AssumeRoleRequest()
+					.withDurationSeconds(sessionDurationSeconds_<%=cid%>)
+					<%if(externalId != null && !externalId.isEmpty() && !("\"\"").equals(externalId)){%>
+					.withExternalId(<%=externalId%>)
+					<%}%>
+					<%if(policyJson != null && !policyJson.isEmpty() && !("\"\"").equals(policyJson)){%>
+	                .withPolicy(<%=policyJson%>)
+	                <%}%>
+	                .withRoleArn(<%=arn%>)
+	                .withRoleSessionName(<%=roleSessionName%>)
+	                <%if(serialNumber != null && !serialNumber.isEmpty() && !("\"\"").equals(serialNumber)){%>
+	                .withSerialNumber(<%=serialNumber%>)
+	                <%}%>
+	                <%if(tokenCode != null && !tokenCode.isEmpty() && !("\"\"").equals(tokenCode)){%>
+	                .withTokenCode(<%=tokenCode%>)
+	                <%}%>
+	                ;
+            
+            if(policyListSize_<%=cid%> > 0 &&  policyArnList_<%=cid%> != null && policyArnList_<%=cid%>.size() > 0){
+            	assumeRoleRequest_<%=cid%>.withPolicyArns(policyArnList_<%=cid%>);
+            }
+	                
+	        if(tagInfoListSize_<%=cid%> > 0 && tagList_<%=cid%> != null && tagList_<%=cid%>.size() > 0){
+	            assumeRoleRequest_<%=cid%>.withTags(tagList_<%=cid%>);
+	        }
+	        
+	        if(tagInfoListSize_<%=cid%> > 0 && tranTagKeys_<%=cid%> != null  && tranTagKeys_<%=cid%>.size() > 0){
+	            assumeRoleRequest_<%=cid%>.withTransitiveTagKeys(tranTagKeys_<%=cid%>);
+	        }
+	                
+			com.amazonaws.services.securitytoken.model.AssumeRoleResult assumeRoleResult_<%=cid%> = stsClient_<%=cid%>.assumeRole(assumeRoleRequest_<%=cid%>);
+			com.amazonaws.services.securitytoken.model.Credentials assumeRoleCred_<%=cid%> = assumeRoleResult_<%=cid%>.getCredentials();
+			com.amazonaws.auth.BasicSessionCredentials roleSessionCredentials_<%=cid%> = 
+				new com.amazonaws.auth.BasicSessionCredentials(
+					assumeRoleCred_<%=cid%>.getAccessKeyId(),
+					assumeRoleCred_<%=cid%>.getSecretAccessKey(),
+					assumeRoleCred_<%=cid%>.getSessionToken());
+			credentialsProvider_<%=cid%> = new com.amazonaws.auth.AWSStaticCredentialsProvider(roleSessionCredentials_<%=cid%>);
 			
 		<%
 		}

@@ -120,39 +120,10 @@ if(columnList != null && columnList.size() > 0) {
 }
 %>
 
-<%
-if(("UPDATE").equals(dataAction) || ("INSERT_OR_UPDATE").equals(dataAction) || ("UPDATE_OR_INSERT").equals(dataAction)) {
-    int updateKeyCount = 0;
-    if(stmtStructure != null) {
-        for(Column column : stmtStructure) {
-            if(column.isUpdateKey() && !column.isDynamic()) {
-                updateKeyCount++;
-            }
-        }
-        %>
-        int updateKeyCount_<%=cid%> = <%=updateKeyCount%>;
-        if(updateKeyCount_<%=cid%> < 1) {
-            throw new RuntimeException("For update, Schema must have a key");
-        }
-        <%
-    }
-} else if(("DELETE").equals(dataAction)) {
-    int deleteKeyCount = 0;
-    if(stmtStructure != null) {
-        for(Column column : stmtStructure) {
-            if(column.isDeleteKey() && !column.isDynamic()) {
-                deleteKeyCount++;
-            }
-        }
-        %>
-        int deleteKeyCount_<%=cid%> = <%=deleteKeyCount%>;
-        if(deleteKeyCount_<%=cid%> < 1) {
-            throw new RuntimeException("For delete, Schema must have a key");
-        }
-        <%
-    }
-}
-%>
+<%@ include file="@{org.talend.designer.components.localprovider}/components/templates/DB/Output/CheckKeysForUpdateAndDelete.javajet"%>
+<%@ include file="@{org.talend.designer.components.localprovider}/components/templates/DB/Output/CheckKeysForUpdateOnDuplicateKey.javajet"%>
+
+
 
 int nb_line_<%=cid%> = 0;
 int nb_line_update_<%=cid%> = 0;
@@ -163,7 +134,7 @@ int nb_line_rejected_<%=cid%> = 0;
 int deletedCount_<%=cid%>=0;
 int updatedCount_<%=cid%>=0;
 int insertedCount_<%=cid%>=0;
-
+int rowsToCommitCount_<%=cid%>=0;
 int rejectedCount_<%=cid%>=0;
 
 String tableName_<%=cid%> = <%=table%>;
@@ -338,78 +309,7 @@ if(columnList != null && columnList.size() > 0) {
 
 <%
 	    } else {//extended-insert mode(begin)
-	    	if ("MYSQL_4".equals(dbVersion)) {
-%>
-	            class BufferLine_<%=cid%> {
-    	            <%
-    	            for(Column column : stmtStructure) {
-    	                if(!column.isReplaced() && !column.isAddCol() && column.isInsertable()) {
-        	                String typeToGenerate = JavaTypesManager.getTypeToGenerate(column.getColumn().getTalendType(), column.getColumn().isNullable());
-        	                %>
-                            <%=typeToGenerate%> <%=column.getName()%>;
-                            <%
-    	                }
-                    }
-                    %>
-
-	                public BufferLine_<%=cid%>(
-                    <%
-                    int count = 0;
-                    for(Column column : stmtStructure) {
-                        if(!column.isReplaced() && !column.isAddCol() && column.isInsertable()) {
-                            if(count != 0) {
-                                %>
-                                ,
-                                <%
-                            }
-                            String typeToGenerate = JavaTypesManager.getTypeToGenerate(column.getColumn().getTalendType(), column.getColumn().isNullable());
-                            %>
-                            <%=typeToGenerate%> <%=column.getName()%>
-                            <%
-                            count++;
-                        }
-                    }
-                    %>
-	                ){
-	                    <%
-                        for(Column column : stmtStructure) {
-                            if(!column.isReplaced() && !column.isAddCol() && column.isInsertable()) {
-                                %>
-                                this.<%=column.getName()%> = <%=column.getName()%>;
-                                <%
-                            }
-                        }
-	                    %>
-                    }
-	            }
-
-	            java.util.List<BufferLine_<%=cid%>> exInsertColValueList<%=cid%> = new java.util.ArrayList();
-	            BufferLine_<%=cid%> exInsertColValue<%=cid%> = null;
-
-
-	            StringBuilder extendInsertValueStmt_<%=cid%> = new StringBuilder();
-                for(int i=0;i < <%=numPerInsert%>;i++){
-                     extendInsertValueStmt_<%=cid%>.append("(<%=insertValueStmt.toString()%>)");
-                     if (i!=<%=numPerInsert%>-1) extendInsertValueStmt_<%=cid%>.append(",");
-                }
-
-
-				String insert_<%=cid%> = "INSERT INTO `"+<%=table%>+"` (<%=insertColName.toString()%>) VALUES " + extendInsertValueStmt_<%=cid%>.toString();
-<%
-				if (supportDuplicateUpdate) {
-%>
-				insert_<%=cid%> += 	duplidateClause_<%=cid%>.toString();
-<%
-				}
-%>
-				<%@ include file="../templates/_hintInsert.javajet" %>
-	            java.sql.PreparedStatement pstmt_<%=cid %> =  conn_<%=cid%>.prepareStatement(insert_<%=cid%>);
-                resourceMap.put("pstmt_<%=cid %>", pstmt_<%=cid %>);
-	            String insertColName<%=cid%> = "<%=insertColName.toString()%>";
-	            String insertColValue<%=cid%> =  "<%=insertValueStmt.toString()%>";
-	            int rowCount<%=cid%> = 0;
-<%
-			} else if ("MYSQL_5".equals(dbVersion)) {
+            if ("MYSQL_5".equals(dbVersion)) {
 %>
 				String insert_<%=cid%> = "INSERT INTO `" + <%=table%> + "` (<%=insertColName.toString()%>) VALUES (<%=insertValueStmt.toString()%>)";
 <%
@@ -495,93 +395,12 @@ if(columnList != null && columnList.size() > 0) {
 }
 }
 if(isDynamic) {
-	if ("MYSQL_4".equals(dbVersion) && extendedInsert) {
+    if ("MYSQL_5".equals(dbVersion) && extendedInsert){
 %>
-
-	class BufferLine_<%=cid%> {
-    	            <%
-    	            for(Column column : stmtStructure) {
-    	                if(!column.isReplaced() && !column.isAddCol() && column.isInsertable() && !column.isDynamic()) {
-        	                String typeToGenerate = JavaTypesManager.getTypeToGenerate(column.getColumn().getTalendType(), column.getColumn().isNullable());
-        	                %>
-                            <%=typeToGenerate%> <%=column.getName()%>;
-                            <%
-    	                }
-                    }
-		    if(isDynamic) {
-		    	Column dynamicColumn = getColumn(getDynamicColumn());
-			String typeToGenerate = JavaTypesManager.getTypeToGenerate(dynamicColumn.getColumn().getTalendType(), dynamicColumn.getColumn().isNullable());
-			if("Dynamic".equals(typeToGenerate)) {
-			%>
-				routines.system.Dynamic <%=dynamicColumn.getName()%>;
-			<%
-			}
-		    }
-                    %>
-
-	                public BufferLine_<%=cid%>(
-                    <%
-                    int count = 0;
-                    for(Column column : stmtStructure) {
-                        if(!column.isReplaced() && !column.isAddCol() && column.isInsertable() && !column.isDynamic()) {
-                            if(count != 0) {
-                                %>
-                                ,
-                                <%
-                            }
-                            String typeToGenerate = JavaTypesManager.getTypeToGenerate(column.getColumn().getTalendType(), column.getColumn().isNullable());
-                            %>
-                            <%=typeToGenerate%> <%=column.getName()%>
-                            <%
-                            count++;
-                        }
-                    }
-		    if(isDynamic) {
-		    	Column dynamicColumn = getColumn(getDynamicColumn());
-			String typeToGenerate = JavaTypesManager.getTypeToGenerate(dynamicColumn.getColumn().getTalendType(), dynamicColumn.getColumn().isNullable());
-			if("Dynamic".equals(typeToGenerate)) {
-			%>
-				, routines.system.Dynamic <%=dynamicColumn.getName()%>
-			<%
-			}
-		    }
-
-                    %>
-	                ){
-	                    <%
-                        for(Column column : stmtStructure) {
-                            if(!column.isReplaced() && !column.isAddCol() && column.isInsertable() && !column.isDynamic()) {
-                                %>
-                                this.<%=column.getName()%> = <%=column.getName()%>;
-                                <%
-                            }
-                        }
-			if(isDynamic) {
-		    	Column dynamicColumn = getColumn(getDynamicColumn());
-			String typeToGenerate = JavaTypesManager.getTypeToGenerate(dynamicColumn.getColumn().getTalendType(), dynamicColumn.getColumn().isNullable());
-			if("Dynamic".equals(typeToGenerate)) {
-			%>
-				this.<%=dynamicColumn.getName()%>=<%=dynamicColumn.getName()%>;
-			<%
-			}
-		    }
-	                    %>
-                    }
-	            }
-
-		    java.util.List<BufferLine_<%=cid%>> exInsertColValueList<%=cid%> = new java.util.ArrayList();
-	            BufferLine_<%=cid%> exInsertColValue<%=cid%> = null;
-		    String insert_<%=cid%>="";
-		    String insertColValue<%=cid%>="";
-		    String insertColName<%=cid%>="";
-		    int counter<%=cid%>=1;
+        int batchSizeCounter_<%=cid%>=0;
+        int batchSize_<%=cid%>=0;
 <%
-	}else if ("MYSQL_5".equals(dbVersion) && extendedInsert){
-%>
-	int batchSizeCounter_<%=cid%>=0;
-	int batchSize_<%=cid%>=0;
-<%
-   }
+    }
 %>
 
 

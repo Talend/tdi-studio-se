@@ -895,8 +895,8 @@ public class Connection extends Element implements IConnection, IPerformance, IA
         List connections;
         if (target != null) {
             connections = target.getIncomingConnections();
-            for (int i = 0; i < connections.size(); i++) {
-                if (((Connection) connections.get(i)).getName().equals(name)) {
+            for (Object connection : connections) {
+                if (((Connection) connection).getName().equals(name)) {
                     canModify = false;
                 }
             }

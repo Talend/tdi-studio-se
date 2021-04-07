@@ -64,10 +64,10 @@ public class ConnectionUtilTest {
         List list = new ArrayList<Map<String, Object>>();
         Map<String, Object> map = new HashMap<String, Object>();
         list.add(map);
-        map.put("drivers", "mvn:mysql/mysql-connector-java/8.0.12/jar");//$NON-NLS-1$//$NON-NLS-2$
+        map.put("drivers", "mvn:mysql/mysql-connector-java/8.0.18/jar");//$NON-NLS-1$//$NON-NLS-2$
         ConnectionUtil.getDriverJar(list);
         Assert.assertEquals(1, map.size());
-        Assert.assertEquals("mysql-connector-java-8.0.12.jar", map.get("drivers")); //$NON-NLS-1$//$NON-NLS-2$
+        Assert.assertEquals("mysql-connector-java-8.0.18.jar", map.get("drivers")); //$NON-NLS-1$//$NON-NLS-2$
     }
 
     @Test
@@ -86,10 +86,10 @@ public class ConnectionUtilTest {
         List list = new ArrayList<Map<String, Object>>();
         Map<String, Object> map = new HashMap<String, Object>();
         list.add(map);
-        map.put("drivers", "mysql-connector-java-8.0.12.jar");//$NON-NLS-1$//$NON-NLS-2$
+        map.put("drivers", "mysql-connector-java-8.0.18.jar");//$NON-NLS-1$//$NON-NLS-2$
         ConnectionUtil.getDriverJar(list);
         Assert.assertEquals(1, map.size());
-        Assert.assertEquals("mysql-connector-java-8.0.12.jar", map.get("drivers")); //$NON-NLS-1$//$NON-NLS-2$
+        Assert.assertEquals("mysql-connector-java-8.0.18.jar", map.get("drivers")); //$NON-NLS-1$//$NON-NLS-2$
     }
 
     @Test
@@ -129,10 +129,10 @@ public class ConnectionUtilTest {
         List list = new ArrayList<Map<String, Object>>();
         Map<String, Object> map = new HashMap<String, Object>();
         list.add(map);
-        map.put("drivers", "mvn:mysql/mysql-connector-java/8.0.12/jar");//$NON-NLS-1$//$NON-NLS-2$
+        map.put("drivers", "mvn:mysql/mysql-connector-java/8.0.18/jar");//$NON-NLS-1$//$NON-NLS-2$
         ConnectionUtil.getDriverJar(list);
         Assert.assertEquals(1, map.size());
-        Assert.assertEquals("mysql-connector-java-8.0.12.jar", map.get("drivers")); //$NON-NLS-1$//$NON-NLS-2$
+        Assert.assertEquals("mysql-connector-java-8.0.18.jar", map.get("drivers")); //$NON-NLS-1$//$NON-NLS-2$
     }
 
     @Test
@@ -151,10 +151,10 @@ public class ConnectionUtilTest {
         List list = new ArrayList<Map<String, Object>>();
         Map<String, Object> map = new HashMap<String, Object>();
         list.add(map);
-        map.put("drivers", "mysql-connector-java-8.0.12.jar");//$NON-NLS-1$//$NON-NLS-2$
+        map.put("drivers", "mysql-connector-java-8.0.18.jar");//$NON-NLS-1$//$NON-NLS-2$
         ConnectionUtil.getDriverJar(list);
         Assert.assertEquals(1, map.size());
-        Assert.assertEquals("mysql-connector-java-8.0.12.jar", map.get("drivers")); //$NON-NLS-1$//$NON-NLS-2$
+        Assert.assertEquals("mysql-connector-java-8.0.18.jar", map.get("drivers")); //$NON-NLS-1$//$NON-NLS-2$
     }
 
     @Test
@@ -174,8 +174,8 @@ public class ConnectionUtilTest {
 
     @Test
     public void testGetDriverJarFromMvnUrlMysql8() {
-        Assert.assertEquals("mysql-connector-java-8.0.12.jar", //$NON-NLS-1$
-                ConnectionUtil.getDriverJarFromMvnUrl("mvn:mysql/mysql-connector-java/8.0.12/jar")); //$NON-NLS-1$
+        Assert.assertEquals("mysql-connector-java-8.0.18.jar", //$NON-NLS-1$
+                ConnectionUtil.getDriverJarFromMvnUrl("mvn:mysql/mysql-connector-java/8.0.18/jar")); //$NON-NLS-1$
     }
 
     @Test
@@ -186,7 +186,7 @@ public class ConnectionUtilTest {
 
     @Test
     public void testGetDriverJarFromMvnUrlMysql8_JarName() {
-        Assert.assertEquals("mysql-connector-java-8.0.12.jar", //$NON-NLS-1$
-                ConnectionUtil.getDriverJarFromMvnUrl("mysql-connector-java-8.0.12.jar")); //$NON-NLS-1$
+        Assert.assertEquals("mysql-connector-java-8.0.18.jar", //$NON-NLS-1$
+                ConnectionUtil.getDriverJarFromMvnUrl("mysql-connector-java-8.0.18.jar")); //$NON-NLS-1$
     }
 }

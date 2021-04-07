@@ -191,7 +191,7 @@ public class Component extends AbstractBasicComponent {
     @Override
     public List<ElementParameter> createElementParameters(INode node) {
         if (node.getComponentProperties() == null) {
-            node.setComponentProperties(ComponentsUtils.getComponentProperties(getName()));
+            node.setComponentProperties(ComponentsUtils.getComponentProperties(componentDefinition.getName()));
         }
         List<ElementParameter> listParam = new ArrayList<>();
         addMainParameters(listParam, node);
@@ -212,7 +212,7 @@ public class Component extends AbstractBasicComponent {
 
         ComponentProperties componentProperties = parentNode.getComponentProperties();
         if (componentProperties == null) {
-            parentNode.setComponentProperties(ComponentsUtils.getComponentProperties(getName()));
+            parentNode.setComponentProperties(ComponentsUtils.getComponentProperties(componentDefinition.getName()));
             componentProperties = parentNode.getComponentProperties();
         }
         if (!(componentProperties instanceof ComponentPropertiesImpl)) {
@@ -246,7 +246,7 @@ public class Component extends AbstractBasicComponent {
         return listReturn;
     }
 
-    private void addDocParameters(final List<ElementParameter> listParam, INode node) {
+    protected void addDocParameters(final List<ElementParameter> listParam, INode node) {
         ElementParameter param = new ElementParameter(node);
         param.setName(EParameterName.INFORMATION.getName());
         param.setValue(new Boolean(false));
@@ -275,7 +275,7 @@ public class Component extends AbstractBasicComponent {
         listParam.add(param);
     }
 
-    private void addValidationRulesParameters(final List<ElementParameter> listParam, INode node) {
+    protected void addValidationRulesParameters(final List<ElementParameter> listParam, INode node) {
         ElementParameter param;
 
         param = new ElementParameter(node);
@@ -817,7 +817,7 @@ public class Component extends AbstractBasicComponent {
         return null;
     }
 
-    private void addPropertyParameters(final List<ElementParameter> listParam, final INode node, String formName,
+    protected void addPropertyParameters(final List<ElementParameter> listParam, final INode node, String formName,
             EComponentCategory category) {
         ComponentProperties props = node.getComponentProperties();
         Form form = props.getForm(formName);
@@ -839,7 +839,7 @@ public class Component extends AbstractBasicComponent {
      * schema. So there need to initialize the schema's again.
      *
      */
-    private void initializeParametersForSchema(List<ElementParameter> listParam, final INode node) {
+    protected void initializeParametersForSchema(List<ElementParameter> listParam, final INode node) {
         ComponentProperties rootProperty = node.getComponentProperties();
         Map<String, SchemaProperty> listSchemaProperties = new HashMap<>();
         findSchemaProperties(rootProperty, listParam, listSchemaProperties, null);
@@ -1018,7 +1018,7 @@ public class Component extends AbstractBasicComponent {
 
         ComponentProperties componentProperties = parentNode.getComponentProperties();
         if (componentProperties == null) {
-            parentNode.setComponentProperties(ComponentsUtils.getComponentProperties(getName()));
+            parentNode.setComponentProperties(ComponentsUtils.getComponentProperties(componentDefinition.getName()));
             componentProperties = parentNode.getComponentProperties();
         }
         Set<? extends Connector> inputConnectors = componentProperties.getPossibleConnectors(false);
@@ -1266,8 +1266,8 @@ public class Component extends AbstractBasicComponent {
         if(!CheckLogManamger.isSelectLog4j2()) {
             //TODO consider to let it works for all jobs, not only for tcompv0 components, mean move the code to ReplaceNodeInProcess and UpdateLog4jJarUtils when not log4j2
             moduleNeeded = new ModuleNeeded(getName(), "", true, "mvn:org.slf4j/slf4j-log4j12/1.7.25");
+            componentImportNeedsList.add(moduleNeeded);
         }
-        componentImportNeedsList.add(moduleNeeded);
         moduleNeeded = new ModuleNeeded(getName(), "", true, "mvn:org.talend.libraries/talend-codegen-utils/0.28.0");
         componentImportNeedsList.add(moduleNeeded);
         return componentImportNeedsList;
@@ -1275,7 +1275,7 @@ public class Component extends AbstractBasicComponent {
 
     @Override
     public ImageDescriptor getIcon16() {
-        InputStream imageStream = ComponentsUtils.getComponentService().getComponentPngImage(getName(),
+        InputStream imageStream = ComponentsUtils.getComponentService().getComponentPngImage(componentDefinition.getName(),
                 ComponentImageType.PALLETE_ICON_32X32);
         if (imageStream != null) {
             ImageData imageData = new ImageData(imageStream);
@@ -1286,7 +1286,7 @@ public class Component extends AbstractBasicComponent {
 
     @Override
     public ImageDescriptor getIcon24() {
-        InputStream imageStream = ComponentsUtils.getComponentService().getComponentPngImage(getName(),
+        InputStream imageStream = ComponentsUtils.getComponentService().getComponentPngImage(componentDefinition.getName(),
                 ComponentImageType.PALLETE_ICON_32X32);
         if (imageStream != null) {
             ImageData imageData = new ImageData(imageStream);
@@ -1297,7 +1297,7 @@ public class Component extends AbstractBasicComponent {
 
     @Override
     public ImageDescriptor getIcon32() {
-        InputStream imageStream = ComponentsUtils.getComponentService().getComponentPngImage(getName(),
+        InputStream imageStream = ComponentsUtils.getComponentService().getComponentPngImage(componentDefinition.getName(),
                 ComponentImageType.PALLETE_ICON_32X32);
         if (imageStream != null) {
             ImageData imageData = new ImageData(imageStream);
@@ -1479,7 +1479,12 @@ public class Component extends AbstractBasicComponent {
             //as sql type value may have newline and return characters, which make compiler issue in java code,
             //so have to convert the newline characters to visible "\r", "\n" for pass the compiler issue and can't only convert them to white space as TDI-41898
             //jdbc drivers, salesforce driver can work like that sql : select * \nfrom Account, so it is ok
-            return NodeUtil.replaceCRLFInMEMO_SQL(value);
+            String replacedString = NodeUtil.replaceCRLFInMEMO_SQL(value).trim();
+
+            // For the case when sql field ends with extra semicolon, it has to be removed to avoid compilation error.
+            return replacedString.endsWith(";")
+                    ? replacedString.substring(0, replacedString.length() -1)
+                    : replacedString;
         }
         if (GenericTypeUtils.isSchemaType(property)) {
             // Handles embedded escaped quotes which might occur
@@ -1576,7 +1581,7 @@ public class Component extends AbstractBasicComponent {
             ComponentProperties properties = node.getComponentProperties();
             return properties.toSerialized();
         } else {
-            ComponentProperties componentProperties = ComponentsUtils.getComponentProperties(getName());
+            ComponentProperties componentProperties = ComponentsUtils.getComponentProperties(componentDefinition.getName());
             return componentProperties.toSerialized();
         }
     }

@@ -18,16 +18,25 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.talend.commons.runtime.model.components.IComponentConstants;
 import org.talend.components.api.component.ComponentDefinition;
 import org.talend.components.api.properties.ComponentProperties;
 import org.talend.components.api.properties.ComponentReferenceProperties;
+import org.talend.core.GlobalServiceRegister;
+import org.talend.core.model.components.IComponent;
+import org.talend.core.model.metadata.builder.connection.Connection;
+import org.talend.core.model.metadata.builder.connection.MetadataTable;
 import org.talend.core.model.process.EParameterFieldType;
 import org.talend.core.model.process.IElementParameter;
 import org.talend.core.model.process.INode;
 import org.talend.core.runtime.services.IGenericService;
+import org.talend.core.runtime.services.IGenericWizardService;
 import org.talend.daikon.properties.Properties;
+import org.talend.designer.core.generic.model.Component;
 import org.talend.designer.core.generic.model.GenericElementParameter;
 import org.talend.designer.core.generic.utils.ComponentsUtils;
+
+import orgomg.cwm.objectmodel.core.TaggedValue;
 
 /**
  * created by ycbai on 2016年3月24日 Detailled comment
@@ -107,6 +116,32 @@ public class GenericService implements IGenericService {
             return (ComponentReferenceProperties)ps;
         }
         return null;
+    }
+
+    @Override
+    public boolean isTcompv0(IComponent component) {
+        return Component.class.isInstance(component);
+    }
+
+    @Override
+    public void validateGenericConnection(Connection conn) throws Exception {
+        ComponentsUtils.getComponentPropertiesFromSerialized(conn.getCompProperties(), conn);
+        if (GlobalServiceRegister.getDefault().isServiceRegistered(IGenericWizardService.class)) {
+            IGenericWizardService gs = GlobalServiceRegister.getDefault().getService(IGenericWizardService.class);
+            List<MetadataTable> metadataTables = gs.getMetadataTables(conn);
+            if (metadataTables != null && !metadataTables.isEmpty()) {
+                for (MetadataTable metadataTable : metadataTables) {
+                    if (metadataTable == null) {
+                        continue;
+                    }
+                    for (TaggedValue taggedValue : metadataTable.getTaggedValue()) {
+                        if (IComponentConstants.COMPONENT_PROPERTIES_TAG.equals(taggedValue.getTag())) {
+                            ComponentsUtils.getComponentPropertiesFromSerialized(taggedValue.getValue(), conn);
+                        }
+                    }
+                }
+            }
+        }
     }
 
 }

@@ -40,7 +40,7 @@ imports="
 
 		public String getDirverClassName(INode node){
 			String dbVersion =  ElementParameterParser.getValue(node, "__DB_VERSION__"); 
-			if("ORACLE_11".equals(dbVersion) || "ORACLE_12".equals(dbVersion) || "ORACLE_18".equals(dbVersion)){
+			if("ORACLE_11".equals(dbVersion) || "ORACLE_12".equals(dbVersion) || "ORACLE_18".equals(dbVersion) ){
 			    return "oracle.jdbc.OracleDriver";
 			}else {
 				return "oracle.jdbc.driver.OracleDriver";	
@@ -56,7 +56,7 @@ imports="
 		if(isLog4jEnabled){
 			shareDBClass = "SharedDBConnectionLog4j";
 %>
-			SharedDBConnectionLog4j.initLogger(log,"<%=cid%>");
+			SharedDBConnectionLog4j.initLogger(log.getName(),"<%=cid%>");
 <%
 		}
 %>

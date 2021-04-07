@@ -28,10 +28,6 @@
 	    	log4jCodeGenerateUtil.useExistConnection(node);
 	    }
 		
-		public void afterUseExistConnection(INode node, boolean needUserAndPassword) {
-	    	log4jCodeGenerateUtil.useExistConnection(node, needUserAndPassword);
-	    }
-	    
 	    public String getDirverClassName(INode node){
 			return "";
 		}
@@ -69,23 +65,8 @@
 				String conn = "conn_" + connection;;
 				%>
 				conn_<%=cid%> = (java.sql.Connection)globalMap.get("<%=conn%>");
-			<%	
-				String type = ElementParameterParser.getValue(node, "__TYPE__");
-				if ("REDSHIFT".equals(type)){
-					String jdbcUrl = "";
-					//Retrieve connection node and check if SSO was used for correct logging
-					java.util.List< ? extends INode> nodes =  node.getProcess().getNodesOfType("tRedshiftConnection");
-					String connectionRedShift = ElementParameterParser.getValue(node,"__CONNECTION__");
-					for (INode ne : nodes) {
-						if (connectionRedShift.equals(ne.getUniqueName())) {
-							jdbcUrl = ElementParameterParser.getValue(ne, "__JDBC_URL__");
-						}
-					}
-					needUserAndPassword = !"SSO".equals(jdbcUrl);
-					this.afterUseExistConnection(node, needUserAndPassword);
-				} else {
+			<%
 					this.afterUseExistConnection(node);
-				}
 			} else {
 	 			boolean specify_alias = "true".equals(ElementParameterParser.getValue(node, "__SPECIFY_DATASOURCE_ALIAS__"));
 		 		if(specify_alias){

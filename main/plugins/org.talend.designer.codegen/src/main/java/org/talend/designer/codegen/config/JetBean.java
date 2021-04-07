@@ -18,6 +18,7 @@ import java.util.Map;
 import org.eclipse.core.runtime.Platform;
 import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.utils.StringUtils;
+import org.talend.designer.core.model.components.ComponentBundleToPath;
 
 /**
  * Jet container for a particular component.
@@ -213,8 +214,17 @@ public class JetBean {
         if (pluginIdToBundle.containsKey(pluginId)) {
             base = pluginIdToBundle.get(pluginId);
         } else {
-            base = Platform.getBundle(pluginId).getEntry("/").toString(); //$NON-NLS-1$
-            pluginIdToBundle.put(pluginId, base);
+        	if (ComponentBundleToPath.SHARED_STUDIO_CUSTOM_COMPONENT_BUNDLE.equals(pluginId)) {
+        		base = ComponentBundleToPath.getPathFromBundle(pluginId);
+        		if (!base.endsWith("/")) {
+        			base = base + "/";
+        		}
+        		pluginIdToBundle.put(pluginId, base);
+        	} else {
+                base = Platform.getBundle(pluginId).getEntry("/").toString(); //$NON-NLS-1$
+                pluginIdToBundle.put(pluginId, base);
+        	}
+
         }
         String result = base + relativeUri;
         return result;

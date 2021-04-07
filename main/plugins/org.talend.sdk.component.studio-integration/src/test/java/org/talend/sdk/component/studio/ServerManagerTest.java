@@ -16,16 +16,16 @@
 package org.talend.sdk.component.studio;
 
 import static java.util.stream.Collectors.joining;
-import static org.apache.xbean.asm7.ClassWriter.COMPUTE_FRAMES;
-import static org.apache.xbean.asm7.Opcodes.ACC_PUBLIC;
-import static org.apache.xbean.asm7.Opcodes.ACC_SUPER;
-import static org.apache.xbean.asm7.Opcodes.ALOAD;
-import static org.apache.xbean.asm7.Opcodes.ARETURN;
-import static org.apache.xbean.asm7.Opcodes.DUP;
-import static org.apache.xbean.asm7.Opcodes.INVOKESPECIAL;
-import static org.apache.xbean.asm7.Opcodes.NEW;
-import static org.apache.xbean.asm7.Opcodes.RETURN;
-import static org.apache.xbean.asm7.Opcodes.V1_8;
+import static org.apache.xbean.asm9.ClassWriter.COMPUTE_FRAMES;
+import static org.apache.xbean.asm9.Opcodes.ACC_PUBLIC;
+import static org.apache.xbean.asm9.Opcodes.ACC_SUPER;
+import static org.apache.xbean.asm9.Opcodes.ALOAD;
+import static org.apache.xbean.asm9.Opcodes.ARETURN;
+import static org.apache.xbean.asm9.Opcodes.DUP;
+import static org.apache.xbean.asm9.Opcodes.INVOKESPECIAL;
+import static org.apache.xbean.asm9.Opcodes.NEW;
+import static org.apache.xbean.asm9.Opcodes.RETURN;
+import static org.apache.xbean.asm9.Opcodes.V1_8;
 import static org.apache.ziplock.JarLocation.jarLocation;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -49,10 +49,10 @@ import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.xbean.asm7.AnnotationVisitor;
-import org.apache.xbean.asm7.ClassWriter;
-import org.apache.xbean.asm7.MethodVisitor;
-import org.apache.xbean.asm7.Type;
+import org.apache.xbean.asm9.AnnotationVisitor;
+import org.apache.xbean.asm9.ClassWriter;
+import org.apache.xbean.asm9.MethodVisitor;
+import org.apache.xbean.asm9.Type;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
@@ -66,6 +66,7 @@ import org.talend.sdk.component.server.front.model.ComponentDetailList;
 import org.talend.sdk.component.server.front.model.ComponentIndices;
 import org.talend.sdk.component.server.front.model.ConfigTypeNodes;
 import org.talend.sdk.component.studio.mvn.Mvn;
+import org.talend.sdk.component.studio.util.TaCoKitConst;
 import org.talend.sdk.component.studio.websocket.WebSocketClient;
 
 class ServerManagerTest {
@@ -146,7 +147,7 @@ class ServerManagerTest {
     }
 
     private void assertClient(final int port) {
-        try (WebSocketClient client = new WebSocketClient("ws://localhost:" + port + "/websocket/v1", 600000)) {
+        try (WebSocketClient client = new WebSocketClient("ws://", String.valueOf(port), "/websocket/v1", 600000)) {
             // we loop since we reuse the same session so we must ensure this reuse works
             for (int i = 0; i < 2; i++) {
                 // simple endpoint
@@ -198,11 +199,11 @@ class ServerManagerTest {
     }
 
     private boolean isStarted(final int port) throws IOException {
-        final URL url = new URL("http://localhost:" + port + "/api/v1/component/index");
+        final URL url = new URL("http://" + TaCoKitConst.DEFAULT_LOCALHOST + ":" + port + "/api/v1/component/index");
         InputStream stream = null;
         try {
             stream = url.openStream();
-            final String content = IOUtils.toString(stream, StandardCharsets.UTF_8);
+            final String content = IOUtils.toString(stream, StandardCharsets.UTF_8.name());
             return content.contains("{\"components\":[");
         } catch (final ConnectException ioe) {
             return false;

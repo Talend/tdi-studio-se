@@ -179,34 +179,74 @@ String inputConnName = null;
 	  		}
 		} else {
 	  	%>
+			
 			String osName_<%=cid %> = System.getProperty("os.name");
 			if (osName_<%=cid %> != null && osName_<%=cid %>.toLowerCase().startsWith("win")){
-	      		<%
+				<%
+				boolean isCP = false;
 				for (int i = 0; i < commandLineWindows.length; i++) {
 					if (i == 0){
-		     	 	%>
-		      			paraList_<%=cid %>.add("<%=commandLineWindows[i]%>");
-		      		<%
+					%>
+						paraList_<%=cid %>.add("<%=commandLineWindows[i]%>");
+						String m2 = System.getProperty("talend.component.manager.m2.repository");
+						if (m2 != null){
+							paraList_<%=cid %>.add("-Dtalend.component.manager.m2.repository=" + m2);
+						}
+						
+						if(enableLogStash){
+							System.getProperties().stringPropertyNames().stream()
+								.filter(it -> it.startsWith("audit."))
+								.forEach(key -> paraList_<%=cid %>.add("-D" + key + "=" + System.getProperty(key)));
+						}
+							
+						System.getProperties().stringPropertyNames().stream()
+							.filter(it -> it.startsWith("runtime.lineage.") || "classpath.extended".equals(it))
+							.forEach(key -> paraList_<%=cid %>.add("-D" + key + "=" + System.getProperty(key)));
+					<%
 					} else if (i > 0){
 		      			if (commandLineWindows[i].indexOf("\"") >= 0){
 							if(commandLineWindows[i].indexOf(".jar")>=0){
 		      				%>
-								jvm_argument_helper_<%=cid%>.addArgumentsTo(paraList_<%=cid %>, dealChildJobLibrary_<%=cid %>.replaceJarPathsFromCrcMap(<%=commandLineWindows[i] %>));
+		      					String classpath_<%=cid %>_<%=i %> = <%=commandLineWindows[i] %>;
+		      					<%if(isCP && (commandLineWindows[i].endsWith(":\"") || commandLineWindows[i].endsWith(";\""))) {%>
+		      					if(audit_jar_path_<%=cid %>!=null && !audit_jar_path_<%=cid %>.isEmpty()) {
+		      						classpath_<%=cid %>_<%=i %> += audit_jar_path_<%=cid %>;
+		      					}
+		      					<%}%>
+								jvm_argument_helper_<%=cid%>.addArgumentsTo(paraList_<%=cid %>, dealChildJobLibrary_<%=cid %>.replaceJarPathsFromCrcMap(classpath_<%=cid %>_<%=i %>));
 		      				<%
 							}else{
 		      				%>
 		      					jvm_argument_helper_<%=cid%>.addArgumentsTo(paraList_<%=cid %>, <%=commandLineWindows[i] %>);
 		      				<%
 		          			}
+		          			
+		          			if("\"-cp\"".equals(commandLineWindows[i]) || "\"-classpath\"".equals(commandLineWindows[i])) {
+		          				isCP = true;
+		          			} else {
+		          				isCP = false;
+		          			}
 		      			}else{
 		          			if(commandLineWindows[i].indexOf(".jar")>=0){
               				%>
-		        				jvm_argument_helper_<%=cid%>.addArgumentsTo(paraList_<%=cid %>, dealChildJobLibrary_<%=cid %>.replaceJarPathsFromCrcMap("<%=commandLineWindows[i] %>"));
+              					String classpath_<%=cid %>_<%=i %> = "<%=commandLineWindows[i] %>";
+              					<%if(isCP && (commandLineWindows[i].endsWith(":") || commandLineWindows[i].endsWith(";"))) {%>
+              					if(audit_jar_path_<%=cid %>!=null && !audit_jar_path_<%=cid %>.isEmpty()) {
+		      						classpath_<%=cid %>_<%=i %> += audit_jar_path_<%=cid %>;
+		      					}
+		      					<%}%>
+	        					jvm_argument_helper_<%=cid%>.addArgumentsTo(paraList_<%=cid %>, dealChildJobLibrary_<%=cid %>.replaceJarPathsFromCrcMap(classpath_<%=cid %>_<%=i %>));
 		      				<%
 		          			}else{
               				%>
 		      					jvm_argument_helper_<%=cid%>.addArgumentsTo(paraList_<%=cid %>, "<%=commandLineWindows[i] %>");
 		      				<%
+		          			}
+		          			
+		          			if("-cp".equals(commandLineWindows[i]) || "-classpath".equals(commandLineWindows[i])) {
+		          				isCP = true;
+		          			} else {
+		          				isCP = false;
 		          			}
 		      			}	
 		    		}
@@ -216,11 +256,25 @@ String inputConnName = null;
 	      		<%
 				for (int i = 0; i < commandLineUnix.length; i++) {
 					if (i == 0){
-		      		%>
+					%>
 						paraList_<%=cid %>.add("<%=commandLineUnix[i]%>");
-		      		<%
-		    		} else if (i > 0){
-		      			String param;
+						String m2 = System.getProperty("talend.component.manager.m2.repository");
+						if (m2 != null){
+							paraList_<%=cid %>.add("-Dtalend.component.manager.m2.repository=" + m2);
+						}
+						
+						if(enableLogStash){
+							System.getProperties().stringPropertyNames().stream()
+								.filter(it -> it.startsWith("audit."))
+								.forEach(key -> paraList_<%=cid %>.add("-D" + key + "=" + System.getProperty(key)));
+						}
+							
+						System.getProperties().stringPropertyNames().stream()
+							.filter(it -> it.startsWith("runtime.lineage.") || "classpath.extended".equals(it))
+							.forEach(key -> paraList_<%=cid %>.add("-D" + key + "=" + System.getProperty(key)));
+					<%
+					} else if (i > 0){
+						String param;
 						if (commandLineUnix[i].indexOf("\"") >= 0){
 							param = commandLineUnix[i];
 						} else {
@@ -229,7 +283,13 @@ String inputConnName = null;
 						if (param.contains("$ROOT_PATH")) {
 							if(param.indexOf(".jar") >= 0){
 		      				%>
-								jvm_argument_helper_<%=cid%>.addArgumentsTo(paraList_<%=cid %>, dealChildJobLibrary_<%=cid %>.replaceJarPathsFromCrcMap(<%=param %>).replace("$ROOT_PATH",System.getProperty("user.dir")));
+		      					String classpath_<%=cid %>_<%=i %> = <%=param %>;
+		      					<%if(isCP && (param.endsWith(":\"") || param.endsWith(";\""))) {%>
+		      					if(audit_jar_path_<%=cid %>!=null && !audit_jar_path_<%=cid %>.isEmpty()) {
+		      						classpath_<%=cid %>_<%=i %> += audit_jar_path_<%=cid %>;
+		      					}
+		      					<%}%>
+								jvm_argument_helper_<%=cid%>.addArgumentsTo(paraList_<%=cid %>, dealChildJobLibrary_<%=cid %>.replaceJarPathsFromCrcMap(classpath_<%=cid %>_<%=i %>).replace("$ROOT_PATH",System.getProperty("user.dir")));
 		      				<%}else{%>
 		        				jvm_argument_helper_<%=cid%>.addArgumentsTo(paraList_<%=cid %>, <%=param %>.replace("$ROOT_PATH",System.getProperty("user.dir")));
 		     	 			<%
@@ -237,17 +297,29 @@ String inputConnName = null;
 		      			}else{
 							if(param.indexOf(".jar") >= 0){
 		      				%>
-		      					jvm_argument_helper_<%=cid%>.addArgumentsTo(paraList_<%=cid %>, dealChildJobLibrary_<%=cid %>.replaceJarPathsFromCrcMap(<%=param %>).replace("$ROOT_PATH",System.getProperty("user.dir")));
+		      					String classpath_<%=cid %>_<%=i %> = <%=param %>;
+		      					<%if(isCP && (param.endsWith(":\"") || param.endsWith(";\""))) {%>
+		      					if(audit_jar_path_<%=cid %>!=null && !audit_jar_path_<%=cid %>.isEmpty()) {
+		      						classpath_<%=cid %>_<%=i %> += audit_jar_path_<%=cid %>;
+		      					}
+		      					<%}%>
+	      						jvm_argument_helper_<%=cid%>.addArgumentsTo(paraList_<%=cid %>, dealChildJobLibrary_<%=cid %>.replaceJarPathsFromCrcMap(classpath_<%=cid %>_<%=i %>).replace("$ROOT_PATH",System.getProperty("user.dir")));
 		      				<%}else{%>
 								jvm_argument_helper_<%=cid%>.addArgumentsTo(paraList_<%=cid %>, <%=param %>);
 		      				<%
 		      				}
-		      			}	
+		      			}
+		      			
+		      			if("\"-cp\"".equals(param) || "\"-classpath\"".equals(param)) {
+		      				isCP = true;
+		      			} else {
+		      				isCP = false;
+		      			}
 	    			}
 		  		}
 		  		%>
 			}
-			
+
 			<%
 			if(use_custom_jvm_setting) {
 			%>
@@ -265,7 +337,7 @@ String inputConnName = null;
 		}
 		%>
 		if(enableLogStash){
-			paraList_<%=cid %>.add("--monitoring="+enableLogStash);
+			paraList_<%=cid %>.add("--audit.enabled="+enableLogStash);
 		}
 		<%
 	}
@@ -435,7 +507,10 @@ String inputConnName = null;
         <%
             if (ProcessorUtilities.isEsbJob(currentProcess)) {
         %>
-        childJob_<%=cid %>.setEndpointRegistry(registry);
+        if (childJob_<%=cid %> instanceof routines.system.api.TalendESBJob) {
+            ((routines.system.api.TalendESBJob)childJob_<%=cid %>).setEndpointRegistry(registry);
+        }
+
         <%
             }
         %>
@@ -461,32 +536,36 @@ String inputConnName = null;
 		<%if(isLog4jEnabled){%>
 			log.info("<%=cid%> - The child job '<%if(!useDynamicJob){%><%=childJob %><%}else{%>"+<%=dynamicJobName%>+"<%}%>' is done.");
 		<%}%>
-	  	<%
+<%
 		if (childJob != null) {
-	    	if (isRunInMultiThread){
-    		%>
-				((java.util.Map)threadLocal.get()).put("errorCode", childJob_<%=cid %>.getErrorCode());
-			<%}else {%>
-				errorCode = childJob_<%=cid %>.getErrorCode();
-		    <%}%>
-	            
-	    	if(childJob_<%=cid %>.getErrorCode() == null){
-				globalMap.put("<%=cid %>_CHILD_RETURN_CODE", childJob_<%=cid %>.getStatus() != null && ("failure").equals(childJob_<%=cid %>.getStatus()) ? 1 : 0);
-	    	}else{
-				globalMap.put("<%=cid %>_CHILD_RETURN_CODE", childJob_<%=cid %>.getErrorCode());
-		    }
-		    if (childJob_<%=cid %>.getExceptionStackTrace() != null) { 
-		    	globalMap.put("<%=cid %>_CHILD_EXCEPTION_STACKTRACE", childJob_<%=cid %>.getExceptionStackTrace());
-		    }
-	  
-			<%if (dieOnError) { %> 
-				if (childJob_<%=cid %>.getErrorCode() != null || ("failure").equals(childJob_<%=cid %>.getStatus())) {
-					java.lang.Exception ce_<%=cid%> = childJob_<%=cid %>.getException();
-					throw new RuntimeException("Child job running failed.\n" + ((ce_<%=cid%>!=null) ? (ce_<%=cid%>.getClass().getName() + ": " + ce_<%=cid%>.getMessage()) : ""));
-				}
-			<%}
-		}%>
-	  	<%
+%>
+            if(childJob_<%=cid %>.getErrorCode() == null){
+                globalMap.put("<%=cid %>_CHILD_RETURN_CODE", childJob_<%=cid %>.getStatus() != null && ("failure").equals(childJob_<%=cid %>.getStatus()) ? 1 : 0);
+            }else{
+                globalMap.put("<%=cid %>_CHILD_RETURN_CODE", childJob_<%=cid %>.getErrorCode());
+            }
+            if (childJob_<%=cid %>.getExceptionStackTrace() != null) {
+                globalMap.put("<%=cid %>_CHILD_EXCEPTION_STACKTRACE", childJob_<%=cid %>.getExceptionStackTrace());
+            }
+<%
+            if (dieOnError) {
+                if (isRunInMultiThread){
+%>
+                    ((java.util.Map)threadLocal.get()).put("errorCode", childJob_<%=cid %>.getErrorCode());
+<%
+                }else {
+%>
+                    errorCode = childJob_<%=cid %>.getErrorCode();
+<%
+                }
+%>
+                if (childJob_<%=cid %>.getErrorCode() != null || ("failure").equals(childJob_<%=cid %>.getStatus())) {
+                    java.lang.Exception ce_<%=cid%> = childJob_<%=cid %>.getException();
+                    throw new RuntimeException("Child job running failed.\n" + ((ce_<%=cid%>!=null) ? (ce_<%=cid%>.getClass().getName() + ": " + ce_<%=cid%>.getMessage()) : ""));
+                }
+<%
+            }
+        }
 
 		String firstConnName = null; 
 		if(outConns != null && outConns.size() > 0) {

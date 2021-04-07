@@ -98,7 +98,6 @@
       NAME="SESSION_DURATION"
       FIELD="TEXT"
       NUM_ROW="20"
-      REQUIRED="true"
       SHOW_IF="ASSUME_ROLE == 'true'"
     >
       <DEFAULT>15</DEFAULT>
@@ -108,7 +107,7 @@
 	    NAME="REGION" 
 	    FIELD="OPENED_LIST" 
 	    RAW="true" 
-	    NUM_ROW="22" 
+	    NUM_ROW="27" 
 	    REQUIRED="true"
 	    GROUP="REGION_ENDPOINT_GROUP">
 	    
@@ -137,7 +136,7 @@
     	</ITEMS>
     </PARAMETER>
     
-    <PARAMETER NAME="ENCRYPT" FIELD="CHECK" NUM_ROW="25"
+    <PARAMETER NAME="ENCRYPT" FIELD="CHECK" NUM_ROW="28"
 		REQUIRED="true" GROUP="ENCRYPT_GROUP">
 		<DEFAULT>false</DEFAULT>
 	</PARAMETER>
@@ -146,7 +145,7 @@
 	    NAME="KEY_TYPE" 
 	    FIELD="CLOSED_LIST" 
 	    RAW="true" 
-	    NUM_ROW="26" 
+	    NUM_ROW="29" 
 	    REQUIRED="true" 
 	    GROUP="ENCRYPT_GROUP"
 	    SHOW_IF="ENCRYPT == 'true'"
@@ -162,7 +161,7 @@
 	    NAME="ALGORITHM_SYMMETRIC_MASTER_KEY" 
 	    FIELD="CLOSED_LIST" 
 	    RAW="true" 
-	    NUM_ROW="27"
+	    NUM_ROW="30"
 	    SHOW_IF="isShow[KEY_TYPE] AND (KEY_TYPE == 'SYMMETRIC_MASTER_KEY')" 
 	    REQUIRED="true" 
 	    GROUP="ENCRYPT_GROUP"
@@ -176,7 +175,7 @@
 	    NAME="ALGORITHM_ASYMMETRIC_MASTER_KEY" 
 	    FIELD="CLOSED_LIST" 
 	    RAW="true" 
-	    NUM_ROW="28"
+	    NUM_ROW="31"
 	    SHOW_IF="isShow[KEY_TYPE] AND (KEY_TYPE == 'ASYMMETRIC_MASTER_KEY')" 
 	    REQUIRED="true" 
 	    GROUP="ENCRYPT_GROUP"
@@ -190,7 +189,7 @@
 	    NAME="ENCODING" 
 	    FIELD="CLOSED_LIST" 
 	    RAW="true" 
-	    NUM_ROW="29"
+	    NUM_ROW="32"
 	    SHOW_IF="isShow[ALGORITHM_SYMMETRIC_MASTER_KEY] AND (ALGORITHM_SYMMETRIC_MASTER_KEY == 'AES')" 
 	    REQUIRED="true" 
 	    GROUP="ENCRYPT_GROUP"
@@ -201,27 +200,27 @@
     	</ITEMS>
     </PARAMETER>
 	
-	<PARAMETER NAME="ENCRYPTED_KEY_CMK" FIELD="PASSWORD" NUM_ROW="31"
+	<PARAMETER NAME="ENCRYPTED_KEY_CMK" FIELD="PASSWORD" NUM_ROW="33"
 		REQUIRED="true" GROUP="ENCRYPT_GROUP" SHOW_IF="isShow[KEY_TYPE] AND (KEY_TYPE == 'KMS_CMK')">
 		<DEFAULT>""</DEFAULT>
 	</PARAMETER>
 	
-	<PARAMETER NAME="ENCRYPTED_KEY_BASE64" FIELD="PASSWORD" NUM_ROW="32"
+	<PARAMETER NAME="ENCRYPTED_KEY_BASE64" FIELD="PASSWORD" NUM_ROW="34"
 		REQUIRED="true" GROUP="ENCRYPT_GROUP" SHOW_IF="isShow[ENCODING] AND (ENCODING == 'BASE64')">
 		<DEFAULT>""</DEFAULT>
 	</PARAMETER>
 	
-	<PARAMETER NAME="ENCRYPTED_KEY_X509" FIELD="FILE" NUM_ROW="33"
+	<PARAMETER NAME="ENCRYPTED_KEY_X509" FIELD="FILE" NUM_ROW="35"
 		REQUIRED="true" GROUP="ENCRYPT_GROUP" SHOW_IF="isShow[ENCODING] AND (ENCODING == 'X509')">
 		<DEFAULT>""</DEFAULT>
 	</PARAMETER>
 	
-	<PARAMETER NAME="PUBLIC_KEY" FIELD="FILE" NUM_ROW="34"
+	<PARAMETER NAME="PUBLIC_KEY" FIELD="FILE" NUM_ROW="36"
 		REQUIRED="true" GROUP="ENCRYPT_GROUP" SHOW_IF="isShow[ALGORITHM_ASYMMETRIC_MASTER_KEY]">
 		<DEFAULT>""</DEFAULT>
 	</PARAMETER>
 	
-	<PARAMETER NAME="PRIVATE_KEY" FIELD="FILE" NUM_ROW="35"
+	<PARAMETER NAME="PRIVATE_KEY" FIELD="FILE" NUM_ROW="37"
 		REQUIRED="true" GROUP="ENCRYPT_GROUP" SHOW_IF="isShow[ALGORITHM_ASYMMETRIC_MASTER_KEY]">
 		<DEFAULT>""</DEFAULT>
 	</PARAMETER>
@@ -231,8 +230,8 @@
     <ADVANCED_PARAMETERS>
     
     <PARAMETER 	NAME="USE_REGION_ENDPOINT" FIELD="CHECK" NUM_ROW="5" REQUIRED="true"	GROUP="REGION_ENDPOINT_GROUP" >
-		<DEFAULT>false</DEFAULT>
-	</PARAMETER>
+	   <DEFAULT>false</DEFAULT>
+  	</PARAMETER>
     
     <PARAMETER 	NAME="REGION_ENDPOINT" 
     			FIELD="TEXT" 
@@ -241,6 +240,15 @@
     			GROUP="REGION_ENDPOINT_GROUP" 
     			SHOW_IF="USE_REGION_ENDPOINT == 'true'" >
       <DEFAULT>"s3.amazonaws.com"</DEFAULT>
+    </PARAMETER>
+
+    <PARAMETER  NAME="PATHSTYLEACCESS" 
+          FIELD="CHECK" 
+          NUM_ROW="6" 
+          REQUIRED="false" 
+          GROUP="REGION_ENDPOINT_GROUP" 
+          SHOW_IF="USE_REGION_ENDPOINT == 'true'" >
+      <DEFAULT>false</DEFAULT>
     </PARAMETER>
 
     <PARAMETER
@@ -287,20 +295,122 @@
     <PARAMETER
       NAME="SET_STS_ENDPOINT"
       FIELD="CHECK"
-      NUM_ROW="30"
+      NUM_ROW="21"
       NB_LINES="5"
-      SHOW_IF="ASSUME_ROLE == 'true'"
+      GROUP="ASSUME_ROLE_CONFIG"
+      SHOW_IF="isShow[ASSUME_ROLE] AND (ASSUME_ROLE == 'true')"
     >
     </PARAMETER>
+    
 	<PARAMETER
       NAME="STS_ENDPOINT"
       FIELD="TEXT"
-      NUM_ROW="30"
-      REQUIRED="true"
-      SHOW_IF="(ASSUME_ROLE == 'true') AND (SET_STS_ENDPOINT == 'true')"
+      NUM_ROW="21"
+      GROUP="ASSUME_ROLE_CONFIG"
+      SHOW_IF="isShow[SET_STS_ENDPOINT] AND (SET_STS_ENDPOINT == 'true')"
     >
       <DEFAULT>""</DEFAULT>
+    </PARAMETER>
+    
+    <PARAMETER
+      NAME="SIGNING_REGION"
+      FIELD="OPENED_LIST"
+      NUM_ROW="23"
+      GROUP="ASSUME_ROLE_CONFIG"
+      REQUIRED="true"
+      SHOW_IF="ASSUME_ROLE == 'true'"
+    >
+      <ITEMS DEFAULT="DEFAULT">
+        	<ITEM NAME="DEFAULT" VALUE="DEFAULT" />
+	        <ITEM NAME="GovCloud" VALUE="&quot;us-gov-west-1&quot;" />
+	        <ITEM NAME="US_EAST_1" VALUE="&quot;us-east-1&quot;" />
+	        <ITEM NAME="US_WEST_1" VALUE="&quot;us-west-1&quot;" />
+	        <ITEM NAME="US_WEST_2" VALUE="&quot;us-west-2&quot;" />
+	        <ITEM NAME="US_EAST_2" VALUE="&quot;us-east-2&quot;" />
+	        <ITEM NAME="SA_EAST_1" VALUE="&quot;sa-east-1&quot;" />
+	        <ITEM NAME="EU_WEST_1" VALUE="&quot;eu-west-1&quot;" />
+	        <ITEM NAME="EU_CENTRAL_1" VALUE="&quot;eu-central-1&quot;" />
+	        <ITEM NAME="EU_WEST_2" VALUE="&quot;eu-west-2&quot;" />
+	        <ITEM NAME="EU_WEST_3" VALUE="&quot;eu-west-3&quot;" />
+	        <ITEM NAME="EU_NORTH_1" VALUE="&quot;eu-north-1&quot;" />
+	        <ITEM NAME="CN_NORTH_1" VALUE="&quot;cn-north-1&quot;" />
+	        <ITEM NAME="CN_NORTHWEST_1" VALUE="&quot;cn-northwest-1&quot;" />
+	        <ITEM NAME="AP_EAST_1" VALUE="&quot;ap-east-1&quot;" />
+         	<ITEM NAME="AP_SOUTHEAST_1" VALUE="&quot;ap-southeast-1&quot;" />
+	        <ITEM NAME="AP_SOUTHEAST_2" VALUE="&quot;ap-southeast-2&quot;" />
+	        <ITEM NAME="AP_NORTHEAST_1" VALUE="&quot;ap-northeast-1&quot;" />
+	        <ITEM NAME="AP_NORTHEAST_2" VALUE="&quot;ap-northeast-2&quot;" />
+        	<ITEM NAME="AP_SOUTH_1" VALUE="&quot;ap-south-1&quot;" />
+	        <ITEM NAME="CA_CENTRAL_1" VALUE="&quot;ca-central-1&quot;" />
+    	</ITEMS>
     </PARAMETER> 
+    
+    <PARAMETER
+      NAME="EXTERNALID"
+      FIELD="TEXT"
+      NUM_ROW="24"
+      GROUP="ASSUME_ROLE_CONFIG"
+      SHOW_IF="ASSUME_ROLE == 'true'"
+    >
+      <DEFAULT>""</DEFAULT>
+    </PARAMETER>
+    
+    <PARAMETER
+      NAME="SERIALNUMBER"
+      FIELD="TEXT"
+      NUM_ROW="25"
+      GROUP="ASSUME_ROLE_CONFIG"
+      SHOW_IF="ASSUME_ROLE == 'true'"
+    >
+      <DEFAULT>""</DEFAULT>
+    </PARAMETER>
+    
+     <PARAMETER
+      NAME="TOKENCODE"
+      FIELD="TEXT"
+      NUM_ROW="26"
+      GROUP="ASSUME_ROLE_CONFIG"
+      SHOW_IF="ASSUME_ROLE == 'true'"
+    >
+      <DEFAULT>""</DEFAULT>
+    </PARAMETER>
+    
+    <PARAMETER
+      NAME="TAGS"
+      FIELD="TABLE"
+      NUM_ROW="27"
+      GROUP="ASSUME_ROLE_CONFIG"
+      SHOW_IF="ASSUME_ROLE == 'true'"
+    >
+      <ITEMS>
+      	<ITEM NAME="TAG_KEY" FIELD="TEXT" />
+      	<ITEM NAME="TAG_VALUE" FIELD="TEXT" />
+      	<ITEM NAME="TAG_TRANSITIVE" FIELD="CHECK" VALUE="FALSE"/>
+      </ITEMS>
+    </PARAMETER>
+    
+    <PARAMETER
+      NAME="POLICY_TABLE"
+      FIELD="TABLE"
+      NUM_ROW="28"
+      GROUP="ASSUME_ROLE_CONFIG"
+      SHOW_IF="ASSUME_ROLE == 'true'"
+    >
+   		<ITEMS>
+    		<ITEM NAME="POLICY_ARN" VALUE="" />
+   		</ITEMS>
+    </PARAMETER>
+    
+    <PARAMETER
+      NAME="POLICY"
+      FIELD="MEMO"
+      NUM_ROW="29"
+      GROUP="ASSUME_ROLE_CONFIG"
+      NB_LINES="15"
+      SHOW_IF="ASSUME_ROLE == 'true'"
+    >
+      <DEFAULT>""</DEFAULT>
+    </PARAMETER>
     
     <PARAMETER
       NAME="CHECK_ACCESSIBILITY"
@@ -337,34 +447,32 @@
 
    <CODEGENERATION>
     <IMPORTS>
-       <IMPORT NAME="aws-java-sdk-1.11.406.jar" MODULE="aws-java-sdk-1.11.406.jar"
-			MVN="mvn:com.amazonaws/aws-java-sdk/1.11.406"
+       <IMPORT NAME="aws-java-sdk-1.11.848.jar" MODULE="aws-java-sdk-1.11.848.jar"
+			MVN="mvn:com.amazonaws/aws-java-sdk/1.11.848"
 			REQUIRED="true" />
-		<IMPORT NAME="jackson-core-2.9.9.jar" MODULE="jackson-core-2.9.9.jar"
-			MVN="mvn:com.fasterxml.jackson.core/jackson-core/2.9.9"
+		<IMPORT NAME="jackson-core-2.11.4.jar" MODULE="jackson-core-2.11.4.jar"
+			MVN="mvn:com.fasterxml.jackson.core/jackson-core/2.11.4"
 			REQUIRED="true" />
-		<IMPORT NAME="jackson-databind-2.9.9.jar" MODULE="jackson-databind-2.9.9.jar"
-			MVN="mvn:com.fasterxml.jackson.core/jackson-databind/2.9.9"
+		<IMPORT NAME="jackson-databind-2.11.4.jar" MODULE="jackson-databind-2.11.4.jar"
+			MVN="mvn:com.fasterxml.jackson.core/jackson-databind/2.11.4"
 			REQUIRED="true" />
-		<IMPORT NAME="jackson-annotations-2.9.0.jar" MODULE="jackson-annotations-2.9.0.jar"
-			MVN="mvn:com.fasterxml.jackson.core/jackson-annotations/2.9.0"
+		<IMPORT NAME="jackson-annotations-2.11.4.jar" MODULE="jackson-annotations-2.11.4.jar"
+			MVN="mvn:com.fasterxml.jackson.core/jackson-annotations/2.11.4"
 			REQUIRED="true" />
-		<IMPORT NAME="httpcore-4.4.9.jar" MODULE="httpcore-4.4.9.jar"
-			MVN="mvn:org.apache.httpcomponents/httpcore/4.4.9"
+		<IMPORT NAME="httpcore-4.4.13.jar" MODULE="httpcore-4.4.13.jar"
+			MVN="mvn:org.apache.httpcomponents/httpcore/4.4.13"
 			REQUIRED="true" />
-		<IMPORT NAME="httpclient-4.5.5.jar" MODULE="httpclient-4.5.5.jar"
-			MVN="mvn:org.apache.httpcomponents/httpclient/4.5.5"
+		<IMPORT NAME="httpclient-4.5.12.jar" MODULE="httpclient-4.5.12.jar"
+			MVN="mvn:org.apache.httpcomponents/httpclient/4.5.12"
 			REQUIRED="true" />
 		<IMPORT NAME="joda-time-2.8.1.jar" MODULE="joda-time-2.8.1.jar"
 			MVN="mvn:joda-time/joda-time/2.8.1"
 			REQUIRED="true" />
-		<IMPORT NAME="commons-logging-1.1.3.jar" MODULE="commons-logging-1.1.3.jar"
-			MVN="mvn:commons-logging/commons-logging/1.1.3"
-			UrlPath="platform:/plugin/org.talend.libraries.apache.common/lib/commons-logging-1.1.3.jar"
+		<IMPORT NAME="commons-logging-1.2.jar" MODULE="commons-logging-1.2.jar"
+			MVN="mvn:commons-logging/commons-logging/1.2"
 			REQUIRED="true" />
-		<IMPORT NAME="commons-codec-1.6.jar" MODULE="commons-codec-1.6.jar"
-			MVN="mvn:org.talend.libraries/commons-codec-1.6/6.0.0"
-			UrlPath="platform:/plugin/org.talend.libraries.apache.common/lib/commons-codec-1.6.jar"
+		<IMPORT NAME="commons-codec-1.14.jar" MODULE="commons-codec-1.14.jar"
+			MVN="mvn:commons-codec/commons-codec/1.14"
 			REQUIRED="true" />
     </IMPORTS>
    </CODEGENERATION>

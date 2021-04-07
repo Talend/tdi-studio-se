@@ -29,6 +29,8 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.ltk.core.refactoring.resource.MoveResourceChange;
 import org.eclipse.ltk.core.refactoring.resource.RenameResourceChange;
 import org.talend.commons.exception.ExceptionHandler;
+import org.talend.commons.exception.PersistenceException;
+import org.talend.commons.utils.workbench.resources.ResourceUtils;
 import org.talend.core.GlobalServiceRegister;
 import org.talend.core.model.properties.Item;
 import org.talend.core.model.properties.Property;
@@ -41,6 +43,7 @@ import org.talend.core.ui.ITestContainerProviderService;
 import org.talend.designer.maven.model.TalendMavenConstants;
 import org.talend.designer.maven.tools.AggregatorPomsHelper;
 import org.talend.designer.maven.tools.BuildCacheManager;
+import org.talend.designer.maven.utils.PomIdsHelper;
 import org.talend.designer.runprocess.java.TalendJavaProjectManager;
 import org.talend.repository.ProjectManager;
 import org.talend.repository.RepositoryWorkUnit;
@@ -71,6 +74,8 @@ public class ProcessChangeListener implements PropertyChangeListener {
                         caseMove(oldValue, newValue);
                     } else if (propertyName.equals(ERepositoryActionName.DELETE_FOREVER.getName())) {
                         caseDeleteForever(newValue);
+                    } else if (propertyName.equals(ERepositoryActionName.AFTER_DELETE.getName())) {
+                        caseAfterDelete(newValue);
                     } else if (propertyName.equals(ERepositoryActionName.FOLDER_RENAME.getName())
                             || propertyName.equals(ERepositoryActionName.JOBLET_FOLDER_RENAME.getName())) {
                         caseFolderRename(oldValue, newValue);
@@ -91,6 +96,10 @@ public class ProcessChangeListener implements PropertyChangeListener {
                         }
                     } else if (propertyName.equals(ERepositoryActionName.IMPORT.getName())) {
                         caseImport(propertyName, newValue);
+                    } else if (propertyName.equals(ERepositoryActionName.DELETE_TO_RECYCLE_BIN.getName())) {
+                        caseDeleteToRecycleBin(newValue);
+                    } else if (propertyName.equals(ERepositoryActionName.RESTORE.getName())) {
+                        caseRestore(newValue);
                     }
                 }
             };
@@ -128,6 +137,7 @@ public class ProcessChangeListener implements PropertyChangeListener {
                     TalendJavaProjectManager.generatePom(property.getItem());
                     AggregatorPomsHelper helper = new AggregatorPomsHelper();
                     helper.syncParentJobPomsForPropertyChange(property);
+                    PropertyProcessUpdater.updateRouteCode(oldName);
                 }
             }
         }
@@ -146,7 +156,7 @@ public class ProcessChangeListener implements PropertyChangeListener {
                 IFolder targetFolder = processTypeFolder.getFolder(targetPath);
                 try {
                     if (!targetFolder.exists()) {
-                        targetFolder.create(true, true, null);
+                        ResourceUtils.createFolder(targetFolder);
                     }
                     List<IRepositoryViewObject> allVersions = ProxyRepositoryFactory.getInstance().getAllVersion(obj.getId());
                     for (IRepositoryViewObject objs : allVersions) {
@@ -179,7 +189,7 @@ public class ProcessChangeListener implements PropertyChangeListener {
             if (property != null && property.getItem() != null) {
                 ITestContainerProviderService service = getTestContainerProviderService();
                 if (service != null && service.isTestContainerItem(property.getItem())) {
-                    // FIXME testcase should regenerate pom to remove extra dependencies.
+                    // done in caseAfterDelete()
                 } else if (isNeedUpdateItem(property.getItem())) {
                     // delete all version old job projects physically, won't check to remove parent folder
                     if (ProjectManager.getInstance().getCurrentProject().isLocal()) {
@@ -188,6 +198,26 @@ public class ProcessChangeListener implements PropertyChangeListener {
                 }
                 // check ref-project if exist same label routine
                 checkCodesAfterDeleteForever(property);
+            }
+        }
+    }
+
+    private void caseAfterDelete(Object newValue) {
+        // newValue: obj
+        if (newValue instanceof IRepositoryViewObject) {
+            Property property = ((IRepositoryViewObject) newValue).getProperty();
+            if (property != null && property.getItem() != null) {
+                ITestContainerProviderService service = getTestContainerProviderService();
+                if (service != null && service.isTestContainerItem(property.getItem())) {
+                    try {
+                        Item jobItem = service.getParentJobItem(property.getItem());
+                        if (jobItem != null) {
+                            TalendJavaProjectManager.generatePom(jobItem);
+                        }
+                    } catch (PersistenceException e) {
+                        ExceptionHandler.process(e);
+                    }
+                }
             }
         }
     }
@@ -300,16 +330,20 @@ public class ProcessChangeListener implements PropertyChangeListener {
             if (getAllProcessTypes().contains(processType)) {
                 IFolder processTypeFolder = getAggregatorPomsHelper().getProcessFolder(processType);
                 IFolder sourceFolder = processTypeFolder.getFolder(sourcePath);
+                if (!sourceFolder.exists()) {
+                    return;
+                }
                 try {
+                    sourceFolder.refreshLocal(IResource.DEPTH_INFINITE, new NullProgressMonitor());
                     removeFromParentSourceFolder(sourceFolder);
                     IFolder targetFolder = processTypeFolder.getFolder(targetPath);
                     if (!targetFolder.exists()) {
-                        targetFolder.create(true, true, null);
+                        ResourceUtils.createFolder(targetFolder);
                     }
                     MoveResourceChange change = new MoveResourceChange(sourceFolder, targetFolder);
                     change.perform(new NullProgressMonitor());
                     updatePomsInNewFolder(targetFolder.getFolder(sourceFolder.getName()));
-                } catch (OperationCanceledException | CoreException e) {
+                } catch (OperationCanceledException | CoreException | PersistenceException e) {
                     ExceptionHandler.process(e);
                 }
             }
@@ -330,12 +364,24 @@ public class ProcessChangeListener implements PropertyChangeListener {
 
     private void caseCreateAndSave(String propertyName, Object newValue) {
         if (newValue instanceof Item) {
-            if (isNeedUpdateItem((Item) newValue)) {
+            Item item = (Item) newValue;
+            ITestContainerProviderService service = getTestContainerProviderService();
+            if (service != null && service.isTestContainerItem(item)) {
+                try {
+                    Item jobItem = service.getParentJobItem(item);
+                    if (jobItem != null) {
+                        item = jobItem;
+                    }
+                } catch (PersistenceException e) {
+                    ExceptionHandler.process(e);
+                }
+            }
+            if (isNeedUpdateItem(item)) {
                 if (propertyName.equals(ERepositoryActionName.SAVE.getName())) {
                     TalendJavaProjectManager.generatePom((Item) newValue);
                 }
-            } else if (newValue instanceof RoutineItem) {
-                updateCodesChange((RoutineItem) newValue);
+            } else if (item instanceof RoutineItem) {
+                updateCodesChange((RoutineItem) item);
             }
         }
     }
@@ -349,6 +395,40 @@ public class ProcessChangeListener implements PropertyChangeListener {
                     TalendJavaProjectManager.generatePom(item, TalendProcessOptionConstants.GENERATE_NO_CODEGEN);
                 } else if (item instanceof RoutineItem) {
                     updateCodesChange((RoutineItem) item);
+                }
+            }
+        }
+    }
+
+    private void caseDeleteToRecycleBin(Object newValue) {
+        if (!PomIdsHelper.getIfExcludeDeletedItems()) {
+            // if not checked Exclude deleted items then no need remove module from root pom
+            return;
+        }
+        if (newValue instanceof IRepositoryViewObject) {
+            IRepositoryViewObject object = (IRepositoryViewObject) newValue;
+            if (getAllProcessTypes().contains(object.getRepositoryObjectType())) {
+                try {
+                    AggregatorPomsHelper.removeAllVersionsFromParentModules(object.getProperty());
+                } catch (Exception e) {
+                    ExceptionHandler.process(e);
+                }
+            }
+        }
+    }
+
+    private void caseRestore(Object newValue) {
+        if (!PomIdsHelper.getIfExcludeDeletedItems()) {
+            // if not checked Exclude deleted items then no need add back the module to root pom
+            return;
+        }
+        if (newValue instanceof IRepositoryViewObject) {
+            IRepositoryViewObject object = (IRepositoryViewObject) newValue;
+            if (getAllProcessTypes().contains(object.getRepositoryObjectType())) {
+                try {
+                    AggregatorPomsHelper.restoreAllVersionsFromParentModules(object.getProperty());
+                } catch (Exception e) {
+                    ExceptionHandler.process(e);
                 }
             }
         }
@@ -386,6 +466,7 @@ public class ProcessChangeListener implements PropertyChangeListener {
         if (allProcessTypes == null) {
             allProcessTypes = ERepositoryObjectType.getAllTypesOfProcess2();
         }
+        allProcessTypes.addAll(ERepositoryObjectType.getAllTypesOfCodesJar());
         return allProcessTypes;
     }
 

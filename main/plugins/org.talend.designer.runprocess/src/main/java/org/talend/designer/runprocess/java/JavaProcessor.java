@@ -25,25 +25,25 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeSet;
 import java.util.concurrent.Callable;
 import java.util.concurrent.FutureTask;
 import java.util.jar.Attributes;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
+import java.util.stream.Collectors;
 import java.util.zip.InflaterInputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 import org.apache.commons.codec.binary.Base64InputStream;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IMarker;
@@ -65,6 +65,7 @@ import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationType;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.debug.core.ILaunchManager;
+import org.eclipse.emf.common.util.EList;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.dom.Message;
 import org.eclipse.jdt.debug.core.IJavaBreakpoint;
@@ -94,6 +95,7 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.PlatformUI;
 import org.talend.commons.CommonsPlugin;
 import org.talend.commons.exception.ExceptionHandler;
+import org.talend.commons.exception.PersistenceException;
 import org.talend.commons.exception.SystemException;
 import org.talend.commons.ui.runtime.exception.RuntimeExceptionHandler;
 import org.talend.commons.utils.generation.JavaUtils;
@@ -105,9 +107,9 @@ import org.talend.core.PluginChecker;
 import org.talend.core.context.Context;
 import org.talend.core.context.RepositoryContext;
 import org.talend.core.hadoop.HadoopConstants;
+import org.talend.core.model.components.ComponentCategory;
 import org.talend.core.model.components.EComponentType;
 import org.talend.core.model.general.ModuleNeeded;
-import org.talend.core.model.process.ElementParameterParser;
 import org.talend.core.model.process.IContext;
 import org.talend.core.model.process.IElementParameter;
 import org.talend.core.model.process.INode;
@@ -117,35 +119,48 @@ import org.talend.core.model.process.ITargetExecutionConfig;
 import org.talend.core.model.process.JobInfo;
 import org.talend.core.model.process.ProcessUtils;
 import org.talend.core.model.properties.Item;
+import org.talend.core.model.properties.JobletProcessItem;
 import org.talend.core.model.properties.ProcessItem;
 import org.talend.core.model.properties.Property;
 import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.core.model.runprocess.IJavaProcessorStates;
 import org.talend.core.model.utils.JavaResourcesHelper;
+import org.talend.core.model.utils.NodeUtil;
 import org.talend.core.prefs.ITalendCorePrefConstants;
 import org.talend.core.runtime.CoreRuntimePlugin;
 import org.talend.core.runtime.maven.MavenArtifact;
+import org.talend.core.runtime.maven.MavenConstants;
 import org.talend.core.runtime.maven.MavenUrlHelper;
 import org.talend.core.runtime.process.ITalendProcessJavaProject;
 import org.talend.core.runtime.process.LastGenerationInfo;
 import org.talend.core.runtime.process.TalendProcessArgumentConstant;
 import org.talend.core.runtime.process.TalendProcessOptionConstants;
+import org.talend.core.runtime.projectsetting.RuntimeLineageManager;
+import org.talend.core.ui.ITestContainerProviderService;
 import org.talend.core.ui.services.IRulesProviderService;
 import org.talend.core.utils.BitwiseOptionUtils;
+import org.talend.core.utils.CodesJarResourceCache;
+import org.talend.core.utils.TalendQuoteUtils;
 import org.talend.designer.codegen.ICodeGenerator;
 import org.talend.designer.codegen.ICodeGeneratorService;
 import org.talend.designer.core.DesignerPlugin;
 import org.talend.designer.core.IDesignerCoreService;
 import org.talend.designer.core.ISyntaxCheckableEditor;
 import org.talend.designer.core.model.components.EParameterName;
+import org.talend.designer.core.model.utils.emf.talendfile.NodeType;
 import org.talend.designer.core.model.utils.emf.talendfile.ProcessType;
+import org.talend.designer.core.model.utils.emf.talendfile.RoutinesParameterType;
+import org.talend.designer.core.runprocess.Processor;
 import org.talend.designer.core.ui.editor.CodeEditorFactory;
 import org.talend.designer.core.ui.editor.nodes.Node;
 import org.talend.designer.core.ui.editor.process.Process;
 import org.talend.designer.core.utils.BigDataJobUtil;
+import org.talend.designer.core.utils.JavaProcessUtil;
 import org.talend.designer.maven.utils.ClasspathsJarGenerator;
 import org.talend.designer.maven.utils.MavenVersionHelper;
+import org.talend.designer.maven.utils.PomIdsHelper;
 import org.talend.designer.maven.utils.PomUtil;
+import org.talend.designer.runprocess.IRunProcessService;
 import org.talend.designer.runprocess.ItemCacheManager;
 import org.talend.designer.runprocess.ProcessorConstants;
 import org.talend.designer.runprocess.ProcessorException;
@@ -155,11 +170,13 @@ import org.talend.designer.runprocess.RunProcessPlugin;
 import org.talend.designer.runprocess.i18n.Messages;
 import org.talend.designer.runprocess.prefs.RunProcessPrefsConstants;
 import org.talend.designer.runprocess.utils.JobVMArgumentsUtil;
+import org.talend.librariesmanager.model.ModulesNeededProvider;
 import org.talend.repository.ProjectManager;
 import org.talend.repository.constants.BuildJobConstants;
 import org.talend.repository.ui.utils.UpdateLog4jJarUtils;
 import org.talend.repository.utils.EmfModelUtils;
 import org.talend.repository.utils.EsbConfigUtils;
+import org.talend.utils.StudioKeysFileCheck;
 import org.talend.utils.io.FilesUtils;
 
 /**
@@ -210,6 +227,8 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
 
     protected Set<JobInfo> buildFirstChildrenJobs;
 
+    protected Set<JobInfo> buildChildrenJobsAndJoblets;
+
     private final ITalendProcessJavaProject talendJavaProject;
 
     protected boolean isTestJob = false;
@@ -219,6 +238,8 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
     private String jobId;
 
     private String jobVersion;
+
+    private static final Logger LOGGER = Logger.getLogger(JavaProcessor.class);
 
     /**
      * Set current status.
@@ -250,6 +271,13 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
             } else {
                 // for shadow process/data preview
                 this.talendJavaProject = TalendJavaProjectManager.getTempJavaProject();
+                if (GlobalServiceRegister.getDefault().isServiceRegistered(IRunProcessService.class)) {
+                    IRunProcessService service = GlobalServiceRegister.getDefault()
+                            .getService(IRunProcessService.class);
+                    if (service != null) {
+                        service.updateLogFiles(talendJavaProject, true);
+                    }
+                }
             }
             Assert.isNotNull(this.talendJavaProject, Messages.getString("JavaProcessor.notFoundedProjectException"));
             this.project = this.talendJavaProject.getProject();
@@ -290,24 +318,32 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
     @Override
     public Set<JobInfo> getBuildChildrenJobs() {
         if (buildChildrenJobs == null || buildChildrenJobs.isEmpty()) {
-            buildChildrenJobs = getChildrenJobInfo(false);
+            buildChildrenJobs = getBuildChildrenJobsAndJoblets().stream().filter(info -> info.getJobletProperty() == null)
+                    .collect(Collectors.toSet());
         }
         return buildChildrenJobs;
-
     }
 
     @Override
     public Set<JobInfo> getBuildFirstChildrenJobs() {
         if (buildFirstChildrenJobs == null || buildFirstChildrenJobs.isEmpty()) {
-            buildFirstChildrenJobs = getChildrenJobInfo(true);
+            buildFirstChildrenJobs = getChildrenJobInfo(true, true);
         }
         return buildFirstChildrenJobs;
     }
 
-    private Set<JobInfo> getChildrenJobInfo(boolean firstChildOnly) {
+    @Override
+    public Set<JobInfo> getBuildChildrenJobsAndJoblets() {
+        if (buildChildrenJobsAndJoblets == null || buildChildrenJobsAndJoblets.isEmpty()) {
+            buildChildrenJobsAndJoblets = getChildrenJobInfo(false, true);
+        }
+        return buildChildrenJobsAndJoblets;
+    }
+
+    private Set<JobInfo> getChildrenJobInfo(boolean firstChildOnly, boolean includeJoblet) {
         Set<JobInfo> childrenJobs = new HashSet<>();
         if (property != null && property.getItem() != null) {
-            Set<JobInfo> infos = ProcessorUtilities.getChildrenJobInfo(property.getItem(), firstChildOnly);
+            Set<JobInfo> infos = ProcessorUtilities.getChildrenJobInfo(property.getItem(), firstChildOnly, true);
             for (JobInfo jobInfo : infos) {
                 if (jobInfo.isTestContainer() && !ProcessUtils.isOptionChecked(getArguments(),
                         TalendProcessArgumentConstant.ARG_GENERATE_OPTION,
@@ -357,6 +393,10 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
         }
         if (buildFirstChildrenJobs != null) {
             buildFirstChildrenJobs.clear();
+        }
+
+        if (buildChildrenJobsAndJoblets != null) {
+            buildChildrenJobsAndJoblets.clear();
         }
 
         ITalendProcessJavaProject tProcessJavaProject = getTalendJavaProject();
@@ -1208,23 +1248,44 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
         // vm args
         String[] cmd2 = addVMArguments(tmpParams.toArray(new String[0]), ignoreCustomJVMSetting);
 
+        String localM2Path = "-Dtalend.component.manager.m2.repository="; //$NON-NLS-1$
         if (isExportConfig()) { // only for export
             // add bat/sh header lines.
             List<String> list = extractAheadCommandSegments();
             list.addAll(Arrays.asList(cmd2));
+            if (isStandardJob() && isExternalUse()) {
+                // for dynamic/independent subjob
+                localM2Path += "../lib"; //$NON-NLS-1$
+                insertArgument(list, localM2Path);
+            }
             return list.toArray(new String[0]);
         } else {
             List<String> asList = convertArgsToList(cmd2);
-            if ((!isExternalUse() && isStandardJob()) || isGuessSchemaJob(property)) {
-                String localM2Path = "-Dtalend.component.manager.m2.repository="; //$NON-NLS-1$
+            if (isStandardJob() || isGuessSchemaJob(property)) {
                 if (EnvironmentUtils.isWindowsSystem()) {
                     localM2Path = localM2Path + PomUtil.getLocalRepositoryPath().replaceAll("%20", " "); //$NON-NLS-1$ //$NON-NLS-2$
                 } else {
                     localM2Path = localM2Path + PomUtil.getLocalRepositoryPath();
                 }
-                asList.add(3, localM2Path);
+                insertArgument(asList, localM2Path);
             }
             return asList.toArray(new String[0]);
+        }
+    }
+
+    private static void insertArgument(List<String> asList, String arg) throws ProcessorException {
+        // https://jira.talendforge.org/browse/TUP-27053
+        int idx = -1;
+        for (int i = 0; i < asList.size(); i++) {
+            if (asList.get(i).equals("-cp")) {
+                idx = i;
+                break;
+            }
+        }
+        if (idx > -1) {
+            asList.add(idx, arg);
+        } else {
+            throw new ProcessorException("Can not insert " + arg);
         }
     }
 
@@ -1295,11 +1356,13 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
         // create classpath.jar
         if (!isExportConfig() && !isSkipClasspathJar() && isCorrespondingOS()) {
             try {
-                libsStr = ClasspathsJarGenerator.createJar(getProperty(), libsStr, classPathSeparator, useRelativeClasspath);
+                libsStr = ClasspathsJarGenerator.createJar(getProperty(), libsStr, classPathSeparator, useRelativeClasspath,
+                        ProcessorUtilities.isDynamicJobAndCITest());
             } catch (Exception e) {
                 throw new ProcessorException(e);
             }
         }
+
         useRelativeClasspath = false;
         return libsStr;
     }
@@ -1329,8 +1392,7 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
                 basePath.append(rootWorkingDir);
             }
             if (isExternalUse()) { // for tRunJob with independent option and init pom for classpath
-                List<String> codesJars = PomUtil.getCodesExportJars(this.getProcess());
-                for (String codesJar : codesJars) {
+                for (String codesJar : JavaProcessUtil.getCodesExportJars(this)) {
                     basePath.append(classPathSeparator);
                     if (rootWorkingDir.length() > 0) {
                         basePath.append(rootWorkingDir);
@@ -1380,9 +1442,9 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
             IPath externalResourcePath = tProcessJvaProject.getExternalResourcesFolder().getLocation();
             basePath.append(getClassPath(externalResourcePath));
             basePath.append(classPathSeparator);
+
             // add subjobs
-            Set<JobInfo> subjobs = this.getBuildChildrenJobs();
-            for (JobInfo info : subjobs) {
+            for (JobInfo info : getBuildChildrenJobs()) {
                 // add sub job classes folder
                 ITalendProcessJavaProject subjobPrject = TalendJavaProjectManager
                         .getTalendJobJavaProject(info.getProcessItem().getProperty());
@@ -1399,6 +1461,35 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
                 basePath.append(getClassPath(subjobExternalResourcePath));
                 basePath.append(classPathSeparator);
             }
+
+            Set<String> codesJarClassPaths = new HashSet<>();
+            // add codesjars from all subjob/joblets
+            getBuildChildrenJobsAndJoblets().forEach(info -> {
+                Item item = null;
+                if (info.getJobletProperty() != null) {
+                    item = info.getJobletProperty().getItem();
+                } else if (info.getProcessItem() != null) {
+                    item = info.getProcessItem();
+                }
+                if (item != null) {
+                    codesJarClassPaths.addAll(getCodesJarClassPaths(item));
+                }
+            });
+            // add codesjars of main job
+            if (getProperty() != null) {
+                Item item = getProperty().getItem();
+                ITestContainerProviderService testContainerService = ITestContainerProviderService.get();
+                if (testContainerService != null && testContainerService.isTestContainerItem(item)) {
+                    try {
+                        item = testContainerService.getParentJobItem(item);
+                    } catch (PersistenceException e) {
+                        ExceptionHandler.process(e);
+                    }
+                }
+                codesJarClassPaths.addAll(getCodesJarClassPaths(item));
+            }
+
+            codesJarClassPaths.forEach(s -> basePath.append(s).append(classPathSeparator));
 
             // for loop dependency, add main classPath
             if (ProcessorUtilities.hasLoopDependency() && ProcessorUtilities.getMainJobInfo() != null) {
@@ -1423,17 +1514,9 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
             basePath.append(getClassPath(routineOutputPath));
             basePath.append(classPathSeparator);
 
-            if (ProcessUtils.isRequiredPigUDFs(process)) {
-                ITalendProcessJavaProject pigudfsProject = TalendJavaProjectManager
-                        .getTalendCodeJavaProject(ERepositoryObjectType.PIG_UDF);
-                IPath pigudfsOutputPath = pigudfsProject.getOutputFolder().getLocation();
-                basePath.append(getClassPath(pigudfsOutputPath));
-                basePath.append(classPathSeparator);
-            }
-
             if (ProcessUtils.isRequiredBeans(process)) {
                 ITalendProcessJavaProject beansProject = TalendJavaProjectManager
-                        .getTalendCodeJavaProject(ERepositoryObjectType.valueOf("BEANS")); //$NON-NLS-1$
+                        .getTalendCodeJavaProject(ERepositoryObjectType.BEANS);
                 IPath beansOutputPath = beansProject.getOutputFolder().getLocation();
                 basePath.append(getClassPath(beansOutputPath));
                 basePath.append(classPathSeparator);
@@ -1453,30 +1536,77 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
         return base.toPortableString();
     }
 
+    @SuppressWarnings("unchecked")
+    protected Set<String> getCodesJarClassPaths(Item item) {
+        Set<String> classPaths = new HashSet<>();
+        EList<RoutinesParameterType> routinesParameter = null;
+        if (item instanceof ProcessItem) {
+            if (((ProcessItem) item).getProcess() != null && ((ProcessItem) item).getProcess().getParameters() != null) {
+                routinesParameter = ((ProcessItem) item).getProcess().getParameters().getRoutinesParameter();
+            }
+        } else if (item instanceof JobletProcessItem) {
+            if (((JobletProcessItem) item).getJobletProcess() != null
+                    && ((JobletProcessItem) item).getJobletProcess().getParameters() != null) {
+                routinesParameter = ((JobletProcessItem) item).getJobletProcess().getParameters().getRoutinesParameter();
+            }
+        }
+        if (routinesParameter != null) {
+            routinesParameter.stream().filter(r -> r.getType() != null).map(r -> CodesJarResourceCache.getCodesJarById(r.getId()))
+                    .filter(info -> info != null).forEach(info -> {
+                        ITalendProcessJavaProject codesJarProject = TalendJavaProjectManager
+                                .getExistingTalendCodesJarProject(info);
+                        if (info.isInCurrentMainProject() && codesJarProject != null) {
+                            // TODO or no need to use project classpath at all, just use m2 path for all?
+                            IPath codesJarOutputPath = codesJarProject.getOutputFolder().getLocation();
+                            classPaths.add(getClassPath(codesJarOutputPath));
+                        } else {
+                            MavenArtifact artifact = new MavenArtifact();
+                            artifact.setGroupId(PomIdsHelper.getCodesJarGroupId(info));
+                            artifact.setArtifactId(info.getLabel().toLowerCase());
+                            artifact.setVersion(PomIdsHelper.getCodesJarVersion(info.getProjectTechName()));
+                            artifact.setType(MavenConstants.TYPE_JAR);
+                            // !!!FIXME!!!
+                            // it might not work for cxf related jobs since it use relative path for job execution ref
+                            // TUP-22972
+                            // need to use relative path for m2 jar path based on execution path
+                            // or check if codesjars are already in temp/lib folder, if yes, can use this relative path
+                            classPaths.add(PomUtil.getArtifactFullPath(artifact));
+                        }
+                    });
+        }
+        return classPaths;
+    }
+
     protected String getNeededModulesJarStr() {
         final String classPathSeparator = extractClassPathSeparator();
         final String libPrefixPath = getRootWorkingDir(true);
 
-        int option = TalendProcessOptionConstants.MODULES_WITH_CHILDREN;
+        int option = TalendProcessOptionConstants.MODULES_WITH_CHILDREN | TalendProcessOptionConstants.MODULES_WITH_CODESJAR;
 
         if (isExportConfig() || isSkipClasspathJar()) {
             option = option | TalendProcessOptionConstants.MODULES_EXCLUDE_SHADED;
         }
-        Set<ModuleNeeded> neededModulesLogjarUnsorted = getNeededModules(option);
-        JavaProcessorUtilities.checkJavaProjectLib(neededModulesLogjarUnsorted);
-        Set<ModuleNeeded> neededModules = new TreeSet<ModuleNeeded>(new Comparator<ModuleNeeded>() {
+        Set<ModuleNeeded> neededModulesLogjarUnsorted = LastGenerationInfo.getInstance()
+                .getModulesNeededWithSubjobPerJob(process.getId(), process.getVersion());
+        neededModulesLogjarUnsorted.addAll(
+                LastGenerationInfo.getInstance().getCodesJarModulesNeededWithSubjobPerJob(process.getId(), process.getVersion()));
+        if (neededModulesLogjarUnsorted.isEmpty()) {
+            neededModulesLogjarUnsorted = getNeededModules(option);
 
-            @Override
-            public int compare(ModuleNeeded o1, ModuleNeeded o2) {
-                for (String moduleName : UpdateLog4jJarUtils.MODULES_NEED_ADDED_BACK) {
-                    if (StringUtils.equals(moduleName, o2.getModuleName())) {
-                        return -1;
-                    }
-                }
-                return 1;
-            }
-        });
+            // get codesjar libraries from related joblets
+            neededModulesLogjarUnsorted.addAll(getCodesJarModulesNeededOfJoblets());
+        }
+        JavaProcessorUtilities.checkJavaProjectLib(neededModulesLogjarUnsorted);
+
+        Set<ModuleNeeded> highPriorityModuleNeeded = LastGenerationInfo.getInstance().getHighPriorityModuleNeeded(process.getId(),
+                process.getVersion());
+
+        List<ModuleNeeded> neededModules = new ArrayList<ModuleNeeded>();
+
         neededModules.addAll(neededModulesLogjarUnsorted);
+
+        UpdateLog4jJarUtils.sortClassPath4Log4j(highPriorityModuleNeeded, neededModules);
+
         // Ignore hadoop confs jars in lib path.
         if (ProcessorUtilities.hadoopConfJarCanBeLoadedDynamically(property)) {
             Iterator<ModuleNeeded> moduleIter = neededModules.iterator();
@@ -1488,6 +1618,9 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
                 }
             }
         }
+
+        // remove lower version of same artifact
+        removeLowerVersionArtifacts(neededModules, highPriorityModuleNeeded);
 
         StringBuffer libPath = new StringBuffer();
         if (isExportConfig() || isRunAsExport()) {
@@ -1514,6 +1647,18 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
                             break out;
                         }
                     }
+                    
+                  //check child job
+                    Set<JobInfo> buildChildrenJobs = getBuildChildrenJobs();
+                    for(JobInfo jobInfo:buildChildrenJobs) {
+                        List<? extends NodeType> generatingNodes = jobInfo.getProcessItem().getProcess().getNode();
+                        for (NodeType inode : generatingNodes) {
+                            if (BuildJobConstants.ESB_CXF_COMPONENTS.contains(inode.getComponentName())) {
+                                hasCXFComponent = true;
+                                break out;
+                            }
+                        }
+                    }
                     break;
                 }
             }
@@ -1532,7 +1677,7 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
                 } else if (hasSapjco3 || hasSapidoc3) {
                     libPath.append(jarPath.toPortableString()).append(classPathSeparator);
                 } else {
-                    libPath.append(PomUtil.getAbsArtifactPathAsCP(artifact)).append(classPathSeparator);
+                    libPath.append(PomUtil.getArtifactFullPath(artifact)).append(classPathSeparator);
                 }
             }
         }
@@ -1542,6 +1687,15 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
             libPath.deleteCharAt(lastSep);
         }
         return libPath.toString();
+    }
+
+    @Override
+    public Set<ModuleNeeded> getCodesJarModulesNeededOfJoblets() {
+        Set<ModuleNeeded> codesJarModulesNeeded = new HashSet<>();
+        getBuildChildrenJobsAndJoblets().stream().filter(info -> info.getJobletProperty() != null)
+                .forEach(info -> codesJarModulesNeeded
+                        .addAll(ModulesNeededProvider.getCodesJarModulesNeededForProcess(info.getJobletProperty().getItem())));
+        return codesJarModulesNeeded;
     }
 
     private int compareSapjco3Version(String jarPath) {
@@ -1592,19 +1746,13 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
     @Override
     public Set<ModuleNeeded> getNeededModules(int options) {
         Set<ModuleNeeded> neededLibraries = JavaProcessorUtilities.getNeededModulesForProcess(process, options);
-        boolean isLog4jEnabled = Boolean.parseBoolean(ElementParameterParser.getValue(process, "__LOG4J_ACTIVATE__")); //$NON-NLS-1$
-        if (isLog4jEnabled) {
-            JavaProcessorUtilities.addLog4jToModuleList(neededLibraries, process);
-        }
+
         return neededLibraries;
     }
 
     @Override
     public void updateModulesAfterSetLog4j(Collection<ModuleNeeded> modulesNeeded) {
-        boolean isLog4jEnabled = Boolean.parseBoolean(ElementParameterParser.getValue(process, "__LOG4J_ACTIVATE__")); //$NON-NLS-1$
-        if (isLog4jEnabled) {
-            JavaProcessorUtilities.addLog4jToModuleList(modulesNeeded, process);
-        }
+
     }
 
     protected String[] getAdditionCommandStrings() {
@@ -1696,14 +1844,59 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
                 }
             }
         }
-        // if not check or the value is empty, should use preference
-        if (string == null || "".equals(string)) { //$NON-NLS-1$
-            string = RunProcessPlugin.getDefault().getPreferenceStore().getString(RunProcessPrefsConstants.VMARGUMENTS);
+        // https://jira.talendforge.org/browse/TUP-27374
+        String[] vmargs = null;
+        try {
+            // if not check or the value is empty, should use preference
+            boolean usePrefJVMArguments = false;
+            if (string == null || "".equals(string)) { //$NON-NLS-1$
+                string = RunProcessPlugin.getDefault().getPreferenceStore().getString(RunProcessPrefsConstants.VMARGUMENTS);
+                usePrefJVMArguments = true;
+            }
+            String replaceAll = string.trim();
+            List<String> vmList = new JobVMArgumentsUtil().readString(replaceAll);
+            //
+            String outputpath = getRuntimeLineageOutputpath();
+            if (outputpath != null) {
+                int usedPosition = -1;
+                for (int i = 0; i < vmList.size(); i++) {
+                    String vm = vmList.get(i);
+                    if (vm.startsWith(RuntimeLineageManager.RUNTIMELINEAGE_OUTPUT_PATH)) {
+                        usedPosition = i;
+                        break;
+                    }
+                }
+                if (usedPosition > -1) {
+                    if (usePrefJVMArguments) {
+                        vmList.set(usedPosition, outputpath);
+                    }
+                } else {
+                    vmList.add(outputpath);
+                }
+            }
+            vmargs = vmList.toArray(new String[0]);
+        } catch (Exception e) {
+            LOGGER.debug(e.getMessage(), e);
+            // UI can not be loaded, use default jvm args
+            vmargs = JobVMArgumentsUtil.DEFAULT_JVM_ARGS;
         }
-        String replaceAll = string.trim();
-        List<String> vmList = new JobVMArgumentsUtil().readString(replaceAll);
-        String[] vmargs = vmList.toArray(new String[0]);
         return vmargs;
+    }
+
+    public String getRuntimeLineageOutputpath() {
+        if (NodeUtil.isJobUsingRuntimeLineage(process)) {
+            RuntimeLineageManager runtimeLineageManager = new RuntimeLineageManager();
+            String outputpath = RuntimeLineageManager.RUNTIMELINEAGE_OUTPUT_PATH;
+            String value = runtimeLineageManager.getOutputPath();
+            if (StringUtils.isNotBlank(value)) {
+                if (EnvironmentUtils.isWindowsSystem()) {
+                    return outputpath = outputpath + value.replaceAll("%20", " "); //$NON-NLS-1$ //$NON-NLS-2$
+                } else {
+                    return outputpath = outputpath + value;
+                }
+            }
+        }
+        return null;
     }
 
     private List<String> convertArgsToList(String[] args) {
@@ -1774,6 +1967,7 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
             wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_MAIN_TYPE_NAME, this.getMainClass());
             wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_STOP_IN_MAIN, true);
             wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_PROGRAM_ARGUMENTS, CTX_ARG + context.getName());
+            setupEncryptionFilePathParameter(wc);
             config = wc.doSave();
         }
         return config;
@@ -1798,11 +1992,50 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
                     launchManager.generateUniqueLaunchConfigurationNameFrom(this.getCodePath().lastSegment()));
             wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_PROJECT_NAME, projectName);
             wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_MAIN_TYPE_NAME, this.getMainClass());
-            wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_STOP_IN_MAIN, true);
             wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_PROGRAM_ARGUMENTS, CTX_ARG + context.getName() + parameterStr);
+            if (isRouteDebugging()) {
+                wc.setAttribute(Processor.DEBUG_ROUTE_ID_ARG, this.getProperty().getId());
+            } else {
+                wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_STOP_IN_MAIN, true);
+            }
+            setupEncryptionFilePathParameter(wc);
+            
+            if (isRouteDebugging()) {
+                StringBuilder jmxArguments = new StringBuilder();
+                jmxArguments.append(wc.getAttribute(IJavaLaunchConfigurationConstants.ATTR_VM_ARGUMENTS, ""));
+                jmxArguments.append("\n-Dorg.apache.camel.jmx.createRmiConnector=True");
+                jmxArguments.append("\n-Dorg.apache.camel.jmx.rmiConnector.registryPort=1099");
+                jmxArguments.append("\n-Dorg.apache.camel.jmx.serviceUrlPath=/jmxrmi/camel/" + process.getName());
+                jmxArguments.append("\n-Dorg.apache.camel.jmx.mbeanObjectDomainName=org.apache.camel");
+                jmxArguments.append("\n-Dorg.apache.camel.jmx.usePlatformMBeanServer=True");
+                jmxArguments.append("\n-Dcom.sun.management.jmxremote.ssl=False");
+                jmxArguments.append("\n-Dcom.sun.management.jmxremote.authenticate=False");
+                wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_VM_ARGUMENTS, jmxArguments.toString());
+            }
             config = wc.doSave();
         }
         return config;
+    }
+
+    private boolean isRouteDebugging() {
+        return ProcessorUtilities.isdebug() && ComponentCategory.CATEGORY_4_CAMEL.getName().equals(process.getComponentsType());
+    }
+    
+    private void setupEncryptionFilePathParameter(ILaunchConfigurationWorkingCopy wc) throws CoreException {
+        StringBuilder vmArguments = new StringBuilder();
+        vmArguments.append(wc.getAttribute(IJavaLaunchConfigurationConstants.ATTR_VM_ARGUMENTS, ""));
+        if (vmArguments.indexOf(StudioKeysFileCheck.ENCRYPTION_KEY_FILE_JVM_PARAM) < 0) {
+            if (vmArguments.length() > 0) {
+                vmArguments.append(" ");
+            }
+            String encryptionFilePath = System.getProperty(StudioKeysFileCheck.ENCRYPTION_KEY_FILE_SYS_PROP);
+            File encryptionFile = new File(encryptionFilePath);
+            if (encryptionFile.exists()) {
+                String encryptFilePath = TalendQuoteUtils.addQuotes(encryptionFile.toURI().getPath());
+                vmArguments.append(StudioKeysFileCheck.ENCRYPTION_KEY_FILE_JVM_PARAM + "=" + encryptFilePath);
+            }
+            wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_VM_ARGUMENTS, vmArguments.toString());
+        }
     }
 
     /*
@@ -1995,6 +2228,10 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
                 return;
             }
             Item item = property.getItem();
+            if (item == null) {
+                // may be a guess schema process
+                return;
+            }
             IFolder externalResourcesFolder = tProcessJvaProject.getExternalResourcesFolder();
             IFolder resourcesFolder = tProcessJvaProject.getResourcesFolder();
             String jobClassPackageFolder = JavaResourcesHelper.getJobClassPackageFolder(item, false);
@@ -2300,5 +2537,45 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
             }
         }
 
+    }
+
+    public static void removeLowerVersionArtifacts(List<ModuleNeeded> neededModules, Set<ModuleNeeded> highPriorityModuleNeeded) {
+        // remove lower version of same artifact
+        Set<ModuleNeeded> toBeDeletedSet = new HashSet<ModuleNeeded>();
+        Map<String, ModuleNeeded> keepModules = new HashMap<String, ModuleNeeded>();
+        Iterator<ModuleNeeded> moduleIter = neededModules.iterator();
+        while (moduleIter.hasNext()) {
+            ModuleNeeded module = moduleIter.next();
+            MavenArtifact artifact = MavenUrlHelper.parseMvnUrl(module.getMavenUri(), true);
+            if (artifact != null) {
+                String key = artifact.getGroupId() + ":" + artifact.getArtifactId();
+                if (artifact.getType() != null) {
+                    key = key + ":" + artifact.getType();
+                }
+                if (artifact.getClassifier() != null) {
+                    key = key + ":" + artifact.getClassifier();
+                }
+                ModuleNeeded checkedModule = keepModules.get(key);
+                if (checkedModule != null) {
+                    MavenArtifact checkedArtifact = MavenUrlHelper.parseMvnUrl(checkedModule.getMavenUri(), true);
+                    if (MavenArtifact.compareVersion(artifact.getVersion(), checkedArtifact.getVersion()) > 0) {
+                        keepModules.put(key, module);
+                        toBeDeletedSet.add(checkedModule);
+                    } else {
+                        keepModules.put(key, checkedModule);
+                        toBeDeletedSet.add(module);
+                    }
+                } else {
+                    keepModules.put(key, module);
+                }
+            }
+        }
+
+        // delete
+        for (ModuleNeeded mod : toBeDeletedSet) {
+            if (!highPriorityModuleNeeded.contains(mod)) {
+                neededModules.remove(mod);
+            }
+        }
     }
 }

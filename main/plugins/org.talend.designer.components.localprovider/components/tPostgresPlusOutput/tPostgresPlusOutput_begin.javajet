@@ -61,6 +61,10 @@ skeleton="../templates/db_output_bulk.skeleton"
     boolean useBatch = "true".equals(ElementParameterParser.getValue(node, "__USE_BATCH__"));
     String batchSize = ElementParameterParser.getValue(node, "__BATCH_SIZE__");
 
+    boolean useAlternateSchema = "true".equals(ElementParameterParser.getValue(node, "__USE_ALTERNATE_SCHEMA__"));
+	
+	String alternateSchema = ElementParameterParser.getValue(node, "__ALTERNATE_SCHEMA__");
+
     String rejectConnName = null;
     List<? extends IConnection> rejectConns = node.getOutgoingConnections("REJECT");
     if(rejectConns != null && rejectConns.size() > 0) {
@@ -89,9 +93,15 @@ if(columnList != null && columnList.size() > 0) {
 String dbschema_<%=cid%> = null;
 <%
 if(("true").equals(useExistingConn)) {
+	if(useAlternateSchema) {
+	%>
+	dbschema_<%=cid%> = <%=alternateSchema%>;
+	<%
+	} else {
 	%>
 	dbschema_<%=cid%> = (String)globalMap.get("schema_" + "<%=ElementParameterParser.getValue(node,"__CONNECTION__")%>");
 	<%
+	}
 } else {
 	%>
 	dbschema_<%=cid%> = <%=dbschema%>;
@@ -106,39 +116,8 @@ if(dbschema_<%=cid%> == null || dbschema_<%=cid%>.trim().length() == 0) {
 	tableName_<%=cid%> = dbschema_<%=cid%> + "\".\"" + <%=tableName%>;
 }
 
-<%
-if(("UPDATE").equals(dataAction) || ("INSERT_OR_UPDATE").equals(dataAction) || ("UPDATE_OR_INSERT").equals(dataAction)) {
-    int updateKeyCount = 0;
-    if(stmtStructure != null) {
-        for(Column column : stmtStructure) {
-            if(column.isUpdateKey()) {
-                updateKeyCount++;
-            }
-        }
-        %>
-        int updateKeyCount_<%=cid%> = <%=updateKeyCount%>;
-        if(updateKeyCount_<%=cid%> < 1) {
-            throw new RuntimeException("For update, Schema must have a key");
-        }
-        <%
-    }
-} else if(("DELETE").equals(dataAction)) {
-    int deleteKeyCount = 0;
-    if(stmtStructure != null) {
-        for(Column column : stmtStructure) {
-            if(column.isDeleteKey()) {
-                deleteKeyCount++;
-            }
-        }
-        %>
-        int deleteKeyCount_<%=cid%> = <%=deleteKeyCount%>;
-        if(deleteKeyCount_<%=cid%> < 1) {
-            throw new RuntimeException("For delete, Schema must have a key");
-        }
-        <%
-    }
-}
-%>
+<%@ include file="@{org.talend.designer.components.localprovider}/components/templates/DB/Output/CheckKeysForUpdateAndDelete.javajet"%>
+
 int nb_line_<%=cid%> = 0;
 int nb_line_update_<%=cid%> = 0;
 int nb_line_inserted_<%=cid%> = 0;

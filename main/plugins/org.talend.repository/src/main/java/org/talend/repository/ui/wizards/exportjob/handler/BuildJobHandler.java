@@ -53,14 +53,19 @@ import org.talend.core.model.process.ProcessUtils;
 import org.talend.core.model.properties.Item;
 import org.talend.core.model.properties.ProcessItem;
 import org.talend.core.model.properties.Project;
+import org.talend.core.model.properties.Property;
+import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.core.model.repository.IRepositoryViewObject;
+import org.talend.core.model.routines.CodesJarInfo;
 import org.talend.core.model.utils.JavaResourcesHelper;
 import org.talend.core.repository.constants.FileConstants;
+import org.talend.core.runtime.CoreRuntimePlugin;
 import org.talend.core.runtime.process.LastGenerationInfo;
 import org.talend.core.runtime.process.TalendProcessArgumentConstant;
 import org.talend.core.runtime.repository.build.BuildExportManager;
 import org.talend.core.service.ITransformService;
 import org.talend.core.ui.ITestContainerProviderService;
+import org.talend.designer.core.model.utils.emf.talendfile.ProcessType;
 import org.talend.designer.maven.model.TalendMavenConstants;
 import org.talend.designer.maven.tools.BuildCacheManager;
 import org.talend.designer.runprocess.IProcessor;
@@ -68,6 +73,7 @@ import org.talend.designer.runprocess.ProcessorUtilities;
 import org.talend.model.bridge.ReponsitoryContextBridge;
 import org.talend.repository.documentation.ExportFileResource;
 import org.talend.repository.local.ExportItemUtil;
+import org.talend.repository.model.IProxyRepositoryFactory;
 import org.talend.repository.model.RepositoryConstants;
 import org.talend.repository.ui.wizards.exportjob.scriptsmanager.JobScriptsManager.ExportChoice;
 import org.talend.utils.io.FilesUtils;
@@ -109,6 +115,8 @@ public class BuildJobHandler extends AbstractBuildJobHandler {
         argumentsMap.put(TalendProcessArgumentConstant.ARG_ENABLE_STATS, isOptionChoosed(ExportChoice.addStatistics));
         argumentsMap.put(TalendProcessArgumentConstant.ARG_ENABLE_TRACS, isOptionChoosed(ExportChoice.addTracs));
         argumentsMap.put(TalendProcessArgumentConstant.ARG_AVOID_BRANCH_NAME, isOptionChoosed(ExportChoice.avoidBranchName));
+        argumentsMap.put(TalendProcessArgumentConstant.ARG_CLEAR_PASSWORD_CONTEXT_PARAMETERS,
+        		isOptionChoosed(ExportChoice.clearPasswordContextParameters));
         Properties prop = (Properties) exportChoice.get(ExportChoice.properties);
         if (prop != null) { // add all properties for arugment map.
             Enumeration<Object> keys = prop.keys();
@@ -170,13 +178,23 @@ public class BuildJobHandler extends AbstractBuildJobHandler {
         }
 
         // generation option
-        int generationOption = (isOptionChoosed(ExportChoice.includeTestSource) || isOptionChoosed(ExportChoice.executeTests)) ? ProcessorUtilities.GENERATE_ALL_CHILDS
-                | ProcessorUtilities.GENERATE_TESTS
-                : ProcessorUtilities.GENERATE_ALL_CHILDS;
+        int generationOption = 0;
+        if (isOptionChoosed(ExportChoice.mainJobOnly)) {
+            generationOption = ProcessorUtilities.GENERATE_MAIN_ONLY;
+        } else {
+            generationOption = ProcessorUtilities.GENERATE_ALL_CHILDS;
+        }
+
+        if (isOptionChoosed(ExportChoice.includeTestSource) || isOptionChoosed(ExportChoice.executeTests)) {
+            generationOption = generationOption | ProcessorUtilities.GENERATE_TESTS;
+        }
+
         if (isOptionChoosed(ExportChoice.doNotCompileCode)) {
             generationOption = generationOption | ProcessorUtilities.GENERATE_WITHOUT_COMPILING;
         }
         argumentsMap.put(TalendProcessArgumentConstant.ARG_GENERATE_OPTION, generationOption);
+        argumentsMap.put(TalendProcessArgumentConstant.ARG_NEED_JETTY_SERVER, 
+        		ProcessUtils.hasJettyEndpoint((ProcessType)processItem.getProcess()));
 
         BuildCacheManager.getInstance().clearCurrentCache();
 
@@ -233,9 +251,17 @@ public class BuildJobHandler extends AbstractBuildJobHandler {
         items.add(processItem);
         ExportItemUtil exportItemUtil = new ExportItemUtil();
         if (withDependencies) {
+            IProxyRepositoryFactory factory = CoreRuntimePlugin.getInstance().getProxyRepositoryFactory();
             Collection<IRepositoryViewObject> allProcessDependencies = ProcessUtils.getAllProcessDependencies(items);
             for (IRepositoryViewObject repositoryObject : allProcessDependencies) {
                 items.add(repositoryObject.getProperty().getItem());
+                if (ERepositoryObjectType.getAllTypesOfCodesJar().contains(repositoryObject.getRepositoryObjectType())) {
+                    Property codeJarProperty = repositoryObject.getProperty();
+                    List<IRepositoryViewObject> allInnerCodes = factory.getAllInnerCodes(CodesJarInfo.create(codeJarProperty));
+                    if (allInnerCodes != null && !allInnerCodes.isEmpty()) {
+                        allInnerCodes.stream().forEach(codeObject -> items.add(codeObject.getProperty().getItem()));
+                    }
+                }
             }
         }
         if (isOptionChoosed(ExportChoice.executeTests)) {

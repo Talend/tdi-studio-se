@@ -24,6 +24,7 @@
         org.talend.core.model.process.ProcessUtils
         org.talend.core.model.components.IComponent
         org.talend.core.model.components.EComponentType
+        org.talend.core.model.utils.NodeUtil
     "
     class="Footer"
     skeleton="footer_java.skeleton"
@@ -108,6 +109,21 @@
         exist_tSQLDB = true;
     }
 
+
+    String[] tcompV0Components = new String[] {
+        "tAzureStorageConnection",
+        "tGoogleDriveConnection",
+        "tMarketoConnection",
+        "tSnowflakeConnection",
+        "tSalesforceConnection",
+        "tNetsuiteConnection",
+        "tMarkLogicConnection"
+    };
+    List<INode> tcompV0ComponentsList =  new ArrayList<INode>();
+    for (String tcompV0Component : tcompV0Components) {
+        tcompV0ComponentsList.addAll((List<INode>)process.getNodesOfType(tcompV0Component));
+    }
+
     boolean exist_tSCP = false;
     List<INode> scpComponentsList = (List<INode>)process.getNodesOfType("tSCPConnection");
     if (scpComponentsList.size() > 0) {
@@ -166,6 +182,8 @@
     if (salesforceComponentsList.size() > 0) {
         exist_tSalesforce = true;
     }
+
+    List<INode> snowflakeComponentsList = (List<INode>)process.getNodesOfType("tSnowflakeConnection");
 
     boolean exist_tSAP= false;
     List<INode> sapComponentsList = (List<INode>)process.getNodesOfType("tSAPConnection");
@@ -258,7 +276,7 @@
     }
 %>
 
-    private PropertiesWithType context_param = new PropertiesWithType();
+    protected PropertiesWithType context_param = new PropertiesWithType();
     public java.util.Map<String, Object> parentContextMap = new java.util.HashMap<String, Object>();
 
     public String status= "";
@@ -447,7 +465,7 @@
                 lastStr = "";
             }
         }
-        enableLogStash = "true".equalsIgnoreCase(System.getProperty("monitoring"));
+        enableLogStash = "true".equalsIgnoreCase(System.getProperty("audit.enabled"));
 
         <%if(isLog4jEnabled){%>
 	        if(!"".equals(log4jLevel)){
@@ -501,8 +519,63 @@
 				break;
 			}
 		}
-    	if(jobCatcherNode!=null) {
-    		String location = ElementParameterParser.getValue(jobCatcherNode, "__LOCATION__");
+		
+		boolean enableLogStash = !Boolean.getBoolean("deactivate_extended_component_log") && (jobCatcherNode!=null);
+		boolean enable_runtime_lineage_log = NodeUtil.isJobUsingRuntimeLineage(process) && (jobCatcherNode!=null);
+		if(enable_runtime_lineage_log) {
+		%>
+			java.util.Properties p_<%=jobCatcherNode.getUniqueName()%> = new java.util.Properties();
+			p_<%=jobCatcherNode.getUniqueName()%>.setProperty("root.logger", "runtime");
+			p_<%=jobCatcherNode.getUniqueName()%>.setProperty("encoding", "UTF-8");
+			p_<%=jobCatcherNode.getUniqueName()%>.setProperty("application.name", "Talend Studio");
+			p_<%=jobCatcherNode.getUniqueName()%>.setProperty("service.name", "Talend Studio Job");
+			p_<%=jobCatcherNode.getUniqueName()%>.setProperty("instance.name", "Talend Studio Job Instance");
+			p_<%=jobCatcherNode.getUniqueName()%>.setProperty("propagate.appender.exceptions", "none");
+			p_<%=jobCatcherNode.getUniqueName()%>.setProperty("log.appender", "file");
+			p_<%=jobCatcherNode.getUniqueName()%>.setProperty("appender.file.path", "runtime.json");
+			p_<%=jobCatcherNode.getUniqueName()%>.setProperty("appender.file.maxsize", "52428800");
+			p_<%=jobCatcherNode.getUniqueName()%>.setProperty("appender.file.maxbackup", "20");
+			p_<%=jobCatcherNode.getUniqueName()%>.setProperty("host", "false");
+			
+			final String runtime_dir_<%=jobCatcherNode.getUniqueName()%> = System.getProperty("runtime.lineage.outputpath");
+			final String runtime_path_<%=jobCatcherNode.getUniqueName()%> = System.getProperty("runtime.lineage.appender.file.path");
+			if(runtime_path_<%=jobCatcherNode.getUniqueName()%>==null || runtime_path_<%=jobCatcherNode.getUniqueName()%>.isEmpty()) {
+				if(runtime_dir_<%=jobCatcherNode.getUniqueName()%>!=null && !runtime_dir_<%=jobCatcherNode.getUniqueName()%>.isEmpty()) {
+					System.setProperty("runtime.lineage.appender.file.path", 
+						new StringBuilder().append(runtime_dir_<%=jobCatcherNode.getUniqueName()%>)
+						.append((runtime_dir_<%=jobCatcherNode.getUniqueName()%>.endsWith("/") || runtime_dir_<%=jobCatcherNode.getUniqueName()%>.endsWith("\\")) ? "" : java.io.File.separator)
+						.append(projectName)
+						.append(java.io.File.separatorChar)
+						.append(jobName)
+						.append(java.io.File.separatorChar)
+						.append(jobVersion)
+						.append(java.io.File.separatorChar)
+						.append("runtime_log_")
+						.append(new java.text.SimpleDateFormat("yyyyMMddHHmmss").format(new java.util.Date()))
+						.append(".json")
+						.toString()
+					);
+				}
+			}
+			
+			System.getProperties().stringPropertyNames().stream()
+					.filter(it -> it.startsWith("runtime.lineage.") && !"runtime.lineage.outputpath".equals(it))
+					.forEach(key -> p_<%=jobCatcherNode.getUniqueName()%>.setProperty(key.substring("runtime.lineage.".length()), System.getProperty(key)));
+			
+			<%if(isLog4j1Enabled) {%>
+			org.apache.log4j.Logger.getLogger(p_<%=jobCatcherNode.getUniqueName()%>.getProperty("root.logger")).setLevel(org.apache.log4j.Level.DEBUG);
+			<%}%>
+			
+			<%if(isLog4j2Enabled) {%>
+			org.apache.logging.log4j.core.config.Configurator.setLevel(p_<%=jobCatcherNode.getUniqueName()%>.getProperty("root.logger"), org.apache.logging.log4j.Level.DEBUG);
+			<%}%>
+			
+			runtime_lineage_logger_<%=jobCatcherNode.getUniqueName()%> = org.talend.job.audit.JobEventAuditLoggerFactory.createJobAuditLogger(p_<%=jobCatcherNode.getUniqueName()%>);
+		<%
+		}
+		
+		if(enableLogStash) {
+			String location = ElementParameterParser.getValue(jobCatcherNode, "__LOCATION__");
 		%>
 			if(enableLogStash) {
 				java.util.Properties properties_<%=jobCatcherNode.getUniqueName()%> = new java.util.Properties();
@@ -519,25 +592,21 @@
 				properties_<%=jobCatcherNode.getUniqueName()%>.setProperty("host", "false");
 
 				System.getProperties().stringPropertyNames().stream()
-					.filter(it -> it.startsWith("monitoring.audit.logger.properties."))
-					.forEach(key -> properties_<%=jobCatcherNode.getUniqueName()%>.setProperty(key.substring("monitoring.audit.logger.properties.".length()), System.getProperty(key)));
+					.filter(it -> it.startsWith("audit.logger."))
+					.forEach(key -> properties_<%=jobCatcherNode.getUniqueName()%>.setProperty(key.substring("audit.logger.".length()), System.getProperty(key)));
 
-				<%if(isLog4jEnabled) {%>
-					<%if(isLog4j1Enabled) {%>
-					org.apache.log4j.Logger.getLogger("audit").setLevel(org.apache.log4j.Level.DEBUG);
-					<%}%>
-					
-					<%if(isLog4j2Enabled) {%>
-					org.apache.logging.log4j.core.config.Configurator.setLevel("audit", org.apache.logging.log4j.Level.DEBUG);
-					<%}%>
-				<%} else {%>
-					org.apache.log4j.Logger.getLogger("audit").setLevel(org.apache.log4j.Level.DEBUG);
+				<%if(isLog4j1Enabled) {%>
+				org.apache.log4j.Logger.getLogger(properties_<%=jobCatcherNode.getUniqueName()%>.getProperty("root.logger")).setLevel(org.apache.log4j.Level.DEBUG);
+				<%}%>
+				
+				<%if(isLog4j2Enabled) {%>
+				org.apache.logging.log4j.core.config.Configurator.setLevel(properties_<%=jobCatcherNode.getUniqueName()%>.getProperty("root.logger"), org.apache.logging.log4j.Level.DEBUG);
 				<%}%>
 				auditLogger_<%=jobCatcherNode.getUniqueName()%> = org.talend.job.audit.JobEventAuditLoggerFactory.createJobAuditLogger(properties_<%=jobCatcherNode.getUniqueName()%>);
 			}
 		<%
 		}
-    	%>
+		%>
 
         if(clientHost == null) {
             clientHost = defaultClientHost;
@@ -573,6 +642,16 @@
         }
 %>
 
+        boolean inOSGi = routines.system.BundleUtils.inOSGi();
+
+        if (inOSGi) {
+            java.util.Dictionary<String, Object> jobProperties = routines.system.BundleUtils.getJobProperties(jobName);
+
+            if (jobProperties != null) {
+                contextStr = (String)jobProperties.get("context");
+            }
+        }
+
         try {
             //call job/subjob with an existing context, like: --context=production. if without this parameter, there will use the default context instead.
             java.io.InputStream inContext = <%=className%>.class.getClassLoader().getResourceAsStream("<%=jobClassPackageFolder%>/contexts/" + contextStr + ".properties");
@@ -580,13 +659,15 @@
                 inContext = <%=className%>.class.getClassLoader().getResourceAsStream("config/contexts/" + contextStr + ".properties");
             }
             if (inContext != null) {
-                //defaultProps is in order to keep the original context value
-                if(context != null && context.isEmpty()) {
+                try {
+                    //defaultProps is in order to keep the original context value
+                    if(context != null && context.isEmpty()) {
 	                defaultProps.load(inContext);
 	                context = new ContextProperties(defaultProps);
+                    }
+                } finally {
+                    inContext.close();
                 }
-                
-                inContext.close();
             } else if (!isDefaultContext) {
                 //print info and job continue to run, for case: context_param is not empty.
                 System.err.println("Could not find the context " + contextStr);
@@ -623,7 +704,16 @@
                         } //endIf
 %>
                         context.setContextType("<%=ctxParam.getName()%>", "<%=ctxParam.getType()%>");
+                        if(context.getStringValue("<%=ctxParam.getName()%>") == null) {
+                            context.<%=ctxParam.getName()%> = null;
+                        } else {
+                        <%//}B1 block%>
 <%
+                        String typeToGenerate ="String";
+                        if( !(ctxParam.getType().equals("id_File") || ctxParam.getType().equals("id_Directory") ||ctxParam.getType().equals("id_List Of Value"))) {
+                           typeToGenerate=JavaTypesManager.getTypeToGenerate(ctxParam.getType(),true);
+                        }
+                        
                         if (ctxParam.getType().equals("id_Password")) {
 %>
                             String pwd_<%=ctxParam.getName()%>_value = context.getProperty("<%=ctxParam.getName()%>");
@@ -641,13 +731,7 @@
                                 }
                             }
 <%
-                            continue;
-                        }
-                        String typeToGenerate ="String";
-                        if( !(ctxParam.getType().equals("id_File") || ctxParam.getType().equals("id_Directory") ||ctxParam.getType().equals("id_List Of Value"))) {
-                           typeToGenerate=JavaTypesManager.getTypeToGenerate(ctxParam.getType(),true);
-                        }
-                        if(typeToGenerate.equals("java.util.Date")) {
+                        } else if(typeToGenerate.equals("java.util.Date")) {
 %>
                         try{
                             String context_<%=ctxParam.getName()%>_value = context.getProperty("<%=ctxParam.getName()%>");
@@ -706,6 +790,10 @@
                             }
 <%
                         }
+%>
+                        <%//{B1 block%>
+                        }
+<%
                     }
 %>
                 } <%/*close last method*/%>
@@ -876,20 +964,6 @@ if(execStat) {
         }
 %>
 
-<%if (hadoopClusterIds.size() > 1) {%>
-    System.err.println("Only one hadoop configuration is allowed in one job!");
-<%}%>
-
-<%
-// run tHadoopConfManager component if there is it.
- if(!hadoopConfNodes.isEmpty()) {
-    INode hadoopConfNode = hadoopConfNodes.get(0);
-%>
-<%=createCallProcess(hadoopConfNode, className, false) %>
-<%
- }
-%>
-
 <%
 //2. load implicit contextload
  if(implicit_Context != null) {
@@ -912,6 +986,21 @@ this.globalResumeTicket = true;//to run tPreJob
  }
 %>
 
+<%if (hadoopClusterIds.size() > 1) {%>
+    System.err.println("Only one hadoop configuration is allowed in one job!");
+<%}%>
+
+<%
+// run tHadoopConfManager component if there is it.
+ if(!hadoopConfNodes.isEmpty()) {
+    INode hadoopConfNode = hadoopConfNodes.get(0);
+    if (hadoopConfNode.isStart()) {
+%>
+<%=createCallProcess(hadoopConfNode, className, false) %>
+<%
+ }
+ }
+%>
 
 <%
         //4. flush the begin msg
@@ -925,7 +1014,7 @@ this.globalResumeTicket = true;//to run tPreJob
 <%
         }
         
-        if(jobCatcherNode!=null) {
+        if(enableLogStash) {
 %>
 		if(enableLogStash) {
 	        <%=jobCatcherNode.getUniqueName() %>.addJobStartMessage();
@@ -1078,7 +1167,7 @@ this.globalResumeTicket = true;//to run tPostJob
 <%
     }
     
-    if(jobCatcherNode!=null) {
+    if(enableLogStash) {
 %>
 		if(enableLogStash) {
 	        <%=jobCatcherNode.getUniqueName() %>.addJobEndMessage(startTime, end, status);
@@ -1117,6 +1206,24 @@ if (execStat) {
     }
 %>
     int returnCode = 0;
+
+<%
+    if (isRunInMultiThread) {
+%>
+        Integer localErrorCode = (Integer)(((java.util.Map)threadLocal.get()).get("errorCode"));
+        String localStatus = (String)(((java.util.Map)threadLocal.get()).get("status"));
+        if (localErrorCode != null) {
+            if (errorCode == null || localErrorCode.compareTo(errorCode) > 0) {
+                   errorCode = localErrorCode;
+            }
+        }
+        if (localStatus != null && !status.equals("failure")){
+            status = localStatus;
+        }
+<%
+    }
+%>
+
     if(errorCode == null) {
          returnCode = status != null && status.equals("failure") ? 1 : 0;
     } else {
@@ -1324,13 +1431,11 @@ if (execStat) {
             } else {
                 type = "ftp";
             }
-            if ("ftp".equals(type)) { %>
-                ((com.enterprisedt.net.ftp.FTPClient) obj_conn).quit();
-        <%} else if ("sftp".equals(type)) { %>
+            if ("sftp".equals(type)) { %>
                 ((com.jcraft.jsch.ChannelSftp) obj_conn).quit();
-        <%} else { %>
-                ((org.apache.commons.net.ftp.FTPSClient) obj_conn).disconnect();
-        <%}%>
+            <%} else { %>
+                ((org.apache.commons.net.ftp.FTPClient) obj_conn).disconnect();
+            <%}%>
             }
 <%  } %>
         } catch (java.lang.Exception e) {
@@ -1420,11 +1525,24 @@ if (execStat) {
     private void closeGSConnections() {
         try {
 <%    for (INode gsComponent : gsComponentsList) { %>
-		org.jets3t.service.impl.rest.httpclient.GoogleStorageService service_<%=gsComponent.getUniqueName()%> =
-				(org.jets3t.service.impl.rest.httpclient.GoogleStorageService)globalMap.get("service_<%=gsComponent.getUniqueName()%>");
-		if(service_<%=gsComponent.getUniqueName()%> !=null){
-				service_<%=gsComponent.getUniqueName()%>.shutdown();
-	    }
+
+    <%
+    String authType = ElementParameterParser.getValue(gsComponent, "__AUTH_TYPE__");
+    if (authType.equals("USER_ACCOUNT_HMAC")){
+    %>
+
+    org.jets3t.service.impl.rest.httpclient.GoogleStorageService service_<%=gsComponent.getUniqueName()%> =
+            (org.jets3t.service.impl.rest.httpclient.GoogleStorageService)globalMap.get("service_<%=gsComponent.getUniqueName()%>");
+    if(service_<%=gsComponent.getUniqueName()%> !=null){
+            service_<%=gsComponent.getUniqueName()%>.shutdown();
+    }
+    <%
+    } else if (authType.equals("SERVICE_ACCOUNT")) {
+    %>
+        //Don't need to close storage when use google storage api
+    <%
+    }
+    %>
 
 <%    } %>
         } catch (java.lang.Exception e) {
@@ -1505,12 +1623,14 @@ if (execStat) {
 <%      } %>
 <%      for (INode existNode : existComponentsList) { %>
             connections.put("col_<%=existNode.getUniqueName()%>", globalMap.get("col_<%=existNode.getUniqueName()%>"));
-<%      } %>
+<%      }
 
-<%      for (INode salesforceNode : salesforceComponentsList) { %>
-            connections.put("conn_<%=salesforceNode.getUniqueName()%>", globalMap.get("conn_<%=salesforceNode.getUniqueName()%>"));
-<%      } %>
-<%      for (INode sapNode : sapComponentsList) { %>
+        for (INode tcompV0ConnectionNode : tcompV0ComponentsList) { %>
+            connections.put("<%=tcompV0ConnectionNode.getUniqueName()%>_connection", globalMap.get("<%=tcompV0ConnectionNode.getUniqueName()%>_connection"));
+            connections.put("<%=tcompV0ConnectionNode.getUniqueName()%>_COMPONENT_RUNTIME_PROPERTIES", globalMap.get("<%=tcompV0ConnectionNode.getUniqueName()%>_COMPONENT_RUNTIME_PROPERTIES"));
+<%      }
+
+        for (INode sapNode : sapComponentsList) { %>
             connections.put("conn_<%=sapNode.getUniqueName()%>", globalMap.get("conn_<%=sapNode.getUniqueName()%>"));
 <%      } %>
 <%      for (INode gsNode : gsComponentsList) { %>
@@ -1574,7 +1694,7 @@ if (execStat) {
             }
         } else if (arg.startsWith("--log4jLevel=")) {
             log4jLevel = arg.substring(13);
-		} else if (arg.startsWith("--monitoring") && arg.contains("=")) {//for trunjob call
+		} else if (arg.startsWith("--audit.enabled") && arg.contains("=")) {//for trunjob call
 		    final int equal = arg.indexOf('=');
 			final String key = arg.substring("--".length(), equal);
 			System.setProperty(key, arg.substring(equal + 1));

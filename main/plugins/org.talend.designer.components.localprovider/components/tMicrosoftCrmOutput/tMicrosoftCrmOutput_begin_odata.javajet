@@ -11,6 +11,14 @@
 	
 	String timeout = ElementParameterParser.getValue(node, "__TIMEOUT__");
 	boolean reuseHttpClient = ("true").equals(ElementParameterParser.getValue(node,"__REUSE_HTTP_CLIENT__"));
+
+	String redirectUrl = ElementParameterParser.getValue(node, "__REDIRECT_URL__");
+	String premiseAuth = ElementParameterParser.getValue(node, "__PREMISE_AUTH__");
+
+        boolean force_oauth_resource = ("true").equals(ElementParameterParser.getValue(node, "__FORCE_OAUTH_RESOURCE__"));
+        String oauth_resource = ElementParameterParser.getValue(node, "__OAUTH_RESOURCE__");
+        oauth_resource = force_oauth_resource ? oauth_resource : null;
+
 	%>
 	int nb_line_<%=cid%> = 0;
 	<%
@@ -63,10 +71,18 @@
 
 	<%
     if(isMsCrm2016OnPremise) {
+       if("NTLM".equals(premiseAuth)){
     %>
     org.talend.ms.crm.odata.ClientConfiguration clientConfig_<%=cid%> = org.talend.ms.crm.odata.ClientConfigurationFactory
             .buildNtlmClientConfiguration(<%=userName%>, decryptedPassword_<%=cid%>, <%=host%>, <%=domain%>);
     <%
+       }
+       else {
+    %>
+    org.talend.ms.crm.odata.ClientConfiguration clientConfig_<%=cid%> = org.talend.ms.crm.odata.ClientConfigurationFactory
+            .buildOAuthPremiseClientConfiguration(<%=userName%>, decryptedPassword_<%=cid%>, <%=authority%>, <%=serviceURL%>,<%=applicationId%>, <%=redirectUrl%>, <%=oauth_resource%>);
+    <%
+       }
     } else {
     	if("NATIVE".equals(onlineRegisterApp)){
 		%>

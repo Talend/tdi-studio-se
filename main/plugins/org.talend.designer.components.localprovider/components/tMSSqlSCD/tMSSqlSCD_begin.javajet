@@ -72,6 +72,7 @@ if(inputSchema != null && inputSchema.size() > 0 && outputSchema != null && outp
     List<Column> insertionColumnList = getInsertionColumnList(scdConfiger);
     String surrogateKeyField = scdConfiger.getSurrogateKeyField();
     boolean dieOnError = "true".equals(ElementParameterParser.getValue(node, "__DIE_ON_ERROR__"));
+    boolean useActiveDirectoryAuth = "true".equals(ElementParameterParser.getValue(node, "__ACTIVE_DIR_AUTH__"));
     
     int schemaOptNum=100;
 	String schemaOptNumStr=ElementParameterParser.getValue(node, "__SCHEMA_OPT_NUM__");

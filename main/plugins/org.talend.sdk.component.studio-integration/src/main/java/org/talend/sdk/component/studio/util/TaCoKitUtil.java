@@ -12,33 +12,65 @@
  */
 package org.talend.sdk.component.studio.util;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.Properties;
+import java.util.Set;
+import java.util.Stack;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
+import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.emf.common.util.EList;
+import org.eclipse.m2e.core.MavenPlugin;
+import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.utils.data.container.Container;
+import org.talend.commons.utils.system.EnvironmentUtils;
+import org.talend.core.model.components.ComponentCategory;
+import org.talend.core.model.components.IComponent;
 import org.talend.core.model.general.Project;
 import org.talend.core.model.properties.ConnectionItem;
+import org.talend.core.model.properties.Item;
+import org.talend.core.model.properties.ProcessItem;
 import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.core.model.repository.IRepositoryViewObject;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
+import org.talend.core.runtime.maven.MavenArtifact;
 import org.talend.core.runtime.maven.MavenConstants;
+import org.talend.core.runtime.maven.MavenUrlHelper;
+import org.talend.core.ui.component.ComponentsFactoryProvider;
+import org.talend.designer.core.model.utils.emf.talendfile.NodeType;
+import org.talend.designer.core.utils.UnifiedComponentUtil;
 import org.talend.repository.ProjectManager;
 import org.talend.sdk.component.server.front.model.ComponentIndex;
 import org.talend.sdk.component.server.front.model.ConfigTypeNode;
+import org.talend.sdk.component.server.front.model.ConfigTypeNodes;
+import org.talend.sdk.component.studio.ComponentModel;
 import org.talend.sdk.component.studio.Lookups;
 import org.talend.sdk.component.studio.metadata.TaCoKitCache;
 import org.talend.sdk.component.studio.metadata.WizardRegistry;
 import org.talend.sdk.component.studio.metadata.model.TaCoKitConfigurationModel;
+import org.talend.sdk.component.studio.model.parameter.PropertyDefinitionDecorator;
+import org.talend.sdk.component.studio.model.parameter.PropertyNode;
 import org.talend.updates.runtime.utils.PathUtils;
+import org.talend.utils.io.FilesUtils;
 
 /**
  * DOC cmeng class global comment. Detailled comment
@@ -49,8 +81,10 @@ public class TaCoKitUtil {
      * Get ConnectionItem from specified project
      *
      * @param project {@link Project} only search from the given project
-     * @param itemId item id
+     * @param itemId  item id
+     *
      * @return stored item of the given parameters, or null
+     *
      * @throws Exception unexpected exception occured during searching
      */
     public static ConnectionItem getLatestTaCoKitConnectionItem(final Project project, final String itemId)
@@ -67,7 +101,9 @@ public class TaCoKitUtil {
      * Get ConnectionItem from main project or it's reference project
      *
      * @param itemId item id
+     *
      * @return stored item of the given parameters, or null
+     *
      * @throws Exception unexpected exception occured during searching
      */
     public static ConnectionItem getLatestTaCoKitConnectionItem(final String itemId) throws Exception {
@@ -170,7 +206,7 @@ public class TaCoKitUtil {
         ERepositoryObjectType eType = ERepositoryObjectType.valueOf(type);
         if (eType == null) {
             eType = new WizardRegistry().createRepositoryObjectType(type, label, alias, folderPathStr, 1,
-                    new String[] { ERepositoryObjectType.PROD_DI });
+                    new String[]{ ERepositoryObjectType.PROD_DI });
             TaCoKitCache taCoKitCache = Lookups.taCoKitCache();
             ConfigTypeNode parentTypeNode = taCoKitCache.getConfigTypeNodeMap().get(configTypeNode.getParentId());
             if (parentTypeNode == null) {
@@ -217,8 +253,9 @@ public class TaCoKitUtil {
     /**
      * Method to create component name from component's family name and component's name itself.
      *
-     * @param familyName component's family name
+     * @param familyName    component's family name
      * @param componentName component's name
+     *
      * @return full component name
      */
     public static String getFullComponentName(final String familyName, final String componentName) {
@@ -306,6 +343,57 @@ public class TaCoKitUtil {
         return null;
     }
 
+    public static PropertyNode getSamePropertyNode(PropertyNode propertyNode, ConfigTypeNode configTypeNode) throws Exception {
+        return getSamePropertyNode(new Stack<>(), getRootPropertyNode(propertyNode), configTypeNode);
+    }
+
+    private static PropertyNode getSamePropertyNode(Stack<Object> visited, PropertyNode propertyNode,
+                                                    ConfigTypeNode configTypeNode) {
+        if (propertyNode == null || visited.contains(propertyNode)) {
+            return null;
+        }
+        PropertyDefinitionDecorator property = propertyNode.getProperty();
+        if (property == null) {
+            return null;
+        }
+        if (StringUtils.equals(property.getConfigurationType(), configTypeNode.getConfigurationType())
+                && StringUtils.equals(property.getConfigurationTypeName(), configTypeNode.getName())) {
+            return propertyNode;
+        }
+        try {
+            visited.push(propertyNode);
+            List<PropertyNode> children = propertyNode.getChildren();
+            if (children != null) {
+                for (PropertyNode c : children) {
+                    PropertyNode pn = getSamePropertyNode(visited, c, configTypeNode);
+                    if (pn != null) {
+                        return pn;
+                    }
+                }
+            }
+
+            return null;
+        } finally {
+            visited.pop();
+        }
+    }
+
+    public static PropertyNode getRootPropertyNode(PropertyNode propertyNode) throws Exception {
+        Set<Object> visited = new HashSet<>();
+        PropertyNode node = propertyNode;
+        PropertyNode parentNode = node;
+        while (node != null) {
+            if (visited.contains(node)) {
+                throw new IllegalArgumentException("dead loop detected from input parameter");
+            } else {
+                visited.add(node);
+            }
+            parentNode = node;
+            node = node.getParent();
+        }
+        return parentNode;
+    }
+
     public static boolean isTaCoKitComponentMadeByTalend(final ComponentIndex index) {
         if (index != null) {
             String location = index.getId().getPluginLocation().trim();
@@ -314,6 +402,170 @@ public class TaCoKitUtil {
             }
         }
         return false;
+    }
+
+    public static int getConfigTypeVersion(final PropertyDefinitionDecorator p, final ConfigTypeNodes configTypeNodes,
+                                           final String familyId) {
+        final String type = p.getMetadata().get("configurationtype::type");
+        final String name = p.getMetadata().get("configurationtype::name");
+        return configTypeNodes.getNodes().values().stream()
+                .filter(c -> c.getConfigurationType() != null && c.getName() != null)
+                .filter(c -> c.getConfigurationType().equals(type) && c.getName().equals(name))
+                .filter(c -> familyId.equals(getPropertyFamilyId(c, configTypeNodes))).findFirst()
+                .map(ConfigTypeNode::getVersion)
+                .orElse(-1);
+    }
+
+    public static String getPropertyFamilyId(final ConfigTypeNode it, final ConfigTypeNodes nodes) {
+        if (it.getParentId() == null) {
+            return null;
+        }
+        String parent = it.getParentId();
+        while (nodes.getNodes().get(parent) != null && nodes.getNodes().get(parent).getParentId() != null) {
+            parent = nodes.getNodes().get(parent).getParentId();
+        }
+        return parent;
+    }
+
+    /**
+     * Find the maven repository path.
+     *
+     * @return the configured m2 repository path
+     */
+    public static java.nio.file.Path findM2Path() {
+        return Optional.ofNullable(System.getProperty("talend.component.manager.m2.repository"))
+                .map(Paths::get)
+                .orElseGet(() -> {
+                    // check if we are in the studio process if so just grab the the studio config
+                    final String m2Repo = System.getProperty("maven.repository");
+                    if (!"global".equals(m2Repo)) {
+                        final String m2StudioRepo = EnvironmentUtils.isWindowsSystem()
+                                ? System.getProperty("osgi.configuration.area", "").replaceAll("^file:/", "")
+                                : System.getProperty("osgi.configuration.area", "").replaceAll("^file:", "");
+                        final java.nio.file.Path localM2 = Paths.get(m2StudioRepo, ".m2/repository");
+                        if (Files.exists(localM2)) {
+                            return localM2;
+                        }
+                    }
+                    // defaults to user m2
+                    return Paths.get(System.getProperty("user.home", "")).resolve(".m2/repository");
+                });
+    }
+
+    /**
+     * Translates a GAV (ie com.tutorial:tutorial-component:0.0.1) to a maven repository path (ie com/tutorial/tutorial-component/0.0.1/tutorial-component-0.0.1.jar).
+     *
+     * @param gav GroupId ArtifactId Version. The GAV may have the following forms:
+     *            com.tutorial:tutorial-component:0.0.1
+     *            or
+     *            com.tutorial:tutorial-component:jar:0.0.1:compile
+     *
+     * @return a translated maven path
+     */
+    public static String gavToMvnPath(String gav) {
+        final String jarPathFmt = "%s/%s/%s/%s-%s.jar";
+        final String[] segments = gav.split(":");
+        if (segments.length < 3) {
+            throw new IllegalArgumentException("Bad GAV given!"); // TODO improve message
+        }
+        String group = segments[0].replaceAll("\\.", "/");
+        String artifact = segments[1];
+        String version = "";
+        if (segments.length == 3) {
+            version = segments[2];
+        } else {
+            version = segments[3];
+        }
+        return String.format(jarPathFmt, group, artifact, version, artifact, version);
+    }
+
+
+    /**
+     * Get all components defined in <code>item</code>.
+     *
+     * @param item the currently processed <code>ProcessItem</code> during job build export
+     *
+     * @return a non-null stream of {@link IComponent}
+     */
+    public static Stream<IComponent> getJobComponents(final Item item) {
+        final EList<?> nodes = ProcessItem.class.cast(item).getProcess().getNode();
+        final String DI = ComponentCategory.CATEGORY_4_DI.getName();
+        return nodes.stream().map(node -> {
+            final String componentName = ((NodeType) node).getComponentName();
+            IComponent component = ComponentsFactoryProvider.getInstance().get(componentName, DI);
+            if (component == null) {
+                component = UnifiedComponentUtil.getDelegateComponent(componentName, DI);
+            }
+            return component;
+        }).filter(Objects::nonNull);
+    }
+
+    /**
+     * Get component-runtime components from <code>components</code>.
+     *
+     * @param components <code>{@link IComponent}</code>
+     *
+     * @return a non-null stream of {@link ComponentModel}
+     */
+    public static Stream<ComponentModel> getTaCoKitComponents(final Stream<IComponent> components) {
+        return components
+                .filter(ComponentModel.class::isInstance)
+                .map(ComponentModel.class::cast);
+    }
+
+    /**
+     * Check if <code>components</code> holds component-runtime components.
+     *
+     * @param components <code>IComponent</code>
+     *
+     * @return true if item has some component-runtime components
+     */
+    public static boolean hasTaCoKitComponents(final Stream<IComponent> components) {
+        return components.anyMatch(ComponentModel.class::isInstance);
+    }
+
+    public static void checkM2TacokitStatus() throws Exception {
+        File studioConfigFile = PathUtils.getStudioConfigFile();
+        Properties configuration = PathUtils.readProperties(studioConfigFile);
+        String repositoryType = configuration.getProperty("maven.repository", ""); //$NON-NLS-1$ //$NON-NLS-2$
+        String m2RootFromContext = System.getProperty("maven.local.repository"); //$NON-NLS-1$
+        if (StringUtils.isBlank(m2RootFromContext) || !"global".equals(repositoryType)) {
+            return;
+        }
+        // zero-install CI mode
+        List<GAV> cars = TaCoKitUtil.getInstalledComponents(new NullProgressMonitor());
+        java.nio.file.Path basePath = new File(MavenPlugin.getMaven().getLocalRepositoryPath()).toPath();
+        java.nio.file.Path defaultBasePath = new File(System.getProperty("user.home"), ".m2/repository/").toPath(); //$NON-NLS-1$ //$NON-NLS-2$
+        cars.stream().map(c -> {
+            String mvnUrl = MavenUrlHelper.generateMvnUrl(c.getGroupId(), c.getArtifactId(), c.getVersion(), c.getType(),
+                    c.getClassifier());
+            MavenArtifact mavenArtifact = MavenUrlHelper.parseMvnUrl(mvnUrl);
+            return MavenUrlHelper.getArtifactPath(mavenArtifact);
+        }).forEach(s -> {
+            File target = basePath.resolve(s).toFile();
+            if (!target.exists()) {
+                copyJar(defaultBasePath, basePath, s);
+                try (JarFile jar = new JarFile(target)) {
+                    JarEntry entry = jar.getJarEntry("TALEND-INF/dependencies.txt"); //$NON-NLS-1$
+                    try (BufferedReader reader = new BufferedReader(new InputStreamReader(jar.getInputStream(entry)))) {
+                        reader.lines().map(l -> gavToMvnPath(l)).forEach(dep -> copyJar(defaultBasePath, basePath, dep));
+                    }
+                } catch (IOException e) {
+                    throw new IllegalArgumentException("Failed to read jar:", e); //$NON-NLS-1$
+                }
+            }
+        });
+    }
+
+    private static void copyJar(java.nio.file.Path sourceBasePath, java.nio.file.Path targetBasePath, String mvnPath) {
+        try {
+            File source = sourceBasePath.resolve(mvnPath).toFile();
+            if (source.exists()) {
+                FilesUtils.copyFile(source, targetBasePath.resolve(mvnPath).toFile());
+            }
+        } catch (IOException e) {
+            throw new IllegalArgumentException("Failed to re-deploy jar:", e);
+        }
     }
 
     public static class GAV {

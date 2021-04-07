@@ -10,10 +10,10 @@
         <relativePath>@ProjectRelativePath@</relativePath>
     </parent>
 	<groupId>@JobGroupId@</groupId>
-	<artifactId>@JobArtifactId@-bundle</artifactId>
+	<artifactId>@JobArtifactId@</artifactId>
 	<version>@JobVersion@</version>
 	<packaging>bundle</packaging>
-    <name>@ProjectName@ @JobName@-@JobVersion@ (@TalendJobVersion@,@JobType@)</name>
+    <name>@ProjectName@ @JobName@-${project.version} (@TalendJobVersion@,@JobType@)</name>
 	
     <properties>
 		<item.name>@ItemName@</item.name>
@@ -37,6 +37,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.distribution-management.repository.id>@ProjectDistributionManagementRepositoryId@</project.distribution-management.repository.id>
         <project.distribution-management.repository.url>@ProjectDistributionManagementRepositoryUrl@</project.distribution-management.repository.url>
+        <docker.skip>true</docker.skip>
 	</properties>
 
 	<dependencies>
@@ -56,6 +57,16 @@
 						<artifactId>plexus-utils</artifactId>
 						<version>3.0.24</version>
 					</dependency>
+					<dependency>
+				      <groupId>org.apache.commons</groupId>
+				      <artifactId>commons-lang3</artifactId>
+				      <version>3.8.1</version>
+				    </dependency>
+					<dependency>
+						<groupId>commons-collections</groupId>
+						<artifactId>commons-collections</artifactId>
+						<version>3.2.2</version>
+					</dependency>
 				</dependencies>
 				<configuration>
 					<archive>
@@ -70,8 +81,39 @@
 						<Import-Package>${bundle.config.import.package}, *;resolution:=optional</Import-Package>
 						<Bundle-ClassPath>., {maven-dependencies}</Bundle-ClassPath>
 					</instructions>
+					<finalName>${talend.job.finalName}</finalName>
 				</configuration>
 			</plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <dependencies>
+						<dependency>
+			              	<groupId>commons-codec</groupId>
+							<artifactId>commons-codec</artifactId>
+							<version>1.15</version>
+			            </dependency>
+					</dependencies>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                        <configuration>
+                            <descriptors>
+                                <descriptor>${basedir}/src/main/assemblies/assembly.xml</descriptor>
+                            </descriptors>
+                            <tarLongFileMode>gnu</tarLongFileMode>
+                            <appendAssemblyId>false</appendAssemblyId>
+                            <finalName>${talend.job.name}-bundle-${project.version}</finalName>
+							<archive>
+								<manifestFile>${current.bundle.resources.dir}/META-INF/MANIFEST.MF</manifestFile>
+							</archive>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
 		</plugins>
 	</build>
     <profiles>
@@ -85,6 +127,13 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-assembly-plugin</artifactId>
+                        <dependencies>
+						<dependency>
+			              	<groupId>commons-codec</groupId>
+							<artifactId>commons-codec</artifactId>
+							<version>1.15</version>
+			            </dependency>
+					</dependencies>
                         <executions>
                             <execution>
                                 <phase>package</phase>
@@ -98,6 +147,9 @@
                                     <tarLongFileMode>gnu</tarLongFileMode>
                                     <appendAssemblyId>false</appendAssemblyId>
                                     <finalName>${talend.job.name}-bundle-${project.version}</finalName>
+									<archive>
+										<manifestFile>${current.bundle.resources.dir}/META-INF/MANIFEST.MF</manifestFile>
+									</archive>
                                 </configuration>
                             </execution>
                         </executions>
@@ -254,41 +306,40 @@
                 <microservice.running.configs.dir>${current.resources.dir}/</microservice.running.configs.dir>
             </properties>
         </profile>
-        <profile>
-          <id>deploy-nexus</id>
-          <activation>
-            <property>
-              <name>altDeploymentRepository</name>
-            </property>
-          </activation>
-          <build>
-            <plugins>
-                <plugin>
-                    <artifactId>maven-deploy-plugin</artifactId>
-                    <version>2.7</version>
-                    <executions>
-                        <execution>
-                            <id>deploy-file</id>
-                            <phase>deploy</phase>
-                            <goals>
-                                <goal>deploy-file</goal>
-                            </goals>
-                            <configuration>
-                                <file>${basedir}/src/main/resources/feature/feature.xml</file>
-                                <groupId>${project.groupId}</groupId>
-                                <artifactId>${talend.job.name}-feature</artifactId>
-                                <version>${project.version}</version>
-                                <classifier>features</classifier>
-                                <packaging>xml</packaging>
-                                <repositoryId>${project.distribution-management.repository.id}</repositoryId>
-                                <url>${project.distribution-management.repository.url}</url>
-                            </configuration>
-                        </execution>
-                    </executions>
-                </plugin>
-            </plugins>
-          </build>
-        </profile>
-            
+		<profile>
+		  <id>deploy-nexus</id>
+		  <activation>
+		    <property>
+		      <name>altDeploymentRepository</name>
+		    </property>
+		  </activation>
+		  <build>
+		    <plugins>
+				<plugin>
+					<groupId>org.talend.ci</groupId>
+					<artifactId>osgihelper-maven-plugin</artifactId>
+					<dependencies>
+						<dependency>
+							<groupId>commons-codec</groupId>
+							<artifactId>commons-codec</artifactId>
+							<version>1.15</version>
+						</dependency>
+					</dependencies>
+					<executions>
+					  <execution>
+						<id>osgi-helper</id>
+						<phase>generate-sources</phase>
+						<goals>
+						  <goal>generate</goal>
+						</goals>
+						<configuration>
+						  <featuresFile>${current.bundle.resources.dir}/feature.xml</featuresFile>
+						</configuration>
+					  </execution>
+					</executions>
+				 </plugin>
+		    </plugins>
+		  </build>
+		</profile>
     </profiles>
 </project>

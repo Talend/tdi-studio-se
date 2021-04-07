@@ -8,6 +8,9 @@
 		org.talend.core.model.metadata.IMetadataColumn 
 		org.talend.core.model.process.EConnectionType 
         org.talend.core.model.process.ElementParameterParser
+        org.talend.core.model.process.EParameterFieldType
+        org.talend.designer.core.model.components.EParameterName
+        org.talend.designer.core.model.components.ElementParameter
 		org.talend.designer.codegen.config.CodeGeneratorArgument
 		org.talend.core.model.utils.NodeUtil
 		org.talend.core.model.process.IConnectionCategory
@@ -140,10 +143,17 @@
 	connSet.addAll(node.getIncomingConnections(EConnectionType.FLOW_MAIN));
 	connSet.addAll(node.getIncomingConnections(EConnectionType.FLOW_MERGE));
 	
-	List<? extends INode> jobCatcherNodes = node.getProcess().getNodesOfType("tJobStructureCatcher");
-	boolean enableLogStash = jobCatcherNodes != null && !jobCatcherNodes.isEmpty();
 	String cid = node.getUniqueName();
-	boolean logstashCurrent = !cid.startsWith("tJobStructureCatcher") && !cid.startsWith("talend") && enableLogStash;
+	
+	List<? extends INode> jobCatcherNodes = node.getProcess().getNodesOfType("tJobStructureCatcher");
+	boolean jobCatcherExists = jobCatcherNodes != null && !jobCatcherNodes.isEmpty();
+	INode jobCatcherNode = jobCatcherExists ? jobCatcherNodes.get(0) : null;
+	
+	boolean enableLogStash = !Boolean.getBoolean("deactivate_extended_component_log") && jobCatcherExists;
+	boolean logstashCurrent = enableLogStash && !cid.startsWith("tJobStructureCatcher") && !cid.startsWith("talend");
+	
+	//about performance monitor, no way to support more than one job catcher component, also that is not necessary
+	final String subprocessName4Catcher = logstashCurrent ? jobCatcherNodes.get(0).getDesignSubjobStartNode().getUniqueName() : null;
 	
 	if ((codePart.equals(ECodePart.BEGIN))&&(stat || logstashCurrent)&&connSet.size()>0) {
 		if(containsTPartitioner) {
@@ -181,13 +191,35 @@
 		if(!node.getComponent().useMerge()) {
 			if(stat && logstashCurrent) {
 			%>
-			runStat.updateStatAndLog(execStat,enableLogStash,iterateId,1,1<%for(IConnection con : connSet){%>,"<%=con.getUniqueName()%>"<%}%>);
+			if(runStat.update(execStat,enableLogStash,iterateId,1,1
+				<%for(IConnection con : connSet){
+					INode source = con.getSource();
+					String sourceNodeId = source.getUniqueName();
+					
+					String sourceLabel = ElementParameterParser.getValue(source, "__LABEL__");
+					String sourceNodeLabel = ((sourceLabel==null || "__UNIQUE_NAME__".equals(sourceLabel) || sourceLabel.contains("\"")) ? sourceNodeId : sourceLabel.trim());
+					
+					String targetLabel = ElementParameterParser.getValue(node, "__LABEL__");
+					String targetNodeLabel = ((targetLabel==null || "__UNIQUE_NAME__".equals(targetLabel) || targetLabel.contains("\"")) ? node.getUniqueName() : targetLabel.trim());
+					
+					String sourceNodeComponent = source.getComponent().getName();
+				%>
+					,"<%=con.getUniqueName()%>","<%=sourceNodeId%>","<%=sourceNodeLabel%>","<%=sourceNodeComponent%>","<%=node.getUniqueName()%>","<%=targetNodeLabel%>","<%=node.getComponent().getName()%>"
+				<%}%>
+			)) {
+				<%=subprocessName4Catcher %>Process(globalMap);
+			}
 			<%
 			} else {
 				if(stat) {
 					%>
 					if(execStat){
-						runStat.updateStatOnConnection(iterateId,1,1<%for(IConnection con : connSet){%>,"<%=con.getUniqueName()%>"<%}%>);
+						runStat.updateStatOnConnection(iterateId,1,1
+						<%for(IConnection con : connSet){
+						%>
+							,"<%=con.getUniqueName()%>"
+						<%}%>
+						);
 					}
 					<%
 				}
@@ -195,7 +227,24 @@
 				if(logstashCurrent) {
 					%>
 					if(enableLogStash) {
-						runStat.log(iterateId,1,1<%for(IConnection con : connSet){%>,"<%=con.getUniqueName()%>"<%}%>);
+						if(runStat.updateLog(iterateId,1,1
+						<%for(IConnection con : connSet){
+							INode source = con.getSource();
+							String sourceNodeId = source.getUniqueName();
+							
+							String sourceLabel = ElementParameterParser.getValue(source, "__LABEL__");
+							String sourceNodeLabel = ((sourceLabel==null || "__UNIQUE_NAME__".equals(sourceLabel) || sourceLabel.contains("\"")) ? sourceNodeId : sourceLabel.trim());
+							
+							String targetLabel = ElementParameterParser.getValue(node, "__LABEL__");
+							String targetNodeLabel = ((targetLabel==null || "__UNIQUE_NAME__".equals(targetLabel) || targetLabel.contains("\"")) ? node.getUniqueName() : targetLabel.trim());
+							
+							String sourceNodeComponent = source.getComponent().getName();
+						%>
+							,"<%=con.getUniqueName()%>","<%=sourceNodeId%>","<%=sourceNodeLabel%>","<%=sourceNodeComponent%>","<%=node.getUniqueName()%>","<%=targetNodeLabel%>","<%=node.getComponent().getName()%>"
+						<%}%>
+						)) {
+							<%=subprocessName4Catcher %>Process(globalMap);
+						}
 					}
 					<%
 				}
@@ -205,18 +254,62 @@
 				if(connection.getUniqueName().equals((String)codeGenArgument.getIncomingName())){
 					if(stat && logstashCurrent) {
 					%>
-					runStat.updateStatAndLog(execStat,enableLogStash,iterateId,1,1<%for(IConnection con : connSet){if(con.getUniqueName().equals((String)codeGenArgument.getIncomingName())){%>,"<%=con.getUniqueName()%>"<%}}%>);
+					if(runStat.update(execStat,enableLogStash,iterateId,1,1
+						<%for(IConnection con : connSet){
+							INode source = con.getSource();
+							String sourceNodeId = source.getUniqueName();
+							
+							String sourceLabel = ElementParameterParser.getValue(source, "__LABEL__");
+							String sourceNodeLabel = ((sourceLabel==null || "__UNIQUE_NAME__".equals(sourceLabel) || sourceLabel.contains("\"")) ? sourceNodeId : sourceLabel.trim());
+							
+							String targetLabel = ElementParameterParser.getValue(node, "__LABEL__");
+							String targetNodeLabel = ((targetLabel==null || "__UNIQUE_NAME__".equals(targetLabel) || targetLabel.contains("\"")) ? node.getUniqueName() : targetLabel.trim());
+							
+							String sourceNodeComponent = source.getComponent().getName();
+							
+							if(con.getUniqueName().equals((String)codeGenArgument.getIncomingName())){%>
+							,"<%=con.getUniqueName()%>","<%=sourceNodeId%>","<%=sourceNodeLabel%>","<%=sourceNodeComponent%>","<%=node.getUniqueName()%>","<%=targetNodeLabel%>","<%=node.getComponent().getName()%>"
+							<%}
+						}%>
+					)) {
+						<%=subprocessName4Catcher %>Process(globalMap);
+					}
 					<%
 					} else {
 						if(stat) {%>
 						if(execStat){
-							runStat.updateStatOnConnection(iterateId,1,1<%for(IConnection con : connSet){if(con.getUniqueName().equals((String)codeGenArgument.getIncomingName())){%>,"<%=con.getUniqueName()%>"<%}}%>);
+							runStat.updateStatOnConnection(iterateId,1,1
+								<%for(IConnection con : connSet){
+									if(con.getUniqueName().equals((String)codeGenArgument.getIncomingName())){%>
+									,"<%=con.getUniqueName()%>"
+									<%}
+								}%>
+							);
 						}
 						<%}
 						
 						if(logstashCurrent) {%>
 						if(enableLogStash) {
-							runStat.log(iterateId,1,1<%for(IConnection con : connSet){if(con.getUniqueName().equals((String)codeGenArgument.getIncomingName())){%>,"<%=con.getUniqueName()%>"<%}}%>);
+							if(runStat.updateLog(iterateId,1,1
+								<%for(IConnection con : connSet){
+									INode source = con.getSource();
+									String sourceNodeId = source.getUniqueName();
+									
+									String sourceLabel = ElementParameterParser.getValue(source, "__LABEL__");
+									String sourceNodeLabel = ((sourceLabel==null || "__UNIQUE_NAME__".equals(sourceLabel) || sourceLabel.contains("\"")) ? sourceNodeId : sourceLabel.trim());
+									
+									String targetLabel = ElementParameterParser.getValue(node, "__LABEL__");
+									String targetNodeLabel = ((targetLabel==null || "__UNIQUE_NAME__".equals(targetLabel) || targetLabel.contains("\"")) ? node.getUniqueName() : targetLabel.trim());
+							
+									String sourceNodeComponent = source.getComponent().getName();
+							
+									if(con.getUniqueName().equals((String)codeGenArgument.getIncomingName())){%>
+									,"<%=con.getUniqueName()%>","<%=sourceNodeId%>","<%=sourceNodeLabel%>","<%=sourceNodeComponent%>","<%=node.getUniqueName()%>","<%=targetNodeLabel%>","<%=node.getComponent().getName()%>"
+									<%}
+								}%>
+							)) {
+								<%=subprocessName4Catcher %>Process(globalMap);
+							}
 						}
 						<%}
 					}
@@ -245,12 +338,107 @@
 		<%
 		log.startWork();
 		log.logCompSetting();
+		boolean enable_runtime_lineage_log = NodeUtil.isJobUsingRuntimeLineage(node.getProcess()) && jobCatcherExists && !cid.startsWith("tJobStructureCatcher") && !cid.startsWith("talend");
+		if(enable_runtime_lineage_log) {
+		%>
+		class ParameterUtil_<%=cid%>{
+		
+            public java.util.Map<String, String> getParameter() throws Exception{
+                java.util.Map<String, String> component_parameters = new java.util.HashMap<>();
+                <%
+                java.util.Set<org.talend.core.model.process.EParameterFieldType> ignoredParamsTypes = new java.util.HashSet<org.talend.core.model.process.EParameterFieldType>(); 
+                ignoredParamsTypes.addAll(
+                    java.util.Arrays.asList(
+                        org.talend.core.model.process.EParameterFieldType.SCHEMA_TYPE,
+                        org.talend.core.model.process.EParameterFieldType.SCHEMA_REFERENCE,
+                        org.talend.core.model.process.EParameterFieldType.LABEL,
+                        org.talend.core.model.process.EParameterFieldType.EXTERNAL,
+                        org.talend.core.model.process.EParameterFieldType.MAPPING_TYPE,
+                        org.talend.core.model.process.EParameterFieldType.IMAGE,
+                        org.talend.core.model.process.EParameterFieldType.TNS_EDITOR,
+                        org.talend.core.model.process.EParameterFieldType.WSDL2JAVA,
+                        org.talend.core.model.process.EParameterFieldType.GENERATEGRAMMARCONTROLLER,
+                        org.talend.core.model.process.EParameterFieldType.GENERATE_SURVIVORSHIP_RULES_CONTROLLER,
+                        org.talend.core.model.process.EParameterFieldType.REFRESH_REPORTS,
+                        org.talend.core.model.process.EParameterFieldType.BROWSE_REPORTS,
+                        org.talend.core.model.process.EParameterFieldType.PALO_DIM_SELECTION,
+                        org.talend.core.model.process.EParameterFieldType.GUESS_SCHEMA,
+                        org.talend.core.model.process.EParameterFieldType.MATCH_RULE_IMEX_CONTROLLER,
+                        org.talend.core.model.process.EParameterFieldType.MEMO_PERL,
+                        org.talend.core.model.process.EParameterFieldType.DBTYPE_LIST,
+                        org.talend.core.model.process.EParameterFieldType.VERSION,
+                        org.talend.core.model.process.EParameterFieldType.TECHNICAL,
+                        org.talend.core.model.process.EParameterFieldType.ICON_SELECTION,
+                        org.talend.core.model.process.EParameterFieldType.JAVA_COMMAND,
+                        org.talend.core.model.process.EParameterFieldType.TREE_TABLE,
+                        org.talend.core.model.process.EParameterFieldType.VALIDATION_RULE_TYPE,
+                        org.talend.core.model.process.EParameterFieldType.DCSCHEMA,
+                        org.talend.core.model.process.EParameterFieldType.SURVIVOR_RELATION,
+                        org.talend.core.model.process.EParameterFieldType.REST_RESPONSE_SCHEMA_TYPE,
+                        org.talend.core.model.process.EParameterFieldType.BUTTON
+                        )
+                );
+                for(org.talend.core.model.process.IElementParameter ep : org.talend.core.model.utils.NodeUtil.getDisplayedParameters(node)){
+                    if(!ep.isLog4JEnabled() || ignoredParamsTypes.contains(ep.getFieldType())){
+                        continue;
+                    }
+                    
+                    ElementParameter p = (ElementParameter)ep;
+                    Object pluginValue = p.getTaggedValue("org.talend.sdk.component.source");
+                    if(pluginValue != null && String.class.cast(pluginValue).equalsIgnoreCase("tacokit")) {
+                        try {
+                            if (!(Boolean) org.talend.core.runtime.IAdditionalInfo.class.cast(p).func("isPersisted")) {
+                                continue;
+                            }
+                        } catch (Exception ex) {
+                            //do nothing
+                        }
+                        
+                        %>
+                        <%@ include file="./tacokit_runtime_log.javajet"%>
+                        <%
+                        
+                        continue;
+                    }
+                    
+                    String name = ep.getName();
+                    java.util.Set<String> ignoredParamsNames = new java.util.HashSet<String>();
+                    ignoredParamsNames.add("SQLPATTERN_VALUE");
+                    ignoredParamsNames.add("ADDITIONAL_INSERT_COLUMNS");
+                    ignoredParamsNames.add("ADDITIONAL_UPDATE_COLUMNS");
+                    ignoredParamsNames.add("SELECTION_TABLE");
+                    ignoredParamsNames.add("DIFFER_MESSAGE");
+                    ignoredParamsNames.add("NO_DIFFER_MESSAGE");
+                    
+                    if(ignoredParamsNames.contains(name)) {
+                        //do nothing
+                    } else if(org.talend.core.model.process.EParameterFieldType.PASSWORD.equals(ep.getFieldType())){
+                        //not log password
+                    }else{
+                        String value = org.talend.core.model.utils.NodeUtil.getRuntimeParameterValue(node, ep);
+                        %>
+                        component_parameters.put("<%=name%>", String.valueOf(<%=value%>));
+                    <%
+                    }
+                }
+                %>
+                return component_parameters;
+            }
+        }
+        
+        <%=jobCatcherNode.getUniqueName()%>.addComponentParameterMessage("<%=node.getUniqueName()%>", "<%=node.getComponent().getName()%>",
+          new ParameterUtil_<%=cid%>().getParameter());
+        <%=jobCatcherNode.getDesignSubjobStartNode().getUniqueName() %>Process(globalMap);
+		<%
+		}
 		
 		if(logstashCurrent) {
 			for (INode jobStructureCatcher : jobCatcherNodes) {
+				String label = ElementParameterParser.getValue(node, "__LABEL__");
+				String nodeLabel = ((label==null || "__UNIQUE_NAME__".equals(label) || label.contains("\"")) ? node.getUniqueName() : label.trim());
 			%>
 			if(enableLogStash) {
-				<%=jobStructureCatcher.getUniqueName() %>.addCM("<%=node.getUniqueName()%>", "<%=node.getComponent().getName()%>");
+				<%=jobStructureCatcher.getUniqueName() %>.addCM("<%=node.getUniqueName()%>", "<%=nodeLabel%>", "<%=node.getComponent().getName()%>");
 				<%=jobStructureCatcher.getDesignSubjobStartNode().getUniqueName() %>Process(globalMap);
 			}
 			<%

@@ -12,7 +12,11 @@
 // ============================================================================
 package org.talend.designer.dbmap.language.generation;
 
+import static java.util.Optional.*;
+import static java.util.stream.Collectors.*;
+
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -57,6 +61,7 @@ import org.talend.designer.dbmap.language.IJoinType;
 import org.talend.designer.dbmap.language.operator.IDbOperator;
 import org.talend.designer.dbmap.language.operator.IDbOperatorManager;
 import org.talend.designer.dbmap.model.tableentry.TableEntryLocation;
+import org.talend.designer.dbmap.utils.DBMapHelper;
 import org.talend.designer.dbmap.utils.DataMapExpressionParser;
 
 /**
@@ -79,6 +84,8 @@ public abstract class DbGenerationManager {
 
     protected String tabSpaceString = DEFAULT_TAB_SPACE_STRING;
 
+    private final String DOT_STR = "."; //$NON-NLS-1$
+
     protected static final String DEFAULT_TAB_SPACE_STRING = ""; //$NON-NLS-1$
 
     protected List<String> queryColumnsSegments = new ArrayList<String>();
@@ -89,9 +96,13 @@ public abstract class DbGenerationManager {
 
     private Boolean useDelimitedIdentifiers;
 
+    private Boolean useAliasInOutputTable;
+
     protected Set<String> subQueryTable = new HashSet<String>();
 
     protected INode source;
+
+    protected Set<String> inputSchemaContextSet = new HashSet<String>();
 
     /**
      * DOC amaumont GenerationManager constructor comment.
@@ -168,7 +179,7 @@ public abstract class DbGenerationManager {
     }
 
     public String getQueryColumnsName() {
-        return this.queryColumnsName;
+        return this.queryColumnsName.replaceAll("[\r\n]", " ");
     }
 
     /**
@@ -268,6 +279,10 @@ public abstract class DbGenerationManager {
         return tableName;
     }
 
+    protected String addQuotes(String name) {
+        return name;
+    }
+
     /**
      *
      * ggu Comment method "buildSqlSelect".
@@ -283,6 +298,7 @@ public abstract class DbGenerationManager {
         queryColumnsSegments.clear();
         querySegments.clear();
         subQueryTable.clear();
+        inputSchemaContextSet.clear();
 
         this.tabSpaceString = tabString;
         DbMapComponent component = getDbMapComponent(dbMapComponent);
@@ -295,7 +311,9 @@ public abstract class DbGenerationManager {
         }
 
         ExternalDbMapData data = component.getExternalData();
-
+        List<ExternalDbMapTable> inputTables = data.getInputTables();
+        List<String> contextList = getContextList(component);
+        collectSchemaContextParam(dbMapComponent, inputTables, contextList);
         StringBuilder sb = new StringBuilder();
 
         List<ExternalDbMapTable> outputTables = data.getOutputTables();
@@ -340,9 +358,11 @@ public abstract class DbGenerationManager {
                     // break;
                     // }
                     // }
+                    boolean added = false;
                     if (!DEFAULT_TAB_SPACE_STRING.equals(this.tabSpaceString)) {
                         expression += DbMapSqlConstants.SPACE + DbMapSqlConstants.AS + DbMapSqlConstants.SPACE
                                 + getAliasOf(dbMapEntry.getName());
+                        added = true;
                     }
                     String exp = replaceVariablesForExpression(component, expression);
                     String columnSegment = exp;
@@ -354,7 +374,14 @@ public abstract class DbGenerationManager {
                     }
                     if (expression != null && expression.trim().length() > 0) {
                         appendSqlQuery(sb, exp);
-                        queryColumnsName += exp;
+                        String alias = exp;
+                        if (!added && isUseAliasInOutputTable()) {
+                            String name = DbMapSqlConstants.SPACE + DbMapSqlConstants.AS + DbMapSqlConstants.SPACE
+                                    + getAliasOf(dbMapEntry.getName());
+                            appendSqlQuery(sb, name);
+                            alias = getAliasOf(dbMapEntry.getName());
+                        }
+                        queryColumnsName += alias;
                         queryColumnsSegments.add(columnSegment);
                     } else {
                         appendSqlQuery(sb, DbMapSqlConstants.LEFT_COMMENT);
@@ -368,8 +395,6 @@ public abstract class DbGenerationManager {
             appendSqlQuery(sb, DbMapSqlConstants.NEW_LINE);
             appendSqlQuery(sb, tabSpaceString);
             appendSqlQuery(sb, DbMapSqlConstants.FROM);
-            List<ExternalDbMapTable> inputTables = data.getInputTables();
-
             // load input table in hash
             boolean explicitJoin = false;
             int lstSizeInputTables = inputTables.size();
@@ -558,6 +583,40 @@ public abstract class DbGenerationManager {
         return sqlQuery;
     }
 
+    protected void collectSchemaContextParam(DbMapComponent dbMapComponent, List<ExternalDbMapTable> inputTables,
+            List<String> contextList) {
+        List<IConnection> incomingConnections = (List<IConnection>) dbMapComponent.getIncomingConnections();
+        if (incomingConnections != null) {
+            for (IConnection connection : incomingConnections) {
+                INode input = connection.getSource();
+                if (input != null) {
+                    IElementParameter eltSchemaNameParam = input.getElementParameter("ELT_SCHEMA_NAME"); //$NON-NLS-1$
+                    if (eltSchemaNameParam != null && eltSchemaNameParam.getValue() != null) {
+                        String schema = String.valueOf(eltSchemaNameParam.getValue());
+                        if (schema != null && !inputSchemaContextSet.contains(schema) && contextList.contains(schema)) {
+                            inputSchemaContextSet.add(schema);
+                        }
+                    }
+                    IElementParameter eltTableNameParam = input.getElementParameter("ELT_TABLE_NAME"); //$NON-NLS-1$
+                    if (eltTableNameParam != null && eltTableNameParam.getValue() != null) {
+                        String table = String.valueOf(eltTableNameParam.getValue());
+                        if (table != null && !inputSchemaContextSet.contains(table) && contextList.contains(table)) {
+                            inputSchemaContextSet.add(table);
+                        }
+                    }
+                }
+            }
+        }
+        if (inputTables != null) {
+            for (ExternalDbMapTable table : inputTables) {
+                if (table.getAlias() != null && !inputSchemaContextSet.contains(table.getAlias())
+                        && contextList.contains(table.getAlias())) {
+                    inputSchemaContextSet.add(table.getAlias());
+                }
+            }
+        }
+    }
+
     public String buildSqlSelect(DbMapComponent dbMapComponent, String outputTableName, String tabString,
             boolean checkUseUpdateStatement) {
         queryColumnsName = "\""; //$NON-NLS-1$
@@ -565,6 +624,7 @@ public abstract class DbGenerationManager {
         queryColumnsSegments.clear();
         querySegments.clear();
         subQueryTable.clear();
+        inputSchemaContextSet.clear();
 
         this.tabSpaceString = tabString;
         DbMapComponent component = getDbMapComponent(dbMapComponent);
@@ -606,7 +666,7 @@ public abstract class DbGenerationManager {
             if (eltSchemaNameParam != null && eltSchemaNameParam.getValue() != null) {
                 String schema = TalendQuoteUtils.removeQuotesIfExist(String.valueOf(eltSchemaNameParam.getValue()));
                 if (org.apache.commons.lang.StringUtils.isNotEmpty(schema)) {
-                    targetSchemaTable = schema + DbMapSqlConstants.DOT + outTableName;
+                    targetSchemaTable = addQuotes(schema) + DbMapSqlConstants.DOT + addQuotes(outTableName);
                 }
             }
 
@@ -625,9 +685,15 @@ public abstract class DbGenerationManager {
                 appendSqlQuery(sb, DbMapSqlConstants.SPACE);
                 boolean isKey = false;
                 int lstSizeOutTableEntries = metadataTableEntries.size();
+                List<Boolean> setColumns = getSetColumnsForUpdateQuery();
+                final boolean hasDeactivatedColumns = !setColumns.isEmpty();
+                boolean isFirstColumn = true;
                 for (int i = 0; i < lstSizeOutTableEntries; i++) {
+                    if (hasDeactivatedColumns && setColumns.get(i)) {
+                        continue;
+                    }
                     ExternalDbMapEntry dbMapEntry = metadataTableEntries.get(i);
-                    String columnEntry = outTableName + DbMapSqlConstants.DOT + dbMapEntry.getName();
+                    String columnEntry = dbMapEntry.getName();
                     String expression = dbMapEntry.getExpression();
                     expression = initExpression(component, dbMapEntry);
                     expression = addQuoteForSpecialChar(expression, component);
@@ -638,7 +704,8 @@ public abstract class DbGenerationManager {
                     }
                     String exp = replaceVariablesForExpression(component, expression);
                     String columnSegment = exp;
-                    if (i > 0) {
+                    // Added isFirstColumn to conform old behaior if first column is skipped
+                    if (i > 0 && !isFirstColumn) {
                         queryColumnsName += DbMapSqlConstants.COMMA + DbMapSqlConstants.SPACE;
                         columnSegment = DbMapSqlConstants.COMMA + DbMapSqlConstants.SPACE + columnSegment;
                     }
@@ -652,7 +719,7 @@ public abstract class DbGenerationManager {
                             String columnName = column.getLabel();
                             if (columnName.equals(dbMapEntry.getName()) && column.isKey()) {
                                 isKey = column.isKey();
-                                keyColumn = columnEntry + " = " + expression;//$NON-NLS-1$
+                                keyColumn = addQuotes(columnEntry) + " = " + expression;//$NON-NLS-1$
                                 break;
                             }
                         }
@@ -661,26 +728,25 @@ public abstract class DbGenerationManager {
                         }
                     }
                     if (expression != null && expression.trim().length() > 0) {
-                        appendSqlQuery(sb, columnEntry + " = " + expression); //$NON-NLS-1$
-                        if (i < lstSizeOutTableEntries - 1) {
+                        // Append COMMA and NEW_LINE for all columns except FIRST.
+                        if (!isFirstColumn) {
                             appendSqlQuery(sb, DbMapSqlConstants.COMMA);
                             appendSqlQuery(sb, DbMapSqlConstants.NEW_LINE);
+                        } else {
+                            isFirstColumn = false;
                         }
+                        appendSqlQuery(sb, addQuotes(columnEntry) + " = " + expression); //$NON-NLS-1$
                     }
                 }
+            }
+            if ("\"".equals(queryColumnsName)) {
+                throw new IllegalArgumentException("Specify at least 1 column for UPDATE QUERY in SET section");
             }
             appendSqlQuery(sb, DbMapSqlConstants.NEW_LINE);
 
             // From
             appendSqlQuery(sb, tabSpaceString);
             appendSqlQuery(sb, DbMapSqlConstants.FROM);
-            appendSqlQuery(sb, DbMapSqlConstants.SPACE);
-            appendSqlQuery(sb, targetSchemaTable);
-            appendSqlQuery(sb, DbMapSqlConstants.NEW_LINE);
-
-            // Inner Join
-            appendSqlQuery(sb, tabSpaceString);
-            appendSqlQuery(sb, DbMapSqlConstants.INNER_JOIN);
 
             List<ExternalDbMapTable> inputTables = data.getInputTables();
             // load input table in hash
@@ -699,35 +765,17 @@ public abstract class DbGenerationManager {
 
             for (int i = 0; i < lstSizeInputTables; i++) {
                 ExternalDbMapTable inputTable = inputTables.get(i);
-                IJoinType joinType = null;
-                if (i == 0) {
-                    joinType = AbstractDbLanguage.JOIN.NO_JOIN;
-                } else {
-                    joinType = language.getJoin(inputTable.getJoinType());
-                }
-                if (language.unuseWithExplicitJoin().contains(joinType) && !explicitJoin) {
-                    appendSqlQuery(sb, DbMapSqlConstants.SPACE);
-                    appendSqlQuery(sb, inputTable.getTableName());
-                    appendSqlQuery(sb, DbMapSqlConstants.SPACE);
-                    appendSqlQuery(sb, inputTable.getAlias());
-                }
+                boolean commaCouldBeAdded = i > 0;
+                buildTableDeclaration(component, sb, inputTable, commaCouldBeAdded, false, false);
             }
 
-            // On
-            if (org.apache.commons.lang.StringUtils.isNotEmpty(keyColumn)) {
-                appendSqlQuery(sb, DbMapSqlConstants.NEW_LINE);
-                appendSqlQuery(sb, tabSpaceString);
-                appendSqlQuery(sb, DbMapSqlConstants.ON);
-                appendSqlQuery(sb, DbMapSqlConstants.SPACE);
-                appendSqlQuery(sb, keyColumn);
-            }
             // where
             StringBuilder sbWhere = new StringBuilder();
             this.tabSpaceString = DEFAULT_TAB_SPACE_STRING;
             boolean isFirstClause = true;
             for (int i = 0; i < lstSizeInputTables; i++) {
                 ExternalDbMapTable inputTable = inputTables.get(i);
-                if (buildConditions(component, sbWhere, inputTable, false, isFirstClause, false)) {
+                if (buildConditions4WhereClause(isFirstClause, component, sbWhere, inputTable, false)) {
                     isFirstClause = false;
                 }
             }
@@ -836,7 +884,7 @@ public abstract class DbGenerationManager {
     }
 
     protected void checkParameters(DbMapComponent component) {
-        checkUseDelimitedIdentifiers(component);
+        checkSpecialParameters(component);
     }
 
     protected boolean checkUseUpdateStatement(DbMapComponent dbMapComponent, String outputTableName) {
@@ -855,7 +903,23 @@ public abstract class DbGenerationManager {
         return false;
     }
 
-    protected void checkUseDelimitedIdentifiers(DbMapComponent component) {
+    /**
+     * This piece regulates which columns are going to be skipped in UPDATE QUERY generation in SET section if
+     * <b>SET_COLUMN</b> property exists. This
+     * enhancement is needed for tELTOutput component in case of <b>USE_UPDATE_STATEMENT</b>
+     *
+     * @return List of columns that going to be skipped, if no <b>SET_COLUMN</b> specified then return empty list.
+     */
+    protected List<Boolean> getSetColumnsForUpdateQuery() {
+        return ofNullable(source.getElementParameter("SET_COLUMN"))
+                .filter(iep -> iep.isShow(source.getElementParameters()))
+                .flatMap(iep -> ofNullable((List<Map<String, ? extends Object>>)iep.getValue()))
+                .orElseGet(Collections::emptyList).stream()
+                .map(m -> !Boolean.valueOf(m.get("UPDATE_COLUMN").toString()))
+                .collect(toList());
+    }
+
+    protected void checkSpecialParameters(DbMapComponent component) {
         /**
          * in elt related component javajets(like tELTMSSqlMap_main.javajet), they don't get DbGenerationManager by
          * DbMapComponent#getGenerationManager() while they construct a new manager manually, so some parameters may not
@@ -869,6 +933,18 @@ public abstract class DbGenerationManager {
                 Object value = activeDelimitedIdentifiersEP.getValue();
                 if (value != null) {
                     setUseDelimitedIdentifiers(Boolean.valueOf(value.toString()));
+                }
+            }
+        }
+
+        if (this.useAliasInOutputTable == null) {
+            this.useAliasInOutputTable = false;
+            IElementParameter useAliasInOutputTableEP = component
+                    .getElementParameter(EParameterName.USE_ALIAS_IN_OUTPUT_TABLE.getName());
+            if (useAliasInOutputTableEP != null) {
+                Object value = useAliasInOutputTableEP.getValue();
+                if (value != null) {
+                    setUseAliasInOutputTable(Boolean.valueOf(value.toString()));
                 }
             }
         }
@@ -902,6 +978,13 @@ public abstract class DbGenerationManager {
             }
         }
         Set<String> globalMapList = getGlobalMapList(component, expression);
+        if (globalMapList.size() > 0) {
+            String tempExpression = expression.trim();
+            if ((tempExpression.startsWith("\"+") && tempExpression.endsWith("+\"")) //$NON-NLS-1$//$NON-NLS-2$
+                    || (tempExpression.startsWith("\" +") && tempExpression.endsWith("+ \""))) {//$NON-NLS-1$ //$NON-NLS-2$
+                return expression;
+            }
+        }
         for (String globalMapStr : globalMapList) {
             String regex = parser.getGlobalMapExpressionRegex(globalMapStr);
             String replacement = parser.getGlobalMapReplacement(globalMapStr);
@@ -931,6 +1014,10 @@ public abstract class DbGenerationManager {
                 querySegments.set(i, segment);
             }
         }
+    }
+
+    protected boolean needAlias(List<IMetadataColumn> columns, ExternalDbMapEntry dbMapEntry, String expression) {
+        return false;
     }
 
     protected void appendSqlQuery(StringBuilder sb, String value) {
@@ -1001,7 +1088,7 @@ public abstract class DbGenerationManager {
 
         return contextList;
     }
-
+    
     protected Set<String> getGlobalMapList(DbMapComponent component, String sqlQuery) {
         return parser.getGlobalMapSet(sqlQuery);
     }
@@ -1016,7 +1103,7 @@ public abstract class DbGenerationManager {
      */
     protected boolean buildConditions(DbMapComponent component, StringBuilder sb, ExternalDbMapTable inputTable,
             boolean writeForJoin, boolean isFirstClause) {
-    	return buildConditions(component, sb, inputTable, writeForJoin, isFirstClause, false);
+        return buildConditions(component, sb, inputTable, writeForJoin, isFirstClause, false);
     }
 
     /**
@@ -1049,6 +1136,35 @@ public abstract class DbGenerationManager {
     }
 
     /**
+     * build conditions for update case only DOC hzhao Comment method "buildConditions".
+     * 
+     * @param isFirstClause
+     * @param component
+     * @param sb
+     * @param inputTable
+     * @param isSqlQuert
+     * @return
+     */
+    protected boolean buildConditions4WhereClause(boolean isFirstClause, DbMapComponent component, StringBuilder sb,
+            ExternalDbMapTable inputTable,
+            boolean isSqlQuert) {
+        List<ExternalDbMapEntry> inputEntries = inputTable.getMetadataTableEntries();
+        int lstSizeEntries = inputEntries.size();
+        boolean atLeastOneConditionWritten = false;
+        for (int j = 0; j < lstSizeEntries; j++) {
+            ExternalDbMapEntry dbMapEntry = inputEntries.get(j);
+            boolean conditionWritten = buildCondition(component, sb, inputTable, isFirstClause, dbMapEntry, true, isSqlQuert);
+            if (conditionWritten) {
+                atLeastOneConditionWritten = true;
+            }
+            if (isFirstClause && conditionWritten) {
+                isFirstClause = false;
+            }
+        }
+        return atLeastOneConditionWritten;
+    }
+
+    /**
      * DOC amaumont Comment method "buildCondition".
      *
      * @param sbWhere
@@ -1073,8 +1189,7 @@ public abstract class DbGenerationManager {
      */
     private boolean buildCondition(DbMapComponent component, StringBuilder sbWhere, ExternalDbMapTable table,
             boolean isFirstClause, ExternalDbMapEntry dbMapEntry, boolean writeCr, boolean isSqlQuery) {
-        String expression = dbMapEntry.getExpression();
-        expression = initExpression(component, dbMapEntry);
+        String expression = initExpression(component, dbMapEntry);
         IDbOperator dbOperator = getOperatorsManager().getOperatorFromValue(dbMapEntry.getOperator());
         boolean operatorIsSet = dbOperator != null;
         boolean expressionIsSet = expression != null && expression.trim().length() > 0;
@@ -1098,13 +1213,13 @@ public abstract class DbGenerationManager {
             if (table.getAlias() == null) {
                 tableName = getHandledTableName(component, table.getName(), table.getAlias());
             } else {
-                tableName = getHandledField(table.getAlias());
+                tableName = getHandledField(component, table.getAlias());
             }
             if (!subQueryTable.contains(tableName)) {
                 entryName = getOriginalColumnName(entryName, component, table);
                 entryName = getColumnName(null, entryName);
             }
-            String locationInputEntry = language.getLocation(tableName, getHandledField(entryName));
+            String locationInputEntry = language.getLocation(tableName, getHandledField(component, entryName));
             appendSqlQuery(sbWhere, DbMapSqlConstants.SPACE, isSqlQuery);
             appendSqlQuery(sbWhere, locationInputEntry, isSqlQuery);
             appendSqlQuery(sbWhere, getSpecialRightJoin(table), isSqlQuery);
@@ -1185,7 +1300,7 @@ public abstract class DbGenerationManager {
                 String handledTableName = getHandledTableName(component, inputTable.getTableName(), alias);
                 appendSqlQuery(sb, handledTableName);
                 appendSqlQuery(sb, DbMapSqlConstants.SPACE);
-                String handledField = getHandledField(alias);
+                String handledField = getHandledField(component, alias);
                 appendSqlQuery(sb, handledField);
                 aliasAlreadyDeclared.add(alias);
             } else {
@@ -1326,8 +1441,8 @@ public abstract class DbGenerationManager {
     }
 
     protected String initExpression(DbMapComponent component, ExternalDbMapEntry dbMapEntry) {
-    	String quote = getQuote(component);
-    	String quto_mark = TalendQuoteUtils.QUOTATION_MARK;
+        String quote = getQuote(component);
+        String quto_mark = TalendQuoteUtils.QUOTATION_MARK;
         String expression = dbMapEntry.getExpression();
         if (expression != null) {
             List<Map<String, String>> itemNameList = null;
@@ -1436,8 +1551,8 @@ public abstract class DbGenerationManager {
                                             oriName = oriName.replaceAll("\\$", "\\\\\\$"); //$NON-NLS-1$ //$NON-NLS-2$
                                         }
                                         expression = expression.replaceFirst(tableValue + "\\." + co.getLabel(), //$NON-NLS-1$
-                                        		tableValue + "\\." + oriName); //$NON-NLS-1$
-                                        expression = replaceAuotes(expression, quto_markParser, quto_mark);
+                                                tableValue + "\\." + oriName); //$NON-NLS-1$
+                                        expression = replaceAuotes(component, expression, quto_markParser, quto_mark);
                                     }
                                 }
 
@@ -1452,11 +1567,14 @@ public abstract class DbGenerationManager {
         return expression;
     }
 
-    protected String replaceAuotes(String expression, String quoParser, String quote){
-        if(!expression.contains("'")){
-            return expression.replaceAll(quoParser,"\\\\" +quote); //$NON-NLS-1$
+    protected String replaceAuotes(DbMapComponent component, String expression, String quoParser, String quote) {
+        if (isComplexExpression(component, expression)) {
+            return expression;
         }
-
+        if(!expression.contains("'")){
+            return expression.replaceAll(quoParser,"\\\\" +quote); //$NON-NLS-1$;
+        }
+        
         List<Integer> indexs = new ArrayList<>();
         for(int i=0;i<expression.length();i++){
             if("'".equals(String.valueOf(expression.charAt(i)))){
@@ -1488,25 +1606,32 @@ public abstract class DbGenerationManager {
         }
         return result.toString();
     }
+    
+    protected boolean isComplexExpression(DbMapComponent component, String expression) {
+        if (parser.isContainsGlobalMapExpression(expression)) {
+            return true;
+        }
+        return false;
+    }
 
     private String getQuote(DbMapComponent component){
-    	String quote = TalendQuoteUtils.QUOTATION_MARK;
-    	IElementParameter mappingPara = component.getElementParameter(EParameterName.MAPPING.getName());
-    	if(mappingPara == null){
-    		return quote;
-    	}
-    	String mapping = (String) mappingPara.getValue();
-    	if(mapping == null){
-    		return quote;
-    	}
-		MappingTypeRetriever mappingTypeRetriever = MetadataTalendType.getMappingTypeRetriever(mapping);
-		if (mappingTypeRetriever == null) {
-			return quote;
-		}
-		Dbms dbms = mappingTypeRetriever.getDbms();
-		String product = dbms.getProduct();
-		EDatabaseTypeName type = EDatabaseTypeName.getTypeFromProductName(product);
-		return TalendQuoteUtils.getQuoteByDBType(type);
+        String quote = TalendQuoteUtils.QUOTATION_MARK;
+        IElementParameter mappingPara = component.getElementParameter(EParameterName.MAPPING.getName());
+        if(mappingPara == null){
+            return quote;
+        }
+        String mapping = (String) mappingPara.getValue();
+        if(mapping == null){
+            return quote;
+        }
+        MappingTypeRetriever mappingTypeRetriever = MetadataTalendType.getMappingTypeRetriever(mapping);
+        if (mappingTypeRetriever == null) {
+            return quote;
+        }
+        Dbms dbms = mappingTypeRetriever.getDbms();
+        String product = dbms.getProduct();
+        EDatabaseTypeName type = EDatabaseTypeName.getTypeFromProductName(product);
+        return TalendQuoteUtils.getQuoteByDBType(type);
     }
 
     private String getOriginalColumnName(String entryName, DbMapComponent component, ExternalDbMapTable table) {
@@ -1595,10 +1720,10 @@ public abstract class DbGenerationManager {
                         }
                     }
                 }
-
                 String schemaNoQuote = TalendTextUtils.removeQuotes(schemaValue);
                 boolean hasSchema = !"".equals(schemaNoQuote);
                 if (hasSchema) {
+                    schemaValue = handledParameterValues(schemaValue);
                     handledTableName = schemaValue + "+\".\"+";
                 }
                 handledTableName = handledTableName + tableValue;
@@ -1607,6 +1732,28 @@ public abstract class DbGenerationManager {
         }
         return tableName;
 
+    }
+
+    protected String handledParameterValues(String originalValue) {
+        List<String> paramValues = new ArrayList<String>();
+        DBMapHelper.convertContextParameterValue(paramValues, originalValue);
+        if (paramValues.size() > 0) {
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < paramValues.size(); i++) {
+                String paramValue = paramValues.get(i);
+                if (ContextParameterUtils.isContainContextParam(paramValue)) {
+                    sb.append(paramValue);
+                } else {
+                    sb.append("\"" + paramValue + "\"");//$NON-NLS-1$//$NON-NLS-2$
+                }
+                if (i < paramValues.size() - 1) {
+                    sb.append(" + \".\" + "); //$NON-NLS-1$
+                }
+            }
+            return sb.toString();
+        } else {
+            return originalValue;
+        }
     }
 
     protected String getColumnName(IConnection conn, String name) {
@@ -1648,9 +1795,20 @@ public abstract class DbGenerationManager {
         return "\""; //$NON-NLS-1$
     }
 
-    protected String getHandledField(String field) {
+    protected String getHandledField(DbMapComponent component, String field) {
         if (field != null) {
-            field = field.replace("\"", "\\\"");
+            List<String> contextList = getContextList(component);
+            boolean haveReplace = false;
+            for (String context : contextList) {
+                if (field.contains(context)) {
+                    field = field.replaceAll("\\b" + context + "\\b", "\" +" + context + "+ \""); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+                    haveReplace = true;
+                    break;
+                }
+            }
+            if (!haveReplace) {
+                field = field.replace("\"", "\\\"");
+            }
         }
         return field;
     }
@@ -1663,4 +1821,337 @@ public abstract class DbGenerationManager {
         this.useDelimitedIdentifiers = useDelimitedIdentifiers;
     }
 
+    public boolean isUseAliasInOutputTable() {
+        return Boolean.TRUE.equals(this.useAliasInOutputTable);
+    }
+
+    public void setUseAliasInOutputTable(boolean useAliasInOutputTable) {
+        this.useAliasInOutputTable = useAliasInOutputTable;
+    }
+
+    public boolean isConditionChecked(DbMapComponent component, ExternalDbMapTable inputTable) {
+        List<ExternalDbMapEntry> inputEntries = inputTable.getMetadataTableEntries();
+        boolean atLeastOneConditionIsChecked = false;
+        for (ExternalDbMapEntry dbMapEntry : inputEntries) {
+            if (dbMapEntry.isJoin()) {
+                if (org.apache.commons.lang.StringUtils.isNotEmpty(dbMapEntry.getExpression())
+                        && org.apache.commons.lang.StringUtils.isNotEmpty(dbMapEntry.getOperator())) {
+                    atLeastOneConditionIsChecked = true;
+                    break;
+                }
+            }
+        }
+        return atLeastOneConditionIsChecked;
+    }
+
+    public String buildSqlUpdate(DbMapComponent dbMapComponent, String outputTableName, String tabString) {
+        queryColumnsName = "\""; //$NON-NLS-1$
+        aliasAlreadyDeclared.clear();
+        queryColumnsSegments.clear();
+        querySegments.clear();
+        subQueryTable.clear();
+        inputSchemaContextSet.clear();
+
+        this.tabSpaceString = tabString;
+        DbMapComponent component = getDbMapComponent(dbMapComponent);
+
+        List<IConnection> outputConnections = (List<IConnection>) component.getOutgoingConnections();
+
+        Map<String, IConnection> nameToOutputConnection = new HashMap<String, IConnection>();
+        for (IConnection connection : outputConnections) {
+            nameToOutputConnection.put(connection.getUniqueName(), connection);
+        }
+
+        ExternalDbMapData data = component.getExternalData();
+        StringBuilder sb = new StringBuilder();
+
+        List<ExternalDbMapTable> outputTables = data.getOutputTables();
+        int lstOutputTablesSize = outputTables.size();
+        ExternalDbMapTable outputTable = null;
+        for (int i = 0; i < lstOutputTablesSize; i++) {
+            ExternalDbMapTable temp = outputTables.get(i);
+            if (outputTableName.equals(temp.getName())) {
+                outputTable = temp;
+                break;
+            }
+        }
+
+        if (outputTable != null) {
+            String outTableName = outputTable.getTableName();
+            IConnection connection = nameToOutputConnection.get(outputTable.getName());
+            List<IMetadataColumn> columns = new ArrayList<IMetadataColumn>();
+            if (connection != null) {
+                IMetadataTable metadataTable = connection.getMetadataTable();
+                if (metadataTable != null) {
+                    columns.addAll(metadataTable.getListColumns());
+                }
+            }
+            // Update
+            String targetSchemaTable = outTableName;
+            IElementParameter eltSchemaNameParam = source.getElementParameter("ELT_SCHEMA_NAME"); //$NON-NLS-1$
+            if (eltSchemaNameParam != null && eltSchemaNameParam.getValue() != null) {
+                String schema = TalendQuoteUtils.removeQuotesIfExist(String.valueOf(eltSchemaNameParam.getValue()));
+                if (org.apache.commons.lang.StringUtils.isNotEmpty(schema)) {
+                    targetSchemaTable = addQuotes(schema) + DbMapSqlConstants.DOT + addQuotes(outTableName);
+                }
+            }
+
+            appendSqlQuery(sb, "\"", false); //$NON-NLS-1$
+            appendSqlQuery(sb, DbMapSqlConstants.UPDATE);
+            appendSqlQuery(sb, DbMapSqlConstants.SPACE);
+            appendSqlQuery(sb, targetSchemaTable);
+            appendSqlQuery(sb, tabSpaceString);
+            appendSqlQuery(sb, DbMapSqlConstants.NEW_LINE);
+
+            // Set
+            String keyColumn = DbMapSqlConstants.EMPTY;
+            List<ExternalDbMapEntry> metadataTableEntries = outputTable.getMetadataTableEntries();
+            if (metadataTableEntries != null) {
+                appendSqlQuery(sb, "SET"); //$NON-NLS-1$
+                appendSqlQuery(sb, DbMapSqlConstants.SPACE);
+                boolean isKey = false;
+                int lstSizeOutTableEntries = metadataTableEntries.size();
+                List<Boolean> setColumns = getSetColumnsForUpdateQuery();
+                final boolean hasDeactivatedColumns = !setColumns.isEmpty();
+                boolean isFirstColumn = true;
+                for (int i = 0; i < lstSizeOutTableEntries; i++) {
+                    if (hasDeactivatedColumns && setColumns.get(i)) {
+                        continue;
+                    }
+                    ExternalDbMapEntry dbMapEntry = metadataTableEntries.get(i);
+                    String columnEntry = dbMapEntry.getName();
+                    String expression = dbMapEntry.getExpression();
+                    expression = initExpression(component, dbMapEntry);
+                    expression = addQuoteForSpecialChar(expression, component);
+                    //
+                    if (!DEFAULT_TAB_SPACE_STRING.equals(this.tabSpaceString)) {
+                        expression += DbMapSqlConstants.SPACE + DbMapSqlConstants.AS + DbMapSqlConstants.SPACE
+                                + getAliasOf(dbMapEntry.getName());
+                    }
+                    String exp = replaceVariablesForExpression(component, expression);
+                    String columnSegment = exp;
+                    // Added isFirstColumn to conform old behaior if first column is skipped
+                    if (i > 0 && !isFirstColumn) {
+                        queryColumnsName += DbMapSqlConstants.COMMA + DbMapSqlConstants.SPACE;
+                        columnSegment = DbMapSqlConstants.COMMA + DbMapSqlConstants.SPACE + columnSegment;
+                    }
+                    if (expression != null && expression.trim().length() > 0) {
+                        queryColumnsName += exp;
+                        queryColumnsSegments.add(columnSegment);
+                    }
+                    //
+                    if (!isKey) {
+                        for (IMetadataColumn column : columns) {
+                            String columnName = column.getLabel();
+                            if (columnName.equals(dbMapEntry.getName()) && column.isKey()) {
+                                isKey = column.isKey();
+                                keyColumn = addQuotes(columnEntry) + " = " + exp;//$NON-NLS-1$
+                                break;
+                            }
+                        }
+                        if (isKey) {
+                            continue;
+                        }
+                    }
+                    if (expression != null && expression.trim().length() > 0) {
+                        // Append COMMA and NEW_LINE for all columns except FIRST.
+                        if (!isFirstColumn) {
+                            appendSqlQuery(sb, DbMapSqlConstants.COMMA);
+                            appendSqlQuery(sb, DbMapSqlConstants.NEW_LINE);
+                        } else {
+                            isFirstColumn = false;
+                        }
+                        appendSqlQuery(sb, addQuotes(columnEntry) + " = " + exp); //$NON-NLS-1$
+                    }
+                }
+            }
+            if ("\"".equals(queryColumnsName)) {
+                throw new IllegalArgumentException("Specify at least 1 column for UPDATE QUERY in SET section");
+            }
+            appendSqlQuery(sb, DbMapSqlConstants.NEW_LINE);
+
+            // From
+            appendSqlQuery(sb, tabSpaceString);
+            appendSqlQuery(sb, DbMapSqlConstants.FROM);
+            // load input table in hash
+            List<ExternalDbMapTable> inputTables = data.getInputTables();
+            // load input table in hash
+            boolean explicitJoin = false;
+            int lstSizeInputTables = inputTables.size();
+
+            appendSqlQuery(sb, DbMapSqlConstants.NEW_LINE);
+            appendSqlQuery(sb, tabSpaceString);
+            IJoinType previousJoinType = null;
+
+            for (int i = 0; i < lstSizeInputTables; i++) {
+                ExternalDbMapTable inputTable = inputTables.get(i);
+                IJoinType joinType = language.getJoin(inputTable.getJoinType());
+                if (!language.unuseWithExplicitJoin().contains(joinType) && i > 0) {
+                    explicitJoin = true;
+                } else {
+                    explicitJoin = false;
+                }
+                if (i == 0) {
+                    joinType = AbstractDbLanguage.JOIN.NO_JOIN;
+                    previousJoinType = joinType;
+                } else {
+                    joinType = language.getJoin(inputTable.getJoinType());
+                }
+                boolean commaCouldBeAdded = !explicitJoin && i > 0;
+                boolean crCouldBeAdded = false;
+                if (language.unuseWithExplicitJoin().contains(joinType) && !explicitJoin) {
+                    buildTableDeclaration(component, sb, inputTable, commaCouldBeAdded, crCouldBeAdded, false);
+
+                } else if (!language.unuseWithExplicitJoin().contains(joinType) && explicitJoin) {
+                    if (i > 0) {
+                        if (previousJoinType == null) {
+                            buildTableDeclaration(component, sb, inputTables.get(i - 1), commaCouldBeAdded, crCouldBeAdded, true);
+                            previousJoinType = joinType;
+                        } else {
+                            // appendSqlQuery(sb, DbMapSqlConstants.NEW_LINE);
+                            appendSqlQuery(sb, tabSpaceString);
+                        }
+                        appendSqlQuery(sb, DbMapSqlConstants.SPACE);
+                    }
+                    String labelJoinType = joinType.getLabel();
+                    if (joinType == AbstractDbLanguage.JOIN.CROSS_JOIN) {
+                        ExternalDbMapTable nextTable = null;
+                        if (i < lstSizeInputTables) {
+                            nextTable = inputTables.get(i);
+                                appendSqlQuery(sb, labelJoinType);
+                                appendSqlQuery(sb, DbMapSqlConstants.SPACE);
+                                buildTableDeclaration(component, sb, nextTable, false, true, true);
+                        }
+
+                    } else {
+                        if (isConditionChecked(component, inputTable)) {
+                            appendSqlQuery(sb, labelJoinType);
+                            appendSqlQuery(sb, DbMapSqlConstants.SPACE);
+                            buildTableDeclaration(component, sb, inputTable, false, false, true);
+                            appendSqlQuery(sb, DbMapSqlConstants.SPACE);
+                            appendSqlQuery(sb, DbMapSqlConstants.ON);
+                            appendSqlQuery(sb, DbMapSqlConstants.LEFT_BRACKET);
+                            appendSqlQuery(sb, DbMapSqlConstants.SPACE);
+                            buildConditions(component, sb, inputTable, true, true, true);
+                            appendSqlQuery(sb, DbMapSqlConstants.SPACE);
+                            appendSqlQuery(sb, DbMapSqlConstants.RIGHT_BRACKET);
+                        } else {
+                            commaCouldBeAdded = true;
+                            buildTableDeclaration(component, sb, inputTable, commaCouldBeAdded, crCouldBeAdded, false);
+                        }
+
+                    }
+
+                }
+            }
+
+            // where
+            StringBuilder sbWhere = new StringBuilder();
+            this.tabSpaceString = DEFAULT_TAB_SPACE_STRING;
+            boolean isFirstClause = true;
+            for (int i = 0; i < lstSizeInputTables; i++) {
+                ExternalDbMapTable inputTable = inputTables.get(i);
+                IJoinType joinType = language.getJoin(inputTable.getJoinType());
+                if (joinType == AbstractDbLanguage.JOIN.CROSS_JOIN) {
+                    // if join type is CROSS JOIN the condition will only in where clause no matter explicit join
+                    // checked or not
+                    if (buildConditions4WhereClause(isFirstClause, component, sbWhere, inputTable, false)) {
+                        isFirstClause = false;
+                    }
+                } else {
+                    if (buildConditions(component, sbWhere, inputTable, false, isFirstClause, false)) {
+                        isFirstClause = false;
+                    }
+                }
+            }
+            /*
+             * for addition conditions
+             */
+            // like as input.newcolumn1>100
+            List<String> whereAddition = new ArrayList<String>();
+            // olny pure start with group or order, like as order/group by input.newcolumn1
+            // List<String> byAddition = new ArrayList<String>();
+            // like as input.newcolumn1>100 group/oder by input.newcolumn1
+            // List<String> containWhereAddition = new ArrayList<String>();
+            // like as "OR/AND input.newcolumn1", will keep original
+            List<String> originalWhereAddition = new ArrayList<String>();
+            List<String> otherAddition = new ArrayList<String>();
+
+            if (outputTable != null) {
+                List<ExternalDbMapEntry> customWhereConditionsEntries = outputTable.getCustomWhereConditionsEntries();
+                if (customWhereConditionsEntries != null) {
+                    for (ExternalDbMapEntry entry : customWhereConditionsEntries) {
+                        String exp = initExpression(component, entry);
+                        if (exp != null && !DbMapSqlConstants.EMPTY.equals(exp.trim())) {
+                            if (containWith(exp, DbMapSqlConstants.OR, true) || containWith(exp, DbMapSqlConstants.AND, true)) {
+                                exp = replaceVariablesForExpression(component, exp);
+                                originalWhereAddition.add(exp);
+                            } else {
+                                exp = replaceVariablesForExpression(component, exp);
+                                whereAddition.add(exp);
+                            }
+                        }
+                    }
+                }
+
+                List<ExternalDbMapEntry> customOtherConditionsEntries = outputTable.getCustomOtherConditionsEntries();
+                if (customOtherConditionsEntries != null) {
+                    for (ExternalDbMapEntry entry : customOtherConditionsEntries) {
+                        String exp = initExpression(component, entry);
+                        if (exp != null && !DbMapSqlConstants.EMPTY.equals(exp.trim())) {
+                            exp = replaceVariablesForExpression(component, exp);
+                            otherAddition.add(exp);
+                        }
+                    }
+                }
+            }
+            this.tabSpaceString = tabString;
+
+            String whereClauses = sbWhere.toString();
+            boolean whereFlag = whereClauses.trim().length() > 0;
+            boolean whereAddFlag = !whereAddition.isEmpty();
+            boolean whereOriginalFlag = !originalWhereAddition.isEmpty();
+            if (whereFlag || whereAddFlag || whereOriginalFlag) {
+                appendSqlQuery(sb, DbMapSqlConstants.NEW_LINE);
+                appendSqlQuery(sb, tabSpaceString);
+                appendSqlQuery(sb, DbMapSqlConstants.WHERE);
+            }
+            if (whereFlag) {
+                appendSqlQuery(sb, whereClauses);
+            }
+            if (whereAddFlag) {
+                for (int i = 0; i < whereAddition.size(); i++) {
+                    if (i == 0 && whereFlag || i > 0) {
+                        appendSqlQuery(sb, DbMapSqlConstants.NEW_LINE);
+                        appendSqlQuery(sb, tabSpaceString);
+                        appendSqlQuery(sb, DbMapSqlConstants.SPACE);
+                        appendSqlQuery(sb, DbMapSqlConstants.AND);
+                    }
+                    appendSqlQuery(sb, DbMapSqlConstants.SPACE);
+                    appendSqlQuery(sb, whereAddition.get(i));
+                }
+            }
+            if (whereOriginalFlag) {
+                for (String s : originalWhereAddition) {
+                    appendSqlQuery(sb, DbMapSqlConstants.NEW_LINE);
+                    appendSqlQuery(sb, DbMapSqlConstants.SPACE);
+                    appendSqlQuery(sb, s);
+                }
+            }
+            if (!otherAddition.isEmpty()) {
+                appendSqlQuery(sb, DbMapSqlConstants.NEW_LINE);
+                appendSqlQuery(sb, tabSpaceString);
+                for (String s : otherAddition) {
+                    appendSqlQuery(sb, s);
+                    appendSqlQuery(sb, DbMapSqlConstants.NEW_LINE);
+                    appendSqlQuery(sb, tabSpaceString);
+                }
+            }
+        }
+
+        String sqlQuery = sb.toString();
+        sqlQuery = handleQuery(sqlQuery);
+        queryColumnsName = handleQuery(queryColumnsName);
+        return sqlQuery;
+    }
 }

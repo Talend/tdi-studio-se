@@ -23,6 +23,7 @@ import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.Platform;
 import org.talend.core.GlobalServiceRegister;
 import org.talend.core.model.components.AbstractComponentsProvider;
+import org.talend.core.runtime.util.SharedStudioInfoProvider;
 import org.talend.core.ui.branding.IBrandingService;
 import org.talend.designer.codegen.i18n.Messages;
 
@@ -69,6 +70,9 @@ public final class ComponentsProviderManager {
                     try {
                         AbstractComponentsProvider componentsProvider = (AbstractComponentsProvider) configurationElement
                                 .createExecutableExtension("class"); //$NON-NLS-1$
+						if (componentsProvider instanceof SharedStudioInfoProvider && !((SharedStudioInfoProvider)componentsProvider).isSupportCurrentMode()) {
+							continue;
+						}		
                         componentsProvider.setId(id);
                         componentsProvider.setFolderName(folderName);
                         componentsProvider.setContributer(contributerName);
@@ -81,15 +85,15 @@ public final class ComponentsProviderManager {
         }
     }
 
-    public AbstractComponentsProvider loadUserComponentsProvidersFromExtension() {
-        if (providers == null) {
-            loadComponentsProvidersFromExtension();
-        }
-        for (AbstractComponentsProvider provider : providers) {
-            if ("org.talend.designer.components.model.UserComponentsProvider".equals(provider.getId())) {
-                return provider;
-            }
-        }
-        return null;
-    }
+	public AbstractComponentsProvider loadUserComponentsProvidersFromExtension() {
+		if (providers == null) {
+			loadComponentsProvidersFromExtension();
+		}
+		for (AbstractComponentsProvider provider : providers) {
+			if (provider instanceof UserComponentsProvider) {
+				return provider;
+			}
+		}
+		return null;
+	}
 }

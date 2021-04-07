@@ -14,19 +14,19 @@ package org.talend.sdk.component.studio.service;
 
 import java.io.File;
 import java.util.Collection;
-import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.runtime.service.ITaCoKitService;
-import org.talend.core.repository.utils.ComponentsJsonModel;
-import org.talend.core.repository.utils.ProjectDataJsonProvider;
-import org.talend.sdk.component.server.front.model.ConfigTypeNode;
+import org.talend.core.model.repository.ERepositoryObjectType;
+import org.talend.sdk.component.server.front.model.ComponentDetail;
 import org.talend.sdk.component.studio.Lookups;
 import org.talend.sdk.component.studio.ServerManager;
 import org.talend.sdk.component.studio.metadata.TaCoKitCache;
-import org.talend.sdk.component.studio.metadata.migration.TaCoKitMigrationManager;
+import org.talend.sdk.component.studio.model.parameter.PropertyDefinitionDecorator;
+import org.talend.sdk.component.studio.model.parameter.VersionParameter;
 import org.talend.sdk.component.studio.toolbar.ReloadAction;
 import org.talend.sdk.component.studio.util.TaCoKitUtil;
 import org.talend.updates.runtime.service.ITaCoKitUpdateService;
@@ -65,44 +65,39 @@ public class TaCoKitService implements ITaCoKitService {
     }
 
     @Override
-    public void checkMigration(IProgressMonitor monitor) throws Exception {
-        Lookups.taCoKitCache().getMigrationManager().checkMigration(monitor);
-    }
-
-    @Override
     public boolean isTaCoKitCar(File file, IProgressMonitor monitor) throws Exception {
         return ITaCoKitUpdateService.getInstance().isCar(file, monitor);
     }
 
     @Override
-    public boolean isNeedMigration(String projectLabel) throws Exception {
-        boolean isNeed = false;
-        TaCoKitCache currentCach = Lookups.taCoKitCache();
-        Collection<ConfigTypeNode> configTypeNodes = currentCach.getConfigTypeNodes().getNodes().values();
+    public boolean isTaCoKitType(Object repoType) {
+        if (repoType instanceof ERepositoryObjectType) {
+            return TaCoKitUtil.isTaCoKitType((ERepositoryObjectType) repoType);
+        } else {
+            throw new IllegalArgumentException("Currently only support ERepositoryObjectType, please implement it if needed");
+        }
+    }
 
-        Map<String, String[]> lastConfigComponent = ProjectDataJsonProvider.getLastConfigComponent(projectLabel);
-        if (lastConfigComponent != null && lastConfigComponent.size() > 0) {
-            for (String id : lastConfigComponent.keySet()) {
-                // content{name,version,displayName}
-                String[] content = lastConfigComponent.get(id);
-                try {
-                    ConfigTypeNode configTypeNode = currentCach.getConfigTypeNode(id);
-                    if (configTypeNode.getVersion() != Integer.parseInt(content[1])) {
-                        isNeed = true;
-                        break;
+    @Override
+    public boolean isNeedMigration(String componentName, Map<String, String> persistedProperties) {
+        TaCoKitCache currentCach = Lookups.taCoKitCache();
+        Optional<ComponentDetail> detail = Lookups.service().getDetail(componentName);
+        final Collection<PropertyDefinitionDecorator> properties = PropertyDefinitionDecorator
+                .wrap(detail.get().getProperties());
+        for (String key : persistedProperties.keySet()) {
+            for (PropertyDefinitionDecorator p : properties) {
+                if (p.getConfigurationType() != null && p.getConfigurationTypeName() != null
+                        && (p.getPath() + VersionParameter.VERSION_SUFFIX).equals(key)) {
+                    int currentVersion = TaCoKitUtil.getConfigTypeVersion(p, currentCach.getConfigTypeNodes(),
+                            detail.get().getId().getFamilyId());
+                    int persistedVersion = Integer.parseInt(persistedProperties.get(key));
+                    if (currentVersion > persistedVersion) {
+                        return true;
                     }
-                } catch (IllegalArgumentException e) {
-                    // means Config type not found for the id, nothing to do here
+                    break;
                 }
             }
         }
-
-        // if installed new component, need update
-        if (configTypeNodes.size() > lastConfigComponent.values().size()) {
-            List<ComponentsJsonModel> componentIndexJsons = TaCoKitMigrationManager.adaptComponentIndexJson(configTypeNodes);
-            ProjectDataJsonProvider.saveConfigComponent(projectLabel, componentIndexJsons);
-        }
-        return isNeed;
+        return false;
     }
-
 }

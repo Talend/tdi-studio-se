@@ -420,6 +420,7 @@ public class SQLBuilderEditorComposite extends AbstractSQLEditorComposite {
      */
     @Override
     public String getSQLToBeExecuted() {
+        updateParameters();
         return colorText.getText();
     }
 
@@ -456,6 +457,7 @@ public class SQLBuilderEditorComposite extends AbstractSQLEditorComposite {
     }
 
     public String getEditorContent() {
+        updateParameters();
         return colorText.getText();
     }
 

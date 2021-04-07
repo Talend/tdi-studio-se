@@ -43,6 +43,14 @@ public class PasswordController extends TextController {
 
     protected static final String PASSWORD = "PASSWORD"; //$NON-NLS-1$
 
+    protected String getDialogTitle() {
+        return Messages.getString("PasswordController.NewPassword"); //$NON-NLS-1$
+    }
+
+    protected String getDialogMessage() {
+        return Messages.getString("PasswordController.NoteConvention"); //$NON-NLS-1$
+    }
+
     /**
      * DOC nrousseau PasswordController constructor comment.
      *
@@ -166,7 +174,7 @@ public class PasswordController extends TextController {
 
             InputDialog dlg = new InputDialog(
                     button.getShell(),
-                    Messages.getString("PasswordController.NewPassword"), Messages.getString("PasswordController.NoteConvention"), //$NON-NLS-1$ //$NON-NLS-2$
+                    getDialogTitle(), getDialogMessage(),
                     initValue, null) {
 
                 /*

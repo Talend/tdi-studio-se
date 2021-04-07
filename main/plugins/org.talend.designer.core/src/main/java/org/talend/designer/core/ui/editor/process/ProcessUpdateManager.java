@@ -29,7 +29,6 @@ import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.ui.IEditorReference;
 import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.exception.PersistenceException;
 import org.talend.commons.runtime.model.components.IComponentConstants;
@@ -42,9 +41,13 @@ import org.talend.core.PluginChecker;
 import org.talend.core.model.components.ComponentCategory;
 import org.talend.core.model.components.IComponent;
 import org.talend.core.model.context.ContextUtils;
+import org.talend.core.model.context.ContextUtils.ContextItemParamMap;
 import org.talend.core.model.context.JobContext;
 import org.talend.core.model.context.JobContextManager;
 import org.talend.core.model.context.JobContextParameter;
+import org.talend.core.model.context.link.ContextLinkService;
+import org.talend.core.model.context.link.ContextParamLink;
+import org.talend.core.model.context.link.ItemContextLink;
 import org.talend.core.model.metadata.IEbcdicConstant;
 import org.talend.core.model.metadata.IMetadataColumn;
 import org.talend.core.model.metadata.IMetadataTable;
@@ -67,6 +70,7 @@ import org.talend.core.model.metadata.builder.connection.ValidationRulesConnecti
 import org.talend.core.model.metadata.builder.connection.XmlFileConnection;
 import org.talend.core.model.metadata.builder.connection.impl.XmlFileConnectionImpl;
 import org.talend.core.model.metadata.designerproperties.RepositoryToComponentProperty;
+import org.talend.core.model.param.EConnectionParameterName;
 import org.talend.core.model.process.EComponentCategory;
 import org.talend.core.model.process.EParameterFieldType;
 import org.talend.core.model.process.IContext;
@@ -85,9 +89,7 @@ import org.talend.core.model.properties.FileItem;
 import org.talend.core.model.properties.GenericSchemaConnectionItem;
 import org.talend.core.model.properties.HeaderFooterConnectionItem;
 import org.talend.core.model.properties.Item;
-import org.talend.core.model.properties.JobletProcessItem;
 import org.talend.core.model.properties.LinkRulesItem;
-import org.talend.core.model.properties.ProcessItem;
 import org.talend.core.model.properties.Property;
 import org.talend.core.model.properties.RulesItem;
 import org.talend.core.model.repository.ERepositoryObjectType;
@@ -114,7 +116,9 @@ import org.talend.core.service.IMetadataManagmentService;
 import org.talend.core.ui.ICDCProviderService;
 import org.talend.core.ui.IJobletProviderService;
 import org.talend.core.ui.component.ComponentsFactoryProvider;
+import org.talend.core.utils.TalendQuoteUtils;
 import org.talend.cwm.helper.SAPBWTableHelper;
+import org.talend.daikon.properties.Properties;
 import org.talend.designer.core.DesignerPlugin;
 import org.talend.designer.core.i18n.Messages;
 import org.talend.designer.core.model.components.EParameterName;
@@ -123,7 +127,6 @@ import org.talend.designer.core.model.components.EmfComponent;
 import org.talend.designer.core.model.process.AbstractProcessProvider;
 import org.talend.designer.core.model.utils.emf.talendfile.ContextParameterType;
 import org.talend.designer.core.model.utils.emf.talendfile.ContextType;
-import org.talend.designer.core.model.utils.emf.talendfile.impl.ContextTypeImpl;
 import org.talend.designer.core.ui.editor.nodes.Node;
 import org.talend.designer.core.ui.editor.update.UpdateCheckResult;
 import org.talend.designer.core.ui.editor.update.UpdateManagerUtils;
@@ -310,10 +313,11 @@ public class ProcessUpdateManager extends AbstractUpdateManager {
                     }
                 }
             } else {
-            	Boolean propagate = DesignerPlugin.getDefault().getPreferenceStore().getBoolean(TalendDesignerPrefConstants.PROPAGATE_CONTEXT);
-            	if(!propagate) {
-            		return contextResults;
-            	}
+                Boolean propagate = DesignerPlugin.getDefault().getPreferenceStore()
+                        .getBoolean(TalendDesignerPrefConstants.PROPAGATE_CONTEXT);
+                if (!propagate) {
+                    return contextResults;
+                }
                 // only handle added groups
                 Set<String> contextSourceChecked = new HashSet<String>();
                 Set<String> processContextGroups = new HashSet<String>();
@@ -400,16 +404,14 @@ public class ProcessUpdateManager extends AbstractUpdateManager {
     private List<UpdateResult> checkContext(boolean onlySimpleShow) {
         List<UpdateResult> contextResults = new ArrayList<UpdateResult>();
         final IContextManager contextManager = getProcess().getContextManager();
+        final String defaultContextName = contextManager.getDefaultContext().getName();
         // record the unsame
         ContextItemParamMap unsameMap = new ContextItemParamMap();
-        // rename
-        ContextItemParamMap renamedMap = new ContextItemParamMap();
         // built in
         ContextItemParamMap builtInMap = new ContextItemParamMap();
         Set<String> builtInSet = new HashSet<String>();
 
-        Map<ContextItem, Map<String, String>> repositoryRenamedMap = ((JobContextManager) contextManager)
-                .getRepositoryRenamedMap();
+        Map<Item, Map<String, String>> repositoryRenamedMap = new HashMap<Item, Map<String, String>>();
 
         ContextItemParamMap deleteParams = new ContextItemParamMap();
 
@@ -419,7 +421,15 @@ public class ProcessUpdateManager extends AbstractUpdateManager {
 
         List<IProcess2> openedProcesses = UpdateManagerUtils.getOpenedProcess();
 
-        Map<ContextItem, Set<String>> existedParams = new HashMap<ContextItem, Set<String>>();
+        Map<Item, Set<String>> existedParams = new HashMap<Item, Set<String>>();
+
+        Map<String, Item> tempItemMap = new HashMap<String, Item>();
+        ItemContextLink itemContextLink = null;
+        try {
+            itemContextLink = ContextLinkService.getInstance().loadContextLinkFromJson(getProcess().getProperty().getItem());
+        } catch (PersistenceException e) {
+            ExceptionHandler.process(e);
+        }
 
         for (IContext context : contextManager.getListContext()) {
             for (IContextParameter param : context.getContextParameterList()) {
@@ -427,57 +437,31 @@ public class ProcessUpdateManager extends AbstractUpdateManager {
                     String source = param.getSource();
                     String paramName = param.getName();
                     refContextIds.add(source);
-                    // rename
-                    boolean renamed = false;
-                    for (ContextItem item : repositoryRenamedMap.keySet()) {
-                        if (source.equals(item.getProperty().getId())) {
-                            String newName = getRenamedVarName(paramName, repositoryRenamedMap.get(item));
-                            if (newName != null && !newName.equals(paramName)) {
-                                renamedMap.add(item, paramName);
-                                renamed = true;
-                            }
-                        }
+                    ContextParamLink paramLink = null;
+                    if (itemContextLink != null) {
+                        paramLink = itemContextLink.findContextParamLinkByName(param.getSource(), context.getName(), param.getName());
                     }
-                    if (!renamed) {
-                        // update
-                        final Item contextItem = ContextUtils.getRepositoryContextItemById(source);
+
+                    Item item = tempItemMap.get(source);
+                    if (item == null) {
+                        item = ContextUtils.findContextItem(allContextItem, source);
+                        tempItemMap.put(source, item);
+                    }
+                    if (item != null) {
                         boolean builtin = true;
-                        if (contextItem != null) {
-                            if (contextItem instanceof ContextItem) {
-                                final ContextType contextType = ContextUtils.getContextTypeByName((ContextItem) contextItem,
-                                        context.getName(), true);
-                                if (contextType != null) {
-                                    final ContextParameterType contextParameterType = ContextUtils
-                                            .getContextParameterTypeByName(contextType, paramName);
-                                    if (contextParameterType != null) {
-                                        ContextItem repositoryContext = (ContextItem) contextItem;
-                                        if (existedParams.get(contextItem) == null) {
-                                            existedParams.put(repositoryContext, new HashSet<String>());
-                                        }
-                                        existedParams.get(repositoryContext).add(paramName);
-                                        if (onlySimpleShow || !ContextUtils.samePropertiesForContextParameter(param,
-                                                contextParameterType)) {
-                                            unsameMap.add(contextItem, paramName);
-                                        }
-                                        builtin = false;
-                                    } else {
-                                        // delete context variable
-                                        if (ContextUtils.isPropagateContextVariable()) {
-                                            deleteParams.add(contextItem, paramName);
-                                            builtin = false;
-                                        }
-                                    }
-                                }
-                            } else if (contextItem instanceof JobletProcessItem) {
-                                builtin = false;
-                            } else if (contextItem instanceof ProcessItem) {
-                                builtin = false;
-                            }
+                        final ContextType contextType = ContextUtils.getContextTypeByName(item, context.getName());
+                        if (contextType != null) {
+                            builtin = ContextUtils.compareContextParameter(item, contextType, param, paramLink,
+                                    repositoryRenamedMap, existedParams, unsameMap, deleteParams, onlySimpleShow,
+                                    StringUtils.equals(context.getName(), defaultContextName));
+                        }
+                        if (!builtin && StringUtils.equals(source, getProcess().getProperty().getId())) {
+                            builtin = true;
                         }
                         if (builtin) {
                             // built in
-                            if (contextItem != null) {
-                                builtInMap.add(contextItem, paramName);
+                            if (item != null) {
+                                builtInMap.add(item, paramName);
                             } else {
                                 builtInSet.add(paramName);
                             }
@@ -535,8 +519,8 @@ public class ProcessUpdateManager extends AbstractUpdateManager {
             }
         }
         // rename
-        if (!renamedMap.isEmpty()) {
-            for (Item item : renamedMap.getContexts()) {
+        if (!repositoryRenamedMap.isEmpty()) {
+            for (Item item : repositoryRenamedMap.keySet()) {
                 Map<String, String> nameMap = repositoryRenamedMap.get(item);
                 if (nameMap != null && !nameMap.isEmpty()) {
                     for (String newName : nameMap.keySet()) {
@@ -569,20 +553,18 @@ public class ProcessUpdateManager extends AbstractUpdateManager {
                 }
             }
         }
-        repositoryRenamedMap.clear();
         return contextResults;
     }
 
-    private void checkNewAddParameterForRef(Map<ContextItem, Set<String>> existedParams, final IContextManager contextManager,
+    private void checkNewAddParameterForRef(Map<Item, Set<String>> existedParams, final IContextManager contextManager,
             boolean isPropagateContextVariable) {
         if (!isPropagateContextVariable) {
             return;
         }
 
-        Map<ContextItem, Set<String>> newParametersMap = ((JobContextManager) contextManager).getNewParametersMap();
-        for (ContextItem contextItem : existedParams.keySet()) {
-            ContextType contextType = ContextUtils.getContextTypeByName((ContextItem) contextItem,
-                    contextItem.getDefaultContext(), true);
+        Map<Item, Set<String>> newParametersMap = ((JobContextManager) contextManager).getNewParametersMap();
+        for (Item contextItem : existedParams.keySet()) {
+            ContextType contextType = ContextUtils.getContextTypeByName(contextItem, null);
             List<ContextParameterType> contextParameter = contextType.getContextParameter();
             Set<String> existedParName = existedParams.get(contextItem);
             for (ContextParameterType parameterType : contextParameter) {
@@ -590,7 +572,8 @@ public class ProcessUpdateManager extends AbstractUpdateManager {
                     if (newParametersMap.get(contextItem) == null) {
                         newParametersMap.put(contextItem, new HashSet<String>());
                     }
-                    // To avoid the case: serval contexts contain more than one same name parameters, but we only can add
+                    // To avoid the case: serval contexts contain more than one same name parameters, but we only can
+                    // add
                     // one of them
                     IContext processContext = ((JobContextManager) contextManager).getDefaultContext();
                     if (processContext.getContextParameter(parameterType.getName()) == null) {
@@ -614,7 +597,7 @@ public class ProcessUpdateManager extends AbstractUpdateManager {
             ContextItemParamMap deleteParams, final List<ContextItem> allContextItem, Set<String> refContextIds) {
         if (ContextUtils.isPropagateContextVariable()) {
             // check newly added parameter
-            Map<ContextItem, Set<String>> newParametersMap = ((JobContextManager) contextManager).getNewParametersMap();
+            Map<Item, Set<String>> newParametersMap = ((JobContextManager) contextManager).getNewParametersMap();
             if (newParametersMap != null) {
                 // improve lookup speed
                 Map<String, ContextItem> contextItemsMap = new HashMap<String, ContextItem>();
@@ -683,38 +666,11 @@ public class ProcessUpdateManager extends AbstractUpdateManager {
         return filterBuildInList;
     }
 
-    private static boolean isOpenedProcess(Process curProcess) {
-        IEditorReference[] reference = RepositoryUpdateManager.getEditors();
-        List<IProcess2> openedProcessList = CorePlugin.getDefault().getDesignerCoreService().getOpenedProcess(reference);
-        for (IProcess2 process : openedProcessList) {
-            Property property = curProcess.getProperty();
-            if (process.getId().equals(property.getId()) && process.getName().equals(property.getLabel())
-                    && process.getVersion().equals(property.getVersion())) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private static String getRenamedVarName(final String varName, Map<String, String> renamedMap) {
-        if (varName == null || renamedMap == null || renamedMap.isEmpty()) {
-            return null;
-        }
-
-        Set<String> keySet = renamedMap.keySet();
-        for (String newName : keySet) {
-            String oldName = renamedMap.get(newName);
-            if (varName.equals(oldName)) {
-                return newName;
-            }
-        }
-        return null;
-    }
-
     /*
      * check job settings parameters.
      */
-    private List<UpdateResult> checkMainParameters(EUpdateItemType type, boolean onlySimpleShow, Map<Object, Object> contextData) {
+    private List<UpdateResult> checkMainParameters(EUpdateItemType type, boolean onlySimpleShow,
+            Map<Object, Object> contextData) throws PersistenceException {
         List<UpdateResult> mainResults = new ArrayList<UpdateResult>();
         switch (type) {
         case JOB_PROPERTY_MAPREDUCE:
@@ -907,12 +863,12 @@ public class ProcessUpdateManager extends AbstractUpdateManager {
     }
 
     private List<UpdateResult> checkJobSettingsParameters(EComponentCategory category, EUpdateItemType type,
-            boolean onlySimpleShow) {
+            boolean onlySimpleShow) throws PersistenceException {
         return checkJobSettingsParameters(category, type, onlySimpleShow, new HashMap<Object, Object>());
     }
 
     private List<UpdateResult> checkJobSettingsParameters(EComponentCategory category, EUpdateItemType type,
-            boolean onlySimpleShow, Map<Object, Object> contextData) {
+            boolean onlySimpleShow, Map<Object, Object> contextData) throws PersistenceException {
         List<UpdateResult> jobSettingsResults = new ArrayList<UpdateResult>();
         final IElementParameter propertyTypeParam = getProcess().getElementParameterFromField(EParameterFieldType.PROPERTY_TYPE,
                 category);
@@ -957,9 +913,7 @@ public class ProcessUpdateManager extends AbstractUpdateManager {
                                     if (repValue == null) {
                                         continue;
                                     }
-                                    if (repositoryValue.equals("connection.driverTable")) {
-                                        ConnectionUtil.resetDriverValue(repValue);
-                                    }
+
                                     if (repositoryValue.equals(UpdatesConstants.TYPE)) { // datebase type
                                         boolean found = false;
                                         String[] list = param.getListRepositoryItems();
@@ -1006,9 +960,16 @@ public class ProcessUpdateManager extends AbstractUpdateManager {
                                                     }
                                                 }
                                             }
+                                        } else if ((param.getName().equals("DRIVER_JAR")
+                                                || param.getName().equals("DRIVER_JAR_IMPLICIT_CONTEXT"))
+                                                && param.getValue() != null) {
+                                            sameValues = isSameDriverList((List<Map<String, Object>>) param.getValue(),
+                                                    (List<Map<String, Object>>) repValue);
+
                                         } else if (!param.getValue().equals(repValue)) {
                                             sameValues = false;
                                         }
+
                                     }
                                 }
                                 if (!sameValues) {
@@ -1055,11 +1016,103 @@ public class ProcessUpdateManager extends AbstractUpdateManager {
         return jobSettingsResults;
     }
 
+    private static boolean isSameDriverList(List<Map<String, Object>> lst1, List<Map<String, Object>> lst2) {
+        if (lst1 == null) {
+            if (lst2 == null) {
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+            if (lst2 == null) {
+                return false;
+            } else {
+                // compare
+                if (lst1.size() != lst2.size()) {
+                    return false;
+                } else {
+                    Set<String> driverSet1 = new HashSet<String>();
+                    Set<String> driverSet2 = new HashSet<String>();
+                    boolean isDriverUri1 = false;
+                    boolean isDriverUri2 = false;
+                    for (Map<String, Object> driverItem1 : lst1) {
+                        Object driver1 = driverItem1.get("drivers");
+                        if (driver1 != null) {
+                            String val = TalendQuoteUtils.removeQuotes(String.valueOf(driver1));
+                            driverSet1.add(val);
+                            if (MavenUrlHelper.isMvnUrl(val)) {
+                                isDriverUri1 = true;
+                            }
+                        }
+                    }
+                    for (Map<String, Object> driverItem2 : lst2) {
+                        Object driver2 = driverItem2.get("drivers");
+                        if (driver2 != null) {
+                            String val = TalendQuoteUtils.removeQuotes(String.valueOf(driver2));
+                            driverSet2.add(val);
+                            if (MavenUrlHelper.isMvnUrl(val)) {
+                                isDriverUri2 = true;
+                            }
+                        }
+                    }
+
+                    if (driverSet1.size() != driverSet2.size()) {
+                        return false;
+                    }
+                    if (isDriverUri1 == isDriverUri2) {
+                        return driverSet1.equals(driverSet2);
+                    } else {
+                        if (isDriverUri1) {
+                            for (String item : driverSet1) {
+                                MavenArtifact art = MavenUrlHelper.parseMvnUrl(item);
+                                if (!driverSet2.contains(art.getFileName())) {
+                                    return false;
+                                }
+                            }
+                        } else {
+                            for (String item : driverSet2) {
+                                MavenArtifact art = MavenUrlHelper.parseMvnUrl(item);
+                                if (!driverSet1.contains(art.getFileName())) {
+                                    return false;
+                                }
+                            }
+                        }
+                        return true;
+                    }
+                }
+            }
+        }
+    }
+
+    private static boolean isSameDriver(Object val1, Object val2) {
+        String driver1 = String.valueOf(val1);
+        String driver2 = String.valueOf(val2);
+        driver1 = TalendQuoteUtils.removeQuotes(driver1);
+        driver2 = TalendQuoteUtils.removeQuotes(driver2);
+        if (MavenUrlHelper.isMvnUrl(driver1)) {
+            if (!MavenUrlHelper.isMvnUrl(driver2)) {
+                MavenArtifact art = MavenUrlHelper.parseMvnUrl(driver1);
+                if (art != null) {
+                    return art.getFileName().equals(driver2);
+                }
+            }
+        } else {
+            if (MavenUrlHelper.isMvnUrl(driver2)) {
+                MavenArtifact art = MavenUrlHelper.parseMvnUrl(driver2);
+                if (art != null) {
+                    return art.getFileName().equals(driver1);
+                }
+            }
+        }
+        return true;
+    }
+
     /*
      * check node parameters.
      */
     @SuppressWarnings("unchecked")
-    private List<UpdateResult> checkNodesParameters(EUpdateItemType type, boolean onlySimpleShow, Map<Object, Object> contextData) {
+    private List<UpdateResult> checkNodesParameters(EUpdateItemType type, boolean onlySimpleShow,
+            Map<Object, Object> contextData) throws PersistenceException {
         List<UpdateResult> nodesResults = new ArrayList<UpdateResult>();
         for (Node node : (List<Node>) getProcess().getGraphicalNodes()) {
             switch (type) {
@@ -1823,9 +1876,11 @@ public class ProcessUpdateManager extends AbstractUpdateManager {
      *
      * @param node
      * @return true if the data have been modified
+     * @throws PersistenceException
      */
     @SuppressWarnings("unchecked")
-    private List<UpdateResult> checkNodePropertiesFromRepository(final Node node, boolean onlySimpleShow) {
+    private List<UpdateResult> checkNodePropertiesFromRepository(final Node node, boolean onlySimpleShow)
+            throws PersistenceException {
         return checkNodePropertiesFromRepository(node, onlySimpleShow, new HashMap<Object, Object>());
     }
 
@@ -1835,9 +1890,11 @@ public class ProcessUpdateManager extends AbstractUpdateManager {
      *
      * @param node
      * @return true if the data have been modified
+     * @throws PersistenceException
      */
     @SuppressWarnings("unchecked")
-    private List<UpdateResult> checkNodePropertiesFromRepository(final Node node, boolean onlySimpleShow, Map<Object, Object> contextData) {
+    private List<UpdateResult> checkNodePropertiesFromRepository(final Node node, boolean onlySimpleShow,
+            Map<Object, Object> contextData) throws PersistenceException {
         if (node == null) {
             return Collections.emptyList();
         }
@@ -1873,7 +1930,7 @@ public class ProcessUpdateManager extends AbstractUpdateManager {
                         if (item != null && item instanceof ConnectionItem) {
                             source = UpdateRepositoryUtils.getRepositorySourceName(item);
                             repositoryConnection = ((ConnectionItem) item).getConnection();
-                            if(repositoryConnection != null && repositoryConnection.getId() == null){
+                            if (repositoryConnection != null && repositoryConnection.getId() == null) {
                                 repositoryConnection.setId(((ConnectionItem) item).getProperty().getId());
                             }
                         }
@@ -2317,6 +2374,11 @@ public class ProcessUpdateManager extends AbstractUpdateManager {
                         if (contextResults != null) {
                             propertiesResults.addAll(contextResults);
                         }
+                        List<UpdateResult> nodeGenericPropertiesResults = checkNodeGenericPropertiesFromRepository(node,
+                                ((ConnectionItem) item));
+                        if (nodeGenericPropertiesResults.size() > 0) {
+                            propertiesResults.addAll(nodeGenericPropertiesResults);
+                        }
                     } else if (item != null && "pattern".equalsIgnoreCase(item.getFileExtension())) {
                         // Added TDQ-11688, check pattern update
                         ITDQPatternService service = null;
@@ -2374,6 +2436,7 @@ public class ProcessUpdateManager extends AbstractUpdateManager {
                 }
             }
         }
+
         return propertiesResults;
     }
 
@@ -2411,17 +2474,10 @@ public class ProcessUpdateManager extends AbstractUpdateManager {
             for (int i = 0; i < oldList.size(); i++) {
                 Map<String, Object> oldMap = oldList.get(i);
                 Map<String, Object> objectMap = (Map<String, Object>) objectList.get(i);
+                String oldDriver = String.valueOf(oldMap.get(nodeParamDriverKey));
                 String driver = String.valueOf(objectMap.get("drivers"));
-                if (driver != null) {
-                    MavenArtifact artifact = MavenUrlHelper.parseMvnUrl(TalendTextUtils.removeQuotes(driver));
-                    if (artifact != null) {
-                        driver = artifact.getFileName();
-                    }
-                }
-                if (oldMap.get(nodeParamDriverKey).equals(driver)) {
-                    sameValues = true;
-                } else {
-                    sameValues = false;
+                sameValues = isSameDriver(oldDriver, driver);
+                if (!sameValues) {
                     break;
                 }
             }
@@ -2508,23 +2564,31 @@ public class ProcessUpdateManager extends AbstractUpdateManager {
      * ggu Comment method "checkParameterContextMode".
      *
      * for bug 5198
+     * 
+     * @throws PersistenceException
      */
     private List<UpdateResult> checkParameterContextMode(final List<? extends IElementParameter> parameters,
-            ConnectionItem connItem, EComponentCategory category, Map<Object, Object> contextData) {
+            ConnectionItem connItem, EComponentCategory category, Map<Object, Object> contextData) throws PersistenceException {
         List<UpdateResult> contextResults = new ArrayList<UpdateResult>();
-
+        Map<String, String> renamedMap = ContextUtils.getContextParamterRenamedMap(process.getProperty().getItem());
         if (connItem != null && parameters != null) {
             ConnectionContextHelper.checkContextMode(connItem);
+            RepositoryUpdateManager.updateConnectionContextParam(connItem);
             Connection connection = connItem.getConnection();
             if (connection.isContextMode()) {
-                Set<String> neededVars = ConnectionContextHelper.retrieveContextVar(parameters, connection, category, contextData);
+                Set<String> neededVars = ConnectionContextHelper.retrieveContextVar(parameters, connection, category,
+                        contextData);
                 if (neededVars != null && !neededVars.isEmpty()) {
                     ContextItem contextItem = ContextUtils.getContextItemById2(connection.getContextId());
-                    EcoreUtil.resolveAll(contextItem);
                     if (contextItem != null) {
+                        EcoreUtil.resolveAll(contextItem);
                         // find added variables
+                        // change back the old context name in neededVars , the renamed context should not be treated as
+                        // new added
+                        neededVars.removeAll(renamedMap.keySet());
+                        neededVars.addAll(renamedMap.values());
                         Set<String> addedVars = ConnectionContextHelper.checkAndAddContextVariables(contextItem, neededVars,
-                                process.getContextManager(), false);
+                                process.getContextManager(), false, renamedMap);
                         if (addedVars != null && !addedVars.isEmpty()) {
                             UpdateCheckResult result = new UpdateCheckResult(addedVars);
                             String remark = UpdateRepositoryUtils.getRepositorySourceName(connItem);
@@ -2545,6 +2609,71 @@ public class ProcessUpdateManager extends AbstractUpdateManager {
             }
         }
         return contextResults;
+    }
+
+    private List<UpdateResult> checkNodeGenericPropertiesFromRepository(final Node node,
+            ConnectionItem repositoryConnectionItem) {
+        List<UpdateResult> results = new ArrayList<UpdateResult>();
+        boolean isChanged = false;
+        if (node.getComponentProperties() != null && repositoryConnectionItem.getConnection().getCompProperties() != null) {
+            for (IElementParameter param : node.getElementParameters()) {
+                if (isChanged) {
+                    break;
+                }
+                if (EConnectionParameterName.GENERIC_DRIVER_JAR.getDisplayName().equals(param.getName())
+                        && param.getFieldType().equals(EParameterFieldType.TABLE)
+                        && param.getListItemsDisplayCodeName().length > 0) {
+                    Properties properties = node.getComponentProperties().getProperties(param.getName());
+                    if (properties != null) {
+                        org.talend.daikon.properties.property.Property<?> property = properties
+                                .getValuedProperty(param.getListItemsDisplayCodeName()[0]);
+                        if (property != null) {
+                            IMetadataTable table = null;
+                            if (!node.getMetadataList().isEmpty()) {
+                                table = node.getMetadataList().get(0);
+                            }
+                            final String componentName = node.getComponent().getName();
+                            Object objectValue = RepositoryToComponentProperty.getValue(repositoryConnectionItem.getConnection(),
+                                    EConnectionParameterName.GENERIC_DRIVER_JAR.getDisplayName(), table, componentName, null);
+                            Object storedValue = property.getStoredValue();
+                            if (objectValue instanceof List) {
+                                List objectValueList = (List) objectValue;
+                                List newValueList = new ArrayList<>();
+                                for (int i = 0; i < objectValueList.size(); i++) {
+                                    Object object = objectValueList.get(i);
+                                    if (object instanceof HashMap) {
+                                        Map objectMap = (HashMap) object;
+                                        if (objectMap.containsKey(property.getName())) {
+                                            newValueList.add(objectMap.get(property.getName()));
+                                        }
+                                    }
+                                }
+                                if (storedValue instanceof List) {
+                                    List storeValueList = (List) storedValue;
+                                    if (storeValueList.size() != newValueList.size()) {
+                                        isChanged = true;
+                                        break;
+                                    }
+                                    for (int i = 0; i < storeValueList.size(); i++) {
+                                        if (!storeValueList.get(i).equals(newValueList.get(i))) {
+                                            isChanged = true;
+                                            break;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            if (isChanged) {
+                UpdateCheckResult result = new UpdateCheckResult(node);
+                result.setResult(EUpdateItemType.NODE_PROPERTY, EUpdateResult.UPDATE, repositoryConnectionItem);
+                result.setJob(getProcess());
+                results.add(result);
+            }
+        }
+        return results;
     }
 
     /*
@@ -2777,7 +2906,8 @@ public class ProcessUpdateManager extends AbstractUpdateManager {
     }
 
     @Override
-    public List<UpdateResult> getUpdatesNeeded(IUpdateItemType itemType, boolean onlySimpleShow, Map<Object, Object> contextData) {
+    public List<UpdateResult> getUpdatesNeeded(IUpdateItemType itemType, boolean onlySimpleShow,
+            Map<Object, Object> contextData) {
         if (itemType == null) {
             return null;
         }
@@ -2791,14 +2921,22 @@ public class ProcessUpdateManager extends AbstractUpdateManager {
             case NODE_SAP_IDOC:
             case NODE_SAP_FUNCTION:
             case NODE_VALIDATION_RULE:
-                tmpResults = checkNodesParameters(type, onlySimpleShow, contextData);
+                try {
+                    tmpResults = checkNodesParameters(type, onlySimpleShow, contextData);
+                } catch (PersistenceException ex) {
+                    ExceptionHandler.process(ex);
+                }
                 break;
             case JOB_PROPERTY_EXTRA:
             case JOB_PROPERTY_STATS_LOGS:
             case JOB_PROPERTY_HEADERFOOTER:
             case JOB_PROPERTY_STORM:
             case JOB_PROPERTY_MAPREDUCE:
-                tmpResults = checkMainParameters(type, onlySimpleShow, contextData);
+                try {
+                    tmpResults = checkMainParameters(type, onlySimpleShow, contextData);
+                } catch (PersistenceException ex) {
+                    ExceptionHandler.process(ex);
+                }
                 break;
             case CONTEXT:
                 tmpResults = checkContext(onlySimpleShow);
@@ -2831,39 +2969,6 @@ public class ProcessUpdateManager extends AbstractUpdateManager {
     @Override
     public boolean executeUpdates(List<UpdateResult> results) {
         return UpdateManagerUtils.executeUpdates(results, false, true, true);
-    }
-
-    /**
-     *
-     * DOC hcw ProcessUpdateManager class global comment. Detailled comment
-     */
-    static class ContextItemParamMap {
-
-        private Map<Item, Set<String>> map = new HashMap<Item, Set<String>>();
-
-        public void add(Item item, String param) {
-            Set<String> params = map.get(item);
-            if (params == null) {
-                params = new HashSet<String>();
-                map.put(item, params);
-            }
-            params.add(param);
-        }
-
-        @SuppressWarnings("unchecked")
-        public Set<String> get(Item item) {
-            Set<String> params = map.get(item);
-            return (params == null) ? Collections.EMPTY_SET : params;
-
-        }
-
-        public boolean isEmpty() {
-            return map.isEmpty();
-        }
-
-        public Set<Item> getContexts() {
-            return map.keySet();
-        }
     }
 
     private void setConfigrationForReadOnlyJob(UpdateCheckResult result) {

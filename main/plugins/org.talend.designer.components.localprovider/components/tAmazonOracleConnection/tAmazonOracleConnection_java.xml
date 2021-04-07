@@ -58,7 +58,7 @@
 	<PARAMETER NAME="DB_VERSION" FIELD="CLOSED_LIST" NUM_ROW="25"
 		REPOSITORY_VALUE="DB_VERSION">
 		<ITEMS DEFAULT="ORACLE_18">
-			<ITEM NAME="ORACLE_18" VALUE="ORACLE_18" />
+            <ITEM NAME="ORACLE_18" VALUE="ORACLE_18" />
 			<ITEM NAME="ORACLE_12" VALUE="ORACLE_12" />
 			<ITEM NAME="ORACLE_11" VALUE="ORACLE_11" />
 		</ITEMS>
@@ -240,9 +240,11 @@
    <CODEGENERATION>
     <IMPORTS>
        <IMPORT NAME="TNS" MODULE="tns.jar" MVN="mvn:org.talend.libraries/tns/6.0.0"  REQUIRED="true" />
-       <IMPORT NAME="Driver-Ojdbc8" MODULE="ojdbc8-12.2.0.1.jar" MVN="mvn:com.oracle.jdbc/ojdbc8/12.2.0.1"  REQUIRED_IF="(DB_VERSION == 'ORACLE_18')" />
+       <IMPORT NAME="ORACLE_18"     MODULE="ojdbc8-19.3.0.0.jar" MVN="mvn:com.oracle.ojdbc/ojdbc8/19.3.0.0" REQUIRED_IF="(DB_VERSION == 'ORACLE_18')" />
        <IMPORT NAME="Driver-Ojdbc7" MODULE="ojdbc7.jar" MVN="mvn:org.talend.libraries/ojdbc7/6.0.0"  REQUIRED_IF="(DB_VERSION == 'ORACLE_12')" />
        <IMPORT NAME="Driver-Ojdbc6" MODULE="ojdbc6.jar" MVN="mvn:org.talend.libraries/ojdbc6/6.0.0"  REQUIRED_IF="(DB_VERSION == 'ORACLE_11')" />
+       <IMPORT NAME="slf4j-api-1.7.25.jar" MODULE="slf4j-api-1.7.25.jar" MVN="mvn:org.slf4j/slf4j-api/1.7.25" REQUIRED_IF="USE_SHARED_CONNECTION =='true'" />
+       <IMPORT NAME="slf4j-log4j12-1.7.25.jar" MODULE="slf4j-log4j12-1.7.25.jar" MVN="mvn:org.slf4j/slf4j-log4j12/1.7.25" REQUIRED_IF="USE_SHARED_CONNECTION =='true'" />
     </IMPORTS>
    </CODEGENERATION>
 

@@ -41,6 +41,7 @@ public enum ERepositoryImages implements IImage {
     CONNECTOR_ICON("/icons/connection.gif"), //$NON-NLS-N$
     TALENDFORGE_ICON("/icons/talendforge.jpg"), //$NON-NLS-N$
     OPEN_ICON("/icons/open.gif"), //$NON-NLS-N$
+    BACKGROUND_TASK_ICON("/icons/backgroundTasks.png"), // $NON-NLS-N$
     DOT_ICON("/icons/dot.jpg");//$NON-NLS-N$
 
     private String path;

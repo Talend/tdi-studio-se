@@ -15,9 +15,12 @@ package org.talend.designer.core.generic.controller;
 import java.beans.PropertyChangeEvent;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.gef.commands.Command;
@@ -38,10 +41,13 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.ui.views.properties.tabbed.ITabbedPropertyConstants;
 import org.talend.components.api.properties.ComponentReferenceProperties;
+import org.talend.core.GlobalServiceRegister;
 import org.talend.core.model.process.EParameterFieldType;
 import org.talend.core.model.process.IElementParameter;
 import org.talend.core.model.process.INode;
+import org.talend.core.model.process.IReplaceNodeHandler;
 import org.talend.core.model.utils.TalendTextUtils;
+import org.talend.core.runtime.services.IGenericWizardService;
 import org.talend.core.ui.properties.tab.IDynamicProperty;
 import org.talend.designer.core.generic.constants.IGenericConstants;
 import org.talend.designer.core.generic.model.GenericElementParameter;
@@ -51,6 +57,7 @@ import org.talend.designer.core.model.components.ElementParameter;
 import org.talend.designer.core.ui.editor.cmd.PropertyChangeCommand;
 import org.talend.designer.core.ui.editor.nodes.Node;
 import org.talend.designer.core.ui.editor.properties.controllers.AbstractElementPropertySectionController;
+import org.talend.designer.core.utils.UnifiedComponentUtil;
 
 /**
  *
@@ -282,12 +289,12 @@ public class ComponentRefController extends AbstractElementPropertySectionContro
         INode currentNode = (INode) elem;
         List<INode> refNodes = getRefNodes(param, props);
         List<String> itemsLabel = new ArrayList<>();
-        List<String> itemsValue = new ArrayList<>();
+        Map<String, INode> itemsValue = new LinkedHashMap<>();
 
         // First item is this component (see also createComboCommand)
         // FIXME - I18N for this message
         itemsLabel.add("Use this Component");
-        itemsValue.add(currentNode.getUniqueName());
+        itemsValue.put(currentNode.getUniqueName(), currentNode);
         String selectedValue;
         Object referenceType = props.referenceType.getValue();
         if (referenceType != null && referenceType.equals(ComponentReferenceProperties.ReferenceType.COMPONENT_INSTANCE)) {
@@ -311,19 +318,20 @@ public class ComponentRefController extends AbstractElementPropertySectionContro
                 displayName = uniqueName + " - " + displayName; //$NON-NLS-1$
             }
             itemsLabel.add(displayName);
-            itemsValue.add(uniqueName);
+            itemsValue.put(uniqueName, node);
             labelToValueMap.put(displayName, uniqueName);
         }
+        List<String> itemValueList = new ArrayList<>(itemsValue.keySet());
         param.setListItemsDisplayName(itemsLabel.toArray(new String[0]));
         param.setListItemsDisplayCodeName(itemsLabel.toArray(new String[0]));
-        param.setListItemsValue(itemsValue.toArray(new String[0]));
+        param.setListItemsValue(itemValueList.toArray(new String[0]));
         combo.setItems(itemsLabel.toArray(new String[0]));
         String iLabel = null;
         int selection = 0;
-        for (int i = 0; i < itemsValue.size(); i++) {
-            String iValue = itemsValue.get(i);
+        for (int i = 0; i < itemValueList.size(); i++) {
+            String iValue = itemValueList.get(i);
             if ((selectedValue == null && (((INode) elem).getUniqueName()).equals(iValue))
-                    || (selectedValue != null && StringUtils.isNotEmpty(iValue) && iValue.endsWith(selectedValue))) {
+                    || isRefernceNode(currentNode, itemsValue.get(iValue), selectedValue, props)) {
                 iLabel = itemsLabel.get(i);
                 break;
             }
@@ -336,6 +344,33 @@ public class ComponentRefController extends AbstractElementPropertySectionContro
 
     }
 
+    private boolean isRefernceNode(INode selectedNode, INode checkingNode, String selectedUniqueName, ComponentReferenceProperties props) {
+        IReplaceNodeHandler selectedHandler = selectedNode.getReplaceNodeHandler();
+        IReplaceNodeHandler checkingHandler = checkingNode.getReplaceNodeHandler();
+
+        String selectedPrefix = Optional.ofNullable(selectedHandler).map(h -> h.getPrefix()).orElse("");
+        String checkingPrefix = Optional.ofNullable(checkingHandler).map(h -> h.getPrefix()).orElse("");
+        if (checkingPrefix.startsWith(selectedPrefix)) {
+            String selectedNameWithoutPrefix = selectedUniqueName;
+            String checkingUniqueNameWithoutPrefix = checkingNode.getUniqueName();
+            if (selectedNameWithoutPrefix.startsWith(selectedPrefix)) {
+                selectedNameWithoutPrefix = selectedNameWithoutPrefix.substring(selectedPrefix.length());
+            }
+            if (checkingUniqueNameWithoutPrefix.startsWith(selectedPrefix)) {
+                checkingUniqueNameWithoutPrefix = checkingUniqueNameWithoutPrefix.substring(selectedPrefix.length());
+            }
+            boolean isReferenceNode = StringUtils.equals(selectedNameWithoutPrefix, checkingUniqueNameWithoutPrefix);
+            if (isReferenceNode && selectedNode != checkingNode) {
+                props.componentInstanceId.setValue(selectedNameWithoutPrefix);
+                props.setReference(checkingNode.getComponentProperties());
+            }
+            
+            return isReferenceNode;
+        } else {
+            return false;
+        }
+    }
+
     private List<INode> getRefNodes(IElementParameter param, ComponentReferenceProperties props) {
         callBeforeActive(param);
         List<INode> refNodes = new ArrayList<>();
@@ -343,7 +378,24 @@ public class ComponentRefController extends AbstractElementPropertySectionContro
             GenericElementParameter gParameter = (GenericElementParameter) param;
             if (gParameter != null && gParameter.getElement() != null && gParameter.getElement() instanceof Node) {
                 Node node = (Node) gParameter.getElement();
-                refNodes = (List<INode>) node.getProcess().getNodesOfType(props.referenceDefinitionName.getStringValue());
+                String referenceComponentName = props.referenceDefinitionName.getStringValue();
+                if (GlobalServiceRegister.getDefault().isServiceRegistered(IGenericWizardService.class)) {
+                    IGenericWizardService service = GlobalServiceRegister.getDefault().getService(IGenericWizardService.class);
+                    if (service != null) {
+                        String databaseName = service.getDatabseNameByNode(node);
+                        if (UnifiedComponentUtil.isAdditionalJDBC(databaseName)) {
+                            referenceComponentName = referenceComponentName.replaceFirst("JDBC",
+                                    StringUtils.deleteWhitespace(databaseName));
+                        }
+                    }
+                }
+
+                refNodes = (List<INode>) node.getProcess().getNodesOfType(referenceComponentName);
+                if(node.getJobletNode() != null) {
+                    List<? extends INode> graphicalNodes = node.getProcess().getGraphicalNodes();
+                    List<String> nodeUniqueNames = graphicalNodes.stream().map(inode->inode.getUniqueName()).collect(Collectors.toList());
+                    refNodes = refNodes.stream().filter(inode->!nodeUniqueNames.contains(inode.getUniqueName())).collect(Collectors.toList());
+                }
             }
         }
         return refNodes;

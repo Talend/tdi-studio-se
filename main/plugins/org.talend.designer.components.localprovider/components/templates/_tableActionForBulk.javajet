@@ -1,15 +1,17 @@
-<%@ jet 
+<%@ jet
 %>
-<%  
+<%
 //issue 0010346 Parallelization crash with "Drop table if exists and create"
 Boolean isParallelize ="true".equalsIgnoreCase(ElementParameterParser.getValue(node, "__PARALLELIZE__"));
 boolean isLog4jEnabled_tableAction = ("true").equals(ElementParameterParser.getValue(node.getProcess(), "__LOG4J_ACTIVATE__"));
+boolean isDynamic = ("true").equals(ElementParameterParser.getValue(node, "__USE_EXISTING_DYNAMIC__"));
+String dynamicComponentName = ElementParameterParser.getValue(node, "__DYNAMIC__");
+
 if (!isParallelize) {
 //end issue 0010346 Parallelization crash with "Drop table if exists and create"
-	manager = getManager(dbmsId, cid);   
+	manager = getManager(dbmsId, cid);
 	manager.setNode(node);
 	if(!("NONE").equals(tableAction)) {
-
 		if(("DROP_CREATE").equals(tableAction)) {
 		%>
 			java.sql.Statement stmtDrop_<%=cid%> = conn_<%=cid%>.createStatement();
@@ -25,7 +27,19 @@ if (!isParallelize) {
 			<%if(isLog4jEnabled_tableAction){%>
 				log.info("<%=cid%> - Creating table <%=manager.getLProtectedChar()%>" + tableName_<%=cid%> + "<%=manager.getRProtectedChar()%>.");
 			<%}%>
-			stmtCreate_<%=cid%>.execute("<%=manager.getCreateTableSQL(stmtStructure)%>)");
+			
+			<%
+			if (isDynamic){
+			%>
+				<%@ include file="./createTableFromDynamicInBulkExec.javajet"%>
+			<%
+			} else {
+			%>
+				stmtCreate_<%=cid%>.execute("<%=manager.getCreateTableSQL(stmtStructure)%>)");
+			<%
+			}
+			%>
+			
 			<%if(isLog4jEnabled_tableAction){%>
 				log.info("<%=cid%> - Create table <%=manager.getLProtectedChar()%>" + tableName_<%=cid%> + "<%=manager.getRProtectedChar()%> has succeeded.");
 			<%}%>
@@ -37,7 +51,19 @@ if (!isParallelize) {
 			<%if(isLog4jEnabled_tableAction){%>
 				log.info("<%=cid%> - Creating table <%=manager.getLProtectedChar()%>" + tableName_<%=cid%> + "<%=manager.getRProtectedChar()%>.");
 			<%}%>
-			stmtCreate_<%=cid%>.execute("<%=manager.getCreateTableSQL(stmtStructure)%>)");
+			
+			<%
+			if (isDynamic){
+			%>
+				<%@ include file="./createTableFromDynamicInBulkExec.javajet"%>
+			<%
+			} else {
+			%>
+				stmtCreate_<%=cid%>.execute("<%=manager.getCreateTableSQL(stmtStructure)%>)");
+			<%
+			}
+			%>
+			
 			<%if(isLog4jEnabled_tableAction){%>
 				log.info("<%=cid%> - Create table <%=manager.getLProtectedChar()%>" + tableName_<%=cid%> + "<%=manager.getRProtectedChar()%> has succeeded.");
 			<%}%>
@@ -49,9 +75,8 @@ if (!isParallelize) {
 				||POSTGRESQL.equalsIgnoreCase(dbmsId)||POSTGREPLUS.equalsIgnoreCase(dbmsId)){
 				tableNameCaseSensitive=true;
 			}
-		
 			if (ORACLE.equalsIgnoreCase(dbmsId) || SAPHANA.equalsIgnoreCase(dbmsId)) {
-			%>   
+			%>
 				<%=manager.generateCode4TabelExist()%>
 				java.sql.DatabaseMetaData dbMetaData_<%=cid%> = conn_<%=cid%>.getMetaData();
 				if(tableNameForSearch_<%=cid%>.indexOf("\"")==-1){
@@ -65,7 +90,7 @@ if (!isParallelize) {
 					whetherExist_<%=cid%> = true;
 				}
 				rsTable_<%=cid%>.close();
-			<%			
+			<%
 			} else if(SYBASE.equalsIgnoreCase(dbmsId)){
 			%>
 				java.sql.DatabaseMetaData dbMetaData_<%=cid%> = conn_<%=cid%>.getMetaData();
@@ -81,7 +106,7 @@ if (!isParallelize) {
 					}
 				}
 				rsTable_<%=cid%>.close();
-			<%				
+			<%
 			} else if( DB2.equalsIgnoreCase(dbmsId) ){
 			%>
 				java.sql.DatabaseMetaData dbMetaData_<%=cid%> = conn_<%=cid%>.getMetaData();
@@ -90,7 +115,7 @@ if (!isParallelize) {
 				while(rsTable_<%=cid%>.next()) {
 					String table_<%=cid%> = rsTable_<%=cid%>.getString("TABLE_NAME");
 					String bkSchema_<%=cid%> = rsTable_<%=cid%>.getString("TABLE_SCHEM");
-					if(table_<%=cid%>.equals(<%=table%>) 
+					if(table_<%=cid%>.equals(<%=table%>)
 						&& (bkSchema_<%=cid%>.equals(schema_<%=cid%>) || (schema_<%=cid%>.trim().length() ==0 && dbUser_<%=cid%>.equalsIgnoreCase(bkSchema_<%=cid%>)))) {
 						whetherExist_<%=cid%> = true;
 						break;
@@ -116,7 +141,7 @@ if (!isParallelize) {
 				while(rsTable_<%=cid%>.next()) {
 					String table_<%=cid%> = rsTable_<%=cid%>.getString("TABLE_NAME");
 					String schema_<%=cid%> = rsTable_<%=cid%>.getString("TABLE_SCHEM");
-					if(table_<%=cid%>.equals<%if(!tableNameCaseSensitive){%>IgnoreCase<%}%>(<%=table%>) 
+					if(table_<%=cid%>.equals<%if(!tableNameCaseSensitive){%>IgnoreCase<%}%>(<%=table%>)
 						&& (schema_<%=cid%>.equals<%if(!tableNameCaseSensitive){%>IgnoreCase<%}%>(dbschema_<%=cid%>) || ((dbschema_<%=cid%> ==null || dbschema_<%=cid%>.trim().length() ==0) && defaultSchema_<%=cid%>.equals<%if(!tableNameCaseSensitive){%>IgnoreCase<%}%>(schema_<%=cid%>)))) {
 						whetherExist_<%=cid%> = true;
 						break;
@@ -141,7 +166,7 @@ if (!isParallelize) {
 					whetherExist_<%=cid%> = true;
 				}
                 rsTable_<%=cid%>.close();
-			<%			
+			<%
 			} else if(REDSHIFT.equalsIgnoreCase(dbmsId)) {
             %>
 				java.sql.DatabaseMetaData dbMetaData_<%=cid%> = conn_<%=cid%>.getMetaData();
@@ -157,28 +182,33 @@ if (!isParallelize) {
             <%
             } else if(MYSQL.equalsIgnoreCase(dbmsId)){
                 boolean useExistMySQLConn = "true".equalsIgnoreCase(ElementParameterParser.getValue(node,"__USE_EXISTING_CONNECTION__"));
-                String dbnameMySQL = "";
+                String dbnameMySQL = null;
                 if (useExistMySQLConn) {
                     List< ? extends INode> nodes =  node.getProcess().getNodesOfType("tMysqlConnection");
                     String connectionMySQL = ElementParameterParser.getValue(node,"__CONNECTION__");
                     for (INode ne : nodes) {
                         if (connectionMySQL.equals(ne.getUniqueName())) {
                             dbnameMySQL = ElementParameterParser.getValue(ne, "__DBNAME__");
+                            break;
                         }
                     }
                 } else {
                     dbnameMySQL = ElementParameterParser.getValue(node, "__DBNAME__");
                 }
-                if (dbnameMySQL == null || dbnameMySQL.isEmpty()) dbnameMySQL = "\"\"";
+                dbnameMySQL = ("".equals(dbnameMySQL)) ? null : dbnameMySQL;
             %>
                 java.sql.DatabaseMetaData dbMetaData_<%=cid%> = conn_<%=cid%>.getMetaData();
-                java.sql.ResultSet rsTable_<%=cid%> = dbMetaData_<%=cid%>.getTables(<%=dbnameMySQL%>, null, null, new String[]{"TABLE"});
+                <%if (dbnameMySQL != null) {%>
+                    java.sql.ResultSet rsTable_<%=cid%> = dbMetaData_<%=cid%>.getTables(<%=dbnameMySQL%>, null, null, new String[]{"TABLE"});
+                <%} else {%>
+                    java.sql.ResultSet rsTable_<%=cid%> = dbMetaData_<%=cid%>.getTables(conn_<%=cid%>.getCatalog(), null, null, new String[]{"TABLE"});
+                <%}%>
                 boolean whetherExist_<%=cid%> = false;
                 while(rsTable_<%=cid%>.next()) {
                     String table_<%=cid%> = rsTable_<%=cid%>.getString("TABLE_NAME");
                     if(table_<%=cid%>.equals<%if(!tableNameCaseSensitive){%>IgnoreCase<%}%>(<%=table%>)) {
                         whetherExist_<%=cid%> = true;
-                    break;
+                        break;
                     }
                 }
                 rsTable_<%=cid%>.close();
@@ -205,7 +235,17 @@ if (!isParallelize) {
 					<%if(isLog4jEnabled_tableAction){%>
 						log.info("<%=cid%> - Creating table <%=manager.getLProtectedChar()%>" + tableName_<%=cid%> + "<%=manager.getRProtectedChar()%>.");
 					<%}%>
-					stmtCreate_<%=cid%>.execute("<%=manager.getCreateTableSQL(stmtStructure)%>)");
+					<%
+					if (isDynamic){
+					%>
+						<%@ include file="./createTableFromDynamicInBulkExec.javajet"%>
+					<%
+					} else {
+					%>
+						stmtCreate_<%=cid%>.execute("<%=manager.getCreateTableSQL(stmtStructure)%>)");
+					<%
+					}
+					%>
 					<%if(isLog4jEnabled_tableAction){%>
 						log.info("<%=cid%> - Create table <%=manager.getLProtectedChar()%>" + tableName_<%=cid%> + "<%=manager.getRProtectedChar()%> has succeeded.");
 					<%}%>
@@ -229,7 +269,17 @@ if (!isParallelize) {
 				<%if(isLog4jEnabled_tableAction){%>
 					log.info("<%=cid%> - Creating table <%=manager.getLProtectedChar()%>" + tableName_<%=cid%> + "<%=manager.getRProtectedChar()%>." );
 				<%}%>
-				stmtCreate_<%=cid%>.execute("<%=manager.getCreateTableSQL(stmtStructure)%>)");
+				<%
+				if (isDynamic){
+				%>
+					<%@ include file="./createTableFromDynamicInBulkExec.javajet"%>
+				<%
+				} else {
+				%>
+					stmtCreate_<%=cid%>.execute("<%=manager.getCreateTableSQL(stmtStructure)%>)");
+				<%
+				}
+				%>
 				<%if(isLog4jEnabled_tableAction){%>
 					log.info("<%=cid%> - Create table <%=manager.getLProtectedChar()%>" + tableName_<%=cid%> + "<%=manager.getRProtectedChar()%> has succeeded.");
 				<%}%>
@@ -268,7 +318,7 @@ if (!isParallelize) {
 			stmtTruncCount_<%=cid%>.close();
 			stmtTrunc_<%=cid%>.close();
 		<%
-		}  
+		}
 		%>
 		//in mysql when autoCommit=true don't commit.
 		if (! conn_<%=cid%>.getAutoCommit()) {

@@ -27,6 +27,8 @@ public class UnifiedObject {
 
     private String componentName;
 
+    private String displayComponentName;
+
     private Set<String> supportedCategories = new HashSet<String>();
 
     private Map<String, String> parameterMapping = new HashMap<String, String>();
@@ -116,6 +118,17 @@ public class UnifiedObject {
      */
     public Set<String> getHideFamilies() {
         return this.hideFamilies;
+    }
+
+    public String getDisplayComponentName() {
+        if (displayComponentName != null) {
+            return displayComponentName;
+        }
+        return componentName;
+    }
+
+    public void setDisplayComponentName(String jdbcComponent) {
+        this.displayComponentName = jdbcComponent;
     }
 
 }

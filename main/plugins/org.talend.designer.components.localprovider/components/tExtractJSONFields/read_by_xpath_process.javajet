@@ -7,7 +7,7 @@ if (outConn!=null) {
     org.dom4j.Document doc_<%=cid%> = null;
     java.util.HashMap xmlNameSpaceMap_<%=cid%> = new java.util.HashMap<String, String>();
     org.dom4j.XPath x_<%=cid%> = null;
-    java.util.List<org.dom4j.tree.AbstractNode> nodeList_<%=cid%> = null;
+    java.util.List<org.dom4j.Node> nodeList_<%=cid%> = null;
     boolean isStructError_<%=cid %> = true;
 
     String loopQuery_<%=cid %> =  <%=loopQuery %> ;
@@ -32,7 +32,7 @@ if (outConn!=null) {
         doc_<%=cid%>= reader_<%=cid%>.read(new java.io.StringReader(xmlStr_<%=cid%>));
         x_<%=cid%> = doc_<%=cid%>.createXPath(loopQuery_<%=cid %>);
         x_<%=cid%>.setNamespaceURIs(xmlNameSpaceMap_<%=cid%>); 
-        nodeList_<%=cid%> = (java.util.List<org.dom4j.tree.AbstractNode>)x_<%=cid%>.selectNodes(doc_<%=cid%>);
+        nodeList_<%=cid%> = (java.util.List<org.dom4j.Node>)x_<%=cid%>.selectNodes(doc_<%=cid%>);
         isStructError_<%=cid %> = false;
         
     }catch(java.lang.Exception ex_<%=cid %>){
@@ -109,7 +109,7 @@ if(outConns!=null){
 %>
             <%=firstConnName %> = new <%=firstConnName %>Struct();
         
-            org.dom4j.tree.AbstractNode temp_<%=cid %> = nodeList_<%=cid %>.get(i_<%=cid %>);
+            org.dom4j.Node temp_<%=cid %> = nodeList_<%=cid %>.get(i_<%=cid %>);
     
             nb_line_<%=cid%>++; 
             try{

@@ -38,6 +38,7 @@ import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.utils.generation.JavaUtils;
 import org.talend.core.model.general.Project;
 import org.talend.core.model.repository.ResourceModelUtils;
+import org.talend.core.runtime.util.SharedStudioUtils;
 import org.talend.repository.ProjectManager;
 import org.talend.repository.utils.ZipFileUtils;
 import org.talend.utils.files.FileUtils;
@@ -312,7 +313,7 @@ public class JarBuilder {
             IProject physProject = ResourceModelUtils.getProject(project);
             tmpFolder = physProject.getFolder(TEMP).getLocation().toPortableString();
         } catch (Exception e) {
-            tmpFolder = System.getProperty("user.dir"); //$NON-NLS-1$
+            tmpFolder = SharedStudioUtils.getTempFolderPath().toPortableString();
         }
         tmpFolder = tmpFolder + "/talendExporter"; //$NON-NLS-1$
         return tmpFolder;
@@ -342,6 +343,7 @@ public class JarBuilder {
         while (jarEntrys.hasMoreElements()) {
             JarEntry jarEntry = jarEntrys.nextElement();
             File f = new File(outFileName + File.separator + jarEntry.getName());
+            FilesUtils.validateDestPath(outFileName, f.getPath());
             makeSupDir(f.getAbsolutePath());
             if (jarEntry.isDirectory() || jarEntry.getName().contains("MANIFEST.MF")) { //$NON-NLS-1$
                 continue;

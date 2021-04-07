@@ -5,7 +5,7 @@ if(!use_customize_version){
 %>String[] applications_<%=cid%> = <%
 	String application = ElementParameterParser.getValue(node, "__APPLICATION__");
 	if("ALL_APPLICATIONS".equals(application)) {
-		if("\"emr-4.6.0\",\"emr-4.9.2\",\"emr-5.11.0\"".contains(cluster_version)) {
+		if("\"emr-4.6.0\",\"emr-4.9.2\",\"emr-5.11.0\",\"emr-5.15.0\", \"emr-5.29.0\"".contains(cluster_version)) {
 		%>
 		{}
 		<%
@@ -13,21 +13,9 @@ if(!use_customize_version){
 		%>
 		{"Ganglia","Hadoop","Hive","Hue","Mahout","Pig","Spark"}
 		<%
-		} else if("\"emr-4.2.0\"".equals(cluster_version)) {
-		%>
-		{"Ganglia","Hadoop","Hive","Hue","Mahout","Pig","Spark"}
-		<%
-		} else if("\"emr-4.1.0\"".equals(cluster_version)) {
-		%>
-		{"Hadoop","Hive","Hue","Mahout","Pig","Spark"}
-		<%
-		} else if("\"emr-4.0.0\"".equals(cluster_version)) {
-		%>
-		{"Hadoop","Hive","Mahout","Pig","Spark"}
-		<%
 		}
 	} else if("CORE_HADOOP".equals(application)) {
-	    if("\"emr-5.11.0\"".equals(cluster_version)){%>
+	    if("\"emr-5.11.0\"".equals(cluster_version) || "\"emr-5.15.0\"".equals(cluster_version) || "\"emr-5.29.0\"".equals(cluster_version)){%>
 	    {"Ganglia","Hadoop","Hive","Hue","Mahout","Pig","Tez"}
 	    <%
 	    }else if("\"emr-4.6.0\"".equals(cluster_version) || "\"emr-4.9.2\"".equals(cluster_version)) {
@@ -37,18 +25,6 @@ if(!use_customize_version){
 		} else if("\"emr-4.5.0\"".equals(cluster_version)) {
 		%>
 		{"Ganglia","Hadoop","Hive","Pig"}
-		<%
-		} else if("\"emr-4.2.0\"".equals(cluster_version)) {
-		%>
-		{"Ganglia","Hadoop","Hive","Pig"}
-		<%		
-		} else if("\"emr-4.1.0\"".equals(cluster_version)) {
-		%>
-		{"Hadoop","Hive","Pig"}
-		<%
-		} else if("\"emr-4.0.0\"".equals(cluster_version)) {
-		%>
-		{"Hadoop","Hive","Pig"}
 		<%
 		}
 	} else if("PRESTO_SANDBOX".equals(application)) {
@@ -60,17 +36,9 @@ if(!use_customize_version){
 		%>
 		{"Hadoop","Hive","Presto-Sandbox"}
 		<%
-		} else if("\"emr-4.2.0\"".equals(cluster_version)) {
-		%>
-		{"Hadoop","Hive","Presto-Sandbox"}
-		<%
-		} else if("\"emr-4.1.0\"".equals(cluster_version)) {
-		%>
-		{"Hadoop","Hive","Presto-Sandbox"}
-		<%
 		}
     } else if("PRESTO".equals(application)) {
-        if("\"emr-5.11.0\"".equals(cluster_version)){%>
+        if("\"emr-5.11.0\"".equals(cluster_version) || "\"emr-5.15.0\"".equals(cluster_version) || "\"emr-5.29.0\"".equals(cluster_version)){%>
         {"Hadoop","Hive","Presto"}
     <% } else { %>
         if(true) {
@@ -79,7 +47,7 @@ if(!use_customize_version){
         <%
         }
 	} else if("SPARK".equals(application)) {
-	    if("\"emr-5.11.0\"".equals(cluster_version)){%>
+	    if("\"emr-5.11.0\"".equals(cluster_version) || "\"emr-5.15.0\"".equals(cluster_version) || "\"emr-5.29.0\"".equals(cluster_version)){%>
         {"Ganglia","Hadoop","Spark","Zeppelin"}
         <%  
         } else if("\"emr-4.6.0\"".equals(cluster_version) || "\"emr-4.9.2\"".equals(cluster_version)) {
@@ -90,21 +58,9 @@ if(!use_customize_version){
 		%>
 		{"Ganglia","Hadoop","Spark"}
 		<%
-		} else if("\"emr-4.2.0\"".equals(cluster_version)) {
-		%>
-		{"Ganglia","Hadoop","Spark"}
-		<%
-		} else if("\"emr-4.1.0\"".equals(cluster_version)) {
-		%>
-		{"Hadoop","Spark"}
-		<%
-		} else if("\"emr-4.0.0\"".equals(cluster_version)) {
-		%>
-		{"Hadoop","Spark"}
-		<%
 		}
 	} else if("HBASE".equals(application)) {
-	    if("\"emr-5.11.0\"".equals(cluster_version) || "\"emr-4.9.2\"".equals(cluster_version)){%>
+	    if("\"emr-5.11.0\"".equals(cluster_version) || "\"emr-4.9.2\"".equals(cluster_version) || "\"emr-5.15.0\"".equals(cluster_version) || "\"emr-5.29.0\"".equals(cluster_version)){%>
         {"HBase","Ganglia","Hadoop","Hive","Hue","Phoenix","ZooKeeper"}
         <%  
         } else if("\"emr-4.6.0\"".equals(cluster_version)) {

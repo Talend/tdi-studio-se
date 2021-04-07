@@ -60,7 +60,7 @@ imports="
 
 		public String getDirverClassName(INode node){
 			String dbVersion =  ElementParameterParser.getValue(node, "__DB_VERSION__");
-			if ("ORACLE_11".equals(dbVersion) || "ORACLE_12".equals(dbVersion) || "ORACLE_18".equals(dbVersion)){
+			if ("ORACLE_11".equals(dbVersion) || "ORACLE_12".equals(dbVersion) || "ORACLE_18".equals(dbVersion) ){
 			    return "oracle.jdbc.OracleDriver";
 			}else {
 				return "oracle.jdbc.driver.OracleDriver";
@@ -259,7 +259,7 @@ imports="
 				dbVersion = ElementParameterParser.getValue(node, "__DB_VERSION__");
 			}
 	    	boolean supportTSTZ = false;
-	    	if("ORACLE_11".equals(dbVersion) || "ORACLE_12".equals(dbVersion) || "ORACLE_10".equals(dbVersion) || "ORACLE_18".equals(dbVersion)){
+	    	if("ORACLE_11".equals(dbVersion) || "ORACLE_12".equals(dbVersion) || "ORACLE_10".equals(dbVersion) || "ORACLE_18".equals(dbVersion) ){
 	    		supportTSTZ = true;
 	    	}
 	    	if(isTSWithTZ && supportTSTZ){

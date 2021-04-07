@@ -1,3 +1,19 @@
+<!--
+  Copyright (C) 2006-2020 Talend Inc. - www.talend.com
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+  http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+  -->
+
 <COMPONENT>
     <HEADER AUTHOR="Andrey Zaharovs" COMPATIBILITY="ALL" LOG4J_ENABLED="true" PLATEFORM="ALL" RELEASE_DATE="200150630A" SERIAL="" STARTABLE="true" STATUS="BETA" VERSION="0.4">
         <SIGNATURE/>
@@ -433,14 +449,14 @@
     </ADVANCED_PARAMETERS>
     <CODEGENERATION>
         <IMPORTS>
-        	<IMPORT MODULE="commons-codec-1.6.jar" NAME="commons-codec" MVN="mvn:org.talend.libraries/commons-codec-1.6/6.0.0" UrlPath="platform:/plugin/org.talend.libraries.apache.common/lib/commons-codec-1.6.jar" REQUIRED="true"/>
-	      	<IMPORT MODULE="commons-logging-1.1.3.jar" NAME="commons-logging" MVN="mvn:commons-logging/commons-logging/1.1.3" UrlPath="platform:/plugin/org.talend.libraries.apache.common/lib/commons-logging-1.1.3.jar" REQUIRED="true"/>
-	      	<IMPORT MODULE="httpclient-4.3.1.jar" NAME="httpclient" MVN="mvn:org.talend.libraries/httpclient-4.3.1/6.0.0" UrlPath="platform:/plugin/org.talend.libraries.apache.http/lib/httpclient-4.3.1.jar" REQUIRED="true"/>
+        	<IMPORT NAME="commons-codec-1.14" MODULE="commons-codec-1.14.jar" MVN="mvn:commons-codec/commons-codec/1.14" REQUIRED="true"/>
+	      	<IMPORT NAME="commons-logging-1.2" MODULE="commons-logging-1.2.jar" MVN="mvn:commons-logging/commons-logging/1.2" REQUIRED="true"/>
+	      	<IMPORT NAME="httpclient-4.5.12" MODULE="httpclient-4.5.12.jar" MVN="mvn:org.apache.httpcomponents/httpclient/4.5.12" REQUIRED="true"/>
       		<IMPORT MODULE="httpclient-cache-4.3.1.jar" NAME="httpclient-cache" MVN="mvn:org.talend.libraries/httpclient-cache-4.3.1/6.0.0" UrlPath="platform:/plugin/org.talend.libraries.apache.http/lib/httpclient-cache-4.3.1.jar" REQUIRED="true"/>
-	      	<IMPORT MODULE="httpcore-4.3.1.jar" NAME="httpcore" MVN="mvn:org.talend.libraries/httpcore-4.3.1/6.0.0" UrlPath="platform:/plugin/org.talend.libraries.apache.http/lib/httpcore-4.3.1.jar" REQUIRED="true"/>
+	      	<IMPORT NAME="httpcore-4.4.13" MODULE="httpcore-4.4.13.jar" MVN="mvn:org.apache.httpcomponents/httpcore/4.4.13" REQUIRED="true"/>
 	      	<IMPORT MODULE="httpmime-4.3.1.jar" NAME="httpmime" MVN="mvn:org.talend.libraries/httpmime-4.3.1/6.0.0" UrlPath="platform:/plugin/org.talend.libraries.apache.http/lib/httpmime-4.3.1.jar" REQUIRED="true"/>
             <IMPORT MODULE="org.json.jar" NAME="json" MVN="mvn:org.talend.libraries/org.json/6.0.0" UrlPath="platform:/plugin/org.talend.libraries.jackson/lib/org.json.jar" REQUIRED="true"/>
-            <IMPORT MODULE="components-servicenow-1.0.0.jar" NAME="components-servicenow" MVN="mvn:org.talend.libraries/components-servicenow-1.0.0/6.0.0" REQUIRED="true"/>
+            <IMPORT NAME="components-servicenow" MODULE="components-servicenow-1.0.1-20200824.jar" MVN="mvn:org.talend.components/components-servicenow/1.0.1-20200824" REQUIRED="true"/>
         </IMPORTS>
     </CODEGENERATION>
     <RETURNS>

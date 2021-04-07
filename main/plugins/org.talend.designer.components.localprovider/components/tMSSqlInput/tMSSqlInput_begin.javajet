@@ -54,6 +54,7 @@ imports="
 	
 		public void setURL(INode node) {
 			String dbschema = ElementParameterParser.getValue(node, "__DB_SCHEMA__");
+            boolean useActiveDirectoryAuth = "true".equals(ElementParameterParser.getValue(node, "__ACTIVE_DIR_AUTH__"));
 %>
 		    String port_<%=cid%> = <%=dbport%>;
 		    String dbname_<%=cid%> = <%=dbname%> ;
@@ -84,6 +85,14 @@ imports="
 			}
 %>
 		    }
+<%
+            if (driver.equals("MSSQL_PROP") && useActiveDirectoryAuth) {
+%>
+                url_<%=cid%> += ";encrypt=true;trustServerCertificate=false;hostNameInCertificate=*.database.windows.net;Authentication=ActiveDirectoryPassword";
+                url_<%=cid%> += ";database=" + <%=dbname%>;
+<%
+            }
+%>
 		    url_<%=cid%> += ";appName=" + projectName + ";" + <%=dbproperties%>;
 		    String dbschema_<%=cid%> = <%=dbschema%>;
 <%		
@@ -123,7 +132,7 @@ imports="
 					net.sourceforge.jtds.jdbc.TalendNTextImpl tNTextImpl_<%=cid %> = new net.sourceforge.jtds.jdbc.TalendNTextImpl(clob_<%=cid %>);
 					tmpContent_<%=cid%> = tNTextImpl_<%=cid %>.getValue();
 				}else{
-					tmpContent_<%=cid%> = null;				
+					tmpContent_<%=cid%> = null;
 				}
 <%
 			}else{

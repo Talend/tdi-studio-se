@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.ColorCellEditor;
 import org.eclipse.jface.viewers.ComboBoxCellEditor;
@@ -64,6 +65,8 @@ import org.talend.core.model.process.INode;
 import org.talend.core.model.process.IProcess;
 import org.talend.core.model.process.IProcess2;
 import org.talend.core.model.properties.EbcdicConnectionItem;
+import org.talend.core.runtime.maven.MavenArtifact;
+import org.talend.core.runtime.maven.MavenUrlHelper;
 import org.talend.core.service.IEBCDICProviderService;
 import org.talend.core.service.ISAPProviderService;
 import org.talend.core.ui.metadata.celleditor.ModuleListCellEditor;
@@ -72,12 +75,14 @@ import org.talend.core.ui.metadata.celleditor.SchemaCellEditor;
 import org.talend.core.ui.metadata.celleditor.SchemaXPathQuerysCellEditor;
 import org.talend.core.ui.metadata.editor.AbstractMetadataTableEditorView;
 import org.talend.core.ui.proposal.TalendProposalProvider;
+import org.talend.core.utils.TalendQuoteUtils;
 import org.talend.designer.core.model.FakeElement;
 import org.talend.designer.core.model.components.EParameterName;
 import org.talend.designer.core.model.components.ElementParameter;
 import org.talend.designer.core.ui.celleditor.PatternCellEditor;
 import org.talend.designer.core.ui.celleditor.PatternPropertyCellEditor;
 import org.talend.designer.core.ui.editor.nodes.Node;
+import org.talend.designer.core.ui.editor.properties.controllers.NumberLimitTextController;
 import org.talend.designer.core.ui.event.CheckColumnSelectionListener;
 
 /**
@@ -321,6 +326,7 @@ public class PropertiesTableEditorView<B> extends AbstractDataTableEditorView<B>
                     ModuleListCellEditor moduleEditor = new ModuleListCellEditor(table, currentParam, param);
                     moduleEditor.setTableEditorView(this);
                     column.setCellEditor(moduleEditor);
+                    column.setLabelProvider(new ModuleTableLabelProvider());
                     break;
                 case COLOR:
                     column.setModifiable((!param.isRepositoryValueUsed()) && (!param.isReadOnly())
@@ -866,6 +872,41 @@ public class PropertiesTableEditorView<B> extends AbstractDataTableEditorView<B>
                                 RGB rgb = (RGB) value;
                                 finalValue = rgb.red + ";" + rgb.green + ";" + rgb.blue; //$NON-NLS-1$ //$NON-NLS-2$
                             }
+                            break;
+                        case NUMBERLIMITTEXT:
+                            
+                            if(value==null||StringUtils.isBlank(value.toString()) ) {
+                                finalValue ="0";
+                                break;
+                            }
+                            String finalStrValue=value.toString();
+                            if(finalStrValue.startsWith(NumberLimitTextController.CONTEXPREFIX)||NumberLimitTextController.CONTEXPREFIX.startsWith(finalStrValue)) {
+                              //context mode no any limit
+                              finalValue =value;
+                              break;
+                            }else if(finalStrValue.length()>=9){
+                                //keep 6 digit after the Decimal point
+                                finalStrValue =finalStrValue.trim().substring(0, 8);
+                            }else if(finalStrValue.contains("-")) {
+                                //'-' is invalid input 
+                                finalStrValue =finalStrValue.trim().replaceAll("-", "");
+                            }
+
+                            try {
+                                double num=Double.valueOf(finalStrValue);
+                                if(num>1||num<0) {
+                                    finalValue="1";
+                                    break;
+                                }else if(num<0) {
+                                    finalValue="0";
+                                    break;
+                                }
+                                finalValue=finalStrValue;
+                            } catch (Exception e1) {
+                                // any exception then reset result be 0
+                                finalValue="0";
+                            }
+                            
                         default:
                         }
                         ((Map<String, Object>) bean).put(items[curCol], finalValue);
@@ -1016,6 +1057,36 @@ public class PropertiesTableEditorView<B> extends AbstractDataTableEditorView<B>
         }
         String[] listToDisplay = stringToDisplay.toArray(new String[0]);
         return listToDisplay;
+    }
+
+    class ModuleTableLabelProvider implements IColumnLabelProvider {
+
+        private final String[] KEYS = new String[] { "drivers", "JAR_NAME" };
+
+        @Override
+        public String getLabel(Object bean) {
+            if (bean instanceof Map) {
+                Map<String, String> valueMap = (Map<String, String>) bean;
+                for (String key : KEYS) {
+                    if (valueMap.containsKey(key)) {
+                        String value = valueMap.get(key);
+                        return getModuleName(value);
+                    }
+                }
+            }
+            return "newLine";
+        }
+    }
+
+    private static String getModuleName(String jarPath) {
+        if (jarPath != null) {
+            jarPath = TalendQuoteUtils.removeQuotes(jarPath);
+            if (jarPath.startsWith(MavenUrlHelper.MVN_PROTOCOL)) {
+                MavenArtifact art = MavenUrlHelper.parseMvnUrl(jarPath);
+                return art.getFileName();
+            }
+        }
+        return jarPath;
     }
 
 }

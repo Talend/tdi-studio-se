@@ -21,6 +21,7 @@ import org.eclipse.draw2d.ColorConstants;
 import org.eclipse.draw2d.Graphics;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.Locator;
+import org.eclipse.draw2d.PolygonShape;
 import org.eclipse.draw2d.StackLayout;
 import org.eclipse.draw2d.ToolbarLayout;
 import org.eclipse.draw2d.TreeSearch;
@@ -155,7 +156,7 @@ public class TalendConnectionHandle extends SquareHandle implements PropertyChan
             return;
         }
         Rectangle rec = new Rectangle(0, 0, 12, 12);
-        PentagonShape sourceShape = new PentagonShape(this.mainConnector);
+        PolygonShape sourceShape = new PolygonShape();
         sourceShape.addPoint(new Point(0, 0));
         sourceShape.addPoint(new Point(9, 0));
         sourceShape.addPoint(new Point(11, 4.5));
@@ -164,12 +165,11 @@ public class TalendConnectionHandle extends SquareHandle implements PropertyChan
         sourceShape.addPoint(new Point(0, 11));
 
         sourceShape.setFill(true);
-        Color whiteColor = ColorUtils.getCacheColor(new RGB(255, 255, 255));
-        sourceShape.setBackgroundColor(whiteColor);
         sourceShape.setPreferredSize(rec.getSize());
         if (mainConnector != null) {
             RGB shapeColor = this.mainConnector.getConnectionProperty(this.mainConnector.getDefaultConnectionType()).getRGB();
             sourceShape.setForegroundColor(ColorUtils.getCacheColor(shapeColor));
+            sourceShape.setBackgroundColor(ColorUtils.getCacheColor(shapeColor));
         }
 
         sourceShape.setBounds(rec);

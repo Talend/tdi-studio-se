@@ -12,6 +12,8 @@
 // ============================================================================
 package org.talend.designer.dbmap.ui.tabs;
 
+import java.util.List;
+
 import org.eclipse.gef.commands.CommandStack;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.swt.SWT;
@@ -23,12 +25,19 @@ import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
+import org.talend.commons.ui.swt.advanced.dataeditor.control.ExtendedPushButton;
 import org.talend.commons.ui.swt.colorstyledtext.UnnotifiableColorStyledText;
+import org.talend.commons.ui.swt.extended.table.ExtendedButtonEvent;
+import org.talend.commons.ui.swt.extended.table.IExtendedButtonListener;
 import org.talend.core.CorePlugin;
 import org.talend.core.ui.metadata.editor.MetadataTableEditorView;
+import org.talend.core.ui.metadata.editor.MetadataToolbarEditorView;
 import org.talend.designer.dbmap.MapperMain;
 import org.talend.designer.dbmap.i18n.Messages;
 import org.talend.designer.dbmap.managers.MapperManager;
+import org.talend.designer.dbmap.model.table.InputTable;
+import org.talend.designer.dbmap.model.table.OutputTable;
+import org.talend.designer.dbmap.ui.visualmap.table.DataMapTableView;
 
 /**
  * DOC amaumont class global comment. Detailled comment <br/>
@@ -57,6 +66,10 @@ public class TabFolderEditors extends CTabFolder {
     private StyledText styledSqlText;
 
     private String dbmsId;
+
+    private List<ExtendedPushButton> inputToolBarButtons;
+
+    private List<ExtendedPushButton> outputToolBarButtons;
 
     public TabFolderEditors(Composite parent, int style, MapperManager mapperManager, String dbmsId) {
         super(parent, style);
@@ -144,6 +157,8 @@ public class TabFolderEditors extends CTabFolder {
         inputMetaEditor.initGraphicComponents();
         inputMetaEditor.getExtendedTableViewer().setCommandStack(commandStack);
 
+        addListenersToInputButtons();
+
         outputMetaEditor = new MetadataTableEditorView(inOutMetaEditorContainer, SWT.BORDER);
         outputMetaEditor.setCurrentDbms(dbmsId);
         outputMetaEditor.setShowDbTypeColumn(true, false, true);
@@ -152,6 +167,46 @@ public class TabFolderEditors extends CTabFolder {
         outputMetaEditor.setShowPatternColumn(false);
         outputMetaEditor.initGraphicComponents();
         outputMetaEditor.getExtendedTableViewer().setCommandStack(commandStack);
+
+        addListenersToOutputButtons();
+    }
+
+    private void addListenersToInputButtons() {
+        MetadataToolbarEditorView toolBar = inputMetaEditor.getToolBar();
+        inputToolBarButtons = toolBar.getButtons();
+        IExtendedButtonListener afterCommandListener = new IExtendedButtonListener() {
+
+            public void handleEvent(ExtendedButtonEvent event) {
+                List<InputTable> inputTablesList = mapperManager.getInputTables();
+                for (InputTable inputTable : inputTablesList) {
+                    DataMapTableView view = mapperManager.retrieveIDataMapTableView(inputTable);
+                    view.getTableViewerCreatorForColumns().getTableViewer().refresh();
+                }
+            }
+        };
+
+        for (ExtendedPushButton extendedPushButton : inputToolBarButtons) {
+            extendedPushButton.addListener(afterCommandListener, false);
+        }
+    }
+
+    private void addListenersToOutputButtons() {
+        MetadataToolbarEditorView toolBar = outputMetaEditor.getToolBar();
+        outputToolBarButtons = toolBar.getButtons();
+        IExtendedButtonListener afterCommandListener = new IExtendedButtonListener() {
+
+            public void handleEvent(ExtendedButtonEvent event) {
+                List<OutputTable> outputTablesList = mapperManager.getOutputTables();
+                for (OutputTable outputTable : outputTablesList) {
+                    DataMapTableView view = mapperManager.retrieveIDataMapTableView(outputTable);
+                    view.getTableViewerCreatorForColumns().getTableViewer().refresh();
+                }
+            }
+        };
+
+        for (ExtendedPushButton extendedPushButton : outputToolBarButtons) {
+            extendedPushButton.addListener(afterCommandListener, false);
+        }
     }
 
     private StyledText createStyledText(CTabItem item) {

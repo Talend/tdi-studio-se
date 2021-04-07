@@ -58,8 +58,5 @@ public class StatsAndLogsElement extends Element {
     @Override
     public void setPropertyValue(String id, Object value) {
         super.setPropertyValue(id, value);
-        if(id.equals(EParameterName.DRIVER_JAR.getName())){
-            ConnectionUtil.getDriverJar(value);
-        }
     }
 }

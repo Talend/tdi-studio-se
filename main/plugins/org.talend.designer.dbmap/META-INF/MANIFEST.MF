@@ -1,8 +1,10 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: DB Map Plug-in
+Bundle-Name: %pluginName
 Bundle-SymbolicName: org.talend.designer.dbmap;singleton:=true
 Bundle-Version: 7.3.1.qualifier
+Automatic-Module-Name: org.talend.designer.dbmap
+Bundle-ClassPath: .
 Require-Bundle: org.eclipse.core.runtime,
  org.apache.commons.collections,
  org.apache.commons.lang,
@@ -24,7 +26,11 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.ui.workbench,
  org.talend.libraries.apache,
  org.eclipse.emf.ecore.xmi,
- org.talend.components.api
+ org.talend.components.api,
+ org.talend.expressionbuilder,
+ org.eclipse.text,
+ org.eclipse.jface.text
+Bundle-ActivationPolicy: lazy
 Eclipse-LazyStart: true
 Export-Package: org.talend.designer.dbmap,
  org.talend.designer.dbmap.external.connection,
@@ -38,6 +44,7 @@ Export-Package: org.talend.designer.dbmap,
  org.talend.designer.dbmap.model,
  org.talend.designer.dbmap.model.emf.dbmap,
  org.talend.designer.dbmap.model.emf.dbmap.impl,
+ org.talend.designer.dbmap.model.emf.dbmap.util,
  org.talend.designer.dbmap.model.table,
  org.talend.designer.dbmap.model.tableentry,
  org.talend.designer.dbmap.ui,
@@ -60,5 +67,6 @@ Export-Package: org.talend.designer.dbmap,
  org.talend.designer.dbmap.ui.visualmap.zone.toolbar,
  org.talend.designer.dbmap.utils,
  org.talend.designer.dbmap.utils.problems
-Bundle-Vendor: .Talend SA.
+Bundle-Vendor: %providerName
+Bundle-Localization: plugin
 Eclipse-RegisterBuddy: org.talend.testutils

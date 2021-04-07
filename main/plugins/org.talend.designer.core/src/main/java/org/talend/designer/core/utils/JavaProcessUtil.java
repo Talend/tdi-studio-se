@@ -27,13 +27,21 @@ import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.apache.commons.lang.StringUtils;
-import org.eclipse.core.runtime.IPath;
-import org.eclipse.core.runtime.Path;
+import org.eclipse.emf.common.util.EList;
+import org.talend.commons.exception.ExceptionHandler;
+import org.talend.commons.exception.PersistenceException;
+import org.talend.commons.runtime.service.ITaCoKitService;
+import org.talend.commons.utils.generation.JavaUtils;
+import org.talend.commons.utils.resource.FileExtensions;
 import org.talend.core.CorePlugin;
+import org.talend.core.GlobalServiceRegister;
 import org.talend.core.hadoop.IHadoopClusterService;
 import org.talend.core.hadoop.repository.HadoopRepositoryUtil;
+import org.talend.core.language.ECodeLanguage;
 import org.talend.core.model.components.EComponentType;
 import org.talend.core.model.general.ModuleNeeded;
 import org.talend.core.model.process.EParameterFieldType;
@@ -47,24 +55,38 @@ import org.talend.core.model.process.JobInfo;
 import org.talend.core.model.process.ProcessUtils;
 import org.talend.core.model.properties.Item;
 import org.talend.core.model.properties.ProcessItem;
+import org.talend.core.model.routines.RoutinesUtil;
 import org.talend.core.model.utils.ContextParameterUtils;
 import org.talend.core.model.utils.TalendTextUtils;
+import org.talend.core.runtime.maven.MavenConstants;
+import org.talend.core.runtime.maven.MavenUrlHelper;
 import org.talend.core.runtime.process.LastGenerationInfo;
 import org.talend.core.runtime.process.TalendProcessOptionConstants;
+import org.talend.core.ui.ITestContainerProviderService;
 import org.talend.core.utils.BitwiseOptionUtils;
-import org.talend.designer.core.CheckLogManamger;
+import org.talend.core.utils.CodesJarResourceCache;
 import org.talend.designer.core.IDesignerCoreService;
 import org.talend.designer.core.model.components.EParameterName;
 import org.talend.designer.core.model.components.EmfComponent;
+import org.talend.designer.core.model.utils.emf.talendfile.RoutinesParameterType;
+import org.talend.designer.core.model.utils.emf.talendfile.impl.ElementParameterTypeImpl;
+import org.talend.designer.core.ui.editor.process.Process;
 import org.talend.designer.maven.utils.MavenVersionHelper;
+import org.talend.designer.runprocess.IProcessor;
+import org.talend.designer.runprocess.IRunProcessService;
 import org.talend.designer.runprocess.ItemCacheManager;
 import org.talend.librariesmanager.model.ModulesNeededProvider;
+import org.talend.repository.ui.utils.Log4jPrefsSettingManager;
+import org.talend.repository.ui.utils.UpdateLog4jJarUtils;
 
 /**
  * DOC xye class global comment. Detailled comment
  */
 public class JavaProcessUtil {
 
+    /**
+     * get All needed modules of current or sub jobs but without codesjar module of joblet
+     */
     public static Set<ModuleNeeded> getNeededModules(final IProcess process, int options) {
         List<ModuleNeeded> modulesNeeded = new ArrayList<ModuleNeeded>();
         // see bug 4939: making tRunjobs work loop will cause a error of "out of memory"
@@ -83,7 +105,6 @@ public class JavaProcessUtil {
 
         // call recursive function to get all dependencies from job & subjobs
         getNeededModules(process, searchItems, modulesNeeded, options);
-
         /*
          * Remove duplicates in the modulesNeeded list after having prioritize the modules. Details in the
          * ModuleNeededComparator class.
@@ -99,28 +120,31 @@ public class JavaProcessUtil {
             // in some case it's not a real library, but just a text.
             if (!module.getModuleName().contains(".")) { //$NON-NLS-1$
                 it.remove();
-            } else if (dedupModulesList.contains(module.getModuleName())) {
-                if (module.isMrRequired() && previousModule != null
-                        && previousModule.getModuleName().equals(module.getModuleName())) {
-                    previousModule.setMrRequired(Boolean.TRUE);
-                }
-                it.remove();
             } else {
-                dedupModulesList.add(module.getModuleName());
-                previousModule = module;
+                String coordinate = MavenUrlHelper.getCoordinate(module.getMavenUri());
+                
+                if (dedupModulesList.contains(coordinate)) {
+                    if (module.isMrRequired() && previousModule != null
+                            && previousModule.getModuleName().equals(module.getModuleName())) {
+                        previousModule.setMrRequired(Boolean.TRUE);
+                    }
+                    it.remove();
+                } else {
+                    dedupModulesList.add(coordinate);
+                    
+                    previousModule = module;
+                }
             }
         }
 
         if (BitwiseOptionUtils.containOption(options, TalendProcessOptionConstants.MODULES_EXCLUDE_SHADED)) {
             new BigDataJobUtil(process).removeExcludedModules(modulesNeeded);
         }
-        CheckLogManamger.updateLog4jToModuleList(modulesNeeded);
+
+        UpdateLog4jJarUtils.addLog4jToModuleList(modulesNeeded, Log4jPrefsSettingManager.getInstance().isSelectLog4j2(), process);
         return new HashSet<ModuleNeeded>(modulesNeeded);
     }
 
-    public static void updateLog4jToModuleList(Collection<ModuleNeeded> jarList) {
-        CheckLogManamger.updateLog4jToModuleList(jarList);
-    }
     // for MapReduce job, if the jar on Xml don't set MRREQUIRED="true", shouldn't add it to
     // DistributedCache
     public static Set<String> getNeededLibraries(final IProcess process, int options) {
@@ -177,11 +201,22 @@ public class JavaProcessUtil {
             getModulesInTable(process, elementParameter, modulesNeeded);
         }
 
+        boolean addDefault = false;
         if (process instanceof IProcess2) {
             Item item = ((IProcess2) process).getProperty().getItem();
-            if (item instanceof ProcessItem) {
-                modulesNeeded.addAll(ModulesNeededProvider.getModulesNeededForProcess((ProcessItem) item, process));
+            if (item == null) {
+                addDefault = true;
+            } else if (item instanceof ProcessItem) {
+                modulesNeeded.addAll(ModulesNeededProvider.getCodesModulesNeededForProcess((ProcessItem) item, process,
+                        BitwiseOptionUtils.containOption(options, TalendProcessOptionConstants.MODULES_WITH_CODESJAR)));
             }
+        } else {
+            addDefault = true;
+        }
+        if (addDefault) {
+            Set<ModuleNeeded> optionalJarsOnlyForRoutines = new HashSet<ModuleNeeded>();
+            optionalJarsOnlyForRoutines.addAll(ModulesNeededProvider.getSystemRunningModules());
+            modulesNeeded.addAll(optionalJarsOnlyForRoutines);
         }
 
         boolean isTestcaseProcess = ProcessUtils.isTestContainer(process);
@@ -237,6 +272,8 @@ public class JavaProcessUtil {
         }
         // in case of multiple Version jars in customize modules, descendOrder
         highPriorityLinkedSet.addAll(descendingOrderModuleList(jdbcCustomizeModulesSet));
+        LastGenerationInfo.getInstance().setHighPriorityModuleNeededPerJob(process.getId(), process.getVersion(),
+                highPriorityLinkedSet);
         LastGenerationInfo.getInstance().setHighPriorityModuleNeeded(process.getId(), process.getVersion(),
                 highPriorityLinkedSet);
 
@@ -309,6 +346,10 @@ public class JavaProcessUtil {
     }
 
     public static String getHadoopClusterItemId(INode node) {
+        return getHadoopClusterItemId(node, true);
+    }
+
+    public static String getHadoopClusterItemId(INode node, boolean ignore) {
         IHadoopClusterService hadoopClusterService = HadoopRepositoryUtil.getHadoopClusterService();
         if (hadoopClusterService == null) {
             return null;
@@ -323,7 +364,7 @@ public class JavaProcessUtil {
         }
         Map<String, IElementParameter> childParameters = propertyElementParameter.getChildParameters();
         String propertyType = (String) childParameters.get(EParameterName.PROPERTY_TYPE.getName()).getValue();
-        if (!EmfComponent.REPOSITORY.equals(propertyType)) {
+        if (ignore && !EmfComponent.REPOSITORY.equals(propertyType)) {
             return null;
         }
         IElementParameter propertyParam = childParameters.get(EParameterName.REPOSITORY_PROPERTY_TYPE.getName());
@@ -366,6 +407,22 @@ public class JavaProcessUtil {
         }
 
         return new HashSet<ModuleNeeded>(modulesNeeded);
+    }
+
+    private static Set<ModuleNeeded> getChildrenModulesFromProcess(final IProcess process, Set<ProcessItem> searchItems) {
+        Set<ModuleNeeded> childrenModules = new HashSet<ModuleNeeded>();
+        List<INode> nodeList = (List<INode>) process.getGeneratingNodes();
+        if (nodeList != null) {
+
+            for (INode node : nodeList) {
+                List<ModuleNeeded> findeModules = getChildrenModules(node, searchItems,
+                        TalendProcessOptionConstants.MODULES_WITH_CHILDREN);
+                if (findeModules.size() > 0) {
+                    childrenModules.addAll(findeModules);
+                }
+            }
+        }
+        return childrenModules;
     }
 
     static List<ModuleNeeded> getChildrenModules(final INode node, Set<ProcessItem> searchItems, int options) {
@@ -486,104 +543,89 @@ public class JavaProcessUtil {
         }
     }
 
-    private static void getModulesInTable(final IProcess process, IElementParameter curParam,
-            List<ModuleNeeded> modulesNeeded) {
-
+    private static void getModulesInTable(final IProcess process, IElementParameter curParam, List<ModuleNeeded> modulesNeeded) {
         if (!(curParam.getValue() instanceof List)) {
             return;
         }
         List<Map<String, Object>> values = (List<Map<String, Object>>) curParam.getValue();
-        if (values != null && !values.isEmpty()) {
-            boolean updateCustomMavenUri = false;
-            Object[] listItemsValue = curParam.getListItemsValue();
-            if (listItemsValue != null && listItemsValue.length > 0 && listItemsValue[0] instanceof IElementParameter) {
-                for (Object o : listItemsValue) {
-                    IElementParameter param = (IElementParameter) o;
-                    if (param.getFieldType() == EParameterFieldType.MODULE_LIST) {
-                        for (Map<String, Object> line : values) {
-                            String moduleName = (String) line.get(param.getName());
-                            if (moduleName != null && !"".equals(moduleName)) { //$NON-NLS-1$
-
-                                boolean isContextMode = ContextParameterUtils.containContextVariables(moduleName);
-                                if (isContextMode) {
-                                    List<IContext> listContext = process.getContextManager().getListContext();
-                                    for (IContext context : listContext) {
-                                        List<IContextParameter> contextParameterList =
-                                                context.getContextParameterList();
-                                        for (IContextParameter contextPara : contextParameterList) {
-                                            String var = ContextParameterUtils.getVariableFromCode(moduleName);
-                                            if (var.equals(contextPara.getName())) {
-                                                String value =
-                                                        context.getContextParameter(contextPara.getName()).getValue();
-                                                if (StringUtils.isBlank(value)) {
-                                                    continue;
-                                                }
-                                                if (curParam.getName().equals(EParameterName.DRIVER_JAR.getName())
-                                                        && value.contains(";")) { //$NON-NLS-1$
-                                                    String[] jars = value.split(";"); //$NON-NLS-1$
-                                                    for (String jar2 : jars) {
-                                                        String jar = jar2;
-                                                        jar = jar.substring(jar.lastIndexOf("\\") + 1); //$NON-NLS-1$
-                                                        ModuleNeeded module = null;
-                                                        String jarName = TalendTextUtils.removeQuotes(jar);
-                                                        if (!jarName.toLowerCase().endsWith(".jar")) {
-                                                            module = ModulesNeededProvider
-                                                                    .getModuleNeededById(jarName);
-                                                            if (module == null) {
-                                                                module = new ModuleNeeded(null, jarName, null, true);
-                                                            }
-                                                        } else {
-                                                            module = new ModuleNeeded(null, jarName, null, true);
-                                                        }
-                                                        modulesNeeded.add(module);
-                                                    }
-                                                } else if (curParam.getName().equals("connection.driverTable") //$NON-NLS-1$
-                                                        && value.contains(";")) { //$NON-NLS-1$
-                                                    String[] jars = value.split(";"); //$NON-NLS-1$
-                                                    for (String jar2 : jars) {
-                                                        String jar = jar2;
-                                                        jar = jar.substring(jar.lastIndexOf("\\") + 1); //$NON-NLS-1$
-                                                        ModuleNeeded module = new ModuleNeeded(null,
-                                                                TalendTextUtils.removeQuotes(jar), null, true);
-                                                        modulesNeeded.add(module);
-                                                    }
-                                                } else {
-                                                    value = value.substring(value.lastIndexOf("\\") + 1); //$NON-NLS-1$
-
-                                                    ModuleNeeded module = new ModuleNeeded(null,
-                                                            TalendTextUtils.removeQuotes(value), null, true);
-                                                    modulesNeeded.add(module);
-                                                }
-                                            }
+        if (values == null || values.isEmpty()) {
+            return;
+        }
+        Object[] listItemsValue = curParam.getListItemsValue();
+        if (listItemsValue == null || listItemsValue.length == 0 && !(listItemsValue[0] instanceof IElementParameter)) {
+            return;
+        }
+        for (Object o : listItemsValue) {
+            IElementParameter param = (IElementParameter) o;
+            if (param.getFieldType() != EParameterFieldType.MODULE_LIST) {
+                continue;
+            }
+            for (Map<String, Object> line : values) {
+                String moduleName = (String) line.get(param.getName());
+                if (StringUtils.isBlank(moduleName)) {
+                    continue;
+                }
+                boolean isContextMode = ContextParameterUtils.containContextVariables(moduleName);
+                if (isContextMode) {
+                    List<IContext> listContext = process.getContextManager().getListContext();
+                    for (IContext context : listContext) {
+                        List<IContextParameter> contextParameterList = context.getContextParameterList();
+                        for (IContextParameter contextPara : contextParameterList) {
+                            String var = ContextParameterUtils.getVariableFromCode(moduleName);
+                            if (!var.equals(contextPara.getName())) {
+                                continue;
+                            }
+                            String value = context.getContextParameter(contextPara.getName()).getValue();
+                            if (StringUtils.isBlank(value)) {
+                                continue;
+                            }
+                            if (!value.contains(";")) { //$NON-NLS-1$
+                                modulesNeeded
+                                        .add(ModuleNeeded.newInstance(null, TalendTextUtils.removeQuotes(value), null, true));
+                                continue;
+                            }
+                            if (curParam.getName().equals(EParameterName.DRIVER_JAR.getName())) {
+                                Stream.of(value.split(";")).forEach(s -> { //$NON-NLS-1$
+                                    ModuleNeeded module = null;
+                                    String jarName = TalendTextUtils.removeQuotes(s);
+                                    if (!jarName.toLowerCase().endsWith(".jar")) { //$NON-NLS-1$
+                                        module = ModulesNeededProvider.getModuleNeededById(jarName);
+                                        // TDQ-18826 set required to true for tdqReportRun when it is Dynamic jars
+                                        if (jarName.startsWith("DYNAMIC_") && module != null) {
+                                            module.setRequired(true);
                                         }
                                     }
-
-                                } else {
-                                    ModuleNeeded mn = null;
-                                    if (!moduleName.toLowerCase().endsWith(".jar")) {
-                                        mn = ModulesNeededProvider.getModuleNeededById(moduleName);
-                                        if (mn == null) {
-                                            mn = getModuleValue(process, moduleName);
-                                        }
-                                    } else {
-                                        mn = getModuleValue(process, moduleName);
+                                    if (module == null) {
+                                        module = ModuleNeeded.newInstance(null, TalendTextUtils.removeQuotes(s), null, true);
                                     }
-
-                                    if (line.get("JAR_NEXUS_VERSION") != null) {
-                                        String a = moduleName.replaceFirst("[.][^.]+$", "");
-                                        mn.setMavenUri("mvn:org.talend.libraries/" + a + "/"
-                                                + line.get("JAR_NEXUS_VERSION") + "/jar");
-
-                                    }
-                                    modulesNeeded.add(mn);
-                                }
+                                    modulesNeeded.add(module);
+                                });
+                                continue;
+                            }
+                            if (curParam.getName().equals("connection.driverTable")) { //$NON-NLS-1$
+                                Stream.of(value.split(";")).forEach(s -> modulesNeeded //$NON-NLS-1$
+                                        .add(ModuleNeeded.newInstance(null, TalendTextUtils.removeQuotes(s), null, true)));
                             }
                         }
                     }
+                } else {
+                    ModuleNeeded module = null;
+                    if (!moduleName.toLowerCase().endsWith(".jar")) { //$NON-NLS-1$
+                        module = ModulesNeededProvider.getModuleNeededById(moduleName);
+                    }
+                    if (module == null) {
+                        module = getModuleValue(process, moduleName);
+                    }
+                    String nexusJarVersion = (String) line.get("JAR_NEXUS_VERSION"); //$NON-NLS-1$
+                    if (nexusJarVersion != null) {
+                        String mvnUrl = MavenUrlHelper.generateMvnUrl(MavenConstants.DEFAULT_LIB_GROUP_ID,
+                                moduleName.replaceFirst("[.][^.]+$", ""), nexusJarVersion, MavenConstants.TYPE_JAR, null);
+                        module.setMavenUri(mvnUrl);
+                    }
+                    modulesNeeded.add(module);
                 }
             }
         }
-
     }
 
     private static ModuleNeeded getModuleValue(final IProcess process, String moduleValue) {
@@ -602,7 +644,7 @@ public class JavaProcessUtil {
                 }
             }
         }
-        return new ModuleNeeded(null, TalendTextUtils.removeQuotes(moduleValue), null, true);
+        return ModuleNeeded.newInstance(null, moduleValue, null, true);
     }
 
     /**
@@ -619,10 +661,9 @@ public class JavaProcessUtil {
             // added for bug 13592. new parameter DRIVER_JAR was used for jdbc connection
             if (value != null && value instanceof List) {
                 List list = (List) value;
-                boolean updateCustomMavenUri = false;
-                for (int i = 0; i < list.size(); i++) {
-                    if (list.get(i) instanceof HashMap) {
-                        HashMap map = (HashMap) list.get(i); // JAR_NAME
+                for (Object element : list) {
+                    if (element instanceof HashMap) {
+                        HashMap map = (HashMap) element; // JAR_NAME
                         Object object = null;
                         if (name.equals("DRIVER_JAR")) { //$NON-NLS-1$
                             object = map.get("JAR_NAME"); //$NON-NLS-1$
@@ -637,23 +678,22 @@ public class JavaProcessUtil {
                                     getModulesInTable(process, curParam, modulesNeeded);
                                 } else {
                                     ModuleNeeded module = null;
-
+                                    String moduleName = TalendTextUtils.removeQuotes(driverName);
                                     if (StringUtils.isNotBlank((String) map.get("JAR_NEXUS_VERSION"))) {
-                                        module = new ModuleNeeded(null, null, true,
-                                                "mvn:org.talend.libraries/"
-                                                        + TalendTextUtils.removeQuotes(driverName).replaceFirst(
-                                                                "[.][^.]+$", "")
-                                                        + "/" + (String) map.get("JAR_NEXUS_VERSION") + "/jar");
-
+                                        String mvnUrl = MavenUrlHelper.generateMvnUrl(MavenConstants.DEFAULT_LIB_GROUP_ID,
+                                                moduleName.replaceFirst("[.][^.]+$", ""), (String) map.get("JAR_NEXUS_VERSION"),
+                                                MavenConstants.TYPE_JAR, null);
+                                        module = ModuleNeeded.newInstance(null, mvnUrl, null, true);
                                     } else {
-                                        String moduleName = TalendTextUtils.removeQuotes(driverName);
                                         if (!moduleName.toLowerCase().endsWith(".jar")) {
                                             module = ModulesNeededProvider.getModuleNeededById(moduleName);
-                                            if (module == null) {
-                                                module = new ModuleNeeded(null, moduleName, null, true);
+                                            // TDQ-18826 set required to true for tdqReportRun when it is Dynamic jars
+                                            if (moduleName.startsWith("DYNAMIC_") && module != null) {
+                                                module.setRequired(true);
                                             }
-                                        } else {
-                                            module = new ModuleNeeded(null, moduleName, null, true);
+                                        }
+                                        if (module == null) {
+                                            module = ModuleNeeded.newInstance(null, moduleName, null, true);
                                         }
                                     }
                                     modulesNeeded.add(module);
@@ -746,10 +786,7 @@ public class JavaProcessUtil {
         if (contextParam != null) {
             String values = contextParam.getValue();
             if (StringUtils.isNotBlank(values)) {
-                IPath path = new Path(values); // if it's path
-                String fileName = path.lastSegment(); // get the file name only.
-                ModuleNeeded module = new ModuleNeeded(null, fileName, null, true);
-                return module;
+                return ModuleNeeded.newInstance(null, values, null, true);
             }
         }
         return null;
@@ -870,4 +907,94 @@ public class JavaProcessUtil {
         module.getExtraAttributes().put("IS_OSGI_EXCLUDED", "true");
         return module;
     }
+
+    public static boolean needMigration(String componentName, EList parameters) {
+        if (parameters != null) {
+            Map<String, String> properties = new HashMap<>();
+            for (final Object elem : parameters) {
+                ElementParameterTypeImpl parameter = (ElementParameterTypeImpl) elem;
+                if (EParameterFieldType.TECHNICAL.name().equals(parameter.getField())
+                        && parameter.getName().endsWith(".__version")) { //$NON-NLS-1$
+                    properties.put(parameter.getName(), parameter.getValue());
+                }
+            }
+            if (properties.size() > 0) {
+                try {
+                    ITaCoKitService tacokitService = ITaCoKitService.getInstance();
+                    if (tacokitService != null) {
+                        return tacokitService.isNeedMigration(componentName, properties);
+                    }
+                } catch (Exception e) {
+                    ExceptionHandler.process(e);
+                }
+            }
+        }
+        return false;
+    }
+
+    @Deprecated
+    public static List<String> getCodesExportJars(IProcess process) {
+        if (process instanceof Process && GlobalServiceRegister.getDefault().isServiceRegistered(IRunProcessService.class)) {
+            IRunProcessService service = GlobalServiceRegister.getDefault().getService(IRunProcessService.class);
+            IProcessor processor = service.createCodeProcessor(process, ((Process) process).getProperty(), ECodeLanguage.JAVA,
+                    true);
+            if (processor != null) {
+                return new ArrayList<>(getCodesExportJars(processor));
+            }
+        }
+        List<String> codesJars = new ArrayList<>();
+        // add routines always.
+        codesJars.add(JavaUtils.ROUTINES_JAR);
+
+        // Beans
+        if (ProcessUtils.isRequiredBeans(process)) {
+            codesJars.add(JavaUtils.BEANS_JAR);
+        }
+
+        // codesjar
+        if (process instanceof Process) {
+            codesJars.addAll(getCodesJarExportJarFromRoutinesParameterType(((Process) process).getRoutineDependencies()));
+        }
+        return codesJars;
+    }
+
+    public static Set<String> getCodesExportJars(IProcessor processor) {
+        Set<String> codesJars = new HashSet<>();
+        // add routines always.
+        codesJars.add(JavaUtils.ROUTINES_JAR);
+
+        // Beans
+        if (ProcessUtils.isRequiredBeans(processor.getProcess())) {
+            codesJars.add(JavaUtils.BEANS_JAR);
+        }
+
+        // codesjar
+        codesJars.addAll(getCodesJarExportJarsWithChildren(processor));
+        return codesJars;
+    }
+
+    private static Set<String> getCodesJarExportJarsWithChildren(IProcessor processor) {
+        Set<String> codesJars = new HashSet<>();
+        Item item = processor.getProperty().getItem();
+        ITestContainerProviderService testContainerService = ITestContainerProviderService.get();
+        if (testContainerService != null && testContainerService.isTestContainerItem(item)) {
+            try {
+                item = testContainerService.getParentJobItem(item);
+            } catch (PersistenceException e) {
+                ExceptionHandler.process(e);
+            }
+        }
+        codesJars.addAll(getCodesJarExportJarFromRoutinesParameterType(RoutinesUtil.getRoutinesParametersFromItem(item)));
+        processor.getBuildChildrenJobsAndJoblets().forEach(info -> codesJars
+                .addAll(getCodesJarExportJarFromRoutinesParameterType(RoutinesUtil.getRoutinesParametersFromJobInfo(info))));
+        return codesJars;
+    }
+
+    private static Set<String> getCodesJarExportJarFromRoutinesParameterType(List<RoutinesParameterType> routinesParameters) {
+        return routinesParameters.stream().filter(r -> r.getType() != null)
+                .map(r -> CodesJarResourceCache.getCodesJarById(r.getId())).filter(info -> info != null)
+                .map(info -> info.getLabel().toLowerCase() + FileExtensions.JAR_FILE_SUFFIX)
+                .collect(Collectors.toSet());
+    }
+
 }

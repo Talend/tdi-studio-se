@@ -114,7 +114,7 @@ public enum EParameterName {
     SCHEMA_OPTIONS(Messages.getString("EParameterName.schemaOptions")), //$NON-NLS-1$
     COLLAPSED("COLLAPSED"), //$NON-NLS-1$  Hidden parameter so no translation needed
     SUBJOB_DISPLAYED("DISPLAY_SUBJOB"), //$NON-NLS-1$  Hidden parameter so no translation needed
-    SHOW_SUBJOB_TITLE(Messages.getString("EParameterName.showSubjob")), //$NON-NLS-1$
+    SHOW_SUBJOB_TITLE(Messages.getString("EParameterName.showSubjob2")), //$NON-NLS-1$
     SUBJOB_TITLE(Messages.getString("EParameterName.title")), //$NON-NLS-1$
     SUBJOB_TITLE_COLOR(Messages.getString("EParameterName.SubjobTitleColor")), //$NON-NLS-1$
     SUBJOB_COLOR(Messages.getString("EParameterName.SubjobColor")), //$NON-NLS-1$
@@ -226,6 +226,9 @@ public enum EParameterName {
     FIELDSEPARATOR(Messages.getString("EParameterName.FieldSeparator")), //$NON-NLS-1$
     ROWSEPARATOR(Messages.getString("EParameterName.RowSeparator")), //$NON-NLS-1$
     FROM_FILE_FLAG(Messages.getString("EParameterName.fromFileFlag")), //$NON-NLS-1$
+    OVERRIDE_ENCODING_FLAG(Messages.getString("EParameterName.OverrideEncodingFlag")), //$NON-NLS-1$
+    // for override encoding (name should be diff from the encoding of Stats&Logs)
+    OVERRIDE_ENCODING_IN_EXTRA("OVERRIDE_ENCODING_IN_EXTRA"), //$NON-NLS-1$
     FROM_DATABASE_FLAG(Messages.getString("EParameterName.fromDatabaseFlag")), //$NON-NLS-1$
     // implict tConextLoad parameters.
     LOAD_NEW_VARIABLE(Messages.getString("EParameterName.LoadNewVariableLabel")), //$NON-NLS-1$
@@ -333,6 +336,11 @@ public enum EParameterName {
     // Route Component Type
     ROUTE_COMPONENT_TYPE("ROUTE_COMPONENT_TYPE"), //$NON-NLS-1$
 
+    // Route Breakpoint Type
+    ROUTE_BREAKPOINT_LANGUAGES("Languages"), //$NON-NLS-1$
+    ROUTE_BREAKPOINT_EXPRESSION("Expression"), //$NON-NLS-1$
+    ROUTE_BREAKPOINT_EXAMPLE("Example"), //$NON-NLS-1$
+    
     // Automatic Parlization
     PARTITIONER(Messages.getString("Connection.paral_partitioner")), //$NON-NLS-1$
     DEPARTITIONER(Messages.getString("Connection.paral_departitioner")), //$NON-NLS-1$
@@ -380,6 +388,8 @@ public enum EParameterName {
     UNIFIED_COMPONENTS("Database"),
 
     ACTIVE_DATABASE_DELIMITED_IDENTIFIERS("Active database delimited identifiers"), //$NON-NLS-1$
+
+    USE_ALIAS_IN_OUTPUT_TABLE("Use alias in output table"), //$NON-NLS-1$
 
     // for tDataprepRun
     PREPARATION_ID("PREPARATION_ID");

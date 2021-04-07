@@ -170,7 +170,7 @@ if (outConn!=null) {
     org.dom4j.Document doc_<%=cid%> = null;
     java.util.HashMap xmlNameSpaceMap_<%=cid%> = null;
     org.dom4j.XPath x_<%=cid%> = null;
-    java.util.List<org.dom4j.tree.AbstractNode> nodeList_<%=cid%> = null;
+    java.util.List<org.dom4j.Node> nodeList_<%=cid%> = null;
 <%if(useXMLField){%>
 	String loopQuery_<%=cid %> = <%=strXMLPrefix %>+<%=loopQuery %>;
 <%}else{
@@ -217,7 +217,7 @@ if (outConn!=null) {
 		<%if(ignore_NS_Str){%>
 			x_<%=cid%>.setNamespaceContext(namespaceContext_<%=cid%>);
 		<%}%> 
-    	nodeList_<%=cid%> = (java.util.List<org.dom4j.tree.AbstractNode>)x_<%=cid%>.selectNodes(doc_<%=cid%>);
+    	nodeList_<%=cid%> = (java.util.List<org.dom4j.Node>)x_<%=cid%>.selectNodes(doc_<%=cid%>);
     	
     	isStructError_<%=cid %> = false;
     	
@@ -304,7 +304,7 @@ if(outConns!=null){
 %>
     		<%=firstConnName %> = new <%=firstConnName %>Struct();
     	
-    		org.dom4j.tree.AbstractNode temp_<%=cid %> = nodeList_<%=cid %>.get(i_<%=cid %>);
+    		org.dom4j.Node temp_<%=cid %> = nodeList_<%=cid %>.get(i_<%=cid %>);
 	
 	    	nb_line_<%=cid%>++;	
 <%

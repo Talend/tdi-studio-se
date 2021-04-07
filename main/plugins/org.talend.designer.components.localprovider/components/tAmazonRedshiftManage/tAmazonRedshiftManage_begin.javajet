@@ -24,6 +24,9 @@
 	String user = ElementParameterParser.getValue(node, "__USER__");
 	String node_type = ElementParameterParser.getValue(node, "__NODE_TYPE__");
 	String node_count = ElementParameterParser.getValue(node, "__NODE_COUNT__");
+	if (node_count.isEmpty()) {
+	    node_count = "1";
+	}
 	
 	boolean isLog4jEnabled = "true".equals(ElementParameterParser.getValue(node.getProcess(), "__LOG4J_ACTIVATE__"));
 	
@@ -88,52 +91,46 @@
     		.withMasterUsername(<%=user%>)
     		.withMasterUserPassword(decryptedPwd_<%=cid%>)
     		
-    		.withNodeType(<%=node_type%>)
+    		.withNodeType(<%=node_type%>);
     		
-    		<%
-    		if(new Integer(node_count) > 1){
-    		%>
-    		.withNumberOfNodes(<%=node_count%>)
-    		<%
-    		} else {
-    		%>
-    		.withClusterType("single-node")
-    		<%
-    		}
-    		%>
-    		
-    		//advanced settings
-    		<%if(parameterUtil.isValid(parameter_group_name)) {%>
-    		.withClusterParameterGroupName(<%=parameter_group_name%>)
-    		<%}%>
-			
-			<%if(parameterUtil.isValid(subnet_group_name)) {%>
-			.withClusterSubnetGroupName(<%=subnet_group_name%>)
+		if (<%=node_count%> > 1) {
+		    request_<%=cid%> = request_<%=cid%>.withNumberOfNodes(<%=node_count%>);
+		} else {
+		    request_<%=cid%> = request_<%=cid%>.withClusterType("single-node");
+		}
+					
+		//advanced settings
+		<%if(parameterUtil.isValid(parameter_group_name)) {%>
+		request_<%=cid%> = request_<%=cid%>.withClusterParameterGroupName(<%=parameter_group_name%>);
+		<%}%>
+		
+		<%if(parameterUtil.isValid(subnet_group_name)) {%>
+		request_<%=cid%> = request_<%=cid%>.withClusterSubnetGroupName(<%=subnet_group_name%>);
+		<%}%>
+		
+		<%
+		if(publicly_accessible) {
+		%>
+			request_<%=cid%> = request_<%=cid%>.withPubliclyAccessible(true);
+			<%if(set_public_ip_address) {%>
+			request_<%=cid%> = request_<%=cid%>.withElasticIp(<%=elastic_ip%>);
 			<%}%>
-			
-			<%
-			if(publicly_accessible) {
-			%>
-				.withPubliclyAccessible(true)
-    			<%if(set_public_ip_address) {%>
-    			.withElasticIp(<%=elastic_ip%>)
-    			<%}%>
-			<%
-			} else {
-			%>
-				.withPubliclyAccessible(false)
-			<%
-			}
-			%>
-			
-			<%if(parameterUtil.isValid(availability_zone)) {%>
-			.withAvailabilityZone(<%=availability_zone%>)
-			<%}%>
-			
-			<%if(parameterUtil.isValid(vpc_security_groupids)) {%>
-			.withVpcSecurityGroupIds(<%=vpc_security_groupids%>.split(","))
-			<%}%>
-    	;
+		<%
+		} else {
+		%>
+			request_<%=cid%> = request_<%=cid%>.withPubliclyAccessible(false);
+		<%
+		}
+		%>
+		
+		<%if(parameterUtil.isValid(availability_zone)) {%>
+		request_<%=cid%> = request_<%=cid%>.withAvailabilityZone(<%=availability_zone%>);
+		<%}%>
+		
+		<%if(parameterUtil.isValid(vpc_security_groupids)) {%>
+		request_<%=cid%> = request_<%=cid%>.withVpcSecurityGroupIds(<%=vpc_security_groupids%>.split(","));
+		<%}%>
+    	
     
     	com.amazonaws.services.redshift.model.Cluster result_<%=cid%> = client_<%=cid%>.createCluster(request_<%=cid%>);
     	<%if(isLog4jEnabled) {%>
@@ -219,7 +216,54 @@
     	}
     	%>
 		
+	<%
+	} else if("PAUSE_CLUSTER".equals(action)) {
+	%>
+		com.amazonaws.services.redshift.model.PauseClusterRequest request_Pause_<%=cid %> = 
+				new com.amazonaws.services.redshift.model.PauseClusterRequest().withClusterIdentifier(<%=cluster_id%>);		
+				
+		com.amazonaws.services.redshift.model.Cluster result_<%=cid%> = client_<%=cid %>.pauseCluster(request_Pause_<%=cid %>);
+		<%if(isLog4jEnabled) {%>
+    	log.info("<%=cid%> - cluster status : " + result_<%=cid%>);
+    	<%}%>
+		globalMap.put("<%=cid %>_CLUSTER_FINAL_ID", result_<%=cid%>.getClusterIdentifier());
 		
+	<%
+	} else if("RESUME_CLUSTER".equals(action)) {
+	%>
+		com.amazonaws.services.redshift.model.ResumeClusterRequest request_Resume_<%=cid %> = 
+				new com.amazonaws.services.redshift.model.ResumeClusterRequest().withClusterIdentifier(<%=cluster_id%>);		
+				
+		com.amazonaws.services.redshift.model.Cluster result_<%=cid%> = client_<%=cid %>.resumeCluster(request_Resume_<%=cid %>);
+		<%if(isLog4jEnabled) {%>
+    	log.info("<%=cid%> - cluster status : " + result_<%=cid%>);
+    	<%}%>
+		globalMap.put("<%=cid %>_CLUSTER_FINAL_ID", result_<%=cid%>.getClusterIdentifier());
+		
+		<%
+    	if(wait_for_cluster_ready) {
+    	%>
+    		boolean clusterReady_<%=cid%> = false;
+            System.out.println("Wating for cluster to become available.");
+            while (!clusterReady_<%=cid%>) {
+                com.amazonaws.services.redshift.model.DescribeClustersResult result2_<%=cid%> = client_<%=cid%>.describeClusters(
+                	new com.amazonaws.services.redshift.model.DescribeClustersRequest()
+                   		.withClusterIdentifier(result_<%=cid%>.getClusterIdentifier())
+                );
+                com.amazonaws.services.redshift.model.Cluster cluster_<%=cid%> = result2_<%=cid%>.getClusters().get(0);
+                String status_<%=cid%> = cluster_<%=cid%>.getClusterStatus();
+                if ("available".equalsIgnoreCase(status_<%=cid%>)) {
+                    clusterReady_<%=cid%> = true;
+                    globalMap.put("<%=cid %>_ENDPOINT", cluster_<%=cid%>.getEndpoint().getAddress());
+                } else {
+                    System.out.print(".");
+                    Thread.sleep(2000);
+                }
+            }
+    	<%
+    	}
+    	%>
+	
 	<%
 	} else if("RESTORE_FROM_SNAPSHOT".equals(action)) {
 	%>

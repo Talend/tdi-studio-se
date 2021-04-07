@@ -54,7 +54,15 @@ public class ContextModeAction extends AbstractEditorAction {
         this.parameters = query;
         this.query = query.getQueryObject();
         // modified by hyWang,for fix a bug which was found in development
-        checked = this.query == null ? false : this.query.isContextMode();
+        if (this.query == null) {
+            if (this.parameters != null) {
+                checked = this.parameters.getIfContextButtonCheckedFromBuiltIn();
+            } else {
+                checked = false;
+            }
+        } else {
+            checked = this.query.isContextMode();
+        }
 
         SqlBuilderRepositoryObject o = (SqlBuilderRepositoryObject) repositoryNode.getObject();
         boolean isBuildin = o.isBuildIn() || query.isNodeReadOnly();
@@ -71,10 +79,12 @@ public class ContextModeAction extends AbstractEditorAction {
         return "context mode"; //$NON-NLS-1$
     }
 
+    @Override
     public boolean isChecked() {
         return this.checked;
     }
 
+    @Override
     public void setChecked(boolean checked) {
         this.checked = checked;
     }

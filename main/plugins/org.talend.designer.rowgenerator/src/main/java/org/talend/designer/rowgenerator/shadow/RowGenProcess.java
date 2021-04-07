@@ -822,12 +822,6 @@ public class RowGenProcess extends Element implements IProcess {
         return null;
     }
 
-    @Override
-    public Set<String> getNeededPigudf() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
     /*
      * (non-Javadoc)
      *
@@ -843,6 +837,12 @@ public class RowGenProcess extends Element implements IProcess {
      */
     @Override
     public Set<ModuleNeeded> getNeededModules(int options) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public INode getNodeByUniqueName(String uniqueName) {
         // TODO Auto-generated method stub
         return null;
     }

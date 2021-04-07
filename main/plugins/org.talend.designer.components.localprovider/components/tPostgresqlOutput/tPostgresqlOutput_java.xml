@@ -294,11 +294,29 @@
 	</PARAMETERS>
 
 	<ADVANCED_PARAMETERS>
+	
+		<PARAMETER
+			NAME="USE_ALTERNATE_SCHEMA"
+			FIELD="CHECK"
+			NUM_ROW="1"
+			SHOW_IF="USE_EXISTING_CONNECTION == 'true'"
+		>
+			<DEFAULT>false</DEFAULT>
+		</PARAMETER>
+		
+		<PARAMETER
+			NAME="ALTERNATE_SCHEMA"
+			FIELD="TEXT"
+			NUM_ROW="2"
+			SHOW_IF="(USE_EXISTING_CONNECTION == 'true') AND (USE_ALTERNATE_SCHEMA == 'true')"
+		>
+			<DEFAULT>""</DEFAULT>
+		</PARAMETER>
 
 		<PARAMETER
 			NAME="PROPERTIES"
 			FIELD="TEXT"
-			NUM_ROW="1"
+			NUM_ROW="5"
 			REPOSITORY_VALUE="PROPERTIES_STRING"
 			SHOW_IF="USE_EXISTING_CONNECTION == 'false'">
 			<DEFAULT>""</DEFAULT>
@@ -422,7 +440,7 @@
 
 	<CODEGENERATION>
 		<IMPORTS>
-			<IMPORT NAME="Driver-Postgres9" MODULE="postgresql-42.2.5.jar" MVN="mvn:org.postgresql/postgresql/42.2.5" REQUIRED_IF="(DB_VERSION =='V9_X') AND (USE_EXISTING_CONNECTION == 'false')" />
+			<IMPORT NAME="Driver-Postgres9" MODULE="postgresql-42.2.14.jar" MVN="mvn:org.postgresql/postgresql/42.2.14" REQUIRED_IF="(DB_VERSION =='V9_X') AND (USE_EXISTING_CONNECTION == 'false')" />
 			<IMPORT NAME="Driver-Postgres" MODULE="postgresql-8.4-703.jdbc4.jar" MVN="mvn:postgresql/postgresql/8.4-703.jdbc4" REQUIRED_IF="(DB_VERSION =='PRIOR_TO_V9') AND (USE_EXISTING_CONNECTION == 'false')" />
 			<IMPORT NAME="Driver-Postgis" MODULE="postgis_1.4.0.jar" MVN="mvn:org.talend.libraries/postgis_1.4.0/6.0.0"  REQUIRED="false" />
 		 	<IMPORT NAME="org.talend.sdi" MODULE="org.talend.sdi.jar" MVN="mvn:org.talend.libraries/org.talend.sdi/6.0.0"  REQUIRED="false" />

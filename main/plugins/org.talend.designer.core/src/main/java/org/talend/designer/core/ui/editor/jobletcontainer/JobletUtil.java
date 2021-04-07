@@ -7,6 +7,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
@@ -29,6 +30,7 @@ import org.talend.components.api.properties.ComponentProperties;
 import org.talend.core.GlobalServiceRegister;
 import org.talend.core.PluginChecker;
 import org.talend.core.model.components.ComponentUtilities;
+import org.talend.core.model.components.EComponentType;
 import org.talend.core.model.components.IComponent;
 import org.talend.core.model.process.EConnectionType;
 import org.talend.core.model.process.EParameterFieldType;
@@ -384,12 +386,12 @@ public class JobletUtil {
         return cloneNode;
     }
 
-    private void updateReferenceComponentInJoblet(Node node, Node cloneNode) {
+    public void updateReferenceComponentInJoblet(Node node, Node cloneNode) {
         ComponentProperties nodeComponentProperties = node.getComponentProperties();
         ComponentProperties cloneNodeComponentProperties = cloneNode.getComponentProperties();
         if (nodeComponentProperties != null && cloneNodeComponentProperties != null) {
-            Properties referencedComponentProperties = nodeComponentProperties.getProperties("referencedComponent");//$NON-NLS-1$
-            Properties cloneNodeProperties = cloneNodeComponentProperties.getProperties("referencedComponent");//$NON-NLS-1$
+            Properties referencedComponentProperties = findOutReferencedComponentProperties(nodeComponentProperties);
+            Properties cloneNodeProperties = findOutReferencedComponentProperties(cloneNodeComponentProperties);
             if (referencedComponentProperties != null && cloneNodeProperties != null) {
                 List<NamedThing> nodeProperties = referencedComponentProperties.getProperties();
                 List<NamedThing> cloneProperties = cloneNodeProperties.getProperties();
@@ -404,6 +406,24 @@ public class JobletUtil {
                 }
             }
         }
+    }
+
+    public Properties findOutReferencedComponentProperties(Properties properties) {
+        Properties refProperties = properties.getProperties("referencedComponent");//$NON-NLS-1$
+        if (refProperties != null) {
+            return refProperties;
+        }
+        List<NamedThing> propertiesList = properties.getProperties();
+        for (NamedThing namedThing : propertiesList) {
+            if (namedThing instanceof Properties) {
+                Properties subProperties = (Properties) namedThing;
+                refProperties = findOutReferencedComponentProperties(subProperties);
+                if (refProperties != null) {
+                    break;
+                }
+            }
+        }
+        return refProperties;
     }
 
     public void updateNode(Node cloneNode, Node node) {
@@ -746,6 +766,27 @@ public class JobletUtil {
         }
         if (expression.contains(":")) {//$NON-NLS-1$
             return true;
+        }
+        return false;
+    }
+
+    public Optional<IComponent> findComponentByName(Set<IComponent> components, String searchName, String paletteType) {
+        return components.stream().filter(p -> p.getComponentType() == EComponentType.JOBLET
+                && paletteType.equals(p.getPaletteType()) && matchesName(p.getName(), searchName)).findFirst();
+    }
+
+    private boolean matchesName(String exist, String search) {
+        if (exist == null) {
+            return false;
+        }
+        if (exist.equals(search)) {
+            return true;
+        }
+        if (matchExpression(exist)) {
+            exist = StringUtils.substringAfterLast(exist, ":"); //$NON-NLS-1$
+            if (exist.equals(search)) {
+                return true;
+            }
         }
         return false;
     }

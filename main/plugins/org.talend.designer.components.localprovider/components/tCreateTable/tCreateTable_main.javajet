@@ -138,7 +138,7 @@ abstract class Manager {
                 dataType = metadataColumn.getType();
             }
             
-            Integer length = metadataColumn.getLength() == null ? 0 : metadataColumn.getLength();
+            Integer length = metadataColumn.getLength() == null ? "sybase_id".equalsIgnoreCase(getDBMSId()) ? 1 : 0 : metadataColumn.getLength();
             
             if ("mysql_id".equalsIgnoreCase(getDBMSId()) && dataType.endsWith("UNSIGNED") ) {
             	createTableSQL.append(dataType.substring(0,dataType.indexOf("UNSIGNED"))) ; 
@@ -898,10 +898,11 @@ class MSSQLManager extends Manager {
     private boolean useExistingConnection;
     private String connection;
     private String driver;
+    private boolean useADAuth;
     
     private static final String SEPARATOR = ";";
     
-    public MSSQLManager(String host, String port, String dbName, String dbSchema, String tableName, String userName, boolean useExistingConnection, String connection, String cid, String driver, String additionalParams) {
+    public MSSQLManager(String host, String port, String dbName, String dbSchema, String tableName, String userName, boolean useExistingConnection, String connection, String cid, String driver, String additionalParams, boolean useADAuth) {
         super(dbName, tableName, userName, cid, additionalParams);
         this.host = host;
         this.port = port;
@@ -909,6 +910,7 @@ class MSSQLManager extends Manager {
         this.useExistingConnection = useExistingConnection;
         this.connection = connection;
         this.driver = driver;
+        this.useADAuth = useADAuth;
     }
     protected String getDriver() {
     	if("JTDS".equals(driver)) {
@@ -930,7 +932,14 @@ class MSSQLManager extends Manager {
     	} else {
     		connectionUrl.append(" + \";databaseName=\" + ");
     	}
-    	connectionUrl.append(dbName);    	
+    	connectionUrl.append(dbName);
+
+        if ("MSSQL_PROP".equals(driver) && useADAuth) {
+            connectionUrl.append(" + \";encrypt=true;trustServerCertificate=false;hostNameInCertificate=*.database.windows.net;Authentication=ActiveDirectoryPassword\"");
+            connectionUrl.append(" + \";database=\" + ");
+            connectionUrl.append(dbName);
+        }
+
     	return connectionUrl.toString();
     }
     public String getSeparator(){
@@ -1147,7 +1156,7 @@ class OracleManager extends Manager {
         this.additionalParams = additionalParams;
     }
     protected String getDriver() {
-        return ("ORACLE_11".equals(dbVersion) || "ORACLE_11-6".equals(dbVersion) || "ORACLE_12".equals(dbVersion) || "ORACLE_18".equals(dbVersion)) ?
+        return ("ORACLE_11".equals(dbVersion) || "ORACLE_11-6".equals(dbVersion) || "ORACLE_12".equals(dbVersion) || "ORACLE_18".equals(dbVersion) ) ?
             "oracle.jdbc.OracleDriver" : "oracle.jdbc.driver.OracleDriver";
     }
     public String getSpecificConnectionURL() {
@@ -2028,6 +2037,15 @@ class RedshiftManager extends Manager {
         javaCode.append("}");
         return javaCode.toString();        
     }    
+    String redshiftTracker = org.talend.core.utils.TrackerUtil.getRedshiftTracker();
+    public String getDropTableSQL() {
+        StringBuilder dropTableSQL = new StringBuilder();
+        dropTableSQL.append(redshiftTracker +" \\n " + "DROP TABLE " + getLProtectedChar() + "\" + tableName_" + cid + " + \"" + getRProtectedChar());
+        return dropTableSQL.toString();
+    }
+    public String getCreateTableSQL(List<IMetadataColumn> listColumn) {
+        return redshiftTracker +" \\n " + super.getCreateTableSQL(listColumn);
+    }
 }
 
 class SnowflaketManager extends Manager {
@@ -2103,7 +2121,7 @@ class SnowflaketManager extends Manager {
         StringBuilder javaCode = new StringBuilder();
         if(useExistingConnection) {
             javaCode.append(retrieveTable());
-            javaCode.append("java.sql.Connection conn_" + cid + " = (java.sql.Connection)globalMap.get(\"" + connection + "_Connection\");");
+            javaCode.append("java.sql.Connection conn_" + cid + " = (java.sql.Connection)globalMap.get(\"" + connection + "_connection\");");
         } else {
             javaCode.append(super.getConnection());
         }
@@ -2239,7 +2257,8 @@ class ManagerFactory {
             boolean useExistingConnection = ("true").equals(ElementParameterParser.getValue(node, "__USE_EXISTING_CONNECTION__"));
             String connection = stringUtil.getString(ElementParameterParser.getValue(node, "__CONNECTION_MSSQL__"));
             String driver = ElementParameterParser.getValue(node, "__MSSQL_DRIVER__");
-            manager = new MSSQLManager(host, port, dbName,dbSchema, tableName, userName, useExistingConnection, connection, cid, driver, additionalParams);
+            boolean useADAuth = ("true").equals(ElementParameterParser.getValue(node, "__MSSQL_ACTIVE_DIR_AUTH__"));
+            manager = new MSSQLManager(host, port, dbName,dbSchema, tableName, userName, useExistingConnection, connection, cid, driver, additionalParams, useADAuth);
         } else if(("MYSQL").equals(dbType)) {
             String host = ElementParameterParser.getValue(node, "__HOST__");
             String port = ElementParameterParser.getValue(node, "__PORT__");

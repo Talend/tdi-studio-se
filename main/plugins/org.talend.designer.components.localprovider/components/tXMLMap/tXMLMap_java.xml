@@ -72,11 +72,9 @@
 		</TEMPLATES>
 
 		<IMPORTS>
-			<IMPORT NAME="Java_DOM4J1.6" MODULE="dom4j-1.6.1.jar" MVN="mvn:dom4j/dom4j/1.6.1"  UrlPath="platform:/plugin/org.talend.libraries.dom4j-jaxen/lib/dom4j-1.6.1.jar"
-				BundleID="org.apache.servicemix.bundles.dom4j"
+			<IMPORT NAME="Java_DOM4J2" MODULE="dom4j-2.1.3.jar" MVN="mvn:org.dom4j/dom4j/2.1.3" BundleID="org.apache.servicemix.bundles.dom4j"
 				REQUIRED="true" />
-			<IMPORT NAME="Java_JAXEN1.1" MODULE="jaxen-1.1.1.jar" MVN="mvn:org.talend.libraries/jaxen-1.1.1/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.dom4j-jaxen/lib/jaxen-1.1.1.jar"
-				BundleID="org.apache.servicemix.bundles.jaxen"
+			<IMPORT NAME="Java_JAXEN_1.1.6" MODULE="jaxen-1.1.6.jar" MVN="mvn:jaxen/jaxen/1.1.6" BundleID="org.apache.servicemix.bundles.jaxen"
 				REQUIRED="true" />
 		</IMPORTS>
 	</CODEGENERATION>

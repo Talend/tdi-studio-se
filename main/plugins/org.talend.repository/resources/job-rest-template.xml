@@ -44,7 +44,14 @@
 			xmlns:tns="${endpoint.serviceNamespace}"
 			serviceName="tns:${endpoint.serviceName}"
 #end
-			address="${endpoint.address}">
+
+#if (!$endpoint.useContextBean)
+	address="${endpoint.address}">
+#end
+
+#if ($endpoint.useContextBean)
+	address="#contextBean">
+#end			
 		<jaxrs:serviceBeans>
 			<ref component-id="serviceBean" />
 		</jaxrs:serviceBeans>
@@ -155,14 +162,8 @@
 		</property>
 #end
 #if (!$job.dataSources.isEmpty())
-		<property name="dataSources">
-			<map>
-#foreach ($alias in $job.dataSources)
-				<entry key="${alias}">
-					<reference interface="javax.sql.DataSource" filter="(osgi.jndi.service.name=${alias})" />
-				</entry>
-#end ## end data sources aliases loop
-			</map>
+		<property name="dataSourceReferences">
+		    <ref component-id="dataSourceReferenceList" /> 
 		</property>
 #end
 	</bean>
@@ -185,5 +186,14 @@
 ]]#
 #end
 
-
+#if ($endpoint.useContextBean)
+	<bean id="contextBean" class="${job.className}.ContextBean" factory-method="getContext">
+		<argument value="${endpoint.defaultContext}" />
+		<argument value="${endpoint.address}" />
+        <argument value="${job.className}" />
+	</bean>
+#end
+#if (!$job.dataSources.isEmpty())
+	<reference-list id="dataSourceReferenceList" member-type="service-reference" interface="javax.sql.DataSource" />
+#end
 </blueprint>

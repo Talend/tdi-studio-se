@@ -104,8 +104,10 @@ import org.talend.designer.core.utils.JavaProcessUtil;
 import org.talend.designer.core.utils.UnifiedComponentUtil;
 import org.talend.designer.runprocess.ProcessorException;
 import org.talend.designer.runprocess.ProcessorUtilities;
+import org.talend.librariesmanager.model.ModulesNeededProvider;
 import org.talend.repository.ProjectManager;
 import org.talend.repository.ui.actions.routines.CreateRoutineAction;
+import org.talend.repository.ui.utils.UpdateLog4jJarUtils;
 
 /**
  * Detailled comment <br/>
@@ -759,12 +761,13 @@ public class DesignerCoreService implements IDesignerCoreService {
      * , boolean)
      */
     @Override
-    public Set<ModuleNeeded> getNeededLibrariesForProcess(IProcess process, boolean withChildrens) {
-        int options = TalendProcessOptionConstants.MODULES_DEFAULT;
-        if (withChildrens) {
-            options |= TalendProcessOptionConstants.MODULES_WITH_CHILDREN;
-        }
+    public Set<ModuleNeeded> getNeededLibrariesForProcess(IProcess process, int options) {
         return JavaProcessUtil.getNeededModules(process, options);
+    }
+
+    @Override
+    public Set<ModuleNeeded> getCodesJarNeededLibrariesForProcess(Item item) {
+        return ModulesNeededProvider.getCodesJarModulesNeededForProcess(item);
     }
 
     @Override
@@ -881,5 +884,10 @@ public class DesignerCoreService implements IDesignerCoreService {
     @Override
     public boolean isNeedContextInJar(IProcess process) {
         return new BigDataJobUtil(process).needsToHaveContextInsideJar();
+    }
+    
+    @Override
+    public String[] getNeedRemoveModulesForLog4j() {
+        return UpdateLog4jJarUtils.NEEDREMOVEMODULES;
     }
 }

@@ -169,6 +169,8 @@
 	   <IMPORT NAME="Driver-Sybase3" MODULE="jconn3.jar" MVN="mvn:org.talend.libraries/jconn3/6.0.0"  BundleID="" REQUIRED_IF = "DB_VERSION == 'SYBSEIQ_12_15'" />
            <IMPORT NAME="Driver-Sybase4" MODULE="jconn4.jar" MVN="mvn:org.talend.libraries/jconn4/6.0.0"  BundleID="" REQUIRED_IF = "DB_VERSION == 'SYBSEIQ_16'" />
            <IMPORT NAME="Driver-SqlAnywhere" MODULE="sajdbc4.jar" MVN="mvn:sap.jdbc4.sqlanywhere/sajdbc4/17.0.0"  BundleID="" REQUIRED_IF = "DB_VERSION == 'SYBSEIQ_16_SA'" />
+           <IMPORT NAME="slf4j-api-1.7.25.jar" MODULE="slf4j-api-1.7.25.jar" MVN="mvn:org.slf4j/slf4j-api/1.7.25" REQUIRED_IF="USE_SHARED_CONNECTION =='true'" />
+           <IMPORT NAME="slf4j-log4j12-1.7.25.jar" MODULE="slf4j-log4j12-1.7.25.jar" MVN="mvn:org.slf4j/slf4j-log4j12/1.7.25" REQUIRED_IF="USE_SHARED_CONNECTION =='true'" />
      </IMPORTS>
    </CODEGENERATION>
 

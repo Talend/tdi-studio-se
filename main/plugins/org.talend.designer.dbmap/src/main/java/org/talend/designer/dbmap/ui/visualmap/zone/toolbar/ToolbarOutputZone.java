@@ -36,8 +36,6 @@ public class ToolbarOutputZone extends ToolbarZone {
 
     private ToolItem guessItem;
 
-    private ToolItem delimitedIdentifiersItem;
-
     public static final String MINIMIZE_TOOLTIP = Messages.getString("ToolbarOutputZone.minimizeTooltip"); //$NON-NLS-1$
 
     public static final String RESTORE_TOOLTIP = Messages.getString("ToolbarOutputZone.restorTooltip"); //$NON-NLS-1$
@@ -69,6 +67,7 @@ public class ToolbarOutputZone extends ToolbarZone {
         addOutputItem.setToolTipText(Messages.getString("ToolbarOutputZone.widgetTooltip.addOutputTable")); //$NON-NLS-1$
         addOutputItem.setImage(org.talend.commons.ui.runtime.image.ImageProvider
                 .getImage(org.talend.commons.ui.runtime.image.ImageProvider.getImageDesc(EImage.ADD_ICON)));
+        addOutputItem.setEnabled(!mapperManager.componentIsReadOnly());
 
         removeOutputItem = new ToolItem(getToolBarActions(), SWT.PUSH);
         removeOutputItem.setEnabled(false);
@@ -83,12 +82,8 @@ public class ToolbarOutputZone extends ToolbarZone {
         guessItem = new ToolItem(getToolBarActions(), SWT.PUSH);
         guessItem.setToolTipText(Messages.getString("ToolbarOutputZone.widgetTooltip.mapInputAndOutput")); //$NON-NLS-1$
         guessItem.setText(Messages.getString("ToolbarOutputZone.widgetText.autoMap")); //$NON-NLS-1$
+        guessItem.setEnabled(!mapperManager.componentIsReadOnly());
 
-        delimitedIdentifiersItem = new ToolItem(getToolBarActions(), SWT.CHECK);
-        delimitedIdentifiersItem.setToolTipText(Messages.getString("ToolbarOutputZone.widgetTooltip.delimitedIdentifiers")); //$NON-NLS-1$
-        delimitedIdentifiersItem.setText(Messages.getString("ToolbarOutputZone.widgetText.delimitedIdentifiers")); //$NON-NLS-1$
-        delimitedIdentifiersItem
-                .setSelection(getMapperManager().getComponent().getGenerationManager().isUseDelimitedIdentifiers());
     }
 
     /**
@@ -119,15 +114,6 @@ public class ToolbarOutputZone extends ToolbarZone {
             @Override
             public void handleEvent(Event event) {
                 getMapperManager().mapAutomaticallly();
-            }
-
-        });
-
-        delimitedIdentifiersItem.addListener(SWT.Selection, new Listener() {
-
-            @Override
-            public void handleEvent(Event event) {
-                getMapperManager().useDelimitedIdentifiers(delimitedIdentifiersItem.getSelection());
             }
 
         });

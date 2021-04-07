@@ -63,6 +63,7 @@ import org.talend.sdk.component.server.front.model.DocumentationContent;
 import org.talend.sdk.component.server.front.model.Environment;
 import org.talend.sdk.component.server.front.model.error.ErrorPayload;
 import org.talend.sdk.component.studio.lang.Pair;
+import org.talend.sdk.component.studio.util.TaCoKitConst;
 // we shouldn't need the execution runtime so don't even include it here
 //
 // technical note: this client includes the transport (websocket) but also the protocol/payload formatting/parsing
@@ -71,16 +72,32 @@ public class WebSocketClient implements AutoCloseable {
     private static final byte[] EOM = "^@".getBytes(StandardCharsets.UTF_8);
     private final Queue<Session> sessions = new ConcurrentLinkedQueue<>();
     private final WebSocketContainer container;
-    private final String base;
+
+    private final String protocol;
+
+    private final String port;
+
+    private final String basePath;
+
     private final long timeout;
     private final Jsonb jsonb;
+
+    private String serverHost;
+
     private Runnable synch;
 
-    public WebSocketClient(final String base, final long timeout) {
-        this.base = base;
+    public WebSocketClient(final String protocol, final String port, final String basePath, final long timeout) {
+        this.protocol = protocol;
+        this.serverHost = TaCoKitConst.DEFAULT_LOCALHOST;
+        this.port = port;
+        this.basePath = basePath;
         this.timeout = timeout;
         this.container = ContainerProvider.getWebSocketContainer();
         this.jsonb = JsonbProvider.provider("org.apache.johnzon.jsonb.JohnzonProvider").create().build();
+    }
+
+    public void setServerHost(String host) {
+        this.serverHost = host;
     }
 
     public void setSynch(final Runnable synch) {
@@ -160,8 +177,12 @@ public class WebSocketClient implements AutoCloseable {
         return poll;
     }
 
+    private String getBase() {
+        return protocol + serverHost + ":" + port + basePath;
+    }
+
     private Session doConnect() {
-        final URI connectUri = URI.create(base + "/bus");
+        final URI connectUri = URI.create(getBase() + "/bus");
         final ClientEndpointConfig endpointConfig = ClientEndpointConfig.Builder.create().build();
         endpointConfig.getUserProperties().put(Constants.IO_TIMEOUT_MS_PROPERTY, Long.toString(timeout));
         try {

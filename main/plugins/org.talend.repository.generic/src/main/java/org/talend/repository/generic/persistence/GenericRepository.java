@@ -86,6 +86,12 @@ public class GenericRepository implements Repository<ComponentProperties> {
                 Connection connection = (Connection) item.getConnection();
                 connection.setCompProperties(serializedProperties);
                 connection.getOwnedElement().clear();
+                try {
+                    // in case compProperties lost
+                    ProxyRepositoryFactory.getInstance().save(item);
+                } catch (PersistenceException e) {
+                    ExceptionHandler.process(e);
+                }
                 return repositoryLocation + IGenericConstants.REPOSITORY_LOCATION_SEPARATOR;
             } else {
                 throw new RuntimeException("Failed to find the GenericConnectionItem for location:" + repositoryLocation); //$NON-NLS-1$

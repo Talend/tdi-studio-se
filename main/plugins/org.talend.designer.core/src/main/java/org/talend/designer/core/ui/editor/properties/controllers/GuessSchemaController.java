@@ -24,6 +24,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.gef.commands.Command;
@@ -58,6 +59,7 @@ import org.talend.core.language.LanguageManager;
 import org.talend.core.model.metadata.IMetadataColumn;
 import org.talend.core.model.metadata.IMetadataConnection;
 import org.talend.core.model.metadata.IMetadataTable;
+import org.talend.core.model.metadata.MappingTypeRetriever;
 import org.talend.core.model.metadata.MetadataColumn;
 import org.talend.core.model.metadata.MetadataTable;
 import org.talend.core.model.metadata.MetadataTalendType;
@@ -355,6 +357,14 @@ public class GuessSchemaController extends AbstractElementPropertySectionControl
                 columns.clear();
             }
             if (!schemaContent.isEmpty()) {
+                MappingTypeRetriever mappingTypeRetriever = MetadataTalendType.getMappingTypeRetriever(dbmsId);
+                if (mappingTypeRetriever == null) {
+                    @SuppressWarnings("null")
+                    EDatabaseTypeName dbType = EDatabaseTypeName.getTypeFromDbType(connt.getDatabaseType(), false);
+                    if (dbType != null) {
+                        mappingTypeRetriever = MetadataTalendType.getMappingTypeRetrieverByProduct(dbType.getProduct());
+                    }
+                }
                 int numbOfColumn = schemaContent.get(0).length;
 
                 for (int i = 1; i <= numbOfColumn; i++) {
@@ -425,6 +435,21 @@ public class GuessSchemaController extends AbstractElementPropertySectionControl
                                     dbType = TypesManager.getDBTypeFromTalendType(dbmsId, oneColum.getTalendType());
                                 }
                                 oneColum.setType(dbType);
+                                if (oneColum.getTalendType() != null) {
+                                    if (oneColum.getTalendType().equals(JavaTypesManager.DATE.getId())
+                                            || oneColum.getTalendType().equals(PerlTypesManager.DATE)) {
+                                        if ("".equals(oneColum.getPattern())) { //$NON-NLS-1$
+                                            if (mappingTypeRetriever != null) {
+                                                String pattern = mappingTypeRetriever.getDefaultPattern(dbmsId,
+                                                        oneColum.getType());
+                                                oneColum.setPattern(StringUtils.isNotBlank(pattern) ? TalendQuoteUtils.addQuotes(pattern)
+                                                        : TalendQuoteUtils.addQuotes("dd-MM-yyyy"));//$NON-NLS-1$
+                                            } else {
+                                                oneColum.setPattern(TalendQuoteUtils.addQuotes("dd-MM-yyyy")); //$NON-NLS-1$
+                                            }
+                                        }
+                                    }
+                                }
                             }
                         }
                         // oneColum.setTalendType(JavaTypesManager.STRING.getId());
@@ -763,6 +788,7 @@ public class GuessSchemaController extends AbstractElementPropertySectionControl
         try {
             if (connt != null) {
                 iMetadataConnection = ConvertionHelper.convert(connt);
+                iMetadataConnection.setAdditionalParams(ConvertionHelper.convertAdditionalParameters(connt));
                 isStatus = checkConnection(iMetadataConnection);
             }
 
@@ -797,6 +823,11 @@ public class GuessSchemaController extends AbstractElementPropertySectionControl
                 	info = new DbInfo(iMetadataConnection.getDbType(), iMetadataConnection.getUsername(),
                             iMetadataConnection.getPassword(), iMetadataConnection.getDbVersionString(),
                             iMetadataConnection.getUrl(), iMetadataConnection.getDriverJarPath(),iMetadataConnection.getAdditionalParams());
+                } else if (EDatabaseTypeName.ORACLE_CUSTOM.getDisplayName().equals(iMetadataConnection.getDbType())) {
+                    info = new DbInfo(iMetadataConnection.getDbType(), iMetadataConnection.getUsername(),
+                            iMetadataConnection.getPassword(), iMetadataConnection.getDbVersionString(),
+                            iMetadataConnection.getUrl(), iMetadataConnection.getDriverJarPath(),
+                            iMetadataConnection.getAdditionalParams());
                 }else {
                     info = new DbInfo(iMetadataConnection.getDbType(), iMetadataConnection.getUsername(),
                             iMetadataConnection.getPassword(), iMetadataConnection.getDbVersionString(),

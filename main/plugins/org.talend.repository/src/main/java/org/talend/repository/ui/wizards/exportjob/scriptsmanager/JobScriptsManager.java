@@ -220,6 +220,7 @@ public abstract class JobScriptsManager {
         esbServiceName,
         esbCategory,
         esbExportType,
+        esbMetrics,
         properties,
         needAssembly,
         buildImage,
@@ -230,7 +231,9 @@ public abstract class JobScriptsManager {
         pushRegistry,
         registryUsername,
         registryPassword,
-        avoidBranchName
+        avoidBranchName,
+        mainJobOnly,
+        clearPasswordContextParameters
     }
 
     /**
@@ -252,15 +255,6 @@ public abstract class JobScriptsManager {
     public abstract List<ExportFileResource> getExportResources(ExportFileResource[] process, String... codeOptions)
             throws ProcessorException;
 
-    /**
-     *
-     * DOC wchen Comment method "getExportPigudfResources". only for run job in studio
-     *
-     * @param process
-     * @return
-     * @throws ProcessorException
-     */
-    public abstract URL getExportPigudfResources(ExportFileResource[] process) throws ProcessorException;
 
     protected String getTmpFolder() {
         String tmpFold = getTmpFolderPath();

@@ -119,7 +119,7 @@
 		NUM_ROW="20"
 		SHOW_IF="USE_PROXY == 'true'"
 		REPOSITORY_VALUE="PROXY_HOST">
-		<DEFAULT>"61.163.92.4"</DEFAULT>
+		<DEFAULT>"127.0.0.1"</DEFAULT>
 	</PARAMETER>
 
 	<PARAMETER
@@ -154,10 +154,10 @@
 	<CODEGENERATION>
     <IMPORTS>
        <IMPORT NAME="Java-Feed" MODULE="feed4j.jar" MVN="mvn:org.talend.libraries/feed4j/6.0.0"  REQUIRED="true" />
-       <IMPORT NAME="Java-DOM" MODULE="dom4j-1.6.1.jar" MVN="mvn:dom4j/dom4j/1.6.1"  UrlPath="platform:/plugin/org.talend.libraries.dom4j-jaxen/lib/dom4j-1.6.1.jar" REQUIRED="true" BundleID="" />
+       <IMPORT NAME="Java-DOM" MODULE="dom4j-2.1.3.jar" MVN="mvn:org.dom4j/dom4j/2.1.3" REQUIRED="true" BundleID="" />
         <IMPORT NAME="Java-NEKO" MODULE="nekohtml.jar" MVN="mvn:org.talend.libraries/nekohtml/6.0.0"  REQUIRED="true" />
-       <IMPORT NAME="Java-XER" MODULE="xercesImpl.jar" MVN="mvn:org.talend.libraries/xercesImpl/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.apache.xml/lib/xercesImpl.jar" REQUIRED="true" BundleID="" />
-       <IMPORT NAME="Java-XML" MODULE="xml-apis.jar" MVN="mvn:org.talend.libraries/xml-apis/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.xml/lib/xml-apis.jar" REQUIRED="true" />
+       <IMPORT NAME="xercesImpl-2.12.0" MODULE="xercesImpl-2.12.0.jar" MVN="mvn:xerces/xercesImpl/2.12.0" REQUIRED="true" BundleID="" />
+       <IMPORT NAME="xml-apis-1.4.01" MODULE="xml-apis-1.4.01.jar" MVN="mvn:xml-apis/xml-apis/1.4.01" REQUIRED="true" />
 
      </IMPORTS>
   </CODEGENERATION>

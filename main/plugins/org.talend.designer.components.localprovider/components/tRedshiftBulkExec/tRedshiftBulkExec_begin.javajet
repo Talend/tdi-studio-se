@@ -71,16 +71,7 @@ skeleton="../templates/db_output_bulk.skeleton"
 %>
 		conn_<%=cid%> = (java.sql.Connection)globalMap.get("<%=conn%>");
 <%
-        //Retrieve connection node and check if SSO was used for correct logging
-        List< ? extends INode> nodes =  node.getProcess().getNodesOfType("tRedshiftConnection");
-        String connectionRedShift = ElementParameterParser.getValue(node,"__CONNECTION__");
-        for (INode ne : nodes) {
-            if (connectionRedShift.equals(ne.getUniqueName())) {
-                jdbcUrl = ElementParameterParser.getValue(ne, "__JDBC_URL__");
-            }
-        }
-        boolean needUserAndPassword = !"SSO".equals(jdbcUrl);
-        log4jCodeGenerateUtil.useExistConnection(node, needUserAndPassword);
+		log4jCodeGenerateUtil.useExistConnection(node);
 	} else {
 %>
 		String driverClass_<%=cid%> = "com.amazon.redshift.jdbc42.Driver";
@@ -108,17 +99,17 @@ skeleton="../templates/db_output_bulk.skeleton"
         }
 %>
         String url_<%=cid%> = sbuilder_<%=cid%>.toString();
-<%      if (!"SSO".equals(jdbcUrl)){
-			String passwordFieldName = "__PASS__";
-			
-			if (ElementParameterParser.canEncrypt(node, passwordFieldName)) {%> 
-			final String decryptedPass_<%=cid%> = routines.system.PasswordEncryptUtil.decryptPassword(<%=ElementParameterParser.getEncryptedValue(node, passwordFieldName)%>);
-			<%} else {%>
-			final String decryptedPass_<%=cid%> = <%= ElementParameterParser.getValue(node, passwordFieldName)%>; 
-			<%}%>
-			String dbUser_<%=cid %> = <%=userName%>;
-			String dbPwd_<%=cid %> = decryptedPass_<%=cid%>;
-<%      }
+<%      
+		String passwordFieldName = "__PASS__";
+		
+		if (ElementParameterParser.canEncrypt(node, passwordFieldName)) {%> 
+		final String decryptedPass_<%=cid%> = routines.system.PasswordEncryptUtil.decryptPassword(<%=ElementParameterParser.getEncryptedValue(node, passwordFieldName)%>);
+		<%} else {%>
+		final String decryptedPass_<%=cid%> = <%= ElementParameterParser.getValue(node, passwordFieldName)%>; 
+		<%}%>
+		String dbUser_<%=cid %> = <%=userName%>;
+		String dbPwd_<%=cid %> = decryptedPass_<%=cid%>;
+<%      
 
 		log4jCodeGenerateUtil.connect(node);
 	}
@@ -154,8 +145,12 @@ skeleton="../templates/db_output_bulk.skeleton"
 	boolean jsonMode = !dynamoDBMode && "JSON".equals(importType);
 	boolean avroMode = !dynamoDBMode && "AVRO".equals(importType);
 	boolean fixedwidthMode = !dynamoDBMode && "FIXEDWIDTH".equals(importType);
+	boolean parquetMode = !dynamoDBMode && "PARQUET".equals(importType);
+	
+	String redshiftTracker = org.talend.core.utils.TrackerUtil.getRedshiftTracker();
 %>
 	StringBuilder command_<%=cid%> = new StringBuilder();
+	command_<%=cid%>.append("<%=redshiftTracker%> ").append('\n');
 <%
 	if(delimitedOrCsvMode) {
 %>
@@ -194,7 +189,7 @@ skeleton="../templates/db_output_bulk.skeleton"
 		.append("\"")
 	
 <%
-	if(columnList != null && columnList.size() > 0) {
+	if(!parquetMode && columnList != null && columnList.size() > 0) {
 %>
 		.append(" (")
 <%
@@ -344,7 +339,7 @@ skeleton="../templates/db_output_bulk.skeleton"
 	}else{
 		encrypt = encrypt && s3Mode;
 	}
-	if(encrypt) {
+	if(encrypt && !parquetMode) {
 %>
 		.append(";master_symmetric_key=")
 <%
@@ -392,9 +387,20 @@ skeleton="../templates/db_output_bulk.skeleton"
 %>
 	.append("FIXEDWIDTH '").append(<%=mapping%>).append("' ")
 <%
-	}
+	}else if(parquetMode){
 %>
+    .append("FORMAT AS PARQUET ")
+
+<%}%>
 	;
+	
+	<%if(parquetMode){
+	String encoding = ElementParameterParser.getValue(node, "__PARQUE_STATUPDATE__");
+	%>
+	command_<%=cid%>.append("STATUPDATE <%=encoding%> ");
+	<%}%>
+	
+	
 <%
 	if(delimitedOrCsvMode) {
 %>
@@ -404,7 +410,7 @@ skeleton="../templates/db_output_bulk.skeleton"
 <%
 	}
 	
-	if(!dynamoDBMode) {
+	if(!dynamoDBMode && !parquetMode) {
 		String encoding = ElementParameterParser.getValue(node, "__ENCODING__");
 %>
 		command_<%=cid%>.append("ENCODING ").append(<%=encoding%>).append(" ");
@@ -412,7 +418,7 @@ skeleton="../templates/db_output_bulk.skeleton"
 	}
 	
 	boolean regionAdded = false;
-	if(useExistingS3Connection) {
+	if(useExistingS3Connection && !parquetMode) {
 		String regionS3 = ElementParameterParser.getValue(current_node, "__REGION__");
 		boolean set_regionS3 = (regionS3!=null && !regionS3.isEmpty() && !"DEFAULT".equalsIgnoreCase(regionS3));
 		if(set_regionS3) {
@@ -425,7 +431,7 @@ skeleton="../templates/db_output_bulk.skeleton"
 	
 	boolean isSetMaxError = false;
 	final List<Map<String, String>> settings = (List<Map<String,String>>)ElementParameterParser.getObjectValue(node, "__OTHER_CONFIGURATION__");
-	if(settings!=null && !settings.isEmpty()) {
+	if(settings!=null && !settings.isEmpty() && !parquetMode) {
 		for(Map<String, String> parameter : settings) {
 			String parameterKey = parameter.get("OTHER_PARAMETER");
 			String value = parameter.get("DATA_VALUE");
@@ -478,14 +484,14 @@ skeleton="../templates/db_output_bulk.skeleton"
  		}
 	}
 	
-	if(encrypt) {
+	if(!parquetMode && encrypt) {
 %>
 		command_<%=cid%>.append("ENCRYPTED ");
 <%
 	}
 	
 	boolean compressed = "true".equals(ElementParameterParser.getValue(node, "__COMPRESS__"));
-	if(compressed && !dynamoDBMode) {
+	if(compressed && !dynamoDBMode && !parquetMode) {
 		String compression = ElementParameterParser.getValue(node, "__COMPRESSION__");
 %>
 		command_<%=cid%>.append("<%=compression%> ");
@@ -493,7 +499,8 @@ skeleton="../templates/db_output_bulk.skeleton"
 	}
 	
 	String dateFormat = ElementParameterParser.getValue(node, "__DATEFORMAT__");
-	if("NONE".equals(dateFormat)) {
+	if(!parquetMode){
+	    if("NONE".equals(dateFormat)) {
 		//do nothing
 	} else if("PATTERN".equals(dateFormat)) {
 		String pattern = ElementParameterParser.getValue(node, "__DATE_PATTERN__");
@@ -504,9 +511,10 @@ skeleton="../templates/db_output_bulk.skeleton"
 %>
 		command_<%=cid%>.append("DATEFORMAT 'auto' ");
 <%
-	}
+	    }
 	
 	String timeFormat = ElementParameterParser.getValue(node, "__TIMEFORMAT__");
+	
 	if("NONE".equals(timeFormat)) {
 		//do nothing
 	} else if("PATTERN".equals(timeFormat)) {
@@ -527,6 +535,7 @@ skeleton="../templates/db_output_bulk.skeleton"
 		command_<%=cid%>.append("TIMEFORMAT 'epochmillisecs' ");
 <%
 	}
+	}//!parquetMode
 %>
 	java.sql.Statement stmt_<%=cid %>=conn_<%=cid %>.createStatement();
 	stmt_<%=cid %>.execute(command_<%=cid%>.toString());

@@ -184,7 +184,9 @@
 		<IMPORT NAME="Driver-VERTICA_6.1.2" MODULE="vertica-jdk5-6.1.2-0.jar" MVN="mvn:org.talend.libraries/vertica-jdk5-6.1.2-0/6.0.0"   REQUIRED_IF="DB_VERSION=='VERTICA_6_1_X'" />
 		<IMPORT NAME="Driver-VERTICA_7.0" MODULE="vertica-jdbc-7.0.1-0.jar" MVN="mvn:org.talend.libraries/vertica-jdbc-7.0.1-0/6.0.0"   REQUIRED_IF="DB_VERSION=='VERTICA_7_0_X'" />
 		<IMPORT NAME="Driver-VERTICA_7.1" MODULE="vertica-jdbc-7.1.2-0.jar" MVN="mvn:org.talend.libraries/vertica-jdbc-7.1.2-0/6.0.0"   REQUIRED_IF="DB_VERSION=='VERTICA_7_1_X'" />
-		<IMPORT NAME="Driver-VERTICA_9.0" MODULE="vertica-jdbc-9.0.0-0.jar" MVN="mvn:org.talend.libraries/vertica-jdbc-9.0.0-0/6.0.0"   REQUIRED_IF="DB_VERSION=='VERTICA_9_0'" />
+		<IMPORT NAME="Driver-VERTICA_9.0" MODULE="vertica-jdbc-9.3.1-0.jar" MVN="mvn:com.vertica/vertica-jdbc/9.3.1-0"   REQUIRED_IF="DB_VERSION=='VERTICA_9_0'" />
+		<IMPORT NAME="slf4j-api-1.7.25.jar" MODULE="slf4j-api-1.7.25.jar" MVN="mvn:org.slf4j/slf4j-api/1.7.25" REQUIRED_IF="USE_SHARED_CONNECTION =='true'" />
+		<IMPORT NAME="slf4j-log4j12-1.7.25.jar" MODULE="slf4j-log4j12-1.7.25.jar" MVN="mvn:org.slf4j/slf4j-log4j12/1.7.25" REQUIRED_IF="USE_SHARED_CONNECTION =='true'" />
     </IMPORTS>
   </CODEGENERATION>
 

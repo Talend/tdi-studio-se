@@ -61,24 +61,8 @@ imports="
                     conn += "_in";
                 }
 %>
-		        conn_<%=cid%> = (java.sql.Connection)globalMap.get("<%=conn%>");
-<%
-				if ("REDSHIFT".equals(type)){
-					String jdbcUrl = "";
-					//Retrieve connection node and check if SSO was used for correct logging
-					List< ? extends INode> nodes =  node.getProcess().getNodesOfType("tRedshiftConnection");
-					String connectionRedShift = ElementParameterParser.getValue(node,"__CONNECTION__");
-					for (INode ne : nodes) {
-						if (connectionRedShift.equals(ne.getUniqueName())) {
-							jdbcUrl = ElementParameterParser.getValue(ne, "__JDBC_URL__");
-						}
-					}
-					boolean needUserAndPassword = !"SSO".equals(jdbcUrl);
-					log4jCodeGenerateUtil.useExistConnection(node, needUserAndPassword);
-				} else {
-					log4jCodeGenerateUtil.useExistConnection(node);
-				}
-%>
+				conn_<%=cid%> = (java.sql.Connection)globalMap.get("<%=conn%>");
+				<%log4jCodeGenerateUtil.useExistConnection(node);%>
 <%
 				dbInputBeginUtil.afterUseExistConnection(node);
 		    } else {
@@ -93,9 +77,7 @@ imports="
 		    <%dbInputBeginUtil.createStatement(node);%>
 
 		    String dbquery_<%=cid%> = <%=dbInputBeginUtil.getQueryString(node)%>;
-			<%if(isLog4jEnabled){%>
-                log.debug("<%=cid%> - Executing the query: '"+dbquery_<%=cid%>+"'.");
-			<%}%>
+		    <% log4jCodeGenerateUtil.query(node, "dbquery_" + cid); %>
 
             <% 
             if(isAmazonAurora){

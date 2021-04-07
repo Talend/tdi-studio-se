@@ -238,6 +238,15 @@ public class PropertyChangeCommand extends Command {
                 Object value = elem.getPropertyValue(propName);
                 if (value == null || (!value.toString().endsWith("xsd") && !value.toString().endsWith("xsd\""))) {
                     elem.setPropertyValue(propertyTypeName, EmfComponent.BUILTIN);
+
+                    /**
+                     * For tCreateTable, DbType changed need to clean repository connection id stored, or it will get
+                     * original DbType repository connection when click to Repository property type from built-in
+                     */
+                    if ("tCreateTable".equals(elem.getPropertyValue(EParameterName.COMPONENT_NAME.getName()))
+                            && "DBTYPE".equals(propName)) {
+                        elem.setPropertyValue(EParameterName.REPOSITORY_PROPERTY_TYPE.getName(), "");
+                    }
                 }
                 for (IElementParameter param : elem.getElementParameters()) {
                     if (param.getRepositoryProperty() == null || param.getRepositoryProperty().equals(currentParam.getName())) {
@@ -254,6 +263,15 @@ public class PropertyChangeCommand extends Command {
                 elem.getElementParameter("module.moduleName").setRepositoryValueUsed(false);
             }
             repositoryValueWasUsed = false;
+
+            /**
+             * For tCreateTable, DbType changed need to clean repository connection id stored, or it will get original
+             * DbType repository connection when click to Repository property type from built-in
+             */
+            if ("tCreateTable".equals(elem.getPropertyValue(EParameterName.COMPONENT_NAME.getName()))
+                    && "DBTYPE".equals(propName)) {
+                elem.setPropertyValue(EParameterName.REPOSITORY_PROPERTY_TYPE.getName(), "");
+            }
         }
 
         oldValue = elem.getPropertyValue(propName);
@@ -302,12 +320,14 @@ public class PropertyChangeCommand extends Command {
             List<? extends IConnection> connections = ((Node) elem).getOutgoingConnections();
             for (IConnection connection : connections) {
                 if (!connection.getName().equals(oldELTValue)) {
-                    // do nothing when custom connection name.
+                    // Update if use custom connection name.
+                    ChangeConnTextCommand command = new ChangeConnTextCommand(connection, newELTValue);
+                    command.execute();
                     continue;
                 }
                 INode targetNode = connection.getTarget();
                 String componentName = targetNode.getComponent().getName();
-                if (componentName.matches("tELT.+Map")) { //$NON-NLS-1$
+                if (componentName.matches("tELT.*Map")) { //$NON-NLS-1$
                     if (GlobalServiceRegister.getDefault().isServiceRegistered(IDbMapDesignerService.class)) {
                         IDbMapDesignerService service = GlobalServiceRegister.getDefault().getService(
                                 IDbMapDesignerService.class);
@@ -490,6 +510,9 @@ public class PropertyChangeCommand extends Command {
         if (currentParam.getName().equals(EParameterName.PROCESS_TYPE_PROCESS.getName())) {
             toUpdate = true;
         }
+        if (currentParam.getName().equals(EParameterName.MAPPING.getName())) {
+            toUpdate = true;
+        }
         // TUP-18405, need update module list
         if (currentParam.getFieldType() == EParameterFieldType.MODULE_LIST) {
             toUpdate = true;
@@ -581,6 +604,24 @@ public class PropertyChangeCommand extends Command {
                 if (notShowIf != null) {
                     if (notShowIf.contains(currentParam.getName())) {
                         toUpdate = true;
+                    }
+                }
+            }
+            String[] listItemsShowIf = testedParam.getListItemsShowIf();
+            if (listItemsShowIf != null && listItemsShowIf.length > 0) {
+                for (String itemShowIf : listItemsShowIf) {
+                    if (itemShowIf != null && itemShowIf.contains(currentParam.getName())) {
+                        toUpdate = true;
+                        break;
+                    }
+                }
+            }
+            String[] listItemsNotShowIf = testedParam.getListItemsNotShowIf();
+            if (listItemsNotShowIf != null && listItemsNotShowIf.length > 0) {
+                for (String itemNotShowIf : listItemsNotShowIf) {
+                    if (itemNotShowIf != null && itemNotShowIf.contains(currentParam.getName())) {
+                        toUpdate = true;
+                        break;
                     }
                 }
             }

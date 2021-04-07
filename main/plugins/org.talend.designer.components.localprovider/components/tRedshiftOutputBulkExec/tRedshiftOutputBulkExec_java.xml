@@ -63,12 +63,12 @@
 			<DEFAULT>Redshift</DEFAULT>
 		</PARAMETER>
 
-		<PARAMETER NAME="USER" FIELD="TEXT" NUM_ROW="5" SHOW_IF="(USE_EXISTING_CONNECTION == 'false') AND (JDBC_URL=='STANDARD')" 
+		<PARAMETER NAME="USER" FIELD="TEXT" NUM_ROW="5" SHOW_IF="(USE_EXISTING_CONNECTION == 'false') " 
 			REPOSITORY_VALUE="USERNAME" REQUIRED="true" GROUP="DB_CONFIG">
 			<DEFAULT>""</DEFAULT>
 		</PARAMETER>
 
-		<PARAMETER NAME="PASS" FIELD="PASSWORD" NUM_ROW="5" SHOW_IF="(USE_EXISTING_CONNECTION == 'false') AND (JDBC_URL=='STANDARD')" 
+		<PARAMETER NAME="PASS" FIELD="PASSWORD" NUM_ROW="5" SHOW_IF="(USE_EXISTING_CONNECTION == 'false') " 
 			REPOSITORY_VALUE="PASSWORD" REQUIRED="true" GROUP="DB_CONFIG">
 			<DEFAULT>""</DEFAULT>
 		</PARAMETER>
@@ -202,32 +202,11 @@
           NAME="SESSION_DURATION"
           FIELD="TEXT"
           NUM_ROW="75"
-          REQUIRED="true"
           SHOW_IF="isShow[ASSUME_ROLE_S3] AND (ASSUME_ROLE_S3 == 'true')"
           GROUP="S3_CONFIG"
         >
           <DEFAULT>15</DEFAULT>
         </PARAMETER>
-        
-        <PARAMETER
-          NAME="SET_STS_ENDPOINT"
-          FIELD="CHECK"
-          NUM_ROW="80"
-          NB_LINES="5"
-          SHOW_IF="isShow[ASSUME_ROLE] AND (ASSUME_ROLE == 'true')"
-          GROUP="S3_CONFIG"
-        >
-        </PARAMETER>
-        <PARAMETER
-          NAME="STS_ENDPOINT"
-          FIELD="TEXT"
-          NUM_ROW="85"
-          REQUIRED="true"
-          SHOW_IF="(ASSUME_ROLE_S3 == 'true') AND (SET_STS_ENDPOINT == 'true')"
-          GROUP="S3_CONFIG"
-        >
-          <DEFAULT>""</DEFAULT>
-        </PARAMETER>  
         
         <PARAMETER 
             NAME="REGION" 
@@ -433,7 +412,124 @@
 				<ITEM NAME="VALUE" />
 			</ITEMS>
 		</PARAMETER>
-
+		<PARAMETER
+          NAME="SET_STS_ENDPOINT"
+          FIELD="CHECK"
+          NUM_ROW="81"
+          NB_LINES="5"
+          SHOW_IF="isShow[ASSUME_ROLE_S3] AND (ASSUME_ROLE_S3 == 'true')"
+          GROUP="ASSUME_ROLE_CONFIG"
+        >
+        </PARAMETER>
+        <PARAMETER
+          NAME="STS_ENDPOINT"
+          FIELD="TEXT"
+          NUM_ROW="81"
+          SHOW_IF="isShow[ASSUME_ROLE_S3] AND (ASSUME_ROLE_S3 == 'true') AND (SET_STS_ENDPOINT == 'true')"
+          GROUP="ASSUME_ROLE_CONFIG"
+        >
+          <DEFAULT>""</DEFAULT>
+        </PARAMETER>
+        <PARAMETER
+	      NAME="SIGNING_REGION"
+	      FIELD="OPENED_LIST"
+	      NUM_ROW="82"
+	      GROUP="ASSUME_ROLE_CONFIG"
+	      REQUIRED="true"
+	      SHOW_IF="isShow[ASSUME_ROLE_S3] AND (ASSUME_ROLE_S3 == 'true')"
+	    >
+	      <ITEMS DEFAULT="DEFAULT">
+        	<ITEM NAME="DEFAULT" VALUE="DEFAULT" />
+	        <ITEM NAME="GovCloud" VALUE="&quot;us-gov-west-1&quot;" />
+	        <ITEM NAME="US_EAST_1" VALUE="&quot;us-east-1&quot;" />
+	        <ITEM NAME="US_WEST_1" VALUE="&quot;us-west-1&quot;" />
+	        <ITEM NAME="US_WEST_2" VALUE="&quot;us-west-2&quot;" />
+	        <ITEM NAME="US_EAST_2" VALUE="&quot;us-east-2&quot;" />
+	        <ITEM NAME="SA_EAST_1" VALUE="&quot;sa-east-1&quot;" />
+	        <ITEM NAME="EU_WEST_1" VALUE="&quot;eu-west-1&quot;" />
+	        <ITEM NAME="EU_CENTRAL_1" VALUE="&quot;eu-central-1&quot;" />
+	        <ITEM NAME="EU_WEST_2" VALUE="&quot;eu-west-2&quot;" />
+	        <ITEM NAME="EU_WEST_3" VALUE="&quot;eu-west-3&quot;" />
+	        <ITEM NAME="EU_NORTH_1" VALUE="&quot;eu-north-1&quot;" />
+	        <ITEM NAME="CN_NORTH_1" VALUE="&quot;cn-north-1&quot;" />
+	        <ITEM NAME="CN_NORTHWEST_1" VALUE="&quot;cn-northwest-1&quot;" />
+	        <ITEM NAME="AP_EAST_1" VALUE="&quot;ap-east-1&quot;" />
+         	<ITEM NAME="AP_SOUTHEAST_1" VALUE="&quot;ap-southeast-1&quot;" />
+	        <ITEM NAME="AP_SOUTHEAST_2" VALUE="&quot;ap-southeast-2&quot;" />
+	        <ITEM NAME="AP_NORTHEAST_1" VALUE="&quot;ap-northeast-1&quot;" />
+	        <ITEM NAME="AP_NORTHEAST_2" VALUE="&quot;ap-northeast-2&quot;" />
+        	<ITEM NAME="AP_SOUTH_1" VALUE="&quot;ap-south-1&quot;" />
+	        <ITEM NAME="CA_CENTRAL_1" VALUE="&quot;ca-central-1&quot;" />
+    	  </ITEMS>
+	    </PARAMETER>
+	    
+	    <PARAMETER
+	      NAME="EXTERNALID"
+	      FIELD="TEXT"
+	      NUM_ROW="83"
+	      GROUP="ASSUME_ROLE_CONFIG"
+	      SHOW_IF="isShow[ASSUME_ROLE_S3] AND (ASSUME_ROLE_S3 == 'true')"
+	    >
+	      <DEFAULT>""</DEFAULT>
+	    </PARAMETER>
+	    
+	    <PARAMETER
+	      NAME="SERIALNUMBER"
+	      FIELD="TEXT"
+	      NUM_ROW="84"
+	      GROUP="ASSUME_ROLE_CONFIG"
+	      SHOW_IF="isShow[ASSUME_ROLE_S3] AND (ASSUME_ROLE_S3 == 'true')"
+	    >
+	      <DEFAULT>""</DEFAULT>
+	    </PARAMETER>
+	    
+	     <PARAMETER
+	      NAME="TOKENCODE"
+	      FIELD="TEXT"
+	      NUM_ROW="85"
+	      GROUP="ASSUME_ROLE_CONFIG"
+	      SHOW_IF="isShow[ASSUME_ROLE_S3] AND (ASSUME_ROLE_S3 == 'true')"
+	    >
+	      <DEFAULT>""</DEFAULT>
+	    </PARAMETER>
+	    
+	    <PARAMETER
+	      NAME="TAGS"
+	      FIELD="TABLE"
+	      NUM_ROW="86"
+	      GROUP="ASSUME_ROLE_CONFIG"
+	      SHOW_IF="isShow[ASSUME_ROLE_S3] AND (ASSUME_ROLE_S3 == 'true')"
+	    >
+	      <ITEMS>
+	      	<ITEM NAME="TAG_KEY" FIELD="TEXT" />
+	      	<ITEM NAME="TAG_VALUE" FIELD="TEXT" />
+	      	<ITEM NAME="TAG_TRANSITIVE" FIELD="CHECK" VALUE="FALSE"/>
+	      </ITEMS>
+	    </PARAMETER>
+	    
+	    <PARAMETER
+	      NAME="POLICY_TABLE"
+	      FIELD="TABLE"
+	      NUM_ROW="87"
+	      GROUP="ASSUME_ROLE_CONFIG"
+	      SHOW_IF="isShow[ASSUME_ROLE_S3] AND (ASSUME_ROLE_S3 == 'true')"
+	    >
+	   		<ITEMS>
+	    		<ITEM NAME="POLICY_ARN" VALUE="" />
+	   		</ITEMS>
+	    </PARAMETER>
+	    
+	    <PARAMETER
+	      NAME="POLICY"
+	      FIELD="MEMO"
+	      NUM_ROW="88"
+	      GROUP="ASSUME_ROLE_CONFIG"
+	      NB_LINES="15"
+	      SHOW_IF="isShow[ASSUME_ROLE_S3] AND (ASSUME_ROLE_S3 == 'true')"
+	    >
+	      <DEFAULT>""</DEFAULT>
+	    </PARAMETER>
+        
         <PARAMETER
             NAME="JDBC_URL"
             FIELD="CLOSED_LIST"
@@ -505,6 +601,13 @@
 			<TEMPLATE_PARAM SOURCE="self.SESSION_DURATION" TARGET="tROB.SESSION_DURATION" />
 			<TEMPLATE_PARAM SOURCE="self.SET_STS_ENDPOINT" TARGET="tROB.SET_STS_ENDPOINT" />
 			<TEMPLATE_PARAM SOURCE="self.STS_ENDPOINT" TARGET="tROB.STS_ENDPOINT" />
+			<TEMPLATE_PARAM SOURCE="self.SIGNING_REGION" TARGET="tROB.SIGNING_REGION" />
+			<TEMPLATE_PARAM SOURCE="self.EXTERNALID" TARGET="tROB.EXTERNALID" />
+			<TEMPLATE_PARAM SOURCE="self.SERIALNUMBER" TARGET="tROB.SERIALNUMBER" />
+			<TEMPLATE_PARAM SOURCE="self.TOKENCODE" TARGET="tROB.TOKENCODE" />
+			<TEMPLATE_PARAM SOURCE="self.TAGS" TARGET="tROB.TAGS" />
+			<TEMPLATE_PARAM SOURCE="self.POLICY_TABLE" TARGET="tROB.POLICY_TABLE" />
+			<TEMPLATE_PARAM SOURCE="self.POLICY" TARGET="tROB.POLICY" />
 			
 			<TEMPLATE_PARAM SOURCE="self.BUCKET" TARGET="tROB.BUCKET" />
 			<TEMPLATE_PARAM SOURCE="self.KEY" TARGET="tROB.KEY" />
@@ -536,37 +639,35 @@
 		</TEMPLATES>
 
 		<IMPORTS>
-			<IMPORT NAME="Driver-Redshift" MODULE="redshift-jdbc42-no-awssdk-1.2.32.1056.jar"
-				MVN="mvn:com.amazon.redshift/redshift-jdbc42-no-awssdk/1.2.32.1056" 
+			<IMPORT NAME="Driver-Redshift" MODULE="redshift-jdbc42-no-awssdk-1.2.37.1061.jar"
+				MVN="mvn:com.amazon.redshift/redshift-jdbc42-no-awssdk/1.2.37.1061" 
 				REQUIRED="true" />
-			<IMPORT NAME="aws-java-sdk-1.11.406.jar" MODULE="aws-java-sdk-1.11.406.jar"
-				MVN="mvn:com.amazonaws/aws-java-sdk/1.11.406"
+			<IMPORT NAME="aws-java-sdk-1.11.848.jar" MODULE="aws-java-sdk-1.11.848.jar"
+				MVN="mvn:com.amazonaws/aws-java-sdk/1.11.848"
 				REQUIRED="true" />
-			<IMPORT NAME="jackson-core-2.9.9.jar" MODULE="jackson-core-2.9.9.jar"
-				MVN="mvn:com.fasterxml.jackson.core/jackson-core/2.9.9"
+			<IMPORT NAME="jackson-core-2.11.4.jar" MODULE="jackson-core-2.11.4.jar"
+				MVN="mvn:com.fasterxml.jackson.core/jackson-core/2.11.4"
 				REQUIRED="true" />
-			<IMPORT NAME="jackson-databind-2.9.9.jar" MODULE="jackson-databind-2.9.9.jar"
-				MVN="mvn:com.fasterxml.jackson.core/jackson-databind/2.9.9"
+			<IMPORT NAME="jackson-databind-2.11.4.jar" MODULE="jackson-databind-2.11.4.jar"
+				MVN="mvn:com.fasterxml.jackson.core/jackson-databind/2.11.4"
 				REQUIRED="true" />
-			<IMPORT NAME="jackson-annotations-2.9.0.jar" MODULE="jackson-annotations-2.9.0.jar"
-				MVN="mvn:com.fasterxml.jackson.core/jackson-annotations/2.9.0"
+			<IMPORT NAME="jackson-annotations-2.11.4.jar" MODULE="jackson-annotations-2.11.4.jar"
+				MVN="mvn:com.fasterxml.jackson.core/jackson-annotations/2.11.4"
 				REQUIRED="true" />
-			<IMPORT NAME="httpcore-4.4.9.jar" MODULE="httpcore-4.4.9.jar"
-				MVN="mvn:org.apache.httpcomponents/httpcore/4.4.9"
+			<IMPORT NAME="httpcore-4.4.13.jar" MODULE="httpcore-4.4.13.jar"
+				MVN="mvn:org.apache.httpcomponents/httpcore/4.4.13"
 				REQUIRED="true" />
-			<IMPORT NAME="httpclient-4.5.5.jar" MODULE="httpclient-4.5.5.jar"
-				MVN="mvn:org.apache.httpcomponents/httpclient/4.5.5"
+			<IMPORT NAME="httpclient-4.5.12.jar" MODULE="httpclient-4.5.12.jar"
+				MVN="mvn:org.apache.httpcomponents/httpclient/4.5.12"
 				REQUIRED="true" />
 			<IMPORT NAME="joda-time-2.8.1.jar" MODULE="joda-time-2.8.1.jar"
 				MVN="mvn:joda-time/joda-time/2.8.1"
 				REQUIRED="true" />
-			<IMPORT NAME="commons-logging-1.1.3.jar" MODULE="commons-logging-1.1.3.jar"
-				MVN="mvn:commons-logging/commons-logging/1.1.3"
-				UrlPath="platform:/plugin/org.talend.libraries.apache.common/lib/commons-logging-1.1.3.jar"
+			<IMPORT NAME="commons-logging-1.2.jar" MODULE="commons-logging-1.2.jar"
+				MVN="mvn:commons-logging/commons-logging/1.2"
 				REQUIRED="true" />
-			<IMPORT NAME="commons-codec-1.6.jar" MODULE="commons-codec-1.6.jar"
-				MVN="mvn:commons-codec/commons-codec/1.6"
-				UrlPath="platform:/plugin/org.talend.libraries.apache.common/lib/commons-codec-1.6.jar"
+			<IMPORT NAME="commons-codec-1.14.jar" MODULE="commons-codec-1.14.jar"
+				MVN="mvn:commons-codec/commons-codec/1.14"
 				REQUIRED="true" />
 		</IMPORTS>
 	</CODEGENERATION>

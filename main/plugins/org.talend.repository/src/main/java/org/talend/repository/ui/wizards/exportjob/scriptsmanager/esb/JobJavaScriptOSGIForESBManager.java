@@ -12,17 +12,22 @@
 // ============================================================================
 package org.talend.repository.ui.wizards.exportjob.scriptsmanager.esb;
 
+import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Enumeration;
@@ -30,29 +35,35 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
+import java.util.Optional;
 import java.util.Properties;
 import java.util.Set;
-import java.util.TreeSet;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.map.MultiKeyMap;
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.emf.common.util.EList;
+import org.osgi.framework.Bundle;
 import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.exception.PersistenceException;
-import org.talend.commons.runtime.utils.io.FileCopyUtils;
 import org.talend.commons.utils.generation.JavaUtils;
 import org.talend.commons.utils.io.FilesUtils;
 import org.talend.core.CorePlugin;
 import org.talend.core.GlobalServiceRegister;
 import org.talend.core.PluginChecker;
+import org.talend.core.model.components.IComponent;
 import org.talend.core.model.general.ModuleNeeded;
 import org.talend.core.model.general.Project;
 import org.talend.core.model.process.IProcess;
@@ -66,16 +77,24 @@ import org.talend.core.model.repository.IRepositoryViewObject;
 import org.talend.core.model.utils.JavaResourcesHelper;
 import org.talend.core.repository.constants.FileConstants;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
+import org.talend.core.runtime.maven.MavenArtifact;
+import org.talend.core.runtime.maven.MavenConstants;
 import org.talend.core.runtime.process.ITalendProcessJavaProject;
 import org.talend.core.runtime.process.LastGenerationInfo;
 import org.talend.core.runtime.repository.build.BuildExportManager;
+import org.talend.core.service.ITaCoKitDependencyService;
 import org.talend.core.ui.branding.IBrandingService;
+import org.talend.core.utils.CodesJarResourceCache;
 import org.talend.designer.core.ICamelDesignerCoreService;
 import org.talend.designer.core.IDesignerCoreService;
 import org.talend.designer.core.model.utils.emf.component.IMPORTType;
 import org.talend.designer.core.model.utils.emf.talendfile.ElementParameterType;
 import org.talend.designer.core.model.utils.emf.talendfile.ElementValueType;
 import org.talend.designer.core.model.utils.emf.talendfile.NodeType;
+import org.talend.designer.core.model.utils.emf.talendfile.RoutinesParameterType;
+import org.talend.designer.maven.model.TalendMavenConstants;
+import org.talend.designer.maven.utils.PomIdsHelper;
+import org.talend.designer.maven.utils.PomUtil;
 import org.talend.designer.runprocess.IProcessor;
 import org.talend.designer.runprocess.IRunProcessService;
 import org.talend.designer.runprocess.ProcessorException;
@@ -83,21 +102,17 @@ import org.talend.designer.runprocess.ProcessorUtilities;
 import org.talend.repository.ProjectManager;
 import org.talend.repository.RepositoryPlugin;
 import org.talend.repository.documentation.ExportFileResource;
-import org.talend.repository.ui.wizards.exportjob.scriptsmanager.JarBuilder;
 import org.talend.repository.ui.wizards.exportjob.scriptsmanager.JobJavaScriptsManager;
 import org.talend.repository.utils.EmfModelUtils;
 import org.talend.repository.utils.EsbConfigUtils;
 import org.talend.repository.utils.TemplateProcessor;
 
-import aQute.bnd.header.Attrs;
+import aQute.bnd.header.Parameters;
 import aQute.bnd.osgi.Analyzer;
 import aQute.bnd.osgi.Clazz;
-import aQute.bnd.osgi.Descriptors;
+import aQute.bnd.osgi.Domain;
 import aQute.bnd.osgi.FileResource;
 import aQute.bnd.osgi.Jar;
-import aQute.bnd.service.AnalyzerPlugin;
-import aQute.bnd.service.Plugin;
-import aQute.service.reporter.Reporter;
 
 /**
  * DOC ycbai class global comment. Detailled comment
@@ -109,14 +124,16 @@ public class JobJavaScriptOSGIForESBManager extends JobJavaScriptsManager {
 
     protected static final String OSGI_EXCLUDE_PROP_FILENAME = "osgi-exclude.properties"; ////$NON-NLS-1$
 
+    private boolean ENABLE_CACHE = StringUtils.equals(System.getProperty("enable.manifest.cache", "false"), "true");
+
     @SuppressWarnings("serial")
     private static final Collection<String> EXCLUDED_MODULES = new ArrayList<String>() {
+
         {
             File propFile = null;
             File esbConfigurationLocation = EsbConfigUtils.getEclipseEsbFolder();
-            
-            if (esbConfigurationLocation != null && esbConfigurationLocation.exists()
-                    && esbConfigurationLocation.isDirectory()) {
+
+            if (esbConfigurationLocation != null && esbConfigurationLocation.exists() && esbConfigurationLocation.isDirectory()) {
                 propFile = new File(esbConfigurationLocation.getAbsolutePath(), OSGI_EXCLUDE_PROP_FILENAME);
             }
 
@@ -125,11 +142,10 @@ public class JobJavaScriptOSGIForESBManager extends JobJavaScriptsManager {
                 if (propFile != null && propFile.exists() && propFile.isFile()) {
                     is = new FileInputStream(propFile);
                 } else {
-                    is = RepositoryPlugin.getDefault().getBundle()
-                            .getEntry("/resources/" + OSGI_EXCLUDE_PROP_FILENAME)
+                    is = RepositoryPlugin.getDefault().getBundle().getEntry("/resources/" + OSGI_EXCLUDE_PROP_FILENAME)
                             .openStream();
                 }
-    
+
                 if (is != null) {
                     final Properties p = new Properties();
                     p.load(is);
@@ -144,16 +160,58 @@ public class JobJavaScriptOSGIForESBManager extends JobJavaScriptsManager {
         }
     };
 
+    private Bundle esbBundle = Platform.getBundle(PluginChecker.ESBSE_PLUGIN_ID);
+
+    File cacheFile = null;
+
     public JobJavaScriptOSGIForESBManager(Map<ExportChoice, Object> exportChoiceMap, String contextName, String launcher,
             int statisticPort, int tracePort) {
         super(exportChoiceMap, contextName, launcher, statisticPort, tracePort);
+
+        if (esbBundle != null) {
+            IPath stateLocationPath = Platform.getStateLocation(esbBundle);
+
+            cacheFile = new File(stateLocationPath.toFile().getAbsolutePath() + File.separatorChar + "dependencyMap.cache");
+
+            FileInputStream fi = null;
+            ObjectInputStream oi = null;
+            try {
+                if (!cacheFile.exists()) {
+                    cacheFile.createNewFile();
+                } else {
+                    if (cacheFile.length() > 0) {
+                        fi = new FileInputStream(cacheFile);
+                        oi = new ObjectInputStream(fi);
+                        dependencyCacheMap = (Map) oi.readObject();
+                    }
+                }
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            } finally {
+                try {
+                    if (oi != null) {
+                        oi.close();
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
     }
+
+    Map<String, List<Object>> dependencyCacheMap = null;
 
     protected static final char PACKAGE_SEPARATOR = '.';
 
     private static final String JAVA = "java"; //$NON-NLS-1$
 
     private static final String JAVA_VERSION = "java.version";
+
+    private static File routineClassRootFolder = null;
+
+    private static File beanClassRootFolder = null;
 
     private MultiKeyMap requireBundleModules = new MultiKeyMap();
 
@@ -167,10 +225,58 @@ public class JobJavaScriptOSGIForESBManager extends JobJavaScriptsManager {
 
     private static final String OSGI_OS_CODE = ';' + "osname=" + System.getProperty("osgi.os") + ';' + "processor=" //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
             + System.getProperty("osgi.arch") + ','; //$NON-NLS-1$
+    
+    private static final String RESOLUTION_OPTIONAL = ";resolution:=optional";
+
+    private static final String COMPILER_LOG_DELIMITER = "----------";
+
+    private static final String COMPILER_LOG_REGEX = "(^[a-z_0-9\\.]+)\\.";
+
+    private static final String COMPILER_LOG_ERROR_1 = "cannot be resolved to a type";
+
+    private static final String COMPILER_LOG_ERROR_2 = "cannot be resolved";
+    
+    private static String complianceLevel = "1.8";
+    
+    private static String complianceParameter;
+
+    static {
+        String javaVersion = System.getProperty(JAVA_VERSION);
+        if (javaVersion != null) {
+            if (javaVersion.startsWith("1.7")) {
+                complianceLevel = "1.7";
+            } else if (javaVersion.startsWith("1.8")) {
+                complianceLevel = "1.8";
+            } else if (javaVersion.startsWith("9")) {
+                complianceLevel = "9";
+            } else if (javaVersion.startsWith("10")) {
+                complianceLevel = "10";
+            } else if (javaVersion.startsWith("11")) {
+                complianceLevel = "11";
+            }
+        }
+        complianceParameter = " -" + complianceLevel + " -maxProblems 100000 -nowarn";
+        
+        try (InputStream is = RepositoryPlugin.getDefault().getBundle().getEntry("/resources/osgi-exclude.properties") //$NON-NLS-1$
+                .openStream()) {
+            final Properties p = new Properties();
+            p.load(is);
+            for (Enumeration<?> e = p.propertyNames(); e.hasMoreElements();) {
+                EXCLUDED_MODULES.add((String) e.nextElement());
+            }
+            if ("1.8".equals(complianceLevel) && null != p.getProperty("java8.excludes")) {
+                EXCLUDED_MODULES.addAll(Arrays.asList(p.getProperty("java8.excludes").split(",")));
+            }
+        } catch (IOException e) {
+            RepositoryPlugin.getDefault().getLog()
+                    .log(new Status(Status.ERROR, RepositoryPlugin.PLUGIN_ID, "Unable to load OSGi excludes", e));
+        }
+    }
 
     @Override
     public List<ExportFileResource> getExportResources(ExportFileResource[] processes, String... codeOptions)
             throws ProcessorException {
+
         List<ExportFileResource> list = new ArrayList<ExportFileResource>();
 
         ExportFileResource osgiResource = new ExportFileResource(null, ""); //$NON-NLS-1$;
@@ -211,6 +317,7 @@ public class JobJavaScriptOSGIForESBManager extends JobJavaScriptsManager {
                 if (null == contextName) {
                     contextName = processItem.getProcess().getDefaultContext();
                 }
+
                 IProcess iProcess = generateJobFiles(processItem, contextName, jobVersion,
                         statisticPort != IProcessor.NO_STATISTICS, tracePort != IProcessor.NO_TRACES,
                         isOptionChoosed(ExportChoice.applyToChildren), progressMonitor);
@@ -243,12 +350,14 @@ public class JobJavaScriptOSGIForESBManager extends JobJavaScriptsManager {
                  * export current item's dependencies. this used for TDM components specially and need more discussion
                  * about then
                  */
+                // TCOMP-1681: feature uses this call for feeding a component-runtime compliant MAVEN-INF/repository and
+                // TALEND-INF/plugins.properties.
                 BuildExportManager.getInstance().exportOSGIDependencies(osgiResource, processItem);
+
             }
 
             ExportFileResource libResource = getCompiledLibExportFileResource(processes);
             list.add(libResource);
-
 
             ExportFileResource libResourceSelected = new ExportFileResource(null, LIBRARY_FOLDER_NAME);
 
@@ -288,6 +397,17 @@ public class JobJavaScriptOSGIForESBManager extends JobJavaScriptsManager {
             if (providedLibResources != null) {
                 list.add(providedLibResources);
             }
+
+            // TCOMP-1681: for class isolation and avoid clashes, we remove tacokit dependencies to main classpath.
+            // However, they're in the scope of ComponentManager.
+            if (GlobalServiceRegister.getDefault().isServiceRegistered(ITaCoKitDependencyService.class)) {
+                ITaCoKitDependencyService tckService = (ITaCoKitDependencyService) GlobalServiceRegister.getDefault()
+                        .getService(ITaCoKitDependencyService.class);
+                if (tckService != null && tckService.hasTaCoKitComponents(tckService.getJobComponents(processItem))) {
+                    list = cleanupResources(tckService.getJobComponents(processItem), list, tckService);
+                }
+            }
+
         } catch (ProcessorException e) {
             throw e;
         } catch (Exception e) {
@@ -324,6 +444,28 @@ public class JobJavaScriptOSGIForESBManager extends JobJavaScriptsManager {
         return libResource;
     }
 
+    private List<ExportFileResource> cleanupResources(Stream<IComponent> components, List<ExportFileResource> resources, ITaCoKitDependencyService service) {
+        Set<String> tckOnly = service.getTaCoKitOnlyDependencies(components);
+        // final List<ExportFileResource> rmResources = new ArrayList<>();
+        //This code is nicer but have to reiterate after, so not so efficient
+//        List<URL> rmDeps = resources.stream()
+//                .filter(rf -> "lib".equals(rf.getDirectoryName()))
+//                .map(resource -> resource.getResourcesByRelativePath(""))
+//                .flatMap(urls -> urls.stream())
+//                .filter(url -> tckOnly.stream().anyMatch(tck -> url.toString().endsWith(tck)))
+//                .collect(Collectors.toList());
+        for (ExportFileResource resource : resources) {
+            if (!("lib".equals(resource.getDirectoryName()) || "lib-provided".equals(resource.getDirectoryName()))) {
+                continue;
+            }
+            List<URL> rmDeps = resource.getResourcesByRelativePath("").stream()
+                    .filter(url -> tckOnly.stream().anyMatch(tck -> url.toString().endsWith(tck)))
+                    .collect(Collectors.toList());
+            rmDeps.stream().forEach(dep -> resource.removeResources("", dep));
+        }
+        return resources;
+    }
+
     protected String getIncludeRoutinesPath() {
         return USER_ROUTINES_PATH;
     }
@@ -334,28 +476,52 @@ public class JobJavaScriptOSGIForESBManager extends JobJavaScriptsManager {
 
     @Override
     protected void addRoutinesResources(ExportFileResource[] processes, ExportFileResource libResource) {
-        File jarFile = new File(getTmpFolder() + File.separatorChar + JavaUtils.ROUTINES_JAR);
+        // codes jars
+        ProcessItem item = (ProcessItem) processes[0].getItem();
+        EList<RoutinesParameterType> routinesParameter = item.getProcess().getParameters().getRoutinesParameter();
+        List<URL> codesjarM2Files = new ArrayList<>();
+        if (routinesParameter != null) {
+            routinesParameter.stream().filter(r -> r.getType() != null).map(r -> CodesJarResourceCache.getCodesJarById(r.getId()))
+                    .filter(info -> info != null).forEach(info -> {
+                        MavenArtifact artifact = new MavenArtifact();
+                        artifact.setGroupId(PomIdsHelper.getCodesJarGroupId(info));
+                        artifact.setArtifactId(info.getLabel().toLowerCase());
+                        artifact.setVersion(PomIdsHelper.getCodesJarVersion(info.getProjectTechName()));
+                        artifact.setType(MavenConstants.TYPE_JAR);
+                        try {
+                            codesjarM2Files.add(new File(PomUtil.getArtifactFullPath(artifact)).toURI().toURL());
+                        } catch (MalformedURLException e) {
+                            e.printStackTrace();
+                        }
+                    });
+        }
 
-        // make a jar file of system routine classes
-        File classRootFileLocation = getCodeClassRootFileLocation(ERepositoryObjectType.ROUTINES);
-        if (classRootFileLocation == null) {
-            return;
-        }
-        if (ERepositoryObjectType.valueOf("BEANS") != null) {
-            FileCopyUtils.copyFolder(getCodeClassRootFileLocation(ERepositoryObjectType.valueOf("BEANS")), classRootFileLocation);
-        }
+        String projectTechName = ProjectManager.getInstance().getProject(item).getTechnicalLabel();
+
+        // routines.jar
+        MavenArtifact routinesArtifact = new MavenArtifact();
+        routinesArtifact.setGroupId(PomIdsHelper.getCodesGroupId(projectTechName, TalendMavenConstants.DEFAULT_CODE));
+        routinesArtifact.setArtifactId(TalendMavenConstants.DEFAULT_ROUTINES_ARTIFACT_ID);
+        routinesArtifact.setVersion(PomIdsHelper.getCodesVersion(projectTechName));
+        routinesArtifact.setType(MavenConstants.TYPE_JAR);
         try {
-            JarBuilder jarbuilder = new JarBuilder(classRootFileLocation, jarFile);
-            jarbuilder.setIncludeDir(getRoutinesPaths());
-            Collection<File> includeRoutines = new ArrayList<File>(getRoutineDependince(processes, true, USER_ROUTINES_PATH));
-            includeRoutines.addAll(getRoutineDependince(processes, false, getIncludeRoutinesPath()));
-            jarbuilder.setIncludeRoutines(includeRoutines);
-            jarbuilder.buildJar();
-
-            libResource.addResources(Collections.singletonList(jarFile.toURI().toURL()));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+            codesjarM2Files.add(new File(PomUtil.getArtifactFullPath(routinesArtifact)).toURI().toURL());
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
         }
+        // beans.jar
+        MavenArtifact beansArtifact = new MavenArtifact();
+        beansArtifact.setGroupId(PomIdsHelper.getCodesGroupId(projectTechName, TalendMavenConstants.DEFAULT_BEAN));
+        beansArtifact.setArtifactId(TalendMavenConstants.DEFAULT_BEANS_ARTIFACT_ID);
+        beansArtifact.setVersion(PomIdsHelper.getCodesVersion(projectTechName));
+        beansArtifact.setType(MavenConstants.TYPE_JAR);
+        try {
+            codesjarM2Files.add(new File(PomUtil.getArtifactFullPath(beansArtifact)).toURI().toURL());
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
+
+        libResource.addResources(codesjarM2Files);
     }
 
     protected ExportFileResource getProvidedLibExportFileResource(ExportFileResource[] processes) {
@@ -545,7 +711,15 @@ public class JobJavaScriptOSGIForESBManager extends JobJavaScriptsManager {
         final String runtimeServicesContext = "/services"; //$NON-NLS-1$
         final String runtimeServicesContextFull = runtimeServicesContext + '/';
         String endpointUri = EmfModelUtils.computeTextElementValue("REST_ENDPOINT", restRequestComponent); //$NON-NLS-1$
-        if (!endpointUri.isEmpty() && !endpointUri.contains("://") && !endpointUri.startsWith("/")) { //$NON-NLS-1$ //$NON-NLS-2$
+        if (endpointUri.contains("context.") || endpointUri.contains("(") || endpointUri.contains("+")) { //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+            // Since TESB-24998, endpointUri could be an expression with variables, does not need unquote
+            endpointUri = EmfModelUtils.computeTextElementValueWithoutUnquote("REST_ENDPOINT", restRequestComponent); //$NON-NLS-1$
+        }
+        if (endpointUri.contains("context.")) {
+            // TESB-24998 Add context bean in blueprint
+            endpointInfo.put("useContextBean", true); //$NON-NLS-1$
+            endpointInfo.put("defaultContext", processItem.getProcess().getDefaultContext()); //$NON-NLS-1$
+        } else if (!endpointUri.isEmpty() && !endpointUri.contains("://") && !endpointUri.startsWith("/")) { //$NON-NLS-1$ //$NON-NLS-2$
             endpointUri = '/' + endpointUri;
         }
 
@@ -754,35 +928,38 @@ public class JobJavaScriptOSGIForESBManager extends JobJavaScriptsManager {
     }
 
     private Manifest getManifest(ExportFileResource libResource, ProcessItem processItem) throws IOException {
+
         Analyzer analyzer = createAnalyzer(libResource, processItem);
+
+        Set<String> imports = null;
 
         if (GlobalServiceRegister.getDefault().isServiceRegistered(IRunProcessService.class)) {
             IRunProcessService service = (IRunProcessService) GlobalServiceRegister.getDefault()
                     .getService(IRunProcessService.class);
             ITalendProcessJavaProject talendProcessJavaProject = service.getTalendJobJavaProject(processItem.getProperty());
             if (talendProcessJavaProject != null) {
-                String optional = ";resolution:=optional";
-                Set<String> imports = importCompiler(service, processItem);
+                imports = importCompiler(service, processItem);
                 String[] defaultPackages = analyzer.getProperty(Analyzer.IMPORT_PACKAGE).split(",");
-
                 // JDK upgrade to 11
                 imports.add("org.osgi.framework");
 
                 for (String dp : defaultPackages) {
-                    if (!imports.contains(dp) && !imports.contains(dp + optional)) {
+                    if (!imports.contains(dp) && !imports.contains(dp + RESOLUTION_OPTIONAL)) {
                         imports.add(dp);
                     }
                 }
                 imports.remove("*;resolution:=optional");
                 imports.remove("routines.system");
-                imports.remove("routines.system" + optional);
-                StringBuilder importPackage = new StringBuilder();
-                for (String packageName : imports) {
-                    importPackage.append(packageName).append(',');
+                imports.remove("routines.system" + RESOLUTION_OPTIONAL);
+
+                if (!ENABLE_CACHE) {
+                    // TESB-24730 set specific version for "javax.annotation"
+                    imports.remove("javax.annotation");
+                    imports.remove("javax.annotation" + RESOLUTION_OPTIONAL);
+                    imports.add("javax.annotation;version=\"[1.3,2)\"" + RESOLUTION_OPTIONAL);
                 }
 
-                importPackage.append("*;resolution:=optional");
-                analyzer.setProperty(Analyzer.IMPORT_PACKAGE, importPackage.toString());
+                analyzer.setProperty(Analyzer.IMPORT_PACKAGE, String.join(",", imports) + ",*;resolution:=optional");
             }
         }
 
@@ -790,7 +967,8 @@ public class JobJavaScriptOSGIForESBManager extends JobJavaScriptsManager {
         Manifest manifest = null;
         try {
             manifest = analyzer.calcManifest();
-            filterImportPackages(manifest);
+            filterPackagesCache(manifest, imports);
+
         } catch (IOException e) {
             throw e;
         } catch (Exception e) {
@@ -804,47 +982,176 @@ public class JobJavaScriptOSGIForESBManager extends JobJavaScriptsManager {
         // https://github.com/bndtools/bnd/blob/master/biz.aQute.bndlib/src/aQute/bnd/osgi/Analyzer.java#L975
         if (System.getProperty(JAVA_VERSION) != null && System.getProperty(JAVA_VERSION).startsWith("1.8")) { //$NON-NLS-1$
             String requireCapability = manifest.getMainAttributes().getValue(Analyzer.REQUIRE_CAPABILITY);
-            // set back to 1.8, version from:
-            // https://github.com/bndtools/bnd/blob/master/biz.aQute.bndlib/src/aQute/bnd/osgi/Clazz.java#L141
-            requireCapability = requireCapability.replace(Clazz.JAVA.OpenJDK9.getFilter(), Clazz.JAVA.OpenJDK8.getFilter())
-                    .replace(Clazz.JAVA.OpenJDK10.getFilter(), Clazz.JAVA.OpenJDK8.getFilter())
-                    .replace(Clazz.JAVA.OpenJDK11.getFilter(), Clazz.JAVA.OpenJDK8.getFilter());
-            manifest.getMainAttributes().put(new Attributes.Name(Analyzer.REQUIRE_CAPABILITY), requireCapability);
+            if (StringUtils.isNotBlank(requireCapability)) {
+                // set back to 1.8, version from:
+                // https://github.com/bndtools/bnd/blob/master/biz.aQute.bndlib/src/aQute/bnd/osgi/Clazz.java#L141
+                requireCapability = requireCapability.replace(Clazz.JAVA.OpenJDK9.getFilter(), Clazz.JAVA.OpenJDK8.getFilter())
+                        .replace(Clazz.JAVA.OpenJDK10.getFilter(), Clazz.JAVA.OpenJDK8.getFilter())
+                        .replace(Clazz.JAVA.OpenJDK11.getFilter(), Clazz.JAVA.OpenJDK8.getFilter());
+                manifest.getMainAttributes().put(new Attributes.Name(Analyzer.REQUIRE_CAPABILITY), requireCapability);
+            }
         }
 
         return manifest;
     }
     
-    private void filterImportPackages(Manifest manifest) {
+    private boolean cacheManifest(URL url, String relativePath) {
+        boolean result = false;
+        ObjectOutputStream o = null;
+        Analyzer al = new Analyzer();
+        try {
+            File jarFile = new File(url.toURI());
 
-        // remove import packages which are present in private packages
+            try (InputStream is = RepositoryPlugin.getDefault().getBundle()
+                    .getEntry("/resources/osgi-ignore-calmanifest.properties").openStream();
+                    BufferedReader br = new BufferedReader(new InputStreamReader(is))) {
 
-        List<String> privatePackages = new ArrayList<String>(); 
-        String privatePackagesString = manifest.getMainAttributes().getValue(Analyzer.PRIVATE_PACKAGE);
-        if (privatePackagesString != null) {
-            String [] packages = privatePackagesString.split(",");
-            for (String p : packages) {
-                privatePackages.add(p);
+                Optional<String> rs = br.lines()
+                        .filter(fn -> StringUtils.equals(jarFile.getName(), fn) || StringUtils.equals(fn, "*")).findFirst();
+                result = rs.orElse(null) != null;
             }
-        }
-        
-        StringBuilder fileterdImportPackage = new StringBuilder();
-        String importPackagesString = manifest.getMainAttributes().getValue(Analyzer.IMPORT_PACKAGE);
-        if (importPackagesString != null) {
-            String [] packages = importPackagesString.split(",");
-            for (String p : packages) {
-                String importPackage = p.split(";")[0];
-                if (!privatePackages.contains(importPackage) || importPackage.startsWith("routines")) {
-                    fileterdImportPackage.append(p).append(",");
+
+            if (result) {
+
+                String key = jarFile.length() + jarFile.getName();
+
+                if (dependencyCacheMap == null || dependencyCacheMap.get(key) == null) {
+                    Jar bin = new Jar(jarFile);
+                    al.setJar(bin);
+                    // al.setProperty(Analyzer.IMPORT_PACKAGE, "*;resolution:=optional");
+                    // bin.putResource(relativePath, new FileResource(jarFile));
+                    Manifest manifest = al.calcManifest();
+                    String requireCapabilityString = manifest.getMainAttributes().getValue(Analyzer.REQUIRE_CAPABILITY);
+
+                    // Todo Handle requireCapabilityString to the MANIFEST.MF file ?
+//                    if (requireCapabilityString != null) {
+//
+//                    }
+                    Domain d = Domain.domain(manifest);
+                    Parameters imports = d.getImportPackage();
+                    Parameters privates = d.getPrivatePackage();
+
+                    String privatePackageString = manifest.getMainAttributes().getValue(Analyzer.PRIVATE_PACKAGE);
+                    String importPackageString = manifest.getMainAttributes().getValue(Analyzer.IMPORT_PACKAGE);
+
+                    if (StringUtils.isBlank(privatePackageString) || StringUtils.isBlank(importPackageString)) {
+                        bundleClasspathKeys.remove(key);
+                        return false;
+                    }
+
+                    List<Object> infos = new ArrayList<>();
+                    infos.add(imports.keyList());
+                    infos.add(privates.keyList());
+                    infos.add(relativePath);
+
+                    if (dependencyCacheMap == null) {
+                        dependencyCacheMap = new HashMap<>();
+                    }
+
+                    dependencyCacheMap.put(key, infos);
+
+                    if (cacheFile != null && cacheFile.exists()) {
+                        FileOutputStream f = new FileOutputStream(cacheFile);
+                        o = new ObjectOutputStream(f);
+                        o.writeObject(dependencyCacheMap);
+                    }
+                } else {
+                    if (dependencyCacheMap.get(key).get(0) == null || dependencyCacheMap.get(key).get(1) == null) {
+                        dependencyCacheMap.remove(key);
+                        bundleClasspathKeys.remove(key);
+                    }
+
                 }
             }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (o != null) {
+                    o.close();
+                }
+                if (al != null) {
+                    al.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
+
+        return result;
+
+    }
+
+    private List<String> bundleClasspathKeys = new ArrayList<>();
+
+    @SuppressWarnings("unchecked")
+    private void filterPackagesCache(Manifest manifest, Set<String> imports) {
+
+        if (!ENABLE_CACHE) {
+            bundleClasspathKeys.clear();
+        }
+
+        Domain domain = Domain.domain(manifest);
+        Parameters calculatedImports = domain.getImportPackage();
+        Parameters calculatedPrivates = domain.getPrivatePackage();
+
+        Set<String> privateNonRepetitivePackages = new HashSet<>(calculatedPrivates.keySet());
+
+        Set<String> importNonRepetitivePackages = new HashSet<>(calculatedImports.keySet());
+
+        importNonRepetitivePackages.addAll(imports);
+
+        importNonRepetitivePackages = importNonRepetitivePackages.stream().map(v -> {
+            if (!StringUtils.endsWith(v, RESOLUTION_OPTIONAL)) {
+                return v + RESOLUTION_OPTIONAL;
+            }
+            return v;
+        }).collect(Collectors.toSet());
+
+        int size = bundleClasspathKeys.size();
+
+        for (int i = 0; i < size; i++) {
+            List<Object> infos = dependencyCacheMap.get(bundleClasspathKeys.get(i));
+            if (infos == null) {
+                continue;
+            }
+            List<String> parameters = (List<String>) infos.get(0);
+
+            importNonRepetitivePackages.addAll(parameters.stream().map(v -> {
+                if (!StringUtils.endsWith(v, RESOLUTION_OPTIONAL)) {
+                    return v + RESOLUTION_OPTIONAL;
+                }
+                return v;
+            }).collect(Collectors.toSet()));
+
+            privateNonRepetitivePackages.addAll((List<String>) infos.get(1));
+        }
+
+        importNonRepetitivePackages.remove("routines.system");
+        importNonRepetitivePackages.remove("routines.system" + RESOLUTION_OPTIONAL);
+
+        // TESB-24730 set specific version for "javax.annotation"
+        importNonRepetitivePackages.remove("javax.annotation");
+        importNonRepetitivePackages.remove("javax.annotation" + RESOLUTION_OPTIONAL);
+        importNonRepetitivePackages.add("javax.annotation;version=\"[1.3,2)\"" + RESOLUTION_OPTIONAL);
         
-        String str = fileterdImportPackage.toString();
-        if (str != null && str.length() > 0 && str.endsWith(",")) {
-            str = str.substring(0, str.length() - 1);
+        // TESB-32507 make  org.talend.esb.authorization.xacml.rt.pep not optional
+        if (importNonRepetitivePackages.contains("org.talend.esb.authorization.xacml.rt.pep" + RESOLUTION_OPTIONAL))  {
+            importNonRepetitivePackages.remove("org.talend.esb.authorization.xacml.rt.pep" + RESOLUTION_OPTIONAL);
+            importNonRepetitivePackages.add("org.talend.esb.authorization.xacml.rt.pep");
         }
-        manifest.getMainAttributes().putValue(Analyzer.IMPORT_PACKAGE, str);
+
+        Set<String> fileterdImportPackage = new HashSet<>();
+
+        for (String p : importNonRepetitivePackages) {
+            if (!privateNonRepetitivePackages.contains(p.replace(RESOLUTION_OPTIONAL, "")) || p.startsWith("routines")) {
+                fileterdImportPackage.add(p);
+            }
+        }
+
+        manifest.getMainAttributes().putValue(Analyzer.PRIVATE_PACKAGE, String.join(",", privateNonRepetitivePackages));
+        manifest.getMainAttributes().putValue(Analyzer.IMPORT_PACKAGE, String.join(",", fileterdImportPackage));
     }
 
     protected Analyzer createAnalyzer(ExportFileResource libResource, ProcessItem processItem) throws IOException {
@@ -879,21 +1186,34 @@ public class JobJavaScriptOSGIForESBManager extends JobJavaScriptsManager {
             Set<URL> resources = libResource.getResourcesByRelativePath(path);
             for (URL url : resources) {
                 // TESB-21804:Fail to deploy cMessagingEndpoint with quartz component in runtime for ClassCastException
-                if (url.getPath().matches("(.*)camel-(.*)-alldep-(.*)$") 
-                        || url.getPath().matches("(.*)activemq-all-[\\d\\.]*.jar$")
-                        || url.getPath().matches("(.*)jms[\\d\\.-]*.jar$")) {
+                String urlStr = url.getPath().replace("\\", "/");
+                if (urlStr.matches("(.*)camel-(.*)-alldep-(.*)$") 
+                        || urlStr.matches("(.*)activemq-all-[\\d\\.]*.jar$")
+                        || urlStr.matches("(.*)/jms[\\d\\.-]*.jar$")
+                        || urlStr.matches("(.*)tdm-lib-di-[\\d\\.-]*.jar$")
+                        || urlStr.matches("(.*)dom4j-[\\d\\.-]*.jar$")) {
                     continue;
                 }
+
                 File dependencyFile = new File(FilesUtils.getFileRealPath(url.getPath()));
                 String relativePath = libResource.getDirectoryName() + PATH_SEPARATOR + dependencyFile.getName();
+
+                bundleClasspathKeys.add(dependencyFile.length() + dependencyFile.getName());
                 bundleClasspath.append(MANIFEST_ITEM_SEPARATOR).append(relativePath);
-                bin.putResource(relativePath, new FileResource(dependencyFile));
+
                 // analyzer.addClasspath(new File(url.getPath()));
                 // Add dynamic library declaration in manifest
                 if (relativePath.toLowerCase().endsWith(DLL_FILE) || relativePath.toLowerCase().endsWith(SO_FILE)) {
                     bundleNativeCode.append(libResource.getDirectoryName() + PATH_SEPARATOR + dependencyFile.getName()).append(
                             OSGI_OS_CODE);
                 }
+
+                // If don't want to enable this feature just comment out
+                if (ENABLE_CACHE && cacheManifest(url, relativePath)) {
+                    continue;
+                }
+
+                bin.putResource(relativePath, new FileResource(dependencyFile));
             }
         }
         analyzer.setProperty(Analyzer.BUNDLE_CLASSPATH, bundleClasspath.toString());
@@ -903,11 +1223,6 @@ public class JobJavaScriptOSGIForESBManager extends JobJavaScriptsManager {
             bundleNativeCode.setLength(bundleNativeCode.length() - 1);
             analyzer.setProperty(Analyzer.BUNDLE_NATIVECODE, bundleNativeCode.toString());
         }
-
-        // TESB-24730 set specific version for "javax.annotation"
-        ImportedPackageRangeReplacer r = new ImportedPackageRangeReplacer();
-        r.addRange("javax.annotation", "[1.3,2)");
-        analyzer.addBasicPlugin(r);
 
         return analyzer;
     }
@@ -926,7 +1241,6 @@ public class JobJavaScriptOSGIForESBManager extends JobJavaScriptsManager {
             if (EmfModelUtils.computeCheckElementValue("EXPOSE_SWAGGER_SPEC", restRequestComponent)) {
                 importPackages.add("org.apache.cxf.jaxrs.swagger");
             }
-
 
             if (EmfModelUtils.computeCheckElementValue("NEED_AUTH", restRequestComponent)) { //$NON-NLS-1$
                 String authType = EmfModelUtils.computeTextElementValue("AUTH_TYPE", restRequestComponent); //$NON-NLS-1$
@@ -1071,6 +1385,7 @@ public class JobJavaScriptOSGIForESBManager extends JobJavaScriptsManager {
     }
 
     private Set<String> importCompiler(IRunProcessService service, ProcessItem processItem) {
+
         Set<String> imports = new HashSet<String>();
         if (processItem != null && service != null && processItem.getProperty() != null) {
             ITalendProcessJavaProject talendProcessJavaProject = service.getTalendJobJavaProject(processItem.getProperty());
@@ -1078,15 +1393,14 @@ public class JobJavaScriptOSGIForESBManager extends JobJavaScriptsManager {
                 String src = JavaResourcesHelper.getJobClassFilePath(processItem, true);
                 IFile srcFile = talendProcessJavaProject.getSrcFolder().getFile(src);
                 imports.addAll(importCompiler(srcFile.getLocation().toString()));
-		        
                 // include imports from child jobs
                 if (ERepositoryObjectType.getType(processItem.getProperty()).equals(ERepositoryObjectType.PROCESS)) {
                     for (JobInfo subjobInfo : ProcessorUtilities.getChildrenJobInfo(processItem)) {
                         imports.addAll(importCompiler(service, subjobInfo.getProcessItem()));
                     }
                 }
-	        }
-    	}
+            }
+        }
         return imports;
     }
     
@@ -1095,7 +1409,8 @@ public class JobJavaScriptOSGIForESBManager extends JobJavaScriptsManager {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         ByteArrayOutputStream err = new ByteArrayOutputStream();
         try {
-            org.eclipse.jdt.core.compiler.batch.BatchCompiler.compile(src + " -1.7 -nowarn -maxProblems 100000 ", new PrintWriter(out),
+            org.eclipse.jdt.core.compiler.batch.BatchCompiler.compile(src + " -1.7 -nowarn -maxProblems 100000 ",
+                    new PrintWriter(out),
                     new PrintWriter(err), null);
             String errString = new String(err.toByteArray());
             String[] errBlocks = errString.split("----------");
@@ -1109,7 +1424,7 @@ public class JobJavaScriptOSGIForESBManager extends JobJavaScriptsManager {
                         Matcher m = pattern.matcher(lines[1].substring(markerPos));
                         if (m.find()) {
                             if (m.groupCount() == 1 && m.group(1).indexOf('.') > 0) {
-                                imports.add(m.group(1) + ";resolution:=optional");
+                                imports.add(m.group(1) + RESOLUTION_OPTIONAL);
                             }
                         }
                     }
@@ -1121,117 +1436,5 @@ public class JobJavaScriptOSGIForESBManager extends JobJavaScriptsManager {
             e.printStackTrace();
         }
         return imports;
-    }
-
-    private class ImportedPackageRangeReplacer implements AnalyzerPlugin, Plugin {
-
-        private Set<Range> ranges = new TreeSet<>();
-
-        public void addRange(String packageName, String packageVersion) {
-            ranges.add(new Range(packageName, packageVersion));
-        }
-
-        /**
-         * Analyzes the jar and update the version range.
-         *
-         * @param analyzer the analyzer
-         * @return {@code false}
-         * @throws Exception if the analaysis fails.
-         */
-        @Override
-        public boolean analyzeJar(Analyzer analyzer) throws Exception {
-
-            if (analyzer.getReferred() == null) {
-                return false;
-            }
-
-            for (Map.Entry<Descriptors.PackageRef, Attrs> entry : analyzer.getReferred().entrySet()) {
-                for (Range range : ranges) {
-                    if (range.matches(entry.getKey().getFQN())) {
-                        String value = range.getRange(analyzer);
-                        if (value != null) {
-                            entry.getValue().put("version", value);
-                        }
-                    }
-                }
-            }
-            return false;
-        }
-
-
-        private class Range implements Comparable<Range> {
-            final String name;
-            final String value;
-            final Pattern regex;
-
-            private String foundRange;
-
-            private Range(String name, String value) {
-                this.name = name;
-                this.value = value;
-                this.regex = Pattern.compile(name.trim().replace(".", "\\.").replace("*", ".*"));
-            }
-
-            private boolean matches(String pck) {
-                return regex.matcher(pck).matches();
-            }
-
-            private String getRange(Analyzer analyzer) throws Exception {
-                if (foundRange != null) {
-                    return foundRange;
-                }
-                if (null == value || value.isEmpty()) {
-                    for (Jar jar : analyzer.getClasspath()) {
-                        if (isProvidedByJar(jar) && jar.getVersion() != null) {
-                            foundRange = jar.getVersion();
-                            return jar.getVersion();
-                        }
-                    }
-                    return null;
-                } else {
-                    return value;
-                }
-            }
-
-            private boolean isProvidedByJar(Jar jar) {
-                for (String s : jar.getPackages()) {
-                    if (matches(s)) {
-                        return true;
-                    }
-                }
-                return false;
-            }
-
-            @Override
-            public int compareTo(Range o) {
-                return Integer.compare(this.regex.pattern().length(), o.regex.pattern().length());
-            }
-
-            @Override
-            public boolean equals(Object o) {
-                if (this == o) {
-                    return true;
-                }
-                if (o == null || getClass() != o.getClass()) {
-                    return false;
-                }
-                Range range = (Range) o;
-                return Objects.equals(name, range.name) &&
-                        Objects.equals(value, range.value);
-            }
-
-            @Override
-            public int hashCode() {
-                return Objects.hashCode(name + value);
-            }
-        }
-
-        @Override
-        public void setReporter(Reporter processor) {
-        }
-
-        @Override
-        public void setProperties(Map<String, String> map) throws Exception {
-        }
     }
 }

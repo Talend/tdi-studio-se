@@ -493,10 +493,13 @@ public class PropertyNode {
     public int hashCode() {
         final int PRIME = 59;
         int result = 1;
-        final Object $parent = this.getParent();
-        result = result * PRIME + ($parent == null ? 43 : $parent.hashCode());
-        final Object $children = this.getChildren();
-        result = result * PRIME + ($children == null ? 43 : $children.hashCode());
+
+        // don't calc parent/children, because it has dead loop/stackoverflow issue
+        // final Object $parent = this.getParent();
+        // result = result * PRIME + ($parent == null ? 43 : $parent.hashCode());
+        // final Object $children = this.getChildren();
+        // result = result * PRIME + ($children == null ? 43 : $children.hashCode());
+
         final Object $layouts = this.getLayouts();
         result = result * PRIME + ($layouts == null ? 43 : $layouts.hashCode());
         final Object $property = this.getProperty();

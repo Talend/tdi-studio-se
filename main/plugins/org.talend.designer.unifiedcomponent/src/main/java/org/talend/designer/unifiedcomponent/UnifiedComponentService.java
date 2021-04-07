@@ -37,6 +37,9 @@ import org.talend.core.runtime.services.IGenericWizardService;
 import org.talend.core.ui.component.ComponentsFactoryProvider;
 import org.talend.designer.core.IUnifiedComponentService;
 import org.talend.designer.core.model.components.EParameterName;
+import org.talend.designer.core.model.components.UnifiedJDBCBean;
+import org.talend.designer.core.ui.editor.nodes.Node;
+import org.talend.designer.core.utils.UnifiedComponentUtil;
 import org.talend.designer.unifiedcomponent.component.DelegateComponent;
 import org.talend.designer.unifiedcomponent.component.UnifiedObject;
 import org.talend.designer.unifiedcomponent.manager.UnifiedComponentsManager;
@@ -123,7 +126,7 @@ public class UnifiedComponentService implements IUnifiedComponentService {
                     String database = object.getDatabase();
                     UnifiedObject unifiedObjectByDatabase = selectedDcomp.getUnifiedObjectByDatabase(database);
                     if (unifiedObjectByDatabase != null) {
-                        return unifiedObjectByDatabase.getComponentName();
+                        return unifiedObjectByDatabase.getDisplayComponentName();
                     }
                 }
 
@@ -152,7 +155,7 @@ public class UnifiedComponentService implements IUnifiedComponentService {
             DelegateComponent dComp = (DelegateComponent) comp;
             Set<UnifiedObject> unifiedObjects = dComp.getUnifiedObjectsByPalette(dComp.getPaletteType());
             for (UnifiedObject obj : unifiedObjects) {
-                if (obj.getComponentName().equals(component.getName())) {
+                if (obj.getDisplayComponentName().equals(component.getDisplayName())) {
                     return dComp;
                 }
             }
@@ -165,7 +168,7 @@ public class UnifiedComponentService implements IUnifiedComponentService {
             DelegateComponent dComp = (DelegateComponent) comp;
             Set<UnifiedObject> unifiedObjects = dComp.getUnifiedObjectsByPalette(dComp.getPaletteType());
             for (UnifiedObject obj : unifiedObjects) {
-                if (obj.getComponentName().equals(emfCompName)) {
+                if (obj.getDisplayComponentName().equals(emfCompName)) {
                     return dComp;
                 }
             }
@@ -464,6 +467,17 @@ public class UnifiedComponentService implements IUnifiedComponentService {
         return null;
     }
 
+    public String getUnifiedCompRealComponentName(IComponent delegateComponent, String emfComponent) {
+        if (delegateComponent instanceof DelegateComponent) {
+            DelegateComponent dcomp = (DelegateComponent) delegateComponent;
+            UnifiedObject unifiedObjectByName = dcomp.getUnifiedObjectByName(emfComponent);
+            if (unifiedObjectByName != null) {
+                return unifiedObjectByName.getComponentName();
+            }
+        }
+        return null;
+    }
+
     @Override
     public void filterUnifiedComponentForPalette(IComponentsFactory compFac, Collection<IComponent> componentSet,
             String lowerCasedKeyword) {
@@ -559,6 +573,18 @@ public class UnifiedComponentService implements IUnifiedComponentService {
         boolean match = obj.getDatabase().equalsIgnoreCase(filter) || obj.getComponentName().equalsIgnoreCase(filter)
                 || obj.getComponentName().substring(1).equalsIgnoreCase(filter);
         return match;
+    }
+
+    public UnifiedJDBCBean getInitJDBCComponentProperties(Node node, IComponent delegateComponent) {
+        if (!(delegateComponent instanceof DelegateComponent)) {
+            return null;
+        }
+        DelegateComponent dComp = (DelegateComponent) delegateComponent;
+        UnifiedObject unifiedObject = dComp.getUnifiedObjectByName(node.getComponent().getName());
+        if (unifiedObject == null) {
+            return null;
+        }
+        return UnifiedComponentUtil.getAdditionalJDBC().get(unifiedObject.getDatabase());
     }
 
 }

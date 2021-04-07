@@ -70,14 +70,14 @@
 					<%if(isLog4jEnabled){%>
 						log.info("<%=cid%> - Closing the connection to the server.");
 					<%}%>
-					ftp_<%=cid %>.quit();
+					ftp_<%=cid %>.disconnect();
 					<%if(isLog4jEnabled){%>
 						log.info("<%=cid%> - Connection to the server closed.");
 					<%}%>  
-				}catch(java.net.SocketException se_<%=cid%>){
+				}catch(java.io.IOException ioe_<%=cid%>){
 					//ignore failure
 					<%if(isLog4jEnabled){%>
-						log.warn("<%=cid%> - " + se_<%=cid%>.getMessage());
+						log.warn("<%=cid%> - " + ioe_<%=cid%>.getMessage());
 					<%}%>
 				}
 <%
@@ -86,17 +86,11 @@
 				<%if(isLog4jEnabled){%>
 					log.info("<%=cid%> - Closing the connection to the server.");
 				<%}%>
-				ftp_<%=cid %>.quit();
+				ftp_<%=cid %>.disconnect();
 				<%if(isLog4jEnabled){%>
 					log.info("<%=cid%> - Connection to the server closed.");
 				<%}%>  
 <%
-			}
-		}else{
-		    if(!moveToCurrentDir){
-%>
-		  		ftp_<%=cid %>.chdir(rootDir_<%=cid %>);
-<%	
 			}
 		}
 	}

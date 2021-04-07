@@ -74,6 +74,7 @@ public class JobSettingsManager {
 
     private static boolean isTeamEdition = PluginChecker.isTeamEdition();
 
+
     public static List<IElementParameter> getJobSettingsParameters(IProcess process) {
         List<IElementParameter> paramList = new ArrayList<IElementParameter>();
         // for extra
@@ -95,6 +96,12 @@ public class JobSettingsManager {
     private static final String QUOTE = TalendTextUtils.getQuoteChar();
 
     private static final String CONNECTOR = TalendTextUtils.getStringConnect();
+
+    private static final String ENCODING_TYPE_UTF_8 = "UTF-8"; //$NON-NLS-1$
+
+    private static final String ENCODING_TYPE_ISO_8859_15 = "ISO-8859-15"; //$NON-NLS-1$
+
+    private static final String ENCODING_TYPE_CUSTOM = "CUSTOM"; //$NON-NLS-1$
 
     private static List<IElementParameter> getHeaderFooterParameters(IProcess process) {
         // for headerFooter Code
@@ -384,6 +391,51 @@ public class JobSettingsManager {
         param.setShowIf(condition);
         paramList.add(param);
 
+        // begin Override encoding checkbox
+        param = new ElementParameter(process);
+        param.setName(EParameterName.OVERRIDE_ENCODING_FLAG.getName());
+        param.setDisplayName(EParameterName.OVERRIDE_ENCODING_FLAG.getDisplayName());
+        param.setFieldType(EParameterFieldType.CHECK);
+        param.setCategory(EComponentCategory.EXTRA);
+        param.setGroup(IMPLICIT_GROUP);
+        param.setNumRow(33);
+        param.setValue(false);
+        param.setShowIf(condition);
+        paramList.add(param);
+        // end Override encoding checkbox
+
+        // begin encoding select
+        ElementParameter encodingParam = new ElementParameter(process);
+        encodingParam.setName(EParameterName.OVERRIDE_ENCODING_IN_EXTRA.getName());
+        encodingParam.setDisplayName(EParameterName.OVERRIDE_ENCODING_IN_EXTRA.getDisplayName());
+        encodingParam.setCategory(EComponentCategory.EXTRA);
+        encodingParam.setGroup(IMPLICIT_GROUP);
+        encodingParam.setFieldType(EParameterFieldType.ENCODING_TYPE);
+        StringBuilder sb = new StringBuilder();
+        sb.append(JobSettingsConstants.getExtraParameterName(EParameterName.FROM_FILE_FLAG.getName())).append(" == 'true' and ")
+                .append(EParameterName.OVERRIDE_ENCODING_FLAG.getName()).append(" == 'true' and ").append(CONTEXTLOAD_CONDITION);
+        condition = JobSettingsConstants.addBrackets(sb.toString());
+        encodingParam.setShowIf(condition); // $NON-NLS-1$
+        encodingParam.setValue(ENCODING_TYPE_ISO_8859_15);
+        encodingParam.setNumRow(34);
+        paramList.add(encodingParam);
+
+        ElementParameter childParam = new ElementParameter(process);
+        childParam.setName(EParameterName.ENCODING_TYPE.getName());
+        childParam.setDisplayName(EParameterName.ENCODING_TYPE.getDisplayName());
+        childParam.setFieldType(EParameterFieldType.TECHNICAL);
+        childParam.setCategory(EComponentCategory.EXTRA);
+        childParam.setGroup(IMPLICIT_GROUP);
+        childParam.setListItemsDisplayName(new String[] { ENCODING_TYPE_ISO_8859_15, ENCODING_TYPE_UTF_8, ENCODING_TYPE_CUSTOM });
+        childParam.setListItemsDisplayCodeName(
+                new String[] { ENCODING_TYPE_ISO_8859_15, ENCODING_TYPE_UTF_8, ENCODING_TYPE_CUSTOM });
+        childParam.setListItemsValue(new String[] { ENCODING_TYPE_ISO_8859_15, ENCODING_TYPE_UTF_8, ENCODING_TYPE_CUSTOM });
+        childParam.setValue(ENCODING_TYPE_ISO_8859_15);
+        childParam.setNumRow(34);
+        childParam.setShow(true);
+        childParam.setShowIf(condition); // $NON-NLS-1$
+        childParam.setParentParameter(encodingParam);
+        // end encoding select
         return paramList;
     }
 
@@ -494,7 +546,7 @@ public class JobSettingsManager {
         param.setFieldType(EParameterFieldType.TEXT);
         param.setCategory(EComponentCategory.EXTRA);
         param.setNumRow(43);
-        param.setRepositoryValue(EConnectionParameterName.GENERIC_URL.getDisplayName()); //$NON-NLS-1$
+        param.setRepositoryValue(EConnectionParameterName.GENERIC_URL.getDisplayName()); 
         String dbCon = dbTypeName + " == 'JDBC'";
         param.setShowIf(JobSettingsConstants.addBrackets(dbCon) + " and " + dbCondition); //$NON-NLS-1$
         param.setGroup(IMPLICIT_GROUP);
@@ -511,7 +563,7 @@ public class JobSettingsManager {
                     if (!moduleNameList.contains(moduleName)) {
                         moduleNameList.add(moduleName);
                     }
-                    String moduleValue = TalendTextUtils.addQuotes(moduleName);
+                    String moduleValue = TalendTextUtils.addQuotes(module.getMavenUri());
                     if (!moduleValueList.contains(moduleValue)) {
                         moduleValueList.add(moduleValue);
                     }
@@ -540,7 +592,7 @@ public class JobSettingsManager {
         param.setValue(new ArrayList<Map<String, Object>>());
         param.setCategory(EComponentCategory.EXTRA);
         param.setNumRow(44);
-        param.setRepositoryValue(EConnectionParameterName.GENERIC_DRIVER_JAR.getDisplayName()); //$NON-NLS-1$
+        param.setRepositoryValue(EConnectionParameterName.GENERIC_DRIVER_JAR.getDisplayName()); 
         dbCon = dbTypeName + " == 'JDBC'";
         param.setShowIf(JobSettingsConstants.addBrackets(dbCon) + " and " + dbCondition); //$NON-NLS-1$
         param.setGroup(IMPLICIT_GROUP);
@@ -555,7 +607,7 @@ public class JobSettingsManager {
         param.setFieldType(EParameterFieldType.TEXT);
         param.setCategory(EComponentCategory.EXTRA);
         param.setNumRow(45);
-        param.setRepositoryValue(EConnectionParameterName.GENERIC_DRIVER_CLASS.getDisplayName()); //$NON-NLS-1$
+        param.setRepositoryValue(EConnectionParameterName.GENERIC_DRIVER_CLASS.getDisplayName()); 
         dbCon = dbTypeName + " == 'JDBC'";
         param.setShowIf(JobSettingsConstants.addBrackets(dbCon) + " and " + dbCondition); //$NON-NLS-1$
         param.setGroup(IMPLICIT_GROUP);
@@ -586,7 +638,9 @@ public class JobSettingsManager {
         param.setNumRow(46);
         param.setRepositoryValue("PORT"); //$NON-NLS-1$
         dbCon = dbTypeName
-                + " != 'SQLITE'" + " and " + dbTypeName + " != 'ACCESS'" + " and " + dbTypeName + " != 'FIREBIRD'" + " and " + dbTypeName + "!='OCLE_OCI'" + " and " + dbTypeName + "!='JDBC'" + " and " + dbTypeName + "!='ODBC'"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$//$NON-NLS-6$//$NON-NLS-7$
+                + " != 'SQLITE'" + " and " + dbTypeName + " != 'ACCESS'" + " and " + dbTypeName + " != 'FIREBIRD'" + " and " //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$//$NON-NLS-6$
+                + dbTypeName + "!='OCLE_OCI'" + " and " + dbTypeName + "!='JDBC'" + " and " + dbTypeName + "!='ODBC'" + " and " //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
+                + dbTypeName + "!='TERADATA'"; //$NON-NLS-1$
         param.setShowIf(JobSettingsConstants.addBrackets(dbCon) + " and " + dbCondition); //$NON-NLS-1$
         param.setGroup(IMPLICIT_GROUP);
         paramList.add(param);
@@ -928,7 +982,7 @@ public class JobSettingsManager {
             return Collections.emptyList();
         }
 
-        IComponent tContextLoadComponent = new JobContextLoadComponent(fileFlag, dbInput);
+        IComponent tContextLoadComponent = new JobContextLoadComponent(fileFlag, dbInput, process.getComponentsType());
 
         final String uniqueName = "Implicit_Context"; //$NON-NLS-1$
         DataNode tContextLoadNode = new DataNode(tContextLoadComponent, uniqueName);
@@ -952,6 +1006,25 @@ public class JobSettingsManager {
             tContextLoadNode.getElementParameter(EParameterName.IMPLICIT_TCONTEXTLOAD_FILE.getName()).setValue(inputFile);
             String regex = FileSeparator.getSeparatorsRegexp(fileSparator);
             tContextLoadNode.getElementParameter(JobSettingsConstants.IMPLICIT_TCONTEXTLOAD_REGEX).setValue(regex);
+
+            String encoding = (String) process.getElementParameter(EParameterName.OVERRIDE_ENCODING_IN_EXTRA.getName())
+                    .getValue();
+            if (StringUtils.isNotEmpty(encoding) && !encoding.startsWith(TalendTextUtils.getQuoteChar())) {
+                encoding = TalendTextUtils.addQuotes(encoding);
+            }
+
+            // override encoding
+            paramName = EParameterName.OVERRIDE_ENCODING_FLAG.getName();
+            boolean overrideFlag = ((Boolean) process.getElementParameter(paramName).getValue())
+                    && process.getElementParameter(paramName).isShow(process.getElementParameters());
+            if (overrideFlag) {
+                IElementParameter encodingParam = new ElementParameter(tContextLoadNode);
+                encodingParam.setName(EParameterName.ENCODING.getName());
+                encodingParam.setDisplayName(EParameterName.ENCODING.getDisplayName());
+                encodingParam.setFieldType(EParameterFieldType.ENCODING_TYPE);
+                encodingParam.setValue(encoding);
+                tContextLoadNode.addElementParameter(encodingParam);
+            }
         } else {
             // is db
             paramName = JobSettingsConstants.getExtraParameterName(EParameterName.URL.getName());
@@ -1023,7 +1096,8 @@ public class JobSettingsManager {
             String dbType = getDatabaseTypeFromParameter(process);
             if (dbType != null) {
                 // TDI-18161:the SQL script's syntax is not right because of the implicit context of General JDBC.
-                if (dbType.equals(EDatabaseTypeName.GENERAL_JDBC.getDisplayName())) {
+                if (dbType.equals(EDatabaseTypeName.GENERAL_JDBC.getDisplayName())
+                        || dbType.equals(EDatabaseTypeName.GENERAL_JDBC.getProduct())) {
                     dbType = findRealDbTypeForJDBC(process, dbType);
                 }
 
@@ -1219,22 +1293,87 @@ public class JobSettingsManager {
             if (StringUtils.isEmpty(separators)) {
                 return TalendQuoteUtils.addQuotes("");
             }
-            String filedSeparator = TalendQuoteUtils.removeQuotes(separators);
-            if (filedSeparator.length() == 1) {
-                if (filedSeparator.equals("\\")) { // special \ //$NON-NLS-1$
-                    return TalendQuoteUtils.addQuotes("\\\\\\" + filedSeparator);//$NON-NLS-1$
-                } else if (METADATA_CHAR.contains(filedSeparator)) {
-                    return TalendQuoteUtils.addQuotes("\\\\" + filedSeparator);//$NON-NLS-1$
+
+            String[] splits = separators.split("\\+"); //$NON-NLS-1$
+            String[] seqs = new String[splits.length];
+            int posit = 0;
+            for (String split : splits) {
+                String seq = split.trim();
+                // don't use seq, might trim space value
+                if (seq.length() > 1 && (seq.startsWith("\"") && seq.endsWith("\"")) || seq.startsWith("context.")) { //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+                    if (seqs[posit] != null) {
+                        posit++;
+                    }
+                    seqs[posit] = split;
+                    posit++;
+                } else {
+                    if (StringUtils.isBlank(seqs[posit])) {
+                        seqs[posit] = split;
+                    } else {
+                        String original = seqs[posit];
+                        seqs[posit] = original + "+" + split; //$NON-NLS-1$
+                    }
                 }
-            } else if (filedSeparator.equals("||")) {// TUP-17232
-                return TalendQuoteUtils.addQuotes("\\\\" + "|" + "\\\\" + "|");//$NON-NLS-1$
             }
-            return separators;
+
+            StringBuffer seqBuffer = new StringBuffer();
+            for (int i = 0; i < seqs.length; i++) {
+                if (seqs[i] == null) {
+                    continue;
+                }
+                if (i != 0) {
+                    seqBuffer.append("+"); //$NON-NLS-1$
+                }
+                if (seqs[i].contains("context.")) { //$NON-NLS-1$
+                    seqBuffer.append(seqs[i]);
+                } else {
+                    seqBuffer.append(doAddMark4SpecialChar(seqs[i]));
+                }
+            }
+
+            return seqBuffer.toString();
+        }
+
+        static String doAddMark4SpecialChar(String sequence) {
+            String filedSeparator = TalendQuoteUtils.removeQuotes(sequence);
+            // add only \t for file separator as special case here , to not break something else
+            if (!"\\t".equals(filedSeparator)) {
+                for (String charStr : METADATA_CHAR) {
+                    if (!filedSeparator.contains(charStr)) {
+                        continue;
+                    }
+                    if ("\\".equals(charStr)) {
+                        filedSeparator = addMarkWithChar(filedSeparator, charStr, "\\\\\\", true); //$NON-NLS-1$
+                    } else {
+                        filedSeparator = addMarkWithChar(filedSeparator, charStr, "\\\\", true); //$NON-NLS-1$
+                    }
+                }
+            }
+            filedSeparator = TalendQuoteUtils.addQuotes(filedSeparator);
+            return filedSeparator;
         }
 
         static String getSeparatorsRegexp(String fileSeparator) {
             fileSeparator = doRegexpQuote(fileSeparator);
             return "\"^([^\"+" + fileSeparator + "+\"]*)\"+" + fileSeparator + "+\"(.*)$\""; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+        }
+
+        static String addMarkWithChar(String separatorStr, String charStr, String markStr, boolean beforeChar) {
+            String resultStr = "";
+            char[] charArray = separatorStr.toCharArray();
+            for (int i = 0; i < charArray.length; i++) {
+                char c = charArray[i];
+                if (charStr.equals(String.valueOf(c))) {
+                    if (beforeChar) {
+                        resultStr = resultStr + markStr + c;
+                    } else {
+                        resultStr = resultStr + c + markStr;
+                    }
+                } else {
+                    resultStr += c;
+                }
+            }
+            return resultStr;
         }
 
         private static List<String> getMetadataChars() {

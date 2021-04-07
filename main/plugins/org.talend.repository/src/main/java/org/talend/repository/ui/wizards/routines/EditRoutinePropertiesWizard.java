@@ -13,7 +13,9 @@
 package org.talend.repository.ui.wizards.routines;
 
 import org.eclipse.core.runtime.IPath;
+import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.core.model.repository.IRepositoryViewObject;
+import org.talend.core.model.routines.RoutinesUtil;
 import org.talend.metadata.managment.ui.wizard.PropertiesWizard;
 import org.talend.repository.i18n.Messages;
 
@@ -32,6 +34,14 @@ public class EditRoutinePropertiesWizard extends PropertiesWizard {
     public EditRoutinePropertiesWizard(IRepositoryViewObject repositoryViewObject, IPath path, boolean useLastVersion) {
         super(repositoryViewObject, path, useLastVersion);
         setWindowTitle(Messages.getString("EditRoutinePropertiesWizard.wizard.title"));//$NON-NLS-1$
+    }
+
+    @Override
+    public ERepositoryObjectType getRepositoryObjectType() {
+        ERepositoryObjectType itemType = object.getRepositoryObjectType();
+        ERepositoryObjectType innerCodeType = itemType == ERepositoryObjectType.ROUTINES ? ERepositoryObjectType.ROUTINESJAR
+                : ERepositoryObjectType.BEANSJAR;
+        return RoutinesUtil.isInnerCodes(object.getProperty()) ? innerCodeType : itemType;
     }
 
     @Override

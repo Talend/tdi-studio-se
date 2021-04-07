@@ -1,17 +1,17 @@
-<%@ jet 
+<%@ jet
 imports="
-	org.talend.core.model.process.INode 
-	org.talend.core.model.process.ElementParameterParser 
+	org.talend.core.model.process.INode
+	org.talend.core.model.process.ElementParameterParser
 	org.talend.designer.codegen.config.CodeGeneratorArgument
-	org.talend.core.model.metadata.IMetadataTable 
-	org.talend.core.model.metadata.MetadataTalendType	
-	org.talend.core.model.metadata.MappingTypeRetriever	 
+	org.talend.core.model.metadata.IMetadataTable
+	org.talend.core.model.metadata.MetadataTalendType
+	org.talend.core.model.metadata.MappingTypeRetriever
 	org.talend.core.model.utils.NodeUtil
 	java.util.List
 	java.util.ArrayList
 	java.util.Map
 	java.util.HashMap
-" 
+"
 skeleton="../templates/db_output_bulk.skeleton"
 %>
 <%@ include file="@{org.talend.designer.components.localprovider}/components/templates/Log4j/DBLogUtil.javajet"%>
@@ -19,7 +19,7 @@ skeleton="../templates/db_output_bulk.skeleton"
 CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
 INode node = (INode)codeGenArgument.getArgument();
 String cid = node.getUniqueName();
-dbLog = new DBLogUtil(node); 
+dbLog = new DBLogUtil(node);
 String action = ElementParameterParser.getValue(node, "__ACTION__");
 String outputAction = ElementParameterParser.getValue(node, "__OUTPUT__");
 
@@ -38,7 +38,11 @@ String table = ElementParameterParser.getValue(node, "__TABLE__");
 String codePage = ElementParameterParser.getValue(node, "__CODE_PAGE__");
 String data_file_type = ElementParameterParser.getValue(node, "__DATA_FILE_TYPE__");
 boolean fire_triggers = ("true").equals(ElementParameterParser.getValue(node, "__FIRE_TRIGGERS__"));
+String additional_query_parameters = ElementParameterParser.getValue(node, "__ADDITIONAL_QUERY_PARAMETERS__");
 boolean convertToUppercase = false; // not active this function
+boolean useExistingDynamic = ("true").equals(ElementParameterParser.getValue(node, "__USE_EXISTING_DYNAMIC__"));
+boolean useCodePage = ("true").equals(ElementParameterParser.getValue(node, "__USE_CODE_PAGE__"));
+boolean useActiveDirectoryAuth = "true".equals(ElementParameterParser.getValue(node, "__ACTIVE_DIR_AUTH__"));
 %>
 int deletedCount_<%=cid%>=0;
 <%@ include file="../templates/Log4j/Log4jDBConnUtil.javajet"%>
@@ -50,7 +54,7 @@ if(("EXPORT").equals(action)) {
 	String server = ElementParameterParser.getValue(node, "__SERVER__");
 	String query_statement = ElementParameterParser.getValue(node, "__QUERY__");
 		   query_statement = query_statement.replaceAll("\n"," ");
-		   query_statement = query_statement.replaceAll("\r"," ");		   
+		   query_statement = query_statement.replaceAll("\r"," ");
 	String output_file_name = ElementParameterParser.getValue(node, "__OUTPUT_FILE_NAME__");
 	String row_terminated_export = ElementParameterParser.getValue(node, "__ROW_TERMINATED_EXPORT__");
 
@@ -62,15 +66,13 @@ if(("EXPORT").equals(action)) {
 	}else{
 		char_type = "-w";
 	}
-	
+
 	%>
-	
+
 	<%
 	String passwordFieldName = "__PASS__";
 	%>
-	
 	<%@ include file="@{org.talend.designer.components.localprovider}/components/templates/password.javajet"%>
-	
 	StringBuffer command_<%=cid%> = new StringBuffer();
 	command_<%=cid%>.append(<%=bcp_utility%>)
 		.append(" \"")
@@ -103,7 +105,7 @@ if(("EXPORT").equals(action)) {
 		.append(<%=field_separator%>)
 		.append(" -r")
 		.append(<%=row_terminated_export%>);
-	
+
 	Runtime runtime_<%=cid%> = Runtime.getRuntime();
 	<%
 		log4jCodeGenerateUtil.logInfo(node,"info",cid+" - Executing '\"+ command_" + cid + "+\"'.");
@@ -173,11 +175,11 @@ if(("EXPORT").equals(action)) {
 	<%
 	log4jCodeGenerateUtil.logInfo(node,"info",cid+" - Excute '\"+ command_" + cid + "+\"' successfully.");
 } else {
-	List<IMetadataColumn> columnList = getColumnList(node);	
+	List<IMetadataColumn> columnList = getColumnList(node);
 	%>
 	String dbschema_<%=cid%> = "";
 	<%@ include file="../templates/tMSSql/_tMSSqlConnection.javajet"%>
-	String tableName_<%=cid%> = null;	
+	String tableName_<%=cid%> = null;
 	if(dbschema_<%=cid%> == null || dbschema_<%=cid%>.trim().length() == 0) {
 		tableName_<%=cid%> = <%=table%>;
 	} else {
@@ -191,14 +193,18 @@ if(("EXPORT").equals(action)) {
 	if(columnList != null && columnList.size() > 0) {
 		stmtStructure = getManager(dbmsId, cid).createColumnList(columnList, false, null, null);
 	}
-	if((columnList != null && columnList.size() > 0) || "CLEAR".equals(tableAction) || "NONE".equals(tableAction) || "TRUNCATE".equals(tableAction)){
-	%>	
+
+	if((columnList != null && columnList.size() > 0) || useExistingDynamic || "CLEAR".equals(tableAction) || "NONE".equals(tableAction) || "TRUNCATE".equals(tableAction)){
+	%>
 		<%@ include file="../templates/_tableActionForBulk.javajet"%>
     	<%
     	if(("INSERT").equals(action)) {
 		%>
     		java.sql.Statement stmtBulkInsert_<%=cid %> = conn_<%=cid %>.createStatement();
-    		String bulkSQL_<%=cid%> = "BULK INSERT <%=manager.getLProtectedChar()%>" + tableName_<%=cid%> + "<%=manager.getRProtectedChar()%> FROM '" + <%=file%> + "' WITH ( CODEPAGE='" + <%=codePage%> + "',DATAFILETYPE='<%=data_file_type%>',FIELDTERMINATOR='" + <%=field_separator%> + "',FIRSTROW =" + <%=first_row%> + <%if (fire_triggers) {%>",FIRE_TRIGGERS" + <%}%> ",ROWTERMINATOR='" + <%=row_separator%>+"')";
+    		String bulkSQL_<%=cid%> = "BULK INSERT <%=manager.getLProtectedChar()%>" + tableName_<%=cid%> + "<%=manager.getRProtectedChar()%> FROM '" + <%=file%>
+    		    + "' WITH ( CODEPAGE='" + <%=codePage%> + "',DATAFILETYPE='<%=data_file_type%>',FIELDTERMINATOR='" + <%=field_separator%> + "',FIRSTROW =" + <%=first_row%>
+    		    + <%if (fire_triggers) {%>",FIRE_TRIGGERS" + <%}%> ",ROWTERMINATOR='" + <%=row_separator%>+"'"
+    		    + (<%=additional_query_parameters%>.isEmpty() ? "" : "," + <%=additional_query_parameters%>) + ")";
     		<%
     		if(isLog4jEnabled_tableAction){
     		%>
@@ -224,7 +230,7 @@ if(("EXPORT").equals(action)) {
     			%>
     			int keyCount_<%=cid%> = <%=keyCount%>;
     			if(keyCount_<%=cid%> == 0) {
-    				throw new RuntimeException("For bulk update, Schema must have a key at least."); 
+    				throw new RuntimeException("For bulk update, Schema must have a key at least.");
     			}
     			String tmpTableName_<%=cid%> = tableName_<%=cid%>;
     			tableName_<%=cid%> = "tmp_<%=cid%>" + "_" + pid + Thread.currentThread().getId();
@@ -238,7 +244,12 @@ if(("EXPORT").equals(action)) {
     			<%}%>
     			stmtCreateTmp_<%=cid%>.close();
     			java.sql.Statement stmtTmpBulk_<%=cid%> = conn_<%=cid%>.createStatement();
-    			String bulkSQL_<%=cid%> = "BULK INSERT <%=manager.getLProtectedChar()%>" + tableName_<%=cid%> + "<%=manager.getRProtectedChar()%> FROM '" + <%=file%> + "' WITH ( CODEPAGE='" + <%=codePage%> + "',DATAFILETYPE='<%=data_file_type%>',FIELDTERMINATOR='" + <%=field_separator%> + "',FIRSTROW =" + <%=first_row%> + ",ROWTERMINATOR='" + <%=row_separator%>+"')";
+    			String bulkSQL_<%=cid%> = "BULK INSERT <%=manager.getLProtectedChar()%>" + tableName_<%=cid%> + "<%=manager.getRProtectedChar()%> FROM '" + <%=file%>
+    			    + "' WITH ( CODEPAGE='" + <%=codePage%> + "',DATAFILETYPE='<%=data_file_type%>',FIELDTERMINATOR='" + <%=field_separator%> + "',FIRSTROW =" + <%=first_row%>
+    			    + ",ROWTERMINATOR='" + <%=row_separator%>+"'"
+        		    + (<%=additional_query_parameters%>.isEmpty() ? "" : "," + <%=additional_query_parameters%>)
+        		    + ")";
+
     			<%if(isLog4jEnabled_tableAction){%>
     				log.debug("<%=cid%> - Bulk SQL:"+bulkSQL_<%=cid%>+".");
     				log.info("<%=cid%> - Bulk inserting data into <%=manager.getLProtectedChar()%>" + tableName_<%=cid%> + "<%=manager.getRProtectedChar()%>." );
@@ -270,9 +281,9 @@ if(("EXPORT").equals(action)) {
     			<%
     		}
     	}
-    }		
-	
-	
+    }
+
+
 	if(!useExistingConnection) {
 		%>
 		if(conn_<%=cid %> != null && !conn_<%=cid %>.isClosed()) {

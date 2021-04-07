@@ -33,13 +33,13 @@ public class ActivateSubjobAction extends SelectionAction {
 
     public static final String ID = "org.talend.designer.core.ui.editor.action.ActivateSubjobAction"; //$NON-NLS-1$
 
-    private static final String TEXT_SET_ACTIVATE_COMPLETE = Messages.getString("ActivateSubjobAction.ActivateComplete"); //$NON-NLS-1$
+    private static final String TEXT_SET_ACTIVATE_COMPLETE = Messages.getString("ActivateSubjobAction.ActivateComplete2"); //$NON-NLS-1$
 
-    private static final String TEXT_REM_ACTIVATE_COMPLETE = Messages.getString("ActivateSubjobAction.DeactivateComplete"); //$NON-NLS-1$
+    private static final String TEXT_REM_ACTIVATE_COMPLETE = Messages.getString("ActivateSubjobAction.DeactivateComplete2"); //$NON-NLS-1$
 
-    private static final String TEXT_SET_ACTIVATE_PART = Messages.getString("ActivateSubjobAction.ActivatePart"); //$NON-NLS-1$
+    private static final String TEXT_SET_ACTIVATE_PART = Messages.getString("ActivateSubjobAction.ActivatePart2"); //$NON-NLS-1$
 
-    private static final String TEXT_REM_ACTIVATE_PART = Messages.getString("ActivateSubjobAction.DeactivatePart"); //$NON-NLS-1$
+    private static final String TEXT_REM_ACTIVATE_PART = Messages.getString("ActivateSubjobAction.DeactivatePart2"); //$NON-NLS-1$
 
     public ActivateSubjobAction(IWorkbenchPart part) {
         super(part);

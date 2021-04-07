@@ -64,10 +64,6 @@ imports="
 		}
 
 		public void useExistConnection(INode node){
-			useExistConnection(node, true);
-		}
-
-		public void useExistConnection(INode node, boolean needUserAndPassword){
 			beforeComponentProcess(node);
 			if(isLog4jEnabled) {
 			%>
@@ -75,8 +71,6 @@ imports="
 					if(conn_<%=cid%>.getMetaData() != null) {
 						<%if (cid.contains("tImpala") || cid.contains("tHive")) {%>
 						log.debug("<%=cid%> - Uses an existing connection <%=connection %>.");
-						<%} else if (!needUserAndPassword){%>
-							log.debug("<%=cid%> - Uses an existing connection. Connection URL: " + conn_<%=cid%>.getMetaData().getURL() + ".");
 						<%} else {%>
 							log.debug("<%=cid%> - Uses an existing connection with username '" + conn_<%=cid%>.getMetaData().getUserName() + "'. Connection URL: " + conn_<%=cid%>.getMetaData().getURL() + ".");
 						<%}%>
@@ -88,11 +82,7 @@ imports="
 
 		public void connect(INode node){
 			beforeComponentProcess(node);
-			if ("SSO".equals(ElementParameterParser.getValue(node, "__JDBC_URL__"))){
-				connectWithSSO();
-			} else {
-				connect();
-			}
+			connect();
 		}
 
 		public void connect(){
@@ -103,14 +93,6 @@ imports="
 			connect_end();
 		}
 		
-		public void connectWithSSO(){
-			connect_begin_noUser();
-			%>
-			conn_<%=cid%> = java.sql.DriverManager.getConnection(url_<%=cid %>);
-			<%
-			connect_end();
-		}
-
 		public void connect_begin(){
 			logInfo(node,"debug",cid+" - Connection attempt to '\" + url_"+cid+" + \"' with the username '\" + dbUser_"+cid+" + \"'.");
 		}
@@ -190,6 +172,16 @@ imports="
 			<%
 		}
 
+		public void query(INode node, String dbQueryVariableName){
+			beforeComponentProcess(node);
+			//for input
+			logInfo(node,"debug",cid+" - Executing the query: '\" + "+dbQueryVariableName +" + \"'.");
+		}
+
+		/**
+		* @deprecated please use another method instead: query(INode node, String dbQueryVariableName) because execution of the query expression can be not idempotent
+		*/
+		@Deprecated
 		public void query(INode node){
 			beforeComponentProcess(node);
 			//for input

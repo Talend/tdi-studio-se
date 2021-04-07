@@ -1,8 +1,7 @@
 package org.talend.designer.dbmap.language.generation;
 
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -29,6 +28,7 @@ import org.talend.core.model.metadata.MetadataTable;
 import org.talend.core.model.process.EConnectionType;
 import org.talend.core.model.process.IConnection;
 import org.talend.core.model.process.IContextParameter;
+import org.talend.core.model.process.IElementParameter;
 import org.talend.core.model.process.INodeConnector;
 import org.talend.core.model.properties.PropertiesFactory;
 import org.talend.core.model.properties.Property;
@@ -37,6 +37,8 @@ import org.talend.core.ui.component.ComponentsFactoryProvider;
 import org.talend.designer.core.model.components.EParameterName;
 import org.talend.designer.core.model.components.ElementParameter;
 import org.talend.designer.core.model.components.NodeConnector;
+import org.talend.designer.core.model.process.DataConnection;
+import org.talend.designer.core.model.process.DataNode;
 import org.talend.designer.core.ui.editor.connections.Connection;
 import org.talend.designer.core.ui.editor.nodes.Node;
 import org.talend.designer.core.ui.editor.process.Process;
@@ -154,38 +156,54 @@ public class DbGenerationManagerTest extends DbGenerationManagerTestHelper {
         String quote = "\"";
         String quoParser = "[\\\\]?\\" + quote; //$NON-NLS-1$
         DbGenerationManager dbManager = new GenericDbGenerationManager();
-        
+        dbMapComponent = new DbMapComponent();
         String expression = "'\"" + "+" + "(String)globalMap.get(\"BusinessDateStr\")" + "+" + "\"' BETWEEN PROD_GRP_DA.EFF_FRM_DT AND PROD_GRP_DA.EFF_TO_DT";
         
-        assertEquals(expression.trim(), dbManager.replaceAuotes(expression, quoParser, quote).trim());
-        
-        expression = "'\"" + "+" + "(String)globalMap.get(\"BusinessDateStr\")" + "+" + "\" BETWEEN PROD_GRP_DA.EFF_FRM_DT AND PROD_GRP_DA.EFF_TO_DT";
-        String expect = "'\\\"" + "+" + "(String)globalMap.get(\\\"BusinessDateStr\\\")" + "+" + "\\\" BETWEEN PROD_GRP_DA.EFF_FRM_DT AND PROD_GRP_DA.EFF_TO_DT";
-        
-        assertEquals(expect.trim(), dbManager.replaceAuotes(expression, quoParser, quote).trim());
+        assertEquals(expression.trim(), dbManager.replaceAuotes(dbMapComponent, expression, quoParser, quote).trim());
         
         expression = "BETWEEN PROD_GRP_DA.EFF_FRM_DT AND PROD_GRP_DA.EFF_TO_DT";
-        expect = "BETWEEN PROD_GRP_DA.EFF_FRM_DT AND PROD_GRP_DA.EFF_TO_DT";
-        assertEquals(expect.trim(), dbManager.replaceAuotes(expression, quoParser, quote).trim());
+        String expect = "BETWEEN PROD_GRP_DA.EFF_FRM_DT AND PROD_GRP_DA.EFF_TO_DT";
+        assertEquals(expect.trim(), dbManager.replaceAuotes(dbMapComponent, expression, quoParser, quote).trim());
         
         expression = "'" +"+"+"context.param1"+"+"+ "aaa";
         expect = "'" +"+"+"context.param1"+"+"+ "aaa";
         
-        assertEquals(expect.trim(), dbManager.replaceAuotes(expression, quoParser, quote).trim());
+        assertEquals(expect.trim(), dbManager.replaceAuotes(dbMapComponent, expression, quoParser, quote).trim());
         
         expression = "'\"" +"+"+"context.param1"+"+"+ "\"'aaa";
         expect = "'\"" +"+"+"context.param1"+"+"+ "\"'aaa";
         
-        assertEquals(expect.trim(), dbManager.replaceAuotes(expression, quoParser, quote).trim());
+        assertEquals(expect.trim(), dbManager.replaceAuotes(dbMapComponent, expression, quoParser, quote).trim());
         
         expression = "'context.param1'";
-        assertEquals(expression, dbManager.replaceAuotes(expression, quoParser, quote).trim());
+        assertEquals(expression, dbManager.replaceAuotes(dbMapComponent, expression, quoParser, quote).trim());
         
         expression = "table1.name = 'context.param2'";
-        assertEquals(expression, dbManager.replaceAuotes(expression, quoParser, quote).trim());
+        assertEquals(expression, dbManager.replaceAuotes(dbMapComponent, expression, quoParser, quote).trim());
         
         expression = "table1.name = 'context.param2' aa";
-        assertEquals(expression, dbManager.replaceAuotes(expression, quoParser, quote).trim());
+        assertEquals(expression, dbManager.replaceAuotes(dbMapComponent, expression, quoParser, quote).trim());
+        
+        expression = "\"+globalMap.get(\"value1\")+\"";
+        assertEquals(expression, dbManager.replaceAuotes(dbMapComponent, expression, quoParser, quote).trim());
+
+        expression = "COALESCE(test.name ,\"+globalMap.get(\"value2\")+\")";
+        assertEquals(expression, dbManager.replaceAuotes(dbMapComponent, expression, quoParser, quote).trim());
+
+        expression = "\" + (Integer)globalMap.get(\"G_ZERO_PNCHEVNT_SKEY\") + \"";
+        assertEquals(expression, dbManager.replaceAuotes(dbMapComponent, expression, quoParser, quote).trim());
+
+        expression = "COALESCE(emp_edited.emp_skey , \" + (Integer)globalMap.get(\"G_ZERO_EMP_SKEY\") + \")";
+        assertEquals(expression, dbManager.replaceAuotes(dbMapComponent, expression, quoParser, quote).trim());
+
+        expression = "COALESCE(from_punch.EMP_SKEY     , \" + (Integer)globalMap.get(\"G_ZERO_EMP_SKEY\") + \")";
+        assertEquals(expression, dbManager.replaceAuotes(dbMapComponent, expression, quoParser, quote).trim());
+
+        expression = "CASE WHEN \" + (String)globalMap.get(\"DSRC_TYP_DES\") + \" in ('Timecard Editor') AND from_punch.PNCHEVNT_DTM> from_punch.ENTERED_DTM THEN 1 ELSE 0 END";
+        assertEquals(expression, dbManager.replaceAuotes(dbMapComponent, expression, quoParser, quote).trim());
+
+        expression = "CASE WHEN \" + (String)globalMap.get(\"DSRC_TYP_DES\") + \" in ('Timecard Editor') THEN 1 ELSE 0 END";
+        assertEquals(expression, dbManager.replaceAuotes(dbMapComponent, expression, quoParser, quote).trim());
     }
     
     @Test
@@ -193,15 +211,15 @@ public class DbGenerationManagerTest extends DbGenerationManagerTestHelper {
         String quote = "\"";
         String quoParser = "[\\\\]?\\" + quote; //$NON-NLS-1$
         DbGenerationManager dbManager = new GenericDbGenerationManager();
-
+        dbMapComponent = new DbMapComponent();
         String expression = "case when upper(a.rate_type)='FLOAT' then 'D001' else 'AMAT' end";
-        assertEquals(expression, dbManager.replaceAuotes(expression, quoParser, quote).trim());
+        assertEquals(expression, dbManager.replaceAuotes(dbMapComponent, expression, quoParser, quote).trim());
 
         expression = "case when upper(a.rate_type)='FLOAT'";
-        assertEquals(expression, dbManager.replaceAuotes(expression, quoParser, quote).trim());
+        assertEquals(expression, dbManager.replaceAuotes(dbMapComponent, expression, quoParser, quote).trim());
 
         expression = "'context.jobName'";
-        assertEquals(expression, dbManager.replaceAuotes(expression, quoParser, quote).trim());
+        assertEquals(expression, dbManager.replaceAuotes(dbMapComponent, expression, quoParser, quote).trim());
     }
 
     private void testWithQuote(){
@@ -934,5 +952,496 @@ public class DbGenerationManagerTest extends DbGenerationManagerTestHelper {
                 + "  table1.id AS id, CASE WHEN table1.column1 IS NULL THEN \" +context.param1+ \" ELSE table1.column1 END AS column1, table1.column2 AS column2\n"
                 + "  FROM\n" + "   table1\n" + "  WHERE t.column2 = '\" +context.param2+ \"'\n" + " ) table2\"";
         assertEquals(exceptQuery.replaceAll("\n", "").trim(), query.trim());
+    }
+    
+    @Test
+    /**
+     * Related Tuj task: TDI40720_tELTMap_InJoin
+     */
+    public void testELTMapInJoin() {
+        String schema = "context.saphana_schema";
+        String inputTable1 = "TDI40745";
+        String inputTable2 = "TDI40745Out";
+        String outTable1 = "outrow";
+
+        dbMapComponent = new DbMapComponent();
+
+        List<IMetadataTable> metadataList = new ArrayList<IMetadataTable>();
+
+        MetadataTable metadataTable = getMetadataTable(new String[] { "newColumn", "newColumn1" }, new String[] { "id", "name" });
+        metadataTable.setLabel(schema + "." + outTable1);
+        metadataList.add(metadataTable);
+
+        dbMapComponent.setMetadataList(metadataList);
+
+        // main table
+        ExternalDbMapData externalData = new ExternalDbMapData();
+        List<ExternalDbMapTable> inputs = new ArrayList<ExternalDbMapTable>();
+        List<ExternalDbMapTable> outputs = new ArrayList<ExternalDbMapTable>();
+        // main table
+        ExternalDbMapTable inputTable = new ExternalDbMapTable();
+        inputTable.setTableName(schema + "." + inputTable1);
+        inputTable.setName(schema + "." + inputTable1);
+        inputTable.setAlias("inrow");
+        List<ExternalDbMapEntry> entities = getMetadataEntities(new String[] { "newColumn", "newColumn1" }, new String[2]);
+        inputTable.setMetadataTableEntries(entities);
+        inputs.add(inputTable);
+
+        // lookup table
+        inputTable = new ExternalDbMapTable();
+        inputTable.setTableName(schema + "." + inputTable2);
+        inputTable.setName(schema + "." + inputTable2);
+        inputTable.setAlias("inrow1");
+        entities = getMetadataEntities(new String[] { "newColumn", "newColumn1" }, new String[2]);
+        ExternalDbMapEntry newColumn = entities.get(0);
+        newColumn.setExpression("inrow.newColumn");
+        newColumn.setOperator("=");
+        inputTable.setJoinType("INNER_JOIN");
+        newColumn.setJoin(true);
+        inputTable.setMetadataTableEntries(entities);
+        inputs.add(inputTable);
+
+        // output
+        ExternalDbMapTable outputTable = new ExternalDbMapTable();
+        outputTable.setName(schema + "." + outTable1);
+        String[] names = new String[] { "newColumn", "newColumn1" };
+        String[] expressions = new String[] { "inrow.newColumn", "inrow.newColumn1" };
+        outputTable.setMetadataTableEntries(getMetadataEntities(names, expressions));
+        outputs.add(outputTable);
+
+        externalData.setInputTables(inputs);
+        externalData.setOutputTables(outputs);
+        dbMapComponent.setExternalData(externalData);
+
+        List<IConnection> incomingConnections = new ArrayList<IConnection>();
+        incomingConnections.add(
+                mockConnection(schema, inputTable1, new String[] { "newColumn", "newColumn1" }, new String[] { "id", "name" }));
+        incomingConnections.add(
+                mockConnection(schema, inputTable2, new String[] { "newColumn", "newColumn1" }, new String[] { "id", "name" }));
+        dbMapComponent.setIncomingConnections(incomingConnections);
+
+        List<IConnection> outputConnections = new ArrayList<IConnection>();
+        Node map1 = mockNode(dbMapComponent);
+        IConnection connection = mockConnection(map1, schema, inputTable1, new String[] { "id", "name" });
+        connection.getMetadataTable().getColumn("id").setLabel("newColumn");
+        connection.getMetadataTable().getColumn("name").setLabel("newColumn1");
+        outputConnections.add(connection);
+        dbMapComponent.setOutgoingConnections(outputConnections);
+
+        Process process = mock(Process.class);
+        when(process.getContextManager()).thenReturn(new JobContextManager());
+        dbMapComponent.setProcess(process);
+
+        JobContext context = new JobContext("Default");
+        IContextParameter schemaContext = new JobContextParameter();
+        schemaContext.setName("saphana_schema");
+        schemaContext.setValue("saphana_schema");
+        schemaContext.setType("String");
+        context.getContextParameterList().add(schemaContext);
+
+        IContextParameter lookupTableContext = new JobContextParameter();
+        lookupTableContext.setName("lookup");
+        lookupTableContext.setValue("lookupTable");
+        lookupTableContext.setType("String");
+        context.getContextParameterList().add(lookupTableContext);
+        dbMapComponent.getProcess().getContextManager().setDefaultContext(context);
+
+        String query = dbManager.buildSqlSelect(dbMapComponent, schema + "." + outTable1);
+
+        String expectedQuery = "\"SELECT\n" + "inrow.id, inrow.name\n" + "FROM\n"
+                + " \" +context.saphana_schema+\".\"+TDI40745+ \" inrow INNER JOIN  \" +context.saphana_schema+\".\"+TDI40745Out+ \" inrow1 ON(  inrow1.id = inrow.id )\"";
+        assertEquals(expectedQuery, query);
+    }
+
+     @Test
+    public void testELTMapJoinWithUpdate() {
+        dbManager = new GenericDbGenerationManager();
+        String schema = "dbo";
+        String inputTable1 = "src1";
+        String inputTable2 = "src2";
+        String outTable1 = "tar";
+
+        dbMapComponent = new DbMapComponent();
+
+        List<IMetadataTable> metadataList = new ArrayList<IMetadataTable>();
+
+        MetadataTable metadataTable = getMetadataTable(new String[] { "newColumn", "newColumn1" }, new String[] { "id", "name" });
+        metadataTable.setLabel(schema + "." + outTable1);
+        metadataList.add(metadataTable);
+
+        dbMapComponent.setMetadataList(metadataList);
+
+        // main table
+        ExternalDbMapData externalData = new ExternalDbMapData();
+        List<ExternalDbMapTable> inputs = new ArrayList<ExternalDbMapTable>();
+        List<ExternalDbMapTable> outputs = new ArrayList<ExternalDbMapTable>();
+        // main table
+        ExternalDbMapTable inputTable = new ExternalDbMapTable();
+        inputTable.setTableName(schema + "." + inputTable1);
+        inputTable.setName(schema + "." + inputTable1);
+        inputTable.setAlias("A");
+        List<ExternalDbMapEntry> entities = getMetadataEntities(new String[] { "newColumn", "newColumn1" }, new String[2]);
+        inputTable.setMetadataTableEntries(entities);
+        inputs.add(inputTable);
+
+        // lookup table
+        inputTable = new ExternalDbMapTable();
+        inputTable.setTableName(schema + "." + inputTable2);
+        inputTable.setName(schema + "." + inputTable2);
+        inputTable.setAlias("B");
+        entities = getMetadataEntities(new String[] { "newColumn", "newColumn1" }, new String[2]);
+        ExternalDbMapEntry newColumn = entities.get(0);
+        newColumn.setExpression("A.newColumn");
+        newColumn.setOperator("=");
+        inputTable.setJoinType("INNER_JOIN");
+        newColumn.setJoin(true);
+        inputTable.setMetadataTableEntries(entities);
+        inputs.add(inputTable);
+
+        // output
+        ExternalDbMapTable outputTable = new ExternalDbMapTable();
+        outputTable.setName(schema + "." + outTable1);
+        outputTable.setTableName(schema + "." + outTable1);
+        String[] names = new String[] { "tarColumn", "tarColumn1" };
+        String[] expressions = new String[] { "A.newColumn", "A.newColumn1" };
+        outputTable.setMetadataTableEntries(getMetadataEntities(names, expressions));
+        outputs.add(outputTable);
+
+        externalData.setInputTables(inputs);
+        externalData.setOutputTables(outputs);
+        dbMapComponent.setExternalData(externalData);
+
+        List<IConnection> incomingConnections = new ArrayList<IConnection>();
+        incomingConnections.add(
+                mockConnection(schema, inputTable1, new String[] { "newColumn", "newColumn1" }, new String[] { "id", "name" }));
+        incomingConnections.add(
+                mockConnection(schema, inputTable2, new String[] { "newColumn", "newColumn1" }, new String[] { "id", "name" }));
+        dbMapComponent.setIncomingConnections(incomingConnections);
+
+        List<IConnection> outputConnections = new ArrayList<IConnection>();
+        Node map1 = mockNode(dbMapComponent);
+        IConnection connection = mockConnection(map1, schema, inputTable1, new String[] { "id", "name" });
+        targetComponent = ComponentsFactoryProvider.getInstance().get("tELTMSSqlOutput",
+                ComponentCategory.CATEGORY_4_DI.getName());
+        connection.getMetadataTable().getColumn("id").setLabel("newColumn");
+        connection.getMetadataTable().getColumn("name").setLabel("newColumn1");
+        // add target
+        DataNode output = new DataNode();
+        List<IElementParameter> paraList = new ArrayList<IElementParameter>();
+        ElementParameter param = new ElementParameter(output);
+        param.setName("USE_UPDATE_STATEMENT"); //$NON-NLS-1$
+        param.setValue("true"); //$NON-NLS-1$
+        paraList.add(param);
+        output.setElementParameters(paraList);
+        output.setComponent(targetComponent);
+
+        DataConnection dataConnection = new DataConnection();
+        dataConnection.setName(schema + "." + outTable1);
+        dataConnection.setActivate(true);
+        dataConnection.setLineStyle(EConnectionType.FLOW_MAIN);
+        dataConnection.setTarget(output);
+        IMetadataTable table = new MetadataTable();
+        table.setLabel(outTable1);
+        table.setTableName(outTable1);
+        List<IMetadataColumn> listColumns = new ArrayList<IMetadataColumn>();
+        for (String columnName : new String[] { "id", "name" }) {
+            IMetadataColumn column = new MetadataColumn();
+            column.setLabel(columnName);
+            column.setOriginalDbColumnName(columnName);
+            listColumns.add(column);
+        }
+        table.setListColumns(listColumns);
+        dataConnection.setMetadataTable(table);
+        // List<DataConnection> dataConnections = new ArrayList<>();
+        outputConnections.add(dataConnection);
+        outputConnections.add(connection);
+        dbMapComponent.setOutgoingConnections(outputConnections);
+
+        Process process = mock(Process.class);
+        when(process.getContextManager()).thenReturn(new JobContextManager());
+        dbMapComponent.setProcess(process);
+
+        IContextParameter lookupTableContext = new JobContextParameter();
+        lookupTableContext.setName("lookup");
+        lookupTableContext.setValue("lookupTable");
+        lookupTableContext.setType("String");
+        String query = dbManager.buildSqlSelect(dbMapComponent, schema + "." + outTable1);
+        String expectedQuery = "\"UPDATE dbo.tar\n" + "SET tarColumn = A.id,\n" + "tarColumn1 = A.name\n"
+                + "FROM \" +dbo+\".\"+src1+ \" A , \" +dbo+\".\"+src2+ \" B\n" + "WHERE\n" + "  B.id = A.id\"";
+
+        assertEquals(expectedQuery, query);
+    }
+
+    @Test
+    public void testGetHandledFieldWithContext() {
+        String schema = "";
+        String table1 = "table1";
+        String table2 = "table2";
+        String table3 = "table3";
+        List<IConnection> incomingConnections = new ArrayList<IConnection>();
+        String[] mainTableEntities = new String[] { "id", "column1", "column2" };
+        incomingConnections.add(mockConnection(schema, table1, mainTableEntities));
+        dbMapComponent.setIncomingConnections(incomingConnections);
+
+        ExternalDbMapData externalData = new ExternalDbMapData();
+        List<ExternalDbMapTable> inputs = new ArrayList<ExternalDbMapTable>();
+        List<ExternalDbMapTable> outputs = new ArrayList<ExternalDbMapTable>();
+        // main table
+        ExternalDbMapTable inputTable = new ExternalDbMapTable();
+        String mainTableName = "".equals(schema) ? table1 : schema + "." + table1;
+        // quote will be removed in the ui for connections ,so we do the same for test
+        String mainTableNameNoQuote = TalendTextUtils.removeQuotes(mainTableName);
+        inputTable.setTableName(mainTableNameNoQuote);
+        inputTable.setName(mainTableName);
+        List<ExternalDbMapEntry> entities = getMetadataEntities(mainTableEntities, new String[3]);
+        inputTable.setMetadataTableEntries(entities);
+        inputs.add(inputTable);
+
+        // output
+        ExternalDbMapTable outputTable = new ExternalDbMapTable();
+        mainTableName = "".equals(schema) ? table2 : schema + "." + table2;
+        // quote will be removed in the ui for connections ,so we do the same for test
+        mainTableNameNoQuote = TalendTextUtils.removeQuotes(mainTableName);
+        outputTable.setTableName(mainTableNameNoQuote);
+        outputTable.setName("table2");
+        String[] names = new String[] { "id", "column1", "column2" };
+        String mainTable = mainTableName;
+        String[] expressions = new String[] { "table1.id",
+                "CASE WHEN table1.column1 IS NULL THEN context.param1 ELSE table1.column1 END", "table1.column2" };
+        outputTable.setMetadataTableEntries(getMetadataEntities(names, expressions));
+
+        String[] whereNames = new String[] { "whereFilter" };
+        String[] whereExps = new String[] { "t.column2 = context.param2" };
+        outputTable.setCustomWhereConditionsEntries(getMetadataEntities(whereNames, whereExps));
+        outputs.add(outputTable);
+        externalData.setInputTables(inputs);
+        externalData.setOutputTables(outputs);
+        dbMapComponent.setExternalData(externalData);
+        List<IMetadataTable> metadataList = new ArrayList<IMetadataTable>();
+        MetadataTable metadataTable = getMetadataTable(names);
+        metadataTable.setLabel("table2");
+        metadataList.add(metadataTable);
+        dbMapComponent.setMetadataList(metadataList);
+        JobContext newContext = new JobContext("Default");
+        List<IContextParameter> newParamList = new ArrayList<IContextParameter>();
+        newContext.setContextParameterList(newParamList);
+        JobContextParameter param = new JobContextParameter();
+        param.setName("schema");
+        newParamList.add(param);
+        process = mock(Process.class);
+        JobContextManager contextManger = new JobContextManager();
+        contextManger.setDefaultContext(newContext);
+        when(process.getContextManager()).thenReturn(contextManger);
+        dbMapComponent.setProcess(process);
+
+        ExternalDbMapData externalData2 = new ExternalDbMapData();
+        DbMapComponent dbMapComponent2 = new DbMapComponent();
+        dbMapComponent2.setExternalData(externalData2);
+        mainTableEntities = new String[] { "id", "column1", "column2" };
+
+        List<IConnection> outgoingConnections = new ArrayList<IConnection>();
+        Node map1 = mockNode(dbMapComponent);
+        outgoingConnections.add(mockConnection(map1, schema, table2, mainTableEntities));
+        dbMapComponent.setOutgoingConnections(outgoingConnections);
+        dbMapComponent2.setIncomingConnections(outgoingConnections);
+
+        inputs = new ArrayList<ExternalDbMapTable>();
+        outputs = new ArrayList<ExternalDbMapTable>();
+        // main table
+        inputTable = new ExternalDbMapTable();
+        mainTableName = "".equals(schema) ? table2 : schema + "." + table2;
+        // quote will be removed in the ui for connections ,so we do the same for test
+        mainTableNameNoQuote = TalendTextUtils.removeQuotes(mainTableName);
+        inputTable.setTableName(mainTableNameNoQuote);
+        inputTable.setName("context.alias1");
+        inputTable.setAlias("context.alias1");
+        entities = getMetadataEntities(mainTableEntities, new String[3]);
+        inputTable.setMetadataTableEntries(entities);
+        inputs.add(inputTable);
+
+        // output
+        outputTable = new ExternalDbMapTable();
+        mainTableName = "".equals(schema) ? table3 : schema + "." + table3;
+        // quote will be removed in the ui for connections ,so we do the same for test
+        mainTableNameNoQuote = TalendTextUtils.removeQuotes(mainTableName);
+        outputTable.setTableName(mainTableNameNoQuote);
+        outputTable.setName("table3");
+        names = new String[] { "id", "column1", "column2" };
+        mainTable = mainTableName;
+        expressions = new String[] { "context.alias1.id", "table2.column1", "table2.column2" };
+        outputTable.setMetadataTableEntries(getMetadataEntities(names, expressions));
+        whereNames = new String[] { "whereFilter" };
+        whereExps = new String[] { "t.column2A = context.param2A" };
+        outputTable.setCustomWhereConditionsEntries(getMetadataEntities(whereNames, whereExps));
+        outputs.add(outputTable);
+
+        externalData2.setInputTables(inputs);
+        externalData2.setOutputTables(outputs);
+        dbMapComponent2.setExternalData(externalData2);
+        metadataList = new ArrayList<IMetadataTable>();
+        metadataTable = getMetadataTable(names);
+        metadataTable.setLabel("table3");
+        metadataList.add(metadataTable);
+        dbMapComponent2.setMetadataList(metadataList);
+        if (dbMapComponent2.getElementParameters() == null) {
+            dbMapComponent2.setElementParameters(Collections.EMPTY_LIST);
+        }
+        JobContextParameter param1 = new JobContextParameter();
+        param1.setName("param1");
+        newParamList.add(param1);
+
+        JobContextParameter param2 = new JobContextParameter();
+        param2.setName("param2");
+        newParamList.add(param2);
+        dbMapComponent2.setProcess(process);
+        outgoingConnections = new ArrayList<IConnection>();
+        outgoingConnections.add(mockConnection(schema, table3, mainTableEntities));
+        dbMapComponent2.setOutgoingConnections(outgoingConnections);
+
+        ElementParameter comName = new ElementParameter(dbMapComponent);
+        comName.setName("COMPONENT_NAME");
+        comName.setValue("tELTMap");
+        List<ElementParameter> list = new ArrayList<>();
+        list.add(comName);
+        dbMapComponent.setElementParameters(list);
+
+        dbManager = new GenericDbGenerationManager() {
+
+            @Override
+            protected java.util.List<String> getContextList(DbMapComponent component) {
+                return Arrays.asList("context.param1", "context.param2", "context.param2A", "context.alias1");
+            };
+        };
+
+        String query = dbManager.buildSqlSelect(dbMapComponent2, "table3");
+        String exceptQuery = "\"SELECT\n" + "\" +context.alias1+ \".id, table2.column1, table2.column2\n" + "FROM\n"
+                + " (\n" + "  SELECT\n"
+                + "  table1.id AS id, CASE WHEN table1.column1 IS NULL THEN \" +context.param1+ \" ELSE table1.column1 END AS column1, table1.column2 AS column2\n"
+                + "  FROM\n" + "   table1\n" + "  WHERE t.column2 = \" +context.param2+ \"\n" + " ) \" +context.alias1+ \"\n"
+                + "WHERE t.column2A = \" +context.param2A";
+        assertEquals(exceptQuery.trim(), query.trim());
+    }
+
+    @Test
+    public void testBuildSqlSelectWithContextCase1() {
+        String schema = "";
+        String main_table = "context.main_table";
+        String main_alias = "";
+        String lookup_table = "lookup_table";
+        String lookup_alias = "";
+        init(schema, main_table, main_alias, lookup_table, lookup_alias);
+        String expectedQuery = "\"SELECT\n" + "\" +context.main_table+ \"" + ".id, " + "\" +context.main_table+ \"" + ".name, "
+                + "\" +context.main_table+ \"" + ".age, " + "lookup_table" + ".score\n" + "FROM\n" + " \" +context.main_table+ \""
+                + " , " + "lookup_table\"";
+        String query = dbManager.buildSqlSelect(dbMapComponent, "grade");
+        assertEquals(expectedQuery, query);
+    }
+
+    @Test
+    public void testBuildSqlSelectWithContextCase2() {
+        String schema = "schema";
+        String main_table = "context.main_table";
+        String main_alias = "";
+        String lookup_table = "lookup_table";
+        String lookup_alias = "";
+        init(schema, main_table, main_alias, lookup_table, lookup_alias);
+        String expectedQuery = "\"SELECT\n" + "schema.\" +context.main_table+ \"" + ".id, " + "schema.\" +context.main_table+ \""
+                + ".name, " + "schema.\" +context.main_table+ \"" + ".age, " + "schema.lookup_table" + ".score\n" + "FROM\n"
+                + " schema.\" +context.main_table+ \"" + " , " + "schema.lookup_table\"";
+        String query = dbManager.buildSqlSelect(dbMapComponent, "grade");
+        assertEquals(expectedQuery, query);
+    }
+
+    @Test
+    public void testBuildSqlSelectWithContextCase3() {
+        String schema = "context.schema";
+        String main_table = "context.main_table";
+        String main_alias = "";
+        String lookup_table = "lookup_table";
+        String lookup_alias = "";
+        init(schema, main_table, main_alias, lookup_table, lookup_alias);
+        String expectedQuery = "\"SELECT\n" + "\" +context.schema+ \"." + "\" +context.main_table+ \"" + ".id, "
+                + "\" +context.schema+ \"." + "\" +context.main_table+ \"" + ".name, " + "\" +context.schema+ \"."
+                + "\" +context.main_table+ \"" + ".age, " + "\" +context.schema+ \"." + "lookup_table" + ".score\n" + "FROM\n"
+                + " \" +context.schema+ \"." + "\" +context.main_table+ \"" + " , " + "\" +context.schema+ \"."
+                + "lookup_table\"";
+        String query = dbManager.buildSqlSelect(dbMapComponent, "grade");
+        assertEquals(expectedQuery, query);
+    }
+
+    @Test
+    public void testBuildSqlSelectWithContextCase4() {
+        String schema = "context.schema1.context.schema2";
+        String main_table = "context.main_table";
+        String main_alias = "a1";
+        String lookup_table = "lookup_table";
+        String lookup_alias = "a2";
+        init(schema, main_table, main_alias, lookup_table, lookup_alias);
+        String expectedQuery = "\"SELECT\n" + "a1.id, a1.name, a1.age, a2.score\n" + "FROM\n" + " \" +context.schema1 + \"."
+                + "\" + context.schema2+\"." + "\"+context.main_table+ \"" + " a1 , " + "\" +context.schema1 + \"."
+                + "\" + context.schema2+\"." + "\"+lookup_table+ \" a2\"";
+        String query = dbManager.buildSqlSelect(dbMapComponent, "grade");
+        assertEquals(expectedQuery, query);
+    }
+
+    @Test
+    public void testBuildSqlSelectWithContextCase5() {
+        String schema = "context.schema1.context.schema2.context.schema3";
+        String main_table = "context.main_table";
+        String main_alias = "a1";
+        String lookup_table = "lookup_table";
+        String lookup_alias = "a2";
+        init(schema, main_table, main_alias, lookup_table, lookup_alias);
+        String expectedQuery = "\"SELECT\n" + "a1.id, a1.name, a1.age, a2.score\n" + "FROM\n" + " \" +context.schema1 + \"."
+                + "\" + context.schema2 + \"." + "\" + context.schema3+\"." + "\"+context.main_table+ \"" + " a1 , "
+                + "\" +context.schema1 + \"." + "\" + context.schema2 + \"." + "\" + context.schema3+\"."
+                + "\"+lookup_table+ \" a2\"";
+        String query = dbManager.buildSqlSelect(dbMapComponent, "grade");
+        assertEquals(expectedQuery, query);
+    }
+
+    @Test
+    public void testBuildSqlSelectWithContextCase6() {
+        String schema = "context.schema1.schema2";
+        String main_table = "context.main_table";
+        String main_alias = "a1";
+        String lookup_table = "lookup_table";
+        String lookup_alias = "a2";
+        init(schema, main_table, main_alias, lookup_table, lookup_alias);
+        String expectedQuery = "\"SELECT\n" + "a1.id, a1.name, a1.age, a2.score\n" + "FROM\n" + " \" +context.schema1 + \"."
+                + "\" + \"schema2\"+\"." + "\"+context.main_table+ \"" + " a1 , " + "\" +context.schema1 + \"."
+                + "\" + \"schema2\"+\"." + "\"+lookup_table+ \" a2\"";
+        String query = dbManager.buildSqlSelect(dbMapComponent, "grade");
+        assertEquals(expectedQuery, query);
+    }
+
+    @Test
+    public void testBuildSqlSelectWithContextCase7() {
+        String schema = "schema1.context.schema2";
+        String main_table = "context.main_table";
+        String main_alias = "a1";
+        String lookup_table = "lookup_table";
+        String lookup_alias = "a2";
+        init(schema, main_table, main_alias, lookup_table, lookup_alias);
+        String expectedQuery = "\"SELECT\n" + "a1.id, a1.name, a1.age, a2.score\n" + "FROM\n" + " \" +\"schema1\" + \"."
+                + "\" + context.schema2+\"." + "\"+context.main_table+ \"" + " a1 , " + "\" +\"schema1\" + \"."
+                + "\" + context.schema2+\"." + "\"+lookup_table+ \" a2\"";
+        String query = dbManager.buildSqlSelect(dbMapComponent, "grade");
+        assertEquals(expectedQuery, query);
+    }
+
+    @Test
+    public void testBuildSqlSelectWithContextCase8() {
+        String schema = "context.schema1 + \".\" + context.schema2";
+        String main_table = "context.main_table";
+        String main_alias = "a1";
+        String lookup_table = "lookup_table";
+        String lookup_alias = "a2";
+        init(schema, main_table, main_alias, lookup_table, lookup_alias);
+        String expectedQuery = "\"SELECT\n" + "a1.id, a1.name, a1.age, a2.score\n" + "FROM\n" + " \" +context.schema1 + \"."
+                + "\" + context.schema2+\"." + "\"+context.main_table+ \"" + " a1 , " + "\" +context.schema1 + \"."
+                + "\" + context.schema2+\"." + "\"+lookup_table+ \" a2\"";
+        String query = dbManager.buildSqlSelect(dbMapComponent, "grade");
+        assertEquals(expectedQuery, query);
     }
 }

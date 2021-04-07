@@ -22,12 +22,9 @@ import java.io.LineNumberReader;
 import java.lang.reflect.InvocationTargetException;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.text.DateFormat;
 import java.text.MessageFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -1343,7 +1340,7 @@ public class RunProcessContext {
             if (processSocket != null && !stopThread) {
                 try {
                     InputStream in = processSocket.getInputStream();
-                    NoHeaderObjectInputStream reader = new NoHeaderObjectInputStream(in);
+                    NoHeaderObjectInputStream reader = new NoHeaderObjectInputStream(in, TraceDataBean.class, TraceStatusBean.class);
                     setBasicRun(false);
 
                     boolean lastIsPrivious = false;
@@ -1814,9 +1811,6 @@ public class RunProcessContext {
 
     public void setMemoryRunning(boolean isMemoryRunning) {
         this.isMemoryRunning = isMemoryRunning;
-        if (isMemoryRunning) {
-            setMonitorTrace(true);
-        }
     }
 
     private void showSparkStreamingData(String data) {

@@ -22,11 +22,11 @@ import org.talend.designer.dbmap.model.emf.dbmap.VarTable;
  * <!-- end-user-doc -->
  * <p>
  * The following features are implemented:
+ * </p>
  * <ul>
  *   <li>{@link org.talend.designer.dbmap.model.emf.dbmap.impl.InputTableImpl#getJoinType <em>Join Type</em>}</li>
  *   <li>{@link org.talend.designer.dbmap.model.emf.dbmap.impl.InputTableImpl#getAlias <em>Alias</em>}</li>
  * </ul>
- * </p>
  *
  * @generated
  */
@@ -209,7 +209,7 @@ public class InputTableImpl extends AbstaceDBInOutTableImpl implements InputTabl
     public String toString() {
         if (eIsProxy()) return super.toString();
 
-        StringBuffer result = new StringBuffer(super.toString());
+        StringBuilder result = new StringBuilder(super.toString());
         result.append(" (joinType: ");
         result.append(joinType);
         result.append(", alias: ");

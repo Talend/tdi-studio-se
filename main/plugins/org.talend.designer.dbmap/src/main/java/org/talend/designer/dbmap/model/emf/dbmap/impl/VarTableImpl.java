@@ -15,8 +15,6 @@ import org.talend.designer.dbmap.model.emf.dbmap.VarTable;
  * <!-- begin-user-doc -->
  * An implementation of the model object '<em><b>Var Table</b></em>'.
  * <!-- end-user-doc -->
- * <p>
- * </p>
  *
  * @generated
  */

@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<genmodel:GenModel xmi:version="2.0"
-    xmlns:xmi="http://www.omg.org/XMI" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore"
-    xmlns:genmodel="http://www.eclipse.org/emf/2002/GenModel" modelDirectory="/org.talend.designer.dbmap/src/main/java"
-    modelPluginID="org.talend.designer.dbmap" modelName="Dbmap" importerID="org.eclipse.emf.importer.ecore"
-    complianceLevel="5.0" copyrightFields="false" usedGenPackages="../../org.talend.model/model/TalendFile.genmodel#//talendfile">
+<genmodel:GenModel xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore"
+    xmlns:genmodel="http://www.eclipse.org/emf/2002/GenModel" modelDirectory="/org.talend.designer.dbmap/src/main/java" modelPluginID="org.talend.designer.dbmap"
+    modelName="Dbmap" importerID="org.eclipse.emf.importer.ecore" complianceLevel="5.0"
+    copyrightFields="false" usedGenPackages="../../org.talend.model/model/TalendFile.genmodel#//talendfile">
   <foreignModel>dbmap.ecore</foreignModel>
   <genPackages prefix="Dbmap" basePackage="org.talend.designer.dbmap.model.emf" resource="XML"
       disposableProviderFactory="true" ecorePackage="dbmap.ecore#/">
@@ -39,6 +38,7 @@
     <genClasses ecoreClass="dbmap.ecore#//FilterEntry">
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute dbmap.ecore#//FilterEntry/name"/>
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute dbmap.ecore#//FilterEntry/expression"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute dbmap.ecore#//FilterEntry/filterKind"/>
     </genClasses>
   </genPackages>
 </genmodel:GenModel>

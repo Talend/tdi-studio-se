@@ -69,7 +69,9 @@ skeleton="../templates/db_output_bulk.skeleton"
     boolean isEnableDebug = ("true").equals(ElementParameterParser.getValue(node,"__ENABLE_DEBUG_MODE__"));
     boolean usingStatsLogs=cid.equals("talendLogs_DB") || cid.equals("talendStats_DB") || cid.equals("talendMeter_DB");
     boolean useBatchSize = "true".equals(ElementParameterParser.getValue(node,"__USE_BATCH_SIZE__"));
-	String batchSize=ElementParameterParser.getValue(node,"__BATCH_SIZE__");
+    String batchSize=ElementParameterParser.getValue(node,"__BATCH_SIZE__");
+
+    boolean useActiveDirectoryAuth = "true".equals(ElementParameterParser.getValue(node, "__ACTIVE_DIR_AUTH__"));
 
     String rejectConnName = null;
     List<? extends IConnection> rejectConns = node.getOutgoingConnections("REJECT");
@@ -133,37 +135,12 @@ if(isUseParallelize || identityInsert || (!"DROP_CREATE".equals(tableAction) && 
 }
 String identityKey = ElementParameterParser.getValue(node, "__IDENTITY_FIELD__");
 getManager(dbmsId, cid, node).setIsSpecifyIdentityKey(isSpecifyIdentityKey);
-if(("UPDATE").equals(dataAction) || ("INSERT_OR_UPDATE").equals(dataAction) || ("UPDATE_OR_INSERT").equals(dataAction)) {
-    int updateKeyCount = 0;
-    if(stmtStructure != null) {
-        for(Column column : stmtStructure) {
-            if(column.isUpdateKey() && !column.isDynamic()) {
-                updateKeyCount++;
-            }
-        }
-        %>
-        int updateKeyCount_<%=cid%> = <%=updateKeyCount%>;
-        if(updateKeyCount_<%=cid%> < 1) {
-            throw new RuntimeException("For update, Schema must have a key");
-        }
-        <%
-    }
-} else if(("DELETE").equals(dataAction)) {
-    int deleteKeyCount = 0;
-    if(stmtStructure != null) {
-        for(Column column : stmtStructure) {
-            if(column.isDeleteKey() && !column.isDynamic()) {
-                deleteKeyCount++;
-            }
-        }
-        %>
-        int deleteKeyCount_<%=cid%> = <%=deleteKeyCount%>;
-        if(deleteKeyCount_<%=cid%> < 1) {
-            throw new RuntimeException("For delete, Schema must have a key");
-        }
-        <%
-    }
-} else if (("INSERT_IF_NOT_EXIST").equals(dataAction)){
+%>
+
+<%@ include file="@{org.talend.designer.components.localprovider}/components/templates/DB/Output/CheckKeysForUpdateAndDelete.javajet"%>
+
+<%
+ if (("INSERT_IF_NOT_EXIST").equals(dataAction)){
 	int insertKeyCount = 0;
     if(stmtStructure != null) {
         for(Column column : stmtStructure) {

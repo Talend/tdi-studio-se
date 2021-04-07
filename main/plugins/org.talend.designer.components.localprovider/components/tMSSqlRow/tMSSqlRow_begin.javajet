@@ -34,6 +34,7 @@ imports="
 	    }
 	    
 		public void setURL(INode node) {
+            boolean useActiveDirectoryAuth = "true".equals(ElementParameterParser.getValue(node, "__ACTIVE_DIR_AUTH__"));
 		%>
 			String port_<%=cid%> = <%=dbport%>;
 		    String dbname_<%=cid%> = <%=dbname%> ;
@@ -64,6 +65,14 @@ imports="
 				}
 			%>
 		    }
+<%
+            if (driver.equals("MSSQL_PROP") && useActiveDirectoryAuth) {
+%>
+                url_<%=cid%> += ";encrypt=true;trustServerCertificate=false;hostNameInCertificate=*.database.windows.net;Authentication=ActiveDirectoryPassword";
+                url_<%=cid%> += ";database=" + <%=dbname%>;
+<%
+            }
+%>
 		    url_<%=cid%> += ";appName=" + projectName + ";" + <%=dbproperties%>;
 		<%
 		}

@@ -780,6 +780,7 @@ if(columnList != null && columnList.size() > 0) {
                     pstmt_<%=cid %>.addBatch();
                     nb_line_<%=cid%>++;
 
+						<%if(isEnableDebug){dbLog.data().sqlDebugPrint("globalMap.get(\""+cid+"_QUERY\")");}%>
                         <%dbLog.data().addingToBatch(dbLog.var("nb_line"), dbLog.str(dataAction));%>
                         <%
                         if (!("").equals(numPerInsert ) && !("0").equals(numPerInsert )) {
@@ -793,6 +794,7 @@ if(columnList != null && columnList.size() > 0) {
                     %>
                     try {
                         nb_line_<%=cid%>++;
+                        <%if(isEnableDebug){dbLog.data().sqlDebugPrint("globalMap.get(\""+cid+"_QUERY\")");}%>
                         insertedCount_<%=cid%> = insertedCount_<%=cid%> + pstmt_<%=cid %>.executeUpdate();
                         <%dbLog.data().inserting(dbLog.var("nb_line"));%>
                     } catch(java.lang.Exception e) {
@@ -870,6 +872,7 @@ if(columnList != null && columnList.size() > 0) {
                 %>
                 try {
                     nb_line_<%=cid%>++;
+                    <%if(isEnableDebug){dbLog.data().sqlDebugPrint("globalMap.get(\""+cid+"_QUERY\")");}%>
                     insertedCount_<%=cid%> = insertedCount_<%=cid%> + pstmt_<%=cid %>.executeUpdate();
                     <%dbLog.data().inserting(dbLog.var("nb_line"));%>
                 } catch(java.lang.Exception e) {
@@ -998,7 +1001,8 @@ if(columnList != null && columnList.size() > 0) {
             %>
             pstmt_<%=cid %>.addBatch();
             nb_line_<%=cid%>++;
-
+				
+				<%if(isEnableDebug){dbLog.data().sqlDebugPrint("globalMap.get(\""+cid+"_QUERY\")");}%>
                 <%dbLog.data().addingToBatch(dbLog.var("nb_line"), dbLog.str(dataAction));%>
                 <%
                 if (useBatchSize && !("").equals(batchSize) && !("0").equals(batchSize)) {
@@ -1012,6 +1016,7 @@ if(columnList != null && columnList.size() > 0) {
             %>
             try {
                 nb_line_<%=cid%>++;
+                <%if(isEnableDebug){dbLog.data().sqlDebugPrint("globalMap.get(\""+cid+"_QUERY\")");}%>
                 updatedCount_<%=cid%> = updatedCount_<%=cid%> + pstmt_<%=cid %>.executeUpdate();
                 <%dbLog.data().updating(dbLog.var("nb_line"));%>
             } catch(java.lang.Exception e) {
@@ -1169,6 +1174,7 @@ if(columnList != null && columnList.size() > 0) {
                 }
                 %>
                 try {
+                    <%if(isEnableDebug){dbLog.data().sqlDebugPrint("globalMap.get(\""+cid+"_QUERY\")");}%>
                     updatedCount_<%=cid%> = updatedCount_<%=cid%> + pstmtUpdate_<%=cid %>.executeUpdate();
                     nb_line_<%=cid%>++;
                     <%dbLog.data().updating(dbLog.var("nb_line"));%>
@@ -1240,6 +1246,7 @@ if(columnList != null && columnList.size() > 0) {
                 }
                 %>
                 try {
+                    <%if(isEnableDebug){dbLog.data().sqlDebugPrint("globalMap.get(\""+cid+"_QUERY\")");}%>
                     insertedCount_<%=cid%> = insertedCount_<%=cid%> + pstmtInsert_<%=cid %>.executeUpdate();
                     nb_line_<%=cid%>++;
                     <%dbLog.data().inserting(dbLog.var("nb_line"));%>
@@ -1413,11 +1420,13 @@ if(columnList != null && columnList.size() > 0) {
                     <%
                 }
                 %>
+                    <%if(isEnableDebug){dbLog.data().sqlDebugPrint("globalMap.get(\""+cid+"_QUERY\")");}%>
                     insertedCount_<%=cid%> = insertedCount_<%=cid%> + pstmtInsert_<%=cid %>.executeUpdate();
                     nb_line_<%=cid%>++;
                     <%dbLog.data().inserting(dbLog.var("nb_line"));%>
                 }else{
                     nb_line_<%=cid%>++;
+                    <%if(isEnableDebug){dbLog.data().sqlDebugPrint("globalMap.get(\""+cid+"_QUERY\")");}%>
                     <%dbLog.data().updating(dbLog.var("nb_line"));%>
              }
                 } catch(java.lang.Exception e) {
@@ -1502,6 +1511,8 @@ if(columnList != null && columnList.size() > 0) {
             %>
             pstmt_<%=cid %>.addBatch();
             nb_line_<%=cid%>++;
+            	
+            	<%if(isEnableDebug){dbLog.data().sqlDebugPrint("globalMap.get(\""+cid+"_QUERY\")");}%>
                 <%dbLog.data().addingToBatch(dbLog.var("nb_line"), dbLog.str(dataAction));%>
                 <%
                 if (useBatchSize && !("").equals(batchSize) && !("0").equals(batchSize)) {
@@ -1514,6 +1525,7 @@ if(columnList != null && columnList.size() > 0) {
             }else {
             %>
             try {
+                <%if(isEnableDebug){dbLog.data().sqlDebugPrint("globalMap.get(\""+cid+"_QUERY\")");}%>
                 deletedCount_<%=cid%> = deletedCount_<%=cid%> + pstmt_<%=cid %>.executeUpdate();
                 nb_line_<%=cid%>++;
                 <%dbLog.data().deleting(dbLog.var("nb_line"));%>
@@ -1587,6 +1599,7 @@ if(columnList != null && columnList.size() > 0) {
             %>
             int replaceCount_<%=cid%> = 0;
             try {
+                <%if(isEnableDebug){dbLog.data().sqlDebugPrint("globalMap.get(\""+cid+"_QUERY\")");}%>
                 replaceCount_<%=cid%> = pstmt_<%=cid %>.executeUpdate();
                 <%dbLog.data().replacing(null);%>
             } catch(java.lang.Exception e) {
@@ -1676,6 +1689,7 @@ if(columnList != null && columnList.size() > 0) {
             %>
             int count_on_duplicate_key_<%=cid%> = 0;
             try {
+                <%if(isEnableDebug){dbLog.data().sqlDebugPrint("globalMap.get(\""+cid+"_QUERY\")");}%>
                 count_on_duplicate_key_<%=cid%> = pstmt_<%=cid %>.executeUpdate();
                 <%dbLog.data().insertingOnDuplicateKeyUpdating(null);%>
             } catch(java.lang.Exception e) {
@@ -1746,6 +1760,7 @@ if(columnList != null && columnList.size() > 0) {
                 %>
                 try {
                     nb_line_<%=cid%>++;
+                    <%if(isEnableDebug){dbLog.data().sqlDebugPrint("globalMap.get(\""+cid+"_QUERY\")");}%>
                     insertedCount_<%=cid%> = insertedCount_<%=cid%> + pstmt_<%=cid %>.executeUpdate();
                     <%dbLog.data().insertingIgnore(dbLog.var("nb_line"));%>
                 } catch(java.lang.Exception e) {

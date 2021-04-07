@@ -10,14 +10,8 @@
 	<bean id="job" class="${className}" #if(${hasDestroyMethod})destroy-method="destroy"#end>
 
 #if (!$dataSources.isEmpty())
-		<property name="dataSources">
-			<map>
-#foreach ($alias in $dataSources)
-				<entry key="${alias}">
-					<reference interface="javax.sql.DataSource" filter="(osgi.jndi.service.name=${alias})" />
-				</entry>
-#end ## end data sources aliases loop
-			</map>
+		<property name="dataSourceReferences">
+		    <ref component-id="dataSourceReferenceList" /> 
 		</property>
 #end
 	</bean>
@@ -44,5 +38,8 @@
 #end
 		</service-properties>
 	</service>
-
+	
+#if (!$dataSources.isEmpty())
+	<reference-list id="dataSourceReferenceList" member-type="service-reference" interface="javax.sql.DataSource" />
+#end
 </blueprint>

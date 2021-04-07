@@ -13,13 +13,10 @@
 package org.talend.repository;
 
 import java.beans.PropertyChangeEvent;
-import java.io.File;
-import java.io.IOException;
-import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -51,6 +48,7 @@ import org.talend.commons.CommonsPlugin;
 import org.talend.commons.exception.BusinessException;
 import org.talend.commons.exception.CommonExceptionHandler;
 import org.talend.commons.exception.ExceptionHandler;
+import org.talend.commons.exception.InformException;
 import org.talend.commons.exception.LoginException;
 import org.talend.commons.exception.OperationCancelException;
 import org.talend.commons.exception.PersistenceException;
@@ -59,7 +57,6 @@ import org.talend.commons.runtime.model.components.IComponentConstants;
 import org.talend.commons.ui.gmf.util.DisplayUtils;
 import org.talend.commons.ui.runtime.exception.MessageBoxExceptionHandler;
 import org.talend.commons.utils.PasswordHelper;
-import org.talend.commons.utils.io.FilesUtils;
 import org.talend.commons.utils.system.EclipseCommandLine;
 import org.talend.core.CorePlugin;
 import org.talend.core.GlobalServiceRegister;
@@ -71,6 +68,7 @@ import org.talend.core.language.ECodeLanguage;
 import org.talend.core.model.action.DisableLanguageActions;
 import org.talend.core.model.components.IComponentsFactory;
 import org.talend.core.model.general.ConnectionBean;
+import org.talend.core.model.general.ModuleNeeded;
 import org.talend.core.model.general.Project;
 import org.talend.core.model.metadata.IMetadataConnection;
 import org.talend.core.model.metadata.builder.connection.DatabaseConnection;
@@ -79,15 +77,13 @@ import org.talend.core.model.metadata.builder.connection.MetadataTable;
 import org.talend.core.model.metadata.builder.connection.SAPConnection;
 import org.talend.core.model.metadata.builder.connection.SAPFunctionUnit;
 import org.talend.core.model.migration.IMigrationToolService;
-import org.talend.core.model.process.IContext;
 import org.talend.core.model.process.IContextManager;
 import org.talend.core.model.process.IContextParameter;
 import org.talend.core.model.process.IElementParameter;
 import org.talend.core.model.process.INode;
 import org.talend.core.model.properties.ContextItem;
 import org.talend.core.model.properties.Item;
-import org.talend.core.model.properties.ProcessItem;
-import org.talend.core.model.properties.Property;
+import org.talend.core.model.properties.PropertiesFactory;
 import org.talend.core.model.properties.RulesItem;
 import org.talend.core.model.properties.SAPConnectionItem;
 import org.talend.core.model.properties.SQLPatternItem;
@@ -109,19 +105,17 @@ import org.talend.core.repository.model.RepositoryFactoryProvider;
 import org.talend.core.repository.model.repositoryObject.SalesforceModuleRepositoryObject;
 import org.talend.core.repository.utils.ProjectHelper;
 import org.talend.core.repository.utils.RepositoryPathProvider;
-import org.talend.core.runtime.process.ITalendProcessJavaProject;
+import org.talend.core.runtime.util.SharedStudioUtils;
+import org.talend.core.services.ICoreTisService;
 import org.talend.core.services.IGITProviderService;
 import org.talend.core.services.ISVNProviderService;
 import org.talend.core.ui.branding.IBrandingService;
 import org.talend.core.ui.component.ComponentsFactoryProvider;
 import org.talend.core.ui.services.IRulesProviderService;
 import org.talend.cwm.helper.ModelElementHelper;
-import org.talend.designer.runprocess.IProcessor;
 import org.talend.designer.runprocess.IRunProcessService;
-import org.talend.designer.runprocess.ProcessorException;
 import org.talend.metadata.managment.ui.model.ProjectNodeHelper;
 import org.talend.metadata.managment.ui.utils.DBConnectionContextUtils;
-import org.talend.repository.documentation.ExportFileResource;
 import org.talend.repository.i18n.Messages;
 import org.talend.repository.model.IProxyRepositoryFactory;
 import org.talend.repository.model.IRepositoryNode;
@@ -144,12 +138,9 @@ import org.talend.repository.ui.login.LoginHelper;
 import org.talend.repository.ui.login.connections.ConnectionUserPerReader;
 import org.talend.repository.ui.login.connections.network.NetworkErrorRetryDialog;
 import org.talend.repository.ui.utils.ColumnNameValidator;
+import org.talend.repository.ui.utils.Log4jPrefsSettingManager;
+import org.talend.repository.ui.utils.UpdateLog4jJarUtils;
 import org.talend.repository.ui.views.IRepositoryView;
-import org.talend.repository.ui.wizards.exportjob.JavaJobScriptsExportWSWizardPage.JobExportType;
-import org.talend.repository.ui.wizards.exportjob.scriptsmanager.JobJavaScriptsManager;
-import org.talend.repository.ui.wizards.exportjob.scriptsmanager.JobScriptsManager;
-import org.talend.repository.ui.wizards.exportjob.scriptsmanager.JobScriptsManager.ExportChoice;
-import org.talend.repository.ui.wizards.exportjob.scriptsmanager.JobScriptsManagerFactory;
 import org.talend.utils.json.JSONException;
 import org.talend.utils.json.JSONObject;
 
@@ -334,6 +325,28 @@ public class RepositoryService implements IRepositoryService, IRepositoryContext
             logged = LoginHelper.getInstance().loginAuto();
         }
         if (!logged) {
+            if (ArrayUtils.contains(Platform.getApplicationArgs(), EclipseCommandLine.LOGIN_ONLINE_UPDATE) && !SharedStudioUtils.isSharedStudioMode()) {
+                ICoreTisService tisService = ICoreTisService.get();
+                if (tisService != null) {
+                    LoginHelper loginHelper = LoginHelper.getInstance();
+                    ConnectionBean connBean = loginHelper.getCurrentSelectedConnBean();
+                    try {
+                        User user = PropertiesFactory.eINSTANCE.createUser();
+                        user.setLogin(connBean.getUser());
+                        user.setPassword(connBean.getPassword().getBytes(StandardCharsets.UTF_8));
+                        LoginHelper.setRepositoryContextInContext(connBean, user, null, null);
+                        tisService.downLoadAndInstallUpdates(connBean.getUser(), connBean.getPassword(),
+                                LoginHelper.getAdminURL(connBean));
+                        tisService.setNeedResartAfterUpdate(true);
+                        LoginHelper.isRestart = true;
+                        EclipseCommandLine.updateOrCreateExitDataPropertyWithCommand(EclipseCommandLine.LOGIN_ONLINE_UPDATE, null,
+                                true, true);
+                        return true;
+                    } catch (Throwable e) {
+                        ExceptionHandler.process(e);
+                    }
+                }
+            }
             LoginDialogV2 loginDialog = new LoginDialogV2(shell);
             logged = (loginDialog.open() == LoginDialogV2.OK);
         }
@@ -499,6 +512,9 @@ public class RepositoryService implements IRepositoryService, IRepositoryContext
                         }
 
                     });
+                } else if (e instanceof InformException) {
+                    Display.getDefault().syncExec(() -> MessageDialog.openInformation(Display.getDefault().getActiveShell(),
+                            Messages.getString("LoginDialog.logonDenyTitle"), e.getLocalizedMessage()));
                 } else {
                     MessageBoxExceptionHandler.process(e, DisplayUtils.getDefaultShell(false));
                 }
@@ -822,57 +838,6 @@ public class RepositoryService implements IRepositoryService, IRepositoryContext
         return true;
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see org.talend.repository.model.IRepositoryService#exportPigudf(org.talend.designer.runprocess.IProcessor,
-     * org.talend.core.model.properties.Property, int, int)
-     */
-    @Override
-    public String exportPigudf(IProcessor processor, Property property, boolean isExport) throws ProcessorException {
-        // build java project
-        ITalendProcessJavaProject pigudfProject = CorePlugin.getDefault().getRunProcessService().getTalendCodeJavaProject(ERepositoryObjectType.PIG_UDF);
-        try {
-            pigudfProject.buildModules(new NullProgressMonitor(), null, null);
-        } catch (Exception e) {
-            throw new ProcessorException(e.getMessage());
-        }
-
-        Map<ExportChoice, Object> exportChoiceMap = new EnumMap<ExportChoice, Object>(ExportChoice.class);
-        exportChoiceMap.put(ExportChoice.needPigudf, true);
-        ProcessItem processItem = (ProcessItem) property.getItem();
-        ExportFileResource fileResource = new ExportFileResource(processItem, property.getLabel());
-        ExportFileResource[] exportFileResources = new ExportFileResource[] { fileResource };
-
-        IContext context = processor.getContext();
-        String contextName = "Default";//$NON-NLS-1$
-        if (context != null) {
-            contextName = context.getName();
-        }
-        JobScriptsManager jobScriptsManager = JobScriptsManagerFactory.createManagerInstance(exportChoiceMap, contextName,
-                JobScriptsManager.ALL_ENVIRONMENTS, -1, -1, JobExportType.POJO);
-        URL url = jobScriptsManager.getExportPigudfResources(exportFileResources);
-
-        if (url == null) {
-            return null;
-        }
-        File file = new File(url.getFile());
-        // String librariesPath = LibrariesManagerUtils.getLibrariesPath(ECodeLanguage.JAVA) + "/";
-        String librariesPath = processor.getCodeProject().getLocation() + "/lib/"; //$NON-NLS-1$
-        String targetFileName = JobJavaScriptsManager.USERPIGUDF_JAR;
-        if (!isExport) {
-            targetFileName = property.getLabel() + '_' + property.getVersion() + '_' + JobJavaScriptsManager.USERPIGUDF_JAR;
-        }
-        File target = new File(librariesPath + targetFileName);
-        try {
-            FilesUtils.copyFile(file, target);
-        } catch (IOException e) {
-            throw new ProcessorException(e.getMessage());
-        }
-        return targetFileName;
-
-    }
-
     @Override
     public RepositoryNode getRepNodeFromRepReviewDialog(Shell parentShell, ERepositoryObjectType type, String repositoryType) {
         RepositoryReviewDialog dialog = new RepositoryReviewDialog(parentShell, type, repositoryType);
@@ -889,7 +854,7 @@ public class RepositoryService implements IRepositoryService, IRepositoryContext
     }
 
     @Override
-    public List<String> getProjectBranch(Project project) {
+    public List<String> getProjectBranch(Project project, boolean onlyLocalIfPossible) {
         List<String> branchesList = new ArrayList<String>();
         if (!isInitedProviderService) {
             initProviderService();
@@ -904,7 +869,7 @@ public class RepositoryService implements IRepositoryService, IRepositoryContext
                     }
                 }
                 if (!project.isLocal() && gitProviderService != null && gitProviderService.isGITProject(project)) {
-                    branchesList.addAll(Arrays.asList(gitProviderService.getBranchList(project)));
+                    branchesList.addAll(Arrays.asList(gitProviderService.getBranchList(project, onlyLocalIfPossible)));
                 }
             } catch (PersistenceException e) {
                 CommonExceptionHandler.process(e);
@@ -1034,4 +999,15 @@ public class RepositoryService implements IRepositoryService, IRepositoryContext
             ((RepoViewCommonNavigator) repView).setShouldCheckRepositoryDirty(shouldFlag);
         }
     }
+
+    @Override
+    public boolean isProjectLevelLog4j2() {
+        return Log4jPrefsSettingManager.getInstance().isSelectLog4j2();
+    }
+
+    @Override
+    public List<ModuleNeeded> getLog4j2Modules() {
+        return UpdateLog4jJarUtils.getLog4j2Modules();
+    }
+
 }

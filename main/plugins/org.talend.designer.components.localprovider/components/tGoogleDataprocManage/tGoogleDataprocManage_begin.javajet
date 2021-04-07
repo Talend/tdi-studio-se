@@ -24,6 +24,9 @@
 	String action = ElementParameterParser.getValue(node, "__ACTION__");
 	String version = ElementParameterParser.getValue(node, "__CLUSTER_VERSION__");
 	String zone = ElementParameterParser.getValue(node, "__ZONE__");
+	String region = ElementParameterParser.getValue(node, "__REGION__");
+	boolean internalIpOnly = ElementParameterParser.getBooleanValue(node, "__ONLY_INTERNAL_IP_ADDRESSES__");
+
 	
 	String masterNumInstances = ElementParameterParser.getValue(node, "__MASTER_NUM_INSTANCES__");
 	String masterInstanceType = ElementParameterParser.getValue(node, "__MASTER_INSTANCE_TYPE__");
@@ -49,6 +52,7 @@
 	List<Map<String, String>> tags = (List<Map<String, String>>) ElementParameterParser.getObjectValue(node, "__TAGS__");
 %>
 
+    final String region_<%=cid %> = <%=region%>;
 <%
 	if("START".equals(action)) {
 %>
@@ -67,11 +71,16 @@
 <%
 		}
 %>
-		org.talend.bigdata.manage.google.dataproc.DataprocCreateCluster.newBuilder() //
+        final String zone_<%=cid %> = <%=zone%>;
+
+        if (!"global".equals(region_<%=cid %>) && !zone_<%=cid %>.startsWith(region_<%=cid %>)) {
+            throw new IllegalArgumentException("Selected zone should fit for the selected region");
+        }
+        org.talend.bigdata.manage.google.dataproc.DataprocCreateCluster.newBuilder() //
          .withProjectId(<%=projectId%>) //
-			.withClusterName(<%=clusterId%>) //
-         .withRegion("global") //
-         .withZone(<%=zone%>) //
+         .withClusterName(<%=clusterId%>) //
+         .withRegion(region_<%=cid %>) //
+         .withZone(zone_<%=cid %>) //
          .withVersion(<%=version%>) //
          .withMasterNumInstances(<%=masterNumInstances%>) //
          .withMasterBootDiskSizeGb(<%=masterDiskSize%>) //
@@ -100,6 +109,7 @@
 <%
 			}
 %>
+         .withInternalIpOnly(<%=internalIpOnly%>)
          .withInitializationActions(<%=cid%>_initializationActions) //
          .withTags(<%=cid%>_tags) //
          .build() //
@@ -109,8 +119,8 @@
 %>
 		org.talend.bigdata.manage.google.dataproc.DataprocDeleteCluster.newBuilder() //
          .withProjectId(<%=projectId%>) //
-			.withClusterName(<%=clusterId%>) //
-			.withRegion("global") //
+         .withClusterName(<%=clusterId%>) //
+         .withRegion(region_<%=cid %>) //
          .withTalendJobName(projectName + "_" + jobName + "_" + jobVersion.replace(".","_") + "_" + pid) //
 <%
 			if(useServiceAccount) {

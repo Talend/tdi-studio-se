@@ -27,11 +27,7 @@ imports="
 	String query_<%=cid %> = "";
 	boolean whetherReject_<%=cid%> = false;
 <%
-    if ("SSO".equals(ElementParameterParser.getValue(node, "__JDBC_URL__"))){
-		dbRowBeginUtil.createConnection(node, false);
-	} else {
-		dbRowBeginUtil.createConnection(node);
-	}
+    dbRowBeginUtil.createConnection(node);
 %>
     resourceMap.put("conn_<%=cid%>", conn_<%=cid%>);
 <%

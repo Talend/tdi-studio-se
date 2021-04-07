@@ -32,6 +32,7 @@ import org.talend.designer.dbmap.model.emf.dbmap.DbmapPackage;
  * <!-- end-user-doc -->
  * <p>
  * The following features are implemented:
+ * </p>
  * <ul>
  *   <li>{@link org.talend.designer.dbmap.model.emf.dbmap.impl.AbstractDBDataMapTableImpl#getName <em>Name</em>}</li>
  *   <li>{@link org.talend.designer.dbmap.model.emf.dbmap.impl.AbstractDBDataMapTableImpl#isMinimized <em>Minimized</em>}</li>
@@ -39,7 +40,6 @@ import org.talend.designer.dbmap.model.emf.dbmap.DbmapPackage;
  *   <li>{@link org.talend.designer.dbmap.model.emf.dbmap.impl.AbstractDBDataMapTableImpl#getDBMapperTableEntries <em>DB Mapper Table Entries</em>}</li>
  *   <li>{@link org.talend.designer.dbmap.model.emf.dbmap.impl.AbstractDBDataMapTableImpl#getTableName <em>Table Name</em>}</li>
  * </ul>
- * </p>
  *
  * @generated
  */
@@ -372,7 +372,7 @@ public class AbstractDBDataMapTableImpl extends EObjectImpl implements AbstractD
     public String toString() {
         if (eIsProxy()) return super.toString();
 
-        StringBuffer result = new StringBuffer(super.toString());
+        StringBuilder result = new StringBuilder(super.toString());
         result.append(" (name: ");
         result.append(name);
         result.append(", minimized: ");

@@ -17,6 +17,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.talend.commons.runtime.xml.XmlUtil;
 import org.talend.commons.ui.gmf.util.DisplayUtils;
@@ -58,8 +59,6 @@ import org.talend.core.model.properties.ContextItem;
 import org.talend.core.model.properties.Item;
 import org.talend.core.model.properties.SAPConnectionItem;
 import org.talend.core.model.utils.TalendTextUtils;
-import org.talend.core.runtime.maven.MavenArtifact;
-import org.talend.core.runtime.maven.MavenUrlHelper;
 import org.talend.core.runtime.services.IGenericWizardService;
 import org.talend.core.service.IJsonFileService;
 import org.talend.core.utils.TalendQuoteUtils;
@@ -357,6 +356,11 @@ public class ChangeValuesFromRepository extends ChangeMetadataCommand {
                     param.setRepositoryValue(repositoryValue);
                     param.setRepositoryValueUsed(true);
                 }
+                if (!isJDBCRepValue && connection instanceof DatabaseConnection
+                        && EParameterFieldType.MAPPING_TYPE.equals(param.getFieldType())
+                        && StringUtils.equals(EParameterName.MAPPING.getName(), param.getName())) {
+                    repositoryValue = param.getName();
+                }
                 if (repositoryValue == null
                         || param.getRepositoryProperty() != null && !param.getRepositoryProperty().equals(propertyParamName)) {
                     continue;
@@ -443,7 +447,7 @@ public class ChangeValuesFromRepository extends ChangeMetadataCommand {
                     if (objectValue != null) {
                         oldValues.put(param.getName(), param.getValue());
                         if (param.getFieldType().equals(EParameterFieldType.CLOSED_LIST)
-                                && param.getRepositoryValue().equals("TYPE")) { //$NON-NLS-1$
+                                && "TYPE".equals(param.getRepositoryValue())) { //$NON-NLS-1$
                             String dbVersion = "";
                             if (connection instanceof DatabaseConnection) {
                                 dbVersion = ((DatabaseConnection) connection).getDbVersionString();
@@ -503,7 +507,7 @@ public class ChangeValuesFromRepository extends ChangeMetadataCommand {
                             JobSettingVersionUtil.setDbVersion(elementParameter, dbVersion, false);
                             DesignerUtilities.setSchemaDB(elementParameter2, param.getValue());
                         } else if (param.getFieldType().equals(EParameterFieldType.CLOSED_LIST)
-                                && param.getRepositoryValue().equals("FRAMEWORK_TYPE")) { //$NON-NLS-1$
+                                && "FRAMEWORK_TYPE".equals(param.getRepositoryValue())) { //$NON-NLS-1$
                             String[] list = param.getListItemsDisplayName();
                             for (int i = 0; i < list.length; i++) {
                                 if (objectValue.equals(list[i])) {
@@ -511,7 +515,7 @@ public class ChangeValuesFromRepository extends ChangeMetadataCommand {
                                 }
                             }
                         } else if (param.getFieldType().equals(EParameterFieldType.CLOSED_LIST)
-                                && param.getRepositoryValue().equals("EDI_VERSION")) {
+                                && "EDI_VERSION".equals(param.getRepositoryValue())) {
                             String[] list = param.getListItemsDisplayName();
                             for (String element : list) {
                                 if (objectValue.toString().toUpperCase().equals(element)) {
@@ -519,7 +523,7 @@ public class ChangeValuesFromRepository extends ChangeMetadataCommand {
                                 }
                             }
                         } else if (param.getFieldType().equals(EParameterFieldType.CLOSED_LIST)
-                                && param.getRepositoryValue().equals("DRIVER")) {
+                                && "DRIVER".equals(param.getRepositoryValue())) {
                             String[] list = param.getListItemsDisplayCodeName();
                             for (String element : list) {
                                 if (objectValue.toString().toUpperCase().equals(element)) {
@@ -527,7 +531,7 @@ public class ChangeValuesFromRepository extends ChangeMetadataCommand {
                                 }
                             }
                         } else if (param.getFieldType().equals(EParameterFieldType.CLOSED_LIST)
-                                && param.getRepositoryValue().equals("CONNECTION_MODE")) {//$NON-NLS-1$
+                                && "CONNECTION_MODE".equals(param.getRepositoryValue())) {//$NON-NLS-1$
                             if (!objectValue.equals(param.getValue())) {
                                 PropertyChangeCommand cmd = new PropertyChangeCommand(elem, "CONNECTION_MODE", objectValue);//$NON-NLS-1$
                                 cmd.execute();
@@ -612,12 +616,7 @@ public class ChangeValuesFromRepository extends ChangeMetadataCommand {
                                         Map map = new HashMap();
                                         String driver = String.valueOf(((Map) value).get("drivers"));
                                         if (driver != null) {
-                                            MavenArtifact artifact = MavenUrlHelper
-                                                    .parseMvnUrl(TalendTextUtils.removeQuotes(driver));
-                                            if (artifact != null) {
-                                                driver = artifact.getFileName();
-                                            }
-                                            map.put("JAR_NAME", driver);
+                                            map.put("JAR_NAME", TalendTextUtils.removeQuotes(driver));
                                             newValue.add(map);
                                         }
                                     }
@@ -625,11 +624,20 @@ public class ChangeValuesFromRepository extends ChangeMetadataCommand {
                                 objectValue = newValue;
                             }
 
+                            /**
+                             * For tCreateTable, several parameter have the same repository value
+                             * (e.g.DB_MYSQL_VERSION/DB_POSTGRE_VERSION/...=>DB_VERSION), avoid to set all...
+                             */
+                            if (EParameterName.DB_VERSION.getName().equals(param.getRepositoryValue())
+                                    && !param.isShow(elem.getElementParameters())) {
+                                continue;
+                            }
+
                             elem.setPropertyValue(param.getName(), objectValue);
                         }
                         param.setRepositoryValueUsed(true);
-                    } else if (param.getFieldType().equals(EParameterFieldType.TABLE)
-                            && param.getRepositoryValue().equals("XML_MAPPING")) { //$NON-NLS-1$
+                    } else if (EParameterFieldType.TABLE.equals(param.getFieldType())
+                            && "XML_MAPPING".equals(param.getRepositoryValue())) { //$NON-NLS-1$
 
                         List<Map<String, Object>> table = (List<Map<String, Object>>) elem.getPropertyValue(param.getName());
                         if (((Node) elem).getMetadataList().size() > 0) {
@@ -639,7 +647,7 @@ public class ChangeValuesFromRepository extends ChangeMetadataCommand {
                             param.setRepositoryValueUsed(true);
                         }
                     } else if (param.getFieldType().equals(EParameterFieldType.TABLE)
-                            && param.getRepositoryValue().equals("WSDL_PARAMS") && connection != null) { //$NON-NLS-1$
+                            && "WSDL_PARAMS".equals(param.getRepositoryValue()) && connection != null) { //$NON-NLS-1$
                         List<Map<String, Object>> table = (List<Map<String, Object>>) elem.getPropertyValue(param.getName());
                         table.clear();
                         ArrayList parameters = ((WSDLSchemaConnection) connection).getParameters();
@@ -672,6 +680,8 @@ public class ChangeValuesFromRepository extends ChangeMetadataCommand {
 
                     if (param.isRepositoryValueUsed()) {
                         if (("GENERATION_MODE").equals(param.getName())) {
+                            param.setReadOnly(true);
+                        } else if (isJDBCRepValue && "MAPPING".equals(param.getName())) {
                             param.setReadOnly(true);
                         } else {
                             param.setReadOnly(false);

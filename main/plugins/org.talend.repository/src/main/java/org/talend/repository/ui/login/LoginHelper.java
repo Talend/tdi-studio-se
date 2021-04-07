@@ -36,8 +36,9 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.PlatformUI;
 import org.talend.commons.CommonsPlugin;
-import org.talend.commons.exception.BusinessException;
+import org.talend.commons.exception.ClientException;
 import org.talend.commons.exception.CommonExceptionHandler;
+import org.talend.commons.exception.InformException;
 import org.talend.commons.exception.LoginException;
 import org.talend.commons.exception.OperationCancelException;
 import org.talend.commons.exception.PersistenceException;
@@ -73,7 +74,6 @@ import org.talend.repository.RepositoryPlugin;
 import org.talend.repository.i18n.Messages;
 import org.talend.repository.model.IRepositoryService;
 import org.talend.repository.model.RepositoryConstants;
-import org.talend.repository.ui.dialog.OverTimePopupDialogTask;
 import org.talend.repository.ui.login.AbstractLoginActionPage.ErrorManager;
 import org.talend.repository.ui.login.connections.ConnectionUserPerReader;
 import org.talend.utils.json.JSONException;
@@ -463,7 +463,10 @@ public class LoginHelper {
             }
             List<String> branches = null;
             try {
-                branches = getProjectBranches(lastUsedProject);
+                /**
+                 * Auto login, means there should be local repository
+                 */
+                branches = getProjectBranches(lastUsedProject, true);
             } catch (JSONException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
@@ -482,6 +485,10 @@ public class LoginHelper {
     }
 
     public boolean logIn(ConnectionBean connBean, final Project project) {
+        return logIn(connBean, project, null);
+    }
+
+    public boolean logIn(ConnectionBean connBean, final Project project, ErrorManager errorManager) {
         final ProxyRepositoryFactory factory = ProxyRepositoryFactory.getInstance();
         final boolean needRestartForLocal = needRestartForLocal(connBean);
         if (connBean == null || project == null || project.getLabel() == null) {
@@ -514,17 +521,18 @@ public class LoginHelper {
         prefManipulator.setLastProject(project.getTechnicalLabel());
         saveLastConnBean(connBean);
 
+
         try {
             if (GlobalServiceRegister.getDefault().isServiceRegistered(ICoreTisService.class)) {
-                final ICoreTisService service = (ICoreTisService) GlobalServiceRegister.getDefault().getService(
-                        ICoreTisService.class);
+                final ICoreTisService service = (ICoreTisService) GlobalServiceRegister.getDefault()
+                        .getService(ICoreTisService.class);
                 if (service != null) {// if in TIS then update the bundle status according to the project type
                     if (!service.validProject(project, needRestartForLocal)) {
                         isRestart = true;
                         return true;
                     }
-                }// else not in TIS so ignor caus we may not have a licence so we do not know which bundles belong to
-                 // DI, DQ or MDM
+                } // else not in TIS so ignor caus we may not have a licence so we do not know which bundles belong to
+                  // DI, DQ or MDM
             }
         } catch (PersistenceException e) {
             CommonExceptionHandler.process(e);
@@ -569,6 +577,14 @@ public class LoginHelper {
                     }
 
                 });
+            } else if (e.getTargetException() instanceof InformException) {
+                Display.getDefault().syncExec(() -> MessageDialog.openInformation(Display.getDefault().getActiveShell(),
+                        Messages.getString("LoginDialog.logonDenyTitle"), e.getTargetException().getLocalizedMessage()));
+            } else if (isAuthorizationException(e.getTargetException()) && errorManager != null) {
+                errorManager.setHasAuthException(true);
+                errorManager.setAuthException(e.getTargetException());
+                errorManager.setErrMessage(
+                        Messages.getString("LoginComposite.errorMessages1") + ":\n" + e.getTargetException().getMessage());//$NON-NLS-1$ //$NON-NLS-2$
             } else {
                 MessageBoxExceptionHandler.process(e.getTargetException(), getUsableShell());
             }
@@ -588,6 +604,17 @@ public class LoginHelper {
         }
 
         return true;
+    }
+
+    public static boolean isAuthorizationException(Throwable exception) {
+        boolean flag = false;
+        if (exception instanceof ClientException) {
+            ClientException e = (ClientException) exception;
+            if (e.getHttpCode() != null && e.getHttpCode() == 401) {
+                flag = true;
+            }
+        }
+        return flag;
     }
 
     public void saveUpdateStatus(Project project) throws JSONException {
@@ -661,6 +688,7 @@ public class LoginHelper {
         if (connBean == null) {
             return null;
         }
+        Thread retrieveProjectThread = Thread.currentThread();
         Project[] projects = null;
         if (connBean != null) {
             String user2 = connBean.getUser();
@@ -686,6 +714,9 @@ public class LoginHelper {
         if (!connBean.isComplete()) {
             return projects;
         }
+        if (retrieveProjectThread.isInterrupted()) {
+            return null;
+        }
 
         boolean initialized = false;
 
@@ -697,51 +728,64 @@ public class LoginHelper {
                 String warnings = e.getMessage();
                 if (warnings != null && !warnings.equals(lastWarnings)) {
                     lastWarnings = warnings;
-                    if (errorManager != null) {
-                        errorManager.setWarnMessage(warnings);
-                    } else {
-                        final Shell shell = DisplayUtils.getDefaultShell(false);
-                        MessageDialog.openWarning(shell, Messages.getString("LoginComposite.warningTitle"), warnings); //$NON-NLS-1$
+                    if (retrieveProjectThread.isInterrupted()) {
+                        return null;
                     }
+                    Display.getDefault().syncExec(() -> {
+                        if (retrieveProjectThread.isInterrupted()) {
+                            return;
+                        }
+                        if (errorManager != null) {
+                            errorManager.setWarnMessage(warnings);
+                        } else {
+                            final Shell shell = DisplayUtils.getDefaultShell(false);
+                            MessageDialog.openWarning(shell, Messages.getString("LoginComposite.warningTitle"), warnings); //$NON-NLS-1$
+                        }
+                    });
                 }
             }
 
-            OverTimePopupDialogTask<Boolean> overTimePopupDialogTask = new OverTimePopupDialogTask<Boolean>() {
-
-                @Override
-                public Boolean run() throws Throwable {
-                    ProxyRepositoryFactory.getInstance().initialize();
-                    return null;
-                }
-            };
-            overTimePopupDialogTask.setNeedWaitingProgressJob(false);
-            overTimePopupDialogTask.runTask();
+            if (retrieveProjectThread.isInterrupted()) {
+                return null;
+            }
+            ProxyRepositoryFactory.getInstance().initialize();
+            if (retrieveProjectThread.isInterrupted()) {
+                return null;
+            }
 
             initialized = true;
         } catch (Throwable e) {
-            projects = new Project[0];
-            if (errorManager != null) {
-                errorManager.setErrMessage(Messages.getString("LoginComposite.errorMessages1") + newLine + e.getMessage());//$NON-NLS-1$
-            } else {
-                final Shell shell = DisplayUtils.getDefaultShell(false);
-                MessageDialog.openError(shell, Messages.getString("LoginComposite.warningTitle"), //$NON-NLS-1$
-                        Messages.getString("LoginComposite.errorMessages1") + newLine + e.getMessage()); //$NON-NLS-1$
+            if (retrieveProjectThread.isInterrupted()) {
+                return null;
             }
+            if (isAuthorizationException(e)) {
+                errorManager.setHasAuthException(true);
+                errorManager.setAuthException(e);
+            }
+            projects = new Project[0];
+            Display.getDefault().syncExec(() -> {
+                if (retrieveProjectThread.isInterrupted()) {
+                    return;
+                }
+                if (errorManager != null) {
+                    errorManager.setErrMessage(Messages.getString("LoginComposite.errorMessages1") + newLine + e.getMessage());//$NON-NLS-1$
+                } else {
+                    final Shell shell = DisplayUtils.getDefaultShell(false);
+                    MessageDialog.openError(shell, Messages.getString("LoginComposite.warningTitle"), //$NON-NLS-1$
+                            Messages.getString("LoginComposite.errorMessages1") + newLine + e.getMessage()); //$NON-NLS-1$
+                }
+            });
         }
 
         if (initialized) {
             try {
-
-                OverTimePopupDialogTask<Project[]> overTimePopupDialogTask = new OverTimePopupDialogTask<Project[]>() {
-
-                    @Override
-                    public Project[] run() throws Throwable {
-                        return ProxyRepositoryFactory.getInstance().readProject();
-                    }
-                };
-                overTimePopupDialogTask.setNeedWaitingProgressJob(false);
-                projects = overTimePopupDialogTask.runTask();
-
+                if (retrieveProjectThread.isInterrupted()) {
+                    return null;
+                }
+                projects = ProxyRepositoryFactory.getInstance().readProject();
+                if (retrieveProjectThread.isInterrupted()) {
+                    return null;
+                }
                 Arrays.sort(projects, new Comparator<Project>() {
 
                     @Override
@@ -750,41 +794,42 @@ public class LoginHelper {
                     }
 
                 });
-            } catch (PersistenceException e) {
-                projects = new Project[0];
-                if (errorManager != null) {
-                    errorManager.setErrMessage(Messages.getString("LoginComposite.errorMessages1") + newLine + e.getMessage());//$NON-NLS-1$
-                } else {
-                    MessageDialog.openError(getUsableShell(), Messages.getString("LoginComposite.errorTitle"), //$NON-NLS-1$
-                            Messages.getString("LoginComposite.errorMessages1") + newLine + e.getMessage()); //$NON-NLS-1$
-                }
-            } catch (BusinessException e) {
-                projects = new Project[0];
-                if (errorManager != null) {
-                    errorManager.setErrMessage(Messages.getString("LoginComposite.errorMessages1") + newLine + e.getMessage());//$NON-NLS-1$
-                } else {
-                    MessageDialog.openError(getUsableShell(), Messages.getString("LoginComposite.errorTitle"), //$NON-NLS-1$
-                            Messages.getString("LoginComposite.errorMessages1") + newLine + e.getMessage()); //$NON-NLS-1$
-                }
             } catch (Throwable e) {
                 projects = new Project[0];
-                if (errorManager != null) {
-                    errorManager.setErrMessage(Messages.getString("LoginComposite.errorMessages1") + newLine + e.getMessage());//$NON-NLS-1$
-                } else {
-                    MessageDialog.openError(getUsableShell(), Messages.getString("LoginComposite.errorTitle"), //$NON-NLS-1$
-                            Messages.getString("LoginComposite.errorMessages1") + newLine + e.getMessage()); //$NON-NLS-1$
+                if (retrieveProjectThread.isInterrupted()) {
+                    return null;
                 }
+                Display.getDefault().syncExec(() -> {
+                    if (retrieveProjectThread.isInterrupted()) {
+                        return;
+                    }
+                    if (errorManager != null) {
+                        errorManager
+                                .setErrMessage(Messages.getString("LoginComposite.errorMessages1") + newLine + e.getMessage());//$NON-NLS-1$
+                    } else {
+                        MessageDialog.openError(getUsableShell(), Messages.getString("LoginComposite.errorTitle"), //$NON-NLS-1$
+                                Messages.getString("LoginComposite.errorMessages1") + newLine + e.getMessage()); //$NON-NLS-1$
+                    }
+                });
             }
         }
 
         return projects;
     }
 
-    public List<String> getProjectBranches(Project p) throws JSONException {
+    /**
+     * get branches of project
+     * 
+     * @param p
+     * @param onlyLocalIfPossible try to only get branches from local repository to improve performance
+     * @return
+     * @throws JSONException
+     */
+    public List<String> getProjectBranches(Project p, boolean onlyLocalIfPossible) throws JSONException {
         IRepositoryService repositoryService = (IRepositoryService) GlobalServiceRegister.getDefault()
                 .getService(IRepositoryService.class);
         if (repositoryService != null) {
-            return repositoryService.getProjectBranch(p);
+            return repositoryService.getProjectBranch(p, onlyLocalIfPossible);
         }
         return Collections.EMPTY_LIST;
     }

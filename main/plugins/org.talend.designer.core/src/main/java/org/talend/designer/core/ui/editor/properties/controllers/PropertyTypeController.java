@@ -63,6 +63,7 @@ import org.talend.core.model.utils.ContextParameterUtils;
 import org.talend.core.model.utils.TalendTextUtils;
 import org.talend.core.repository.RepositoryComponentManager;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
+import org.talend.core.runtime.services.IGenericWizardService;
 import org.talend.core.ui.properties.tab.IDynamicProperty;
 import org.talend.designer.core.i18n.Messages;
 import org.talend.designer.core.model.components.EParameterName;
@@ -161,6 +162,10 @@ public class PropertyTypeController extends AbstractRepositoryController {
         String componentName = node.getComponent().getName();
         String repositoryValue = param.getRepositoryValue();
         boolean isHDFSRepVal = repositoryValue != null && repositoryValue.contains("HDFS"); //$NON-NLS-1$
+        String compDefName = getDefinitionNameIfAdditionalJDBC(node);
+        if (StringUtils.isNotBlank(compDefName)) {
+            componentName = compDefName;
+        }
         return !isHDFSRepVal && RepositoryComponentManager.validComponent(componentName);
         // for (EDatabaseComponentName eComponent : EDatabaseComponentName.values()) {
         // if (componentName.equals(eComponent.getInputComponentName())
@@ -179,6 +184,16 @@ public class PropertyTypeController extends AbstractRepositoryController {
         // }
         // }
         // return canSaved;
+    }
+
+    private static String getDefinitionNameIfAdditionalJDBC(INode node) {
+        if (GlobalServiceRegister.getDefault().isServiceRegistered(IGenericWizardService.class)) {
+            IGenericWizardService service = GlobalServiceRegister.getDefault().getService(IGenericWizardService.class);
+            if (service != null) {
+                return service.getDefinitionName4AdditionalJDBC(node);
+            }
+        }
+        return null;
     }
 
     /**
@@ -663,8 +678,10 @@ public class PropertyTypeController extends AbstractRepositoryController {
         String currentDbType = ((DatabaseConnection) repositoryConnection).getDatabaseType();
         EDatabaseTypeName typeName = EDatabaseTypeName.getTypeFromDbType(currentDbType);
 
-        Command command = new PropertyChangeCommand(elem, property, typeName.getXMLType());
-        compoundCommand.add(command);
+        if (!typeName.getXMLType().equalsIgnoreCase(String.valueOf(elem.getElementParameter(property).getValue()))) {
+            Command command = new PropertyChangeCommand(elem, property, typeName.getXMLType());
+            compoundCommand.add(command);
+        }
     }
 
     /*

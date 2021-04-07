@@ -47,6 +47,15 @@
             >
       </preview>
    </extension>
+     <extension
+       point="org.talend.core.runtime.filepreview_provider">
+      <preview
+            class="org.talend.designer.runprocess.shadow.ShadowFilePreview"
+            language="java"
+            type="FILE_XML"
+            >
+      </preview>
+   </extension>
    <extension
          point="org.talend.core.repository.repository_content">
       <RepositoryContent
@@ -178,6 +187,10 @@
            class="org.talend.repository.json.util.JSONProviderService"
            serviceId="IJSONProviderService">
      </Service>
+     <Service
+            class="org.talend.repository.json.service.JsonFileConnectionContextUpdateService"
+            serviceId="IRepositoryContextUpdateService">
+      </Service>
    </extension>         
    <extension
          point="org.talend.repository.items.importexport.handler">

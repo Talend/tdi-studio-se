@@ -30,14 +30,17 @@ imports="
 
 	boolean enableACL = "true".equals(ElementParameterParser.getValue(node, "__ACCESS_CONTROL_LIST__"));
 	List<Map<String, String>> paramsACL = ElementParameterParser.getTableValue(node,"__ACL__");
-	
+	final String cannedACL = ElementParameterParser.getValue(node, "__CANNED_ACCESS_CONTROL_LIST__");
+	final boolean enableCannedACL = (cannedACL != null) && (!cannedACL.isEmpty()) && !("\"NONE\"".equals(cannedACL));
 	%>
 	<%@ include file="../tS3Connection/S3Client.javajet" %>
 	String key_<%=cid%> = <%=key%>;
 	
 	int partSizeInBytes_<%=cid%> = <%=partSizeMb%> * 1024 * 1024;
 	if(partSizeInBytes_<%=cid%> < 5 << 20 ) {
+		<%if(isLog4jEnabled) {%>
 		log.info("Set part size as 5MB, as it is the recommended minimun value.");
+		<%}%>
 		partSizeInBytes_<%=cid%> = 5 << 20;
 	}
 	
@@ -139,7 +142,15 @@ accessCtrlList.grantPermission(grantee_<%=cid%>_<%=grantee_id%>, com.amazonaws.s
 			<%if (enableACL) {%>
 				putRequest_<%=cid%>.withAccessControlList(accessCtrlList);
 			<%}%>
-
+		    <%if (enableCannedACL) {%>
+				{
+				   final String cannedACLChoice = <%= cannedACL %>;
+				   if (cannedACLChoice != null && (!cannedACLChoice.isEmpty()) && !("NONE".equals(cannedACLChoice))) {
+				       putRequest_<%=cid%>.withCannedAcl(com.amazonaws.services.s3.model.CannedAccessControlList.valueOf(cannedACLChoice));
+				   }
+				}
+			<%}%>
+			
   			<%@ include file="./set_kms.javajet"%>
   		
   			com.amazonaws.services.s3.transfer.Upload upload_<%=cid%> = tm_<%=cid%>.upload(putRequest_<%=cid%>);
@@ -174,7 +185,14 @@ accessCtrlList.grantPermission(grantee_<%=cid%>_<%=grantee_id%>, com.amazonaws.s
                     <%if (enableACL) {%>
 				          putRequest_<%=cid%>.withAccessControlList(accessCtrlList);
 			        <%}%>
-    				
+    				<%if (enableCannedACL) {%>
+				         {
+				             final String cannedACLChoice = <%= cannedACL %>;
+				             if (cannedACLChoice != null && (!cannedACLChoice.isEmpty()) && !("NONE".equals(cannedACLChoice))) {
+				                 putRequest_<%=cid%>.withCannedAcl(com.amazonaws.services.s3.model.CannedAccessControlList.valueOf(cannedACLChoice));
+				             }
+				         }
+			        <%}%>
     				<%@ include file="./set_kms.javajet"%>
     				
     				conn_<%=cid%>.putObject(putRequest_<%=cid%>);
@@ -185,7 +203,14 @@ accessCtrlList.grantPermission(grantee_<%=cid%>_<%=grantee_id%>, com.amazonaws.s
                 <%if (enableACL) {%>
 				putRequest_<%=cid%>.withAccessControlList(accessCtrlList);
 			    <%}%>
-      			
+      			<%if (enableCannedACL) {%>
+				{
+				    final String cannedACLChoice = <%= cannedACL %>;
+				    if (cannedACLChoice != null && (!cannedACLChoice.isEmpty()) && !("NONE".equals(cannedACLChoice))) {
+				        putRequest_<%=cid%>.withCannedACL(com.amazonaws.services.s3.model.CannedAccessControlList.valueOf(cannedACLChoice));
+				    }
+				}
+			    <%}%>
       			<%@ include file="./set_kms.javajet"%>
       			
       			com.amazonaws.services.s3.model.InitiateMultipartUploadResult initResponse_<%=cid%> = conn_<%=cid%>.initiateMultipartUpload(putRequest_<%=cid%>);
@@ -251,6 +276,7 @@ accessCtrlList.grantPermission(grantee_<%=cid%>_<%=grantee_id%>, com.amazonaws.s
 			<%
 			}
 			%>
+			globalMap.put("<%=cid %>_ERROR_MESSAGE", e_<%=cid%>.getMessage());
 			System.err.println(e_<%=cid%>.getMessage());
 		<%
 		}

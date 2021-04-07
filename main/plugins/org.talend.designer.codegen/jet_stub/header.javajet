@@ -73,6 +73,9 @@ import pigudf.<%=routine%>;
 import routines.<%=routine%>;
 <%  }
 }%>
+<%for (String codesJar : CodeGeneratorRoutine.getRequiredCodesJarName(process)) {%>
+import <%=codesJar%>;
+<%}%>
 import routines.system.*;
 import routines.system.api.*;
 import java.text.ParseException;
@@ -298,6 +301,15 @@ if(isRunInMultiThread){
 			}
 			<% } %>
 		}
+		
+		//if the stored or passed value is "<TALEND_NULL>" string, it mean null
+		public String getStringValue(String key) {
+			String origin_value = this.getProperty(key);
+			if(NULL_VALUE_EXPRESSION_IN_COMMAND_STRING_FOR_CHILD_JOB_ONLY.equals(origin_value)) {
+				return null;
+			}
+			return origin_value;
+		}
 
 <%
 		for (IContextParameter ctxParam :params)
@@ -380,8 +392,28 @@ public <%=JavaTypesManager.getTypeToGenerate(ctxParam.getType(),true)%> get<%=Ch
 			break;
 		}
 	}
-	boolean enableLogStash = jobCatcherNode != null;
-	if (stats || enableLogStash) {
+	
+	boolean enableLogStash = !Boolean.getBoolean("deactivate_extended_component_log") && (jobCatcherNode!=null);
+	boolean enable_runtime_lineage_log = NodeUtil.isJobUsingRuntimeLineage(process) && (jobCatcherNode!=null);
+	
+	if(jobCatcherNode!=null) {
+%>
+private final JobStructureCatcherUtils <%=jobCatcherNode.getUniqueName() %> = new JobStructureCatcherUtils(jobName, "<%=process.getId() %>", "<%=process.getVersion() %>");
+<%
+	}
+	if(enable_runtime_lineage_log) {
+%>
+private org.talend.job.audit.JobAuditLogger runtime_lineage_logger_<%=jobCatcherNode.getUniqueName()%> = null;
+<%
+	}
+	
+	if (enableLogStash) {
+%>
+private org.talend.job.audit.JobAuditLogger auditLogger_<%=jobCatcherNode.getUniqueName()%> = null;
+
+private RunStat runStat = new RunStat(<%=jobCatcherNode.getUniqueName() %>, System.getProperty("audit.interval"));
+<%
+	} else if(stats) {
 %>
 private RunStat runStat = new RunStat();
 <%
@@ -408,6 +440,20 @@ private RunTrace runTrace = new RunTrace();
 		globalMap.put(KEY_DB_DATASOURCES, talendDataSources);
 		globalMap.put(KEY_DB_DATASOURCES_RAW, new java.util.HashMap<String, javax.sql.DataSource>(dataSources));
 	}
+	
+	public void setDataSourceReferences(List serviceReferences) throws Exception{
+		
+		java.util.Map<String, routines.system.TalendDataSource> talendDataSources = new java.util.HashMap<String, routines.system.TalendDataSource>();
+		java.util.Map<String, javax.sql.DataSource> dataSources = new java.util.HashMap<String, javax.sql.DataSource>();
+		
+		for (java.util.Map.Entry<String, javax.sql.DataSource> entry : BundleUtils.getServices(serviceReferences,  javax.sql.DataSource.class).entrySet()) {
+                    dataSources.put(entry.getKey(), entry.getValue());
+                    talendDataSources.put(entry.getKey(), new routines.system.TalendDataSource(entry.getValue()));
+		}
+
+		globalMap.put(KEY_DB_DATASOURCES, talendDataSources);
+		globalMap.put(KEY_DB_DATASOURCES_RAW, new java.util.HashMap<String, javax.sql.DataSource>(dataSources));
+	}
 
 <%
 	for (INode logCatcher : process.getNodesOfType("tLogCatcher")) {
@@ -422,13 +468,6 @@ private RunTrace runTrace = new RunTrace();
 <%
 	}
 	
-	if(enableLogStash) {
-%>
-	JobStructureCatcherUtils <%=jobCatcherNode.getUniqueName() %> = new JobStructureCatcherUtils(jobName, "<%=process.getId() %>", "<%=process.getVersion() %>");
-	org.talend.job.audit.JobAuditLogger auditLogger_<%=jobCatcherNode.getUniqueName()%> = null;
-<%
-	}
-
 	for (INode metterCatcher : process.getNodesOfType("tFlowMeterCatcher")) {
 %>
 	MetterCatcherUtils <%=metterCatcher.getUniqueName() %> = new MetterCatcherUtils("<%=process.getId() %>", "<%=process.getVersion() %>");

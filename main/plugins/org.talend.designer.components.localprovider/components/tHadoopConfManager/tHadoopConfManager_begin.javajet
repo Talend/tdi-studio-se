@@ -13,9 +13,29 @@
     INode node = (INode)codeGenArgument.getArgument();
     String cid = node.getUniqueName();
     String confLib = ElementParameterParser.getValue(node, "__CONF_LIB__");
+    Boolean setHadoopConf = ElementParameterParser.getBooleanValue(node, "__SET_HADOOP_CONF__");
+    String customHadoopConfPath = ElementParameterParser.getValue(node, "__HADOOP_CONF_SPECIFIC_JAR__");
+    if (setHadoopConf == null) {
+        setHadoopConf = Boolean.FALSE;
+    }
+    boolean isLog4jEnabled = ("true").equals(ElementParameterParser.getValue(node.getProcess(), "__LOG4J_ACTIVATE__"));
 %>
 
-<% if(confLib != null && confLib.length() > 0){%>
+<% if((confLib != null && confLib.length() > 0) || setHadoopConf){%>
+
+String libPath_<%=cid %> = "";
+
+<% if (setHadoopConf) { 
+
+    if (isLog4jEnabled) {
+        %>
+        log.info("hadoop conf jar : " + <%=customHadoopConfPath %>);
+        <%
+    }
+    %>
+    libPath_<%=cid %> = <%=customHadoopConfPath %>;
+
+<% } else { %>
 
 class DealJobLibrary_<%=cid%> {
 
@@ -75,21 +95,80 @@ class DealJobLibrary_<%=cid%> {
 
 }
 
-java.net.URLClassLoader currentLoader<%=cid %> = (java.net.URLClassLoader) Thread.currentThread().getContextClassLoader();
-java.lang.reflect.Method method_<%=cid %> = java.net.URLClassLoader.class.getDeclaredMethod("addURL", new Class[] { java.net.URL.class });
-method_<%=cid %>.setAccessible(true);
-
 DealJobLibrary_<%=cid%> dealJobLibrary = new DealJobLibrary_<%=cid%>();
 String confJarName = dealJobLibrary.getConfJarName(<%=confLib %>, this.contextStr);
 
-String libPath_<%=cid %> = "";
-<%if (ProcessorUtilities.isExportConfig()) {%>
-    libPath_<%=cid %> = "../lib/" + confJarName;
-<%} else {
-    String libFolder = ProcessorUtilities.getJavaProjectLibFolder().getAbsolutePath().replace("\\", "/");%>
-    libPath_<%=cid %> = new java.io.File("<%=libFolder %>/" + confJarName).getAbsolutePath();
-<%}%>
-libPath_<%=cid %> = dealJobLibrary.replaceJarPathsFromCrcMap(libPath_<%=cid %>);
+
+<%
+String libFolder = ProcessorUtilities.isExportConfig() ? "../lib" : ProcessorUtilities.getJavaProjectLibFolder().getAbsolutePath().replace("\\", "/");
+%>    
+libPath_<%=cid%> = dealJobLibrary.replaceJarPathsFromCrcMap(new java.io.File("<%=libFolder%>/" + confJarName).getAbsolutePath());
+java.io.File fileConfJar = new java.io.File(libPath_<%=cid%>);
+    
+// Checking standard hadoop conf 
+if (!fileConfJar.exists()) {
+    <% 
+    if (isLog4jEnabled) { 
+        %>
+        log.info("Hadoop configuration '" + confJarName + "' does not exist");
+        <% 
+    } 
+    %>
+    confJarName = confJarName.replace("_"+this.contextStr,"");
+    libPath_<%=cid%> = dealJobLibrary.replaceJarPathsFromCrcMap(new java.io.File("<%=libFolder%>/" + confJarName).getAbsolutePath());
+    fileConfJar = new java.io.File(libPath_<%=cid%>);
+}
+
+// Checking hadoop conf without timestamp suffix 
+if (!fileConfJar.exists()) {
+    <% 
+    if (isLog4jEnabled) { 
+        %>
+        log.info("Hadoop configuration '" + confJarName + "' does not exist");
+        <% 
+    } 
+    %>
+    confJarName = confJarName.replaceFirst("(_[0-9]+)","");
+    libPath_<%=cid%> = dealJobLibrary.replaceJarPathsFromCrcMap(new java.io.File("<%=libFolder%>/" + confJarName).getAbsolutePath());
+    fileConfJar = new java.io.File(libPath_<%=cid%>);
+}
+
+if (!fileConfJar.exists()) {
+    <% 
+    if (isLog4jEnabled) { 
+        %>
+        log.info("Hadoop configuration '" + confJarName + "' does not exist");
+        <% 
+    } 
+    %>
+    confJarName = <%=confLib%>.replaceAll(".jar", "") + "_" + this.contextStr.replaceFirst("(_[0-9]+)","") + ".jar";
+    libPath_<%=cid%> = dealJobLibrary.replaceJarPathsFromCrcMap(new java.io.File("<%=libFolder%>/" + confJarName).getAbsolutePath());
+    fileConfJar = new java.io.File(libPath_<%=cid%>);
+}
+
+if (!fileConfJar.exists()) {
+    <% 
+    if (isLog4jEnabled) { 
+        %>
+        log.info("Hadoop configuration '" + confJarName + "' does not exist");
+        log.info("at : "+fileConfJar.toString());
+        <% 
+    } 
+    %>
+    throw new RuntimeException("Hadoop configuration jar not found");
+}
+<%
+if (isLog4jEnabled) { 
+    %>
+    log.info("Hadoop configuration '" + confJarName + "' used");
+    <% 
+} 
+}
+%>
+
+java.net.URLClassLoader currentLoader<%=cid %> = (java.net.URLClassLoader) Thread.currentThread().getContextClassLoader();
+java.lang.reflect.Method method_<%=cid %> = java.net.URLClassLoader.class.getDeclaredMethod("addURL", new Class[] { java.net.URL.class });
+method_<%=cid %>.setAccessible(true);
 method_<%=cid %>.invoke(currentLoader<%=cid %>, new Object[] { new java.io.File(libPath_<%=cid %>).toURL() });
 
 <%}%>

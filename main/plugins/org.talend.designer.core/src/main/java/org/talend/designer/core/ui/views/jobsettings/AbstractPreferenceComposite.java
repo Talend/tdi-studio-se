@@ -193,8 +193,8 @@ public abstract class AbstractPreferenceComposite extends MultipleThreadDynamicC
             // end
             if (hasRunJobNode(false) && needApplyToChildren()) {
                 applyToChildrenJob = new Button(topComposite, SWT.PUSH);
-                applyToChildrenJob.setText(Messages.getString("AbstractPreferenceComposite.textContent")); //$NON-NLS-1$
-                applyToChildrenJob.setToolTipText(Messages.getString("AbstractPreferenceComposite.tipContent")); //$NON-NLS-1$
+                applyToChildrenJob.setText(Messages.getString("AbstractPreferenceComposite.textContent2")); //$NON-NLS-1$
+                applyToChildrenJob.setToolTipText(Messages.getString("AbstractPreferenceComposite.tipContent2")); //$NON-NLS-1$
             }
 
             Point initialSize = topComposite.computeSize(SWT.DEFAULT, SWT.DEFAULT);

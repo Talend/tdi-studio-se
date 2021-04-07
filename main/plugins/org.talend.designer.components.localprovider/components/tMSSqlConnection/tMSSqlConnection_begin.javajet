@@ -12,6 +12,7 @@ imports="
 		public void createURL(INode node) {
 			super.createURL(node);
 			String driver = ElementParameterParser.getValue(node, "__DRIVER__");
+            boolean useActiveDirectoryAuth = "true".equals(ElementParameterParser.getValue(node, "__ACTIVE_DIR_AUTH__"));
 %>
 <%
 			if(driver.equals("JTDS")) {
@@ -42,6 +43,15 @@ imports="
 			}
 %>
     	}
+
+<%
+        if (driver.equals("MSSQL_PROP") && useActiveDirectoryAuth) {
+%>
+            url_<%=cid%> += ";encrypt=true;trustServerCertificate=false;hostNameInCertificate=*.database.windows.net;Authentication=ActiveDirectoryPassword";
+            url_<%=cid%> += ";database=" + <%=dbname%>;
+<%
+        }
+%>
 		url_<%=cid%> += ";appName=" + projectName + ";" + <%=dbproperties%>;  
 <%	
 		}
@@ -69,3 +79,5 @@ imports="
 	globalMap.put("conn_<%=cid%>",conn_<%=cid%>);
 	
 	globalMap.put("shareIdentitySetting_<%=cid%>",  <%=ElementParameterParser.getValue(node, "__SHARE_IDENTITY_SETTING__")%>);
+
+	globalMap.put("driver_<%=cid%>", "<%=ElementParameterParser.getValue(node, "__DRIVER__")%>");

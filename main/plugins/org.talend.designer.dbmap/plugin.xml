@@ -11,6 +11,13 @@
             class="org.talend.designer.dbmap.model.emf.dbmap.DbmapPackage"
             genModel="model/dbmap.genmodel"/>
    </extension>
+
+   <extension point="org.eclipse.emf.ecore.extension_parser">
+      <!-- @generated dbmap -->
+      <parser
+            type="dbmap"
+            class="org.talend.designer.dbmap.model.emf.dbmap.util.DbmapResourceFactoryImpl"/>
+   </extension>
    <extension
          point="org.talend.core.migrationTask">
       <projecttask
@@ -30,6 +37,15 @@
             id="org.talend.designer.dbmap.migration.DBMapSplitTableConstraintFiltersMigrationTask"
             name="DBMapSplitTableConstraintFiltersMigrationTask"
             version="5.6.0">
+      </projecttask>
+      <projecttask
+            beforeLogon="false"
+            breaks="7.3.0"
+            class="org.talend.designer.dbmap.migration.DbOperatorMigrationTask"
+            description="Save elt map external data to emf"
+            id="org.talend.designer.dbmap.migration.DbOperatorMigrationTask"
+            name="DbOperatorMigrationTask"
+            version="7.3.1">
       </projecttask>
    </extension>
    <extension

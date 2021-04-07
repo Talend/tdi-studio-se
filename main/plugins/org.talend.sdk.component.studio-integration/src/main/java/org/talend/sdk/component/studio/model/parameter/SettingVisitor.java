@@ -31,9 +31,10 @@ import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.TreeMap;
-import java.util.concurrent.Callable;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -183,7 +184,15 @@ public class SettingVisitor implements PropertyVisitor {
 
             final Map<String, TaCoKitElementParameter> targetParams = conditionGroups.stream()
                     .flatMap(it -> it.getConditions().stream())
-                    .map(c -> TaCoKitElementParameter.class.cast(settings.get(c.getTargetPath())))
+                    .map(PropertyDefinitionDecorator.Condition::getTargetPath)
+                    .peek((String key) -> {
+                        if (!this.settings.containsKey(key)) {
+                            LOGGER.error("Path " + path + " not found in settings for form " + this.form);
+                        }
+                    })
+                    .map(this.settings::get)
+                    .filter(Objects::nonNull).filter(TaCoKitElementParameter.class::isInstance)
+                    .map(TaCoKitElementParameter.class::cast)
                     .collect(toMap(ElementParameter::getName, identity()));
 
             final ActiveIfListener activationListener = new ActiveIfListener(conditionGroups, param, targetParams);
@@ -288,7 +297,7 @@ public class SettingVisitor implements PropertyVisitor {
      *
      * @param node current PropertyNode
      */
-    private void buildHealthCheck(final PropertyNode node) {
+    protected void buildHealthCheck(final PropertyNode node) {
         if (hasHealthCheck(node)) {
             final ActionReference action = actions
                     .stream()
@@ -301,7 +310,7 @@ public class SettingVisitor implements PropertyVisitor {
                     checkableLayout.getChildLayout(checkableLayout.getPath() + PropertyNode.CONNECTION_BUTTON);
             if (buttonLayout.isPresent()) {
                 new HealthCheckResolver(element, family, node, action, category, buttonLayout.get().getPosition())
-                        .resolveParameters(settings);
+                        .resolveParameters(this.form, this.settings);
             } else {
                 LOGGER.debug("Button layout {} not found for form {}", checkableLayout.getPath() + PropertyNode.CONNECTION_BUTTON, form);
             }
@@ -322,6 +331,7 @@ public class SettingVisitor implements PropertyVisitor {
                 final UpdateAction action = new UpdateAction(updatable.getActionName(), family);
                 final UpdateResolver resolver = new UpdateResolver(element, category, buttonPosition, action, node,
                         actions, redrawParameter, settings, () -> hasVisibleChild(formLayout.getPath()));
+                resolver.getButton().setForm(this.form);
                 parameterResolvers.add(resolver);
             } else {
                 LOGGER.debug("Button layout {} not found for form {}", formLayout.getPath() + PropertyNode.UPDATE_BUTTON, form);
@@ -459,11 +469,11 @@ public class SettingVisitor implements PropertyVisitor {
         final String connectionName = getConnectionName(node);
         final String discoverSchemaAction = node.getProperty().getConnection().getDiscoverSchema();
         return new OutputSchemaParameter(getNode(), node.getProperty().getPath(), connectionName, discoverSchemaAction,
-                true);
+                true, node.getChildrenNames());
     }
 
     private TaCoKitElementParameter visitInSchema(final PropertyNode node) {
-        return new InputSchemaParameter(getNode(), node.getProperty().getPath(), getConnectionName(node));
+        return new InputSchemaParameter(getNode(), node.getProperty().getPath(), getConnectionName(node), node.getChildrenNames());
     }
 
     /**
@@ -505,7 +515,7 @@ public class SettingVisitor implements PropertyVisitor {
     protected TaCoKitElementParameter createSchemaParameter(final String connectionName, final String schemaName,
             final String discoverSchemaAction,
             final boolean show) {
-        return new OutputSchemaParameter(getNode(), schemaName, connectionName, discoverSchemaAction, show);
+        return new OutputSchemaParameter(getNode(), schemaName, connectionName, discoverSchemaAction, show, Collections.emptyList());
     }
 
     /**
@@ -519,7 +529,7 @@ public class SettingVisitor implements PropertyVisitor {
         parameter.setDisplayName(node.getProperty().getDisplayName());
         parameter.setFieldType(node.getFieldType());
         parameter.setName(node.getProperty().getPath());
-        parameter.setRepositoryValue(node.getProperty().getPath());
+        // parameter.setRepositoryValue(node.getProperty().getPath());
         parameter.setNumRow(node.getLayout(form).getPosition());
         parameter.setShow(true);
         String defaultValue = node.getProperty().getDefaultValue();
@@ -530,15 +540,13 @@ public class SettingVisitor implements PropertyVisitor {
         parameter.setRequired(node.getProperty().isRequired());
         if (TaCoKitElementParameter.class.isInstance(parameter)) {
             final TaCoKitElementParameter taCoKitElementParameter = TaCoKitElementParameter.class.cast(parameter);
+            taCoKitElementParameter.setPropertyNode(node);
             taCoKitElementParameter.updateValueOnly(defaultValue);
+            taCoKitElementParameter.setForm(this.form);
             if (node.getProperty().hasConstraint() || node.getProperty().hasValidation()) {
-                taCoKitElementParameter.setRegistValidatorCallback(new Callable<Void>() {
-
-                    @Override
-                    public Void call() throws Exception {
+                taCoKitElementParameter.setRegistValidatorCallback(() -> {
                         createValidationLabel(node, taCoKitElementParameter);
                         return null;
-                    }
                 });
             }
             buildActivationCondition(node, node);

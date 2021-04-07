@@ -86,6 +86,8 @@ public class TalendDesignerPrefConstants {
 
     public static final String COMPONENT_ASSIST = "componentsAssist"; //$NON-NLS-1$
 
+    public static final String HELP_OFFLINE = "enableOffLineHelp";
+
     public static final String NOT_SHOW_WARNING_WHEN_DELETE_LINK_WITH_JOBLETTRIGGERLINKCOMPONENT = "not_show_warning_when_delete_link_with_joblettriggerlinkcomponent"; //$NON-NLS-1$
 
     public static final String PALETTE_SETTINGS_RECENTLY_USED_LIST_SIZE = "paletteSettingsRecentlyUsedListSize"; //$NON-NLS-1$

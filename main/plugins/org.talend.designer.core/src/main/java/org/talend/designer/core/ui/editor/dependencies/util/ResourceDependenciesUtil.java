@@ -27,6 +27,7 @@ import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.exception.PersistenceException;
 import org.talend.commons.utils.io.FilesUtils;
 import org.talend.commons.utils.workbench.resources.ResourceUtils;
+import org.talend.core.GlobalServiceRegister;
 import org.talend.core.model.general.Project;
 import org.talend.core.model.metadata.types.JavaTypesManager;
 import org.talend.core.model.process.IContext;
@@ -36,8 +37,11 @@ import org.talend.core.model.properties.Property;
 import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.core.model.repository.IRepositoryViewObject;
 import org.talend.core.model.resources.ResourceItem;
+import org.talend.core.model.utils.JavaResourcesHelper;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
+import org.talend.core.runtime.process.ITalendProcessJavaProject;
 import org.talend.designer.core.ui.editor.dependencies.model.JobResourceDependencyModel;
+import org.talend.designer.runprocess.IRunProcessService;
 import org.talend.repository.ProjectManager;
 
 public class ResourceDependenciesUtil {
@@ -65,12 +69,8 @@ public class ResourceDependenciesUtil {
 
     public static Collection<JobResourceDependencyModel> getResourceDependencies(IProcess2 process) {
         Property property = process.getProperty();
-        StringBuffer joblabel = new StringBuffer();
-        if (StringUtils.isNotBlank(property.getItem().getState().getPath())) {
-            joblabel.append(property.getItem().getState().getPath() + "/");
-        }
-        joblabel.append(property.getLabel() + "_" + property.getVersion());
-        return getResourceDependencies((String) process.getAdditionalProperties().get(RESOURCES_PROP), joblabel.toString(),
+        String jobLabel = JavaResourcesHelper.getJobFolderName(property.getLabel(), property.getVersion());
+        return getResourceDependencies((String) process.getAdditionalProperties().get(RESOURCES_PROP), jobLabel,
                 process);
     }
 
@@ -241,18 +241,14 @@ public class ResourceDependenciesUtil {
         Path p = new Path(item.getProperty().getLabel());
         resourcePath.append(p.removeFileExtension().lastSegment());
         resourcePath.append("_" + version + "." + item.getBindingExtension());
-        // for job testjob_0.2 => testjob_0_2
-        String checkversion = jobLabel.substring(jobLabel.lastIndexOf("_"));
-        if (checkversion.contains(".")) {
-            jobLabel = jobLabel.substring(0, jobLabel.lastIndexOf("_")) + checkversion.replace(".", "_");
-        }
         // Local_Project/testjob_0_2/resources/test_0.1.txt
         /*
          * Local_Project project Label need to lower case avoid the exception of
          * org.eclipse.core.internal.resources.ResourceException: A resource exists with a different case caused by
          * ext-resources/local_project/testjob_0_2/contexts
          */
-        String newFilePath = currentProject.getLabel().toLowerCase() + SEG_TAG + jobLabel + SEG_TAG + SRC_RESOURCES_FOLDER
+        String newFilePath = JavaResourcesHelper.getProjectFolderName(currentProject.getTechnicalLabel()) + SEG_TAG + jobLabel
+                + SEG_TAG + SRC_RESOURCES_FOLDER
                 + SEG_TAG + resourcePath.toString();
         return newFilePath;
     }
@@ -269,11 +265,7 @@ public class ResourceDependenciesUtil {
             return;
         }
         Property property = jobObject.getProperty();
-        StringBuffer joblabel = new StringBuffer();
-        if (StringUtils.isNotBlank(property.getItem().getState().getPath())) {
-            joblabel.append(property.getItem().getState().getPath() + "/");
-        }
-        joblabel.append(property.getLabel() + "_" + property.getVersion());
+        String jobLabel = JavaResourcesHelper.getJobFolderName(property.getLabel(), property.getVersion());
 
         ResourceItem item = model.getItem();
         String version = item.getProperty().getVersion();
@@ -289,25 +281,28 @@ public class ResourceDependenciesUtil {
         String itemResPath = model.getPathUrl() + fileSuffix;
         File resourceFile = project.getFile(new Path(RESOURCES_FOLDER + SEG_TAG + itemResPath)).getLocation().toFile();
         if (resourceFile.exists()) {
-            String processJobLabel = joblabel.toString();
-            if (StringUtils.isNotBlank(rootJobLabel)) {
-                processJobLabel = rootJobLabel;
-            }
-            String extResPath = getProcessFolder(jobObject) + processJobLabel.toLowerCase() + SRC_EXTRESOURCE_FOLDER;
-            String newFilePath = getResourcePath(model, joblabel.toString(), newVersion);
-
-            // resourceItem and processItem can belong to different project
-            IProject proProject = getWorkspaceProject(jobObject.getProperty());
-            if (proProject == null) {
-                return;
-            }
-            File targetFile = proProject.getFile(new Path(extResPath + SEG_TAG + newFilePath)).getLocation().toFile();
+            File targetFile = new File(getJobExecuteResourceFilePath(model, property, jobLabel, newVersion));
             try {
                 FilesUtils.copyFile(resourceFile, targetFile);
             } catch (IOException e) {
                 ExceptionHandler.process(e);
             }
         }
+    }
+
+    public static String getJobExecuteResourceFilePath(JobResourceDependencyModel model, Property jobProperty,String jobLabel,String resourceVersion) {
+        String path = null;
+        IRunProcessService service = null;
+        if (GlobalServiceRegister.getDefault().isServiceRegistered(IRunProcessService.class)) {
+            service = GlobalServiceRegister.getDefault().getService(IRunProcessService.class);
+        }
+        if (service == null) {
+            return path;
+        }
+        String filePath = getResourcePath(model, jobLabel, resourceVersion);
+        ITalendProcessJavaProject talendJobJavaProject = service.getTalendJobJavaProject(jobProperty);
+        path = talendJobJavaProject.getExternalResourcesFolder().getFile(new Path(filePath)).getLocation().toOSString();
+        return path;
     }
 
     private static IProject getWorkspaceProject(EObject object) {
@@ -381,7 +376,7 @@ public class ResourceDependenciesUtil {
         }
     }
 
-    private static String getProcessFolder(IRepositoryViewObject jobObject) {
+    public static String getProcessFolder(IRepositoryViewObject jobObject) {
         String folder = jobObject.getRepositoryObjectType().getFolder();
         return POMS_JOBS_FOLDER + folder + "/";
     }

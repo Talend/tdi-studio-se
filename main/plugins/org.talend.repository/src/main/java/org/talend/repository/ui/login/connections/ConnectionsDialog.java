@@ -62,6 +62,10 @@ public class ConnectionsDialog extends TitleAreaDialog {
 
     public static final int HSPACE = 5;
 
+    private ConnectionBean defaultConnectionSelected;
+
+    private boolean hasAuthorizationError = false;
+
     public ConnectionsDialog(Shell parentShell) {
         super(parentShell);
         setShellStyle(getShellStyle() | SWT.RESIZE);
@@ -69,6 +73,15 @@ public class ConnectionsDialog extends TitleAreaDialog {
         // setTitleAreaColor(rgb);
         setTitleImage();
         setTitleAreaColor(new RGB(255, 255, 255));
+    }
+
+    public ConnectionsDialog(Shell parentShell, ConnectionBean defaultConnectionSelected, boolean hasAuthorizationError) {
+        super(parentShell);
+        setShellStyle(getShellStyle() | SWT.RESIZE);
+        setTitleImage();
+        setTitleAreaColor(new RGB(255, 255, 255));
+        this.defaultConnectionSelected = defaultConnectionSelected;
+        this.hasAuthorizationError = hasAuthorizationError;
     }
 
     protected void setTitleImage() {
@@ -121,7 +134,7 @@ public class ConnectionsDialog extends TitleAreaDialog {
         layout.verticalSpacing = 0;
         container.setLayout(layout);
 
-        listComposite = new ConnectionsListComposite(container, SWT.NONE);
+        listComposite = new ConnectionsListComposite(container, SWT.NONE, this);
         GridDataFactory.fillDefaults().hint(LIST_COMPOSITE_WIDTH, SWT.DEFAULT).grab(false, true).applyTo(listComposite);
 
         formComposite = new ConnectionFormComposite(container, SWT.NONE, listComposite, this);
@@ -130,11 +143,19 @@ public class ConnectionsDialog extends TitleAreaDialog {
 
         Label titleBarSeparator = new Label(composite, SWT.HORIZONTAL | SWT.SEPARATOR);
         titleBarSeparator.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+
+        if (defaultConnectionSelected != null && hasAuthorizationError) {
+            setErrorMessage(Messages.getString("ConnectionsDialog.usernameOrPasswordInvalid"));
+        }
         return composite;
     }
 
     public List<ConnectionBean> getConnections() {
         return listComposite.getList();
+    }
+
+    public ConnectionBean getDefaultConnectionSelected() {
+        return defaultConnectionSelected;
     }
 
 }

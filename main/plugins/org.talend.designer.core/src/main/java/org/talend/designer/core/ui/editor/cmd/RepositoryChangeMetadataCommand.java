@@ -18,17 +18,19 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 import org.talend.commons.runtime.xml.XmlUtil;
 import org.talend.components.api.properties.ComponentProperties;
 import org.talend.core.GlobalServiceRegister;
-import org.talend.core.model.components.ComponentCategory;
 import org.talend.core.model.components.IComponent;
 import org.talend.core.model.metadata.ColumnNameChanged;
 import org.talend.core.model.metadata.IMetadataColumn;
 import org.talend.core.model.metadata.IMetadataTable;
+import org.talend.core.model.metadata.MappingTypeRetriever;
+import org.talend.core.model.metadata.MetadataTalendType;
 import org.talend.core.model.metadata.MetadataToolHelper;
 import org.talend.core.model.metadata.builder.connection.Connection;
 import org.talend.core.model.metadata.builder.connection.DatabaseConnection;
@@ -145,6 +147,7 @@ public class RepositoryChangeMetadataCommand extends ChangeMetadataCommand {
                 ConnectionItem connectionItem = MetadataToolHelper.getConnectionItemFromRepository(newPropValue.toString());
                 ConnectionContextHelper.addContextForNodeParameter(node, connectionItem, false);
             }
+            updateColumnList();
         }
         // IElementParameter schemaTypeParameter =
         // node.getElementParameter(propName).getParentParameter().getChildParameters().get(
@@ -249,7 +252,7 @@ public class RepositoryChangeMetadataCommand extends ChangeMetadataCommand {
                             List<ComponentProperties> componentProperties = null;
                             IGenericWizardService wizardService = null;
                             if (GlobalServiceRegister.getDefault().isServiceRegistered(IGenericWizardService.class)) {
-                                wizardService = (IGenericWizardService) GlobalServiceRegister.getDefault().getService(
+                                wizardService = GlobalServiceRegister.getDefault().getService(
                                         IGenericWizardService.class);
                             }
                             if (wizardService != null && wizardService.isGenericConnection(getConnection())) {
@@ -337,7 +340,7 @@ public class RepositoryChangeMetadataCommand extends ChangeMetadataCommand {
             String tableName = newOutputMetadata.getTableName();
             IElementParameter schemaParam;
             param.setValue(TalendQuoteUtils.addQuotes(tableName));
-            param.setRepositoryValueUsed(EmfComponent.REPOSITORY.equals((String) node.getPropertyValue(EParameterName.SCHEMA_TYPE.getName())));
+            param.setRepositoryValueUsed(EmfComponent.REPOSITORY.equals(node.getPropertyValue(EParameterName.SCHEMA_TYPE.getName())));
             //If tableName value is empty we have to erase schema value and repository_schema_type, to prevent setting previous values. New values must be set instead.
             if (tableName == null &&
                     ((schemaParam = node.getElementParameter("table.main.schema")) != null || (schemaParam = node.getElementParameter("module.main.schema")) != null)) {
@@ -365,11 +368,7 @@ public class RepositoryChangeMetadataCommand extends ChangeMetadataCommand {
                             if (value instanceof Map) {
                                 Map map = new HashMap();
                                 String driver = String.valueOf(((Map) value).get("drivers"));
-                                MavenArtifact artifact = MavenUrlHelper.parseMvnUrl(TalendTextUtils.removeQuotes(driver));
-                                if (artifact != null) {
-                                    driver = artifact.getFileName();
-                                }
-                                map.put("JAR_NAME", driver);
+                                map.put("JAR_NAME", TalendTextUtils.removeQuotes(driver));
                                 newValue.add(map);
                             }
                         }
@@ -458,5 +457,32 @@ public class RepositoryChangeMetadataCommand extends ChangeMetadataCommand {
             ColumnListController.updateColumnList(node, null);
         }
 
+    }
+
+    private void updateColumnList() {
+        IComponent component = node.getComponent();
+        if (component == null || newOutputMetadata == null) {
+            return;
+        }
+        // Update elt component db type column
+        if (node.isELTComponent()) {
+            MappingTypeRetriever mappingTypeRetriever = null;
+            IElementParameter elementParameter = node.getElementParameter(EParameterName.MAPPING.getName());
+            if (elementParameter != null) {
+                if (elementParameter.getValue() instanceof String) {
+                    String value = (String) elementParameter.getValue();
+                    mappingTypeRetriever = MetadataTalendType.getMappingTypeRetriever(value);
+                }
+            }
+            if (mappingTypeRetriever != null) {
+                for (IMetadataColumn column : newOutputMetadata.getListColumns()) {
+                    String talendType = column.getTalendType();
+                    String type = column.getType();
+                    if (StringUtils.isBlank(type)) {
+                        column.setType(mappingTypeRetriever.getDefaultSelectedDbType(talendType));
+                    }
+                }
+            }
+        }
     }
 }

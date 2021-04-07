@@ -83,7 +83,6 @@ public class FilterColumnDialog extends Dialog {
 
     public FilterColumnDialog(Shell parentShell, Connection conn, CommandStack stack) {
         super(parentShell);
-        parentShell.setText(SETUP_TRACES_TITLE);
         this.setShellStyle(this.getShellStyle() | SWT.RESIZE | SWT.MAX);
         this.conn = conn;
         this.stack = stack;

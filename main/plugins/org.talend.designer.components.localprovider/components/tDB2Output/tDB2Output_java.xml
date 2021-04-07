@@ -275,10 +275,29 @@
 	    <DEFAULT>*Note: Example for Additional JDBC Parameters: "parameterName1=value1;parameterName2=value2;"</DEFAULT>
 	</PARAMETER>
 
+    <PARAMETER
+      NAME="USE_ALTERNATE_SCHEMA"
+      FIELD="CHECK"
+      NUM_ROW="7"
+      SHOW_IF="USE_EXISTING_CONNECTION == 'true'"
+    >
+      <DEFAULT>false</DEFAULT>
+    </PARAMETER>
+
+    <PARAMETER
+      NAME="ALTERNATE_SCHEMA"
+      FIELD="TEXT"
+      NUM_ROW="8"
+      REQUIRED="true"
+      SHOW_IF="((USE_EXISTING_CONNECTION == 'true') AND (USE_ALTERNATE_SCHEMA == 'true'))"
+    >
+      <DEFAULT>""</DEFAULT>
+    </PARAMETER>
+
   	<PARAMETER
       NAME="ENCODING"
       FIELD="TEXT"
-      NUM_ROW="7"
+      NUM_ROW="10"
       REQUIRED="true"
       SHOW="false"
     >
@@ -288,7 +307,7 @@
     <PARAMETER
       NAME="COMMIT_EVERY"
       FIELD="TEXT"
-      NUM_ROW="7"
+      NUM_ROW="10"
       REQUIRED="true"
       SHOW_IF="USE_EXISTING_CONNECTION == 'false'"
     >
@@ -299,7 +318,7 @@
       NAME="ADD_COLS"
       FIELD="TABLE"
       REQUIRED="false"
-      NUM_ROW="8"
+      NUM_ROW="11"
       NB_LINES="3"
     >
       <ITEMS>

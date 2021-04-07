@@ -228,76 +228,8 @@ if(columnList != null && columnList.size() > 0) {
                 resourceMap.put("pstmt_<%=cid %>", pstmt_<%=cid %>);
 
 <%
-	    } else {//extended-insert mode(begin)
-	    	if ("MYSQL_4".equals(dbVersion)) {
-%>
-	            ////////////////////////////////////////////////////////////////////////////////////////////
-
-
-	            StringBuilder extendInsertValueStmt_<%=cid%> = new StringBuilder();
-                for(int i=0;i < <%=numPerInsert%>;i++){
-<%
-			if(isDynamic) {
-			     List< ? extends IConnection> conns_dynamic = node.getIncomingConnections();
-			     if(conns_dynamic!=null && conns_dynamic.size()>0){
-			     	IConnection conn = conns_dynamic.get(0);
-%>
-                    extendInsertValueStmt_<%=cid%>.append("(<%=insertValueStmt.toString()%>,"+DynamicUtils.getInsertIntoStmtValuesList(<%=conn.getName()%>.<%=getDynamicColumn()%>)+")");
-<%
-				}
-			} else {
-%>
-				    extendInsertValueStmt_<%=cid%>.append("(<%=insertValueStmt.toString()%>)");
-<%
-			}
-%>
-                if (i!=<%=numPerInsert%>-1) extendInsertValueStmt_<%=cid%>.append(",");
-                }
-<%
-				List< ? extends IConnection> conns_dynamic = node.getIncomingConnections();
-				if(conns_dynamic!=null && conns_dynamic.size()>0){
-					IConnection conn = conns_dynamic.get(0);
-					if(!("".equals(insertColName.toString()))) {
-%>
-						insert_<%=cid%> = "INSERT INTO `" + <%=table%> + "` (<%=insertColName.toString()%>, "+DynamicUtils.getInsertIntoStmtColumnsList(<%=conn.getName()%>.<%=getDynamicColumn()%>, "<%=dbmsId %>")+") VALUES " + extendInsertValueStmt_<%=cid%>.toString();
-<%					} else {
-%>
-						insert_<%=cid%> = "INSERT INTO `" + <%=table%> + "` ("+DynamicUtils.getInsertIntoStmtColumnsList(<%=conn.getName()%>.<%=getDynamicColumn()%>, "<%=dbmsId %>")+") VALUES " + extendInsertValueStmt_<%=cid%>.toString();
-<%
-					}
-				if (supportDuplicateUpdate) {
-%>
-				    insert_<%=cid%> += 	duplidateClause_<%=cid%>.toString();
-<%
-				}
-%>
-                    <%@ include file="../templates/_hintInsert.javajet" %>
-                    pstmt_<%=cid %> =  conn_<%=cid%>.prepareStatement(insert_<%=cid%>);
-                    resourceMap.put("pstmt_<%=cid %>", pstmt_<%=cid %>);
-<%
-					if(!("".equals(insertColName.toString()))) {
-%>
-
-				    insertColName<%=cid%> = "<%=insertColName.toString()%>, "+DynamicUtils.getInsertIntoStmtColumnsList(<%=conn.getName()%>.<%=getDynamicColumn()%>, "<%=dbmsId %>");
-				    insertColValue<%=cid%> =  "<%=insertValueStmt.toString()%>, "+DynamicUtils.getInsertIntoStmtValuesList(<%=conn.getName()%>.<%=getDynamicColumn()%>);
-<%
-					} else {
-%>
-	      			insertColName<%=cid%> = DynamicUtils.getInsertIntoStmtColumnsList(<%=conn.getName()%>.<%=getDynamicColumn()%>, "<%=dbmsId %>");
-				    insertColValue<%=cid%> =  DynamicUtils.getInsertIntoStmtValuesList(<%=conn.getName()%>.<%=getDynamicColumn()%>);
-<%
-					}
-				}
-		    if(isDynamic) {
-%>
-			    rowCount<%=cid%> = 0;
-<%
-		    } else {
-%>
-	            int rowCount<%=cid%> = 0;
-<%
-		    }
-		} else if ("MYSQL_5".equals(dbVersion)) {
+        } else {//extended-insert mode(begin)
+            if ("MYSQL_5".equals(dbVersion)) {
 				List< ? extends IConnection> conns_dynamic = node.getIncomingConnections();
 				if(conns_dynamic!=null && conns_dynamic.size()>0){
 					IConnection conn = conns_dynamic.get(0);
@@ -641,88 +573,9 @@ if(columnList != null && columnList.size() > 0) {
         <%
         if(("INSERT").equals(dataAction)) {
             if(extendedInsert) {//extended-insert mode(begin)
-            	if ("MYSQL_4".equals(dbVersion)) {
-	                ExtendInsertOperation eiOperation = new ExtendInsertOperation();
-	                int insertableCount = 0;
-	                for(Column column : colStruct) {
-	                    if(column.isInsertable()) {
-	                        insertableCount++;
-	                    }
-	                }
-			if(!isDynamic) {
-	                %>
-	                	int counter<%=cid%> = rowCount<%=cid%> * <%=insertableCount%> + 1;
-	                <%
-			}
-	                for(Column column : colStruct) {
-	                    if(column.isInsertable()) {
-	                        String typeToGenerate = JavaTypesManager.getTypeToGenerate(column.getColumn().getTalendType(), column.getColumn().isNullable());
-	                        eiOperation.generateSetStmt(typeToGenerate,column,incomingConnName,cid);
-	                        %>
-	                        counter<%=cid%>++;
-	                        <%
-	                    }
-	                }
-					if(isDynamic) {
-						Column dynamicColumn = getColumn(getDynamicColumn());
-						String typeToGenerate = JavaTypesManager.getTypeToGenerate(dynamicColumn.getColumn().getTalendType(), dynamicColumn.getColumn().isNullable());
-						if("Dynamic".equals(typeToGenerate)) {
-						%>
-							int count_dyn_<%=cid%>=DynamicUtils.writeColumnsToDatabse(<%=incomingConnName%>.<%=dynamicColumn.getName()%>, pstmt_<%=cid%>, counter<%=cid%>-1, "<%=dbmsId%>");
-							counter<%=cid%>+=count_dyn_<%=cid%>;
-						<%
-						}
-					}
-	                %>
-
-	                exInsertColValue<%=cid%> = new BufferLine_<%=cid%>(
-	                <%
-	                int count =0;
-	                for(Column column : colStruct) {
-	                    if(column.isInsertable()) {
-	                        if(count != 0) {
-	                            %>
-	                            ,
-	                            <%
-	                        }
-	                        %>
-	                        <%=incomingConnName%>.<%=column.getName()%>
-	                        <%
-	                        count++;
-	                    }
-	                }
-			if(isDynamic) {
-			    	Column dynamicColumn = getColumn(getDynamicColumn());
-				String typeToGenerate = JavaTypesManager.getTypeToGenerate(dynamicColumn.getColumn().getTalendType(), dynamicColumn.getColumn().isNullable());
-				if("Dynamic".equals(typeToGenerate)) {
-				%>
-					, <%=incomingConnName%>.<%=dynamicColumn.getName()%>
-				<%
-				}
-			    }
-	                %>
-	                );
-
-	                exInsertColValueList<%=cid%>.add(exInsertColValue<%=cid%>);
-
-	                rowCount<%=cid%>++;
-<%
-			if(isDynamic) {
-%>
-				nb_line_<%=cid%>++;
-<%
-			}
-%>
-	                if(rowCount<%=cid%> == <%=numPerInsert%>){
-	                    insertedCount_<%=cid%> = insertedCount_<%=cid%> + pstmt_<%=cid %>.executeUpdate();
-	                    exInsertColValueList<%=cid%>.clear();
-	                    rowCount<%=cid%> = 0;
-			    counter<%=cid%>=1;
-	                }
-<%
-				} else if ("MYSQL_5".equals(dbVersion)) {
-	 				int counter = 1;
-	                for(Column column : colStruct) {
+                if ("MYSQL_5".equals(dbVersion)) {
+                    int counter = 1;
+                    for(Column column : colStruct) {
 	                    if(column.isInsertable()) {
 	                        String typeToGenerate = JavaTypesManager.getTypeToGenerate(column.getColumn().getTalendType(), column.getColumn().isNullable());
 	                        %>
@@ -763,6 +616,7 @@ if(columnList != null && columnList.size() > 0) {
 		    		pstmt_<%=cid %>.addBatch();
 		    		nb_line_<%=cid%>++;
 
+						<%if(isEnableDebug){dbLog.data().sqlDebugPrint("globalMap.get(\""+cid+"_QUERY\")");}%>
 		    			<%dbLog.data().addingToBatch(dbLog.var("nb_line"), dbLog.str(dataAction));%>
 		    		  	<%
 		    		  	if (!("").equals(numPerInsert ) && !("0").equals(numPerInsert )) {
@@ -776,6 +630,7 @@ if(columnList != null && columnList.size() > 0) {
 		    		%>
 	                try {
 	                    nb_line_<%=cid%>++;
+	                    <%if(isEnableDebug){dbLog.data().sqlDebugPrint("globalMap.get(\""+cid+"_QUERY\")");}%>
 	                    insertedCount_<%=cid%> = insertedCount_<%=cid%> + pstmt_<%=cid %>.executeUpdate();
 	                    <%dbLog.data().inserting(dbLog.var("nb_line"));%>
 	                } catch(java.lang.Exception e) {
@@ -853,6 +708,7 @@ if(columnList != null && columnList.size() > 0) {
                 %>
                 try {
                     nb_line_<%=cid%>++;
+                    <%if(isEnableDebug){dbLog.data().sqlDebugPrint("globalMap.get(\""+cid+"_QUERY\")");}%>
                     insertedCount_<%=cid%> = insertedCount_<%=cid%> + pstmt_<%=cid %>.executeUpdate();
                     <%dbLog.data().inserting(dbLog.var("nb_line"));%>
                 } catch(java.lang.Exception e) {
@@ -979,6 +835,7 @@ if(columnList != null && columnList.size() > 0) {
     		%>
         		pstmt_<%=cid %>.addBatch();
         		nb_line_<%=cid%>++;
+        		<%if(isEnableDebug){dbLog.data().sqlDebugPrint("globalMap.get(\""+cid+"_QUERY\")");}%>
     		  	<%dbLog.data().addingToBatch(dbLog.var("nb_line"), dbLog.str(dataAction));%>
     		  		batchSizeCounter_<%=cid%>++;
     		<%
@@ -986,6 +843,7 @@ if(columnList != null && columnList.size() > 0) {
     		%>
             try {
                 nb_line_<%=cid%>++;
+                <%if(isEnableDebug){dbLog.data().sqlDebugPrint("globalMap.get(\""+cid+"_QUERY\")");}%>
                 updatedCount_<%=cid%> = updatedCount_<%=cid%> + pstmt_<%=cid %>.executeUpdate();
                 <%dbLog.data().updating(dbLog.var("nb_line"));%>
             } catch(java.lang.Exception e) {
@@ -1137,6 +995,7 @@ if(columnList != null && columnList.size() > 0) {
                 }
     			%>
                 try {
+                    <%if(isEnableDebug){dbLog.data().sqlDebugPrint("globalMap.get(\""+cid+"_QUERY\")");}%>
                     updatedCount_<%=cid%> = updatedCount_<%=cid%> + pstmtUpdate_<%=cid %>.executeUpdate();
                     nb_line_<%=cid%>++;
         			<%dbLog.data().updating(dbLog.var("nb_line"));%>
@@ -1212,6 +1071,7 @@ if(columnList != null && columnList.size() > 0) {
                 }
     			%>
                 try {
+                    <%if(isEnableDebug){dbLog.data().sqlDebugPrint("globalMap.get(\""+cid+"_QUERY\")");}%>
                     insertedCount_<%=cid%> = insertedCount_<%=cid%> + pstmtInsert_<%=cid %>.executeUpdate();
                     nb_line_<%=cid%>++;
                     <%dbLog.data().inserting(dbLog.var("nb_line"));%>
@@ -1389,11 +1249,13 @@ if(columnList != null && columnList.size() > 0) {
                     <%
                 }
         		%>
+             		<%if(isEnableDebug){dbLog.data().sqlDebugPrint("globalMap.get(\""+cid+"_QUERY\")");}%>
                     insertedCount_<%=cid%> = insertedCount_<%=cid%> + pstmtInsert_<%=cid %>.executeUpdate();
              		nb_line_<%=cid%>++;
                     <%dbLog.data().inserting(dbLog.var("nb_line"));%>
     			}else{
     				nb_line_<%=cid%>++;
+    				<%if(isEnableDebug){dbLog.data().sqlDebugPrint("globalMap.get(\""+cid+"_QUERY\")");}%>
     				<%dbLog.data().updating(dbLog.var("nb_line"));%>
     			}
                 } catch(java.lang.Exception e) {
@@ -1472,12 +1334,14 @@ if(columnList != null && columnList.size() > 0) {
     		%>
         		pstmt_<%=cid %>.addBatch();
     			nb_line_<%=cid%>++;
+    			<%if(isEnableDebug){dbLog.data().sqlDebugPrint("globalMap.get(\""+cid+"_QUERY\")");}%>
         		<%dbLog.data().addingToBatch(dbLog.var("nb_line"), dbLog.str(dataAction));%>
     		  		batchSizeCounter_<%=cid%>++;
     		<%
     		}else {
     		%>
             try {
+            	<%if(isEnableDebug){dbLog.data().sqlDebugPrint("globalMap.get(\""+cid+"_QUERY\")");}%>
         	    deletedCount_<%=cid%> = deletedCount_<%=cid%> + pstmt_<%=cid %>.executeUpdate();
             	nb_line_<%=cid%>++;
             	<%dbLog.data().deleting(dbLog.var("nb_line"));%>
@@ -1625,6 +1489,7 @@ if(columnList != null && columnList.size() > 0) {
             %>
             int count_on_duplicate_key_<%=cid%> = 0;
             try {
+                <%if(isEnableDebug){dbLog.data().sqlDebugPrint("globalMap.get(\""+cid+"_QUERY\")");}%>
                 count_on_duplicate_key_<%=cid%> = pstmt_<%=cid %>.executeUpdate();
                 <%dbLog.data().insertingOnDuplicateKeyUpdating(null);%>
             } catch(java.lang.Exception e) {
@@ -1690,6 +1555,7 @@ if(columnList != null && columnList.size() > 0) {
                 %>
                 try {
                     nb_line_<%=cid%>++;
+                    <%if(isEnableDebug){dbLog.data().sqlDebugPrint("globalMap.get(\""+cid+"_QUERY\")");}%>
                     insertedCount_<%=cid%> = insertedCount_<%=cid%> + pstmt_<%=cid %>.executeUpdate();
                     <%dbLog.data().insertingOnDuplicateKeyUpdating(dbLog.var("nb_line"));%>
                 } catch(java.lang.Exception e) {

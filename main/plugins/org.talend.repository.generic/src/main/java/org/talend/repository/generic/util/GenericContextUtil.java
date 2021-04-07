@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.talend.components.api.properties.ComponentProperties;
 import org.talend.core.language.ECodeLanguage;
@@ -137,6 +138,54 @@ public class GenericContextUtil {
             }
         }
         return lines;
+    }
+
+
+    /**
+     * update component properties for context name change DOC jding Comment method
+     * "updateCompPropertiesForContextMode".
+     * 
+     * @param connection DatabaseConnection
+     * @param contextVarMap <key:OldContextName, value:NewContextName>
+     */
+    public static void updateCompPropertiesForContextMode(Connection connection, Map<String, String> contextVarMap) {
+        ComponentProperties componentProperties = getComponentProperties(connection);
+        if (componentProperties == null) {
+            return;
+        }
+        findOutPropertiesToUpdate(componentProperties, contextVarMap);
+        updateComponentProperties(connection, componentProperties);
+    }
+
+    private static void findOutPropertiesToUpdate(Properties componentProperties, Map<String, String> contextVarMap) {
+        for (NamedThing namedThing : componentProperties.getProperties()) {
+            if (namedThing==null) {
+                continue;
+            }
+            if (namedThing instanceof Property) {
+                Property property = (Property) namedThing;
+                Object paramValue = property.getStoredValue();
+                if (paramValue != null) {
+                    if (GenericTypeUtils.isListStringType(property)) {
+                        List<String> listString = (List<String>) paramValue;
+                        for (int i = 0; i < listString.size(); i++) {
+                            String str = listString.get(i);
+                            if (StringUtils.isNotBlank(str) && contextVarMap.get(str) != null) {
+                                listString.set(i, contextVarMap.get(str));
+                            }
+                        }
+                    } else {
+                        String newVlue = contextVarMap.get(paramValue.toString());
+                        if (newVlue != null) {
+                            property.setValue(newVlue);
+                        }
+                    }
+                }
+            } else if (namedThing instanceof Properties) {
+                Properties compProp = (Properties) namedThing;
+                findOutPropertiesToUpdate(compProp, contextVarMap);
+            }
+        }
     }
 
     public static void setPropertiesForContextMode(String prefixName, Connection connection, Set<IConnParamName> paramSet) {

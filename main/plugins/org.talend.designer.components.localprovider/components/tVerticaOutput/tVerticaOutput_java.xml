@@ -167,6 +167,16 @@
 			SHOW_IF="USE_EXISTING_CONNECTION == 'false'">
 			<DEFAULT>""</DEFAULT>
 		</PARAMETER>	
+		
+		<PARAMETER NAME="USE_ALTERNATE_SCHEMA" FIELD="CHECK" NUM_ROW="2"
+			SHOW_IF="USE_EXISTING_CONNECTION == 'true'"
+		>
+			<DEFAULT>false</DEFAULT>
+		</PARAMETER>
+		<PARAMETER NAME="ALTERNATE_SCHEMA" FIELD="TEXT" NUM_ROW="3"
+			SHOW_IF="((USE_EXISTING_CONNECTION == 'true') AND (USE_ALTERNATE_SCHEMA == 'true'))">
+			<DEFAULT>""</DEFAULT>
+		</PARAMETER>
 
 		<!-- COPY Command -->
 		<PARAMETER NAME="ABORT_ON_ERROR" FIELD="CHECK" NUM_ROW="4" REQUIRED="false" GROUP="COPY_PARAMETERS" SHOW_IF="DATA_ACTION == 'COPY'">
@@ -198,7 +208,7 @@
 
 		<PARAMETER NAME="BATCH_MODE" FIELD="CHECK" NUM_ROW="10"
 			REQUIRED="true" SHOW_IF="(DATA_ACTION == 'INSERT') OR (DATA_ACTION == 'UPDATE') OR (DATA_ACTION == 'DELETE') OR (DATA_ACTION == 'COPY')">
-			<DEFAULT>false</DEFAULT>
+			<DEFAULT>true</DEFAULT>
 		</PARAMETER>
 
 	  <PARAMETER
@@ -288,7 +298,7 @@
 		<IMPORT NAME="Driver-VERTICA_6.1.2" MODULE="vertica-jdk5-6.1.2-0.jar" MVN="mvn:org.talend.libraries/vertica-jdk5-6.1.2-0/6.0.0"   REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false') and (DB_VERSION=='VERTICA_6_1_X')" />
 		<IMPORT NAME="Driver-VERTICA_7.0.1" MODULE="vertica-jdbc-7.0.1-0.jar" MVN="mvn:org.talend.libraries/vertica-jdbc-7.0.1-0/6.0.0"   REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false') and (DB_VERSION=='VERTICA_7_0_X')" />
 		<IMPORT NAME="Driver-VERTICA_7.1.2" MODULE="vertica-jdbc-7.1.2-0.jar" MVN="mvn:org.talend.libraries/vertica-jdbc-7.1.2-0/6.0.0"   REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false') and (DB_VERSION=='VERTICA_7_1_X')" />
-		<IMPORT NAME="Driver-VERTICA_9.0" MODULE="vertica-jdbc-9.0.0-0.jar" MVN="mvn:org.talend.libraries/vertica-jdbc-9.0.0-0/6.0.0"   REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false') and (DB_VERSION=='VERTICA_9_0')" />
+		<IMPORT NAME="Driver-VERTICA_9.0" MODULE="vertica-jdbc-9.3.1-0.jar" MVN="mvn:com.vertica/vertica-jdbc/9.3.1-0"   REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false') and (DB_VERSION=='VERTICA_9_0')" />
     </IMPORTS>
   </CODEGENERATION>
 

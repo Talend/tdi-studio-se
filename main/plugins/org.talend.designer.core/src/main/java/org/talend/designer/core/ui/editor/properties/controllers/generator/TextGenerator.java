@@ -24,7 +24,7 @@ import org.talend.designer.core.ui.editor.properties.controllers.TextController;
  */
 public class TextGenerator implements IControllerGenerator {
 
-    private IDynamicProperty dp;
+    protected IDynamicProperty dp;
 
     /*
      * (non-Javadoc)

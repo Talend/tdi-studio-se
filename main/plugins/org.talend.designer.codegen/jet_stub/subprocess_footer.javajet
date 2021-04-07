@@ -44,7 +44,7 @@
 	INode startNode = subTree.getRootNode();
 	String startNodeId = startNode.getUniqueName();
 	
-	if(startNodeId!=null && startNodeId.startsWith("tCollector")) {
+	if ("tCollector".equals( startNode.getComponent().getOriginalName() )) {
 		List<? extends INode> departitioners = startNode.getProcess().getNodesOfType("tDepartitioner");
     	if(departitioners!=null) {
     		for(INode departitioner : departitioners) {

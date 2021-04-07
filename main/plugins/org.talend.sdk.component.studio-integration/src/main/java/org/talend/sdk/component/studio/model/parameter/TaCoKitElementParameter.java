@@ -21,13 +21,19 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.Callable;
 
+import org.apache.commons.lang3.StringUtils;
+import org.talend.commons.exception.ExceptionHandler;
 import org.talend.core.model.process.IElement;
+import org.talend.core.model.process.IElementParameter;
 import org.talend.core.runtime.IAdditionalInfo;
 import org.talend.designer.core.model.components.ElementParameter;
+import org.talend.sdk.component.server.front.model.ConfigTypeNode;
+import org.talend.sdk.component.studio.Lookups;
 import org.talend.sdk.component.studio.model.action.IActionParameter;
 import org.talend.sdk.component.studio.model.action.SettingsActionParameter;
 import org.talend.sdk.component.studio.ui.composite.problemmanager.IProblemManager;
 import org.talend.sdk.component.studio.util.TaCoKitUtil;
+import org.talend.sdk.studio.process.TaCoKitNode;
 
 /**
  * DOC cmeng class global comment. Detailled comment
@@ -35,7 +41,9 @@ import org.talend.sdk.component.studio.util.TaCoKitUtil;
 public class TaCoKitElementParameter extends ElementParameter implements IAdditionalInfo {
 
     private final PropertyChangeSupport pcs = new PropertyChangeSupport(this);
-
+    
+    private final PropertyChangeSupport pcs_refresh = new PropertyChangeSupport(this);
+    
     private final List<IValueChangedListener> valueChangeListeners = new ArrayList<>();
 
     /**
@@ -50,6 +58,14 @@ public class TaCoKitElementParameter extends ElementParameter implements IAdditi
     private Optional<IProblemManager> problemManager = Optional.ofNullable(null);
 
     private Optional<Callable<Void>> registValidatorCallback = Optional.ofNullable(null);
+
+    private PropertyNode propertyNode;
+
+    /**
+     * Form that own this tck element paramter.
+     * actually : Main or Advanced.
+     */
+    private String form;
 
     public TaCoKitElementParameter() {
         this(null);
@@ -81,6 +97,14 @@ public class TaCoKitElementParameter extends ElementParameter implements IAdditi
         return problemManager;
     }
 
+    public String getForm() {
+        return form;
+    }
+
+    public void setForm(String form) {
+        this.form = form;
+    }
+
     public void setProblemManager(IProblemManager problemManager) {
         this.problemManager = Optional.ofNullable(problemManager);
     }
@@ -100,6 +124,14 @@ public class TaCoKitElementParameter extends ElementParameter implements IAdditi
     public void unregisterListener(final String propertyName, final PropertyChangeListener listener) {
         pcs.removePropertyChangeListener(propertyName, listener);
     }
+    
+    public void registerRedrawListener(final String propertyName, final PropertyChangeListener listener) {
+        pcs_refresh.addPropertyChangeListener(propertyName, listener);
+    }
+    
+    public void unregisterRedrawListener(final String propertyName, final PropertyChangeListener listener) {
+        pcs_refresh.removePropertyChangeListener(propertyName, listener);
+    }
 
     public void addValueChangeListener(final IValueChangedListener listener) {
         valueChangeListeners.add(listener);
@@ -112,17 +144,68 @@ public class TaCoKitElementParameter extends ElementParameter implements IAdditi
     public void firePropertyChange(final String name, final Object oldValue, final Object newValue) {
         pcs.firePropertyChange(name, oldValue, newValue);
     }
-
+    
+    public void firePropertyChangeRedraw(final String name, final Object oldValue, final Object newValue) {
+        pcs_refresh.firePropertyChange(name, oldValue, newValue);
+    }
+    
     void fireValueChange(final Object oldValue, final Object newValue) {
         for (final IValueChangedListener listener : valueChangeListeners) {
             listener.onValueChanged(this, oldValue, newValue);
         }
     }
 
+    @Override
+    public String getRepositoryValue() {
+        String valueFromParentClass = super.getRepositoryValue();
+        if (StringUtils.isNotBlank(valueFromParentClass)) {
+            return valueFromParentClass;
+        }
+        String defaultRepositoryValue = getName();
+        try {
+            /**
+             * It is better to don't use cache here, because it may have issue after metadata type is changed
+             */
+            if (propertyNode != null) {
+                IElement element = this.getElement();
+                if (element != null) {
+                    IElementParameter metadataTypeIdParam = element.getElementParameter(TaCoKitNode.TACOKIT_METADATA_TYPE_ID);
+                    if (metadataTypeIdParam != null) {
+                        String metadataTypeId = (String) metadataTypeIdParam.getValue();
+                        if (StringUtils.isNotBlank(metadataTypeId)) {
+                            ConfigTypeNode configTypeNode = Lookups.taCoKitCache().getConfigTypeNode(metadataTypeId);
+                            if (configTypeNode != null) {
+                                PropertyNode propNode = TaCoKitUtil.getSamePropertyNode(propertyNode, configTypeNode);
+                                if (propNode != null) {
+                                    String prefix = propNode.getProperty().getPath();
+                                    if (!defaultRepositoryValue.startsWith(prefix + ".")) { //$NON-NLS-1$
+                                        defaultRepositoryValue = null;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        } catch (Exception e) {
+            ExceptionHandler.process(e);
+        }
+
+        return defaultRepositoryValue;
+    }
+
     public void redraw() {
         if (isRedrawable()) {
             redrawParameter.setValue(true);
         }
+    }
+
+    public PropertyNode getPropertyNode() {
+        return propertyNode;
+    }
+
+    public void setPropertyNode(PropertyNode propertyNode) {
+        this.propertyNode = propertyNode;
     }
 
     /**
@@ -215,6 +298,7 @@ public class TaCoKitElementParameter extends ElementParameter implements IAdditi
         super.setValue(newValue);
         firePropertyChange("value", oldValue, getStringValue());
         fireValueChange(oldValue, newValue);
+        firePropertyChangeRedraw("show", "", getValue());
     }
 
     public void updateValueOnly(final Object newValue) {

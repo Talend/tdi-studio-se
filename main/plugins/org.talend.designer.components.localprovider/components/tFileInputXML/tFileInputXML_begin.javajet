@@ -550,7 +550,7 @@ org.jaxen.NamespaceContext namespaceContext_<%=cid%> = new org.jaxen.NamespaceCo
 x_<%=cid%>.setNamespaceContext(namespaceContext_<%=cid%>);
 <%}%>
 
-java.util.List<org.dom4j.tree.AbstractNode> nodeList_<%=cid%> = (java.util.List<org.dom4j.tree.AbstractNode>)x_<%=cid%>.selectNodes(doc_<%=cid%>);	
+java.util.List<org.dom4j.Node> nodeList_<%=cid%> = (java.util.List<org.dom4j.Node>)x_<%=cid%>.selectNodes(doc_<%=cid%>);	
 XML_API_<%=cid%> xml_api_<%=cid%> = new XML_API_<%=cid%>();
 String str_<%=cid %> = "";
 org.dom4j.Node node_<%=cid%> = null;
@@ -618,7 +618,7 @@ if(schemaOptNum>0){
 }
 %>
 <%log4jFileUtil.startRetriveDataInfo();%>
-for (org.dom4j.tree.AbstractNode temp_<%=cid%>: nodeList_<%=cid%>) {
+for (org.dom4j.Node temp_<%=cid%>: nodeList_<%=cid%>) {
 <%
 // *** SAX *** //
 }else if(("SAX").equals(mode)){
@@ -771,7 +771,7 @@ if ((metadatas!=null)&&(metadatas.size()>0)) {
 				varsMap.put("node_"+cid,"org.dom4j.Node");
 				varsMap.put("nsTool_"+cid,"NameSpaceTool_"+cid);
 				varsMap.put("xmlNameSpaceMap_"+cid,"java.util.HashMap<String,String>");
-				varsMap.put("temp_"+cid,"org.dom4j.tree.AbstractNode");
+				varsMap.put("temp_"+cid,"org.dom4j.Node");
 				if(ignore_NS){
 					varsMap.put("namespaceContext_"+cid,"org.jaxen.NamespaceContext");
 				}

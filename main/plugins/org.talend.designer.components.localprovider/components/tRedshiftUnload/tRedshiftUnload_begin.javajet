@@ -35,6 +35,7 @@ imports="
 	
 	boolean useExistingS3Connection = "true".equalsIgnoreCase(ElementParameterParser.getValue(node,"__USE_EXISTING_CONNECTION_S3__"));
 	String s3ConnectionCid = ElementParameterParser.getValue(node,"__CONNECTION_S3__");
+    String redshiftTracker = org.talend.core.utils.TrackerUtil.getRedshiftTracker();
 	INode current_node = node;
 	if(useExistingS3Connection){
 		current_node = NodeUtil.getNodeByUniqueName(node.getProcess(),s3ConnectionCid,true);
@@ -47,16 +48,7 @@ imports="
 %>
 	 	conn_<%=cid%> = (java.sql.Connection)globalMap.get("<%=conn%>");
 <%
-        //Retrieve connection node and check if SSO was used for correct logging
-        List< ? extends INode> nodes =  node.getProcess().getNodesOfType("tRedshiftConnection");
-        String connectionRedShift = ElementParameterParser.getValue(node,"__CONNECTION__");
-        for (INode ne : nodes) {
-            if (connectionRedShift.equals(ne.getUniqueName())) {
-                jdbcUrl = ElementParameterParser.getValue(ne, "__JDBC_URL__");
-            }
-        }
-        boolean needUserAndPassword = !"SSO".equals(jdbcUrl);
-        log4jCodeGenerateUtil.useExistConnection(node, needUserAndPassword);
+		log4jCodeGenerateUtil.useExistConnection(node);
 	} else {
 %>
 		String driverClass_<%=cid%> = "com.amazon.redshift.jdbc42.Driver";
@@ -85,17 +77,16 @@ imports="
 %>
         String url_<%=cid%> = sbuilder_<%=cid%>.toString();
 <%
-        if (!"SSO".equals(jdbcUrl)){
-            String passwordFieldName = "__PASS__";
-            %>
-            <%if (ElementParameterParser.canEncrypt(node, passwordFieldName)) {%> 
-            final String decryptedPass_<%=cid%> = routines.system.PasswordEncryptUtil.decryptPassword(<%=ElementParameterParser.getEncryptedValue(node, passwordFieldName)%>);
-            <%} else {%>
-            final String decryptedPass_<%=cid%> = <%= ElementParameterParser.getValue(node, passwordFieldName)%>; 
-            <%}%>
-            String dbUser_<%=cid %> = <%=userName%>;
-            String dbPwd_<%=cid %> = decryptedPass_<%=cid%>;
-<%      }
+        String passwordFieldName = "__PASS__";
+        %>
+        <%if (ElementParameterParser.canEncrypt(node, passwordFieldName)) {%> 
+        final String decryptedPass_<%=cid%> = routines.system.PasswordEncryptUtil.decryptPassword(<%=ElementParameterParser.getEncryptedValue(node, passwordFieldName)%>);
+        <%} else {%>
+        final String decryptedPass_<%=cid%> = <%= ElementParameterParser.getValue(node, passwordFieldName)%>; 
+        <%}%>
+        String dbUser_<%=cid %> = <%=userName%>;
+        String dbPwd_<%=cid %> = decryptedPass_<%=cid%>;
+<%      
 		log4jCodeGenerateUtil.connect(node);
 	}
 	
@@ -178,7 +169,7 @@ imports="
 		encrypt = "true".equals(ElementParameterParser.getValue(current_node, "__ENCRYPT__"));
 		encryptionKeyPropertyName = "__ENCRYPTED_KEY_BASE64__";
 	}
-	if(encrypt) {
+	if(!"PARQUET".equals(exportType) && encrypt) {
 %>
 		.append(";master_symmetric_key=")
 <%
@@ -195,7 +186,12 @@ imports="
 %>
 	.append("' ")
 <%
-	if(encrypt) {
+    if("PARQUET".equals(exportType)) {
+%>
+        .append("FORMAT PARQUET ")
+<%
+    }
+	if(!"PARQUET".equals(exportType) && encrypt) {
 %>
 		.append("ENCRYPTED ")
 <%
@@ -218,20 +214,20 @@ imports="
 	}
 	
 	boolean compressed = "true".equals(ElementParameterParser.getValue(node, "__COMPRESS__"));
-	if(compressed) {
+	if(!"PARQUET".equals(exportType) && compressed) {
 		String compression = ElementParameterParser.getValue(node, "__COMPRESSION__");
 %>
 		.append("<%=compression%> ")
 <%
 	}
-	
-	boolean escape = "true".equals(ElementParameterParser.getValue(node, "__ESCAPE__"));
-	if(escape) {
+	if(!"PARQUET".equals(exportType)) {
+        boolean escape = "true".equals(ElementParameterParser.getValue(node, "__ESCAPE__"));
+        if(escape) {
 %>
-		.append("ESCAPE ")
+            .append("ESCAPE ")
 <%
+        }
 	}
-	
 	boolean allowOverwrite = "true".equals(ElementParameterParser.getValue(node, "__ALLOWOVERWRITE__"));
 	if(allowOverwrite) {
 %>
@@ -245,19 +241,20 @@ imports="
 		.append("PARALLEL OFF ")
 <%
 	}
-	
-	boolean specifyNullString = "true".equals(ElementParameterParser.getValue(node, "__SPECIFY_NULL_STRING__"));
-	if(specifyNullString) {
-		String nullString = ElementParameterParser.getValue(node, "__NULL_STRING__");
+    if(!"PARQUET".equals(exportType)) {
+        boolean specifyNullString = "true".equals(ElementParameterParser.getValue(node, "__SPECIFY_NULL_STRING__"));
+        if(specifyNullString) {
+            String nullString = ElementParameterParser.getValue(node, "__NULL_STRING__");
 %>
-		.append("NULL '").append(<%=nullString%>).append("' ")
+            .append("NULL '").append(<%=nullString%>).append("' ")
 <%
-	}
+        }
+    }
 %>
 	;
 	
 	java.sql.Statement stmt_<%=cid %>=conn_<%=cid %>.createStatement();
-	stmt_<%=cid %>.execute(command_<%=cid%>.toString());
+	stmt_<%=cid %>.execute("<%=redshiftTracker%> \n " + command_<%=cid%>.toString());
 	<%if(log4jEnabled){%>
 		log.info("<%=cid%> - Finish unloading data to s3.");
 	<%}%>

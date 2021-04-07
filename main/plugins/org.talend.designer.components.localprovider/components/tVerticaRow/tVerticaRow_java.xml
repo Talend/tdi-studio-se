@@ -230,12 +230,12 @@
 		<IMPORT NAME="Driver-VERTICA_4" MODULE="vertica_4.0_jdk_5.jar" MVN="mvn:org.talend.libraries/vertica_4.0_jdk_5/6.0.0"   REQUIRED="false" />
 		<IMPORT NAME="Driver-VERTICA_4.1" MODULE="vertica_4.1.7_jdk_5.jar" MVN="mvn:org.talend.libraries/vertica_4.1.7_jdk_5/6.0.0"   REQUIRED="false" />
 		<IMPORT NAME="Driver-VERTICA_5.0" MODULE="vertica_4.1.14_jdk_5.jar" MVN="mvn:org.talend.libraries/vertica_4.1.14_jdk_5/6.0.0"   REQUIRED="false" />
-        <IMPORT NAME="Driver-VERTICA_5.1" MODULE="vertica_5.1.6_jdk_5.jar" MVN="mvn:org.talend.libraries/vertica_5.1.6_jdk_5/6.0.0"   REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false') and (DB_VERSION=='VERTICA_5_1')" />
+		<IMPORT NAME="Driver-VERTICA_5.1" MODULE="vertica_5.1.6_jdk_5.jar" MVN="mvn:org.talend.libraries/vertica_5.1.6_jdk_5/6.0.0"   REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false') and (DB_VERSION=='VERTICA_5_1')" />
 		<IMPORT NAME="Driver-VERTICA_6.0" MODULE="vertica-jdk5-6.0.2-0.jar" MVN="mvn:org.talend.libraries/vertica-jdk5-6.0.2-0/6.0.0"   REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false') and (DB_VERSION=='VERTICA_6_0')" />
 		<IMPORT NAME="Driver-VERTICA_6.1.2" MODULE="vertica-jdk5-6.1.2-0.jar" MVN="mvn:org.talend.libraries/vertica-jdk5-6.1.2-0/6.0.0"   REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false') and (DB_VERSION=='VERTICA_6_1_X')" />
 		<IMPORT NAME="Driver-VERTICA_7.0.1" MODULE="vertica-jdbc-7.0.1-0.jar" MVN="mvn:org.talend.libraries/vertica-jdbc-7.0.1-0/6.0.0"   REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false') and (DB_VERSION=='VERTICA_7_0_X')" />
 		<IMPORT NAME="Driver-VERTICA_7.1.2" MODULE="vertica-jdbc-7.1.2-0.jar" MVN="mvn:org.talend.libraries/vertica-jdbc-7.1.2-0/6.0.0"   REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false') and (DB_VERSION=='VERTICA_7_1_X')" />
-		<IMPORT NAME="Driver-VERTICA_9.0" MODULE="vertica-jdbc-9.0.0-0.jar" MVN="mvn:org.talend.libraries/vertica-jdbc-9.0.0-0/6.0.0"   REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false') and (DB_VERSION=='VERTICA_9_0')" />
+		<IMPORT NAME="Driver-VERTICA_9.0" MODULE="vertica-jdbc-9.3.1-0.jar" MVN="mvn:com.vertica/vertica-jdbc/9.3.1-0"   REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false') and (DB_VERSION=='VERTICA_9_0')" />
     </IMPORTS>
   </CODEGENERATION>
 

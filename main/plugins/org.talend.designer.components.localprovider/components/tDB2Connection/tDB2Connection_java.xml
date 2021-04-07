@@ -191,6 +191,8 @@
 		<IMPORT NAME="Driver-DB2" MODULE="db2jcc4.jar" MVN="mvn:org.talend.libraries/db2jcc4/6.0.0"  REQUIRED="true" />
 		<IMPORT NAME="Driver-DB2" MODULE="db2jcc_license_cu.jar" MVN="mvn:org.talend.libraries/db2jcc_license_cu/6.0.0"  REQUIRED="true" />
 		<IMPORT NAME="Driver-DB2" MODULE="db2jcc_license_cisuz.jar" MVN="mvn:org.talend.libraries/db2jcc_license_cisuz/6.0.0"  REQUIRED="true" />
+		<IMPORT NAME="slf4j-api-1.7.25.jar" MODULE="slf4j-api-1.7.25.jar" MVN="mvn:org.slf4j/slf4j-api/1.7.25" REQUIRED_IF="(USE_SHARED_CONNECTION == 'true' AND SPECIFY_DATASOURCE_ALIAS=='false')" />
+		<IMPORT NAME="slf4j-log4j12-1.7.25.jar" MODULE="slf4j-log4j12-1.7.25.jar" MVN="mvn:org.slf4j/slf4j-log4j12/1.7.25" REQUIRED_IF="(USE_SHARED_CONNECTION == 'true' AND SPECIFY_DATASOURCE_ALIAS=='false')" />
      </IMPORTS>
    </CODEGENERATION>
 

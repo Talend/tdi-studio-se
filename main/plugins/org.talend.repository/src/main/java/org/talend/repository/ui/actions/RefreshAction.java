@@ -48,7 +48,6 @@ public class RefreshAction extends Action {
         ProjectRepositoryNode.refProjectBool = false;
         // qli modified to fix the bug 6659.
         RepositoryManager.syncRoutineAndJoblet(ERepositoryObjectType.ROUTINES);
-        RepositoryManager.syncRoutineAndJoblet(ERepositoryObjectType.PIG_UDF);
         RepositoryManager.syncRoutineAndJoblet(ERepositoryObjectType.JOBLET);
         RepositoryManager.syncUserComponents();
 

@@ -57,8 +57,6 @@ public class ChangeMysqlJarReference4MysqlComponents extends
 	                    String jarValue = dbVersion.getValue();
 	                    if ("mysql-connector-java-5.1.0-bin.jar".equalsIgnoreCase(jarValue)) { //$NON-NLS-1$
 	                        dbVersion.setValue("MYSQL_5"); //$NON-NLS-1$
-	                    } else if ("mysql-connector-java-3.1.14-bin.jar".equalsIgnoreCase(jarValue)) { //$NON-NLS-1$
-	                        dbVersion.setValue("MYSQL_4"); //$NON-NLS-1$
 	                    }
 	                }
 	            }
@@ -68,8 +66,6 @@ public class ChangeMysqlJarReference4MysqlComponents extends
 	        		String jarValue = dbVersion.getValue();
 	        		if ("mysql-connector-java-5.1.0-bin.jar".equalsIgnoreCase(jarValue)) {//$NON-NLS-1$
 	        			dbVersion.setValue("MYSQL_5");//$NON-NLS-1$
-	        		} else if ("mysql-connector-java-3.1.14-bin.jar".equalsIgnoreCase(jarValue)) {//$NON-NLS-1$
-	        			dbVersion.setValue("MYSQL_4");//$NON-NLS-1$
 	        		}
 	        	}
 	        }

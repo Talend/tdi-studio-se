@@ -12,9 +12,8 @@
 // ============================================================================
 package org.talend.designer.dbmap.language.oracle;
 
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -283,7 +282,7 @@ public class OracleGenerationManagerTest extends DbGenerationManagerTestHelper {
     }
 
     @Test
-    public void testBuildSqlSelectWithAlias() {
+    public void testBuildSqlSelect() {
         String schema = "";
         String main_table = "((String)globalMap.get(\"main_table\"))";
         String main_alias = "main1";
@@ -306,14 +305,77 @@ public class OracleGenerationManagerTest extends DbGenerationManagerTestHelper {
         init(schema, main_table, main_alias, lookup_table, lookup_alias);
         expectedQuery = "\"SELECT\n"
                 + "main_table.id, main_table.name, main_table.age, \""
-                + " +context.schema+ \".\" +((String)globalMap.get(\"lookup_table\"))+ \".score AS score\n"
+                + " +context.schema+ \".\" +((String)globalMap.get(\"lookup_table\"))+ \".score\n"
                 + "FROM\n"
                 + " \" +context.schema+\".\"+((String)globalMap.get(\"main_table\"))+((String)globalMap.get(\"main_table1\"))+ \" main_table , \""
                 + " +context.schema+ \".\" +((String)globalMap.get(\"lookup_table\"))";
         manager = new OracleGenerationManager();
         query = manager.buildSqlSelect(dbMapComponent, "grade");
         assertEquals(expectedQuery, query);
-
     }
 
+    @Test
+    public void testBuildSqlSelectWithAlias() {
+        String schema = "";
+        String main_table = "((String)globalMap.get(\"main_table\"))";
+        String main_alias = "main1";
+        String lookup_table = "((String)globalMap.get(\"lookup_table\"))";
+        String lookup_alias = "lookup1";
+        init(schema, main_table, main_alias, lookup_table, lookup_alias);
+        String expectedQuery = "\"SELECT\n" + "main1.id, main1.name, main1.age, lookup1.score\n"
+                + "FROM\n"
+                + " \" +((String)globalMap.get(\"main_table\"))+ \" main1 , \" +((String)globalMap.get(\"lookup_table\"))+ \" lookup1\"";
+        OracleGenerationManager manager = new OracleGenerationManager();
+        manager.setUseAliasInOutputTable(true);
+        String query = manager.buildSqlSelect(dbMapComponent, "grade");
+        assertEquals(expectedQuery, query);
+
+        schema = "context.schema";
+        main_table = "((String)globalMap.get(\"main_table\"))+((String)globalMap.get(\"main_table1\"))";
+        main_alias = "main_table";
+        lookup_table = "((String)globalMap.get(\"lookup_table\"))";
+        lookup_alias = "";
+        init(schema, main_table, main_alias, lookup_table, lookup_alias);
+        expectedQuery = "\"SELECT\n" + "main_table.id, main_table.name, main_table.age, \""
+                + " +context.schema+ \".\" +((String)globalMap.get(\"lookup_table\"))+ \".score AS score\n" + "FROM\n"
+                + " \" +context.schema+\".\"+((String)globalMap.get(\"main_table\"))+((String)globalMap.get(\"main_table1\"))+ \" main_table , \""
+                + " +context.schema+ \".\" +((String)globalMap.get(\"lookup_table\"))";
+        manager = new OracleGenerationManager();
+        manager.setUseAliasInOutputTable(true);
+        query = manager.buildSqlSelect(dbMapComponent, "grade");
+        assertEquals(expectedQuery, query);
+    }
+
+    @Test
+    public void testBuildSqlSelectWithColumnsAliasIfChecked() {
+        OracleGenerationManager manager = new OracleGenerationManager();
+        manager.setUseAliasInOutputTable(true);
+        String schema = "";
+        String main_table = "main_table";
+        String main_alias = "";
+        String lookup_table = "lookup_table";
+        String lookup_alias = "";
+        init4ColumnAlias(schema, main_table, main_alias, lookup_table, lookup_alias);
+        String expectedQuery = "\"SELECT\n"
+                + "main_table.id, main_table.name_alias AS name, main_table.age_alias AS age, lookup_table.score\n"
+                + "FROM\n" + " main_table , lookup_table\"";
+        String query = manager.buildSqlSelect(dbMapComponent, "grade");
+        assertEquals(expectedQuery, query);
+    }
+
+    @Test
+    public void testBuildSqlSelectWithColumnsAliasIfunChecked() {
+        OracleGenerationManager manager = new OracleGenerationManager();
+        manager.setUseAliasInOutputTable(false);
+        String schema = "";
+        String main_table = "main_table";
+        String main_alias = "";
+        String lookup_table = "lookup_table";
+        String lookup_alias = "";
+        init4ColumnAlias(schema, main_table, main_alias, lookup_table, lookup_alias);
+        String expectedQuery = "\"SELECT\n" + "main_table.id, main_table.name_alias, main_table.age_alias, lookup_table.score\n"
+                + "FROM\n" + " main_table , lookup_table\"";
+        String query = manager.buildSqlSelect(dbMapComponent, "grade");
+        assertEquals(expectedQuery, query);
+    }
 }

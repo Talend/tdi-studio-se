@@ -56,7 +56,7 @@ public class ComponentService {
 
     private static final org.apache.log4j.Logger log = org.apache.log4j.Logger.getLogger(ComponentService.class);
 
-    private static final ImageDescriptor DEFAULT_IMAGE = ImageProvider.getImageDesc(EImage.COMPONENT_MISSING);
+    public static final ImageDescriptor DEFAULT_IMAGE = ImageProvider.getImageDesc(EImage.COMPONENT_MISSING);
 
     private final Function<String, File> mvnResolver;
 

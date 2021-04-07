@@ -17,6 +17,8 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.ArrayUtils;
@@ -34,9 +36,9 @@ import org.eclipse.debug.core.ILaunchConfiguration;
 import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.exception.SystemException;
 import org.talend.commons.ui.runtime.exception.MessageBoxExceptionHandler;
+import org.talend.commons.utils.generation.JavaUtils;
 import org.talend.core.model.process.IContext;
 import org.talend.core.model.process.IProcess;
-import org.talend.core.model.process.IProcess2;
 import org.talend.core.model.process.ITargetExecutionConfig;
 import org.talend.core.model.runprocess.IEclipseProcessor;
 import org.talend.core.runtime.process.TalendProcessArgumentConstant;
@@ -44,12 +46,12 @@ import org.talend.core.runtime.process.TalendProcessOptionConstants;
 import org.talend.designer.codegen.ICodeGenerator;
 import org.talend.designer.core.ISyntaxCheckableEditor;
 import org.talend.designer.core.i18n.Messages;
-import org.talend.designer.maven.model.MavenSystemFolders;
 import org.talend.designer.runprocess.IProcessMessageManager;
 import org.talend.designer.runprocess.IProcessor;
 import org.talend.designer.runprocess.ProcessorException;
 import org.talend.designer.runprocess.ProcessorUtilities;
 import org.talend.repository.ui.wizards.exportjob.scriptsmanager.JobScriptsManager;
+import org.talend.utils.StudioKeysFileCheck;
 
 /**
  * DOC nrousseau class global comment. Detailled comment <br/>
@@ -63,6 +65,8 @@ public abstract class Processor implements IProcessor, IEclipseProcessor, Talend
     private static Logger log = Logger.getLogger(Processor.class);
 
     public static final String CTX_ARG = TalendProcessArgumentConstant.CMD_ARG_CONTEXT_NAME;
+
+    public static final String DEBUG_ROUTE_ID_ARG = "DEBUG_ROUTE_ID_ARG"; //$NON-NLS-1$
 
     private static final String STAT_PORT_ARG = TalendProcessArgumentConstant.CMD_ARG_STATS_PORT;
 
@@ -361,6 +365,7 @@ public abstract class Processor implements IProcessor, IEclipseProcessor, Talend
             throws ProcessorException {
 
         String[] cmd = getCommandLine(true, false, statOption, traceOption, codeOptions);
+        cmd = addEncryptionFilePathParameter(cmd);
         logCommandLine(cmd, level);
         return exec(cmd, path);
     }
@@ -368,11 +373,7 @@ public abstract class Processor implements IProcessor, IEclipseProcessor, Talend
     protected Process exec(String[] cmd, String path) throws ProcessorException {
         try {
             if (path == null || !new File(path).exists()) {
-                if (getSpecialWorkingDir() != null) {
-                    return Runtime.getRuntime().exec(cmd, null, getSpecialWorkingDir());
-                } else {
-                    return Runtime.getRuntime().exec(cmd);
-                }
+                return Runtime.getRuntime().exec(cmd);
             } else {
                 return Runtime.getRuntime().exec(cmd, null, new File(path));
             }
@@ -381,21 +382,29 @@ public abstract class Processor implements IProcessor, IEclipseProcessor, Talend
         }
     }
 
-    /**
-     * (TUP-20459)For a job which dependencies resources need set the working dir DOC jding
-     * Comment method "getSpecialWorkingDir".
-     *
-     * @return
-     */
-    private File getSpecialWorkingDir() {
-        if (!(process instanceof IProcess2)) {
-            return null;
+    protected String[] addEncryptionFilePathParameter(String[] cmds) {
+        String encryptionFilePath = System.getProperty(StudioKeysFileCheck.ENCRYPTION_KEY_FILE_SYS_PROP);
+        File encryptionFile = new File(encryptionFilePath);
+        boolean isContained = false;
+        for (String cmd : cmds) {
+            if (cmd != null && cmd.trim().startsWith(StudioKeysFileCheck.ENCRYPTION_KEY_FILE_JVM_PARAM)) {
+                isContained = true;
+                break;
+            }
         }
-        File workingDir = project.getFile(MavenSystemFolders.EXT_RESOURCES.getPath()).getLocation().toFile();
-        if (workingDir.exists()) {
-            return workingDir;
+        if (!isContained) {
+            List<String> cmdList = new ArrayList<String>();
+            int cpIndex = ArrayUtils.indexOf(cmds, JavaUtils.JAVA_CP);
+            for (int i = 0; i < cpIndex; i++) {
+                cmdList.add(cmds[i]);
+            }
+            cmdList.add(StudioKeysFileCheck.ENCRYPTION_KEY_FILE_JVM_PARAM + "=" + encryptionFile.toURI().getPath());
+            for (int i = cpIndex; i < cmds.length; i++) {
+                cmdList.add(cmds[i]);
+            }
+            return cmdList.toArray(new String[0]);
         }
-        return null;
+        return cmds;
     }
 
     public static Thread createProdConsThread(final InputStream input, final boolean isError, final int bufferSize,

@@ -28,6 +28,7 @@ import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
 
 import org.talend.commons.ui.runtime.exception.ExceptionHandler;
+import org.talend.commons.utils.io.FilesUtils;
 import org.talend.core.repository.constants.FileConstants;
 
 /**
@@ -204,44 +205,7 @@ public class ZipToFile {
      * @throws Exception
      */
     public static void unZipFile(String zipfile, String unzipdir) throws Exception {
-        File unzipF = new File(unzipdir);
-        if (!unzipF.exists()) {
-            unzipF.mkdirs();
-        }
-        ZipFile zfile = new ZipFile(zipfile);
-        Enumeration zList = zfile.entries();
-        ZipEntry ze = null;
-        byte[] buf = new byte[1024];
-        while (zList.hasMoreElements()) {
-            ze = (ZipEntry) zList.nextElement();
-            if (ze.isDirectory()) {
-                File f = new File(unzipdir + File.separator+ze.getName());
-                f.mkdirs();
-                continue;
-            }
-            // OutputStream os = new BufferedOutputStream(new
-            // FileOutputStream(getRealFileName(unzipdir,
-            // ze.getName())));
-            unzipdir = unzipdir.replace('\\', '/');
-            if (!unzipdir.endsWith("/")) { //$NON-NLS-1$
-                unzipdir = unzipdir + "/"; //$NON-NLS-1$
-            }
-            String filename = unzipdir + ze.getName();
-            File zeF = new File(filename);
-            if (!zeF.getParentFile().exists()) {
-                zeF.getParentFile().mkdirs();
-            }
-
-            OutputStream os = new BufferedOutputStream(new FileOutputStream(zeF));
-            InputStream is = new BufferedInputStream(zfile.getInputStream(ze));
-            int readLen = 0;
-            while ((readLen = is.read(buf, 0, 1024)) != -1) {
-                os.write(buf, 0, readLen);
-            }
-            is.close();
-            os.close();
-        }
-        zfile.close();
+        FilesUtils.unzip(zipfile, unzipdir);
     }
 
     public static void main(String[] args) {

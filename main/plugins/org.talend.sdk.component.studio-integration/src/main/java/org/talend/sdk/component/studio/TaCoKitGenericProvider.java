@@ -22,6 +22,8 @@ import java.util.Locale;
 import java.util.Set;
 import java.util.stream.Stream;
 
+import org.eclipse.jface.resource.ImageDescriptor;
+import org.talend.commons.exception.ExceptionHandler;
 import org.talend.core.CorePlugin;
 import org.talend.core.model.components.ComponentCategory;
 import org.talend.core.model.components.IComponent;
@@ -74,8 +76,16 @@ public class TaCoKitGenericProvider implements IGenericProvider {
             details.forEach(pair -> {
                 ComponentIndex index = pair.getFirst();
                 ComponentDetail detail = pair.getSecond();
-                components.add(new ComponentModel(index, detail, configTypes, service.toEclipseIcon(index.getIcon()), reportPath,
-                        isCatcherAvailable));
+                ImageDescriptor imageDesc = null;
+                try {
+                    imageDesc = service.toEclipseIcon(index.getIcon());
+                } catch (Exception e) {
+                    ExceptionHandler.process(e);
+                }
+                if (imageDesc == null) {
+                    imageDesc = ComponentService.DEFAULT_IMAGE;
+                }
+                components.add(new ComponentModel(index, detail, configTypes, imageDesc, reportPath, isCatcherAvailable));
             });
         }
     }

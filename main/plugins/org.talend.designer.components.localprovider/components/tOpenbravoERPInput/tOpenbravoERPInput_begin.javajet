@@ -293,7 +293,7 @@ String loopPath_<%=cid %> = "/ob:Openbravo/<%=entityName %>";
 org.dom4j.XPath x_<%=cid%> = doc_<%=cid%>.createXPath(nsTool_<%=cid%>.addDefaultNSPrefix(loopPath_<%=cid %>, loopPath_<%=cid %>));  
 x_<%=cid%>.setNamespaceURIs(xmlNameSpaceMap_<%=cid%>); 
 
-java.util.List<org.dom4j.tree.AbstractNode> nodeList_<%=cid%> = (java.util.List<org.dom4j.tree.AbstractNode>)x_<%=cid%>.selectNodes(doc_<%=cid%>);	
+java.util.List<org.dom4j.Node> nodeList_<%=cid%> = (java.util.List<org.dom4j.Node>)x_<%=cid%>.selectNodes(doc_<%=cid%>);	
 XML_API_<%=cid%> xml_api_<%=cid%> = new XML_API_<%=cid%>();
 String str_<%=cid %> = "";
 String referenceFieldSeparator_<%=cid %> = ";";
@@ -301,7 +301,7 @@ org.dom4j.Node node_<%=cid%> = null;
 StringBuilder referenceValue_<%=cid %> = new StringBuilder();
 is_<%=cid %>.close();
 hc_<%=cid %>.disconnect();
-for (org.dom4j.tree.AbstractNode temp_<%=cid%>: nodeList_<%=cid%>) {
+for (org.dom4j.Node temp_<%=cid%>: nodeList_<%=cid%>) {
 	nb_line_<%=cid%>++;
 <%
 List< ? extends IConnection> conns = node.getOutgoingSortedConnections();
@@ -390,10 +390,10 @@ if(itemType<%=i %>_<%=cid %>.equals("")){
 						}
 %>
 // List field: <%=columnName %>. Entity type of the list item is "<%=itemType %>".
-java.util.List<org.dom4j.tree.AbstractNode> nodes<%=i %>_<%=cid %> = temp_<%=cid %>.selectNodes("./<%=openbravoName %>/<%=itemType %>");
+java.util.List<org.dom4j.Node> nodes<%=i %>_<%=cid %> = temp_<%=cid %>.selectNodes("./<%=openbravoName %>/<%=itemType %>");
 //System.out.print(nodes23_<%=cid %>.size());
 <%=conn.getName() %>.<%=columnName %> = new java.util.ArrayList<String>();
-for (org.dom4j.tree.AbstractNode node<%=i %>_<%=cid %> : nodes<%=i %>_<%=cid %>) {
+for (org.dom4j.Node node<%=i %>_<%=cid %> : nodes<%=i %>_<%=cid %>) {
 	// string value for Reference.
     referenceValue_<%=cid %>.delete(0, referenceValue_<%=cid %>.length());
     // @id

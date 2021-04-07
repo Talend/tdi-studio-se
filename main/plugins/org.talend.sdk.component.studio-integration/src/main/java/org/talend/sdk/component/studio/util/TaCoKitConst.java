@@ -16,6 +16,8 @@ import org.talend.core.model.repository.ERepositoryObjectType;
 
 public class TaCoKitConst {
 
+    public static final String DEFAULT_LOCALHOST = "127.0.0.1"; //$NON-NLS-1$
+
     public static final String BUNDLE_ID = "org.talend.sdk.component.studio-integration"; //$NON-NLS-1$
 
     public static final ERepositoryObjectType METADATA_TACOKIT = ERepositoryObjectType.valueOf("TACOKIT"); //$NON-NLS-1$
@@ -58,9 +60,15 @@ public class TaCoKitConst {
 
     public static final String PROP_COMPONENT = "component.java.coordinates"; //$NON-NLS-1$
 
+    public static final String PROP_COMPONENT_SEPARATOR = ","; //$NON-NLS-1$
+
     public static final String PROP_REGISTRY = "component.java.registry"; //$NON-NLS-1$
 
     public static final String COMPONENT_NAME_PREFIX = "t"; //$NON-NLS-1$
 
     public static final String BASE_HELP_LINK = "org.talend.help."; //$NON-NLS-1$
+
+    public static final String MAVEN_INF = "MAVEN-INF"; //$NON-NLS-1$
+
+    public static final String TALEND_INF = "TALEND-INF"; //$NON-NLS-1$
 }

@@ -1,0 +1,75 @@
+<%@ jet
+%>
+class BigQueryHelper_<%=cid%> {
+			
+	private final java.time.format.DateTimeFormatter timeParserFormat = java.time.format.DateTimeFormatter.ofPattern("[H][HH]:[m][mm]:[s][ss][.SSSSSS][.SSSSS][.SSSS][.SSS][.SS][.S][X][Z][VV][z]");
+			
+	private final java.time.format.DateTimeFormatter timeDateParserFormat = java.time.format.DateTimeFormatter.ofPattern("yyyy-[M][MM]-[d][dd][ ]['T']HH:[m][mm]:[s][ss][.SSSSSS][.SSSSS][.SSSS][.SSS][.SS][.S][X][Z][VV][z]");
+			
+	private final java.time.format.DateTimeFormatter dateParserFormat = java.time.format.DateTimeFormatter.ofPattern("yyyy-[M][MM]-[d][dd]");
+	
+	public void readColumnsFromBigQuery(Dynamic column, java.util.List<com.google.api.services.bigquery.model.TableCell> rs, int fixedColumnCount, boolean trim) throws Exception {
+		column.clearColumnValues();
+		for (int i = 0; i < column.getColumnCount(); i++) {
+			DynamicMetadata dcm = column.getColumnMetadata(i);
+			int colNum = fixedColumnCount + i;
+			if (com.google.api.client.util.Data.isNull(rs.get(colNum).getV())) {
+				column.addColumnValue(null);
+				continue;
+			}
+			if ("id_String".equals(dcm.getType())) {
+				String value = rs.get(colNum).getV().toString();
+				column.addColumnValue((trim && (value!=null)) ? value.trim() : value);
+			} else if ("id_Date".equals(dcm.getType())) {
+				if("TIMESTAMP".equals(dcm.getDbType())) {
+					column.addColumnValue(new Date(ParserUtils.parseTo_Double(rs.get(colNum).getV().toString()).longValue() * 1000));
+				} else if("TIME".equalsIgnoreCase(dcm.getDbType())) {
+					java.time.LocalTime ta = timeParserFormat.parse(rs.get(colNum).getV().toString(), java.time.LocalTime::from);
+					column.addColumnValue(Date.from(ta.atDate(java.time.LocalDate.of(1970, 1, 1)).
+							atZone(java.time.ZoneId.systemDefault()).toInstant()));
+				} else if("DATETIME".equalsIgnoreCase(dcm.getDbType())) {
+					java.time.LocalDateTime ta = timeDateParserFormat.parse(rs.get(colNum).getV().toString(), java.time.LocalDateTime::from);
+					column.addColumnValue(Date.from(ta.atZone(java.time.ZoneId.systemDefault()).toInstant()));
+				} else if("DATE".equalsIgnoreCase(dcm.getDbType())) {
+					java.time.LocalDate ta = dateParserFormat.parse(rs.get(colNum).getV().toString(), java.time.LocalDate::from);
+					column.addColumnValue(Date.from(ta.atStartOfDay(java.time.ZoneId.systemDefault()).toInstant()));
+				}
+			} else if ("id_Integer".equals(dcm.getType()) || "id_Long".equals(dcm.getType()) || "id_Double".equals(dcm.getType())
+					|| "id_Byte".equals(dcm.getType()) || "id_BigDecimal".equals(dcm.getType())) {
+				<%
+				if(advancedSeparator) {
+				%>
+					String strNum = ParserUtils.parseTo_Number(value_<%=cid%>.toString(), <%= thousandsSeparator %>, <%= decimalSeparator %>).toString();
+				<%
+				} else {
+				%>
+					String strNum = rs.get(colNum).getV().toString();
+				<%
+				}
+				%>
+				if ("id_Integer".equals(dcm.getType())) {
+					column.addColumnValue(ParserUtils.parseTo_Integer(strNum));
+				} else if ("id_Long".equals(dcm.getType())) {
+					column.addColumnValue(ParserUtils.parseTo_Long(strNum));
+				} else if ("id_Double".equals(dcm.getType())) {
+					column.addColumnValue(ParserUtils.parseTo_Double(strNum));
+				} else if ("id_Byte".equals(dcm.getType())) {
+					column.addColumnValue(ParserUtils.parseTo_Byte(strNum));
+				} else if ("id_BigDecimal".equals(dcm.getType())) {
+					column.addColumnValue(ParserUtils.parseTo_BigDecimal(strNum));
+				}
+			} else if("id_byte[]".equals(dcm.getType())) {
+				column.addColumnValue(rs.get(colNum).getV().toString().getBytes(<%=encoding %>));
+			} else  if ("id_Boolean".equals(dcm.getType())) {
+				if (rs.get(colNum).getV() == null) {
+					column.addColumnValue(null);
+				}else{
+					column.addColumnValue(ParserUtils.parseTo_Boolean(rs.get(colNum).getV().toString()));
+				}
+			} else {
+				column.addColumnValue(rs.get(colNum).getV());
+			}
+		}
+	}
+		
+}

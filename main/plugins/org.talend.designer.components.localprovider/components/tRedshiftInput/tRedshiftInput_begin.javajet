@@ -17,8 +17,6 @@ imports="
 
 	class DBInputBeginUtil extends DefaultDBInputUtil{
 
-        private boolean needUserAndPassword = true;
-
 		public void setURL(INode node) {
 			
 			boolean useLogFile= "true".equals(ElementParameterParser.getValue(node, "__USE_LOG_FILE__"));
@@ -31,6 +29,7 @@ imports="
 %>
 				java.io.Writer output_<%=cid %> = new java.io.FileWriter(<%= logFile %>, true);
 				java.io.PrintWriter logWriter_<%=cid %> = new java.io.PrintWriter(output_<%=cid %>,true);
+			    globalMap.put("fileLogWriter_<%=cid %>", logWriter_<%=cid %>);
 
 <%
 			}else{%>
@@ -38,7 +37,6 @@ imports="
 			<%
 			}
 %>
-			globalMap.put("logWriter_<%=cid %>", logWriter_<%=cid %>);
 			java.sql.DriverManager.setLogWriter(logWriter_<%=cid %>);
 		<%}%>
 		
@@ -76,8 +74,7 @@ imports="
 		
 		public void createConnection(INode node) {
 			String jdbcUrl = ElementParameterParser.getValue(node, "__JDBC_URL__");
-			if ("SSO".equals(jdbcUrl)) needUserAndPassword = false;
-			super.createConnection(node, needUserAndPassword);
+			super.createConnection(node);
 			String useCursor= ElementParameterParser.getValue(node, "__USE_CURSOR__");
 			if(("true").equals(useCursor)) {
 				log4jCodeGenerateUtil.autoCommit(node,false);
@@ -94,6 +91,11 @@ imports="
 <%
             }
 		}
+
+    	public String getQueryString(INode node) {
+    			String trackerString = "\""+ org.talend.core.utils.TrackerUtil.getRedshiftTracker() + "\\n\" + ";
+    			return trackerString + "(" + super.getQueryString(node) + ")";
+    	}
 		
 		//-----------according schema type to generate ResultSet
 	    

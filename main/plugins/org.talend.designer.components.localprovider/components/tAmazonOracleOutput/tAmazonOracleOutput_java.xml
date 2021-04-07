@@ -145,7 +145,7 @@
       NUM_ROW="50"
       REPOSITORY_VALUE="SCHEMA"
       REQUIRED="false"
-      SHOW_IF="((USE_EXISTING_CONNECTION == 'false') "
+      SHOW_IF="(USE_EXISTING_CONNECTION == 'false') "
     >
       <DEFAULT>""</DEFAULT>
     </PARAMETER>
@@ -266,7 +266,6 @@
         SHOW_IF="(USE_EXISTING_CONNECTION == 'false') and (CONNECTION_TYPE != 'ORACLE_WALLET')">
         <DEFAULT>""</DEFAULT>
     </PARAMETER>
-
     <PARAMETER
         NAME="NOTE"
         FIELD="LABEL"
@@ -274,6 +273,26 @@
         SHOW_IF="(USE_EXISTING_CONNECTION == 'false') and (CONNECTION_TYPE != 'ORACLE_WALLET')">
         <DEFAULT>*Note: Example for Additional JDBC Parameters: "parameterName1=value1&amp;&amp;parameterName2=value2"</DEFAULT>
     </PARAMETER>
+
+    <PARAMETER
+      NAME="USE_ALTERNATE_SCHEMA"
+      FIELD="CHECK"
+      NUM_ROW="15"
+      SHOW_IF="USE_EXISTING_CONNECTION == 'true'"
+    >
+      <DEFAULT>false</DEFAULT>
+    </PARAMETER>
+
+    <PARAMETER
+      NAME="ALTERNATE_SCHEMA"
+      FIELD="TEXT"
+      NUM_ROW="20"
+      REQUIRED="false"
+      SHOW_IF="(USE_EXISTING_CONNECTION == 'true') and (USE_ALTERNATE_SCHEMA == 'true')"
+    >
+      <DEFAULT>""</DEFAULT>
+    </PARAMETER>
+
     <PARAMETER
       NAME="ENCODING"
       FIELD="ENCODING_TYPE"
@@ -438,7 +457,7 @@
        <IMPORTS>
             <IMPORT NAME="Driver-Oracle-XDB" MODULE="xdb.jar" MVN="mvn:org.talend.libraries/xdb/6.0.0"  REQUIRED_IF="SCHEMA.DB_TYPE IN ['XMLTYPE']" />
             <IMPORT NAME="Driver-Oracle-XMLPARSERV2" BundleID="" MODULE="xmlparserv2.jar" MVN="mvn:org.talend.libraries/xmlparserv2/6.0.0"  REQUIRED_IF="SCHEMA.DB_TYPE IN ['XMLTYPE']" />
-            <IMPORT NAME="Driver-Ojdbc8" MODULE="ojdbc8-12.2.0.1.jar" MVN="mvn:com.oracle.jdbc/ojdbc8/12.2.0.1" REQUIRED_IF="(DB_VERSION == 'ORACLE_18') AND (USE_EXISTING_CONNECTION == 'false')" />
+            <IMPORT NAME="ORACLE_18"     MODULE="ojdbc8-19.3.0.0.jar" MVN="mvn:com.oracle.ojdbc/ojdbc8/19.3.0.0" REQUIRED_IF="(DB_VERSION == 'ORACLE_18') AND (USE_EXISTING_CONNECTION == 'false')" />
             <IMPORT NAME="Driver-Ojdbc7" MODULE="ojdbc7.jar" MVN="mvn:org.talend.libraries/ojdbc7/6.0.0"  REQUIRED_IF="(DB_VERSION == 'ORACLE_12') AND (USE_EXISTING_CONNECTION == 'false')" />
             <IMPORT NAME="Driver-Ojdbc6" MODULE="ojdbc6.jar" MVN="mvn:org.talend.libraries/ojdbc6/6.0.0"  REQUIRED_IF="(DB_VERSION == 'ORACLE_11') AND (USE_EXISTING_CONNECTION == 'false')" />
        </IMPORTS>

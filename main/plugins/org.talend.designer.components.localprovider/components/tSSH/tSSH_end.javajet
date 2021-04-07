@@ -23,7 +23,7 @@ imports="
 			if("TO_CONSOLE".equals(standardOutput) || "TO_CONSOLE_AND_GLOBAL_VARIABLE".equals(standardOutput)){
 %>
 				if(stringStdout_<%=cid%>.length() > 0) {
-					System.out.println(stringStdout_<%=cid%>.toString());
+					System.out.println(out_content_<%=cid%>);
 				}
 <%
 			}
@@ -31,7 +31,7 @@ imports="
 			if("TO_CONSOLE".equals(errorOutput) || "TO_CONSOLE_AND_GLOBAL_VARIABLE".equals(errorOutput)){
 %>
 				if(stringStderr_<%=cid%>.length() > 0) {
-					System.out.println(stringStderr_<%=cid%>.toString());
+					System.out.println(err_content_<%=cid%>);
 				}
 <%
 			}
@@ -42,9 +42,9 @@ imports="
 	<%if(isLog4jEnabled){%>
 		log.info("<%=cid%> - Closing the connection to the server.");
 	<%}%>
-	conn_<%=cid%>.close();
+	client_<%=cid%>.close();
 	<%if(isLog4jEnabled){%>
 		log.info("<%=cid%> - Connection to the server closed.");
 	<%}%>
-	globalMap.put("<%=cid %>_EXIT_CODE",sess_<%=cid%>.getExitStatus());
+	globalMap.put("<%=cid %>_EXIT_CODE", exit_code_<%=cid%>);
 	

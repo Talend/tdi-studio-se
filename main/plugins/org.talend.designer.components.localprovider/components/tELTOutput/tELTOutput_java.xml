@@ -4,7 +4,7 @@
     SERIAL=""
     VERSION="0.102"
     STATUS="ALPHA"
-    
+
     COMPATIBILITY="ALL"
     AUTHOR="Talend"
     RELEASE_DATE="20070314A"
@@ -50,7 +50,7 @@
         <ITEM NAME="TRUNCATE" VALUE="TRUNCATE"/>
       </ITEMS>
     </PARAMETER>
-    
+
     <!-- work for teradata only -->
     <PARAMETER
       NAME="CREATE_TABLE_TYPE"
@@ -63,7 +63,7 @@
           <ITEM NAME="MULTISET" VALUE="MULTISET" />
       </ITEMS>
     </PARAMETER>
-    
+
     <PARAMETER
       NAME="DATA_ACTION"
       FIELD="CLOSED_LIST"
@@ -71,7 +71,7 @@
     >
       <ITEMS DEFAULT="INSERT">
         <ITEM NAME="INSERT"           VALUE="INSERT" />
-		<ITEM NAME="UPDATE"           VALUE="UPDATE"/>
+		<ITEM NAME="UPDATE"           VALUE="UPDATE" NOT_SHOW_IF="(MAPPING == 'databricks_delta_lake_id')"/>
 		<ITEM NAME="DELETE"           VALUE="DELETE"/>
       </ITEMS>
     </PARAMETER>
@@ -83,11 +83,42 @@
     >
     </PARAMETER>
 
-    <PARAMETER NAME="WHERE_CLAUSE" FIELD="MEMO" NUM_ROW="8" SHOW_IF="(DATA_ACTION == 'UPDATE') OR (DATA_ACTION == 'DELETE')"
-	>
+    <PARAMETER NAME="USE_WHERE_CONDITIONS_TABLE" FIELD="CHECK" NUM_ROW="8"
+		SHOW_IF="(DATA_ACTION == 'UPDATE') OR (DATA_ACTION == 'DELETE')">
+		<DEFAULT>false</DEFAULT>
+	</PARAMETER>
+	
+    <PARAMETER NAME="WHERE_CLAUSE" FIELD="MEMO" NUM_ROW="10"
+    	SHOW_IF="((DATA_ACTION == 'UPDATE') OR (DATA_ACTION == 'DELETE')) AND (USE_WHERE_CONDITIONS_TABLE == 'false')">
       <DEFAULT>""</DEFAULT>
     </PARAMETER>
     
+    <PARAMETER NAME="NOTE" FIELD="LABEL" NUM_ROW="11"
+		SHOW_IF="((DATA_ACTION == 'UPDATE') OR (DATA_ACTION == 'DELETE')) AND (USE_WHERE_CONDITIONS_TABLE == 'true')">
+		<DEFAULT>WHERE conditions table&#x000A;(for UPDATE and DELETE only)</DEFAULT>
+	</PARAMETER>
+	
+	<PARAMETER NAME="WHERE_CONDITIONS_TABLE" FIELD="TABLE" NUM_ROW="12"
+		SHOW_IF="((DATA_ACTION == 'UPDATE') OR (DATA_ACTION == 'DELETE')) AND (USE_WHERE_CONDITIONS_TABLE == 'true')">
+		<ITEMS>
+			<ITEM NAME="COLUMN" VALUE='""'/>
+			<ITEM NAME="FUNCTION" FIELD="CLOSED_LIST">
+				<ITEMS DEFAULT="EQUAL">
+					<ITEM NAME="EQUAL" VALUE="&quot;=&quot;"/>
+					<ITEM NAME="GREATER" VALUE="&quot;&gt;&quot;"/>
+					<ITEM NAME="LESS" VALUE="&quot;&lt;&quot;"/>
+					<ITEM NAME="GREATER_OR_EQUAL" VALUE="&quot;&gt;=&quot;"/>
+					<ITEM NAME="LESS_OR_EQUAL" VALUE="&quot;&lt;=&quot;"/>
+					<ITEM NAME="NOT_EQUAL" VALUE="&quot;&lt;&gt;&quot;"/>
+					<ITEM NAME="BETWEEN" VALUE="&quot;BETWEEN&quot;"/>
+					<ITEM NAME="LIKE" VALUE="&quot;LIKE&quot;"/>
+					<ITEM NAME="IN" VALUE="&quot;IN&quot;"/>
+				</ITEMS>
+			</ITEM>
+			<ITEM NAME="VALUE_SQL" VALUE='""'/>
+		</ITEMS>	
+	</PARAMETER>
+
 	<PARAMETER
       NAME="ELT_TABLE_NAME"
       FIELD="TEXT"
@@ -95,7 +126,7 @@
     >
       <DEFAULT>""</DEFAULT>
     </PARAMETER>
-    	
+
 	<PARAMETER
       NAME="ELT_SCHEMA_NAME"
       FIELD="TEXT"
@@ -103,7 +134,7 @@
     >
       <DEFAULT>""</DEFAULT>
     </PARAMETER>
-    
+
     <PARAMETER
       NAME="IS_TABLE_NAME_VARIABLE"
       FIELD="CHECK"
@@ -129,7 +160,17 @@
     >
       <DEFAULT>""</DEFAULT>
     </PARAMETER>
-    
+	
+	    <PARAMETER
+      NAME="PARTITION"
+      FIELD="TEXT"
+      NUM_ROW="35"
+      SHOW_IF="(MAPPING == 'databricks_delta_lake_id') AND (DATA_ACTION == 'INSERT')"
+    >
+      <DEFAULT>""</DEFAULT>
+    </PARAMETER>
+	
+
     <PARAMETER
       NAME="MAPPING"
       FIELD="MAPPING_TYPE"
@@ -137,15 +178,34 @@
     >
       <DEFAULT>mysql_id</DEFAULT>
     </PARAMETER>
-    
+
   </PARAMETERS>
-  
-    <ADVANCED_PARAMETERS>
+
+  <ADVANCED_PARAMETERS>
+    <PARAMETER
+        NAME="USE_UPDATE_STATEMENT"
+        FIELD="CHECK"
+        NUM_ROW="10"
+        SHOW_IF="DATA_ACTION=='UPDATE'"
+    >
+      <DEFAULT>false</DEFAULT>
+    </PARAMETER>
+    <PARAMETER
+          NAME="SET_COLUMN"
+          FIELD="TABLE"
+          REQUIRED="true"
+          NUM_ROW="12"
+          NB_LINES="5"
+          SHOW_IF="DATA_ACTION == 'UPDATE'" >
+          <ITEMS BASED_ON_SCHEMA="true">
+            <ITEM NAME="UPDATE_COLUMN" FIELD="CHECK" VALUE="true"/>
+          </ITEMS>
+    </PARAMETER>
   </ADVANCED_PARAMETERS>
 
   <CODEGENERATION>
   </CODEGENERATION>
-   
+
   <RETURNS>
     <RETURN NAME="NB_LINE"          TYPE="id_Integer" AVAILABILITY="AFTER"/>
     <RETURN NAME="NB_LINE_INSERTED" TYPE="id_Integer" AVAILABILITY="AFTER" SHOW_IF="DATA_ACTION=='INSERT'"/>

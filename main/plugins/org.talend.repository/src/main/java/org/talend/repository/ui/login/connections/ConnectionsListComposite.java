@@ -19,6 +19,7 @@ import java.util.List;
 import org.eclipse.draw2d.ColorConstants;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TextCellEditor;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
@@ -60,6 +61,8 @@ import org.talend.repository.ui.login.LoginHelper;
  */
 public class ConnectionsListComposite extends Composite {
 
+    private ConnectionsDialog dialog;
+
     private FormToolkit toolkit;
 
     private AbstractDataTableEditorView<ConnectionBean> table;
@@ -79,9 +82,10 @@ public class ConnectionsListComposite extends Composite {
      * @param parent
      * @param style
      */
-    public ConnectionsListComposite(Composite parent, int style) {
+    public ConnectionsListComposite(Composite parent, int style, ConnectionsDialog dialog) {
         super(parent, style);
 
+        this.dialog = dialog;
         // PreferenceManipulator prefManipulator = new
         // PreferenceManipulator(CorePlugin.getDefault().getPreferenceStore());
         // list = prefManipulator.readConnections();
@@ -236,11 +240,37 @@ public class ConnectionsListComposite extends Composite {
         });
 
         if (!list.isEmpty()) {
+            ConnectionBean selectConnection = null;
+            ConnectionBean defaultConnectionSelected = dialog.getDefaultConnectionSelected();
             for (int i = 0; i < list.size(); i++) {
-                setSelectedConnection(list.get(i));
+                ConnectionBean connectionBean = list.get(i);
+                setSelectedConnection(connectionBean);
+                if (isTheSameConnection(connectionBean, defaultConnectionSelected)) {
+                    selectConnection = connectionBean;
+                }
             }
-            setSelectedConnection(list.get(0));
+            if (selectConnection != null) {
+                table.getTableViewerCreator().getTableViewer()
+                        .setSelection(new StructuredSelection(new Object[] { selectConnection }));
+            } else {
+                table.getTableViewerCreator().getTableViewer()
+                        .setSelection(new StructuredSelection(new Object[] { list.get(0) }));
+            }
         }
+    }
+
+    private boolean isTheSameConnection(ConnectionBean baseConnection, ConnectionBean refConnection) {
+        boolean flag = false;
+        if (baseConnection == null || refConnection == null) {
+            return flag;
+        }
+        if (baseConnection.getName().equals(refConnection.getName())
+                && baseConnection.getUrl().equals(refConnection.getUrl())
+                && baseConnection.getRepositoryId().equals(refConnection.getRepositoryId())
+                && baseConnection.getUser().equals(refConnection.getUser())) {
+            flag = true;
+        }
+        return flag;
     }
 
     private void setSelectedConnection(ConnectionBean selected) {

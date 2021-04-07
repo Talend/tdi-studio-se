@@ -2,8 +2,10 @@ package org.talend.designer.core.utils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.talend.core.model.metadata.IMetadataColumn;
 import org.talend.core.model.metadata.IMetadataTable;
@@ -386,7 +388,18 @@ public class ParallelExecutionUtils {
     }
 
     public static boolean isExistPreviousParCon(Node previousNode) {
+        Set<String> checkedNodeSet = new HashSet<String>();
+        boolean existPreviousParCon = isExistPreviousParCon(previousNode, checkedNodeSet);
+        return existPreviousParCon;
+    }
+
+    private static boolean isExistPreviousParCon(Node previousNode, Set<String> checkedSet) {
         boolean hasParInPreviousCon = false;
+        if (previousNode == null || checkedSet.contains(previousNode.getUniqueName())) {
+            // already checked, return
+            return hasParInPreviousCon;
+        }
+        checkedSet.add(previousNode.getUniqueName());
         if (previousNode.getIncomingConnections().size() > 0) {
             for (IConnection con : previousNode.getIncomingConnections()) {
                 if (con.getElementParameter(EParameterName.PARTITIONER.getName()) != null
@@ -396,7 +409,10 @@ public class ParallelExecutionUtils {
                     hasParInPreviousCon = true;
                     break;
                 } else {
-                    hasParInPreviousCon = isExistPreviousParCon((Node) con.getSource());
+                    hasParInPreviousCon = isExistPreviousParCon((Node) con.getSource(), checkedSet);
+                    if (hasParInPreviousCon) {
+                        break;
+                    }
                 }
             }
         }
@@ -519,6 +535,7 @@ public class ParallelExecutionUtils {
                     target.getListColumns().remove(targetColumn);
                     newTargetColumn.setCustom(targetColumn.isCustom());
                     newTargetColumn.setCustomId(targetColumn.getCustomId());
+                    newTargetColumn.setIgnoreCustomSort(targetColumn.isIgnoreCustomSort());
                     columnsTAdd.add(newTargetColumn);
                 }
             }

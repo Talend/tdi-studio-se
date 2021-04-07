@@ -54,6 +54,7 @@ import org.talend.designer.dbmap.i18n.Messages;
 import org.talend.designer.dbmap.language.generation.DbGenerationManager;
 import org.talend.designer.dbmap.language.generation.GenericDbGenerationManager;
 import org.talend.designer.dbmap.language.hive.HiveGenerationManager;
+import org.talend.designer.dbmap.language.mssql.MssqlGenerationManager;
 import org.talend.designer.dbmap.language.mysql.MysqlGenerationManager;
 import org.talend.designer.dbmap.language.oracle.OracleGenerationManager;
 import org.talend.designer.dbmap.language.postgres.PostgresGenerationManager;
@@ -180,6 +181,30 @@ public class DbMapComponent extends AbstractMapComponent {
                 elemParams.add(activeDelimitedIdentifiersEP);
             }
             activeDelimitedIdentifiersEP.setValue(getGenerationManager().isUseDelimitedIdentifiers());
+
+            //
+            IElementParameter useAliasInOutputTableEP = origNode
+                    .getElementParameter(EParameterName.USE_ALIAS_IN_OUTPUT_TABLE.getName());
+            if (useAliasInOutputTableEP == null) {
+                useAliasInOutputTableEP = new ElementParameter(origNode);
+                useAliasInOutputTableEP.setShow(false);
+                useAliasInOutputTableEP.setFieldType(EParameterFieldType.CHECK);
+                useAliasInOutputTableEP.setName(EParameterName.USE_ALIAS_IN_OUTPUT_TABLE.getName());
+                useAliasInOutputTableEP.setCategory(EComponentCategory.TECHNICAL);
+                useAliasInOutputTableEP.setNumRow(99);
+                useAliasInOutputTableEP.setReadOnly(false);
+                //
+                if (getGenerationManager() instanceof OracleGenerationManager) {
+                    boolean disableAlias = Boolean
+                            .valueOf(System.getProperty("elt.oracle.disableColumnAlias", Boolean.FALSE.toString())); //$NON-NLS-1$
+                    if (!disableAlias) {
+                        getGenerationManager().setUseAliasInOutputTable(true);
+                    }
+                }
+                List<IElementParameter> elemParams = (List<IElementParameter>) origNode.getElementParameters();
+                elemParams.add(useAliasInOutputTableEP);
+            }
+            useAliasInOutputTableEP.setValue(getGenerationManager().isUseAliasInOutputTable());
         }
         mapperMain.loadModelFromInternalData();
         metadataListOut = mapperMain.getMetadataListOut();
@@ -465,7 +490,9 @@ public class DbMapComponent extends AbstractMapComponent {
         }
         if (externalData != null) {
             // rename metadata column name
-            List<ExternalDbMapTable> tables = new ArrayList<ExternalDbMapTable>(externalData.getInputTables());
+            List<ExternalDbMapTable> tables = new ArrayList<ExternalDbMapTable>();
+            List<ExternalDbMapTable> inputTables = new ArrayList<ExternalDbMapTable>(externalData.getInputTables());
+            tables.addAll(inputTables);
             tables.addAll(externalData.getOutputTables());
             ExternalDbMapTable tableFound = null;
             for (ExternalDbMapTable table : tables) {
@@ -482,11 +509,23 @@ public class DbMapComponent extends AbstractMapComponent {
                 }
             }
 
+            List<String> alias = new ArrayList<String>();
+            alias.add(conectionName);
+            for(ExternalDbMapTable table : inputTables) {
+                if (table.getTableName().equals(conectionName)) {
+                    if(table.getAlias() != null) {
+                        alias.add(table.getAlias());
+                    }
+                }
+            }
+            
             // it is necessary to update expressions only if renamed column come from input table
-            if (tableFound != null && externalData.getInputTables().indexOf(tableFound) != -1) {
-                TableEntryLocation oldLocation = new TableEntryLocation(conectionName, oldColumnName);
-                TableEntryLocation newLocation = new TableEntryLocation(conectionName, newColumnName);
-                replaceLocationsInAllExpressions(oldLocation, newLocation, false);
+            for(String connName : alias) {
+                if (tableFound != null && externalData.getInputTables().indexOf(tableFound) != -1) {
+                    TableEntryLocation oldLocation = new TableEntryLocation(connName, oldColumnName);
+                    TableEntryLocation newLocation = new TableEntryLocation(connName, newColumnName);
+                    replaceLocationsInAllExpressions(oldLocation, newLocation, false);
+                }
             }
 
         }
@@ -501,7 +540,7 @@ public class DbMapComponent extends AbstractMapComponent {
      * @param newTableName
      * @param newColumnName
      */
-    private void replaceLocationsInAllExpressions(TableEntryLocation oldLocation, TableEntryLocation newLocation,
+    public void replaceLocationsInAllExpressions(TableEntryLocation oldLocation, TableEntryLocation newLocation,
             boolean tableRenamed) {
         // replace old location by new location for all expressions in mapper
         List<ExternalDbMapTable> tables = new ArrayList<ExternalDbMapTable>(externalData.getInputTables());
@@ -588,6 +627,8 @@ public class DbMapComponent extends AbstractMapComponent {
                 generationManager = new PostgresGenerationManager();
             } else if (value.contains("tELTHiveMap")) { //$NON-NLS-1$
                 generationManager = new HiveGenerationManager();
+            } else if (value.contains("tELTMSSqlMap")) {
+                generationManager = new MssqlGenerationManager();
             } else if (value.startsWith("tELT") && value.endsWith("Map")) //$NON-NLS-1$ //$NON-NLS-2$
             {
                 generationManager = new GenericDbGenerationManager();
@@ -595,6 +636,7 @@ public class DbMapComponent extends AbstractMapComponent {
                 throw new IllegalArgumentException(Messages.getString("DbMapComponent.unknowValue") + value); //$NON-NLS-1$
             }
             updateUseDelimitedIdentifiersStatus();
+            updateUseAliasInOutputTableStatus();
         }
 
         return generationManager;
@@ -604,6 +646,7 @@ public class DbMapComponent extends AbstractMapComponent {
     public void setOriginalNode(INode originalNode) {
         super.setOriginalNode(originalNode);
         updateUseDelimitedIdentifiersStatus();
+        updateUseAliasInOutputTableStatus();
     }
 
     private void updateUseDelimitedIdentifiersStatus() {
@@ -622,6 +665,25 @@ public class DbMapComponent extends AbstractMapComponent {
                 }
             }
             generationManager.setUseDelimitedIdentifiers(activeDelimitedIdentifiers);
+        }
+    }
+
+    private void updateUseAliasInOutputTableStatus() {
+        if (generationManager == null) {
+            return;
+        }
+        INode oriNode = getOriginalNode();
+        if (oriNode != null) {
+            IElementParameter useAliasInOutputTableEP = oriNode
+                    .getElementParameter(EParameterName.USE_ALIAS_IN_OUTPUT_TABLE.getName());
+            boolean useAliasInOutputTable = false;
+            if (useAliasInOutputTableEP != null) {
+                Object value = useAliasInOutputTableEP.getValue();
+                if (value != null) {
+                    useAliasInOutputTable = Boolean.valueOf(value.toString());
+                }
+            }
+            generationManager.setUseAliasInOutputTable(useAliasInOutputTable);
         }
     }
 

@@ -249,6 +249,8 @@ public abstract class AbstractJavaProcessor extends Processor implements IJavaPr
 
         checkExecutingCommands(path, cmds);
 
+        cmds = addEncryptionFilePathParameter(cmds);
+
         logCommandLine(cmds, level);
 
         return exec(cmds, path);

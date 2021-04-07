@@ -61,6 +61,10 @@ skeleton="../templates/db_output_bulk.skeleton"
     boolean useBatch = "true".equals(ElementParameterParser.getValue(node, "__USE_BATCH__"));
     String batchSize = ElementParameterParser.getValue(node, "__BATCH_SIZE__");
 
+    boolean useAlternateSchema = "true".equals(ElementParameterParser.getValue(node, "__USE_ALTERNATE_SCHEMA__"));
+	
+	String alternateSchema = ElementParameterParser.getValue(node, "__ALTERNATE_SCHEMA__");
+
     String rejectConnName = null;
     List< ? extends IConnection> rejectConns = node.getOutgoingConnections("REJECT");
     if(rejectConns != null && rejectConns.size() > 0) {
@@ -82,6 +86,8 @@ skeleton="../templates/db_output_bulk.skeleton"
     String dbVersion = "" ;
 
 	String numPerInsert = ElementParameterParser.getValue(node, "__NB_ROWS_PER_INSERT__");
+	
+	String redshiftTracker = org.talend.core.utils.TrackerUtil.getRedshiftTracker();
 %>
 
 <%
@@ -103,9 +109,15 @@ if(columnList != null && columnList.size() > 0) {
 String dbschema_<%=cid%> = null;
 <%
 if(("true").equals(useExistingConn)) {
+	if(useAlternateSchema) {
+	%>
+	dbschema_<%=cid%> = <%=alternateSchema%>;
+	<%
+	} else {
 	%>
 	dbschema_<%=cid%> = (String)globalMap.get("schema_" + "<%=ElementParameterParser.getValue(node,"__CONNECTION__")%>");
 	<%
+	}
 } else {
 	%>
 	dbschema_<%=cid%> = <%=dbschema%>;
@@ -141,39 +153,8 @@ if(tableNameWithSchema){
 }
 %>
 
-<%
-if(("UPDATE").equals(dataAction) || ("INSERT_OR_UPDATE").equals(dataAction) || ("UPDATE_OR_INSERT").equals(dataAction)) {
-    int updateKeyCount = 0;
-    if(stmtStructure != null) {
-        for(Column column : stmtStructure) {
-            if(column.isUpdateKey() && !column.isDynamic()) {
-                updateKeyCount++;
-            }
-        }
-        %>
-        int updateKeyCount_<%=cid%> = <%=updateKeyCount%>;
-        if(updateKeyCount_<%=cid%> < 1) {
-            throw new RuntimeException("For update, Schema must have a key");
-        }
-        <%
-    }
-} else if(("DELETE").equals(dataAction)) {
-    int deleteKeyCount = 0;
-    if(stmtStructure != null) {
-        for(Column column : stmtStructure) {
-            if(column.isDeleteKey() && !column.isDynamic()) {
-                deleteKeyCount++;
-            }
-        }
-        %>
-        int deleteKeyCount_<%=cid%> = <%=deleteKeyCount%>;
-        if(deleteKeyCount_<%=cid%> < 1) {
-            throw new RuntimeException("For delete, Schema must have a key");
-        }
-        <%
-    }
-}
-%>
+<%@ include file="@{org.talend.designer.components.localprovider}/components/templates/DB/Output/CheckKeysForUpdateAndDelete.javajet"%>
+
 int nb_line_<%=cid%> = 0;
 int nb_line_update_<%=cid%> = 0;
 int nb_line_inserted_<%=cid%> = 0;
@@ -211,21 +192,8 @@ if(("true").equals(useExistingConn)) {
 	String conn = "conn_" + connection;
 	%>
 	conn_<%=cid%> = (java.sql.Connection)globalMap.get("<%=conn%>");
-	
 <%
-	//Retrieve connection node and check if SSO was used for correct logging
-	List< ? extends INode> nodes =  node.getProcess().getNodesOfType("tRedshiftConnection");
-	String connectionRedShift = ElementParameterParser.getValue(node,"__CONNECTION__");
-	for (INode ne : nodes) {
-		if (connectionRedShift.equals(ne.getUniqueName())) {
-			jdbcUrl = ElementParameterParser.getValue(ne, "__JDBC_URL__");
-		}
-	}
-	if ("SSO".equals(jdbcUrl)){
-		dbLog.conn().useExistConn("conn_"+cid+".getMetaData().getURL()", null);
-	} else {
-		dbLog.conn().useExistConn("conn_"+cid+".getMetaData().getURL()", "conn_"+cid+".getMetaData().getUserName()");
-	}
+	dbLog.conn().useExistConn("conn_"+cid+".getMetaData().getURL()", "conn_"+cid+".getMetaData().getUserName()");
 %>
 	<%
 } else {
@@ -254,30 +222,19 @@ if(("true").equals(useExistingConn)) {
 <%
     }
 %>
-    String url_<%=cid%> = sbuilder_<%=cid%>.toString();
-	
-	
-	
-	
-	
-	
-<%  if ("SSO".equals(jdbcUrl)){%>
-		conn_<%=cid%> = java.sql.DriverManager.getConnection(url_<%=cid %>);
-		<%dbLog.conn().connTry(dbLog.var("url"), null);%>
-		<%dbLog.conn().connDone(dbLog.var("url"));%>
-<%  } else {%>
-		String dbUser_<%=cid %> = <%=dbuser%>;
-		<%
-		String passwordFieldName = "__PASS__";
-		%>
+	String url_<%=cid%> = sbuilder_<%=cid%>.toString();
+	String dbUser_<%=cid %> = <%=dbuser%>;
+	<%
+	String passwordFieldName = "__PASS__";
+	%>
 
-		<%@ include file="@{org.talend.designer.components.localprovider}/components/templates/password.javajet"%>
+	<%@ include file="@{org.talend.designer.components.localprovider}/components/templates/password.javajet"%>
 
-		String dbPwd_<%=cid %> = decryptedPassword_<%=cid%>;
-		conn_<%=cid%> = java.sql.DriverManager.getConnection(url_<%=cid %>,dbUser_<%=cid%>,dbPwd_<%=cid%>);
-		<%dbLog.conn().connTry(dbLog.var("url"), dbLog.var("dbUser"));%>
-		<%dbLog.conn().connDone(dbLog.var("url"));%>
-<%  }%>
+	String dbPwd_<%=cid %> = decryptedPassword_<%=cid%>;
+	conn_<%=cid%> = java.sql.DriverManager.getConnection(url_<%=cid %>,dbUser_<%=cid%>,dbPwd_<%=cid%>);
+	<%dbLog.conn().connTry(dbLog.var("url"), dbLog.var("dbUser"));%>
+	<%dbLog.conn().connDone(dbLog.var("url"));%>
+		
 	resourceMap.put("conn_<%=cid%>", conn_<%=cid%>);
     conn_<%=cid%>.setAutoCommit(false);
 	<%
@@ -352,7 +309,7 @@ if(columnList != null && columnList.size()>0) {
 	if(("INSERT").equals(dataAction)) {
 		if(!extendedInsert) {
 %>
-			java.sql.PreparedStatement pstmt_<%=cid %> = conn_<%=cid%>.prepareStatement("INSERT INTO \"" + tableName_<%=cid%> + "\" (<%=insertColName.toString()%>) VALUES (<%=insertValueStmt.toString()%>)");
+			java.sql.PreparedStatement pstmt_<%=cid %> = conn_<%=cid%>.prepareStatement("<%=redshiftTracker%> \n " + "INSERT INTO \"" + tableName_<%=cid%> + "\" (<%=insertColName.toString()%>) VALUES (<%=insertValueStmt.toString()%>)");
 			resourceMap.put("pstmt_<%=cid %>", pstmt_<%=cid %>);
 <%
 		} else { //entended insert
@@ -391,34 +348,34 @@ if(columnList != null && columnList.size()>0) {
 			}
 
 			String insert_<%=cid%> = "INSERT INTO \"" + tableName_<%=cid%> + "\" (<%=insertColName.toString()%>) VALUES " + extendInsertValueStmt_<%=cid%>.toString();
-			java.sql.PreparedStatement pstmt_<%=cid %> =  conn_<%=cid%>.prepareStatement(insert_<%=cid%>);
+			java.sql.PreparedStatement pstmt_<%=cid %> =  conn_<%=cid%>.prepareStatement("<%=redshiftTracker%> \n " +insert_<%=cid%>);
 			resourceMap.put("pstmt_<%=cid %>", pstmt_<%=cid %>);
 <%
 		}
 	} else if (("UPDATE").equals(dataAction)) {
 	    %>
-	    java.sql.PreparedStatement pstmt_<%=cid %> = conn_<%=cid%>.prepareStatement("UPDATE \"" + tableName_<%=cid%> + "\" SET <%=updateSetStmt.toString()%> WHERE <%=updateWhereStmt.toString()%>");
+	    java.sql.PreparedStatement pstmt_<%=cid %> = conn_<%=cid%>.prepareStatement("<%=redshiftTracker%> \n " + "UPDATE \"" + tableName_<%=cid%> + "\" SET <%=updateSetStmt.toString()%> WHERE <%=updateWhereStmt.toString()%>");
 	    resourceMap.put("pstmt_<%=cid %>", pstmt_<%=cid %>);
 	    <%
 	} else if (("INSERT_OR_UPDATE").equals(dataAction)) {
 	    %>
-	    java.sql.PreparedStatement pstmt_<%=cid %> = conn_<%=cid%>.prepareStatement("SELECT COUNT(1) FROM \"" + tableName_<%=cid%> + "\" WHERE <%=updateWhereStmt.toString()%>");
+	    java.sql.PreparedStatement pstmt_<%=cid %> = conn_<%=cid%>.prepareStatement("<%=redshiftTracker%> \n " + "SELECT COUNT(1) FROM \"" + tableName_<%=cid%> + "\" WHERE <%=updateWhereStmt.toString()%>");
 	    resourceMap.put("pstmt_<%=cid %>", pstmt_<%=cid %>);
-	    java.sql.PreparedStatement pstmtInsert_<%=cid %> = conn_<%=cid%>.prepareStatement("INSERT INTO \"" + tableName_<%=cid%> + "\" (<%=insertColName.toString()%>) VALUES (<%=insertValueStmt.toString()%>)");
+	    java.sql.PreparedStatement pstmtInsert_<%=cid %> = conn_<%=cid%>.prepareStatement("<%=redshiftTracker%> \n " + "INSERT INTO \"" + tableName_<%=cid%> + "\" (<%=insertColName.toString()%>) VALUES (<%=insertValueStmt.toString()%>)");
 	    resourceMap.put("pstmtInsert_<%=cid %>", pstmtInsert_<%=cid %>);
-	    java.sql.PreparedStatement pstmtUpdate_<%=cid %> = conn_<%=cid%>.prepareStatement("UPDATE \"" + tableName_<%=cid%> + "\" SET <%=updateSetStmt.toString()%> WHERE <%=updateWhereStmt.toString()%>");
+	    java.sql.PreparedStatement pstmtUpdate_<%=cid %> = conn_<%=cid%>.prepareStatement("<%=redshiftTracker%> \n " + "UPDATE \"" + tableName_<%=cid%> + "\" SET <%=updateSetStmt.toString()%> WHERE <%=updateWhereStmt.toString()%>");
 	    resourceMap.put("pstmtUpdate_<%=cid %>", pstmtUpdate_<%=cid %>);
 	    <%
 	} else if (("UPDATE_OR_INSERT").equals(dataAction)) {
 	    %>
-	    java.sql.PreparedStatement pstmtUpdate_<%=cid %> = conn_<%=cid%>.prepareStatement("UPDATE \"" + tableName_<%=cid%> + "\" SET <%=updateSetStmt.toString()%> WHERE <%=updateWhereStmt.toString()%>");
+	    java.sql.PreparedStatement pstmtUpdate_<%=cid %> = conn_<%=cid%>.prepareStatement("<%=redshiftTracker%> \n " + "UPDATE \"" + tableName_<%=cid%> + "\" SET <%=updateSetStmt.toString()%> WHERE <%=updateWhereStmt.toString()%>");
 	    resourceMap.put("pstmtUpdate_<%=cid %>", pstmtUpdate_<%=cid %>);
-	    java.sql.PreparedStatement pstmtInsert_<%=cid %> = conn_<%=cid%>.prepareStatement("INSERT INTO \"" + tableName_<%=cid%> + "\" (<%=insertColName.toString()%>) VALUES (<%=insertValueStmt.toString()%>)");
+	    java.sql.PreparedStatement pstmtInsert_<%=cid %> = conn_<%=cid%>.prepareStatement("<%=redshiftTracker%> \n " + "INSERT INTO \"" + tableName_<%=cid%> + "\" (<%=insertColName.toString()%>) VALUES (<%=insertValueStmt.toString()%>)");
 	    resourceMap.put("pstmtInsert_<%=cid %>", pstmtInsert_<%=cid %>);
 	    <%
 	} else if (("DELETE").equals(dataAction)) {
 	    %>
-	    java.sql.PreparedStatement pstmt_<%=cid %> = conn_<%=cid%>.prepareStatement("DELETE FROM \"" + tableName_<%=cid%> + "\" WHERE <%=deleteWhereStmt.toString()%>");
+	    java.sql.PreparedStatement pstmt_<%=cid %> = conn_<%=cid%>.prepareStatement("<%=redshiftTracker%> \n " + "DELETE FROM \"" + tableName_<%=cid%> + "\" WHERE <%=deleteWhereStmt.toString()%>");
 	    resourceMap.put("pstmt_<%=cid %>", pstmt_<%=cid %>);
 	    <%
 	}

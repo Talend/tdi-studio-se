@@ -46,7 +46,6 @@ public class TaCoKitValueSelectionController extends AbstractValueSelectionContr
         return new SelectionAdapter() {
 
             private final Job job;
-
             {
                 job = new Job(Messages.getString("suggestion.job.title")) {
 
@@ -58,7 +57,7 @@ public class TaCoKitValueSelectionController extends AbstractValueSelectionContr
                             return Status.CANCEL_STATUS;
                         }
                         monitor.subTask(Messages.getString("suggestion.job.subtask.openDialog"));
-                        Display.getDefault().asyncExec(new Runnable() {
+                        Display.getDefault().syncExec(new Runnable() {
                             public void run() {
                                 final ValueSelectionDialog dialog = new ValueSelectionDialog(composite.getShell(), possibleValues,
                                         false);
@@ -81,7 +80,10 @@ public class TaCoKitValueSelectionController extends AbstractValueSelectionContr
 
             @Override
             public void widgetSelected(final SelectionEvent e) {
-                job.schedule();
+                int state = job.getState();
+                if (Job.NONE == state) {
+                    job.schedule();
+                }
             }
         };
     }

@@ -89,6 +89,7 @@ import org.talend.core.model.process.INodeReturn;
 import org.talend.core.model.process.IPerformance;
 import org.talend.core.model.process.IProcess;
 import org.talend.core.model.process.IProcess2;
+import org.talend.core.model.process.IReplaceNodeHandler;
 import org.talend.core.model.process.Problem;
 import org.talend.core.model.process.Problem.ProblemStatus;
 import org.talend.core.model.properties.JobletProcessItem;
@@ -194,6 +195,8 @@ public class Node extends Element implements IGraphicalNode {
     public static final String RETURNS_CHANGED = "returns changed"; //$NON-NLS-1$
 
     public static final String ICON_CHANGE = "iconChange";//$NON-NLS-1$
+    
+    private static final String DATABASE_LABEL = "Database"; //$NON-NLS-1$
 
     public static final int DEFAULT_SIZE = 32;
 
@@ -220,6 +223,8 @@ public class Node extends Element implements IGraphicalNode {
     private IComponent delegateComponent;
 
     private IComponent component;
+
+    private String unifiedComponentDisplayName;
 
     private String showHintText;
 
@@ -320,6 +325,8 @@ public class Node extends Element implements IGraphicalNode {
     private ComponentProperties componentProperties;
 
     private List<String> previousCustomLibs = null;
+
+    private IReplaceNodeHandler replaceNodeHandler;
 
     /**
      * Getter for index.
@@ -719,6 +726,10 @@ public class Node extends Element implements IGraphicalNode {
             createElementParameters.addAll(component.createElementParameters(this));
         }
         setElementParameters(createElementParameters);
+        // for additional jdbc init default value
+        if (UnifiedComponentUtil.isDelegateComponent(getDelegateComponent())) {
+            UnifiedComponentUtil.initComponentIfJDBC(this, getDelegateComponent());
+        }
     }
 
     @Override
@@ -949,7 +960,7 @@ public class Node extends Element implements IGraphicalNode {
                 if (metadata != null) {
                     List<IMetadataColumn> listColumns = metadata.getListColumns();
 
-                    for (int i = 0; i < listColumns.size(); i++) {
+                    for (IMetadataColumn column : listColumns) {
 
                         INodeReturn flowToIterateReturn = new NodeReturn() {
 
@@ -967,7 +978,6 @@ public class Node extends Element implements IGraphicalNode {
                             }
 
                         };
-                        IMetadataColumn column = listColumns.get(i);
                         String columnLabel = column.getLabel();
                         String columnType = column.getTalendType();
                         flowToIterateReturn.setName(columnLabel);
@@ -988,8 +998,7 @@ public class Node extends Element implements IGraphicalNode {
                     if (map != null && metadata != null) {
                         List<IMetadataColumn> listColumns = metadata.getListColumns();
 
-                        for (int i = 0; i < map.size(); i++) {
-                            Map<String, String> line = map.get(i);
+                        for (Map<String, String> line : map) {
                             String keyName = TalendTextUtils.removeQuotes(line.get("KEY")); //$NON-NLS-1$
 
                             INodeReturn flowToIterateReturn = new NodeReturn() {
@@ -1009,10 +1018,10 @@ public class Node extends Element implements IGraphicalNode {
                             };
 
                             String cueeName = line.get("VALUE"); //$NON-NLS-1$
-                            for (int j = 0; j < listColumns.size(); j++) {
-                                String columnName = listColumns.get(j).getLabel();
+                            for (IMetadataColumn listColumn : listColumns) {
+                                String columnName = listColumn.getLabel();
                                 if (columnName.equals(cueeName)) {
-                                    String columnType = listColumns.get(j).getTalendType();
+                                    String columnType = listColumn.getTalendType();
                                     flowToIterateReturn.setType(columnType);
                                 }
 
@@ -1375,8 +1384,7 @@ public class Node extends Element implements IGraphicalNode {
                             }
                             boolean customFound = false;
                             int customColNumber = 0;
-                            for (int i = 0; i < targetTable.getListColumns().size(); i++) {
-                                IMetadataColumn column = targetTable.getListColumns().get(i);
+                            for (IMetadataColumn column : targetTable.getListColumns()) {
                                 if (column.isCustom()) {
                                     customColNumber++;
                                 }
@@ -1612,8 +1620,8 @@ public class Node extends Element implements IGraphicalNode {
         }
         List<IConnection> listNm = (List<IConnection>) conn.getSource().getOutgoingConnections(conn.getLineStyle());
         int deactiveNum = 0;
-        for (int i = 0; i < outputs.size(); i++) {
-            if (!outputs.get(i).isActivate()) {
+        for (IConnection output : outputs) {
+            if (!output.isActivate()) {
                 deactiveNum = deactiveNum + 1;
             }
         }
@@ -2258,10 +2266,10 @@ public class Node extends Element implements IGraphicalNode {
 
     @Override
     public IMetadataTable getMetadataTable(String metaName) {
-        for (int i = 0; i < metadataList.size(); i++) {
-            String tableName = metadataList.get(i).getTableName();
+        for (IMetadataTable element : metadataList) {
+            String tableName = element.getTableName();
             if (tableName != null && tableName.equals(metaName)) {
-                return metadataList.get(i);
+                return element;
             }
         }
         return null;
@@ -2946,7 +2954,7 @@ public class Node extends Element implements IGraphicalNode {
                     if (param != null) {
                         String errorMessage;
                         boolean isContextMode = false;
-                        if (param.getValue() == null || "".equals(param.getValue())) { //$NON-NLS-1$
+                        if (!param.isSelectedFromItemValue()) {
                             errorMessage = Messages.getString("Node.parameterEmpty", param.getDisplayName()); //$NON-NLS-1$
                         } else {
                             errorMessage = Messages.getString("Node.parameterNotExist", param.getDisplayName(), param.getValue()); //$NON-NLS-1$
@@ -3724,7 +3732,7 @@ public class Node extends Element implements IGraphicalNode {
         List<IConnection> subjobLinks = (List<IConnection>) this.getIncomingConnections(EConnectionType.ON_SUBJOB_OK);
         subjobLinks.addAll(this.getIncomingConnections(EConnectionType.ON_SUBJOB_ERROR));
         if(!subjobLinks.isEmpty() && !this.getUniqueName().equals(this.getDesignSubjobStartNode().getUniqueName())){
-        	String errorMessage = Messages.getString("Node.notSubjobStartNode", this.getUniqueName()); //$NON-NLS-1$
+            String errorMessage = Messages.getString("Node.notSubjobStartNode2", this.getUniqueName()); //$NON-NLS-1$
             Problems.add(ProblemStatus.WARNING, this, errorMessage);
         }
         
@@ -3781,8 +3789,7 @@ public class Node extends Element implements IGraphicalNode {
 
             if (canEditSchema && table != null) {
                 if (LanguageManager.getCurrentLanguage() == ECodeLanguage.JAVA) {
-                    for (int i = 0; i < table.getListColumns().size(); i++) {
-                        IMetadataColumn column = table.getListColumns().get(i);
+                    for (IMetadataColumn column : table.getListColumns()) {
                         if (column.isCustom()) {
                             continue;
                         }
@@ -3995,7 +4002,7 @@ public class Node extends Element implements IGraphicalNode {
                             String currentDbmsId = outputMeta.getDbms();
                             // TDI-21862:when drag/drop a special schema onto a component,need check if this schema's
                             // dbType compatible with this component
-                            if (!typevalue.equals("id_Dynamic") && currentDbmsId != null //$NON-NLS-1$
+                            if (!typevalue.equals("id_Dynamic") && currentDbmsId != null && isShowDBTypeColumn(this)//$NON-NLS-1$
                                     && !TypesManager.checkDBType(currentDbmsId, typevalue, sourceType)) {
                                 String errorMessage = "the schema's dbType not correct for this component"; //$NON-NLS-1$
                                 Problems.add(ProblemStatus.WARNING, this, errorMessage);
@@ -4146,12 +4153,11 @@ public class Node extends Element implements IGraphicalNode {
                         }
                     }
                     if (outputMeta != null) {
-                        for (int i = 0; i < outputMeta.getListColumns().size(); i++) {
-                            IMetadataColumn column = outputMeta.getListColumns().get(i);
+                        for (IMetadataColumn column : outputMeta.getListColumns()) {
                             String sourceType = column.getType();
                             String typevalue = column.getTalendType();
                             String currentDbmsId = outputMeta.getDbms();
-                            if (!typevalue.equals("id_Dynamic") && currentDbmsId != null //$NON-NLS-1$
+                            if (!typevalue.equals("id_Dynamic") && currentDbmsId != null && isShowDBTypeColumn(node)//$NON-NLS-1$
                                     && !TypesManager.checkDBType(currentDbmsId, typevalue, sourceType)) {
                                 String errorMessage = "the schema's dbType not correct for this component"; //$NON-NLS-1$
                                 Problems.add(ProblemStatus.WARNING, this, errorMessage);
@@ -4227,12 +4233,11 @@ public class Node extends Element implements IGraphicalNode {
                 }
 
                 if (outputMeta != null) {
-                    for (int i = 0; i < outputMeta.getListColumns().size(); i++) {
-                        IMetadataColumn column = outputMeta.getListColumns().get(i);
+                    for (IMetadataColumn column : outputMeta.getListColumns()) {
                         String sourceType = column.getType();
                         String typevalue = column.getTalendType();
                         String currentDbmsId = outputMeta.getDbms();
-                        if (!typevalue.equals("id_Dynamic") && currentDbmsId != null //$NON-NLS-1$
+                        if (!typevalue.equals("id_Dynamic") && currentDbmsId != null && isShowDBTypeColumn(this)//$NON-NLS-1$
                                 && !TypesManager.checkDBType(currentDbmsId, typevalue, sourceType)) {
                             String errorMessage = "the schema's dbType not correct for this component"; //$NON-NLS-1$
                             Problems.add(ProblemStatus.WARNING, this, errorMessage);
@@ -4286,6 +4291,24 @@ public class Node extends Element implements IGraphicalNode {
 
             }
         }
+    }
+    
+    private boolean isShowDBTypeColumn(INode node) {
+        boolean hasMappingType = false;
+        boolean eltComponent = isELTComponent();
+        IComponent _component = node.getComponent();
+        boolean isEBCDIC = _component.getName().contains("EBCDIC");
+        if (_component != null && _component.isSupportDbType() || _component.getOriginalFamilyName().startsWith(DATABASE_LABEL)
+                || eltComponent || isEBCDIC) {
+            for (IElementParameter currentParam : getElementParameters()) {
+                if (EParameterFieldType.MAPPING_TYPE.equals(currentParam.getFieldType())) {
+                    hasMappingType = true;
+                    break;
+                }
+            }
+        }
+        
+        return hasMappingType || eltComponent;
     }
 
     @Override
@@ -4831,8 +4854,11 @@ public class Node extends Element implements IGraphicalNode {
      */
     @Override
     public boolean checkIfCanBeStart() {
-        // tELTSAPMap component is more like a input component than ELT component as it output a flow stream.
-        if (isELTSAPMapComponent()) {
+        // tCollectAndCheck can be start node now in BD jobs
+    	if ("tCollectAndCheck".equals(this.getComponent().getName())) {
+    		return true;
+    	} else if (isELTSAPMapComponent()) {
+    		// tELTSAPMap component is more like a input component than ELT component as it output a flow stream.
             if (!isThereConditionLink() && isOnMainBranch()) {
                 return true;
             }
@@ -4982,15 +5008,24 @@ public class Node extends Element implements IGraphicalNode {
                         }
                     }
                     if (targetParam != null) {
-                        if (sourceParam.getName().equals(EParameterName.LABEL.getName())
-                                && (sourceParam.getValue() == null || "".equals(sourceParam.getValue()))) { //$NON-NLS-1$
-                            String name = null;
-                            if (EComponentType.JOBLET.equals(component.getComponentType())) {
-                                name = component.getName();
+                        if (sourceParam.getName().equals(EParameterName.LABEL.getName())) {
+                            boolean update = false;
+                            Object sourceParamObj = sourceParam.getValue();
+                            if (sourceParamObj != null && StringUtils.isNotBlank(sourceParamObj.toString())
+                                    && !(EComponentType.JOBLET.equals(component.getComponentType()) && isUpdate)) {
+                                setPropertyValue(sourceParam.getName(), sourceParamObj);
                             } else {
-                                name = component.getProcess().getName();
+                                update = true;
                             }
-                            setPropertyValue(sourceParam.getName(), name);
+                            if (update) {
+                                String name = null;
+                                if (EComponentType.JOBLET.equals(component.getComponentType())) {
+                                    name = component.getName();
+                                } else {
+                                    name = component.getProcess().getName();
+                                }
+                                setPropertyValue(sourceParam.getName(), name);
+                            }
                         } else {
                             setPropertyValue(sourceParam.getName(), sourceParam.getValue());
                         }
@@ -5639,6 +5674,15 @@ public class Node extends Element implements IGraphicalNode {
      */
     public IComponent getDelegateComponent() {
         return this.delegateComponent;
+    }
+
+    @Override
+    public IReplaceNodeHandler getReplaceNodeHandler() {
+        return replaceNodeHandler;
+    }
+
+    public void setReplaceNodeHandler(IReplaceNodeHandler replaceNodeHandler) {
+        this.replaceNodeHandler = replaceNodeHandler;
     }
 
 }

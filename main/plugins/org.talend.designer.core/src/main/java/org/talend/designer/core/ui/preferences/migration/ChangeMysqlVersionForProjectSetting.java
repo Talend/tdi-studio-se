@@ -124,10 +124,6 @@ public class ChangeMysqlVersionForProjectSetting extends AbstractMigrationTask i
                         EDatabaseVersion4Drivers.MYSQL_5.getVersionValue()).equalsIgnoreCase(param.getValue())) { //$NON-NLS-1$
             param.setValue("MYSQL_5"); //$NON-NLS-1$
             return true;
-        } else if (EDatabaseVersion4Drivers.getDriversStr(EDatabaseTypeName.MYSQL.getDisplayName(),
-                EDatabaseVersion4Drivers.MYSQL_4.getVersionValue()).equalsIgnoreCase(param.getValue())) {//$NON-NLS-1$
-            param.setValue("MYSQL_4"); //$NON-NLS-1$
-            return true;
         }
         return false;
     }

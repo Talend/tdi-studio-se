@@ -49,9 +49,6 @@ public class SQLBuilderService implements ISQLBuilderService {
             Object abstractMultiPageTalendEditor) {
         OpenSQLBuilderDialogJob openDialogJob = new OpenSQLBuilderDialogJob(connParameters, composite, elem, propertyName,
                 commandStack, (AbstractElementPropertySectionController) abstractElementPropertySectionController);
-        IWorkbenchSiteProgressService siteps = (IWorkbenchSiteProgressService) ((AbstractMultiPageTalendEditor) abstractMultiPageTalendEditor)
-                .getSite().getAdapter(IWorkbenchSiteProgressService.class);
-        siteps.showInDialog(composite.getShell(), openDialogJob);
         openDialogJob.schedule();
     }
 
@@ -64,6 +61,7 @@ public class SQLBuilderService implements ISQLBuilderService {
             DatabaseConnection connection = createConnection(connParameters);
             if (connection != null) {
                 IMetadataConnection metadataConnection = ConvertionHelper.convert(connection);
+                metadataConnection.setAdditionalParams(ConvertionHelper.convertAdditionalParameters(connection));
                 UIUtils.checkConnection(parentShell, metadataConnection);
             }
         }

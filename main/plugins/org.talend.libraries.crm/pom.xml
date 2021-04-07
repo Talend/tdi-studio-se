@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.talend.studio</groupId>
     <artifactId>tdi-studio-se</artifactId>
-    <version>7.3.1-SNAPSHOT</version>
+    <version>7.3.1-PATCH</version>
     <relativePath>../../../</relativePath>
   </parent>
   <artifactId>org.talend.libraries.crm</artifactId>
@@ -45,9 +45,9 @@
                     <configuration>
                         <artifactItems>
                             <artifactItem>
-                                <groupId>org.talend.libraries</groupId>
+                                <groupId>org.talend.components</groupId>
                                 <artifactId>talend-mscrm</artifactId>
-                                <version>3.4-20191012</version>
+                                <version>3.4-20201009</version>
                                 <type>jar</type>
                                 <overWrite>true</overWrite>
                                 <outputDirectory>${libs.dir}</outputDirectory>

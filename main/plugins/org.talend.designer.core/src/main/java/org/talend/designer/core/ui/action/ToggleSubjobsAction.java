@@ -41,7 +41,7 @@ public class ToggleSubjobsAction extends Action {
 
     private static final String TEST_CASE_DI_EDITOR = "org.talend.testcontainer.core.ui.editor.TestContainerMultiPageEditor";
 
-    public static final String TEXT = Messages.getString("ToggleSubjobsAction.LABEL"); //$NON-NLS-1$
+    public static final String TEXT = Messages.getString("ToggleSubjobsAction.LABEL2"); //$NON-NLS-1$
 
     private static ToggleSubjobsAction instance = new ToggleSubjobsAction();
 

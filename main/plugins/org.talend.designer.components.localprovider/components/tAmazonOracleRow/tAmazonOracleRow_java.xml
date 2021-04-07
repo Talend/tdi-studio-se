@@ -79,7 +79,7 @@
 	<PARAMETER NAME="DB_VERSION" FIELD="CLOSED_LIST" NUM_ROW="35"
 		REPOSITORY_VALUE="DB_VERSION" SHOW_IF="(USE_EXISTING_CONNECTION == 'false')">
 		<ITEMS DEFAULT="ORACLE_18">
-			<ITEM NAME="ORACLE_18" VALUE="ORACLE_18" />
+            <ITEM NAME="ORACLE_18" VALUE="ORACLE_18" />
 			<ITEM NAME="ORACLE_12" VALUE="ORACLE_12" />
 			<ITEM NAME="ORACLE_11" VALUE="ORACLE_11" />
 		</ITEMS>
@@ -339,7 +339,7 @@
 
    <CODEGENERATION>
     <IMPORTS>
-       <IMPORT NAME="Driver-OjdbcConnector8" MODULE="ojdbc8-12.2.0.1.jar" MVN="mvn:com.oracle.jdbc/ojdbc8/12.2.0.1" REQUIRED_IF="(DB_VERSION == 'ORACLE_18') AND (USE_EXISTING_CONNECTION == 'false')" />
+       <IMPORT NAME="Driver-OjdbcConnector8" MODULE="ojdbc8-19.3.0.0.jar" MVN="mvn:com.oracle.ojdbc/ojdbc8/19.3.0.0" REQUIRED_IF="(DB_VERSION == 'ORACLE_18') AND (USE_EXISTING_CONNECTION == 'false')" />
        <IMPORT NAME="Driver-OjdbcConnector7" MODULE="ojdbc7.jar" MVN="mvn:org.talend.libraries/ojdbc7/6.0.0"  REQUIRED_IF="(DB_VERSION == 'ORACLE_12') AND (USE_EXISTING_CONNECTION == 'false')" />
        <IMPORT NAME="Driver-OjdbcConnector6" MODULE="ojdbc6.jar" MVN="mvn:org.talend.libraries/ojdbc6/6.0.0"  REQUIRED_IF="(DB_VERSION == 'ORACLE_11') AND (USE_EXISTING_CONNECTION == 'false')" />
     </IMPORTS>

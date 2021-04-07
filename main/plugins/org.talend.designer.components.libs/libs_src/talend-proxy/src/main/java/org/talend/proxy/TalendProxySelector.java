@@ -1,22 +1,20 @@
 package org.talend.proxy;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.IOException;
 import java.net.Proxy;
 import java.net.ProxySelector;
 import java.net.SocketAddress;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
-
-import org.apache.log4j.Logger;
-
 
 public class TalendProxySelector extends ProxySelector {
     private static TalendProxySelector instance;
 
-    private static final Logger log = Logger.getLogger(TalendProxySelector.class);
+    private static final Logger log = LoggerFactory.getLogger(TalendProxySelector.class);
 
     private ThreadLocal<ProxyHolder> threadLocalProxyHolder;
     private ProxyHolder globalProxyHolder;

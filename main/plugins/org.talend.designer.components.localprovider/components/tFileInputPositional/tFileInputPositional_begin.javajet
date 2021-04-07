@@ -2,6 +2,7 @@
 	imports="
 		org.talend.core.model.process.INode 
 		org.talend.core.model.process.ElementParameterParser 
+		org.talend.core.model.process.IProcess
 		org.talend.core.model.metadata.IMetadataTable 
 		org.talend.core.model.metadata.IMetadataColumn 
 		org.talend.core.model.process.IConnection
@@ -68,7 +69,7 @@
         	String dieOnErrorStr = ElementParameterParser.getValue(node, "__DIE_ON_ERROR__");
     		boolean dieOnError = (dieOnErrorStr!=null&&!("").equals(dieOnErrorStr))?("true").equals(dieOnErrorStr):false;
     		
-    		//need to process rows longger than 100 000 characters, the property SafetySwitch(in talend_file_enhanced_20070724.jar) should be sent to false.(the default is true)
+    		//need to process rows longger than 100 000 characters, the property SafetySwitch(in talend_file_enhanced-1.1.jar) should be sent to false.(the default is true)
     		//that means if check the option(true), the logic value of bSafetySwitch should be changed to false (XOR with 'true')
     		boolean bSafetySwitch = (("true").equals(ElementParameterParser.getValue(node, "__PROCESS_LONG_ROW__")) ^ true);    		
     		String advancedSeparatorStr = ElementParameterParser.getValue(node, "__ADVANCED_SEPARATOR__");
@@ -121,9 +122,21 @@
                 }
             <%
             }
-            
-			boolean hasDynamic = metadata.isDynamicSchema();
+			IProcess process = node.getProcess();
 			String dynamic = ElementParameterParser.getValue(node, "__DYNAMIC__");
+			List<? extends INode> dynamicSchemaNodes = process.getNodesOfType("tSetDynamicSchema");
+			boolean guessSchemaFromFile = false;
+			for (INode currentNode : dynamicSchemaNodes){
+				if (currentNode.getUniqueName().equals(dynamic)){
+					guessSchemaFromFile = ("true").equals(ElementParameterParser.getValue(currentNode, "__GUESS_SCHEMA_FROM_FILE__"));
+				}
+			}
+			%>
+			if (<%=guessSchemaFromFile%>) {
+				throw new RuntimeException("tFileInputPositional doesn't support to work with tSetDynamicSchema when 'Guess schema from file' option is activated");
+			}
+			<%
+			boolean hasDynamic = metadata.isDynamicSchema();
 			boolean useExistingDynamic = "true".equals(ElementParameterParser.getValue(node, "__USE_EXISTING_DYNAMIC__"));
             String dyn = dynamic+"_DYNAMIC";
 			if(useExistingDynamic){
@@ -265,7 +278,7 @@
 										if(useExistingDynamic){
 										%>
                 							routines.system.Dynamic dynamic_<%=cid %> = (routines.system.Dynamic)globalMap.get("<%=dyn%>");
-                							dynamic_<%=cid %>.clearColumnValues();
+                							<%=firstConnName %>.<%=column.getLabel() %> = dynamic_<%=cid %>.copyMetadata();
 											int maxColumnCount_<%=cid %> = dynamic_<%=cid %>.getColumnCount();
 											int substringBegin<%=cid %> = begins_<%=cid %>[<%=valueN%>]; int substringEnd<%=cid %> =0;
 											for (int i<%=cid%>=0;i<%=cid%><maxColumnCount_<%=cid %>;i<%=cid%>++) {
@@ -318,10 +331,9 @@
 												<%
 												}
 												%>
-												dynamic_<%=cid %>.addColumnValue(currentColumnValue_<%=cid%>);
+												<%=firstConnName %>.<%=column.getLabel() %>.addColumnValue(currentColumnValue_<%=cid%>);
 												substringBegin<%=cid %> = substringEnd<%=cid %>; 
 											}
-											<%=firstConnName %>.<%=column.getLabel() %> = dynamic_<%=cid %>;
 										<%
                 						}
                 					} else {
@@ -374,7 +386,7 @@
 								for(int i=0;i <	columnList.size();i++){
 									if(i % 100 == 0){
                         		    %>
-                        		    	int parseValue_<%=i%>(String row_<%=cid%>, int substringBegin<%=cid%>, int substringEnd<%=cid%>, int rowLen_<%=cid%>, String[] columnValue<%=cid%> <%if("BYTES".equals(patternUnits)){%>, Arrays_<%=cid%> arrays_<%=cid%>, byte[][] byteArray_<%=cid%><%}%><%if(useExistingDynamic){%>, routines.system.Dynamic dynamic_<%=cid%><%}%>)throws java.lang.Exception{
+                        		    	int parseValue_<%=i%>(String row_<%=cid%>, int substringBegin<%=cid%>, int substringEnd<%=cid%>, int rowLen_<%=cid%>, String[] columnValue<%=cid%> <%if("BYTES".equals(patternUnits)){%>, Arrays_<%=cid%> arrays_<%=cid%>, byte[][] byteArray_<%=cid%><%}%><%if(useExistingDynamic){%>, routines.system.Dynamic dynamicLocal_<%=cid%><%}%>)throws java.lang.Exception{
                         		    <%
                         		    }
                         		    IMetadataColumn column = columnList.get(i);
@@ -383,10 +395,10 @@
                         				String paddingChar = formats.get(i).get("PADDING_CHAR");
                         				String align = formats.get(i).get("ALIGN");
 										%> 	
-                        				dynamic_<%=cid %>.clearColumnValues();
-                        				int maxColumnCount_<%=cid %> = dynamic_<%=cid %>.getColumnCount();
+
+                        				int maxColumnCount_<%=cid %> = dynamicLocal_<%=cid %>.getColumnCount();
                         				for (int i<%=cid%>=0;i<%=cid%><maxColumnCount_<%=cid %>;i<%=cid%>++) {
-                        					routines.system.DynamicMetadata dynamicMetadataColumn_<%=cid%> = dynamic_<%=cid %>.getColumnMetadata(i<%=cid%>);
+                        					routines.system.DynamicMetadata dynamicMetadataColumn_<%=cid%> = dynamicLocal_<%=cid %>.getColumnMetadata(i<%=cid%>);
                         					int currentFieldLength_<%=cid%> = dynamicMetadataColumn_<%=cid%>.getLength();
                                             <%
                                             if(!"RARE_SYMBOLS".equals(patternUnits)){
@@ -435,7 +447,7 @@
 											<%
 											}
 											%>
-                        					dynamic_<%=cid %>.addColumnValue(currentColumnValue_<%=cid%>);
+                        					dynamicLocal_<%=cid %>.addColumnValue(currentColumnValue_<%=cid%>);
                         					substringBegin<%=cid %> = substringEnd<%=cid %>;
 										}
                     				<%
@@ -748,10 +760,10 @@
                 try {//TD110 begin
                 	if(filename_<%=cid %> instanceof java.io.InputStream){
                 		in_<%=cid %> = 
-                				new java.io.BufferedReader(new java.io.InputStreamReader((java.io.InputStream)filename_<%=cid %>, <%=encoding %>));
+                				new java.io.BufferedReader(new routines.system.UnicodeReader((java.io.InputStream)filename_<%=cid %>, <%=encoding %>));
                 	}else{
                 		in_<%=cid %> = 
-                			new java.io.BufferedReader(new java.io.InputStreamReader(new java.io.FileInputStream(String.valueOf(filename_<%=cid %>)), <%=encoding %>));
+                			new java.io.BufferedReader(new routines.system.UnicodeReader(new java.io.FileInputStream(String.valueOf(filename_<%=cid %>)), <%=encoding %>));
                 	}
 
 			<%
@@ -825,7 +837,7 @@
             	if(filename_<%=cid %> instanceof java.io.InputStream){
             		throw new java.lang.RuntimeException("When the input source is a stream,footer shouldn't be bigger than 0.");
             	}else{
-            		in_<%=cid %> = new java.io.BufferedReader(new java.io.InputStreamReader(new java.io.FileInputStream(String.valueOf(filename_<%=cid %>)), <%=encoding %>));
+            		in_<%=cid %> = new java.io.BufferedReader(new routines.system.UnicodeReader(new java.io.FileInputStream(String.valueOf(filename_<%=cid %>)), <%=encoding %>));
             	}
 				<%
 				if("BYTES".equals(patternUnits)&&(("").equals(rowSeparator) || ("\"\"").equals(rowSeparator))){
@@ -984,8 +996,13 @@
                         			IMetadataColumn column = columnList.get(i);
                     				if(i % 100 == 0){
                     				%>
-                        				substringBegin<%=cid%> = positionalUtil_<%=cid%>.parseValue_<%=i%>(row_<%=cid%>, substringBegin<%=cid%>, substringEnd<%=cid%>, rowLen_<%=cid%>, columnValue<%=cid%> <%if("BYTES".equals(patternUnits)){%>, arrays_<%=cid%>, byteArray_<%=cid%><%}%><%if(useExistingDynamic){%>, dynamic_<%=cid%><%}%>);
-                        				substringEnd<%=cid%> = substringBegin<%=cid%>;
+		                            <% if (useExistingDynamic) { %>
+                   				           <%=firstConnName %>.<%=metadata.getDynamicColumn().getLabel()%> = dynamic_<%=cid %>.copyMetadata();
+                        				   substringBegin<%=cid%> = positionalUtil_<%=cid%>.parseValue_<%=i%>(row_<%=cid%>, substringBegin<%=cid%>, substringEnd<%=cid%>, rowLen_<%=cid%>, columnValue<%=cid%> <%if("BYTES".equals(patternUnits)){%>, arrays_<%=cid%>, byteArray_<%=cid%><%}%>, <%=firstConnName %>.<%=metadata.getDynamicColumn().getLabel()%>);
+                                    <% } else { %>
+                   				           substringBegin<%=cid%> = positionalUtil_<%=cid%>.parseValue_<%=i%>(row_<%=cid%>, substringBegin<%=cid%>, substringEnd<%=cid%>, rowLen_<%=cid%>, columnValue<%=cid%> <%if("BYTES".equals(patternUnits)){%>, arrays_<%=cid%>, byteArray_<%=cid%><%}%>);
+                   				    <% } %>                        				
+                   				    substringEnd<%=cid%> = substringBegin<%=cid%>;
                     				<%
                         			}
                         		}
@@ -997,12 +1014,6 @@
     								<%
                             	    }
                                	}
-       	 
-    							if(useExistingDynamic && !advanced){
-    							%>
-    								<%=firstConnName %>.<%=metadata.getDynamicColumn().getLabel()%>=dynamic_<%=cid %>;
-    							<%		
-                        		}
                             }
         
         					log4jFileUtil.debugRetriveData(node,false);

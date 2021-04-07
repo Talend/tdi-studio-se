@@ -106,7 +106,7 @@
     >
       <DEFAULT>Greenplum</DEFAULT>
     </PARAMETER>
-
+	
     <PARAMETER
       NAME="SCHEMA_DB"
       FIELD="TEXT"
@@ -219,13 +219,31 @@
   </PARAMETERS>
 
   <ADVANCED_PARAMETERS>
+    <PARAMETER
+      NAME="USE_ALTERNATE_SCHEMA"
+      FIELD="CHECK"
+      NUM_ROW="3"
+      SHOW_IF="USE_EXISTING_CONNECTION == 'true'"
+    >
+      <DEFAULT>false</DEFAULT>
+    </PARAMETER>
+	<PARAMETER
+      NAME="ALTERNATE_SCHEMA"
+      FIELD="TEXT"
+      NUM_ROW="4"
+	  REQUIRED="true"
+      SHOW_IF="(USE_EXISTING_CONNECTION == 'true') AND (USE_ALTERNATE_SCHEMA == 'true')"
+    >
+      <DEFAULT>""</DEFAULT>
+    </PARAMETER>
+
   	<PARAMETER
       NAME="DB_DRIVER"
       FIELD="CLOSED_LIST"
       NUM_ROW="5"
       SHOW_IF="USE_EXISTING_CONNECTION == 'false'"
   	>
-      <ITEMS DEFAULT="POSTGRESQL">
+      <ITEMS DEFAULT="GREENPLUM">
           <ITEM NAME="POSTGRESQL" VALUE="POSTGRESQL" />
           <ITEM NAME="GREENPLUM" VALUE="GREENPLUM"/>
       </ITEMS>
@@ -329,7 +347,7 @@
         <IMPORT NAME="Postgres-Driver"
         MODULE="postgresql-8.4-703.jdbc4.jar" MVN="mvn:postgresql/postgresql/8.4-703.jdbc4"  REQUIRED_IF="(DB_DRIVER =='POSTGRESQL') AND (USE_EXISTING_CONNECTION == 'false')"/>
         <IMPORT NAME="Greenplum-Driver" 
-		MODULE="greenplum.jar" MVN="mvn:com.pivotal/greenplum/5.8.1" REQUIRED_IF="(DB_DRIVER =='GREENPLUM') AND (USE_EXISTING_CONNECTION == 'false')"/>
+		MODULE="greenplum-5.1.4.000275.jar" MVN="mvn:com.pivotal/greenplum/5.1.4.000275" REQUIRED_IF="(DB_DRIVER =='GREENPLUM') AND (USE_EXISTING_CONNECTION == 'false')"/>
     </IMPORTS>
   </CODEGENERATION>
 

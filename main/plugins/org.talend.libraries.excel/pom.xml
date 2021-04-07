@@ -4,13 +4,13 @@
 	<parent>
 		<groupId>org.talend.studio</groupId>
 		<artifactId>tdi-studio-se</artifactId>
-		<version>7.3.1-SNAPSHOT</version>
+		<version>7.3.1-PATCH</version>
 		<relativePath>../../../</relativePath>
 	</parent>
 	<artifactId>org.talend.libraries.excel</artifactId>
 	<packaging>eclipse-plugin</packaging>
 	<properties>
-		<talend.groupid>org.talend.libraries</talend.groupid>
+		<talend.groupid>org.talend.components</talend.groupid>
 		<talend.version.610>6.1.0</talend.version.610>
 		<talend.version.600>6.0.0</talend.version.600>
 	</properties>
@@ -33,22 +33,22 @@
 								<artifactItem>
 									<groupId>org.apache.poi</groupId>
 									<artifactId>poi-scratchpad</artifactId>
-									<version>4.1.0-20190523141255_modified_talend</version>
+									<version>4.1.2-20200903124306_modified_talend</version>
 								</artifactItem>
 								<artifactItem>
 									<groupId>org.apache.poi</groupId>
 									<artifactId>poi</artifactId>
-									<version>4.1.0-20190523141255_modified_talend</version>
+									<version>4.1.2-20200903124306_modified_talend</version>
 								</artifactItem>
 								<artifactItem>
 									<groupId>org.apache.poi</groupId>
 									<artifactId>poi-ooxml-schemas</artifactId>
-									<version>4.1.0-20190523141255_modified_talend</version>
+									<version>4.1.2-20200903124306_modified_talend</version>
 								</artifactItem>
 								<artifactItem>
 									<groupId>org.apache.poi</groupId>
 									<artifactId>poi-ooxml</artifactId>
-									<version>4.1.0-20190523141255_modified_talend</version>
+									<version>4.1.2-20200903124306_modified_talend</version>
 								</artifactItem>
 								<artifactItem>
 									<groupId>org.apache.commons</groupId>
@@ -70,23 +70,23 @@
 							<goal>copy</goal>
 						</goals>
 						<configuration>
-							<stripVersion>true</stripVersion>
+							<stripVersion>false</stripVersion>
 							<outputDirectory>${project.basedir}/lib</outputDirectory>
 							<artifactItems>
 								<artifactItem>
                                     <groupId>${talend.groupid}</groupId>
-                                    <artifactId>simpleexcel-2.2-20190722</artifactId>
-                                    <version>${talend.version.600}</version>
+                                    <artifactId>simpleexcel</artifactId>
+                                    <version>2.5-20201119</version>
                                 </artifactItem>
                                 <artifactItem>
                                     <groupId>${talend.groupid}</groupId>
-                                    <artifactId>talendMsgMailUtil-1.1-20191012</artifactId>
-                                    <version>${talend.version.600}</version>
+                                    <artifactId>talendMsgMailUtil</artifactId>
+                                    <version>1.2-20200923</version>
                                 </artifactItem>
                                 <artifactItem>
                                     <groupId>${talend.groupid}</groupId>
-                                    <artifactId>talendExcel-1.5-20190731</artifactId>
-                                    <version>${talend.version.600}</version>
+                                    <artifactId>talendExcel</artifactId>
+                                    <version>1.10-20210113</version>
                                 </artifactItem>
 							</artifactItems>
 						</configuration>

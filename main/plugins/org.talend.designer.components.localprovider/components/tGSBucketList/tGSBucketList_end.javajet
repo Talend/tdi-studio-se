@@ -1,20 +1,21 @@
-<%@ jet 
+<%@ jet
 imports="
 	org.talend.core.model.process.INode
     org.talend.designer.codegen.config.CodeGeneratorArgument
     org.talend.core.model.process.ElementParameterParser
-    " 
+    "
 %>
 	<%
     CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
     INode node = (INode)codeGenArgument.getArgument();
     String cid = node.getUniqueName();
-    
+
     String useExistingConn = ElementParameterParser.getValue(node,"__USE_EXISTING_CONNECTION__");
+	String authType = ElementParameterParser.getValue(node, "__AUTH_TYPE__");
 	%>
 		}
 	<%
-	if(!("true").equals(useExistingConn)) {
+	if(!("true").equals(useExistingConn) && "USER_ACCOUNT_HMAC".equals(authType)) {
 	%>
 		}finally{
 			if(service_<%=cid%> !=null){
@@ -25,4 +26,3 @@ imports="
 	}
 	%>
 	globalMap.put("<%=cid%>_NB_BUCKET", nb_bucket_<%=cid%>);
-	

@@ -6,7 +6,7 @@
 
     <groupId>org.talend.components.lib</groupId>
     <artifactId>talend-proxy</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.1</version>
     <build>
         <plugins>
             <plugin>
@@ -46,9 +46,9 @@
             <version>3.9</version>
         </dependency>
         <dependency>
-            <groupId>log4j</groupId>
-            <artifactId>log4j</artifactId>
-            <version>1.2.17</version>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>1.7.25</version>
         </dependency>
     </dependencies>
 

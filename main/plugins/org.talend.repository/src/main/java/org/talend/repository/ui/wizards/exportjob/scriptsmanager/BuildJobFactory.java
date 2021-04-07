@@ -26,6 +26,7 @@ import org.talend.core.runtime.repository.build.BuildExportManager;
 import org.talend.core.runtime.repository.build.IBuildExportHandler;
 import org.talend.core.runtime.repository.build.IBuildJobParameters;
 import org.talend.core.runtime.repository.build.IBuildParametes;
+import org.talend.designer.core.model.utils.emf.talendfile.NodeType;
 import org.talend.repository.constants.BuildJobConstants;
 import org.talend.repository.ui.wizards.exportjob.JavaJobScriptsExportWSWizardPage.JobExportType;
 import org.talend.repository.ui.wizards.exportjob.handler.BuildJobHandler;
@@ -96,6 +97,18 @@ public class BuildJobFactory {
                 ERepositoryObjectType repositoryObjectType = ERepositoryObjectType.getItemType(processItem);
                 if (repositoryObjectType == ERepositoryObjectType.PROCESS_ROUTE && "ROUTE_MICROSERVICE".equals(type)) {
                     esb = true;
+                } else if ("REST_MS".equals(type)) {
+                    esb = true;
+                }else {
+                    for (Object o : ((ProcessItem) processItem).getProcess().getNode()) {
+                        if (o instanceof NodeType) {
+                            NodeType currentNode = (NodeType) o;
+                            if (BuildJobConstants.esbComponents.contains(currentNode.getComponentName())) {
+                                esb = true;
+                                break;
+                            }
+                        }
+                    }
                 }
             }
 

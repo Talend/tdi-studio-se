@@ -12,9 +12,9 @@
  */
 package org.talend.sdk.component.studio.metadata.handler;
 
-import static org.talend.core.model.metadata.designerproperties.RepositoryToComponentProperty.*;
-import static org.talend.sdk.component.studio.model.parameter.PropertyDefinitionDecorator.*;
-import static org.talend.sdk.component.studio.util.TaCoKitUtil.*;
+import static org.talend.core.model.metadata.designerproperties.RepositoryToComponentProperty.addQuotesIfNecessary;
+import static org.talend.sdk.component.studio.model.parameter.PropertyDefinitionDecorator.PATH_SEPARATOR;
+import static org.talend.sdk.component.studio.util.TaCoKitUtil.isEmpty;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -58,6 +58,7 @@ import org.talend.sdk.component.studio.model.parameter.PropertyDefinitionDecorat
 import org.talend.sdk.component.studio.util.TaCoKitConst;
 import org.talend.sdk.component.studio.util.TaCoKitUtil;
 import org.talend.sdk.component.studio.websocket.WebSocketClient.V1Component;
+import org.talend.sdk.studio.process.TaCoKitNode;
 
 public class TaCoKitDragAndDropHandler extends AbstractDragAndDropServiceHandler {
 
@@ -99,6 +100,9 @@ public class TaCoKitDragAndDropHandler extends AbstractDragAndDropServiceHandler
         String key = null;
         try {
             model = new TaCoKitConfigurationModel(connection);
+            if (TaCoKitNode.TACOKIT_METADATA_TYPE_ID.equals(repositoryKey)) {
+                return model.getConfigurationId();
+            }
             key = computeKey(model, repositoryKey, targetComponent);
             valueModel = model.getValue(key);
         } catch (Exception e) {

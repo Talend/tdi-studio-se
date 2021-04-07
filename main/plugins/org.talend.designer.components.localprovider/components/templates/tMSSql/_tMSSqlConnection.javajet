@@ -3,15 +3,25 @@
 java.sql.Connection conn_<%=cid%> = null;
 <%
 boolean useExistingConnection = "true".equals(ElementParameterParser.getValue(node,"__USE_EXISTING_CONNECTION__"));
+boolean useAlternateSchema = "true".equals(ElementParameterParser.getValue(node, "__USE_ALTERNATE_SCHEMA__"));
 %>
 String dbUser_<%=cid %> = null;
 <%
 if(useExistingConnection) {
 	String connection = ElementParameterParser.getValue(node,"__CONNECTION__");
 	String conn = "conn_" + connection;
-	String schema = "dbschema_" + connection;
+	if(useAlternateSchema) {
+		String alternateSchema = ElementParameterParser.getValue(node,"__ALTERNATE_SCHEMA__");
+	%>
+	dbschema_<%=cid%> = <%=alternateSchema%>;
+	<%
+	} else {
+		String schema = "dbschema_" + connection;
 	%>
 	dbschema_<%=cid%> = (String)globalMap.get("<%=schema%>");
+	<%
+	}
+	%>
 	conn_<%=cid%> = (java.sql.Connection)globalMap.get("<%=conn%>");
 	<%dbLog.conn().useExistConn("conn_"+cid+".getMetaData().getURL()", "conn_"+cid+".getMetaData().getUserName()");%>
 <%
@@ -75,6 +85,14 @@ if(useExistingConnection) {
 			}
 	%>
     }
+<%
+    if (driver.equals("MSSQL_PROP") && useActiveDirectoryAuth) {
+%>
+        url_<%=cid%> += ";encrypt=true;trustServerCertificate=false;hostNameInCertificate=*.database.windows.net;Authentication=ActiveDirectoryPassword";
+        url_<%=cid%> += ";database=" + <%=dbname%>;
+<%
+    }
+%>
     url_<%=cid%> += ";appName=" + projectName + ";" + <%=dbproperties%>;
     dbUser_<%=cid %> = <%=dbuser%>;
 

@@ -55,7 +55,7 @@
 			NUM_ROW="25"
 			REPOSITORY_VALUE="DRIVER"
 			SHOW_IF="USE_EXISTING_CONNECTION == 'false'">
-			<ITEMS DEFAULT="JTDS">
+			<ITEMS DEFAULT="MSSQL_PROP">
 				<ITEM NAME="JTDS" VALUE="JTDS" />
 				<ITEM NAME="MSSQL_PROP" VALUE="MSSQL_PROP"/>
 			</ITEMS>
@@ -234,6 +234,28 @@
 			<DEFAULT>""</DEFAULT>
 		</PARAMETER>
 
+		<PARAMETER NAME="ACTIVE_DIR_AUTH" FIELD="CHECK" NUM_ROW="6" SHOW_IF="(DRIVER=='MSSQL_PROP') AND (USE_EXISTING_CONNECTION == 'false')">
+			<DEFAULT>false</DEFAULT>
+		</PARAMETER>
+
+	    <PARAMETER
+	      NAME="USE_ALTERNATE_SCHEMA"
+	      FIELD="CHECK"
+	      NUM_ROW="7"
+	      SHOW_IF="USE_EXISTING_CONNECTION == 'true'"
+	    >
+	      <DEFAULT>false</DEFAULT>
+	    </PARAMETER>
+	    <PARAMETER
+	      NAME="ALTERNATE_SCHEMA"
+	      FIELD="TEXT"
+	      NUM_ROW="8"
+	      REQUIRED="true"
+	      SHOW_IF="(USE_EXISTING_CONNECTION == 'true') AND (USE_ALTERNATE_SCHEMA == 'true')"
+	    >
+	      <DEFAULT>""</DEFAULT>
+	    </PARAMETER>
+
 		<PARAMETER NAME="ENCODING" FIELD="ENCODING_TYPE" NUM_ROW="9"
 			REQUIRED="true" SHOW="false">
 			<DEFAULT>"ISO-8859-15"</DEFAULT>
@@ -334,7 +356,15 @@
 		<IMPORTS>
 			<IMPORT NAME="Driver-jTDS" MODULE="jtds-1.3.1-patch-20190523.jar" MVN="mvn:net.sourceforge.jtds/jtds/1.3.1-patch-20190523"  
 				REQUIRED_IF="(DRIVER == 'JTDS') AND (USE_EXISTING_CONNECTION == 'false')" />
-			<IMPORT NAME="Driver-mssql-jdbc" MODULE="mssql-jdbc.jar" MVN="mvn:org.talend.libraries/mssql-jdbc/6.0.0"  REQUIRED_IF="(DRIVER == 'MSSQL_PROP') AND (USE_EXISTING_CONNECTION == 'false')" />	
+			<IMPORT NAME="Driver-mssql-jdbc" MODULE="mssql-jdbc.jar" MVN="mvn:org.talend.libraries/mssql-jdbc/6.0.0"  REQUIRED_IF="(DRIVER == 'MSSQL_PROP') AND (USE_EXISTING_CONNECTION == 'false')" />
+            <IMPORT NAME="adal4j" MODULE="adal4j-1.6.5.jar" MVN="mvn:com.microsoft.azure/adal4j/1.6.5"  REQUIRED_IF="(ACTIVE_DIR_AUTH == 'true') AND (DRIVER=='MSSQL_PROP') AND (USE_EXISTING_CONNECTION == 'false')" />
+            <IMPORT NAME="commons-lang3" MODULE="commons-lang3-3.10.jar" MVN="mvn:org.apache.commons/commons-lang3/3.10"  REQUIRED_IF="(ACTIVE_DIR_AUTH == 'true') AND (DRIVER=='MSSQL_PROP') AND (USE_EXISTING_CONNECTION == 'false')" />
+            <IMPORT NAME="commons-codec" MODULE="commons-codec-1.14.jar" MVN="mvn:commons-codec/commons-codec/1.14"  REQUIRED_IF="(ACTIVE_DIR_AUTH == 'true') AND (DRIVER=='MSSQL_PROP') AND (USE_EXISTING_CONNECTION == 'false')" />
+            <IMPORT NAME="gson" MODULE="gson-2.8.6.jar" MVN="mvn:com.google.code.gson/gson/2.8.6"  REQUIRED_IF="(ACTIVE_DIR_AUTH == 'true') AND (DRIVER=='MSSQL_PROP') AND (USE_EXISTING_CONNECTION == 'false')" />
+            <IMPORT NAME="oauth2-oidc-sdk" MODULE="oauth2-oidc-sdk-6.5.jar" MVN="mvn:com.nimbusds/oauth2-oidc-sdk/6.5"  REQUIRED_IF="(ACTIVE_DIR_AUTH == 'true') AND (DRIVER=='MSSQL_PROP') AND (USE_EXISTING_CONNECTION == 'false')" />
+            <IMPORT NAME="json-smart" MODULE="json-smart-2.3.jar" MVN="mvn:net.minidev/json-smart/2.3"  REQUIRED_IF="(ACTIVE_DIR_AUTH == 'true') AND (DRIVER=='MSSQL_PROP') AND (USE_EXISTING_CONNECTION == 'false')" />
+            <IMPORT NAME="nimbus-jose-jwt" MODULE="nimbus-jose-jwt-8.11.jar" MVN="mvn:com.nimbusds/nimbus-jose-jwt/8.11"  REQUIRED_IF="(ACTIVE_DIR_AUTH == 'true') AND (DRIVER=='MSSQL_PROP') AND (USE_EXISTING_CONNECTION == 'false')" />
+            <IMPORT NAME="javax.mail" MODULE="javax.mail-1.6.2.jar" MVN="mvn:com.sun.mail/javax.mail/1.6.2"  REQUIRED_IF="(ACTIVE_DIR_AUTH == 'true') AND (DRIVER=='MSSQL_PROP') AND (USE_EXISTING_CONNECTION == 'false')" />
 		</IMPORTS>
 	</CODEGENERATION>
 

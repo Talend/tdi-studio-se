@@ -47,7 +47,7 @@ if ((metadatas!=null)&&(metadatas.size()>0)) {
 		}
 		if (((AbstractNode)node).getParallelIterator() != null) {
 		%>
-			synchronized ((Object[])globalMap.get("lockWrite_<%=((AbstractNode)node).getParallelIterator()%>")) {
+			synchronized (fileName_<%=cid %>.intern()) {
 		<% 
 		}
 		if (isParallelize) {
@@ -94,12 +94,23 @@ if ((metadatas!=null)&&(metadatas.size()>0)) {
 				    }
 					<%
 					if(isInRowMode){
+						if (split || compress) {
 					%>
 						if(out<%=cid %>!=null) {
 							out<%=cid %>.flush();
 							out<%=cid %>.close();
 						}
 					<%
+						} else {
+%>
+							java.io.Writer outWriter_<%=cid %> = (java.io.Writer) resourceMap.get("outWriter_for_" + <%=filename %>);
+							if(outWriter_<%=cid %> != null) {
+								outWriter_<%=cid %>.flush();
+								outWriter_<%=cid %>.close();
+								resourceMap.remove("outWriter_for_" + <%=filename %>);
+							}
+<%
+						}
 					}
 				}else{
 					if(isInRowMode){

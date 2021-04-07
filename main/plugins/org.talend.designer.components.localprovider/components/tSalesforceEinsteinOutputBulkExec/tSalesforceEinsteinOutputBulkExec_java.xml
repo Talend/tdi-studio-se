@@ -122,7 +122,7 @@
           GROUP="CONNECTION_INFO"
           SHOW_IF="USE_EXISTING_CONNECTION == 'false'"
         >
-          <DEFAULT>"https://login.salesforce.com/services/Soap/u/45.0"</DEFAULT>
+          <DEFAULT>"https://login.salesforce.com/services/Soap/u/47.0"</DEFAULT>
         </PARAMETER>
 
         <PARAMETER

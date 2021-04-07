@@ -11,6 +11,8 @@ import org.talend.core.model.process.IElementParameter;
 import org.talend.core.model.process.INode;
 import org.talend.core.model.process.INodeConnector;
 import org.talend.core.model.utils.IComponentName;
+import org.talend.designer.core.model.components.UnifiedJDBCBean;
+import org.talend.designer.core.ui.editor.nodes.Node;
 
 // ============================================================================
 //
@@ -83,6 +85,8 @@ public interface IUnifiedComponentService extends IService {
 
     public String getUnifiedCompDisplayName(IComponent delegateComponent, String emfComponent);
 
+    public String getUnifiedCompRealComponentName(IComponent delegateComponent, String emfComponent);
+
     public void filterUnifiedComponentForPalette(IComponentsFactory compFac, Collection<IComponent> componentSet,
             String lowerCasedKeyword);
 
@@ -90,4 +94,5 @@ public interface IUnifiedComponentService extends IService {
 
     public IComponent getUnifiedComponentByFilter(IComponent delegateComponent, String filter);
 
+    public UnifiedJDBCBean getInitJDBCComponentProperties(Node node, IComponent delegateComponent);
 }

@@ -126,7 +126,12 @@
 	</PARAMETER>
 </ADVANCED_PARAMETERS>
 
-	<CODEGENERATION></CODEGENERATION>
+	<CODEGENERATION>
+	<IMPORTS>
+		<IMPORT NAME="Driver-Teradata" MODULE="terajdbc4-16.20.00.02.jar" MVN="mvn:com.teradata/terajdbc4/16.20.00.02" REQUIRED="true" />
+		<IMPORT NAME="Driver-Teradata" MODULE="tdgssconfig-16.20.00.02.jar" MVN="mvn:com.teradata/tdgssconfig/16.20.00.02" REQUIRED="true" />
+	</IMPORTS>
+	</CODEGENERATION>
 
 	<RETURNS></RETURNS>
 

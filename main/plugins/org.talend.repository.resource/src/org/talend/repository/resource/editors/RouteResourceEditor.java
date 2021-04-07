@@ -51,7 +51,7 @@ public class RouteResourceEditor extends TextEditor {
 		String displayName = item.getProperty().getDisplayName();
 		String version = item.getProperty().getVersion();
 		String partName = "Resource " + displayName + " " + version;
-//		setPartName(partName);
+		setPartName(partName);
 		setTitleToolTip(partName);
 		getSourceViewer().setEditable(!rrInput.isReadOnly());
 	}

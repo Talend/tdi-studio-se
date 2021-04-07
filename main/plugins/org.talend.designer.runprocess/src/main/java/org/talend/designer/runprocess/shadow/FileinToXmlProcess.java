@@ -536,6 +536,12 @@ public class FileinToXmlProcess<K extends FileInputNode> extends RepositoryObjec
             // TODO Auto-generated method stub
             return false;
         }
+
+        @Override
+        public void saveToEmf(EList contextTypeList, boolean useInternalId) {
+            // TODO Auto-generated method stub
+
+        }
     }
 
     @Override
@@ -805,12 +811,6 @@ public class FileinToXmlProcess<K extends FileInputNode> extends RepositoryObjec
         return null;
     }
 
-    @Override
-    public Set<String> getNeededPigudf() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
     /*
      * (non-Javadoc)
      *
@@ -848,6 +848,12 @@ public class FileinToXmlProcess<K extends FileInputNode> extends RepositoryObjec
      */
     @Override
     public Set<ModuleNeeded> getNeededModules(int options) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public INode getNodeByUniqueName(String uniqueName) {
         // TODO Auto-generated method stub
         return null;
     }

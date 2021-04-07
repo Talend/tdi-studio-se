@@ -315,7 +315,7 @@ public class ChangeComponentCommandTest {
                 ComponentCategory.CATEGORY_4_DI.getName());
         IComponent tRedshiftInput = compService.getComponentsFactory().get("tRedshiftInput",
                 ComponentCategory.CATEGORY_4_DI.getName());
-        IComponent tEXAInput = compService.getComponentsFactory().get("tEXAInput",
+        IComponent tExasolInput = compService.getComponentsFactory().get("tExasolInput",
                 ComponentCategory.CATEGORY_4_DI.getName());
         IComponent tFirebirdInput = compService.getComponentsFactory().get("tFirebirdInput",
                 ComponentCategory.CATEGORY_4_DI.getName());
@@ -327,8 +327,6 @@ public class ChangeComponentCommandTest {
         IComponent tIngresInput = compService.getComponentsFactory().get("tIngresInput",
                 ComponentCategory.CATEGORY_4_DI.getName());
         IComponent tInterbaseInput = compService.getComponentsFactory().get("tInterbaseInput",
-                ComponentCategory.CATEGORY_4_DI.getName());
-        IComponent tMemSQLInput = compService.getComponentsFactory().get("tMemSQLInput",
                 ComponentCategory.CATEGORY_4_DI.getName());
         IComponent tMSSqlInput = compService.getComponentsFactory().get("tMSSqlInput", ComponentCategory.CATEGORY_4_DI.getName());
         IComponent tMysqlInput = compService.getComponentsFactory().get("tMysqlInput", ComponentCategory.CATEGORY_4_DI.getName());
@@ -368,14 +366,13 @@ public class ChangeComponentCommandTest {
         tDBInputs.add(tAmazonMysqlInput);
         tDBInputs.add(tAmazonOracleInput);
         tDBInputs.add(tRedshiftInput);
-        tDBInputs.add(tEXAInput);
+        tDBInputs.add(tExasolInput);
         tDBInputs.add(tFirebirdInput);
         tDBInputs.add(tGreenplumInput);
         tDBInputs.add(tDB2Input);
         tDBInputs.add(tInformixInput);
         tDBInputs.add(tIngresInput);
         tDBInputs.add(tInterbaseInput);
-        tDBInputs.add(tMemSQLInput);
         tDBInputs.add(tMSSqlInput);
         tDBInputs.add(tMysqlInput);
         tDBInputs.add(tNetezzaInput);

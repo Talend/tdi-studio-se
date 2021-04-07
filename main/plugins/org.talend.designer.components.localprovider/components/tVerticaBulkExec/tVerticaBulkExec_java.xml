@@ -210,11 +210,29 @@
     >
       <DEFAULT>""</DEFAULT>
     </PARAMETER>
+    
+    <PARAMETER
+      NAME="USE_EXISTING_DYNAMIC"
+      FIELD="CHECK"
+      NUM_ROW="605">
+      <DEFAULT>false</DEFAULT>
+    </PARAMETER>
 
+    <PARAMETER
+      NAME="DYNAMIC"
+      FIELD="COMPONENT_LIST"
+      REQUIRED="true"
+      FILTER="tSetDynamicSchema"
+      NUM_ROW="610"
+      SHOW_IF="USE_EXISTING_DYNAMIC == 'true'"
+      >
+    </PARAMETER>
+    
     <PARAMETER
       NAME="SCHEMA"
       FIELD="SCHEMA_TYPE"
       NUM_ROW="700"
+      SHOW_IF="USE_EXISTING_DYNAMIC == 'false'"
     >
       <DEFAULT>""</DEFAULT>
     </PARAMETER>
@@ -255,6 +273,16 @@
       SHOW="false"
     >
       <DEFAULT>vertica_id</DEFAULT>
+    </PARAMETER>
+
+    <PARAMETER
+      NAME="VARCHAR_LENGTH_FOR_DYNAMIC"
+      FIELD="TEXT"
+      NUM_ROW="1500"
+      SHOW="false"
+      REPOSITORY_VALUE="VARCHAR_LENGTH_FOR_DYNAMIC"
+    >
+      <DEFAULT>65000</DEFAULT>
     </PARAMETER>
 
    </PARAMETERS>
@@ -470,7 +498,7 @@
 		<IMPORT NAME="Driver-VERTICA_6.1.2" MODULE="vertica-jdk5-6.1.2-0.jar" MVN="mvn:org.talend.libraries/vertica-jdk5-6.1.2-0/6.0.0"   REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false') and (DB_VERSION=='VERTICA_6_1_X')" />
 		<IMPORT NAME="Driver-VERTICA_7.0.1" MODULE="vertica-jdbc-7.0.1-0.jar" MVN="mvn:org.talend.libraries/vertica-jdbc-7.0.1-0/6.0.0"   REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false') and (DB_VERSION=='VERTICA_7_0_X')" />
 		<IMPORT NAME="Driver-VERTICA_7.1.2" MODULE="vertica-jdbc-7.1.2-0.jar" MVN="mvn:org.talend.libraries/vertica-jdbc-7.1.2-0/6.0.0"   REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false') and (DB_VERSION=='VERTICA_7_1_X')" />
-		<IMPORT NAME="Driver-VERTICA_9.0" MODULE="vertica-jdbc-9.0.0-0.jar" MVN="mvn:org.talend.libraries/vertica-jdbc-9.0.0-0/6.0.0"   REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false') and (DB_VERSION=='VERTICA_9_0')" />
+		<IMPORT NAME="Driver-VERTICA_9.0" MODULE="vertica-jdbc-9.3.1-0.jar" MVN="mvn:com.vertica/vertica-jdbc/9.3.1-0"   REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false') and (DB_VERSION=='VERTICA_9_0')" />
     </IMPORTS>
   </CODEGENERATION>
 

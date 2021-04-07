@@ -35,12 +35,13 @@ import org.talend.core.model.process.IConnectionCategory;
 import org.talend.core.model.process.IElementParameter;
 import org.talend.core.model.process.INode;
 import org.talend.core.model.process.INodeConnector;
+import org.talend.designer.core.DesignerPlugin;
 import org.talend.designer.core.model.components.AbstractBasicComponent;
 import org.talend.designer.core.model.components.EParameterName;
 import org.talend.designer.core.model.components.ElementParameter;
+import org.talend.designer.core.ui.preferences.TalendDesignerPrefConstants;
 import org.talend.sdk.component.server.front.model.ComponentDetail;
 import org.talend.sdk.component.server.front.model.ConfigTypeNode;
-import org.talend.sdk.component.server.front.model.ConfigTypeNodes;
 import org.talend.sdk.component.studio.ComponentModel;
 import org.talend.sdk.component.studio.Lookups;
 import org.talend.sdk.component.studio.model.connector.ConnectorCreatorFactory;
@@ -103,7 +104,7 @@ public class ElementParameterCreator {
         if (!properties.isEmpty()) {
             final PropertyNode root = new PropertyTreeCreator(new WidgetTypeMapper())
                     .createPropertyTree(properties);
-            final SettingVisitor settingVisitor = new SettingVisitor(node, updateComponentsParameter, detail);
+            final SettingVisitor4Component settingVisitor = new SettingVisitor4Component(node, updateComponentsParameter, detail);
             root.accept(settingVisitor.withCategory(BASIC), Metadatas.MAIN_FORM);
             root.accept(settingVisitor.withCategory(ADVANCED), Metadatas.ADVANCED_FORM);
             parameters.addAll(settingVisitor.getSettings());
@@ -112,32 +113,11 @@ public class ElementParameterCreator {
             // create config type version param
             properties.stream().filter(p -> p.getConfigurationType() != null && p.getConfigurationTypeName() != null)
                     .forEach(p -> parameters.add(new VersionParameter(node, p.getPath(),
-                            String.valueOf(
-                                    getConfigTypeVersion(p, component.getConfigTypeNodes(), component.getId().getFamilyId())))));
+                            String.valueOf(TaCoKitUtil.getConfigTypeVersion(p, component.getConfigTypeNodes(),
+                                    component.getId().getFamilyId())))));
         }
 
         checkSchemaProperties(new SettingVisitor(node, updateComponentsParameter, detail).withCategory(BASIC));
-    }
-
-    public static int getConfigTypeVersion(final PropertyDefinitionDecorator p, final ConfigTypeNodes configTypeNodes, final String familyId) {
-        final String type = p.getMetadata().get("configurationtype::type");
-        final String name = p.getMetadata().get("configurationtype::name");
-        return configTypeNodes.getNodes().values().stream()
-                .filter(c -> c.getConfigurationType() != null && c.getName() != null)
-                .filter(c -> c.getConfigurationType().equals(type) && c.getName().equals(name))
-                .filter(c -> familyId.equals(getPropertyFamilyId(c, configTypeNodes)))
-                .findFirst().map(ConfigTypeNode::getVersion).orElse(-1);
-    }
-
-    private static String getPropertyFamilyId(final ConfigTypeNode it, final ConfigTypeNodes nodes) {
-        if (it.getParentId() == null) {
-            return null;
-        }
-        String parent = it.getParentId();
-        while (nodes.getNodes().get(parent) != null && nodes.getNodes().get(parent).getParentId() != null) {
-            parent = nodes.getNodes().get(parent).getParentId();
-        }
-        return parent;
     }
 
     private void addLayoutParameter(final PropertyNode root, final String form) {
@@ -217,6 +197,7 @@ public class ElementParameterCreator {
         addUniqueNameParameter();
         addComponentNameParameter();
         addTacokitComponentIdParameter();
+        addTaCoKitMetadataTypeIdParameter();
         addVersionParameter();
         addFamilyParameter();
         addStartParameter();
@@ -233,6 +214,9 @@ public class ElementParameterCreator {
         addParallelizeParameter();
         addParallelizeNumberParameter();
         addParallelizeKeepEmptyParameter();
+
+        addViewParameters();
+        addDocParameters();
     }
 
     /**
@@ -636,6 +620,21 @@ public class ElementParameterCreator {
         parameters.add(parameter);
     }
 
+    private void addTaCoKitMetadataTypeIdParameter() {
+        final ElementParameter parameter = new ElementParameter(node);
+        parameter.setName(TaCoKitNode.TACOKIT_METADATA_TYPE_ID);
+        parameter.setFieldType(EParameterFieldType.TEXT);
+        parameter.setValue(null);
+        parameter.setRepositoryValue(TaCoKitNode.TACOKIT_METADATA_TYPE_ID);
+        parameter.setDisplayName(TaCoKitNode.TACOKIT_METADATA_TYPE_ID);
+        parameter.setFieldType(EParameterFieldType.TECHNICAL);
+        parameter.setCategory(EComponentCategory.BASIC);
+        parameter.setNumRow(1);
+        parameter.setReadOnly(false);
+        parameter.setShow(false);
+        parameters.add(parameter);
+    }
+
     /**
      * Creates and adds {@link EParameterName#VERSION} parameter
      * Its value is component version. More specifically it is a version of component configuration.
@@ -656,4 +655,71 @@ public class ElementParameterCreator {
         parameters.add(parameter);
     }
 
+    private void addViewParameters() {
+        ElementParameter parameter = new ElementParameter(node);
+        parameter.setName(EParameterName.LABEL.getName());
+        parameter.setDisplayName(EParameterName.LABEL.getDisplayName());
+        parameter.setFieldType(EParameterFieldType.TEXT);
+        parameter.setCategory(EComponentCategory.VIEW);
+        parameter.setNumRow(1);
+        parameter.setReadOnly(false);
+        parameter.setRequired(false);
+        parameter.setShow(true);
+        // in case label/format is not set in the preferences.
+        String label = DesignerPlugin.getDefault().getPreferenceStore().getString(TalendDesignerPrefConstants.DEFAULT_LABEL);
+        if (!"".equals(label)) { //$NON-NLS-1$
+            parameter.setValue(label);
+        }
+        parameter.setDefaultValue(parameter.getValue());
+        parameters.add(parameter);
+
+        parameter = new ElementParameter(node);
+        parameter.setName(EParameterName.HINT.getName());
+        parameter.setDisplayName(EParameterName.HINT.getDisplayName());
+        parameter.setFieldType(EParameterFieldType.TEXT);
+        parameter.setCategory(EComponentCategory.VIEW);
+        parameter.setNumRow(2);
+        parameter.setReadOnly(false);
+        parameter.setRequired(false);
+        parameter.setShow(true);
+        // in case hint/format is not set in the preferences.
+        label = DesignerPlugin.getDefault().getPreferenceStore().getString(TalendDesignerPrefConstants.DEFAULT_HINT);
+        if (!"".equals(label)) { //$NON-NLS-1$
+            parameter.setValue(label);
+        }
+        parameter.setDefaultValue(parameter.getValue());
+        parameters.add(parameter);
+
+        parameter = new ElementParameter(node);
+        parameter.setName(EParameterName.CONNECTION_FORMAT.getName());
+        parameter.setDisplayName(EParameterName.CONNECTION_FORMAT.getDisplayName());
+        parameter.setFieldType(EParameterFieldType.TEXT);
+        parameter.setCategory(EComponentCategory.VIEW);
+        parameter.setNumRow(3);
+        parameter.setReadOnly(false);
+        parameter.setRequired(false);
+        parameter.setShow(true);
+        // in case connection/format is not set in the preferences.
+        label = DesignerPlugin.getDefault().getPreferenceStore().getString(TalendDesignerPrefConstants.DEFAULT_CONNECTION_FORMAT);
+        if (!"".equals(label)) { //$NON-NLS-1$
+            parameter.setValue(label);
+        }
+        parameter.setDefaultValue(parameter.getValue());
+        parameters.add(parameter);
+    }
+
+    private void addDocParameters() {
+        final ElementParameter parameter = new ElementParameter(node);
+        parameter.setName(EParameterName.INFORMATION.getName());
+        parameter.setValue(new Boolean(false));
+        parameter.setDisplayName(EParameterName.INFORMATION.getDisplayName());
+        parameter.setFieldType(EParameterFieldType.CHECK);
+        parameter.setCategory(EComponentCategory.DOC);
+        parameter.setNumRow(1);
+        parameter.setReadOnly(false);
+        parameter.setRequired(false);
+        parameter.setShow(true);
+        parameter.setDefaultValue(parameter.getValue());
+        parameters.add(parameter);
+    }
 }

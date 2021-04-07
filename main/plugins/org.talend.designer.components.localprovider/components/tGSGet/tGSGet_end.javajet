@@ -1,11 +1,11 @@
-<%@ jet 
+<%@ jet
 imports="
 	java.util.List
 	org.talend.core.model.process.INode
     org.talend.designer.codegen.config.CodeGeneratorArgument
     org.talend.core.model.process.ElementParameterParser
     java.util.Map
-    " 
+    "
 %>
 	<%
     CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
@@ -13,24 +13,41 @@ imports="
     String cid = node.getUniqueName();
     String dieOnError = ElementParameterParser.getValue(node, "__DIE_ON_ERROR__");
 	boolean isLog4jEnabled = ("true").equals(ElementParameterParser.getValue(node.getProcess(), "__LOG4J_ACTIVATE__"));
-	
+
 	boolean getList = "true".equals(ElementParameterParser.getValue(node,"__GETLIST__"));
 	List<Map<String, String>> buckets = (List<Map<String,String>>)ElementParameterParser.getObjectValue(node, "__BUCKETS__");
 	String useExistingConn = ElementParameterParser.getValue(node,"__USE_EXISTING_CONNECTION__");
 	boolean useKeysList = "true".equals(ElementParameterParser.getValue(node,"__USE_KEYS_LIST__"));
 	List<Map<String, String>> keys = (List<Map<String,String>>)ElementParameterParser.getObjectValue(node, "__KEYS__");
-	
+	String connection = ElementParameterParser.getValue(node,"__CONNECTION__");
+	String authType = ElementParameterParser.getValue(node, "__AUTH_TYPE__");
+        boolean useHMACAuthType = false;
+        if(("true").equals(useExistingConn)) {
+            List< ? extends INode> nodes =  node.getProcess().getNodesOfType("tGSConnection");
+            for (INode ne : nodes) {
+                if (connection.equals(ne.getUniqueName())) {
+                        String authTypeInConnectionComponent = ElementParameterParser.getValue(ne, "__AUTH_TYPE__");
+                        useHMACAuthType = "USER_ACCOUNT_HMAC".equals(authTypeInConnectionComponent);
+                        break;
+                }
+            }
+        } else{
+            useHMACAuthType = "USER_ACCOUNT_HMAC".equals(authType);
+        }
+
 	if((!getList && !useKeysList) || (useKeysList && keys.size()>0) || (getList && buckets.size()>0)){
 	%>
-					}
-		   		}
+					}//100
+		   		}//101
 		<%
 		if(!useKeysList){
-		%>		   		
- 			}
+		%>
+ 			}//102
 		<%
 		}
 	}
+
+if (useHMACAuthType){
 	%>
 	}catch(java.lang.Exception e_<%=cid%>){
 		<%
@@ -71,7 +88,7 @@ imports="
 					%>
 					System.err.println(servError_<%=cid%>.getErrorMessage());
 				}
-	
+
 			}else{
 				<%
 				if(isLog4jEnabled){
@@ -90,10 +107,16 @@ imports="
 				if(service_<%=cid%> !=null){
 					service_<%=cid%>.shutdown();
 				}
-		
+
 		<%
 		}
 		%>
 	}
+<%
+} else {
+%>
+	//For service account
+<%
+}
+%>
 	globalMap.put("<%=cid%>_NB_LINE", nb_line_<%=cid%>);
-	

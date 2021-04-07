@@ -929,7 +929,13 @@ public class ConnectionFormComposite extends Composite {
             nameText.setText((connection.getName() == null ? "" : connection.getName())); //$NON-NLS-1$
             descriptionText.setText((connection.getDescription() == null ? "" : connection.getDescription())); //$NON-NLS-1$
             userText.setText((connection.getUser() == null ? "" : connection.getUser())); //$NON-NLS-1$
-            String passwordStr = TalendTextUtils.hidePassword(connection.getPassword());
+            String passwordStr = null;
+            String originalPassword = connection.getPassword();
+            if (StringUtils.isBlank(originalPassword) && StringUtils.isBlank(userText.getText())) {
+                passwordStr = ""; //$NON-NLS-1$
+            } else {
+                passwordStr = TalendTextUtils.hidePassword(connection.getPassword());
+            }
             tokenButton.setSelection(connection.isToken());
             tokenText.setEnabled(connection.isToken());
             passwordButton.setSelection(!connection.isToken());

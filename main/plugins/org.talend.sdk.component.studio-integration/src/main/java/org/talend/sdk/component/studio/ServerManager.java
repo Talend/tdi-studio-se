@@ -30,6 +30,7 @@ import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
 import org.talend.commons.CommonsPlugin;
 import org.talend.commons.exception.ExceptionHandler;
+import org.talend.commons.utils.VersionUtils;
 import org.talend.osgi.hook.maven.MavenResolver;
 import org.talend.sdk.component.studio.debounce.DebounceManager;
 import org.talend.sdk.component.studio.metadata.TaCoKitCache;
@@ -38,6 +39,7 @@ import org.talend.sdk.component.studio.service.AsciidoctorService;
 import org.talend.sdk.component.studio.service.ComponentService;
 import org.talend.sdk.component.studio.service.Configuration;
 import org.talend.sdk.component.studio.service.UiActionsThreadPool;
+import org.talend.sdk.component.studio.util.TaCoKitUtil;
 import org.talend.sdk.component.studio.websocket.WebSocketClient;
 
 public class ServerManager {
@@ -61,6 +63,11 @@ public class ServerManager {
     private static Object lock = new Object();
 
     private ServerManager() {
+        /**
+         * update/set "talend.studio.version", because TCK server need to know whether running on studio by checking
+         * this parameter
+         */
+        VersionUtils.getInternalVersion();
     }
 
     public static ServerManager getInstance() {
@@ -85,6 +92,8 @@ public class ServerManager {
             } catch (Exception e) {
                 ExceptionHandler.process(e);
             }
+
+            TaCoKitUtil.checkM2TacokitStatus();
 
             final BundleContext ctx = SdkComponentPlugin.getDefault().getBundle().getBundleContext();
             final Configuration configuration = new Configuration(!Boolean.getBoolean("component.kit.skip"),
@@ -118,9 +127,15 @@ public class ServerManager {
             manager = new ProcessManager(GAV.INSTANCE.getGroupId(), mvnResolverImpl);
             manager.start();
 
-            client = new WebSocketClient("ws://localhost:" + manager.getPort() + "/websocket/v1",
+            client = new WebSocketClient("ws://", String.valueOf(manager.getPort()), "/websocket/v1",
                     Long.getLong("talend.component.websocket.client.timeout", Constants.IO_TIMEOUT_MS_DEFAULT));
-            client.setSynch(() -> manager.waitForServer(() -> client.v1().healthCheck()));
+            client.setSynch(() -> {
+                manager.waitForServer(() -> {
+                    client.setServerHost(manager.getServerAddress());
+                    client.v1().healthCheck();
+                });
+                client.setServerHost(manager.getServerAddress());
+            });
 
             services.add(ctx.registerService(ProcessManager.class.getName(), manager, new Hashtable<>()));
             services.add(ctx.registerService(WebSocketClient.class.getName(), client, new Hashtable<>()));

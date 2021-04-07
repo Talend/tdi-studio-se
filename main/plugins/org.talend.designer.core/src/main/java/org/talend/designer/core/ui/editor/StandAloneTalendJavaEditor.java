@@ -88,6 +88,7 @@ import org.talend.core.model.properties.SQLPatternItem;
 import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.core.model.repository.Folder;
 import org.talend.core.model.repository.IRepositoryViewObject;
+import org.talend.core.model.routines.RoutinesUtil;
 import org.talend.core.model.utils.RepositoryManagerHelper;
 import org.talend.core.repository.constants.Constant;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
@@ -97,6 +98,7 @@ import org.talend.core.runtime.process.ITalendProcessJavaProject;
 import org.talend.core.services.IUIRefresher;
 import org.talend.core.ui.ILastVersionChecker;
 import org.talend.core.ui.branding.IBrandingService;
+import org.talend.core.utils.CodesJarResourceCache;
 import org.talend.designer.codegen.ICodeGeneratorService;
 import org.talend.designer.codegen.ISQLPatternSynchronizer;
 import org.talend.designer.codegen.ITalendSynchronizer;
@@ -317,8 +319,7 @@ public class StandAloneTalendJavaEditor extends CompilationUnitEditor implements
                     Image titleImage = null;
                     if (ERepositoryObjectType.SQLPATTERNS == repositoryNode.getObjectType()) {
                         titleImage = ImageProvider.getImage(ECoreImage.METADATA_SQLPATTERN_ICON_EDITOR);
-                    } else if (ERepositoryObjectType.ROUTINES == repositoryNode.getObjectType()
-                            || ERepositoryObjectType.PIG_UDF == repositoryNode.getObjectType()) {
+                    } else if (ERepositoryObjectType.ROUTINES == repositoryNode.getObjectType()) {
                         titleImage = ImageProvider.getImage(ECoreImage.ROUTINE_EDITOR_ICON);
                     } else {
                         titleImage = ImageProvider.getImage(repositoryNode.getIcon());
@@ -499,9 +500,14 @@ public class StandAloneTalendJavaEditor extends CompilationUnitEditor implements
             resetItem();
             ByteArray byteArray = item.getContent();
             byteArray.setInnerContentFromFile(((FileEditorInput) getEditorInput()).getFile());
-            final IRunProcessService runProcessService = CorePlugin.getDefault().getRunProcessService();
-            ITalendProcessJavaProject routineProject = runProcessService.getTalendCodeJavaProject(ERepositoryObjectType.ROUTINES);
-            routineProject.buildModules(new NullProgressMonitor(), null, null);
+            ITalendProcessJavaProject codeProject;
+            if (RoutinesUtil.isInnerCodes(item.getProperty())) {
+                codeProject = IRunProcessService.get()
+                        .getTalendCodesJarJavaProject(CodesJarResourceCache.getCodesJarByInnerCode((RoutineItem) item));
+            } else {
+                codeProject = IRunProcessService.get().getTalendCodeJavaProject(ERepositoryObjectType.getItemType(item));
+            }
+            codeProject.buildModules(new NullProgressMonitor(), null, null);
             // check syntax error
             addProblems();
             String name = "Save Routine"; //$NON-NLS-1$

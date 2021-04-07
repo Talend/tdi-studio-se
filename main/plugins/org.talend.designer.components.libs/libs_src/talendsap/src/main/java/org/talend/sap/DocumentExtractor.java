@@ -16,21 +16,11 @@ public class DocumentExtractor {
 	
 	public DocumentExtractor(Document doc,String function) {
 		this.doc = doc;
-		this.finalFunction = replaceNamespace(function);
+		this.finalFunction = SAPXMLCoder.encode(function);
 	}
 	
-	/**
-	 * the xml document which come from the cimt sap api will change the element name which contains "/" and convert "/" to "_-", 
-	 * we need to do the same thing for finding the element by the xpath
-	 * @param name
-	 * @return
-	 */
-    private String replaceNamespace(String name) {
-        return name.replace("/", "_-");
-    }
-	
 	public String getSingleResult(String name) {
-	    final String finalName = replaceNamespace(name);
+	    final String finalName = SAPXMLCoder.encode(name);
 	    
 		XPath xpath = org.dom4j.DocumentHelper.createXPath(
 			sb.append("/").append(finalFunction).append("/OUTPUT/").append(finalName)
@@ -47,7 +37,7 @@ public class DocumentExtractor {
 	}
 	
 	public List<String> getStructureResult(String structureName,List<String> names) {
-	    final String finalStructureName = replaceNamespace(structureName);
+	    final String finalStructureName = SAPXMLCoder.encode(structureName);
 	    
 		XPath xpath = org.dom4j.DocumentHelper.createXPath(
 			sb.append("/").append(finalFunction).append("/OUTPUT/").append(finalStructureName)
@@ -65,7 +55,7 @@ public class DocumentExtractor {
 		List<String> result = new ArrayList<String>();
 		
 		for(String name : names) {
-		    final String finalName = replaceNamespace(name);
+		    final String finalName = SAPXMLCoder.encode(name);
 			Node subNode = node.selectSingleNode(finalName);
 			if(subNode == null) {
 				result.add(null);
@@ -78,7 +68,7 @@ public class DocumentExtractor {
 	}
 	
 	public List<List<String>> getTableResult(String tableName,List<String> names) {
-	    final String finalTableName = replaceNamespace(tableName);
+	    final String finalTableName = SAPXMLCoder.encode(tableName);
 	    
 		List<List<String>> result = new ArrayList<List<String>>();
 		
@@ -90,6 +80,7 @@ public class DocumentExtractor {
 		List<Element> tablesAndChangingElements = new ArrayList<Element>(3);
 		tablesAndChangingElements.add(functionElement.element("TABLES"));
 		tablesAndChangingElements.add(functionElement.element("CHANGING"));
+		tablesAndChangingElements.add(functionElement.element("OUTPUT"));
 
 		for(Element tablesOrChangingElement : tablesAndChangingElements) {
 			if (tablesOrChangingElement == null) {
@@ -111,7 +102,7 @@ public class DocumentExtractor {
 			for(Element element : elements) {
 				List<String> row = new ArrayList<String>();
 				for(String name : names) {
-				    final String finalName = replaceNamespace(name);
+				    final String finalName = SAPXMLCoder.encode(name);
 					Element subElement = element.element(finalName);
 					if(subElement == null) {
 						row.add(null);
@@ -120,6 +111,10 @@ public class DocumentExtractor {
 					}
 				}
 				result.add(row);
+			}
+			
+			if(!result.isEmpty()) {
+				return result;
 			}
 		}
 		

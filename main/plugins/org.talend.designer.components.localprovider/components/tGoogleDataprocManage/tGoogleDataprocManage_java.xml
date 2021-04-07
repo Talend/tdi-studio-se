@@ -41,7 +41,7 @@
 		</PARAMETER>
 
 		<PARAMETER NAME="PATH_TO_GOOGLE_CREDENTIALS"
-			REPOSITORY_VALUE="PATH_TO_GOOGLE_CREDENTIALS" FIELD="TEXT" REQUIRED="true"
+			REPOSITORY_VALUE="PATH_TO_GOOGLE_CREDENTIALS" FIELD="FILE" REQUIRED="true"
 			NUM_ROW="16" GROUP="CONFIGURATION"
 			SHOW_IF="((isShow[DEFINE_PATH_TO_GOOGLE_CREDENTIALS]) AND DEFINE_PATH_TO_GOOGLE_CREDENTIALS=='true')">
 			<DEFAULT>""</DEFAULT>
@@ -57,35 +57,104 @@
 
 		<PARAMETER NAME="CLUSTER_VERSION" FIELD="OPENED_LIST"
 			NUM_ROW="21" SHOW_IF="ACTION=='START'" REQUIRED="true" GROUP="CONFIGURATION">
-			<ITEMS DEFAULT="LATEST">
-				<ITEM NAME="LATEST" VALUE="&quot;latest&quot;" />
+			<ITEMS DEFAULT="DATAPROC_1_4_0">
+				<ITEM NAME="DATAPROC_1_4_0" VALUE="&quot;1.4&quot;" />
+				<ITEM NAME="DATAPROC_1_3_0" VALUE="&quot;1.3&quot;" />
 				<ITEM NAME="DATAPROC_1_1_0" VALUE="&quot;1.1&quot;" />
+			</ITEMS>
+		</PARAMETER>
+
+			<PARAMETER NAME="REGION" FIELD="OPENED_LIST" NUM_ROW="25"
+			REQUIRED="true" GROUP="CONFIGURATION">
+			<ITEMS DEFAULT="GLOBAL">
+				<ITEM NAME="GLOBAL" VALUE="&quot;global&quot;" />
+				<ITEM NAME="ASIA_EAST1" VALUE="&quot;asia-east1&quot;" />
+				<ITEM NAME="ASIA_EAST2" VALUE="&quot;asia-east2&quot;" />
+				<ITEM NAME="ASIA_NORTHEAST1" VALUE="&quot;asia-northeast1&quot;" />
+				<ITEM NAME="ASIA_NORTHEAST2" VALUE="&quot;asia-northeast2&quot;" />
+				<ITEM NAME="ASIA_SOUTH1" VALUE="&quot;asia-south1&quot;" />
+				<ITEM NAME="ASIA_SOUTHEAST1" VALUE="&quot;asia-southeast1&quot;" />
+				<ITEM NAME="AUSTRALIA_SOUTHEAST1" VALUE="&quot;australia-southeast1&quot;" />
+				<ITEM NAME="EUROPE_NORTH1" VALUE="&quot;europe-north1&quot;" />
+				<ITEM NAME="EUROPE_WEST1" VALUE="&quot;europe-west1&quot;" />
+				<ITEM NAME="EUROPE_WEST2" VALUE="&quot;europe-west2&quot;" />
+				<ITEM NAME="EUROPE_WEST3" VALUE="&quot;europe-west3&quot;" />
+				<ITEM NAME="EUROPE_WEST4" VALUE="&quot;europe-west4&quot;" />
+				<ITEM NAME="EUROPE_WEST6" VALUE="&quot;europe-west6&quot;" />
+				<ITEM NAME="NORTHAMERICA_NORTHEAST1" VALUE="&quot;northamerica-northeast1&quot;" />
+				<ITEM NAME="SOUTHAMERICA_EAST1" VALUE="&quot;southhamerica-east1&quot;" />
+				<ITEM NAME="US_WEST1" VALUE="&quot;us-west1&quot;" />
+				<ITEM NAME="US_WEST2" VALUE="&quot;us-west2&quot;" />
+				<ITEM NAME="US_CENTRAL1" VALUE="&quot;us-central1&quot;" />
+				<ITEM NAME="US_EAST1" VALUE="&quot;us-east1&quot;" />
+				<ITEM NAME="US_EAST4" VALUE="&quot;us-east4&quot;" />
 			</ITEMS>
 		</PARAMETER>
 
 		<PARAMETER NAME="ZONE" FIELD="OPENED_LIST" NUM_ROW="25"
 			REQUIRED="true" SHOW_IF="ACTION=='START'" GROUP="CONFIGURATION">
 			<ITEMS DEFAULT="US_CENTRAL1_A">
-				<ITEM NAME="US_WEST1_A" VALUE="&quot;us-west1-a&quot;" />
-				<ITEM NAME="US_WEST1_B" VALUE="&quot;us-west1-b&quot;" />
-				<ITEM NAME="US_CENTRAL1_A" VALUE="&quot;us-central1-a&quot;" />
-				<ITEM NAME="US_CENTRAL1_B" VALUE="&quot;us-central1-b&quot;" />
-				<ITEM NAME="US_CENTRAL1_C" VALUE="&quot;us-central1-c&quot;" />
-				<ITEM NAME="US_CENTRAL1_F" VALUE="&quot;us-central1-f&quot;" />
-				<ITEM NAME="US_EAST1_B" VALUE="&quot;us-east1-b&quot;" />
-				<ITEM NAME="US_EAST1_C" VALUE="&quot;us-east1-c&quot;" />
-				<ITEM NAME="US_EAST1_D" VALUE="&quot;us-east1-d&quot;" />
-				<ITEM NAME="EUROPE_WEST1_B" VALUE="&quot;europe-west1-b&quot;" />
-				<ITEM NAME="EUROPE_WEST1_C" VALUE="&quot;europe-west1-c&quot;" />
-				<ITEM NAME="EUROPE_WEST1_D" VALUE="&quot;europe-west1-d&quot;" />
-				<ITEM NAME="ASIA_SOUTHEAST1_A" VALUE="&quot;asia-southeast1-a&quot;" />
-				<ITEM NAME="ASIA_SOUTHEAST1_B" VALUE="&quot;asia-southeast1-b&quot;" />
-				<ITEM NAME="ASIA_EAST1_A" VALUE="&quot;asia-east1-a&quot;" />
-				<ITEM NAME="ASIA_EAST1_B" VALUE="&quot;asia-east1-b&quot;" />
-				<ITEM NAME="ASIA_EAST1_C" VALUE="&quot;asia-east1-c&quot;" />
-				<ITEM NAME="ASIA_NORTHEAST1_A" VALUE="&quot;asia-northeast1-a&quot;" />
-				<ITEM NAME="ASIA_NORTHEAST1_B" VALUE="&quot;asia-northeast1-b&quot;" />
-				<ITEM NAME="ASIA_NORTHEAST1_C" VALUE="&quot;asia-northeast1-c&quot;" />
+				<ITEM NAME="ASIA_EAST1_A" VALUE="&quot;asia-east1-a&quot;" SHOW_IF="(REGION == 'GLOBAL') OR (REGION == 'ASIA_EAST1')" />
+				<ITEM NAME="ASIA_EAST1_B" VALUE="&quot;asia-east1-b&quot;" SHOW_IF="(REGION == 'GLOBAL') OR (REGION == 'ASIA_EAST1')" />
+				<ITEM NAME="ASIA_EAST1_C" VALUE="&quot;asia-east1-c&quot;" SHOW_IF="(REGION == 'GLOBAL' OR (REGION == 'ASIA_EAST1')" />
+				<ITEM NAME="ASIA_EAST2_A" VALUE="&quot;asia-east2-a&quot;" SHOW_IF="(REGION == 'GLOBAL') OR (REGION == 'ASIA_EAST2')" />
+				<ITEM NAME="ASIA_EAST2_B" VALUE="&quot;asia-east2-b&quot;" SHOW_IF="(REGION == 'GLOBAL') OR (REGION == 'ASIA_EAST2')" />
+				<ITEM NAME="ASIA_EAST2_C" VALUE="&quot;asia-east2-c&quot;" SHOW_IF="(REGION == 'GLOBAL') OR (REGION == 'ASIA_EAST2')" />
+				<ITEM NAME="ASIA_NORTHEAST1_A" VALUE="&quot;asia-northeast1-a&quot;" SHOW_IF="(REGION == 'GLOBAL') OR (REGION == 'ASIA_NORTHEAST1')" />
+				<ITEM NAME="ASIA_NORTHEAST1_B" VALUE="&quot;asia-northeast1-b&quot;" SHOW_IF="(REGION == 'GLOBAL') OR (REGION == 'ASIA_NORTHEAST1')" />
+				<ITEM NAME="ASIA_NORTHEAST1_C" VALUE="&quot;asia-northeast1-c&quot;" SHOW_IF="(REGION == 'GLOBAL') OR (REGION == 'ASIA_NORTHEAST1')" />
+				<ITEM NAME="ASIA_NORTHEAST2_A" VALUE="&quot;asia-northeast2-a&quot;" SHOW_IF="(REGION == 'GLOBAL') OR (REGION == 'ASIA_NORTHEAST2')" />
+				<ITEM NAME="ASIA_NORTHEAST2_B" VALUE="&quot;asia-northeast2-b&quot;" SHOW_IF="(REGION == 'GLOBAL') OR (REGION == 'ASIA_NORTHEAST2')" />
+				<ITEM NAME="ASIA_NORTHEAST2_C" VALUE="&quot;asia-northeast2-c&quot;" SHOW_IF="(REGION == 'GLOBAL') OR (REGION == 'ASIA_NORTHEAST2')" />
+				<ITEM NAME="ASIA_SOUTH1_A" VALUE="&quot;asia-south1-a&quot;" SHOW_IF="(REGION == 'GLOBAL') OR (REGION == 'ASIA_SOUTH1')" />
+				<ITEM NAME="ASIA_SOUTH1_B" VALUE="&quot;asia-south1-b&quot;" SHOW_IF="(REGION == 'GLOBAL') OR (REGION == 'ASIA_SOUTH1')" />
+				<ITEM NAME="ASIA_SOUTH1_C" VALUE="&quot;asia-south1-c&quot;" SHOW_IF="(REGION == 'GLOBAL') OR (REGION == 'ASIA_SOUTH1')" />
+				<ITEM NAME="ASIA_SOUTHEAST1_A" VALUE="&quot;asia-southeast1-a&quot;" SHOW_IF="(REGION == 'GLOBAL') OR (REGION == 'ASIA_SOUTHEAST1')" />
+				<ITEM NAME="ASIA_SOUTHEAST1_B" VALUE="&quot;asia-southeast1-b&quot;" SHOW_IF="(REGION == 'GLOBAL') OR (REGION == 'ASIA_SOUTHEAST1')" />
+				<ITEM NAME="ASIA_SOUTHEAST1_C" VALUE="&quot;asia-southeast1-c&quot;" SHOW_IF="(REGION == 'GLOBAL') OR (REGION == 'ASIA_SOUTHEAST1')" />
+				<ITEM NAME="AUSTRALIA_SOUTHEAST1_A" VALUE="&quot;australia-southeast1-a&quot;" SHOW_IF="(REGION == 'GLOBAL') OR (REGION == 'AUSTRALIA_SOUTHEAST1')" />
+				<ITEM NAME="AUSTRALIA_SOUTHEAST1_B" VALUE="&quot;australia-southeast1-b&quot;" SHOW_IF="(REGION == 'GLOBAL') OR (REGION == 'AUSTRALIA_SOUTHEAST1')" />
+				<ITEM NAME="AUSTRALIA_SOUTHEAST1_C" VALUE="&quot;australia-southeast1-c&quot;" SHOW_IF="(REGION == 'GLOBAL') OR (REGION == 'AUSTRALIA_SOUTHEAST1')" />
+				<ITEM NAME="EUROPE_NORTH1_A" VALUE="&quot;europe-north1-a&quot;" SHOW_IF="(REGION == 'GLOBAL') OR (REGION == 'EUROPE_NORTH1')" />
+				<ITEM NAME="EUROPE_NORTH1_B" VALUE="&quot;europe-north1-b&quot;" SHOW_IF="(REGION == 'GLOBAL') OR (REGION == 'EUROPE_NORTH1')" />
+				<ITEM NAME="EUROPE_NORTH1_C" VALUE="&quot;europe-north1-c&quot;" SHOW_IF="(REGION == 'GLOBAL') OR (REGION == 'EUROPE_NORTH1')" />
+				<ITEM NAME="EUROPE_WEST1_B" VALUE="&quot;europe-west1-b&quot;" SHOW_IF="(REGION == 'GLOBAL') OR (REGION == 'EUROPE_WEST1')" />
+				<ITEM NAME="EUROPE_WEST1_C" VALUE="&quot;europe-west1-c&quot;" SHOW_IF="(REGION == 'GLOBAL') OR (REGION == 'EUROPE_WEST1')" />
+				<ITEM NAME="EUROPE_WEST1_D" VALUE="&quot;europe-west1-d&quot;" SHOW_IF="(REGION == 'GLOBAL') OR (REGION == 'EUROPE_WEST1')" />
+				<ITEM NAME="EUROPE_WEST2_A" VALUE="&quot;europe-west2-a&quot;" SHOW_IF="(REGION == 'GLOBAL') OR (REGION == 'EUROPE_WEST2')" />
+				<ITEM NAME="EUROPE_WEST2_B" VALUE="&quot;europe-west2-b&quot;" SHOW_IF="(REGION == 'GLOBAL') OR (REGION == 'EUROPE_WEST2')" />
+				<ITEM NAME="EUROPE_WEST2_C" VALUE="&quot;europe-west2-c&quot;" SHOW_IF="(REGION == 'GLOBAL') OR (REGION == 'EUROPE_WEST2')" />
+				<ITEM NAME="EUROPE_WEST3_A" VALUE="&quot;europe-west3-a&quot;" SHOW_IF="(REGION == 'GLOBAL') OR (REGION == 'EUROPE_WEST3')" />
+				<ITEM NAME="EUROPE_WEST3_B" VALUE="&quot;europe-west3-b&quot;" SHOW_IF="(REGION == 'GLOBAL') OR (REGION == 'EUROPE_WEST3')" />
+				<ITEM NAME="EUROPE_WEST3_C" VALUE="&quot;europe-west3-c&quot;" SHOW_IF="(REGION == 'GLOBAL') OR (REGION == 'EUROPE_WEST3')" />
+				<ITEM NAME="EUROPE_WEST4_A" VALUE="&quot;europe-west4-a&quot;" SHOW_IF="(REGION == 'GLOBAL') OR (REGION == 'EUROPE_WEST4')" />
+				<ITEM NAME="EUROPE_WEST4_B" VALUE="&quot;europe-west4-b&quot;" SHOW_IF="(REGION == 'GLOBAL') OR (REGION == 'EUROPE_WEST4')" />
+				<ITEM NAME="EUROPE_WEST4_C" VALUE="&quot;europe-west4-c&quot;" SHOW_IF="(REGION == 'GLOBAL') OR (REGION == 'EUROPE_WEST4')" />
+				<ITEM NAME="EUROPE_WEST6_A" VALUE="&quot;europe-west6-a&quot;" SHOW_IF="(REGION == 'GLOBAL') OR (REGION == 'EUROPE_WEST6')" />
+				<ITEM NAME="EUROPE_WEST6_B" VALUE="&quot;europe-west6-b&quot;" SHOW_IF="(REGION == 'GLOBAL') OR (REGION == 'EUROPE_WEST6')" />
+				<ITEM NAME="EUROPE_WEST6_C" VALUE="&quot;europe-west6-c&quot;" SHOW_IF="(REGION == 'GLOBAL') OR (REGION == 'EUROPE_WEST6')" />
+				<ITEM NAME="NORTHAMERICA_NORTHEAST1_A" VALUE="&quot;northamerica-northeast1-a&quot;" SHOW_IF="(REGION == 'GLOBAL') OR (REGION == 'NORTHAMERICA_NORTHEAST1')" />
+				<ITEM NAME="NORTHAMERICA_NORTHEAST1_B" VALUE="&quot;northamerica-northeast1-b&quot;" SHOW_IF="(REGION == 'GLOBAL') OR (REGION == 'NORTHAMERICA_NORTHEAST1')" />
+				<ITEM NAME="NORTHAMERICA_NORTHEAST1_C" VALUE="&quot;northamerica-northeast1-c&quot;" SHOW_IF="(REGION == 'GLOBAL') OR (REGION == 'NORTHAMERICA_NORTHEAST1')" />
+				<ITEM NAME="SOUTHAMERICA_EAST1_A" VALUE="&quot;southhamerica-east1-a&quot;" SHOW_IF="(REGION == 'GLOBAL') OR (REGION == 'SOUTHAMERICA_EAST1')" />
+				<ITEM NAME="SOUTHAMERICA_EAST1_B" VALUE="&quot;southhamerica-east1-b&quot;" SHOW_IF="(REGION == 'GLOBAL') OR (REGION == 'SOUTHAMERICA_EAST1')" />
+				<ITEM NAME="SOUTHAMERICA_EAST1_C" VALUE="&quot;southhamerica-east1-c&quot;" SHOW_IF="(REGION == 'GLOBAL') OR (REGION == 'SOUTHAMERICA_EAST1')" />
+				<ITEM NAME="US_CENTRAL1_A" VALUE="&quot;us-central1-a&quot;" SHOW_IF="(REGION == 'GLOBAL') OR (REGION == 'US_CENTRAL1')" />
+				<ITEM NAME="US_CENTRAL1_B" VALUE="&quot;us-central1-b&quot;" SHOW_IF="(REGION == 'GLOBAL') OR (REGION == 'US_CENTRAL1')" />
+				<ITEM NAME="US_CENTRAL1_C" VALUE="&quot;us-central1-c&quot;" SHOW_IF="(REGION == 'GLOBAL') OR (REGION == 'US_CENTRAL1')" />
+				<ITEM NAME="US_CENTRAL1_F" VALUE="&quot;us-central1-f&quot;" SHOW_IF="(REGION == 'GLOBAL') OR (REGION == 'US_CENTRAL1')" />
+				<ITEM NAME="US_EAST1_B" VALUE="&quot;us-east1-b&quot;" SHOW_IF="(REGION == 'GLOBAL') OR (REGION == 'US_EAST1')" />
+				<ITEM NAME="US_EAST1_C" VALUE="&quot;us-east1-c&quot;" SHOW_IF="(REGION == 'GLOBAL') OR (REGION == 'US_EAST1')" />
+				<ITEM NAME="US_EAST1_D" VALUE="&quot;us-east1-d&quot;" SHOW_IF="(REGION == 'GLOBAL') OR (REGION == 'US_EAST1')" />
+				<ITEM NAME="US_EAST4_A" VALUE="&quot;us-east4-a&quot;" SHOW_IF="(REGION == 'GLOBAL') OR (REGION == 'US_EAST4')" />
+				<ITEM NAME="US_EAST4_B" VALUE="&quot;us-east4-b&quot;" SHOW_IF="(REGION == 'GLOBAL') OR (REGION == 'US_EAST4')" />
+				<ITEM NAME="US_EAST4_C" VALUE="&quot;us-east4-c&quot;" SHOW_IF="(REGION == 'GLOBAL') OR (REGION == 'US_EAST4')" />
+				<ITEM NAME="US_WEST1_A" VALUE="&quot;us-west1-a&quot;" SHOW_IF="(REGION == 'GLOBAL') OR (REGION == 'US_WEST1')" />
+				<ITEM NAME="US_WEST1_B" VALUE="&quot;us-west1-b&quot;" SHOW_IF="(REGION == 'GLOBAL') OR (REGION == 'US_WEST1')" />
+				<ITEM NAME="US_WEST1_C" VALUE="&quot;us-west1-c&quot;" SHOW_IF="(REGION == 'GLOBAL') OR (REGION == 'US_WEST1')" />
+				<ITEM NAME="US_WEST2_A" VALUE="&quot;us-west2-a&quot;" SHOW_IF="(REGION == 'GLOBAL') OR (REGION == 'US_WEST2')" />
+				<ITEM NAME="US_WEST2_B" VALUE="&quot;us-west2-b&quot;" SHOW_IF="(REGION == 'GLOBAL') OR (REGION == 'US_WEST2')" />
+				<ITEM NAME="US_WEST2_C" VALUE="&quot;us-west2-c&quot;" SHOW_IF="(REGION == 'GLOBAL') OR (REGION == 'US_WEST2')" />
 			</ITEMS>
 		</PARAMETER>
 
@@ -207,15 +276,24 @@
 			<DEFAULT>"default"</DEFAULT>
 		</PARAMETER>
 
+		<PARAMETER NAME="ONLY_INTERNAL_IP_ADDRESSES"
+				   FIELD="CHECK"
+				   REQUIRED="true"
+				   NUM_ROW="40"
+				   SHOW_IF="(ACTION=='START')"
+				   GROUP="ADVANCED_CONFIGURATION">
+			<DEFAULT>false</DEFAULT>
+		</PARAMETER>
+
 		<PARAMETER NAME="TAGS" FIELD="TABLE" SHOW_IF="ACTION=='START'"
-			NUM_ROW="36" NB_LINES="3" GROUP="ADVANCED_CONFIGURATION">
+			NUM_ROW="45" NB_LINES="3" GROUP="ADVANCED_CONFIGURATION">
 			<ITEMS>
 				<ITEM NAME="TAG" />
 			</ITEMS>
 		</PARAMETER>
 
 		<PARAMETER NAME="INITIALIZATION_ACTIONS" FIELD="TABLE"
-			SHOW_IF="ACTION=='START'" NUM_ROW="40" NB_LINES="3"
+			SHOW_IF="ACTION=='START'" NUM_ROW="50" NB_LINES="3"
 			GROUP="ADVANCED_CONFIGURATION">
 			<ITEMS>
 				<ITEM NAME="EXECUTABLE_FILE" />
@@ -226,8 +304,12 @@
 
 	<CODEGENERATION>
 		<IMPORTS>
-			<IMPORT MODULE_GROUP="GOOGLE-DATAPROC-MANAGE-LIB-DATAPROC11"
+			<IMPORT MODULE_GROUP="GOOGLE-DATAPROC-MANAGE-LIB-DATAPROC14"
 				REQUIRED="true" />
+			<IMPORT NAME="commons-codec"
+				MODULE="commons-codec-1.14" MVN="mvn:commons-codec/commons-codec/1.14" REQUIRED="true"/>
+			<IMPORT NAME="log4j"
+				MODULE="log4j-1.2.17.jar" MVN="mvn:log4j/log4j/1.2.17" REQUIRED="true"/>
 		</IMPORTS>
 	</CODEGENERATION>
 

@@ -15,16 +15,25 @@ package org.talend.designer.core.model.process.jobsettings;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
+import org.apache.avro.Schema;
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.jface.resource.ImageDescriptor;
+import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.utils.VersionUtils;
+import org.talend.components.api.properties.ComponentProperties;
 import org.talend.core.model.components.ComponentCategory;
 import org.talend.core.model.components.EComponentType;
 import org.talend.core.model.components.IComponent;
 import org.talend.core.model.components.IMultipleComponentItem;
 import org.talend.core.model.components.IMultipleComponentManager;
 import org.talend.core.model.general.ModuleNeeded;
+import org.talend.core.model.metadata.IMetadataTable;
+import org.talend.core.model.metadata.MetadataToolAvroHelper;
+import org.talend.core.model.metadata.builder.ConvertionHelper;
+import org.talend.core.model.param.EConnectionParameterName;
 import org.talend.core.model.process.EConnectionType;
 import org.talend.core.model.process.EParameterFieldType;
 import org.talend.core.model.process.IElementParameter;
@@ -33,11 +42,15 @@ import org.talend.core.model.process.INodeConnector;
 import org.talend.core.model.process.INodeReturn;
 import org.talend.core.model.process.IProcess;
 import org.talend.core.model.temp.ECodePart;
+import org.talend.core.runtime.services.IGenericService;
+import org.talend.core.ui.component.ComponentsFactoryProvider;
 import org.talend.designer.core.model.components.EParameterName;
 import org.talend.designer.core.model.components.ElementParameter;
 import org.talend.designer.core.model.components.EmfComponent;
 import org.talend.designer.core.model.components.MultipleComponentConnection;
+import org.talend.designer.core.model.components.MultipleComponentItem;
 import org.talend.designer.core.model.components.MultipleComponentManager;
+import org.talend.designer.core.model.components.MultipleGenricComponentManager;
 import org.talend.designer.core.model.process.jobsettings.JobSettingsConstants.ContextLoadInfo;
 
 /**
@@ -65,9 +78,22 @@ public class JobContextLoadComponent implements IComponent {
 
     private final boolean isFile;
 
-    public JobContextLoadComponent(boolean isFile, String dbComponent) {
+    private IComponent component;
+
+    public JobContextLoadComponent(boolean isFile, String dbComponent, String componentType) {
         this.isFile = isFile;
         this.dbComponent = dbComponent;
+        try {
+            String compType = componentType;
+            if (StringUtils.isBlank(componentType)) {
+                ExceptionHandler.log(
+                        this.getClass().getName() + ": componentType is empty, will use DI type for component " + dbComponent);
+                compType = ComponentCategory.CATEGORY_4_DI.getName();
+            }
+            component = ComponentsFactoryProvider.getInstance().get(dbComponent, compType);
+        } catch (Throwable e) {
+            ExceptionHandler.process(e);
+        }
         loadMultipleComponentManager();
     }
 
@@ -87,17 +113,46 @@ public class JobContextLoadComponent implements IComponent {
             if (dbComponent == null) {
                 return;
             }
-            multipleComponentManager = new MultipleComponentManager(DB_INPUT, CONTEXT_LOAD);
 
-            IMultipleComponentItem currentItem = multipleComponentManager.addItem(DB_INPUT, dbComponent);
-            currentItem.getOutputConnections().add(
-                    new MultipleComponentConnection(EConnectionType.FLOW_MAIN.getName(), CONTEXT_LOAD));
+            MultipleComponentConnection multiCompConnection = new MultipleComponentConnection(EConnectionType.FLOW_MAIN.getName(),
+                    CONTEXT_LOAD);
+            IMultipleComponentItem currentItem = null;
+            if (isTcompv0(component)) {
+                multipleComponentManager = new MultipleGenricComponentManager(DB_INPUT, CONTEXT_LOAD);
+                multiCompConnection.setConnectorName("MAIN");
+                currentItem = new MultipleComponentItem() {
+
+                    public void updateNode(INode newNode, INode oldNode) {
+                        super.updateNode(newNode, oldNode);
+                        if (newNode != null) {
+                            List<IMetadataTable> metadataList = newNode.getMetadataList();
+                            if (0 < metadataList.size() && isTcompv0(newNode.getComponent())) {
+                                IMetadataTable newMetadata = metadataList.get(0);
+                                newMetadata.setAttachedConnector("MAIN");
+                                ComponentProperties tcomp_properties = newNode.getComponentProperties();
+                                Schema schema = MetadataToolAvroHelper.convertToAvro(ConvertionHelper.convert(newMetadata));
+                                tcomp_properties.setValue("main.schema", schema);
+                            }
+                        }
+                    };
+                };
+                currentItem.setName(DB_INPUT);
+                currentItem.setComponent(dbComponent);
+
+                ((MultipleGenricComponentManager) multipleComponentManager).addItem(currentItem);
+            } else {
+                multipleComponentManager = new MultipleComponentManager(DB_INPUT, CONTEXT_LOAD);
+                currentItem = multipleComponentManager.addItem(DB_INPUT, dbComponent);
+            }
+
+            currentItem.getOutputConnections().add(multiCompConnection);
 
             currentItem = multipleComponentManager.addItem(CONTEXT_LOAD, CONTEXTLOAD_COMPONENT);
 
         }
         multipleComponentManager.validateItems();
         multipleComponentManagers.add(multipleComponentManager);
+
         createMultipleComponentsParameters();
     }
 
@@ -181,6 +236,11 @@ public class JobContextLoadComponent implements IComponent {
         return false;
     }
 
+    private boolean isTcompv0(IComponent comp) {
+        return comp != null
+                && Optional.ofNullable(IGenericService.getService()).map(s -> s.isTcompv0(comp)).orElse(Boolean.FALSE);
+    }
+
     /*
      * (non-Javadoc)
      *
@@ -242,10 +302,10 @@ public class JobContextLoadComponent implements IComponent {
     }
 
     protected void createMultipleComponentsParameters() {
-        final String self = "self."; //$NON-NLS-1$
         // create parameters
         if ((multipleComponentManagers != null) && (multipleComponentManagers.size() > 0)) {
             IMultipleComponentManager multipleComponentManager = multipleComponentManagers.get(0);
+            final String self = "self" + multipleComponentManager.getParamSeperator(); //$NON-NLS-1$
             if (isFile) {
                 String source = self + EParameterName.IMPLICIT_TCONTEXTLOAD_FILE.getName();
                 multipleComponentManager.addParam(source, FILE_INPUT_REGEX + ".FILENAME"); //$NON-NLS-1$
@@ -256,83 +316,142 @@ public class JobContextLoadComponent implements IComponent {
                 source = self + "IGNORE_ERROR_MESSAGE"; //$NON-NLS-1$
                 multipleComponentManager.addParam(source, FILE_INPUT_REGEX + ".IGNORE_ERROR_MESSAGE"); //$NON-NLS-1$
 
+                source = self + "ENCODING";
+                multipleComponentManager.addParam(source, FILE_INPUT_REGEX + ".ENCODING"); //$NON-NLS-1$ //$NON-NLS-2$
+
             } else {
-                String source = self + JobSettingsConstants.getExtraParameterName(EParameterName.URL.getName());
-                multipleComponentManager.addParam(source, DB_INPUT + ".URL");
-
-                source = self + JobSettingsConstants.getExtraParameterName(EParameterName.DRIVER_JAR.getName());
-                multipleComponentManager.addParam(source, DB_INPUT + ".DRIVER_JAR");
-
-                source = self + JobSettingsConstants.getExtraParameterName(EParameterName.DRIVER_CLASS.getName());
-                multipleComponentManager.addParam(source, DB_INPUT + ".DRIVER_CLASS");
-
-                source = self + JobSettingsConstants.getExtraParameterName(EParameterName.HOST.getName());
-                multipleComponentManager.addParam(source, DB_INPUT + ".HOST"); //$NON-NLS-1$
-                multipleComponentManager.addParam(source, DB_INPUT + ".SERVER"); //$NON-NLS-1$
-                multipleComponentManager.addParam(source, DB_INPUT + ".DSN"); //$NON-NLS-1$
-
-                source = self + JobSettingsConstants.getExtraParameterName(EParameterName.PORT.getName());
-                multipleComponentManager.addParam(source, DB_INPUT + ".PORT"); //$NON-NLS-1$
-
-                source = self + JobSettingsConstants.getExtraParameterName(EParameterName.DBNAME.getName());
-                multipleComponentManager.addParam(source, DB_INPUT + ".DBNAME"); //$NON-NLS-1$
-
-                source = self + JobSettingsConstants.getExtraParameterName(EParameterName.DB_VERSION.getName());
-                multipleComponentManager.addParam(source, DB_INPUT + ".DB_VERSION"); //$NON-NLS-1$
-
-                source = self + JobSettingsConstants.getExtraParameterName(EParameterName.PROPERTIES.getName());
-                multipleComponentManager.addParam(source, DB_INPUT + ".PROPERTIES"); //$NON-NLS-1$
-
-                source = self + JobSettingsConstants.getExtraParameterName(EParameterName.SCHEMA_DB.getName());
-                multipleComponentManager.addParam(source, DB_INPUT + ".SCHEMA_DB"); //$NON-NLS-1$
-
-                source = self + JobSettingsConstants.getExtraParameterName(EParameterName.USER.getName());
-                multipleComponentManager.addParam(source, DB_INPUT + ".USER"); //$NON-NLS-1$
-
-                source = self + JobSettingsConstants.getExtraParameterName(EParameterName.PASS.getName());
-                multipleComponentManager.addParam(source, DB_INPUT + ".PASS"); //$NON-NLS-1$
-
-                source = self + JobSettingsConstants.getExtraParameterName(EParameterName.DBTABLE.getName());
-                multipleComponentManager.addParam(source, DB_INPUT + ".DBTABLE"); //$NON-NLS-1$
-
-                source = self + JobSettingsConstants.getExtraParameterName(EParameterName.DB_TYPE.getName());
-                multipleComponentManager.addParam(source, DB_INPUT + ".DB_TYPE"); //$NON-NLS-1$
-
-                source = self + JobSettingsConstants.getExtraParameterName(EParameterName.CONNECTION_TYPE.getName());
-                multipleComponentManager.addParam(source, DB_INPUT + ".CONNECTION_TYPE"); //$NON-NLS-1$
-
-                source = self + JobSettingsConstants.QUERY;
-                multipleComponentManager.addParam(source, DB_INPUT + "." + JobSettingsConstants.QUERY); //$NON-NLS-1$
+                boolean initDefault = true;
+                if (isTcompv0(component)) {
+                    if ("tJDBCInput".equalsIgnoreCase(dbComponent)) {
+                        initDefault = false;
+                        initTcompv0ParamMapping(self, multipleComponentManager);
+                    } else {
+                        ExceptionHandler.log(this.getClass().getName()
+                                + ": MultipleComponentsParameters mapping is not prepared for tcompv0 " + dbComponent);
+                    }
+                }
+                if (initDefault) {
+                    initDefaultParameterMapping(self, multipleComponentManager);
+                }
 
             }
-            // context parameter
-            final String context = CONTEXT_LOAD + "."; //$NON-NLS-1$
 
-            String source = self + EParameterName.LOAD_NEW_VARIABLE.getName();
-            String target = context + EParameterName.LOAD_NEW_VARIABLE.getName();
-            multipleComponentManager.addParam(source, target);
-
-            source = self + EParameterName.NOT_LOAD_OLD_VARIABLE.getName();
-            target = context + EParameterName.NOT_LOAD_OLD_VARIABLE.getName();
-            multipleComponentManager.addParam(source, target);
-
-            source = self + EParameterName.PRINT_OPERATIONS.getName();
-            target = context + EParameterName.PRINT_OPERATIONS.getName();
-            multipleComponentManager.addParam(source, target);
-
-            source = self + EParameterName.DISABLE_ERROR.getName();
-            target = context + EParameterName.DISABLE_ERROR.getName();
-            multipleComponentManager.addParam(source, target);
-
-            source = self + EParameterName.DISABLE_INFO.getName();
-            target = context + EParameterName.DISABLE_INFO.getName();
-            multipleComponentManager.addParam(source, target);
-
-            source = self + EParameterName.DISABLE_WARNINGS.getName();
-            target = context + EParameterName.DISABLE_WARNINGS.getName();
-            multipleComponentManager.addParam(source, target);
+            initContextParamMapping(self, multipleComponentManager);
         }
 
+    }
+
+    private void initTcompv0ParamMapping(final String self, IMultipleComponentManager multipleComponentManager) {
+
+        final String seperator = multipleComponentManager.getParamSeperator();
+        String source = self + JobSettingsConstants.getExtraParameterName(EParameterName.URL.getName());
+        multipleComponentManager.addParam(source, DB_INPUT + seperator + EConnectionParameterName.GENERIC_URL.getDisplayName());
+
+        source = self + JobSettingsConstants.getExtraParameterName(EParameterName.DRIVER_JAR.getName());
+        multipleComponentManager.addParam(source,
+                DB_INPUT + seperator + EConnectionParameterName.GENERIC_DRIVER_JAR.getDisplayName());
+
+        source = self + JobSettingsConstants.getExtraParameterName(EParameterName.DRIVER_CLASS.getName());
+        multipleComponentManager.addParam(source,
+                DB_INPUT + seperator + EConnectionParameterName.GENERIC_DRIVER_CLASS.getDisplayName());
+
+        source = self + JobSettingsConstants.getExtraParameterName(EParameterName.DBNAME.getName());
+        multipleComponentManager.addParam(source,
+                DB_INPUT + seperator + EConnectionParameterName.GENERIC_TABLENAME.getDisplayName()); // $NON-NLS-1$
+
+        source = self + JobSettingsConstants.getExtraParameterName(EParameterName.USER.getName());
+        multipleComponentManager.addParam(source,
+                DB_INPUT + seperator + EConnectionParameterName.GENERIC_USERNAME.getDisplayName()); // $NON-NLS-1$
+
+        source = self + JobSettingsConstants.getExtraParameterName(EParameterName.PASS.getName());
+        multipleComponentManager.addParam(source,
+                DB_INPUT + seperator + EConnectionParameterName.GENERIC_PASSWORD.getDisplayName()); // $NON-NLS-1$
+
+        source = self + JobSettingsConstants.getExtraParameterName(EParameterName.DBTABLE.getName());
+        multipleComponentManager.addParam(source,
+                DB_INPUT + seperator + EConnectionParameterName.GENERIC_TABLENAME.getDisplayName()); // $NON-NLS-1$
+
+        source = self + JobSettingsConstants.QUERY;
+        multipleComponentManager.addParam(source, DB_INPUT + seperator + "sql"); //$NON-NLS-1$
+
+    }
+
+    private void initContextParamMapping(final String self, IMultipleComponentManager multipleComponentManager) {
+        // context parameter
+        final String context = CONTEXT_LOAD + multipleComponentManager.getParamSeperator();
+
+        String source = self + EParameterName.LOAD_NEW_VARIABLE.getName();
+        String target = context + EParameterName.LOAD_NEW_VARIABLE.getName();
+        multipleComponentManager.addParam(source, target);
+
+        source = self + EParameterName.NOT_LOAD_OLD_VARIABLE.getName();
+        target = context + EParameterName.NOT_LOAD_OLD_VARIABLE.getName();
+        multipleComponentManager.addParam(source, target);
+
+        source = self + EParameterName.PRINT_OPERATIONS.getName();
+        target = context + EParameterName.PRINT_OPERATIONS.getName();
+        multipleComponentManager.addParam(source, target);
+
+        source = self + EParameterName.DISABLE_ERROR.getName();
+        target = context + EParameterName.DISABLE_ERROR.getName();
+        multipleComponentManager.addParam(source, target);
+
+        source = self + EParameterName.DISABLE_INFO.getName();
+        target = context + EParameterName.DISABLE_INFO.getName();
+        multipleComponentManager.addParam(source, target);
+
+        source = self + EParameterName.DISABLE_WARNINGS.getName();
+        target = context + EParameterName.DISABLE_WARNINGS.getName();
+        multipleComponentManager.addParam(source, target);
+    }
+
+    private void initDefaultParameterMapping(final String self, IMultipleComponentManager multipleComponentManager) {
+        String source = self + JobSettingsConstants.getExtraParameterName(EParameterName.URL.getName());
+        multipleComponentManager.addParam(source, DB_INPUT + ".URL");
+
+        source = self + JobSettingsConstants.getExtraParameterName(EParameterName.DRIVER_JAR.getName());
+        multipleComponentManager.addParam(source, DB_INPUT + ".DRIVER_JAR");
+
+        source = self + JobSettingsConstants.getExtraParameterName(EParameterName.DRIVER_CLASS.getName());
+        multipleComponentManager.addParam(source, DB_INPUT + ".DRIVER_CLASS");
+
+        source = self + JobSettingsConstants.getExtraParameterName(EParameterName.HOST.getName());
+        multipleComponentManager.addParam(source, DB_INPUT + ".HOST"); //$NON-NLS-1$
+        multipleComponentManager.addParam(source, DB_INPUT + ".SERVER"); //$NON-NLS-1$
+        multipleComponentManager.addParam(source, DB_INPUT + ".DSN"); //$NON-NLS-1$
+
+        source = self + JobSettingsConstants.getExtraParameterName(EParameterName.PORT.getName());
+        multipleComponentManager.addParam(source, DB_INPUT + ".PORT"); //$NON-NLS-1$
+
+        source = self + JobSettingsConstants.getExtraParameterName(EParameterName.DBNAME.getName());
+        multipleComponentManager.addParam(source, DB_INPUT + ".DBNAME"); //$NON-NLS-1$
+
+        source = self + JobSettingsConstants.getExtraParameterName(EParameterName.DB_VERSION.getName());
+        multipleComponentManager.addParam(source, DB_INPUT + ".DB_VERSION"); //$NON-NLS-1$
+
+        source = self + JobSettingsConstants.getExtraParameterName(EParameterName.PROPERTIES.getName());
+        multipleComponentManager.addParam(source, DB_INPUT + ".PROPERTIES"); //$NON-NLS-1$
+
+        source = self + JobSettingsConstants.getExtraParameterName(EParameterName.SCHEMA_DB.getName());
+        multipleComponentManager.addParam(source, DB_INPUT + ".SCHEMA_DB"); //$NON-NLS-1$
+
+        source = self + JobSettingsConstants.getExtraParameterName(EParameterName.USER.getName());
+        multipleComponentManager.addParam(source, DB_INPUT + ".USER"); //$NON-NLS-1$
+
+        source = self + JobSettingsConstants.getExtraParameterName(EParameterName.PASS.getName());
+        multipleComponentManager.addParam(source, DB_INPUT + ".PASS"); //$NON-NLS-1$
+
+        source = self + JobSettingsConstants.getExtraParameterName(EParameterName.DBTABLE.getName());
+        multipleComponentManager.addParam(source, DB_INPUT + ".DBTABLE"); //$NON-NLS-1$
+
+        source = self + JobSettingsConstants.getExtraParameterName(EParameterName.DB_TYPE.getName());
+        multipleComponentManager.addParam(source, DB_INPUT + ".DB_TYPE"); //$NON-NLS-1$
+
+        source = self + JobSettingsConstants.getExtraParameterName(EParameterName.CONNECTION_TYPE.getName());
+        multipleComponentManager.addParam(source, DB_INPUT + ".CONNECTION_TYPE"); //$NON-NLS-1$
+
+        source = self + JobSettingsConstants.QUERY;
+        multipleComponentManager.addParam(source, DB_INPUT + "." + JobSettingsConstants.QUERY); //$NON-NLS-1$
     }
 
     @Override
@@ -380,8 +499,17 @@ public class JobContextLoadComponent implements IComponent {
         IElementParameter newParam = new ElementParameter(node);
         newParam.setName(JobSettingsConstants.getExtraParameterName(EParameterName.DRIVER_JAR.getName()));
         newParam.setFieldType(EParameterFieldType.TABLE);
-        newParam.setListItemsDisplayName(new String[] { EmfComponent.TEXT_BUILTIN, EmfComponent.TEXT_REPOSITORY });
-        newParam.setListItemsDisplayCodeName(new String[] { EmfComponent.BUILTIN, EmfComponent.REPOSITORY });
+        if (isTcompv0(component)) {
+            /**
+             * seems that tcompv0 will check the list using the display name when generating codes:
+             * GenericTableUtils#setTableValues
+             */
+            newParam.setListItemsDisplayName(new String[0]);
+            newParam.setListItemsDisplayCodeName(new String[0]);
+        } else {
+            newParam.setListItemsDisplayName(new String[] { EmfComponent.TEXT_BUILTIN, EmfComponent.TEXT_REPOSITORY });
+            newParam.setListItemsDisplayCodeName(new String[] { EmfComponent.BUILTIN, EmfComponent.REPOSITORY });
+        }
         elemParamList.add(newParam);
 
         newParam = new ElementParameter(node);

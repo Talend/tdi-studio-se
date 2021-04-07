@@ -172,7 +172,7 @@ if(useExistingConnection) {
         <%
     }
     %>
-    <%if("ORACLE_11".equals(dbVersion) || "ORACLE_12".equals(dbVersion) || "ORACLE_18".equals(dbVersion)){%>
+    <%if("ORACLE_11".equals(dbVersion) || "ORACLE_12".equals(dbVersion) || "ORACLE_18".equals(dbVersion) ){%>
         String driverClass_<%=cid%> = "oracle.jdbc.OracleDriver";
     <%}else {%>
         String driverClass_<%=cid%> = "oracle.jdbc.driver.OracleDriver";

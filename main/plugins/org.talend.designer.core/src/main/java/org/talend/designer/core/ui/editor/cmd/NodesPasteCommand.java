@@ -31,6 +31,7 @@ import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.ui.PlatformUI;
+import org.talend.commons.exception.PersistenceException;
 import org.talend.commons.ui.runtime.exception.ExceptionHandler;
 import org.talend.core.CorePlugin;
 import org.talend.core.GlobalServiceRegister;
@@ -48,6 +49,10 @@ import org.talend.core.model.process.INode;
 import org.talend.core.model.process.INodeConnector;
 import org.talend.core.model.process.IProcess;
 import org.talend.core.model.process.IProcess2;
+import org.talend.core.model.properties.ConnectionItem;
+import org.talend.core.model.properties.Item;
+import org.talend.core.model.repository.IRepositoryViewObject;
+import org.talend.core.repository.model.ProxyRepositoryFactory;
 import org.talend.core.ui.IJobletProviderService;
 import org.talend.core.ui.component.ComponentsFactoryProvider;
 import org.talend.core.ui.process.IGraphicalNode;
@@ -68,6 +73,7 @@ import org.talend.designer.core.ui.editor.process.ProcessPart;
 import org.talend.designer.core.ui.editor.subjobcontainer.SubjobContainer;
 import org.talend.designer.core.ui.editor.subjobcontainer.SubjobContainerPart;
 import org.talend.designer.core.utils.UpgradeElementHelper;
+import org.talend.metadata.managment.ui.utils.ConnectionContextHelper;
 
 /**
  * Command used to paste all the components.
@@ -371,7 +377,7 @@ public class NodesPasteCommand extends Command {
         Map<SubjobContainer, List<Node>> junitGroup = null;
         if (isJunitCreate()) {
             if (GlobalServiceRegister.getDefault().isServiceRegistered(ITestContainerGEFService.class)) {
-                testContainerService = (ITestContainerGEFService) GlobalServiceRegister.getDefault()
+                testContainerService = GlobalServiceRegister.getDefault()
                         .getService(ITestContainerGEFService.class);
                 if (testContainerService != null) {
                     junitGroup = testContainerService.caculateJunitGroup(nodeParts);
@@ -393,7 +399,7 @@ public class NodesPasteCommand extends Command {
             if (component == null) {
                 boolean isJobletInOutComponent = false;
                 if (PluginChecker.isJobLetPluginLoaded()) {
-                    IJobletProviderService service = (IJobletProviderService) GlobalServiceRegister.getDefault()
+                    IJobletProviderService service = GlobalServiceRegister.getDefault()
                             .getService(IJobletProviderService.class);
                     if (service != null && service.isJobletInOutComponent(copiedNode)) {
                         isJobletInOutComponent = true;
@@ -604,6 +610,7 @@ public class NodesPasteCommand extends Command {
             if (selectedExpandedJoblet != null && selectedExpandedJoblet.contains(copiedNodePart)) {
                 jobletNodeToExpand.add(nc);
             }
+            addContextForPastedNodes((Node) pastedNode);
         }
         ((Process) process).setCopyPasteSubjobMappings(mapping);
         Map<String, String> oldToNewConnVarMap = new HashMap<String, String>();
@@ -826,6 +833,32 @@ public class NodesPasteCommand extends Command {
         }
 
     }
+    
+    private void addContextForPastedNodes(Node copiedNode) {
+        IElementParameter propertyParam = copiedNode.getElementParameterFromField(EParameterFieldType.PROPERTY_TYPE);
+        if(propertyParam == null) {
+        	return;
+        }
+    	IElementParameter child = propertyParam.getChildParameters().get(EParameterName.REPOSITORY_PROPERTY_TYPE.getName());
+    	if(child == null) {
+    		return;
+    	}
+    	String id = (String) child.getValue();
+    	IRepositoryViewObject connObj;
+		try {
+			connObj = ProxyRepositoryFactory.getInstance().getLastVersion(id);
+            if (connObj != null && connObj.getProperty() != null) {
+                Item item = connObj.getProperty().getItem();
+                if (item instanceof ConnectionItem) {
+                    ConnectionContextHelper.addContextForNodeParameter(copiedNode, (ConnectionItem) item, false);
+                }
+            }
+		} catch (PersistenceException e) {
+			ExceptionHandler.process(e);
+		}
+
+    }
+    
 
     /**
      * DOC bqian Comment method "makeCopyNodeAndSubjobMapping".<br>

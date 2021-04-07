@@ -65,7 +65,7 @@
 		</PARAMETER>
 		<PARAMETER NAME="PROXY_HOST" FIELD="TEXT"
 			NUM_ROW="31" SHOW_IF="USE_PROXY == 'true'">
-			<DEFAULT>"61.163.92.4"</DEFAULT>
+			<DEFAULT>"127.0.0.1"</DEFAULT>
 		</PARAMETER>
 		<PARAMETER NAME="PROXY_PORT" FIELD="TEXT"
 			NUM_ROW="32" SHOW_IF="USE_PROXY == 'true'">
@@ -130,7 +130,7 @@
 	      NUM_ROW="10"
 	      SHOW_IF="USE_KERBEROS == 'true'"
 	    />
-	    
+
  	    <PARAMETER
  	      NAME="ENFORCE_NTLM"
  	      FIELD="CHECK"
@@ -145,15 +145,14 @@
 	<CODEGENERATION>
 		<IMPORTS>
 			<IMPORT NAME="activation" MODULE="activation.jar" MVN="mvn:org.talend.libraries/activation/6.0.0" REQUIRED="true" BundleID="" />
-			<IMPORT NAME="jaxqname" MODULE="jax-qname.jar" MVN="mvn:org.talend.libraries/jax-qname/6.0.0" REQUIRED="true" BundleID="" />
-			<IMPORT NAME="jaxpapi" MODULE="jaxp-api.jar" MVN="mvn:org.talend.libraries/jaxp-api/6.0.0" REQUIRED="true" BundleID="" />
-			<IMPORT NAME="jaxpri" MODULE="jaxp-ri.jar" MVN="mvn:org.talend.libraries/jaxp-ri/6.0.0" REQUIRED="true" BundleID="" />
-			<IMPORT NAME="saajapi" MODULE="saaj-api-1.3.jar" MVN="mvn:org.talend.libraries/saaj-api-1.3/6.0.0" REQUIRED="true" BundleID="" />
-			<IMPORT NAME="saajimpl" MODULE="saaj-impl-1.3.2.jar" MVN="mvn:org.talend.libraries/saaj-impl-1.3.2/6.0.0" REQUIRED="true" BundleID="" />
-			<IMPORT NAME="jdom" MODULE="jdom-1.1.jar" MVN="mvn:org.talend.libraries/jdom-1.1/6.0.0" UrlPath="platform:/plugin/org.talend.libraries.jdom/lib/jdom-1.1.jar" REQUIRED="true" BundleID="org.apache.servicemix.bundles.jdom" />
-			<IMPORT NAME="talendsoap" MODULE="talend-soap-2.1-20190716.jar" MVN="mvn:org.talend.libraries/talend-soap-2.1-20190716/6.0.0" REQUIRED="true" />
-			<IMPORT NAME="Java_xercesImpl" MODULE="xercesImpl.jar" MVN="mvn:org.talend.libraries/xercesImpl/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.apache.xml/lib/xercesImpl.jar" REQUIRED="true" BundleID="" />
-			<IMPORT NAME="commons-codec" MODULE="commons-codec-1.9.jar" MVN="mvn:org.talend.libraries/commons-codec-1.9/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.apache.common/lib/commons-codec-1.9.jar" REQUIRED="true" BundleID="" />
+			<IMPORT NAME="saajimpl" MODULE="saaj-impl-1.5.2.jar" MVN="mvn:com.sun.xml.messaging.saaj/saaj-impl/1.5.2" REQUIRED="true"/>
+			<IMPORT NAME="dom4j-2.1.3" MODULE="dom4j-2.1.3.jar" MVN="mvn:org.dom4j/dom4j/2.1.3" REQUIRED="true" />
+			<IMPORT NAME="components-soap" MODULE="components-soap-2.3-20201016.jar" MVN="mvn:org.talend.components/components-soap/2.3-20201016" REQUIRED="true" />
+			<IMPORT NAME="stax-ex-1.8.3" MODULE="stax-ex-1.8.3.jar" MVN="mvn:org.jvnet.staxex/stax-ex/1.8.3" REQUIRED="true" />
+			<IMPORT NAME="jakarta.xml.soap-api-1.4.2" MODULE="jakarta.xml.soap-api-1.4.2.jar" MVN="mvn:jakarta.xml.soap/jakarta.xml.soap-api/1.4.2" REQUIRED="true" />
+			<IMPORT NAME="xercesImpl-2.12.0" MODULE="xercesImpl-2.12.0.jar" MVN="mvn:xerces/xercesImpl/2.12.0" REQUIRED="true"/>
+			<IMPORT NAME="xml-apis-1.4.01" MODULE="xml-apis-1.4.01.jar" MVN="mvn:xml-apis/xml-apis/1.4.01" REQUIRED="true" />
+			<IMPORT NAME="commons-codec-1.14" MODULE="commons-codec-1.14.jar" MVN="mvn:commons-codec/commons-codec/1.14" REQUIRED="true" />
 		</IMPORTS>
 	</CODEGENERATION>
 

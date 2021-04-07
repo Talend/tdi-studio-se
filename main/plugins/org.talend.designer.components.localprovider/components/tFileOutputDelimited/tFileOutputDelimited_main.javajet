@@ -90,7 +90,7 @@ if(("false").equals(ElementParameterParser.getValue(node,"__CSV_OPTION__"))) {
                         }
                         if (((AbstractNode)node).getParallelIterator() != null) {
                 %>
-                synchronized ((Object[])globalMap.get("lockWrite_<%=((AbstractNode)node).getParallelIterator()%>")) {
+                synchronized (fileName_<%=cid%>.intern()) {
                 <%
                         }
                         if (isParallelize) {
@@ -240,7 +240,7 @@ if(("false").equals(ElementParameterParser.getValue(node,"__CSV_OPTION__"))) {
                         }
                         if (((AbstractNode)node).getParallelIterator() != null) {
                     %>
-                    synchronized ((Object[])globalMap.get("lockWrite_<%=((AbstractNode)node).getParallelIterator()%>")) {
+                    synchronized (fileName_<%=cid%>.intern()) {
                     <%
                         }
                         if (isParallelize) {
@@ -439,7 +439,7 @@ if(("false").equals(ElementParameterParser.getValue(node,"__CSV_OPTION__"))) {
                             }
                             if (((AbstractNode)node).getParallelIterator() != null) {
                             %>
-                    synchronized ((Object[])globalMap.get("lockWrite_<%=((AbstractNode)node).getParallelIterator()%>")) {
+                    synchronized (fileName_<%=cid%>.intern()) {
                             <%
                             }
                             if (isParallelize) {
@@ -610,7 +610,7 @@ if(("false").equals(ElementParameterParser.getValue(node,"__CSV_OPTION__"))) {
                         }
                         if (((AbstractNode)node).getParallelIterator() != null) {
 %>
-                synchronized ((Object[])globalMap.get("lockWrite_<%=((AbstractNode)node).getParallelIterator()%>")) {
+                synchronized (fileName_<%=cid%>.intern()) {
 <%
                         }
                         if (isParallelize) {

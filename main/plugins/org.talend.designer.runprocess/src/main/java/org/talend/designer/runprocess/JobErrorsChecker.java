@@ -103,6 +103,7 @@ public class JobErrorsChecker {
                         .getInstance()
                         .getRoutinesNeededWithSubjobPerJob(LastGenerationInfo.getInstance().getLastMainJob().getJobId(),
                                 LastGenerationInfo.getInstance().getLastMainJob().getJobVersion());
+                // TODO find a way to check codesjar's innercode compilation error
                 if (routinesObjects != null) {
                     for (IRepositoryViewObject obj : routinesObjects) {
                         Property property = obj.getProperty();
@@ -383,6 +384,7 @@ public class JobErrorsChecker {
                 .getInstance()
                 .getRoutinesNeededWithSubjobPerJob(LastGenerationInfo.getInstance().getLastMainJob().getJobId(),
                         LastGenerationInfo.getInstance().getLastMainJob().getJobVersion());
+        // TODO find a way to check codesjar's innercode compilation error
 
         // from Problems
         List<Problem> errors = Problems.getProblemList().getProblemsBySeverity(ProblemStatus.ERROR);

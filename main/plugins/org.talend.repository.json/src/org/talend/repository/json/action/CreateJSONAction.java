@@ -15,8 +15,12 @@ package org.talend.repository.json.action;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.PlatformUI;
+import org.talend.commons.exception.ExceptionHandler;
+import org.talend.commons.exception.PersistenceException;
 import org.talend.commons.ui.runtime.image.ImageProvider;
+import org.talend.core.model.properties.ConnectionItem;
 import org.talend.core.model.repository.ERepositoryObjectType;
+import org.talend.core.model.update.RepositoryUpdateManager;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
 import org.talend.core.repository.ui.actions.metadata.AbstractCreateAction;
 import org.talend.repository.ProjectManager;
@@ -120,6 +124,10 @@ public class CreateJSONAction extends AbstractCreateAction {
         WizardDialog wizardDialog = null;
         JSONWizard jsonWizard = null;
         try {
+            if (!creation) {
+                ConnectionItem conntectionItem = (ConnectionItem) repositoryNode.getObject().getProperty().getItem();
+                RepositoryUpdateManager.updateConnectionContextParam(conntectionItem);
+            }
             if (isToolbar()) {
                 init(repositoryNode);
                 jsonWizard = new JSONWizard(PlatformUI.getWorkbench(), creation, repositoryNode, getExistingNames());
@@ -132,6 +140,8 @@ public class CreateJSONAction extends AbstractCreateAction {
             wizardDialog.setPageSize(WIZARD_WIDTH, WIZARD_HEIGHT);
             wizardDialog.create();
             wizardDialog.open();
+        } catch (PersistenceException ex) {
+            ExceptionHandler.process(ex);
         } finally {
             if (jsonWizard != null) {
                 jsonWizard.deleteTemFile();
@@ -139,5 +149,4 @@ public class CreateJSONAction extends AbstractCreateAction {
         }
 
     }
-
 }

@@ -508,7 +508,7 @@ public class StatsAndLogsManager {
             refPara.setValue(connectionNode.getUniqueName());
             IGenericDBService dbService = null;
             if (GlobalServiceRegister.getDefault().isServiceRegistered(IGenericDBService.class)) {
-                dbService = (IGenericDBService) GlobalServiceRegister.getDefault().getService(IGenericDBService.class);
+                dbService = GlobalServiceRegister.getDefault().getService(IGenericDBService.class);
             }
             if (dbService != null) {
                 dbService.initReferencedComponent(refPara, connectionNode.getUniqueName());
@@ -1062,7 +1062,7 @@ public class StatsAndLogsManager {
     private static void getMVNDriverJar(IElementParameter elePara, Object value) {
         IGenericDBService dbService = null;
         if (GlobalServiceRegister.getDefault().isServiceRegistered(IGenericDBService.class)) {
-            dbService = (IGenericDBService) GlobalServiceRegister.getDefault().getService(IGenericDBService.class);
+            dbService = GlobalServiceRegister.getDefault().getService(IGenericDBService.class);
         }
         if (dbService == null) {
             return;
@@ -1476,7 +1476,7 @@ public class StatsAndLogsManager {
                     if (!moduleNameList.contains(moduleName)) {
                         moduleNameList.add(moduleName);
                     }
-                    String moduleValue = TalendTextUtils.addQuotes(moduleName);
+                    String moduleValue = TalendTextUtils.addQuotes(module.getMavenUri());
                     if (!moduleValueList.contains(moduleValue)) {
                         moduleValueList.add(moduleValue);
                     }
@@ -1546,7 +1546,7 @@ public class StatsAndLogsManager {
         param.setNumRow(53);
         param.setRepositoryValue("PORT"); //$NON-NLS-1$
         param.setShowIf(
-                "(ON_DATABASE_FLAG == 'true') and (ON_STATCATCHER_FLAG == 'true' or ON_LOGCATCHER_FLAG == 'true' or ON_METERCATCHER_FLAG == 'true') and (DB_TYPE!='SQLITE' and DB_TYPE!='ACCESS' and DB_TYPE!='FIREBIRD' and DB_TYPE!='OCLE_OCI'  and DB_TYPE!='JDBC') "); //$NON-NLS-1$
+                "(ON_DATABASE_FLAG == 'true') and (ON_STATCATCHER_FLAG == 'true' or ON_LOGCATCHER_FLAG == 'true' or ON_METERCATCHER_FLAG == 'true') and (DB_TYPE!='SQLITE' and DB_TYPE!='ACCESS' and DB_TYPE!='FIREBIRD' and DB_TYPE!='OCLE_OCI'  and DB_TYPE!='JDBC' and DB_TYPE!='TERADATA') "); //$NON-NLS-1$
         paramList.add(param);
 
         // databaseSource
