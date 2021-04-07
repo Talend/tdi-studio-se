@@ -3,6 +3,7 @@
 		org.talend.core.model.process.INode
 		org.talend.designer.codegen.config.CodeGeneratorArgument
 		org.talend.core.model.process.ElementParameterParser
+		org.talend.core.model.process.IConnection
 		"
 %>
 
@@ -15,13 +16,30 @@
 
 	String cid = node.getUniqueName();
 
+	String connName = null;
+
+	if (node.getIncomingConnections().size() == 1){
+		IConnection conn = node.getIncomingConnections().get(0);
+		connName = conn.getName();
+	}
+
 	String fileName = ElementParameterParser.getValue(node, "__FILENAME__");	
+	
+	fileName = fileName.replace("input_row", connName); 
 
 	String destination  = ElementParameterParser.getValue(node, "__DESTINATION__");
+	
+	destination = destination.replace("input_row", connName); 
+	
+	String srcFileFolderPath = ElementParameterParser.getValue(node, "__SOURCE_DERECTORY__");
+	
+	srcFileFolderPath = srcFileFolderPath.replace("input_row", connName);
 	
 	boolean rename = ("true").equals(ElementParameterParser.getValue(node, "__RENAME__"));
 	
 	String destination_filename  = ElementParameterParser.getValue(node, "__DESTINATION_RENAME__");
+	
+	destination_filename = destination_filename.replace("input_row", connName); 
 
 	boolean isCopyADir = ("true").equals(ElementParameterParser.getValue(node, "__ENABLE_COPY_DIRECTORY__"));
 	
@@ -39,9 +57,9 @@
 	
 	if (isCopyADir){ // copy a directory
 %>     
-        String srcFileFolderPath_<%=cid %> = <%=ElementParameterParser.getValue(node, "__SOURCE_DERECTORY__")%>;
+        String srcFileFolderPath_<%=cid %> = <%=srcFileFolderPath%>;
 
-        String desFileFolderPath_<%=cid %> = <%=ElementParameterParser.getValue(node, "__DESTINATION__")%>;
+        String desFileFolderPath_<%=cid %> = <%=destination%>;
 		
 		java.io.File srcFileFolder_<%=cid %> = new java.io.File(srcFileFolderPath_<%=cid %>);
 
