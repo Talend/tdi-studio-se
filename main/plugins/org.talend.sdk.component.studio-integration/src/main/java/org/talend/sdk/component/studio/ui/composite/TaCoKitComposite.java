@@ -229,7 +229,7 @@ public class TaCoKitComposite extends MissingSettingsMultiThreadDynamicComposite
     }
     
     protected Composite addUseExistConnection(final Composite parent, final Composite previous) {
-        Composite previousComposite = previous;       
+        Composite previousComposite = previous;
         IElementParameter useExistConnectionParameter = null, connectionParameter = null;
         for (IElementParameter p : parameters) {
             if (TaCoKitConst.PARAMETER_USE_EXISTING_CONNECTION.equals(p.getName())) {
@@ -244,15 +244,17 @@ public class TaCoKitComposite extends MissingSettingsMultiThreadDynamicComposite
             connectionComposite.setBackground(parent.getBackground());
             connectionComposite.setLayout(new FormLayout());
             connectionComposite.setLayoutData(levelLayoutData(previousComposite));
-            previousComposite = connectionComposite;            
+            previousComposite = connectionComposite;
             if (useExistConnectionParameter != null) {
-                Control connectionControl = addWidget(connectionComposite, useExistConnectionParameter, null);
-                if (doShow(connectionParameter)) {
-                    addWidget(connectionComposite, connectionParameter, connectionControl);
+                if (doShow(useExistConnectionParameter)) {
+                    Control connectionControl = addWidget(connectionComposite, useExistConnectionParameter, null);
+                    if (doShow(connectionParameter)) {
+                        addWidget(connectionComposite, connectionParameter, connectionControl);
+                    }
                 }
-            } else {
+            } else if (connectionParameter != null && doShow(connectionParameter)) {
                 addWidget(connectionComposite, connectionParameter, null);
-            }         
+            }
         }
         return previousComposite;
     }
