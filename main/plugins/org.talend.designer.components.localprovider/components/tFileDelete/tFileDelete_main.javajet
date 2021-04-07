@@ -3,6 +3,7 @@
 		org.talend.core.model.process.INode
 		org.talend.designer.codegen.config.CodeGeneratorArgument
 		org.talend.core.model.process.ElementParameterParser
+		org.talend.core.model.process.IConnection
 		"
 %>
 
@@ -12,9 +13,19 @@
 CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
 INode node = (INode)codeGenArgument.getArgument();
 String cid = node.getUniqueName();
+String connName = null;
+
+if (node.getIncomingConnections().size() == 1){
+	IConnection conn = node.getIncomingConnections().get(0);
+	connName = conn.getName();
+}
+
 String fileName = ElementParameterParser.getValue(node, "__FILENAME__");
+fileName = fileName.replace("input_row", connName); 
 String dirName = ElementParameterParser.getValue(node, "__DIRECTORY__");
+dirName = dirName.replace("input_row", connName);
 String path = ElementParameterParser.getValue(node, "__PATH__");
+path = path.replace("input_row", connName);
 String failon = ElementParameterParser.getValue(node, "__FAILON__");
 boolean ifFolder = ("true").equals(ElementParameterParser.getValue(node, "__FOLDER__"));
 boolean either = ("true").equals(ElementParameterParser.getValue(node, "__FOLDER_FILE__"));
