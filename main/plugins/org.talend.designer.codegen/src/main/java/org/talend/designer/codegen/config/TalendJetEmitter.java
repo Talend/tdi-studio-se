@@ -587,20 +587,20 @@ public class TalendJetEmitter extends JETEmitter {
                 // nothing since if got exception here, the method will be reloaded bellow. (normal case)
                 // real error should be logged if the initialize fail.
             }
-            // add this part in case there is any problem in the project (should never be called in normal use)
-            // but if there is any problem, it will force to regenerate again this component.
-            // This might be also called for custom components.
-            if (localMethod == null) {
-                try {
-                    talendEclipseHelper.initialize(BasicMonitor.toMonitor(new NullProgressMonitor()), this, componentFamily,
-                            templateName, templateLanguage, codePart);
-                    localMethod = super.getMethod();
-                } catch (JETException e) {
-                    ExceptionHandler.process(e);
-                }
-            } else {
-                setMethod(localMethod);
+        }
+        // add this part in case there is any problem in the project (should never be called in normal use)
+        // but if there is any problem, it will force to regenerate again this component.
+        // This might be also called for custom components.
+        if (localMethod == null) {
+            try {
+                talendEclipseHelper.initialize(BasicMonitor.toMonitor(new NullProgressMonitor()), this, componentFamily,
+                        templateName, templateLanguage, codePart);
+                localMethod = super.getMethod();
+            } catch (JETException e) {
+                ExceptionHandler.process(e);
             }
+        } else {
+            setMethod(localMethod);
         }
         return localMethod;
     }
@@ -681,6 +681,11 @@ public class TalendJetEmitter extends JETEmitter {
         }
 
         getMethod(); // force to load the method before generate in case it was not set before.
-        return super.generate(progressMonitor, list.toArray(), lineDelimiter);
+        try {
+            return super.generate(progressMonitor, list.toArray(), lineDelimiter);
+        } finally {
+            setObject(null);
+        }
     }
+
 }
