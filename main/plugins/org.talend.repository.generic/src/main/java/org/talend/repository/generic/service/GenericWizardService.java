@@ -33,6 +33,7 @@ import org.talend.components.api.properties.ComponentProperties;
 import org.talend.components.api.wizard.ComponentWizard;
 import org.talend.components.api.wizard.ComponentWizardDefinition;
 import org.talend.components.api.wizard.WizardImageType;
+import org.talend.components.api.service.ComponentService;
 import org.talend.core.GlobalServiceRegister;
 import org.talend.core.PluginChecker;
 import org.talend.core.database.EDatabaseTypeName;
@@ -98,30 +99,33 @@ public class GenericWizardService implements IGenericWizardService {
     @Override
     public List<RepositoryNode> createNodesFromComponentService(RepositoryNode curParentNode) {
         List<RepositoryNode> repNodes = new ArrayList<>();
-        Set<ComponentWizardDefinition> wizardDefinitions = internalService.getComponentService().getTopLevelComponentWizards();
-        for (ComponentWizardDefinition wizardDefinition : wizardDefinitions) {
-            String name = wizardDefinition.getName();
-            String displayName = wizardDefinition.getDisplayName();
-            String folder = "metadata/" + name; //$NON-NLS-1$
-            int ordinal = 100;
-            ERepositoryObjectType repositoryType = internalService.createRepositoryType(name, displayName, name, folder, ordinal);
-            if (curParentNode == null && "JDBC".equals(name)) { //$NON-NLS-1$
-                Class<ComponentProperties> jdbcClass = ReflectionUtils.getClass(
-                        "org.talend.components.jdbc.wizard.JDBCConnectionWizardProperties",
-                        wizardDefinition.getClass().getClassLoader());
-                if (jdbcClass != null && wizardDefinition.supportsProperties(jdbcClass)) {
-                    IGenericDBService dbService = null;
-                    if (GlobalServiceRegister.getDefault().isServiceRegistered(IGenericDBService.class)) {
-                        dbService = (IGenericDBService) GlobalServiceRegister.getDefault().getService(IGenericDBService.class);
-                    }
-                    if (dbService != null) {
-                        dbService.getExtraTypes().add(repositoryType);
+        ComponentService componentService = internalService.getComponentService();
+        if (componentService!=null) {
+            Set<ComponentWizardDefinition> wizardDefinitions = componentService.getTopLevelComponentWizards();
+            for (ComponentWizardDefinition wizardDefinition : wizardDefinitions) {
+                String name = wizardDefinition.getName();
+                String displayName = wizardDefinition.getDisplayName();
+                String folder = "metadata/" + name; //$NON-NLS-1$
+                int ordinal = 100;
+                ERepositoryObjectType repositoryType = internalService.createRepositoryType(name, displayName, name, folder, ordinal);
+                if (curParentNode == null && "JDBC".equals(name)) { //$NON-NLS-1$
+                    Class<ComponentProperties> jdbcClass = ReflectionUtils.getClass(
+                            "org.talend.components.jdbc.wizard.JDBCConnectionWizardProperties",
+                            wizardDefinition.getClass().getClassLoader());
+                    if (jdbcClass != null && wizardDefinition.supportsProperties(jdbcClass)) {
+                        IGenericDBService dbService = null;
+                        if (GlobalServiceRegister.getDefault().isServiceRegistered(IGenericDBService.class)) {
+                            dbService = (IGenericDBService) GlobalServiceRegister.getDefault().getService(IGenericDBService.class);
+                        }
+                        if (dbService != null) {
+                            dbService.getExtraTypes().add(repositoryType);
+                        }
                     }
                 }
-            }
-            if (curParentNode != null && !needHide(repositoryType)) {
-                repNodes.add(internalService.createRepositoryNode(curParentNode, wizardDefinition.getDisplayName(),
-                        repositoryType, ENodeType.SYSTEM_FOLDER));
+                if (curParentNode != null && !needHide(repositoryType)) {
+                    repNodes.add(internalService.createRepositoryNode(curParentNode, wizardDefinition.getDisplayName(),
+                            repositoryType, ENodeType.SYSTEM_FOLDER));
+                }
             }
         }
         return repNodes;
@@ -145,10 +149,12 @@ public class GenericWizardService implements IGenericWizardService {
     @Override
     public List<String> getGenericTypeNames() {
         if (typeNames.isEmpty()) {
-            Set<ComponentWizardDefinition> wizardDefinitions = internalService.getComponentService()
-                    .getTopLevelComponentWizards();
-            for (ComponentWizardDefinition wizardDefinition : wizardDefinitions) {
-                typeNames.add(wizardDefinition.getName());
+            ComponentService componentService = internalService.getComponentService();
+            if (componentService!=null) {
+                Set<ComponentWizardDefinition> wizardDefinitions = componentService.getTopLevelComponentWizards();
+                for (ComponentWizardDefinition wizardDefinition : wizardDefinitions) {
+                    typeNames.add(wizardDefinition.getName());
+                }
             }
         }
         return typeNames;
