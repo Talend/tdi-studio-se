@@ -1330,7 +1330,7 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
 
         StringBuffer basePath = new StringBuffer(50);
 
-        if (isExportConfig() || isRunAsExport() || isLinuxTargetPlatform()) {
+        if (isExportConfig() || isRunAsExport()) {
             // current path.
             basePath.append('.');
 
@@ -1490,7 +1490,7 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
 
         StringBuffer libPath = new StringBuffer();
 
-        if (isExportConfig() || isRunAsExport() || isLinuxTargetPlatform()) {
+        if (isExportConfig() || isRunAsExport()) {
           
             boolean hasLibPrefix = libPrefixPath.length() > 0;
             for (ModuleNeeded neededModule : neededModules) {
