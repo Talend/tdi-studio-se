@@ -1,0 +1,128 @@
+<%@ jet 
+imports="
+    org.talend.core.model.process.INode 
+    org.talend.core.model.process.ElementParameterParser 
+    org.talend.designer.codegen.config.CodeGeneratorArgument
+	java.util.List
+	java.util.Map
+" 
+%>
+	<%
+    CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
+    INode node = (INode)codeGenArgument.getArgument();
+	
+    String cid = node.getUniqueName();
+    String bucket = ElementParameterParser.getValue(node,"__BUCKET__");
+    String key = ElementParameterParser.getValue(node,"__KEY__");
+    String file = ElementParameterParser.getValue(node,"__FILE__");
+	String dieOnError = ElementParameterParser.getValue(node, "__DIE_ON_ERROR__");
+	String kmsid = ElementParameterParser.getValue(node, "__KMSID__");
+	
+	boolean enableServerSideEncryption = "true".equals(ElementParameterParser.getValue(node, "__ENABLE-SERVER-SIDE-ENCRYPTION__"));
+	boolean enableKMS = "true".equals(ElementParameterParser.getValue(node, "__ENABLE-KMS__"));
+	
+	%>
+	<%@ include file="./S3Client.javajet" %>
+	try{
+		<%
+		if(isLog4jEnabled){
+		%>	
+			log.info("<%=cid%> - Uploading an object with key:" + <%=key%>);
+		<%
+		}
+		%>
+		com.amazonaws.services.s3.model.PutObjectRequest putRequest_<%=cid%> = new com.amazonaws.services.s3.model.PutObjectRequest(<%=bucket%>, <%=key%>, new java.io.File(<%=file%>));
+		
+		<%
+		if(enableServerSideEncryption){
+		%>
+			<%
+			if(!enableKMS){
+			%>		
+				<%
+				if(isLog4jEnabled){
+				%>	
+					log.info("<%=cid%> - No KMS - Normal SSE");
+				<%
+				}
+				%>
+				com.amazonaws.services.s3.model.ObjectMetadata objectMetadata_<%=cid%> = new com.amazonaws.services.s3.model.ObjectMetadata();
+				objectMetadata_<%=cid%>.setSSEAlgorithm(com.amazonaws.services.s3.model.ObjectMetadata.AES_256_SERVER_SIDE_ENCRYPTION);
+				putRequest_<%=cid%>.setMetadata(objectMetadata_<%=cid%>);
+			<%
+			} else { /* KMS is enabled, so test for default or presence of key */
+			%>
+				<%
+				if(isLog4jEnabled){
+				%>	
+					log.info("<%=cid%> - KMS-Enabled - kmsid="+<%=kmsid%>);
+				<%
+				}
+				%>
+				<%
+				if("\"\"".equals(kmsid)){
+				%>
+					<%
+					if(isLog4jEnabled){
+					%>	
+						log.info("<%=cid%> - No KMS key - use default");
+					<%
+					}
+					%>
+					putRequest_<%=cid%>.withSSEAwsKeyManagementParams(new com.amazonaws.services.s3.model.SSEAwsKeyManagementParams ());
+				<%
+				} else {
+				%>
+					<%
+					if(isLog4jEnabled){
+					%>	
+						log.info("<%=cid%> - Key found - use key");
+					<%
+					}
+					%>
+					putRequest_<%=cid%>.withSSEAwsKeyManagementParams(new com.amazonaws.services.s3.model.SSEAwsKeyManagementParams (<%=kmsid%>));
+				<%
+				}
+				%>
+			<%
+			}
+			%>
+		<%
+		}
+		%>
+		
+		conn_<%=cid%>.putObject(putRequest_<%=cid%>);
+		<%
+		if(isLog4jEnabled){
+		%>	
+			log.info("<%=cid%> - Upload the object successfully.");
+		<%
+		}
+		%>
+	}catch(java.lang.Exception e_<%=cid%>){
+		<%
+		if (("true").equals(dieOnError)) {
+		%>
+			throw(e_<%=cid%>);
+		<%
+		} else {
+			if(isLog4jEnabled){
+			%>
+				log.error("<%=cid%> - " + e_<%=cid%>.getMessage());
+			<%
+			}
+			%>
+			System.err.println(e_<%=cid%>.getMessage());
+		<%
+		}
+		if(!("true").equals(useExistingConn)) {
+		%>
+	}finally{
+		if(conn_<%=cid%> !=null){
+			conn_<%=cid%>.shutdown();
+		}
+		<%
+		}
+		%>
+	}
+	        
