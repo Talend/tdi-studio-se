@@ -3959,6 +3959,8 @@ public class Node extends Element implements IGraphicalNode {
                     }
 
                     if (inputMeta != null) {
+                    	inputMeta.setNodeCheck(true);
+                    	outputMeta.setNodeCheck(true);
                         INodeConnector connector = getConnectorFromName(outputMeta.getAttachedConnector());
                         if (connector != null
                                 && ((connector.getMaxLinkInput() != 0 && connector.getMaxLinkOutput() != 0)
