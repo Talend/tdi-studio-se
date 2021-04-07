@@ -13,14 +13,12 @@
 package org.talend.sdk.component.studio.metadata.tableeditor;
 
 import java.util.Arrays;
-import java.util.Map;
 
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.ComboBoxCellEditor;
 import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Table;
-import org.talend.commons.ui.runtime.swt.tableviewer.data.ModifiedObjectInfo;
 import org.talend.commons.ui.swt.tableviewer.TableViewerCreator;
 import org.talend.core.model.process.IElement;
 import org.talend.core.model.process.IElementParameter;
@@ -51,21 +49,13 @@ public class TaCoKitPropertiesTableEditorView<B> extends PropertiesTableEditorVi
             ((ComboBoxCellEditor) cellEditor).setItems(listToDisplay);
         }
         Object returnedValue = 0;
-        boolean find = false;
         if (originalTypedValue != null) {
             String[] namesSet = listToDisplay;
             for (int j = 0; j < namesSet.length; j++) {
                 if (namesSet[j].equals(originalTypedValue)) {
                     returnedValue = j;
-                    find = true;
                     break;
                 }
-            }
-            // if not find , then fill the first.
-            if (!find && namesSet.length > 0) {
-                ModifiedObjectInfo modifiedObjectInfo = tableViewerCreator.getModifiedObjectInfo();
-                Object bean = modifiedObjectInfo.getCurrentModifiedBean();
-                ((Map<String, Object>) bean).put(currentKey, listToDisplay[0]);
             }
         }
         return returnedValue;
