@@ -579,9 +579,8 @@ public class TaCoKitUtil {
     }
     
     public static boolean isUseExistConnection(INode node) {
-        if (node!= null) {
-            for (int i = 0; i < node.getElementParameters().size(); i++) {
-                ElementParameter ele = (ElementParameter) node.getElementParameters().get(i);
+        if (node != null) {
+            for (IElementParameter ele : node.getElementParameters()) {
                 if (TaCoKitConst.PARAMETER_USE_EXISTING_CONNECTION.equals(ele.getName())) {
                     if (ele.getValue() != null && Boolean.parseBoolean(ele.getValue().toString())) {
                         return true;
@@ -594,8 +593,7 @@ public class TaCoKitUtil {
     
     public static String getUseExistConnectionName(INode node) {
         if (node != null) {
-            for (int i = 0; i < node.getElementParameters().size(); i++) {
-                ElementParameter ele = (ElementParameter) node.getElementParameters().get(i);
+            for (IElementParameter ele : node.getElementParameters()) {
                 if (TaCoKitConst.PARAMETER_CONNECTION.equals(ele.getName())) {
                     if (ele.getValue() == null || StringUtils.isEmpty(ele.getValue().toString())) {
                         return null;

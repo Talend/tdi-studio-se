@@ -383,7 +383,7 @@ public class ElementParameterCreator {
         final ElementParameter connectionParameter = new ElementParameter(node);
         connectionParameter.setName(TaCoKitConst.PARAMETER_CONNECTION);
         connectionParameter.setValue("");
-        connectionParameter.setDisplayName("Component List");
+        connectionParameter.setDisplayName(Messages.getString("ElementParameterCreator.connectionLabel"));
         connectionParameter.setFieldType(EParameterFieldType.COMPONENT_LIST);
         connectionParameter.setCategory(EComponentCategory.BASIC);
         connectionParameter.setNumRow(1);
