@@ -155,7 +155,7 @@ public class TaCoKitUtilTest {
         assertEquals("configuration.connection", TaCoKitUtil.getDatastorePath(propertyList));
 
         p = new SimplePropertyDefinition();
-        p.setName("configuration.datastore");
+        p.setName("datastore");
         p.setPath("configuration.datastore");
         propertyList.add(p);
         assertEquals("configuration.datastore", TaCoKitUtil.getDatastorePath(propertyList));
