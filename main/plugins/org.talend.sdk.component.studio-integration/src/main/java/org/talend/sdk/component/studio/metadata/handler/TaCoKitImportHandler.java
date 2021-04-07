@@ -62,7 +62,7 @@ public class TaCoKitImportHandler extends MetadataConnectionImportHandler {
      * @param monitor progress monitor
      */
     @Override
-    protected void applyMigrationTasks(final ImportItem importItem, final IProgressMonitor monitor) {
+    public void applyMigrationTasks(final ImportItem importItem, final IProgressMonitor monitor) {
         try {
             getItem(importItem).ifPresent(connectionItem -> {
                 final TaCoKitConfigurationModel configuration = new TaCoKitConfigurationModel(connectionItem.getConnection());

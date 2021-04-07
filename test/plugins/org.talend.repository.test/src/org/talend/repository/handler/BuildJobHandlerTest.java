@@ -124,7 +124,7 @@ public class BuildJobHandlerTest {
         List<ImportItem> projectRecords = importManager.populateImportingItems(resManager, true, new NullProgressMonitor());
         assertTrue(projectRecords.size() > 0);
         importManager.importItemRecords(new NullProgressMonitor(), resManager, projectRecords, true,
-                projectRecords.toArray(new ImportItem[0]), null);
+                projectRecords.toArray(new ImportItem[0]), null, false);
 
         jobWithTdqItem = (ProcessItem) getItemById(JOB_WITH_TDQ_ID);
         jobWithTdmItem = (ProcessItem) getItemById(JOB_WITH_TDM_ID);
