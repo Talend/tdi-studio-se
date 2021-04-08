@@ -165,7 +165,9 @@
 
    	<CODEGENERATION>
 	   <IMPORTS>
-	        <IMPORT NAME="xstream-1.4.15.jar" MODULE="xstream-1.4.15.jar" MVN="mvn:com.thoughtworks.xstream/xstream/1.4.15" REQUIRED_IF="(DB_VERSION=='BONITA_523') OR (((DB_VERSION=='BONITA_652')OR(DB_VERSION=='BONITA_724')) AND (CLIENT_MODE=='JAVA_CLIENT'))" />
+
+			<IMPORT NAME="xstream-1.4.16.jar" MODULE="xstream-1.4.16.jar" MVN="mvn:com.thoughtworks.xstream/xstream/1.4.16" REQUIRED_IF="(DB_VERSION=='BONITA_523') OR (((DB_VERSION=='BONITA_652')OR(DB_VERSION=='BONITA_724')) AND (CLIENT_MODE=='JAVA_CLIENT'))" />
+
 			<!-- Bonita 5.2.3 -->
 			<IMPORT NAME="bonita_client_523" MODULE="bonita-client-5.2.3.jar" MVN="mvn:org.talend.libraries/bonita-client-5.2.3/6.0.0" UrlPath="platform:/plugin/org.talend.libraries.bonita/lib/bonita-client-5.2.3.jar" REQUIRED_IF="DB_VERSION=='BONITA_523'" />
 			<IMPORT NAME="bonita_server_523" MODULE="bonita-server-5.2.3.jar" MVN="mvn:org.talend.libraries/bonita-server-5.2.3/6.0.0" UrlPath="platform:/plugin/org.talend.libraries.bonita/lib/bonita-server-5.2.3.jar" REQUIRED_IF="DB_VERSION=='BONITA_523'" />
