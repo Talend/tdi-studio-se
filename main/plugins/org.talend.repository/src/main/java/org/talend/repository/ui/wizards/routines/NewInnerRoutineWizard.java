@@ -45,4 +45,8 @@ public class NewInnerRoutineWizard extends NewRoutineWizard {
         RoutinesUtil.setInnerCodes(property, ERepositoryObjectType.ROUTINESJAR);
     }
 
+    public Property getJarProperty() {
+        return node.getObject().getProperty();
+    }
+
 }

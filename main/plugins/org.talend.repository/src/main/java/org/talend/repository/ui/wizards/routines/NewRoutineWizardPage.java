@@ -28,6 +28,9 @@ import org.talend.commons.exception.PersistenceException;
 import org.talend.core.model.properties.Property;
 import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.core.model.repository.IRepositoryViewObject;
+import org.talend.core.model.routines.CodesJarInfo;
+import org.talend.core.model.routines.RoutinesUtil;
+import org.talend.core.repository.model.ProxyRepositoryFactory;
 import org.talend.metadata.managment.ui.wizard.PropertiesWizardPage;
 import org.talend.repository.ProjectManager;
 import org.talend.repository.i18n.Messages;
@@ -123,6 +126,19 @@ public class NewRoutineWizardPage extends PropertiesWizardPage {
         if (nameStatus.getSeverity() == IStatus.OK) {
             evaluateNameInJob();
         }
+    }
+
+    @Override
+    protected List<IRepositoryViewObject> loadRepositoryViewObjectList() throws PersistenceException {
+        if (!RoutinesUtil.isInnerCodes(property)) {
+            return super.loadRepositoryViewObjectList();
+        }
+        CodesJarInfo info = CodesJarInfo.create(getJarPropery());
+        return ProxyRepositoryFactory.getInstance().getAllInnerCodes(info);
+    }
+
+    protected Property getJarPropery() {
+        return ((NewInnerRoutineWizard) getWizard()).getJarProperty();
     }
 
     @Override
