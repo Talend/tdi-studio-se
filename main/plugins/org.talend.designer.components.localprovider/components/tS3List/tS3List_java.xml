@@ -82,7 +82,7 @@
     <PARAMETER
       NAME="ASSUME_ROLE"
       FIELD="CHECK"
-      NUM_ROW="25"
+      NUM_ROW="22"
       REQUIRED="true"
       GROUP="CONNECTION_CONFIG"
       SHOW_IF="(USE_EXISTING_CONNECTION == 'false')" 
@@ -93,7 +93,7 @@
     <PARAMETER
       NAME="ARN"
       FIELD="TEXT"
-      NUM_ROW="26"
+      NUM_ROW="23"
       REQUIRED="true"
       GROUP="CONNECTION_CONFIG"
       SHOW_IF="isShow[ASSUME_ROLE] AND (ASSUME_ROLE == 'true')"
@@ -104,7 +104,7 @@
     <PARAMETER
       NAME="ROLE_SESSION_NAME"
       FIELD="TEXT"
-      NUM_ROW="27"
+      NUM_ROW="24"
       REQUIRED="true"
       GROUP="CONNECTION_CONFIG"
       SHOW_IF="isShow[ASSUME_ROLE] AND (ASSUME_ROLE == 'true')"
@@ -115,7 +115,7 @@
     <PARAMETER
       NAME="SESSION_DURATION"
       FIELD="TEXT"
-      NUM_ROW="28"
+      NUM_ROW="25"
       GROUP="CONNECTION_CONFIG"
       SHOW_IF="isShow[ASSUME_ROLE] AND (ASSUME_ROLE == 'true')"
     >
@@ -126,7 +126,7 @@
 	    NAME="REGION" 
 	    FIELD="OPENED_LIST" 
 	    RAW="true" 
-	    NUM_ROW="29"
+	    NUM_ROW="26"
 	    REQUIRED="true" 
 	    SHOW_IF="USE_EXISTING_CONNECTION == 'false'"
 	 >
@@ -158,7 +158,7 @@
     <PARAMETER
       NAME="LISTALL"
       FIELD="CHECK"
-      NUM_ROW="30"
+      NUM_ROW="27"
       REQUIRED="true"
     >
         <DEFAULT>true</DEFAULT>
@@ -167,7 +167,7 @@
     <PARAMETER
       NAME="OBJECTS_PREFIX"
       FIELD="TEXT"
-      NUM_ROW="30"
+      NUM_ROW="27"
       REQUIRED="false"
       SHOW_IF="LISTALL == 'true'"
     >
@@ -176,7 +176,7 @@
     <PARAMETER 
 		NAME="BUCKETS"
 		FIELD="TABLE"
-		NUM_ROW="31"
+		NUM_ROW="30"
 		REQUIRED="true"
 		NB_LINES="5"
 		SHOW_IF="LISTALL == 'false'"

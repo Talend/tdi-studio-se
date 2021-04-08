@@ -72,7 +72,7 @@
     <PARAMETER
       NAME="ASSUME_ROLE"
       FIELD="CHECK"
-      NUM_ROW="20"
+      NUM_ROW="17"
       REQUIRED="true"
     >
       <DEFAULT>false</DEFAULT>
@@ -81,7 +81,7 @@
     <PARAMETER
       NAME="ARN"
       FIELD="TEXT"
-      NUM_ROW="21"
+      NUM_ROW="18"
       REQUIRED="true"
       SHOW_IF="ASSUME_ROLE == 'true'"
     >
@@ -91,7 +91,7 @@
     <PARAMETER
       NAME="ROLE_SESSION_NAME"
       FIELD="TEXT"
-      NUM_ROW="22"
+      NUM_ROW="19"
       REQUIRED="true"
       SHOW_IF="ASSUME_ROLE == 'true'"
     >
@@ -101,7 +101,7 @@
     <PARAMETER
       NAME="SESSION_DURATION"
       FIELD="TEXT"
-      NUM_ROW="23"
+      NUM_ROW="20"
       SHOW_IF="ASSUME_ROLE == 'true'"
     >
       <DEFAULT>15</DEFAULT>
