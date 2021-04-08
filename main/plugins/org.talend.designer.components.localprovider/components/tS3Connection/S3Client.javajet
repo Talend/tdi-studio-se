@@ -60,15 +60,15 @@
 		<%
 		}
 
-		String settingCredentialProvider = ElementParameterParser.getValue(node, "__CREDENTIAL_PROVIDER__");
+        String settingCredentialProvider = ElementParameterParser.getValue(node, "__CREDENTIAL_PROVIDER__");
         if ("STATIC_CREDENTIALS".equals(settingCredentialProvider)) {
-	    	String passwordFieldName = "__SECRET_KEY__";
-	    %>
-    		<%@ include file="@{org.talend.designer.components.localprovider}/components/templates/password.javajet"%>
+            String passwordFieldName = "__SECRET_KEY__";
+        %>
+            <%@ include file="@{org.talend.designer.components.localprovider}/components/templates/password.javajet"%>
 
-			com.amazonaws.auth.AWSCredentials credentials_<%=cid%> = new com.amazonaws.auth.BasicAWSCredentials(<%=accessKey%>,decryptedPassword_<%=cid%>);
-			com.amazonaws.auth.AWSCredentialsProvider credentialsProvider_<%=cid%> = new com.amazonaws.auth.AWSStaticCredentialsProvider(credentials_<%=cid%>);
-		<%
+            com.amazonaws.auth.AWSCredentials credentials_<%=cid%> = new com.amazonaws.auth.BasicAWSCredentials(<%=accessKey%>,decryptedPassword_<%=cid%>);
+            com.amazonaws.auth.AWSCredentialsProvider credentialsProvider_<%=cid%> = new com.amazonaws.auth.AWSStaticCredentialsProvider(credentials_<%=cid%>);
+        <%
         } else if ("WEB_TOKEN".equals(settingCredentialProvider)) {
             String webTokenFile = ElementParameterParser.getValue(node, "__WEB_IDENTITY_TOKEN_FILE__");
             String webTokenArn = ElementParameterParser.getValue(node, "__WEB_TOKEN_ARN__");
@@ -96,15 +96,15 @@
                 .build();
         <%
         } else if ("INHERIT_CREDENTIALS".equals(settingCredentialProvider)) {
-	    %>
+        %>
             com.amazonaws.auth.AWSCredentialsProvider credentialsProvider_<%=cid%> = new com.amazonaws.auth.EC2ContainerCredentialsProviderWrapper();
-		<%
+        <%
         } else {
-	    %>
+        %>
             // Unknown credential provider is used: <%=settingCredentialProvider%>
-		<%
+        <%
         }
-	    %>
+        %>
 		<%
 		boolean encrypt = "true".equals(ElementParameterParser.getValue(node,"__ENCRYPT__"));
 
@@ -377,42 +377,42 @@
 			credentialsProvider_<%=cid%> = new com.amazonaws.auth.AWSStaticCredentialsProvider(roleSessionCredentials_<%=cid%>);
 
 		<%
-	    } // end if (assumeRole)
+		} // end if (assumeRole)
 		%>
-		<% if(encrypt) { %>
-			com.amazonaws.services.s3.AmazonS3 conn_<%=cid%> = com.amazonaws.services.s3.AmazonS3EncryptionClientBuilder.standard()
+        <% if(encrypt) { %>
+            com.amazonaws.services.s3.AmazonS3 conn_<%=cid%> = com.amazonaws.services.s3.AmazonS3EncryptionClientBuilder.standard()
                 .withEncryptionMaterials(encryptionMaterialsProvider_<%=cid%>)
             <% if("KMS_CMK".equals(key_type) && set_region) { %>
                 .withCryptoConfiguration(new com.amazonaws.services.s3.model.CryptoConfiguration()
                 .withAwsKmsRegion(com.amazonaws.regions.RegionUtils.getRegion(<%=region%>)))
-			<% } %>
-		<% } else { %>
-			com.amazonaws.services.s3.AmazonS3 conn_<%=cid%> = com.amazonaws.services.s3.AmazonS3ClientBuilder.standard()
-		<% } %>
+            <% } %>
+        <% } else { %>
+            com.amazonaws.services.s3.AmazonS3 conn_<%=cid%> = com.amazonaws.services.s3.AmazonS3ClientBuilder.standard()
+        <% } %>
 
-		<% if(useRegionEndpoint && regionEndpoint != null && !regionEndpoint.isEmpty()) { %>
-		    <%if(!set_region){%>
-		        .withEndpointConfiguration(new com.amazonaws.client.builder.AwsClientBuilder.EndpointConfiguration(<%=regionEndpoint%>,null))
-		        .withForceGlobalBucketAccessEnabled(true)
-		    <% } else { %>
-		        .withEndpointConfiguration(new com.amazonaws.client.builder.AwsClientBuilder.EndpointConfiguration(<%=regionEndpoint%>,<%=region%>))
-		    <% } %>
-	    <% } else { %>
-	        <% if(!set_region) { %>
-			    .withRegion("us-east-1") // The first region to try your request against
+        <% if(useRegionEndpoint && regionEndpoint != null && !regionEndpoint.isEmpty()) { %>
+            <%if(!set_region){%>
+                .withEndpointConfiguration(new com.amazonaws.client.builder.AwsClientBuilder.EndpointConfiguration(<%=regionEndpoint%>,null))
+                .withForceGlobalBucketAccessEnabled(true)
+            <% } else { %>
+                .withEndpointConfiguration(new com.amazonaws.client.builder.AwsClientBuilder.EndpointConfiguration(<%=regionEndpoint%>,<%=region%>))
+            <% } %>
+        <% } else { %>
+            <% if(!set_region) { %>
+                .withRegion("us-east-1") // The first region to try your request against
                 .withForceGlobalBucketAccessEnabled(true) // If a bucket is in a different region, try again in the correct region
             <% } else { %>
                 .withRegion(<%=region%>)
             <% } %>
-	    <% } %>
+        <% } %>
         <% if(enableAccelerateMode) { %>
                 .withAccelerateModeEnabled(true)
         <% } %>
                 .withCredentials(credentialsProvider_<%=cid%>)
                 .withClientConfiguration(cc_<%=cid%>)
-		<% if(useRegionEndpoint && enablePathStyleAccess) { %>
-				.enablePathStyleAccess()
-		<% } %>
+        <% if(useRegionEndpoint && enablePathStyleAccess) { %>
+                .enablePathStyleAccess()
+        <% } %>
                 .build();
 		<%
 		if(isLog4jEnabled){
