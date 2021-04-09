@@ -278,6 +278,8 @@ public class TosTokenCollector extends AbstractTokenCollector {
                                 : new JSONArray();
                         component_names.put(NODE_CUSTOM_CAMEL_COMPONENTS, customCamelComponentsArray);
                         
+                        String library = "";
+                        String useLibrary = "";
                         EList elementParameter = node.getElementParameter();
                         for (Object obj : elementParameter) {
                             if (obj instanceof ElementParameterType) {
@@ -289,12 +291,24 @@ public class TosTokenCollector extends AbstractTokenCollector {
                                         record(camelComponentsArray, camelComponentMap, value.toLowerCase());
                                     }
                                 } else if (ep.getName().equalsIgnoreCase("LIBRARY")) {
-                                    String mvnUrl = ep.getValue();
-                                    mvnUrl = uncloakQuotation(mvnUrl);
-                                    MavenArtifact artifact = MavenUrlHelper.parseMvnUrl(mvnUrl);
-                                    String fileName = artifact.getFileName();
-                                    record(customCamelComponentsArray, customCamelComponentMap, fileName);
+                                    library = ep.getValue();
+                                } else if (ep.getName().equalsIgnoreCase("USE_CUSTOM_COMPONENT")) {
+                                    useLibrary = ep.getValue();
                                 }
+                            }
+                        }
+
+                        if (Boolean.toString(true).equalsIgnoreCase(useLibrary) && !library.isEmpty()) {
+                            library = uncloakQuotation(library);
+                            MavenArtifact artifact = null;
+                            try {
+                                artifact = MavenUrlHelper.parseMvnUrl(library);
+                            } catch (Exception e) {
+                            }
+
+                            if (artifact != null) {
+                                String fileName = artifact.getFileName();
+                                record(customCamelComponentsArray, customCamelComponentMap, fileName);
                             }
                         }
                     }
