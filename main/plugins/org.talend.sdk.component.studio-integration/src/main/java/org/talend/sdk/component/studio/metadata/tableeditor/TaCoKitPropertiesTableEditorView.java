@@ -13,12 +13,14 @@
 package org.talend.sdk.component.studio.metadata.tableeditor;
 
 import java.util.Arrays;
+import java.util.Map;
 
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.ComboBoxCellEditor;
 import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Table;
+import org.talend.commons.ui.runtime.swt.tableviewer.data.ModifiedObjectInfo;
 import org.talend.commons.ui.swt.tableviewer.TableViewerCreator;
 import org.talend.core.model.process.IElement;
 import org.talend.core.model.process.IElementParameter;
@@ -36,6 +38,33 @@ public class TaCoKitPropertiesTableEditorView<B> extends PropertiesTableEditorVi
     public TaCoKitPropertiesTableEditorView(Composite parentComposite, int mainCompositeStyle, PropertiesTableEditorModel model,
             boolean toolbarVisible, boolean labelVisible) {
         super(parentComposite, mainCompositeStyle, model, toolbarVisible, labelVisible);
+    }
+
+    @Override
+    protected Object getComboBoxCellOriginalTypedValue(final TableViewerCreator<B> tableViewerCreator, IElement element,
+            IElementParameter currentParam, CellEditor cellEditor, String currentKey, Object cellEditorTypedValue) {
+        Object returnedValue = null;
+        if (cellEditorTypedValue != null && cellEditorTypedValue instanceof Integer) {
+            int index = (Integer) cellEditorTypedValue;
+            String[] namesSet = ((CCombo) cellEditor.getControl()).getItems();
+            if (namesSet.length > 0 && index > -1 && index < namesSet.length) {
+                returnedValue = namesSet[index];
+            } else {
+                returnedValue = null;
+            }
+            // Update
+            if (namesSet.length > 0 && returnedValue != null && currentKey != null) {
+                ModifiedObjectInfo modifiedObjectInfo = tableViewerCreator.getModifiedObjectInfo();
+                Object bean = modifiedObjectInfo.getCurrentModifiedBean();
+                Object existedValue = ((Map<String, Object>) bean).get(currentKey);
+                if (existedValue != null && !returnedValue.equals(existedValue)) {
+                    ((Map<String, Object>) bean).put(currentKey, null);
+                }
+            }
+        } else {
+            returnedValue = null;
+        }
+        return returnedValue;
     }
 
     @Override

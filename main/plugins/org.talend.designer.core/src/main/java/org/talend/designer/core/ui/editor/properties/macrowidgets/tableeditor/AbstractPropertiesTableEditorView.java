@@ -45,6 +45,9 @@ public abstract class AbstractPropertiesTableEditorView<B> extends AbstractDataT
         super(parentComposite, mainCompositeStyle);
     }
 
+    protected abstract Object getComboBoxCellOriginalTypedValue(final TableViewerCreator<B> tableViewerCreator, IElement element,
+            IElementParameter currentParam, CellEditor cellEditor, String currentKey, Object cellEditorTypedValue);
+
     protected abstract Object getComboBoxCellEditorTypedValue(final TableViewerCreator<B> tableViewerCreator, IElement element,
             IElementParameter currentParam, CellEditor cellEditor, String currentKey, Object originalTypedValue);
 

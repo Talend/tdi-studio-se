@@ -232,19 +232,8 @@ public class PropertiesTableEditorView<B> extends AbstractPropertiesTableEditorV
 
                         @Override
                         public Object getOriginalTypedValue(CellEditor cellEditor, Object cellEditorTypedValue) {
-                            Object returnedValue = null;
-                            if (cellEditorTypedValue != null && cellEditorTypedValue instanceof Integer) {
-                                int index = (Integer) cellEditorTypedValue;
-                                String[] namesSet = ((CCombo) cellEditor.getControl()).getItems();
-                                if (namesSet.length > 0 && index > -1 && index < namesSet.length) {
-                                    returnedValue = namesSet[index];
-                                } else {
-                                    returnedValue = null;
-                                }
-                            } else {
-                                returnedValue = null;
-                            }
-                            return returnedValue;
+                            return getComboBoxCellOriginalTypedValue(tableViewerCreator, element, copyOfTmpParam, cellEditor,
+                                    items[curCol], cellEditorTypedValue);
                         };
 
                         @Override
@@ -1071,6 +1060,24 @@ public class PropertiesTableEditorView<B> extends AbstractPropertiesTableEditorV
             }
         }
         return jarPath;
+    }
+
+    @Override
+    protected Object getComboBoxCellOriginalTypedValue(final TableViewerCreator<B> tableViewerCreator, IElement element,
+            IElementParameter currentParam, CellEditor cellEditor, String currentKey, Object cellEditorTypedValue) {
+        Object returnedValue = null;
+        if (cellEditorTypedValue != null && cellEditorTypedValue instanceof Integer) {
+            int index = (Integer) cellEditorTypedValue;
+            String[] namesSet = ((CCombo) cellEditor.getControl()).getItems();
+            if (namesSet.length > 0 && index > -1 && index < namesSet.length) {
+                returnedValue = namesSet[index];
+            } else {
+                returnedValue = null;
+            }
+        } else {
+            returnedValue = null;
+        }
+        return returnedValue;
     }
 
     @Override
