@@ -79,5 +79,35 @@
     "component":"tJDBCSP",
     "category":"DI",
     "family":""
+},
+{
+    "component_delegate":"tDBOutputBulk",
+    "component":"tJDBCOutputBulk",
+    "category":"DI",
+    "family":""
+},
+{
+    "component_delegate":"tDBOutputBulkExec",
+    "component":"tJDBCOutputBulkExec",
+    "category":"DI",
+    "family":"",
+    "parameter":{
+        "mapping":{
+            "connection.userPassword.userId":"USERNAME",
+            "connection.userPassword.password":"PASSWORD",
+        }
+     }
+},
+{
+    "component_delegate":"tDBBulkExec",
+    "component":"tJDBCBulkExec",
+    "category":"DI",
+    "family":"",
+    "parameter":{
+        "mapping":{
+            "connection.userPassword.userId":"USERNAME",
+            "connection.userPassword.password":"PASSWORD",
+        }
+     }
 }
 ]

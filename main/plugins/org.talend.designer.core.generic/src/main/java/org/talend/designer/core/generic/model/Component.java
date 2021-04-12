@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2021 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -1268,7 +1268,7 @@ public class Component extends AbstractBasicComponent {
             moduleNeeded = new ModuleNeeded(getName(), "", true, "mvn:org.slf4j/slf4j-log4j12/1.7.25");
             componentImportNeedsList.add(moduleNeeded);
         }
-        moduleNeeded = new ModuleNeeded(getName(), "", true, "mvn:org.talend.libraries/talend-codegen-utils/0.28.0");
+        moduleNeeded = new ModuleNeeded(getName(), "", true, "mvn:org.talend.libraries/talend-codegen-utils/0.29.0");
         componentImportNeedsList.add(moduleNeeded);
         return componentImportNeedsList;
     }

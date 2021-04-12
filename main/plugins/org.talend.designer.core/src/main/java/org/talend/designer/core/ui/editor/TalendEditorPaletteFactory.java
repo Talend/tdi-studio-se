@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2021 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -1496,6 +1496,9 @@ public final class TalendEditorPaletteFactory {
                 String helpKeyword = keyword;
                 try {
                     TalendPaletteSearchIndex searchIndex = TalendPaletteSearchIndex.getInstance();
+                    if (!searchIndex.exists()) {
+                        return Status.OK_STATUS;
+                    }
                     LocalSearchManager localSearchManager = BaseHelpSystem.getLocalSearchManager();
                     // if not work or null, maybe should throw a warn to inform user and help us trace
                     // if (searchIndex != null && localSearchManager != null) {

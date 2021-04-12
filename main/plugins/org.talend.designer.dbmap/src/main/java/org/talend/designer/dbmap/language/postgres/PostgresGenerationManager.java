@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2021 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -22,7 +22,6 @@ import org.talend.core.model.metadata.IMetadataTable;
 import org.talend.core.model.process.IConnection;
 import org.talend.core.model.process.IElementParameter;
 import org.talend.core.model.process.INode;
-import org.talend.core.model.utils.ContextParameterUtils;
 import org.talend.core.model.utils.TalendTextUtils;
 import org.talend.designer.dbmap.DbMapComponent;
 import org.talend.designer.dbmap.external.data.ExternalDbMapData;
@@ -256,11 +255,6 @@ public class PostgresGenerationManager extends DbGenerationManager {
             }
         }
         return sb.toString();
-    }
-
-    private boolean isVariable(String expression) {
-        return !StringUtils.isEmpty(expression)
-                && (ContextParameterUtils.isContainContextParam(expression) || parser.getGlobalMapSet(expression).size() > 0);
     }
 
     private void generateSubQuery(DbMapComponent component, StringBuffer sb, INode source, IConnection iconn, String tableName,

@@ -195,6 +195,10 @@
                <instanceof
                      value="org.talend.repository.model.RepositoryNode">
                </instanceof>
+               <test
+                     forcePluginActivation="true"
+                     property="org.talend.repository.node.code.isNeedShowCustomJarNode">
+               </test>
                <or>
                   <test
                         forcePluginActivation="true"
@@ -440,7 +444,7 @@
             class="org.talend.repository.view.di.viewer.tester.RoutinesJarNodeTester"
             id="org.talend.repository.node.tester.code.routinesjar"
             namespace="org.talend.repository.node.code"
-            properties="isRoutinesJar"
+            properties="isRoutinesJar,isNeedShowCustomJarNode"
             type="org.talend.repository.model.RepositoryNode">
       </propertyTester>
       <propertyTester

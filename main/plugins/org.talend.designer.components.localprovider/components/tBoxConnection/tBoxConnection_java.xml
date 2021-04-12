@@ -72,13 +72,13 @@
                 MODULE="boxjavalibv2-v3.0.10.jar" MVN="mvn:net.box/boxjavalibv2/v3.0.10"
                 REQUIRED="true" />
             <IMPORT NAME="jackson-core"
-                MODULE="jackson-core-2.10.1.jar" MVN="mvn:com.fasterxml.jackson.core/jackson-core/2.10.1" 
+                MODULE="jackson-core-2.11.4.jar" MVN="mvn:com.fasterxml.jackson.core/jackson-core/2.11.4" 
                 REQUIRED="true" />
             <IMPORT NAME="jackson-databind"
-                MODULE="jackson-databind-2.10.1.jar" MVN="mvn:com.fasterxml.jackson.core/jackson-databind/2.10.1" 
+                MODULE="jackson-databind-2.11.4.jar" MVN="mvn:com.fasterxml.jackson.core/jackson-databind/2.11.4" 
                 REQUIRED="true" />
             <IMPORT NAME="jackson-annotations"
-                MODULE="jackson-annotations-2.10.1.jar" MVN="mvn:com.fasterxml.jackson.core/jackson-annotations/2.10.1" 
+                MODULE="jackson-annotations-2.11.4.jar" MVN="mvn:com.fasterxml.jackson.core/jackson-annotations/2.11.4" 
                 REQUIRED="true" />
             <IMPORT NAME="apache-http-client"
                 MODULE="httpclient-4.5.12.jar" MVN="mvn:org.apache.httpcomponents/httpclient/4.5.12" 

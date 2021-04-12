@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2021 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -56,6 +56,7 @@ import org.talend.core.model.properties.Project;
 import org.talend.core.model.properties.Property;
 import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.core.model.repository.IRepositoryViewObject;
+import org.talend.core.model.routines.CodesJarInfo;
 import org.talend.core.model.utils.JavaResourcesHelper;
 import org.talend.core.repository.constants.FileConstants;
 import org.talend.core.runtime.CoreRuntimePlugin;
@@ -70,7 +71,6 @@ import org.talend.designer.maven.tools.BuildCacheManager;
 import org.talend.designer.runprocess.IProcessor;
 import org.talend.designer.runprocess.ProcessorUtilities;
 import org.talend.model.bridge.ReponsitoryContextBridge;
-import org.talend.repository.ProjectManager;
 import org.talend.repository.documentation.ExportFileResource;
 import org.talend.repository.local.ExportItemUtil;
 import org.talend.repository.model.IProxyRepositoryFactory;
@@ -249,16 +249,13 @@ public class BuildJobHandler extends AbstractBuildJobHandler {
         items.add(processItem);
         ExportItemUtil exportItemUtil = new ExportItemUtil();
         if (withDependencies) {
+            IProxyRepositoryFactory factory = CoreRuntimePlugin.getInstance().getProxyRepositoryFactory();
             Collection<IRepositoryViewObject> allProcessDependencies = ProcessUtils.getAllProcessDependencies(items);
             for (IRepositoryViewObject repositoryObject : allProcessDependencies) {
                 items.add(repositoryObject.getProperty().getItem());
                 if (ERepositoryObjectType.getAllTypesOfCodesJar().contains(repositoryObject.getRepositoryObjectType())) {
                     Property codeJarProperty = repositoryObject.getProperty();
-                    org.talend.core.model.general.Project project = ProjectManager.getInstance().getProjectFromProjectTechLabel(
-                            ProjectManager.getInstance().getProject(codeJarProperty).getTechnicalLabel());
-                    IProxyRepositoryFactory factory = CoreRuntimePlugin.getInstance().getProxyRepositoryFactory();
-                    List<IRepositoryViewObject> allInnerCodes = factory.getAllInnerCodes(project,
-                            repositoryObject.getRepositoryObjectType(), codeJarProperty);
+                    List<IRepositoryViewObject> allInnerCodes = factory.getAllInnerCodes(CodesJarInfo.create(codeJarProperty));
                     if (allInnerCodes != null && !allInnerCodes.isEmpty()) {
                         allInnerCodes.stream().forEach(codeObject -> items.add(codeObject.getProperty().getItem()));
                     }

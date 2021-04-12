@@ -9,7 +9,7 @@ import javax.wsdl.Binding;
 import javax.wsdl.Definition;
 //============================================================================
 //
-//Copyright (C) 2006-2019 Talend Inc. - www.talend.com
+//Copyright (C) 2006-2021 Talend Inc. - www.talend.com
 //
 //This source code is available under agreement available at
 //%InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt

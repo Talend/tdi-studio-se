@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2021 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -311,7 +311,7 @@ public class LoginComposite extends Composite {
         columnFormDatas = new ArrayList<FormData>();
 
         Composite rightPartComposite = null;
-        if (!PluginChecker.isSVNProviderPluginLoaded()) {
+        if (!PluginChecker.isRemoteProviderPluginLoaded()) {
             createTosRepositoryArea(formBody);
             // createSeparator(formBody);
             createTosActionArea(formBody);
@@ -343,7 +343,7 @@ public class LoginComposite extends Composite {
         recordFirstConnection();
         fillContents();
         addListeners();
-        if (PluginChecker.isSVNProviderPluginLoaded()) {
+        if (PluginChecker.isRemoteProviderPluginLoaded()) {
             manageViewer.getControl().setEnabled(true);
             manageProjectsButton.setEnabled(true);
         }
@@ -359,7 +359,7 @@ public class LoginComposite extends Composite {
             log.error(e);
         }
         displayPasswordComposite();
-        if (!PluginChecker.isSVNProviderPluginLoaded()) {
+        if (!PluginChecker.isRemoteProviderPluginLoaded()) {
             initConnection();
         }
     }
@@ -396,7 +396,7 @@ public class LoginComposite extends Composite {
     }
 
     private void displayPasswordComposite() {
-        if (PluginChecker.isSVNProviderPluginLoaded()) {
+        if (PluginChecker.isRemoteProviderPluginLoaded()) {
             if (getConnection() != null) {
                 boolean local = RepositoryConstants.REPOSITORY_LOCAL_ID.equals(getConnection().getRepositoryId());
                 if (local) {
@@ -442,7 +442,7 @@ public class LoginComposite extends Composite {
     }
 
     private ManageItem[] getManageElements() {
-        boolean tis = PluginChecker.isSVNProviderPluginLoaded();
+        boolean tis = PluginChecker.isRemoteProviderPluginLoaded();
         boolean isSVNProviderPluginLoadedRemote = isSVNProviderPluginLoadedRemote();
         boolean hasConnection = (getConnection() != null);
         List<ManageItem> toReturn = new ArrayList<ManageItem>();
@@ -875,7 +875,7 @@ public class LoginComposite extends Composite {
 
         FormData data = new FormData();
         comfortColumnWidth(tosProjectLabel, data);
-        if (PluginChecker.isSVNProviderPluginLoaded()) {
+        if (PluginChecker.isRemoteProviderPluginLoaded()) {
             data.top = new FormAttachment(0, 12);
         } else {
             data.top = new FormAttachment(0, 10);
@@ -906,7 +906,7 @@ public class LoginComposite extends Composite {
 
         // open button
         data = new FormData();
-        if (PluginChecker.isSVNProviderPluginLoaded()) {
+        if (PluginChecker.isRemoteProviderPluginLoaded()) {
             data.top = new FormAttachment(projectViewer.getControl(), HORIZONTAL_SPACE);
 
         } else {
@@ -1291,7 +1291,7 @@ public class LoginComposite extends Composite {
 
     private boolean isSVNProviderPluginLoadedRemote() {
         boolean isRemote = false;
-        if (PluginChecker.isSVNProviderPluginLoaded()) {
+        if (PluginChecker.isRemoteProviderPluginLoaded()) {
             StructuredSelection selection = (StructuredSelection) connectionsViewer.getSelection();
             Object firstElement = selection.getFirstElement();
             if (firstElement instanceof ConnectionBean) {
@@ -1314,7 +1314,7 @@ public class LoginComposite extends Composite {
         if (getConnection() != null) {
             final boolean localConn = getConnection().getRepositoryId() == null
                     || getConnection().getRepositoryId().equals(RepositoryConstants.REPOSITORY_LOCAL_ID);
-            boolean visible = PluginChecker.isSVNProviderPluginLoaded() && !localConn;
+            boolean visible = PluginChecker.isRemoteProviderPluginLoaded() && !localConn;
             if (passwordLabel != null) {
                 passwordLabel.setVisible(visible);
             }
@@ -1590,7 +1590,7 @@ public class LoginComposite extends Composite {
 
             });
         }
-        if (PluginChecker.isSVNProviderPluginLoaded()) {
+        if (PluginChecker.isRemoteProviderPluginLoaded()) {
 
             ModifyListener modifyListener = new ModifyListener() {
 
@@ -2044,12 +2044,12 @@ public class LoginComposite extends Composite {
             if (fillProjectsBtn != null) {
                 fillProjectsBtn.setEnabled(true);
             }
-            if (PluginChecker.isSVNProviderPluginLoaded() && branchesViewer != null) {
+            if (PluginChecker.isRemoteProviderPluginLoaded() && branchesViewer != null) {
                 branchesViewer.getControl().setEnabled(true);
             }
             restartBut.setVisible(false);
         }
-        if (PluginChecker.isSVNProviderPluginLoaded() && !localConn) {
+        if (PluginChecker.isRemoteProviderPluginLoaded() && !localConn) {
             manageViewer.getControl().setEnabled(true);
             manageProjectsButton.setEnabled(true);
         }
@@ -2354,7 +2354,7 @@ public class LoginComposite extends Composite {
     public ConnectionBean getConnection() {
         IStructuredSelection sel = (IStructuredSelection) connectionsViewer.getSelection();
         ConnectionBean firstElement = (ConnectionBean) sel.getFirstElement();
-        if (!PluginChecker.isSVNProviderPluginLoaded()) {
+        if (!PluginChecker.isRemoteProviderPluginLoaded()) {
             if (bean == null) {
                 bean = ConnectionBean.getDefaultConnectionBean();
                 bean.setUser("test@talend.com"); //$NON-NLS-1$

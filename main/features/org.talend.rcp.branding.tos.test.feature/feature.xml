@@ -13,7 +13,6 @@
     <import plugin="org.talend.designer.core" version="0.0.0" match="greaterOrEqual"/>
     <import plugin="org.talend.designer.mapper" version="0.0.0" match="greaterOrEqual"/>
     <import plugin="org.talend.designer.runprocess" version="0.0.0" match="greaterOrEqual"/>
-    <import plugin="org.talend.model.migration" version="0.0.0" match="greaterOrEqual"/>
     <import plugin="org.talend.repository" version="0.0.0" match="greaterOrEqual"/>
     <import plugin="org.talend.utils" version="0.0.0" match="greaterOrEqual"/>
   </requires>  
@@ -42,7 +41,6 @@
   <plugin id="org.talend.metadata.managment.test" download-size="0" install-size="0" version="0.0.0" fragment="true" unpack="false"/>
   <plugin id="org.talend.metadata.managment.ui.test" download-size="0" install-size="0" version="0.0.0" fragment="true" unpack="false"/>
   <plugin id="org.talend.migrationTool.test" download-size="0" install-size="0" version="0.0.0" fragment="true" unpack="false"/>
-  <plugin id="org.talend.model.migration.test" download-size="0" install-size="0" version="0.0.0" fragment="true" unpack="false"/>
   <plugin id="org.talend.model.test" download-size="0" install-size="0" version="0.0.0" fragment="true" unpack="false"/>
   <plugin id="org.talend.repository.generic.test" download-size="0" install-size="0" version="0.0.0" fragment="true" unpack="false"/>
   <plugin id="org.talend.repository.items.importexport.test" download-size="0" install-size="0" version="0.0.0" fragment="true" unpack="false"/>

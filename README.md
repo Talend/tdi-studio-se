@@ -55,6 +55,6 @@ See the [CONTRIBUTORS.md](./CONTRIBUTORS.md) file for details.
 
 ## License
 
-Copyright (c) 2006-2019 Talend
+Copyright (c) 2006-2021 Talend
 
 Licensed under the Apache V2 License

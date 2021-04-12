@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2021 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -879,14 +879,23 @@ public class RepositoryService implements IRepositoryService, IRepositoryContext
     }
 
     private void initProviderService() {
-        if (PluginChecker.isSVNProviderPluginLoaded()) {
+        if (PluginChecker.isRemoteProviderPluginLoaded()) {
+            GlobalServiceRegister gsr = GlobalServiceRegister.getDefault();
             try {
-                svnProviderService = (ISVNProviderService) GlobalServiceRegister.getDefault()
-                        .getService(ISVNProviderService.class);
-                gitProviderService = (IGITProviderService) GlobalServiceRegister.getDefault()
-                        .getService(IGITProviderService.class);
-            } catch (RuntimeException e) {
-                // nothing to do
+                if (gsr.isServiceRegistered(ISVNProviderService.class)) {
+                    svnProviderService = (ISVNProviderService) GlobalServiceRegister.getDefault()
+                            .getService(ISVNProviderService.class);
+                }
+            } catch (Exception e) {
+                ExceptionHandler.process(e);
+            }
+            try {
+                if (gsr.isServiceRegistered(IGITProviderService.class)) {
+                    gitProviderService = (IGITProviderService) GlobalServiceRegister.getDefault()
+                            .getService(IGITProviderService.class);
+                }
+            } catch (Exception e) {
+                ExceptionHandler.process(e);
             }
         }
         isInitedProviderService = true;

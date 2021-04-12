@@ -400,6 +400,17 @@
    </extension>
    <extension
          point="org.talend.core.migrationTask">
+         
+  <projecttask
+        beforeLogon="true"
+        breaks="7.3.1"
+        class="org.talend.repository.model.migration.spark.AddKafkaExtraInfo"
+        description="Add key, partition and topic to the output schema of tKafkaInput components"
+        id="org.talend.repository.model.migration.spark.AddKafkaExtraInfo"
+        name="AddKafkaExtraInfo"
+        version="7.3.1">                     
+  </projecttask>
+  
   <projecttask
         beforeLogon="true"
         breaks="5.1.1"
@@ -1364,15 +1375,6 @@
              description="Add Routine Dependencies for job"
              id="org.talend.repository.model.migration.AddRoutineDependenciesMigrationTask"
              name="Add Routine Dependencies"
-             version="5.1.2">
-       </projecttask>
-       <projecttask
-             beforeLogon="false"
-             breaks="5.1.1"
-             class="org.talend.repository.model.migration.MergeTosMetadataMigrationTask"
-             description="merge metadata"
-             id="org.talend.repository.MergeTosMetadataMigrationTask"
-             name="MergeTosMetadataMigrationTask"
              version="5.1.2">
        </projecttask>
        <projecttask
@@ -3484,6 +3486,15 @@
                name="TeradataTPTAddDatabaseNameToOptionalTablesMigrationTask"
                version="7.3.1">
        </projecttask>
+       <projecttask
+          beforeLogon="true"
+          breaks="7.3.0"
+          class="org.talend.repository.model.migration.UpdateDaikonCryptoUtilsMigrationTask"
+          id="org.talend.repository.model.migration.UpdateDaikonCryptoUtilsMigrationTask"
+          description="Update Daikon Crypto Utils"
+          name="UpdateDaikonCryptoUtilsMigrationTask"
+          version="7.3.1">
+       </projecttask>
 	   <projecttask
                beforeLogon="false"
                breaks="7.3.0"
@@ -3584,12 +3595,39 @@
              version="7.3.1">
        </projecttask>
        <projecttask
+             beforeLogon="false"
+             breaks="7.4.0"
+             class="org.talend.repository.model.migration.ChangeGreenplumDefaultDriverMigrationTask"
+             description="change Greenplum default driver"
+             id="org.talend.repository.model.migration.ChangeGreenplumDefaultDriverMigrationTask"
+             name="ChangeGreenplumDefaultDriverMigrationTask"
+             version="7.4.1">
+       </projecttask>
+       <projecttask
               beforeLogon="false"
               breaks="7.3.0"
               class="org.talend.repository.model.migration.FixUpgradePasswordEncryptionAlg4ItemMigrationTask"
               description="Fix upgrading password encryption Alg 4 item migration task"
               id="org.talend.repository.model.migration.FixUpgradePasswordEncryptionAlg4ItemMigrationTask"
               name="FixUpgradePasswordEncryptionAlg4ItemMigrationTask"
+              version="7.3.1">
+        </projecttask>
+        <projecttask
+             beforeLogon="false"
+             breaks="7.4.0"
+             class="org.talend.repository.model.migration.SpecialUpdateELTEnableColumnAliasMigrationTask"
+             description="Update ELT to enable oracle column alias"
+             id="org.talend.repository.model.migration.SpecialUpdateELTEnableColumnAliasMigrationTask"
+             name="SpecialUpdateELTEnableColumnAliasMigrationTask"
+             version="7.4.1">
+	    </projecttask>
+		<projecttask
+              beforeLogon="false"
+              breaks="7.3.0"
+              class="org.talend.repository.model.migration.RemoveDefaultProxyIPTask"
+              description="Replace the unUsed proxy IP to 127.0.0.1"
+              id="org.talend.repository.model.migration.RemoveDefaultProxyIPTask"
+              name="RemoveDefaultProxyIPTask"
               version="7.3.1">
         </projecttask>
    </extension>

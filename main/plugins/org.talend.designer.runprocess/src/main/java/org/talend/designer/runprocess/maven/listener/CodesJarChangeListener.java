@@ -37,6 +37,7 @@ import org.talend.core.repository.utils.XmiResourceManager;
 import org.talend.core.runtime.process.ITalendProcessJavaProject;
 import org.talend.core.utils.CodesJarResourceCache;
 import org.talend.designer.maven.tools.AggregatorPomsHelper;
+import org.talend.designer.maven.tools.BuildCacheManager;
 import org.talend.designer.maven.tools.CodesJarM2CacheManager;
 import org.talend.designer.maven.utils.CodesJarMavenUtil;
 import org.talend.designer.runprocess.IRunProcessService;
@@ -69,11 +70,14 @@ public class CodesJarChangeListener implements PropertyChangeListener {
                         caseImport(propertyName, newValue);
                     } else if (propertyName.equals(ERepositoryActionName.RESTORE.getName())) {
                         caseRestore(newValue);
+                    } else if (propertyName.equals(ERepositoryActionName.COPY.getName())) {
+                        caseCopy(newValue);
                     }
                 } catch (Exception e) {
                     ExceptionHandler.process(e);
                 }
             }
+
         };
         workUnit.setAvoidUnloadResources(true);
         ProxyRepositoryFactory.getInstance().executeRepositoryWorkUnit(workUnit);
@@ -82,20 +86,28 @@ public class CodesJarChangeListener implements PropertyChangeListener {
     private void casePropertiesChange(Object oldValue, Object newValue) throws Exception {
         if (oldValue instanceof String[] && newValue instanceof Property) {
             Property property = (Property) newValue;
-            if (!needUpdate(property.getItem())) {
-                return;
+            if (needUpdate(property.getItem())) {
+                String[] oldFields = (String[]) oldValue;
+                if (oldFields.length == 0) {
+                    return;
+                }
+                String oldName = oldFields[0];
+                String oldVersion = oldFields[1];
+                CodesJarResourceCache.updateCache(null, oldName, oldVersion, property);
+                ERepositoryObjectType type = ERepositoryObjectType.getItemType(property.getItem());
+                IFolder folder = new AggregatorPomsHelper().getCodeFolder(type).getFolder(oldName);
+                RenameResourceChange change = new RenameResourceChange(folder.getFullPath(), property.getLabel());
+                change.perform(new NullProgressMonitor());
+                TalendJavaProjectManager.deleteTalendCodesJarProject(type,
+                        ProjectManager.getInstance().getProject(property).getTechnicalLabel(), oldName, true);
+                boolean isLabelChanged = !property.getLabel().equals(oldName);
+                if (isLabelChanged) {
+                    CodesJarM2CacheManager.deleteCodesJarProjectCache(CodesJarInfo.create(property));
+                }
+                CodesJarM2CacheManager.updateCodesJarProject(CodesJarInfo.create(property), isLabelChanged);
+            } else if (RoutinesUtil.isInnerCodes(property)) {
+                updateModifiedDateForCodesJar(property.getItem());
             }
-            String[] oldFields = (String[]) oldValue;
-            String oldName = oldFields[0];
-            String oldVersion = oldFields[1];
-            CodesJarResourceCache.updateCache(null, oldName, oldVersion, property);
-            ERepositoryObjectType type = ERepositoryObjectType.getItemType(property.getItem());
-            IFolder folder = new AggregatorPomsHelper().getCodeFolder(type).getFolder(oldName);
-            RenameResourceChange change = new RenameResourceChange(folder.getFullPath(), property.getLabel());
-            change.perform(new NullProgressMonitor());
-            TalendJavaProjectManager.deleteTalendCodesJarProject(type,
-                    ProjectManager.getInstance().getProject(property).getTechnicalLabel(), oldName, true);
-            CodesJarM2CacheManager.updateCodesJarProject(property, !property.getLabel().equals(oldName));
         }
     }
 
@@ -108,7 +120,9 @@ public class CodesJarChangeListener implements PropertyChangeListener {
                     updateModifiedDateForCodesJar(property.getItem());
                 } else if (needUpdate(property.getItem())) {
                     CodesJarResourceCache.removeCache(property);
-                    TalendJavaProjectManager.deleteTalendCodesJarProject(property, true);
+                    CodesJarInfo info = CodesJarInfo.create(property);
+                    CodesJarM2CacheManager.deleteCodesJarProjectCache(info);
+                    TalendJavaProjectManager.deleteTalendCodesJarProject(info, true);
                 }
             }
         }
@@ -145,6 +159,18 @@ public class CodesJarChangeListener implements PropertyChangeListener {
         }
     }
 
+    private void caseCopy(Object newValue) throws Exception {
+        if (newValue instanceof RoutineItem) {
+            RoutineItem item = (RoutineItem) newValue;
+            if (RoutinesUtil.isInnerCodes(item.getProperty())) {
+                updateModifiedDateForCodesJar(item);
+            }
+            // FIXME after optimized global routines/beans m2 cache, should update cache status here.
+            BuildCacheManager.getInstance().clearCodesCache(ERepositoryObjectType.getItemType(item));
+            // buildCodeProject(item);
+        }
+    }
+
     private boolean needUpdate(Item item) {
         return item instanceof RoutinesJarItem;
     }
@@ -156,6 +182,9 @@ public class CodesJarChangeListener implements PropertyChangeListener {
 
         RoutineItem codeItem = (RoutineItem) property.getItem();
         CodesJarInfo info = CodesJarResourceCache.getCodesJarByInnerCode(codeItem);
+        if (info == null) {
+            return;
+        }
         if (GlobalServiceRegister.getDefault().isServiceRegistered(IRunProcessService.class)) {
             IRunProcessService runProcessService = GlobalServiceRegister.getDefault().getService(IRunProcessService.class);
             if (runProcessService != null) {
@@ -173,10 +202,7 @@ public class CodesJarChangeListener implements PropertyChangeListener {
             }
         }
 
-        if (info.getProperty() != null) {
-            CodesJarM2CacheManager.updateCodesJarProject(info.getProperty());
-        }
-
+        CodesJarM2CacheManager.updateCodesJarProject(info, false);
     }
 
     private void updateModifiedDateForCodesJar(Item item) throws Exception {
@@ -184,10 +210,32 @@ public class CodesJarChangeListener implements PropertyChangeListener {
             RoutineItem innerCodeItem = (RoutineItem) item;
             CodesJarInfo info = CodesJarResourceCache.getCodesJarByInnerCode(innerCodeItem);
             Project project = ProjectManager.getInstance().getProjectFromProjectTechLabel(info.getProjectTechName());
-            IRepositoryViewObject obj = ProxyRepositoryFactory.getInstance().getLastVersion(project, info.getProperty().getId());
-            Property codesJarProperty = obj.getProperty();
-            new XmiResourceManager().saveResource(codesJarProperty.eResource());
-            CodesJarResourceCache.addToCache(codesJarProperty);
+            IRepositoryViewObject obj = ProxyRepositoryFactory.getInstance().getLastVersion(project, info.getId());
+            if (obj != null) {
+                Property codesJarProperty = obj.getProperty();
+                new XmiResourceManager().saveResource(codesJarProperty.eResource());
+                CodesJarResourceCache.addToCache(codesJarProperty);
+            }
+        }
+    }
+
+    private void buildCodeProject(Item item) throws Exception {
+        if (item instanceof RoutineItem) {
+            RoutineItem routineItem = (RoutineItem) item;
+            if (RoutinesUtil.isInnerCodes(routineItem.getProperty())) {
+                CodesJarInfo info = CodesJarResourceCache.getCodesJarByInnerCode(routineItem);
+                if (info != null) {
+                    ITalendProcessJavaProject project = TalendJavaProjectManager.getTalendCodeJavaProject(info.getType(),
+                            info.getProjectTechName());
+                    project.buildModules(new NullProgressMonitor(), null, null);
+                }
+            } else {
+                ERepositoryObjectType type = ERepositoryObjectType.getItemType(routineItem);
+                if (type != null) {
+                    ITalendProcessJavaProject project = TalendJavaProjectManager.getTalendCodeJavaProject(type);
+                    project.buildModules(new NullProgressMonitor(), null, null);
+                }
+            }
         }
     }
 

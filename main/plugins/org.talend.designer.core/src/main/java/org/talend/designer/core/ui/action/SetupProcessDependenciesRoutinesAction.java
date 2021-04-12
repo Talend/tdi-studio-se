@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2021 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -100,9 +100,6 @@ public class SetupProcessDependenciesRoutinesAction extends AContextualAction {
                     && ProxyRepositoryFactory.getInstance().getStatus(node.getObject()) == ERepositoryStatus.DELETED) {
                 canWork = false;
             }
-            if (canWork && !ProjectManager.getInstance().isInCurrentMainProject(node)) {
-                canWork = false;
-            }
 
             // If the editProcess action canwork is true, then detect that the job version is the latest verison or not.
             if (canWork) {
@@ -125,7 +122,8 @@ public class SetupProcessDependenciesRoutinesAction extends AContextualAction {
         ProxyRepositoryFactory repFactory = ProxyRepositoryFactory.getInstance();
         ERepositoryStatus status = repFactory.getStatus(node.getObject());
         if (!repFactory.isPotentiallyEditable(node.getObject()) || status == ERepositoryStatus.LOCK_BY_OTHER
-                || status == ERepositoryStatus.LOCK_BY_USER || (ERepositoryObjectType.TEST_CONTAINER != null
+                || status == ERepositoryStatus.LOCK_BY_USER || !ProjectManager.getInstance().isInCurrentMainProject(node)
+                || (ERepositoryObjectType.TEST_CONTAINER != null
                         && node.getObjectType().equals(ERepositoryObjectType.TEST_CONTAINER))) {
             readonly = true;
         }

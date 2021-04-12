@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2021 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -49,6 +49,18 @@ public class DIMetadatasNodeTester extends CoMetadataNodeTester {
     private static final String IS_WEB_SERVICE = "isWebService"; //$NON-NLS-1$
 
     private static final String IS_MDM = "isMDM"; //$NON-NLS-1$
+
+    @Override
+    protected Boolean testProperty(Object receiver, String property, Object[] args, Object expectedValue) {
+        if (IS_MDM.equals(property) && ERepositoryObjectType.METADATA_MDMCONNECTION == null) {
+            /**
+             * If mdm connection plugin is not loaded, it is impossible to be a mdm connection node
+             */
+            return Boolean.FALSE;
+        } else {
+            return super.testProperty(receiver, property, args, expectedValue);
+        }
+    }
 
     @Override
     protected ERepositoryObjectType findType(String property) {

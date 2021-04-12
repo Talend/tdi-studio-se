@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2021 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -95,6 +95,7 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.PlatformUI;
 import org.talend.commons.CommonsPlugin;
 import org.talend.commons.exception.ExceptionHandler;
+import org.talend.commons.exception.PersistenceException;
 import org.talend.commons.exception.SystemException;
 import org.talend.commons.ui.runtime.exception.RuntimeExceptionHandler;
 import org.talend.commons.utils.generation.JavaUtils;
@@ -122,7 +123,6 @@ import org.talend.core.model.properties.JobletProcessItem;
 import org.talend.core.model.properties.ProcessItem;
 import org.talend.core.model.properties.Property;
 import org.talend.core.model.repository.ERepositoryObjectType;
-import org.talend.core.model.routines.CodesJarInfo;
 import org.talend.core.model.runprocess.IJavaProcessorStates;
 import org.talend.core.model.utils.JavaResourcesHelper;
 import org.talend.core.model.utils.NodeUtil;
@@ -136,15 +136,18 @@ import org.talend.core.runtime.process.LastGenerationInfo;
 import org.talend.core.runtime.process.TalendProcessArgumentConstant;
 import org.talend.core.runtime.process.TalendProcessOptionConstants;
 import org.talend.core.runtime.projectsetting.RuntimeLineageManager;
+import org.talend.core.ui.ITestContainerProviderService;
 import org.talend.core.ui.services.IRulesProviderService;
 import org.talend.core.utils.BitwiseOptionUtils;
 import org.talend.core.utils.CodesJarResourceCache;
+import org.talend.core.utils.TalendQuoteUtils;
 import org.talend.designer.codegen.ICodeGenerator;
 import org.talend.designer.codegen.ICodeGeneratorService;
 import org.talend.designer.core.DesignerPlugin;
 import org.talend.designer.core.IDesignerCoreService;
 import org.talend.designer.core.ISyntaxCheckableEditor;
 import org.talend.designer.core.model.components.EParameterName;
+import org.talend.designer.core.model.utils.emf.talendfile.NodeType;
 import org.talend.designer.core.model.utils.emf.talendfile.ProcessType;
 import org.talend.designer.core.model.utils.emf.talendfile.RoutinesParameterType;
 import org.talend.designer.core.runprocess.Processor;
@@ -1349,7 +1352,8 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
         // create classpath.jar
         if (!isExportConfig() && !isSkipClasspathJar() && isCorrespondingOS()) {
             try {
-                libsStr = ClasspathsJarGenerator.createJar(getProperty(), libsStr, classPathSeparator, useRelativeClasspath);
+                libsStr = ClasspathsJarGenerator.createJar(getProperty(), libsStr, classPathSeparator, useRelativeClasspath,
+                        ProcessorUtilities.isDynamicJobAndCITest());
             } catch (Exception e) {
                 throw new ProcessorException(e);
             }
@@ -1469,7 +1473,16 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
             });
             // add codesjars of main job
             if (getProperty() != null) {
-                codesJarClassPaths.addAll(getCodesJarClassPaths(getProperty().getItem()));
+                Item item = getProperty().getItem();
+                ITestContainerProviderService testContainerService = ITestContainerProviderService.get();
+                if (testContainerService != null && testContainerService.isTestContainerItem(item)) {
+                    try {
+                        item = testContainerService.getParentJobItem(item);
+                    } catch (PersistenceException e) {
+                        ExceptionHandler.process(e);
+                    }
+                }
+                codesJarClassPaths.addAll(getCodesJarClassPaths(item));
             }
 
             codesJarClassPaths.forEach(s -> basePath.append(s).append(classPathSeparator));
@@ -1524,33 +1537,38 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
         Set<String> classPaths = new HashSet<>();
         EList<RoutinesParameterType> routinesParameter = null;
         if (item instanceof ProcessItem) {
-            routinesParameter = ((ProcessItem) item).getProcess().getParameters().getRoutinesParameter();
+            if (((ProcessItem) item).getProcess() != null && ((ProcessItem) item).getProcess().getParameters() != null) {
+                routinesParameter = ((ProcessItem) item).getProcess().getParameters().getRoutinesParameter();
+            }
         } else if (item instanceof JobletProcessItem) {
-            routinesParameter = ((JobletProcessItem) item).getJobletProcess().getParameters().getRoutinesParameter();
+            if (((JobletProcessItem) item).getJobletProcess() != null
+                    && ((JobletProcessItem) item).getJobletProcess().getParameters() != null) {
+                routinesParameter = ((JobletProcessItem) item).getJobletProcess().getParameters().getRoutinesParameter();
+            }
         }
         if (routinesParameter != null) {
-            routinesParameter.stream().filter(r -> r.getType() != null).forEach(r -> {
-                CodesJarInfo info = CodesJarResourceCache.getCodesJarById(r.getId());
-                Property property = info.getProperty();
-                String projectTechName = info.getProjectTechName();
-                ITalendProcessJavaProject codesJarProject = TalendJavaProjectManager.getExistingTalendCodesJarProject(info);
-                if (info.isInCurrentMainProject() && codesJarProject != null) {
-                    // TODO or no need to use project classpath at all, just use m2 path for all?
-                    IPath codesJarOutputPath = codesJarProject.getOutputFolder().getLocation();
-                    classPaths.add(getClassPath(codesJarOutputPath));
-                } else {
-                    MavenArtifact artifact = new MavenArtifact();
-                    artifact.setGroupId(PomIdsHelper.getCodesJarGroupId(projectTechName, property.getItem()));
-                    artifact.setArtifactId(property.getLabel().toLowerCase());
-                    artifact.setVersion(PomIdsHelper.getCodesJarVersion(projectTechName));
-                    artifact.setType(MavenConstants.TYPE_JAR);
-                    // !!!FIXME!!!
-                    // it might not work for cxf related jobs since it use relative path for job execution ref TUP-22972
-                    // need to use relative path for m2 jar path based on execution path
-                    // or check if codesjars are already in temp/lib folder, if yes, can use this relative path
-                    classPaths.add(PomUtil.getArtifactFullPath(artifact));
-                }
-            });
+            routinesParameter.stream().filter(r -> r.getType() != null).map(r -> CodesJarResourceCache.getCodesJarById(r.getId()))
+                    .filter(info -> info != null).forEach(info -> {
+                        ITalendProcessJavaProject codesJarProject = TalendJavaProjectManager
+                                .getExistingTalendCodesJarProject(info);
+                        if (info.isInCurrentMainProject() && codesJarProject != null) {
+                            // TODO or no need to use project classpath at all, just use m2 path for all?
+                            IPath codesJarOutputPath = codesJarProject.getOutputFolder().getLocation();
+                            classPaths.add(getClassPath(codesJarOutputPath));
+                        } else {
+                            MavenArtifact artifact = new MavenArtifact();
+                            artifact.setGroupId(PomIdsHelper.getCodesJarGroupId(info));
+                            artifact.setArtifactId(info.getLabel().toLowerCase());
+                            artifact.setVersion(PomIdsHelper.getCodesJarVersion(info.getProjectTechName()));
+                            artifact.setType(MavenConstants.TYPE_JAR);
+                            // !!!FIXME!!!
+                            // it might not work for cxf related jobs since it use relative path for job execution ref
+                            // TUP-22972
+                            // need to use relative path for m2 jar path based on execution path
+                            // or check if codesjars are already in temp/lib folder, if yes, can use this relative path
+                            classPaths.add(PomUtil.getArtifactFullPath(artifact));
+                        }
+                    });
         }
         return classPaths;
     }
@@ -1623,6 +1641,17 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
                         if (BuildJobConstants.ESB_CXF_COMPONENTS.contains(node.getComponent().getName())) {
                             hasCXFComponent = true;
                             break out;
+                        }
+                    }
+                    //check child job
+                    Set<JobInfo> buildChildrenJobs = getBuildChildrenJobs();
+                    for(JobInfo jobInfo:buildChildrenJobs) {
+                        List<? extends NodeType> generatingNodes = jobInfo.getProcessItem().getProcess().getNode();
+                        for (NodeType inode : generatingNodes) {
+                            if (BuildJobConstants.ESB_CXF_COMPONENTS.contains(inode.getComponentName())) {
+                                hasCXFComponent = true;
+                                break out;
+                            }
                         }
                     }
                     break;
@@ -2037,7 +2066,8 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
             String encryptionFilePath = System.getProperty(StudioKeysFileCheck.ENCRYPTION_KEY_FILE_SYS_PROP);
             File encryptionFile = new File(encryptionFilePath);
             if (encryptionFile.exists()) {
-                vmArguments.append(StudioKeysFileCheck.ENCRYPTION_KEY_FILE_JVM_PARAM + "=" + encryptionFile.toURI().getPath());
+                String encryptFilePath = TalendQuoteUtils.addQuotes(encryptionFile.toURI().getPath());
+                vmArguments.append(StudioKeysFileCheck.ENCRYPTION_KEY_FILE_JVM_PARAM + "=" + encryptFilePath);
             }
             wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_VM_ARGUMENTS, vmArguments.toString());
         }

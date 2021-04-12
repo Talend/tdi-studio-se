@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2021 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -29,6 +29,7 @@ import org.talend.core.model.properties.PropertiesFactory;
 import org.talend.core.model.properties.Property;
 import org.talend.core.model.properties.RoutinesJarItem;
 import org.talend.core.model.repository.ERepositoryObjectType;
+import org.talend.core.model.routines.CodesJarInfo;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
 import org.talend.designer.maven.tools.CodesJarM2CacheManager;
 import org.talend.repository.ProjectManager;
@@ -84,7 +85,7 @@ public class NewRoutinesJarWizard extends Wizard {
             if (!folder.exists()) {
                 ResourceUtils.createFolder(folder);
             }
-            CodesJarM2CacheManager.updateCodesJarProject(property);
+            CodesJarM2CacheManager.updateCodesJarProject(CodesJarInfo.create(property), false);
         } catch (Exception e) {
             MessageDialog.openError(getShell(), Messages.getString("NewProcessWizard.failureTitle"), ""); //$NON-NLS-1$ //$NON-NLS-2$
             ExceptionHandler.process(e);

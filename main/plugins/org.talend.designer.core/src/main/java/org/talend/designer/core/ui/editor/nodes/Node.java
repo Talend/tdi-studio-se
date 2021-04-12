@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2021 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -195,6 +195,8 @@ public class Node extends Element implements IGraphicalNode {
     public static final String RETURNS_CHANGED = "returns changed"; //$NON-NLS-1$
 
     public static final String ICON_CHANGE = "iconChange";//$NON-NLS-1$
+    
+    private static final String DATABASE_LABEL = "Database"; //$NON-NLS-1$
 
     public static final int DEFAULT_SIZE = 32;
 
@@ -3423,6 +3425,17 @@ public class Node extends Element implements IGraphicalNode {
             }
         }
     }
+    
+    //TUP-30345: special process for tcompv0
+    private boolean isDerivedTJDBCRowCommitComponent() {
+        if ( getComponentProperties() != null) {
+            if ("TJDBCRowProperties".equals(getComponentProperties().getClass().getSimpleName()) 
+                || "TJDBCCommitProperties".equals(getComponentProperties().getClass().getSimpleName()) ) {
+                return true;
+            }
+        }
+        return false;
+    }
 
     public void checkLinks() {
         boolean isJoblet = false;
@@ -3463,7 +3476,8 @@ public class Node extends Element implements IGraphicalNode {
             }
         } else if ((Boolean) getPropertyValue(EParameterName.STARTABLE.getName())) {
             for (INodeConnector connector : getConnectorsFromType(EConnectionType.FLOW_MAIN)) {
-                if (connector.isShow() && (connector.getMaxLinkInput() == 0) && (connector.getMaxLinkOutput() != 0)) {
+                if (connector.isShow() && (connector.getMaxLinkInput() == 0) && (connector.getMaxLinkOutput() != 0) 
+                    && !isDerivedTJDBCRowCommitComponent()) {  //TUP-30345
                     if ((getCurrentActiveLinksNbOutput(EConnectionType.FLOW_MAIN) == 0)
                             && (getCurrentActiveLinksNbOutput(EConnectionType.FLOW_MERGE) == 0)
                             && (getCurrentActiveLinksNbOutput(EConnectionType.FLOW_REF) == 0)
@@ -4000,7 +4014,7 @@ public class Node extends Element implements IGraphicalNode {
                             String currentDbmsId = outputMeta.getDbms();
                             // TDI-21862:when drag/drop a special schema onto a component,need check if this schema's
                             // dbType compatible with this component
-                            if (!typevalue.equals("id_Dynamic") && currentDbmsId != null //$NON-NLS-1$
+                            if (!typevalue.equals("id_Dynamic") && currentDbmsId != null && isShowDBTypeColumn(this)//$NON-NLS-1$
                                     && !TypesManager.checkDBType(currentDbmsId, typevalue, sourceType)) {
                                 String errorMessage = "the schema's dbType not correct for this component"; //$NON-NLS-1$
                                 Problems.add(ProblemStatus.WARNING, this, errorMessage);
@@ -4155,7 +4169,7 @@ public class Node extends Element implements IGraphicalNode {
                             String sourceType = column.getType();
                             String typevalue = column.getTalendType();
                             String currentDbmsId = outputMeta.getDbms();
-                            if (!typevalue.equals("id_Dynamic") && currentDbmsId != null //$NON-NLS-1$
+                            if (!typevalue.equals("id_Dynamic") && currentDbmsId != null && isShowDBTypeColumn(node)//$NON-NLS-1$
                                     && !TypesManager.checkDBType(currentDbmsId, typevalue, sourceType)) {
                                 String errorMessage = "the schema's dbType not correct for this component"; //$NON-NLS-1$
                                 Problems.add(ProblemStatus.WARNING, this, errorMessage);
@@ -4235,7 +4249,7 @@ public class Node extends Element implements IGraphicalNode {
                         String sourceType = column.getType();
                         String typevalue = column.getTalendType();
                         String currentDbmsId = outputMeta.getDbms();
-                        if (!typevalue.equals("id_Dynamic") && currentDbmsId != null //$NON-NLS-1$
+                        if (!typevalue.equals("id_Dynamic") && currentDbmsId != null && isShowDBTypeColumn(this)//$NON-NLS-1$
                                 && !TypesManager.checkDBType(currentDbmsId, typevalue, sourceType)) {
                             String errorMessage = "the schema's dbType not correct for this component"; //$NON-NLS-1$
                             Problems.add(ProblemStatus.WARNING, this, errorMessage);
@@ -4289,6 +4303,24 @@ public class Node extends Element implements IGraphicalNode {
 
             }
         }
+    }
+    
+    private boolean isShowDBTypeColumn(INode node) {
+        boolean hasMappingType = false;
+        boolean eltComponent = isELTComponent();
+        IComponent _component = node.getComponent();
+        boolean isEBCDIC = _component.getName().contains("EBCDIC");
+        if (_component != null && _component.isSupportDbType() || _component.getOriginalFamilyName().startsWith(DATABASE_LABEL)
+                || eltComponent || isEBCDIC) {
+            for (IElementParameter currentParam : getElementParameters()) {
+                if (EParameterFieldType.MAPPING_TYPE.equals(currentParam.getFieldType())) {
+                    hasMappingType = true;
+                    break;
+                }
+            }
+        }
+        
+        return hasMappingType || eltComponent;
     }
 
     @Override
@@ -4834,8 +4866,11 @@ public class Node extends Element implements IGraphicalNode {
      */
     @Override
     public boolean checkIfCanBeStart() {
-        // tELTSAPMap component is more like a input component than ELT component as it output a flow stream.
-        if (isELTSAPMapComponent()) {
+        // tCollectAndCheck can be start node now in BD jobs
+    	if ("tCollectAndCheck".equals(this.getComponent().getName())) {
+    		return true;
+    	} else if (isELTSAPMapComponent()) {
+    		// tELTSAPMap component is more like a input component than ELT component as it output a flow stream.
             if (!isThereConditionLink() && isOnMainBranch()) {
                 return true;
             }

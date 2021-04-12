@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2021 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -62,7 +62,6 @@ import org.talend.core.model.process.IContext;
 import org.talend.core.model.process.IProcess;
 import org.talend.core.model.process.IProcess2;
 import org.talend.core.model.process.JobInfo;
-import org.talend.core.model.process.ProcessUtils;
 import org.talend.core.model.properties.Item;
 import org.talend.core.model.properties.ProjectReference;
 import org.talend.core.model.properties.Property;
@@ -839,16 +838,8 @@ public class DefaultRunProcessService implements IRunProcessService {
     }
 
     @Override
-    public void buildCodesJavaProject(IProgressMonitor monitor) {
-        try {
-            AggregatorPomsHelper.buildAndInstallCodesProject(monitor, ERepositoryObjectType.ROUTINES);
-            if (ProcessUtils.isRequiredBeans(null)) {
-                AggregatorPomsHelper.buildAndInstallCodesProject(monitor, ERepositoryObjectType.BEANS);
-            }
-            CodesJarM2CacheManager.updateCodesJarProject(monitor);
-        } catch (Exception e) {
-            ExceptionHandler.process(e);
-        }
+    public void buildCodesJavaProject(IProgressMonitor monitor, Set<CodesJarInfo> toUpdate) {
+        AggregatorPomsHelper.buildCodesProject(monitor, toUpdate);
     }
 
     @Override
@@ -881,18 +872,11 @@ public class DefaultRunProcessService implements IRunProcessService {
                 initRefPoms(new Project(ref.getReferencedProject()));
             }
             helper.updateRefProjectModules(references, monitor);
-            helper.updateCodeProjects(monitor, true);
+            helper.updateCodeProjects(monitor, true, false, true);
 
-            CodesJarM2CacheManager.updateCodesJarProject(monitor);
-            for (CodesJarInfo info : CodesJarResourceCache.getAllCodesJars()) {
-                // if (!info.isInCurrentMainProject()) {
-                // }
-                ITalendProcessJavaProject refCodesJarProject = getExistingTalendCodesJarProject(info);
-                if (refCodesJarProject != null) {
-                    refCodesJarProject.getProject().delete(false, true, monitor);
-                    TalendJavaProjectManager.removeFromCodesJarJavaProjects(info);
-                }
-            }
+            CodesJarM2CacheManager.updateCodesJarProjectForLogon(monitor);
+            CodesJarResourceCache.getAllCodesJars().stream().filter(info -> getExistingTalendCodesJarProject(info) != null)
+                    .forEach(info -> TalendJavaProjectManager.deleteTalendCodesJarProject(info, false));
         } catch (Exception e) {
             ExceptionHandler.process(e);
         }
@@ -913,6 +897,12 @@ public class DefaultRunProcessService implements IRunProcessService {
             if (CodeM2CacheManager.needUpdateCodeProject(refProject, codeType)) {
                 installRefCodeProject(codeType, refHelper, monitor);
                 CodeM2CacheManager.updateCodeProjectCache(refProject, codeType);
+            } else {
+                ITalendProcessJavaProject codeProject = TalendJavaProjectManager.getExistingTalendCodeProject(codeType,
+                        refHelper.getProjectTechName());
+                if (codeProject != null) {
+                    codeProject.buildWholeCodeProject();
+                }
             }
         }
 
@@ -962,8 +952,14 @@ public class DefaultRunProcessService implements IRunProcessService {
     }
 
     @Override
-    public void removeFromCodesJarJavaProjects(CodesJarInfo info) {
-        TalendJavaProjectManager.removeFromCodesJarJavaProjects(info);
+    public void deleteTalendCodesJarProject(CodesJarInfo info, boolean deleteContent) {
+        TalendJavaProjectManager.deleteTalendCodesJarProject(info, deleteContent);
+    }
+
+    @Override
+    public void deleteTalendCodesJarProject(ERepositoryObjectType type, String projectTechName, String codesJarName,
+            boolean deleteContent) {
+        TalendJavaProjectManager.deleteTalendCodesJarProject(type, projectTechName, codesJarName, deleteContent);
     }
 
     @Override

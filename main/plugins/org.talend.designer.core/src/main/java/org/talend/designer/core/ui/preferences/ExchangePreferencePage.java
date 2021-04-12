@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2021 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -85,7 +85,7 @@ public class ExchangePreferencePage extends FieldEditorPreferencePage implements
         logonButton.setText(userAccount != null ? Messages.getString("ExchangePreferencePage.signOutExchangeTitle") : Messages
                 .getString("ExchangePreferencePage.signInExchangeTitle"));
 
-        if (PluginChecker.isSVNProviderPluginLoaded()) {
+        if (PluginChecker.isRemoteProviderPluginLoaded()) {
             BooleanFieldEditor checkTisLogonExchangeDialog = new BooleanFieldEditor(
                     ITalendCorePrefConstants.EXCHANGE_CHECK_TIS_VERSION,
                     Messages.getString("ExchangePreferencePage.checkTisLogonExchangeTitle"), getFieldEditorParent()); //$NON-NLS-1$

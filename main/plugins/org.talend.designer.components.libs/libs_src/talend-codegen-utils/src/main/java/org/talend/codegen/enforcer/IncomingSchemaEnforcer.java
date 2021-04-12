@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2021 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -153,9 +153,10 @@ public class IncomingSchemaEnforcer {
      * @param fieldPattern dynamic field date format
      * @param description dynamic field description
      * @param isNullable defines whether dynamic field may contain <code>null</code> value
+     * @param isKey defines whether dynamic field is key field
      */
     public void addDynamicField(String name, String diType, String logicalType, String fieldPattern, String description,
-            boolean isNullable) {
+            boolean isNullable, boolean isKey) {
         if (!needsInitDynamicColumns())
             return;
         Schema fieldSchema = diToAvro(diType, logicalType);
@@ -163,12 +164,32 @@ public class IncomingSchemaEnforcer {
         if (isNullable) {
             fieldSchema = SchemaBuilder.nullable().type(fieldSchema);
         }
+
         Schema.Field field = new Schema.Field(name, fieldSchema, description, (Object) null);
         // Set pattern for date type
         if ("id_Date".equals(diType) && fieldPattern != null) {
             field.addProp(SchemaConstants.TALEND_COLUMN_PATTERN, fieldPattern);
         }
+        if (isKey) {
+            field.addProp(SchemaConstants.TALEND_COLUMN_IS_KEY, "true");
+        }
         dynamicFields.add(field);
+    }
+
+    /**
+     * Recreates dynamic field from parameters retrieved from DI dynamic metadata
+     *
+     * @param name dynamic field name
+     * @param diType di column type
+     * @param logicalType dynamic field logical type; could be null
+     * @param fieldPattern dynamic field date format
+     * @param description dynamic field description
+     * @param isNullable defines whether dynamic field may contain <code>null</code> value
+     */
+    @Deprecated
+    public void addDynamicField(String name, String diType, String logicalType, String fieldPattern, String description,
+            boolean isNullable) {
+        addDynamicField(name, diType, logicalType, fieldPattern, description, isNullable, false);
     }
 
     public void addIncomingNodeField(String name, String className) {

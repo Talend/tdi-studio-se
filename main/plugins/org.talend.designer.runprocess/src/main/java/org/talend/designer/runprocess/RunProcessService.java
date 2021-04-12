@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2021 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -479,8 +479,8 @@ public class RunProcessService implements IRunProcessService {
     }
 
     @Override
-    public void buildCodesJavaProject(IProgressMonitor monitor) {
-        delegateService.buildCodesJavaProject(monitor);
+    public void buildCodesJavaProject(IProgressMonitor monitor, Set<CodesJarInfo> toUpdate) {
+        delegateService.buildCodesJavaProject(monitor, toUpdate);
     }
 
     @Override
@@ -536,9 +536,14 @@ public class RunProcessService implements IRunProcessService {
     }
 
     @Override
-    public void removeFromCodesJarJavaProjects(CodesJarInfo info) {
-        delegateService.removeFromCodesJarJavaProjects(info);
+    public void deleteTalendCodesJarProject(CodesJarInfo info, boolean deleteContent) {
+        delegateService.deleteTalendCodesJarProject(info, deleteContent);
+    }
 
+    @Override
+    public void deleteTalendCodesJarProject(ERepositoryObjectType type, String projectTechName, String codesJarName,
+            boolean deleteContent) {
+        delegateService.deleteTalendCodesJarProject(type, projectTechName, codesJarName, deleteContent);
     }
 
 }

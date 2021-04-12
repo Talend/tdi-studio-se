@@ -14,7 +14,7 @@
   <description>Studio integration of the Talend Component Kit framework.</description>
 
   <properties>
-    <component-runtime.version>1.29.1</component-runtime.version>
+    <component-runtime.version>1.31.0</component-runtime.version>
     <commons-lang3.version>3.11</commons-lang3.version>
     <mockito.version>2.23.0</mockito.version>
     <oro.version>2.0.8</oro.version>
@@ -194,6 +194,24 @@
     </resources>
 
     <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-clean-plugin</artifactId>
+        <version>3.1.0</version>
+        <configuration>
+          <filesets>
+            <fileset>
+              <!-- The same directory as in maven-dependency-plugin where the libraries will be copied-->
+              <directory>${project.basedir}/lib</directory>
+              <includes>
+                <include>**/*.jar</include>
+              </includes>
+              <followSymlinks>false</followSymlinks>
+            </fileset>
+          </filesets>
+        </configuration>
+      </plugin>
+
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-dependency-plugin</artifactId>

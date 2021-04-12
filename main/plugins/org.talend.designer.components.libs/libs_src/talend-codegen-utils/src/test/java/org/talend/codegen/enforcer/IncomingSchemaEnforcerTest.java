@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2021 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -697,6 +697,28 @@ public class IncomingSchemaEnforcerTest {
         IndexedRecord record = enforcer.createIndexedRecord();
         assertThat(record.get(0), is((Object) new BigDecimal("630.1020")));
         assertThat(record.get(1), is((Object) new Date(1234567891011L)));
+    }
+
+    /**
+     * Checks key field setting
+     */
+    @Test
+    public void testAddDynamicFieldKey() {
+        Schema expectedRuntimeSchema = SchemaBuilder.builder().record("Record").fields().name("id")
+                .prop(SchemaConstants.TALEND_COLUMN_IS_KEY, "true").type().intType().noDefault().endRecord();
+
+        Schema designSchema = SchemaBuilder.builder().record("Record").prop(SchemaConstants.INCLUDE_ALL_FIELDS, "true")
+                .prop(DiSchemaConstants.TALEND6_DYNAMIC_COLUMN_POSITION, "0").fields().endRecord();
+
+        IncomingSchemaEnforcer enforcer = new IncomingSchemaEnforcer(designSchema);
+
+        enforcer.addDynamicField("id", "id_Integer", null, null, null, false, true);
+
+        enforcer.createRuntimeSchema();
+        assertTrue(enforcer.areDynamicFieldsInitialized());
+
+        Schema actualRuntimeSchema = enforcer.getRuntimeSchema();
+        assertEquals(expectedRuntimeSchema, actualRuntimeSchema);
     }
 
     /**

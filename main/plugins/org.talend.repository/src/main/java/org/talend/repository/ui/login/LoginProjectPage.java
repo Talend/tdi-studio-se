@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2021 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -1368,7 +1368,23 @@ public class LoginProjectPage extends AbstractLoginActionPage {
                 errorManager.setAuthException(null);
                 errorManager.setHasAuthException(false);
                 fillConnectionsList(new NullProgressMonitor());
-                onConnectionSelected(new NullProgressMonitor(), hasAuthException);
+                boolean forceRefresh = hasAuthException;
+                ConnectionBean connection = getConnection();
+                if (connection != null && !LoginHelper.isRemotesConnection(connection)) {
+                    /**
+                     * In case user delete project in manage connection dialog
+                     */
+                    forceRefresh = true;
+                }
+                onConnectionSelected(new NullProgressMonitor(), forceRefresh);
+            } else {
+                ConnectionBean connection = getConnection();
+                if (connection != null && !LoginHelper.isRemotesConnection(connection)) {
+                    /**
+                     * In case user delete project in manage connection dialog
+                     */
+                    onConnectionSelected(new NullProgressMonitor(), true);
+                }
             }
             // setStatusArea();
         } catch (Exception e1) {
@@ -1556,7 +1572,7 @@ public class LoginProjectPage extends AbstractLoginActionPage {
     }
 
     protected void refreshBranchAreaVisible() {
-        boolean tisRemote = isSVNProviderPluginLoadedRemote();
+        boolean tisRemote = isRemoteProviderPluginLoaded();
         refreshBranchAreaVisible(tisRemote);
     }
 
@@ -1813,7 +1829,7 @@ public class LoginProjectPage extends AbstractLoginActionPage {
             return;
         }
         try {
-            if (currentBean != null && isSVNProviderPluginLoadedRemote() && isWorkSpaceSame()) {
+            if (currentBean != null && isRemoteProviderPluginLoaded() && isWorkSpaceSame()) {
                 if (afterUpdate) {
                     Display.getDefault().syncExec(() -> {
                         if (monitor.isCanceled() || isDisposed()) {
@@ -2163,14 +2179,14 @@ public class LoginProjectPage extends AbstractLoginActionPage {
     }
 
     /**
-     * svn provider plugin loaded && a remote connection
+     * remote provider plugin loaded && a remote connection
      *
      * @return
      */
-    protected boolean isSVNProviderPluginLoadedRemote() {
+    protected boolean isRemoteProviderPluginLoaded() {
         AtomicBoolean isRemote = new AtomicBoolean(false);
         Display.getDefault().syncExec(() -> {
-            if (PluginChecker.isSVNProviderPluginLoaded()) {
+            if (PluginChecker.isRemoteProviderPluginLoaded()) {
                 StructuredSelection selection = (StructuredSelection) connectionsViewer.getSelection();
                 Object firstElement = selection.getFirstElement();
                 if (firstElement instanceof ConnectionBean) {
