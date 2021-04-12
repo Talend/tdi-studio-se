@@ -165,7 +165,6 @@
 
    	<CODEGENERATION>
 	   <IMPORTS>
-
 			<IMPORT NAME="xstream-1.4.16.jar" MODULE="xstream-1.4.16.jar" MVN="mvn:com.thoughtworks.xstream/xstream/1.4.16" REQUIRED_IF="(DB_VERSION=='BONITA_523') OR (((DB_VERSION=='BONITA_652')OR(DB_VERSION=='BONITA_724')) AND (CLIENT_MODE=='JAVA_CLIENT'))" />
 
 			<!-- Bonita 5.2.3 -->
