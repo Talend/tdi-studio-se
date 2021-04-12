@@ -150,6 +150,11 @@
            mapping="TACOKIT_TEXT_AREA_SELECTION"
            name="Text Area Selection Generator">
      </generator>
+     <generator
+           class="org.talend.sdk.component.studio.ui.composite.generator.TaCoKitTableGenerator"
+           mapping="TACOKIT_TABLE"
+           name="TaCoKit Table Generator">
+     </generator>
   </extension>
   <extension
         point="org.talend.designer.core.process_provider">

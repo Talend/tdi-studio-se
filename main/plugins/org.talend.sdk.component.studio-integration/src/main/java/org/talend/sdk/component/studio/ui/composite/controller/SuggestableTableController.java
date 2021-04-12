@@ -56,7 +56,7 @@ import org.talend.designer.core.ui.editor.nodes.Node;
 import org.talend.designer.core.ui.editor.properties.controllers.ColumnListController;
 import org.talend.designer.core.ui.editor.properties.controllers.TableController;
 import org.talend.designer.core.ui.editor.properties.macrowidgets.tableeditor.PropertiesTableEditorModel;
-import org.talend.designer.core.ui.editor.properties.macrowidgets.tableeditor.PropertiesTableEditorView;
+import org.talend.sdk.component.studio.metadata.tableeditor.TaCoKitPropertiesTableEditorView;
 import org.talend.sdk.component.studio.model.parameter.SuggestableTableParameter;
 
 public class SuggestableTableController extends TableController {
@@ -99,7 +99,7 @@ public class SuggestableTableController extends TableController {
         final PropertiesTableEditorModel<Map<String, Object>> tableEditorModel = new PropertiesTableEditorModel<Map<String, Object>>();
 
         tableEditorModel.setData(elem, param, getProcess(elem, part));
-        final PropertiesTableEditorView<Map<String, Object>> tableEditorView = new PropertiesTableEditorView<Map<String, Object>>(
+        final TaCoKitPropertiesTableEditorView<Map<String, Object>> tableEditorView = new TaCoKitPropertiesTableEditorView<Map<String, Object>>(
                 parentComposite, SWT.NONE, tableEditorModel, false, false);
         tableEditorView.getExtendedTableViewer().setCommandStack(getCommandStack());
         final boolean editable = !param.isReadOnly() && (elem instanceof FakeElement || !param.isRepositoryValueUsed());
@@ -282,7 +282,7 @@ public class SuggestableTableController extends TableController {
         updateTableValues(param);
 
         tableEditorModel.setData(elem, param, part.getProcess());
-        final PropertiesTableEditorView<Map<String, Object>> tableEditorView = new PropertiesTableEditorView<Map<String, Object>>(
+        final TaCoKitPropertiesTableEditorView<Map<String, Object>> tableEditorView = new TaCoKitPropertiesTableEditorView<Map<String, Object>>(
                 subComposite, SWT.NONE, tableEditorModel, false, false);
         tableEditorView.getExtendedTableViewer().setCommandStack(getCommandStack());
         tableEditorView.setReadOnly(param.isReadOnly());
@@ -332,8 +332,7 @@ public class SuggestableTableController extends TableController {
                         List<Map<String, Object>> paramValues = (List<Map<String, Object>>) param.getValue();
                         String[] items = param.getListItemsDisplayCodeName();
 
-                        for (int currentIndex = 0; currentIndex < paramValues.size(); currentIndex++) {
-                            Map<String, Object> currentLine = paramValues.get(currentIndex);
+                        for (Map<String, Object> currentLine : paramValues) {
                             Object o = currentLine.get(items[j]);
                             if (o instanceof Integer) {
                                 Integer nb = (Integer) o;

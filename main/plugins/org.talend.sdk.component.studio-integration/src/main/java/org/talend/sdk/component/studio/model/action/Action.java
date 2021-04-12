@@ -17,6 +17,7 @@ package org.talend.sdk.component.studio.model.action;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -35,6 +36,7 @@ import org.talend.core.model.process.IContextManager;
 import org.talend.core.model.process.IContextParameter;
 import org.talend.designer.core.ui.editor.properties.controllers.uidialog.OpenContextChooseComboDialog;
 import org.talend.sdk.component.studio.Lookups;
+import org.talend.sdk.component.studio.model.parameter.TableActionParameter;
 import org.talend.sdk.component.studio.websocket.WebSocketClient.V1Action;
 
 public class Action<T> {
@@ -85,6 +87,30 @@ public class Action<T> {
             throw new IllegalArgumentException("action already contains parameter " + parameter);
         }
         list.add(parameter);
+    }
+
+    public void setRowNumber(int rowNumber) {
+        parameters.values().stream().flatMap(List::stream).forEach(param -> {
+            if (param instanceof TableActionParameter) {
+                ((TableActionParameter) param).setRowNumber(rowNumber);
+            }
+        });
+    }
+
+    public boolean isMissingRequired() {
+        Iterator iter = parameters.values().iterator();
+        while (iter.hasNext()) {
+            Object obj = iter.next();
+            if (obj != null && obj instanceof List) {
+                List<IActionParameter> actionsList = (List<IActionParameter>) obj;
+                for (IActionParameter action : actionsList) {
+                    if (action instanceof TableActionParameter && ((TableActionParameter) action).isMissingRequired()) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
     }
 
     @SuppressWarnings("unchecked")

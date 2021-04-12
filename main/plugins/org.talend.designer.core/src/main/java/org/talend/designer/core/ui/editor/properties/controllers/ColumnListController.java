@@ -495,6 +495,10 @@ public class ColumnListController extends AbstractElementPropertySectionControll
                             curColumnNameList = refColumnListNames;
                             curColumnValueList = refColumnListValues;
                         }
+                        if (tmpParam.getFieldType() == EParameterFieldType.TACOKIT_VALUE_SELECTION) {
+                            curColumnNameList = prevColumnNameList;
+                            curColumnValueList = prevColumnNameList;
+                        }
                         if (tmpParam.getFieldType() == EParameterFieldType.COLUMN_LIST
                                 || tmpParam.getFieldType() == EParameterFieldType.PREV_COLUMN_LIST
                                 || tmpParam.getFieldType() == EParameterFieldType.LOOKUP_COLUMN_LIST) {
@@ -674,8 +678,7 @@ public class ColumnListController extends AbstractElementPropertySectionControll
                         }
                     }
 
-                    for (int k = 0; k < paramValues.size(); k++) {
-                        Map<String, Object> line = paramValues.get(k);
+                    for (Map<String, Object> line : paramValues) {
                         Map<String, Object> newline = new HashMap<String, Object>();
                         if (found) {
                             Object object = line.get(colChanged.getOldName());
@@ -1020,7 +1023,6 @@ public class ColumnListController extends AbstractElementPropertySectionControll
                 }
             }
         }
-
         return columnList;
     }
 

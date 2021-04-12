@@ -65,6 +65,7 @@ import org.talend.designer.core.model.components.EParameterName;
 import org.talend.designer.core.ui.editor.cmd.PropertyChangeCommand;
 import org.talend.designer.core.ui.editor.connections.Connection;
 import org.talend.designer.core.ui.editor.nodes.Node;
+import org.talend.designer.core.ui.editor.properties.macrowidgets.tableeditor.AbstractPropertiesTableEditorView;
 import org.talend.designer.core.ui.editor.properties.macrowidgets.tableeditor.PropertiesTableEditorModel;
 import org.talend.designer.core.ui.editor.properties.macrowidgets.tableeditor.PropertiesTableEditorView;
 import org.talend.designer.core.ui.editor.properties.macrowidgets.tableeditor.PropertiesTableToolbarEditorView;
@@ -78,7 +79,7 @@ import org.talend.designer.runprocess.ItemCacheManager;
  * $Id: TableController.java 1 2006-12-14 下午05:44:30 +0000 (下午05:44:30) yzhang $
  *
  */
-public class TableController extends AbstractElementPropertySectionController {
+public class TableController extends AbstractTableController {
 
     /**
      *
@@ -115,8 +116,7 @@ public class TableController extends AbstractElementPropertySectionController {
         PropertiesTableEditorModel<Map<String, Object>> tableEditorModel = new PropertiesTableEditorModel<Map<String, Object>>();
 
         tableEditorModel.setData(elem, param, getProcess(elem, part));
-        PropertiesTableEditorView<Map<String, Object>> tableEditorView = new PropertiesTableEditorView<Map<String, Object>>(
-                parentComposite, SWT.NONE, tableEditorModel, !param.isBasedOnSchema(), false);
+        AbstractPropertiesTableEditorView<Map<String, Object>> tableEditorView = getPropertiesTableEditorView(parentComposite, SWT.NONE, tableEditorModel,param, !param.isBasedOnSchema(), false);
         tableEditorView.getExtendedTableViewer().setCommandStack(getCommandStack());
         boolean editable = !param.isReadOnly() && (elem instanceof FakeElement || !param.isRepositoryValueUsed());
         tableEditorView.setReadOnly(!editable);
@@ -304,8 +304,8 @@ public class TableController extends AbstractElementPropertySectionController {
         updateTableValues(param);
 
         tableEditorModel.setData(elem, param, part.getProcess());
-        PropertiesTableEditorView<Map<String, Object>> tableEditorView = new PropertiesTableEditorView<Map<String, Object>>(
-                subComposite, SWT.NONE, tableEditorModel, !param.isBasedOnSchema(), false);
+        AbstractPropertiesTableEditorView<Map<String, Object>> tableEditorView = getPropertiesTableEditorView(subComposite,
+                SWT.NONE, tableEditorModel, param, !param.isBasedOnSchema(), false);
         tableEditorView.getExtendedTableViewer().setCommandStack(getCommandStack());
         tableEditorView.setReadOnly(param.isReadOnly());
         final Table table = tableEditorView.getTable();
@@ -381,7 +381,8 @@ public class TableController extends AbstractElementPropertySectionController {
                         IElementParameter columnParam = (IElementParameter) element;
                         if (columnParam.getFieldType() == EParameterFieldType.COLUMN_LIST
                                 || columnParam.getFieldType() == EParameterFieldType.PREV_COLUMN_LIST
-                                || columnParam.getFieldType() == EParameterFieldType.LOOKUP_COLUMN_LIST) {
+                                || columnParam.getFieldType() == EParameterFieldType.LOOKUP_COLUMN_LIST
+                                || param.getFieldType() == EParameterFieldType.TACOKIT_VALUE_SELECTION) {
                             for (Map<String, Object> columnMap : values) {
                                 Object column = columnMap.get(columnParam.getName());
                                 if (column == null || "".equals(column)) { //$NON-NLS-1$
@@ -562,7 +563,8 @@ public class TableController extends AbstractElementPropertySectionController {
                     IElementParameter tmpParam = (IElementParameter) itemsValue[j];
                     if (tmpParam.getFieldType() == EParameterFieldType.COLUMN_LIST
                             || tmpParam.getFieldType() == EParameterFieldType.PREV_COLUMN_LIST
-                            || tmpParam.getFieldType() == EParameterFieldType.LOOKUP_COLUMN_LIST) {
+                            || tmpParam.getFieldType() == EParameterFieldType.LOOKUP_COLUMN_LIST
+                            || param.getFieldType() == EParameterFieldType.TACOKIT_VALUE_SELECTION) {
                         if ((j + 1) >= colList.size()) {
                             break;
                         }
@@ -577,8 +579,7 @@ public class TableController extends AbstractElementPropertySectionController {
                         List<Map<String, Object>> paramValues = (List<Map<String, Object>>) param.getValue();
                         String[] items = param.getListItemsDisplayCodeName();
 
-                        for (int currentIndex = 0; currentIndex < paramValues.size(); currentIndex++) {
-                            Map<String, Object> currentLine = paramValues.get(currentIndex);
+                        for (Map<String, Object> currentLine : paramValues) {
                             Object o = currentLine.get(items[j]);
                             if (o instanceof Integer) {
                                 Integer nb = (Integer) o;
@@ -634,8 +635,7 @@ public class TableController extends AbstractElementPropertySectionController {
                         List<Map<String, Object>> paramValues = (List<Map<String, Object>>) param.getValue();
                         String[] items = param.getListItemsDisplayCodeName();
 
-                        for (int currentIndex = 0; currentIndex < paramValues.size(); currentIndex++) {
-                            Map<String, Object> currentLine = paramValues.get(currentIndex);
+                        for (Map<String, Object> currentLine : paramValues) {
                             Object o = currentLine.get(items[j]);
                             if (o instanceof Integer) {
                                 Integer nb = (Integer) o;
@@ -689,8 +689,7 @@ public class TableController extends AbstractElementPropertySectionController {
                         List<Map<String, Object>> paramValues = (List<Map<String, Object>>) param.getValue();
                         String[] items = param.getListItemsDisplayCodeName();
 
-                        for (int currentIndex = 0; currentIndex < paramValues.size(); currentIndex++) {
-                            Map<String, Object> currentLine = paramValues.get(currentIndex);
+                        for (Map<String, Object> currentLine : paramValues) {
                             Object o = currentLine.get(items[j]);
                             if (o instanceof Integer) {
                                 Integer nb = (Integer) o;
@@ -817,8 +816,7 @@ public class TableController extends AbstractElementPropertySectionController {
                         List<Map<String, Object>> paramValues = (List<Map<String, Object>>) param.getValue();
                         String[] items = param.getListItemsDisplayCodeName();
 
-                        for (int currentIndex = 0; currentIndex < paramValues.size(); currentIndex++) {
-                            Map<String, Object> currentLine = paramValues.get(currentIndex);
+                        for (Map<String, Object> currentLine : paramValues) {
                             Object o = currentLine.get(items[j]);
                             if (o instanceof Integer) {
                                 Integer nb = (Integer) o;
@@ -867,6 +865,7 @@ public class TableController extends AbstractElementPropertySectionController {
         case DBTYPE_LIST:
         case LOOKUP_COLUMN_LIST:
         case PREV_COLUMN_LIST:
+        case TACOKIT_VALUE_SELECTION:
             line.put(items[0], new Integer(tmpParam.getIndexOfItemFromList((String) tmpParam.getDefaultClosedListValue())));
             break;
         case SCHEMA_TYPE:
@@ -894,6 +893,7 @@ public class TableController extends AbstractElementPropertySectionController {
             case CONNECTION_LIST:
             case LOOKUP_COLUMN_LIST:
             case PREV_COLUMN_LIST:
+            case TACOKIT_VALUE_SELECTION:
                 line.put(items[i], new Integer(tmpParam.getIndexOfItemFromList((String) tmpParam.getDefaultClosedListValue())));
                 break;
             default: // TEXT or CHECK or COLOR (means String or Boolean)
@@ -950,4 +950,13 @@ public class TableController extends AbstractElementPropertySectionController {
         return false;
 
     }
+
+    @Override
+    protected AbstractPropertiesTableEditorView getPropertiesTableEditorView(Composite parentComposite, int mainCompositeStyle,
+            PropertiesTableEditorModel tableEditorModel,
+            IElementParameter param, boolean toolbarVisible, boolean labelVisible) {
+        return new PropertiesTableEditorView<Map<String, Object>>(parentComposite, SWT.NONE, tableEditorModel,
+                !param.isBasedOnSchema(),
+                false);
+    } 
 }
