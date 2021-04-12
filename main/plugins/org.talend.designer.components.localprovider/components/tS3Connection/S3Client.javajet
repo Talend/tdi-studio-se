@@ -72,7 +72,7 @@
 		<%
 		} else {
 		%>
-		com.amazonaws.auth.AWSCredentialsProvider credentialsProvider_<%=cid%> = new com.amazonaws.auth.EC2ContainerCredentialsProviderWrapper();
+			com.amazonaws.auth.AWSCredentialsProvider credentialsProvider_<%=cid%> = new com.amazonaws.auth.DefaultAWSCredentialsProviderChain();
 		<%
 		}
 		
@@ -351,42 +351,17 @@
 			if(encrypt) {
 			%>
 				com.amazonaws.services.s3.AmazonS3 conn_<%=cid%> = com.amazonaws.services.s3.AmazonS3EncryptionClientBuilder.standard()
-					<%if(useRegionEndpoint && regionEndpoint != null && !regionEndpoint.isEmpty()){%>
-			        
-			            <%if(!set_region){%>
-			            .withEndpointConfiguration(new com.amazonaws.client.builder.AwsClientBuilder.EndpointConfiguration(<%=regionEndpoint%>,null))
-			            .withForceGlobalBucketAccessEnabled(true)
-			            <%}else{%>
-			            .withEndpointConfiguration(new com.amazonaws.client.builder.AwsClientBuilder.EndpointConfiguration(<%=regionEndpoint%>,<%=region%>))
-			            <%}%>
-			        
-		            <%}else{%>
-		            
-		            	<%if(!set_region){%>
-				        .withRegion("us-east-1") // The first region to try your request against
-                        .withForceGlobalBucketAccessEnabled(true) // If a bucket is in a different region, try again in the correct region
-                        <%}else{%>
-                        .withRegion(<%=region%>)
-                        <%}%>
-		            
-		            <%}%>
-                    <%if(enableAccelerateMode){%>
-                    .withAccelerateModeEnabled(true)
-                    <%}%>
-                    .withCredentials(credentialsProvider_<%=cid%>)
-                    .withClientConfiguration(cc_<%=cid%>)
                     .withEncryptionMaterials(encryptionMaterialsProvider_<%=cid%>)
                     <%if("KMS_CMK".equals(key_type) && set_region) {%>
                     .withCryptoConfiguration(new com.amazonaws.services.s3.model.CryptoConfiguration().withAwsKmsRegion(com.amazonaws.regions.RegionUtils.getRegion(<%=region%>)))
 					<%}%>
-					<%if(useRegionEndpoint && enablePathStyleAccess) {%>
-					.enablePathStyleAccess()
-					<%}%>
-                    .build();
 			<%
 			} else {
 			%>
 				com.amazonaws.services.s3.AmazonS3 conn_<%=cid%> = com.amazonaws.services.s3.AmazonS3ClientBuilder.standard()
+			<%
+			}
+			%>
 					<%if(useRegionEndpoint && regionEndpoint != null && !regionEndpoint.isEmpty()){%>
 			        
 			            <%if(!set_region){%>
@@ -416,8 +391,7 @@
 					.enablePathStyleAccess()
 					<%}%>
                     .build();
-			<%
-			}
+		<%
 		if(isLog4jEnabled){
 		%>	
 			log.info("<%=cid%> - Creating new connection successfully.");
