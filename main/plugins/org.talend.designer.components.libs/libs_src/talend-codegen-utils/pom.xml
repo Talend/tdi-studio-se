@@ -7,21 +7,21 @@
 	<groupId>org.talend.libraries</groupId>
 	<artifactId>talend-codegen-utils</artifactId>
 	<!-- release for revert version of library -->
-	<version>0.28.0</version>
+	<version>0.29.0</version>
 	<packaging>jar</packaging>
 	
 	<properties>
 		<avro.version>1.8.0</avro.version>
-		<components.version>0.25.0-SNAPSHOT</components.version>
-		<daikon.version>0.26.0-SNAPSHOT</daikon.version>
+		<components.version>0.30.0</components.version>
+		<daikon.version>0.31.11</daikon.version>
 		<hamcrest.version>1.3</hamcrest.version>
 		<junit.version>4.12</junit.version>
 		<java-formatter.plugin.version>0.1.0</java-formatter.plugin.version>
 		<formatter.plugin.version>1.6.0-SNAPSHOT</formatter.plugin.version>
 		<mockito.version>2.2.15</mockito.version>
 		<jacoco.plugin.version>0.7.8</jacoco.plugin.version>
-		<maven.compiler.source>1.7</maven.compiler.source>
-		<maven.compiler.target>1.7</maven.compiler.target>
+		<maven.compiler.source>1.8</maven.compiler.source>
+		<maven.compiler.target>1.8</maven.compiler.target>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<talend.nexus.url>https://artifacts-oss.talend.com</talend.nexus.url>
 	</properties>
