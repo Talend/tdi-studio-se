@@ -144,9 +144,15 @@ if (sftp) {  // *** sftp *** //
 			}
 
 			public String getPassword() {
+				<% if ("PASSWORD".equals(authMethod) || "PUBLIC_KEY_AND_PASSWORD".equals(authMethod)) { %>
 				<% passwordFieldName = "__PASSWORD__"; %>
+
 				<%@ include file="@{org.talend.designer.components.localprovider}/components/templates/password.javajet"%>
-				return decryptedPassword_<%=cid%>;
+
+						return decryptedPassword_<%=cid%>;
+				<% } else { %>
+						return null;
+				<% } %>
 			}
     	}; 
     	final com.jcraft.jsch.UserInfo defaultUserInfo_<%=cid%> = new MyUserInfo_<%=cid%>();
