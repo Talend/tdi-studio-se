@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -40,12 +41,13 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.m2e.core.MavenPlugin;
-import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.utils.data.container.Container;
 import org.talend.commons.utils.system.EnvironmentUtils;
 import org.talend.core.model.components.ComponentCategory;
 import org.talend.core.model.components.IComponent;
 import org.talend.core.model.general.Project;
+import org.talend.core.model.process.IElement;
+import org.talend.core.model.process.IElementParameter;
 import org.talend.core.model.properties.ConnectionItem;
 import org.talend.core.model.properties.Item;
 import org.talend.core.model.properties.ProcessItem;
@@ -67,8 +69,10 @@ import org.talend.sdk.component.studio.Lookups;
 import org.talend.sdk.component.studio.metadata.TaCoKitCache;
 import org.talend.sdk.component.studio.metadata.WizardRegistry;
 import org.talend.sdk.component.studio.metadata.model.TaCoKitConfigurationModel;
+import org.talend.sdk.component.studio.model.action.SuggestionsAction;
 import org.talend.sdk.component.studio.model.parameter.PropertyDefinitionDecorator;
 import org.talend.sdk.component.studio.model.parameter.PropertyNode;
+import org.talend.sdk.component.studio.model.parameter.ValueSelectionParameter;
 import org.talend.updates.runtime.utils.PathUtils;
 import org.talend.utils.io.FilesUtils;
 
@@ -565,6 +569,38 @@ public class TaCoKitUtil {
             }
         } catch (IOException e) {
             throw new IllegalArgumentException("Failed to re-deploy jar:", e);
+        }
+    }
+
+    public static void updateElementParameter(final IElement element, final IElementParameter param, int rowNumber) {
+        if (param instanceof ValueSelectionParameter) {
+            ValueSelectionParameter vsParam = ((ValueSelectionParameter) param);
+            Map<String, String> suggestedValues = new LinkedHashMap<>();
+            SuggestionsAction action = vsParam.getAction();
+            action.setRowNumber(rowNumber);
+            if (!action.isMissingRequired()) {
+                suggestedValues = vsParam.getSuggestionValues();
+            }
+            param.setListItemsDisplayCodeName(suggestedValues.keySet().toArray(new String[suggestedValues.size()]));
+            param.setListItemsValue(suggestedValues.keySet().toArray(new String[suggestedValues.size()]));
+            param.setListItemsDisplayName(suggestedValues.keySet().toArray(new String[suggestedValues.size()]));
+            param.setListItemsNotShowIf(new String[suggestedValues.size()]);
+            param.setListItemsShowIf(new String[suggestedValues.size()]);
+        }
+    }
+
+    public static void fillDefaultItemsList(final IElementParameter param, Object value) {
+        if (param instanceof ValueSelectionParameter) {
+            List<String> itemsList = new ArrayList<String>();
+            if (value != null && value instanceof String && StringUtils.isNotBlank((String) value)) {
+                itemsList.add((String) value);
+            }
+            param.setListItemsDisplayName(itemsList.toArray(new String[0]));
+            param.setListItemsDisplayCodeName(itemsList.toArray(new String[0]));
+            param.setListItemsValue(itemsList.toArray(new String[0]));
+            param.setListItemsNotShowIf(itemsList.toArray(new String[0]));
+            param.setListItemsShowIf(itemsList.toArray(new String[0]));
+            param.setDefaultClosedListValue(""); //$NON-NLS-1$
         }
     }
 

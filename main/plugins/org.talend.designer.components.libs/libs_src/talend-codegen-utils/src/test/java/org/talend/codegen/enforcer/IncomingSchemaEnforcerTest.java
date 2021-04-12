@@ -700,6 +700,28 @@ public class IncomingSchemaEnforcerTest {
     }
 
     /**
+     * Checks key field setting
+     */
+    @Test
+    public void testAddDynamicFieldKey() {
+        Schema expectedRuntimeSchema = SchemaBuilder.builder().record("Record").fields().name("id")
+                .prop(SchemaConstants.TALEND_COLUMN_IS_KEY, "true").type().intType().noDefault().endRecord();
+
+        Schema designSchema = SchemaBuilder.builder().record("Record").prop(SchemaConstants.INCLUDE_ALL_FIELDS, "true")
+                .prop(DiSchemaConstants.TALEND6_DYNAMIC_COLUMN_POSITION, "0").fields().endRecord();
+
+        IncomingSchemaEnforcer enforcer = new IncomingSchemaEnforcer(designSchema);
+
+        enforcer.addDynamicField("id", "id_Integer", null, null, null, false, true);
+
+        enforcer.createRuntimeSchema();
+        assertTrue(enforcer.areDynamicFieldsInitialized());
+
+        Schema actualRuntimeSchema = enforcer.getRuntimeSchema();
+        assertEquals(expectedRuntimeSchema, actualRuntimeSchema);
+    }
+
+    /**
      * Checks {@link IncomingSchemaEnforcer#put()} converts string value to date according pattern specified in dynamic field
      * TODO (iv.gonchar): this is incorrect behavior, because avro record should not contain java.util.Date value. It should store
      * such value as Long

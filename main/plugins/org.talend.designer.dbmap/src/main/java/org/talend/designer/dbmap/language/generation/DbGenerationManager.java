@@ -662,17 +662,11 @@ public abstract class DbGenerationManager {
                 }
             }
             // Update
-            String targetSchemaTable = getDifferentTable(dbMapComponent, outputTableName);
+            String targetSchemaTable = getDifferentTable(dbMapComponent, outTableName);
             if (targetSchemaTable == null) {
                 targetSchemaTable = outTableName;
             }
-            IElementParameter eltSchemaNameParam = source.getElementParameter("ELT_SCHEMA_NAME"); //$NON-NLS-1$
-            if (eltSchemaNameParam != null && eltSchemaNameParam.getValue() != null) {
-                String schema = TalendQuoteUtils.removeQuotesIfExist(String.valueOf(eltSchemaNameParam.getValue()));
-                if (org.apache.commons.lang.StringUtils.isNotEmpty(schema)) {
-                    targetSchemaTable = addQuotes(schema) + DbMapSqlConstants.DOT + addQuotes(targetSchemaTable);
-                }
-            }
+            targetSchemaTable = getTargetSchemaTable(component, targetSchemaTable);
 
             appendSqlQuery(sb, "\"", false); //$NON-NLS-1$
             appendSqlQuery(sb, DbMapSqlConstants.UPDATE);
@@ -723,7 +717,7 @@ public abstract class DbGenerationManager {
                             String columnName = column.getLabel();
                             if (columnName.equals(dbMapEntry.getName()) && column.isKey()) {
                                 isKey = column.isKey();
-                                keyColumn = addQuotes(columnEntry) + " = " + expression;//$NON-NLS-1$
+                                keyColumn = addQuotes(columnEntry) + " = " + exp;//$NON-NLS-1$
                                 break;
                             }
                         }
@@ -739,7 +733,7 @@ public abstract class DbGenerationManager {
                         } else {
                             isFirstColumn = false;
                         }
-                        appendSqlQuery(sb, addQuotes(columnEntry) + " = " + expression); //$NON-NLS-1$
+                        appendSqlQuery(sb, addQuotes(columnEntry) + " = " + exp); //$NON-NLS-1$
                     }
                 }
             }
@@ -1895,6 +1889,32 @@ public abstract class DbGenerationManager {
         return atLeastOneConditionIsChecked;
     }
 
+    protected String getTargetSchemaTable(DbMapComponent component, String outTableName) {
+        String targetSchemaTable = null;
+        IElementParameter eltSchemaNameParam = source.getElementParameter("ELT_SCHEMA_NAME"); //$NON-NLS-1$
+        if (eltSchemaNameParam != null && eltSchemaNameParam.getValue() != null) {
+            String schemaNoQuote = TalendQuoteUtils.removeQuotesIfExist(String.valueOf(eltSchemaNameParam.getValue()));
+            if (org.apache.commons.lang.StringUtils.isNotEmpty(schemaNoQuote)) {
+                targetSchemaTable = getHandledField(component, schemaNoQuote);
+                if (isVariable(schemaNoQuote)) {
+                    targetSchemaTable = replaceVariablesForExpression(component, schemaNoQuote);
+                }
+                targetSchemaTable = targetSchemaTable + "."; //$NON-NLS-1$
+            }
+        }
+        String targetTable = getHandledField(component, outTableName);
+        if (isVariable(targetTable)) {
+            targetSchemaTable += replaceVariablesForExpression(component, targetTable);
+        } else {
+            if (org.apache.commons.lang.StringUtils.isNotBlank(targetSchemaTable)) {
+                targetSchemaTable += targetTable;
+            } else {
+                targetSchemaTable = targetTable;
+            }
+        }
+        return targetSchemaTable;
+    }
+
     public String buildSqlUpdate(DbMapComponent dbMapComponent, String outputTableName, String tabString) {
         queryColumnsName = "\""; //$NON-NLS-1$
         aliasAlreadyDeclared.clear();
@@ -1938,14 +1958,7 @@ public abstract class DbGenerationManager {
                 }
             }
             // Update
-            String targetSchemaTable = outTableName;
-            IElementParameter eltSchemaNameParam = source.getElementParameter("ELT_SCHEMA_NAME"); //$NON-NLS-1$
-            if (eltSchemaNameParam != null && eltSchemaNameParam.getValue() != null) {
-                String schema = TalendQuoteUtils.removeQuotesIfExist(String.valueOf(eltSchemaNameParam.getValue()));
-                if (org.apache.commons.lang.StringUtils.isNotEmpty(schema)) {
-                    targetSchemaTable = addQuotes(schema) + DbMapSqlConstants.DOT + addQuotes(outTableName);
-                }
-            }
+            String targetSchemaTable = getTargetSchemaTable(component, outTableName);
 
             appendSqlQuery(sb, "\"", false); //$NON-NLS-1$
             appendSqlQuery(sb, DbMapSqlConstants.UPDATE);
@@ -2204,5 +2217,10 @@ public abstract class DbGenerationManager {
         sqlQuery = handleQuery(sqlQuery);
         queryColumnsName = handleQuery(queryColumnsName);
         return sqlQuery;
+    }
+
+    protected boolean isVariable(String expression) {
+        return !org.apache.commons.lang.StringUtils.isEmpty(expression)
+                && (ContextParameterUtils.isContainContextParam(expression) || parser.getGlobalMapSet(expression).size() > 0);
     }
 }
