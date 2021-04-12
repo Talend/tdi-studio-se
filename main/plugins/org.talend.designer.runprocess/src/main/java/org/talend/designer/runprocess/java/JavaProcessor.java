@@ -1356,7 +1356,8 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
         // create classpath.jar
         if (!isExportConfig() && !isSkipClasspathJar() && isCorrespondingOS()) {
             try {
-                libsStr = ClasspathsJarGenerator.createJar(getProperty(), libsStr, classPathSeparator, useRelativeClasspath);
+                libsStr = ClasspathsJarGenerator.createJar(getProperty(), libsStr, classPathSeparator, useRelativeClasspath,
+                        ProcessorUtilities.isDynamicJobAndCITest());
             } catch (Exception e) {
                 throw new ProcessorException(e);
             }

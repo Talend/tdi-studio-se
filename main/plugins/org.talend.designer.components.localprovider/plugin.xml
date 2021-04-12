@@ -1834,9 +1834,8 @@
 
         <libraryNeeded
             context="plugin:org.talend.libraries.apache.common"
-            id="commons-collections-3.2.1.jar"
-            name="commons-collections-3.2.1.jar" mvn_uri="mvn:org.talend.libraries/commons-collections-3.2.1/6.0.0"
-            uripath="platform:/plugin/org.talend.libraries.apache.common/lib/commons-collections-3.2.1.jar"
+            id="commons-collections-3.2.2.jar"
+            name="commons-collections-3.2.2.jar" mvn_uri="mvn:commons-collections/commons-collections/3.2.2"
             bundleID="" />
 
         <libraryNeeded
@@ -2483,10 +2482,9 @@
             uripath="platform:/plugin/org.talend.libraries.apache.common/lib/commons-collections4-4.0.jar">
         </libraryNeeded>
         <libraryNeeded
-            id="commons-collections-3.2.1.jar"
-            name="commons-collections-3.2.1.jar" mvn_uri="mvn:org.talend.libraries/commons-collections-3.2.1/6.0.0"
-            context="plugin:org.talend.libraries.apache.common"
-            uripath="platform:/plugin/org.talend.libraries.apache.common/lib/commons-collections-3.2.1.jar">
+            id="commons-collections-3.2.2.jar"
+            name="commons-collections-3.2.2.jar" mvn_uri="mvn:commons-collections/commons-collections/3.2.2"
+            context="plugin:org.talend.libraries.apache.common">
         </libraryNeeded>
         <libraryNeeded
             id="commons-io-2.4.jar"
@@ -3036,7 +3034,7 @@
 	             id="commons-cli-1.2.jar">
 	         </library>
 	         <library
-	             id="commons-collections-3.2.1.jar">
+	             id="commons-collections-3.2.2.jar">
 	         </library>
 	         <library
 	             id="guava-11.0.2.jar">
@@ -3065,7 +3063,6 @@
                 name="HDFS-LIB-HDP_2_3">
             <library id="avro-1.7.5.jar"/>
             <library id="commons-cli-1.2.jar"/>
-            <library id="commons-collections-3.2.1.jar"/>
             <library id="commons-configuration-1.6.jar"/>
             <library id="commons-codec-1.4.jar"/>
             <library id="commons-io-2.4.jar"/>
@@ -3114,7 +3111,7 @@
 	             id="commons-cli-1.2.jar">
 	         </library>
 	         <library
-	             id="commons-collections-3.2.1.jar">
+	             id="commons-collections-3.2.2.jar">
 	         </library>
 	         <library
 	             id="guava-11.0.2.jar">
@@ -3198,7 +3195,7 @@
                  id="commons-cli-1.2.jar">
              </library>
              <library
-                 id="commons-collections-3.2.1.jar">
+                 id="commons-collections-3.2.2.jar">
              </library>
              <library
                  id="commons-io-2.4.jar">
@@ -3276,7 +3273,7 @@
 	             id="commons-logging-1.1.3.jar">
 	         </library>
 	         <library
-	             id="commons-collections-3.2.1.jar">
+	             id="commons-collections-3.2.2.jar">
 	         </library>
 	         <library
 	             id="commons-configuration-1.6.jar">
@@ -3324,7 +3321,7 @@
                  id="commons-logging-1.1.3.jar">
              </library>
              <library
-                 id="commons-collections-3.2.1.jar">
+                 id="commons-collections-3.2.2.jar">
              </library>
              <library
                  id="commons-configuration-1.6.jar">
@@ -3385,7 +3382,7 @@
 	             id="commons-codec-1.4.jar">
 	         </library>
 	         <library
-	             id="commons-collections-3.2.1.jar">
+	             id="commons-collections-3.2.2.jar">
 	         </library>
 	         <library
 	             id="guava-11.0.2.jar">
@@ -3463,7 +3460,7 @@
 	             id="commons-codec-1.4.jar">
 	         </library>
 	         <library
-	             id="commons-collections-3.2.1.jar">
+	             id="commons-collections-3.2.2.jar">
 	         </library>
 	         <library
 	             id="guava-11.0.2.jar">
@@ -3520,7 +3517,7 @@
 	             id="guava-11.0.2.jar">
 	         </library>
 	         <library
-	             id="commons-collections-3.2.1.jar">
+	             id="commons-collections-3.2.2.jar">
 	         </library>
 	         <library
 	             id="commons-cli-1.2.jar">
@@ -3556,7 +3553,7 @@
             <library id="avro-1.7.5.jar"/>
             <library id="commons-cli-1.2.jar"/>
             <library id="commons-codec-1.4.jar"/>
-            <library id="commons-collections-3.2.1.jar"/>
+            <library id="commons-collections-3.2.2.jar"/>
             <library id="commons-configuration-1.6.jar"/>
             <library id="commons-io-2.4.jar"/>
             <library id="commons-lang-2.6.jar"/>
@@ -3658,7 +3655,7 @@
                  id="commons-codec-1.4.jar">
              </library>
              <library
-                 id="commons-collections-3.2.1.jar">
+                 id="commons-collections-3.2.2.jar">
              </library>
              <library
                  id="guava-11.0.2.jar">
@@ -3748,7 +3745,7 @@
                  id="commons-codec-1.4.jar">
              </library>
              <library
-                 id="commons-collections-3.2.1.jar">
+                 id="commons-collections-3.2.2.jar">
              </library>
              <library
                  id="httpcore-4.3.2.jar">
@@ -3859,7 +3856,7 @@
 	             id="commons-codec-1.4.jar">
 	         </library>
 	         <library
-	             id="commons-collections-3.2.1.jar">
+	             id="commons-collections-3.2.2.jar">
 	         </library>
 	         <library
 	             id="guava-13.0.1.jar">
@@ -3943,7 +3940,7 @@
                  id="commons-codec-1.4.jar">
              </library>
              <library
-                 id="commons-collections-3.2.1.jar">
+                 id="commons-collections-3.2.2.jar">
              </library>
              <library
                  id="guava-13.0.1.jar">
@@ -4142,7 +4139,7 @@
 	             id="commons-lang-2.6.jar">
 	         </library>
 	         <library
-	             id="commons-collections-3.2.1.jar">
+	             id="commons-collections-3.2.2.jar">
 	         </library>
 	         <library
 	             id="protobuf-java-2.5.0.jar">
@@ -4208,7 +4205,7 @@
 	             id="commons-lang-2.6.jar">
 	         </library>
 	         <library
-	             id="commons-collections-3.2.1.jar">
+	             id="commons-collections-3.2.2.jar">
 	         </library>
 	         <library
 	             id="protobuf-java-2.5.0.jar">
@@ -4230,7 +4227,7 @@
                 id="HBASE-LIB-HDP_2_3"
                 name="HBASE-LIB-HDP_2_3">
             <library id="commons-codec-1.9.jar"/>
-            <library id="commons-collections-3.2.1.jar"/>
+            <library id="commons-collections-3.2.2.jar"/>
             <library id="commons-configuration-1.6.jar"/>
             <library id="commons-lang-2.6.jar"/>
             <library id="commons-logging-1.2.jar"/>
@@ -4306,7 +4303,7 @@
 	             id="commons-lang-2.6.jar">
 	         </library>
 	         <library
-	             id="commons-collections-3.2.1.jar">
+	             id="commons-collections-3.2.2.jar">
 	         </library>
 	         <library
 	             id="protobuf-java-2.5.0.jar">
@@ -4348,7 +4345,7 @@
 	             id="commons-logging-1.1.3.jar">
 	         </library>
 	         <library
-	             id="commons-collections-3.2.1.jar">
+	             id="commons-collections-3.2.2.jar">
 	         </library>
 	         <library
 	             id="commons-configuration-1.6.jar">
@@ -4402,7 +4399,7 @@
                  id="commons-logging-1.1.3.jar">
              </library>
              <library
-                 id="commons-collections-3.2.1.jar">
+                 id="commons-collections-3.2.2.jar">
              </library>
              <library
                  id="commons-configuration-1.6.jar">
@@ -4490,7 +4487,7 @@
 	             id="commons-cli-1.2.jar">
 	         </library>
 	         <library
-	             id="commons-collections-3.2.1.jar">
+	             id="commons-collections-3.2.2.jar">
 	         </library>
 	         <library
 	             id="protobuf-java-2.5.0.jar">
@@ -4571,7 +4568,7 @@
 	             id="commons-cli-1.2.jar">
 	         </library>
 	         <library
-	             id="commons-collections-3.2.1.jar">
+	             id="commons-collections-3.2.2.jar">
 	         </library>
 	         <library
 	             id="protobuf-java-2.5.0.jar">
@@ -4634,7 +4631,7 @@
 	             id="commons-cli-1.2.jar">
 	         </library>
 	         <library
-	             id="commons-collections-3.2.1.jar">
+	             id="commons-collections-3.2.2.jar">
 	         </library>
 	         <library
 	             id="protobuf-java-2.5.0.jar">
@@ -4667,7 +4664,7 @@
             <library id="avro-1.7.5.jar"/>
             <library id="commons-cli-1.2.jar"/>
             <library id="commons-codec-1.4.jar"/>
-            <library id="commons-collections-3.2.1.jar"/>
+            <library id="commons-collections-3.2.2.jar"/>
             <library id="commons-configuration-1.6.jar"/>
             <library id="commons-io-2.4.jar"/>
             <library id="commons-lang-2.6.jar"/>
@@ -4751,7 +4748,7 @@
 	             id="commons-cli-1.2.jar">
 	         </library>
 	         <library
-	             id="commons-collections-3.2.1.jar">
+	             id="commons-collections-3.2.2.jar">
 	         </library>
 	         <library
 	             id="protobuf-java-2.5.0.jar">
@@ -4862,7 +4859,7 @@
 	             id="commons-codec-1.4.jar">
 	         </library>
 	         <library
-	             id="commons-collections-3.2.1.jar">
+	             id="commons-collections-3.2.2.jar">
 	         </library>
 	         <library
 	             id="protobuf-java-2.5.0.jar">
@@ -4955,7 +4952,7 @@
                  id="commons-codec-1.4.jar">
              </library>
              <library
-                 id="commons-collections-3.2.1.jar">
+                 id="commons-collections-3.2.2.jar">
              </library>
              <library
                  id="protobuf-java-2.5.0.jar">
@@ -5031,7 +5028,7 @@
 	             id="commons-codec-1.4.jar">
 	         </library>
 	         <library
-	             id="commons-collections-3.2.1.jar">
+	             id="commons-collections-3.2.2.jar">
 	         </library>
 	         <library
 	             id="protobuf-java-2.5.0.jar">
@@ -5112,7 +5109,7 @@
 	             id="commons-codec-1.4.jar">
 	         </library>
 	         <library
-	             id="commons-collections-3.2.1.jar">
+	             id="commons-collections-3.2.2.jar">
 	         </library>
 	         <library
 	             id="protobuf-java-2.5.0.jar">
@@ -5175,7 +5172,7 @@
 	             id="commons-codec-1.4.jar">
 	         </library>
 	         <library
-	             id="commons-collections-3.2.1.jar">
+	             id="commons-collections-3.2.2.jar">
 	         </library>
 	         <library
 	             id="protobuf-java-2.5.0.jar">
@@ -5210,7 +5207,7 @@
             <library id="avro-1.7.5.jar"/>
             <library id="commons-cli-1.2.jar"/>
             <library id="commons-codec-1.4.jar"/>
-            <library id="commons-collections-3.2.1.jar"/>
+            <library id="commons-collections-3.2.2.jar"/>
             <library id="commons-configuration-1.6.jar"/>
             <library id="commons-io-2.4.jar"/>
             <library id="commons-lang-2.6.jar"/>
@@ -5297,7 +5294,7 @@
                  id="commons-codec-1.4.jar">
              </library>
              <library
-                 id="commons-collections-3.2.1.jar">
+                 id="commons-collections-3.2.2.jar">
              </library>
              <library
                  id="commons-io-2.4.jar">
@@ -5411,7 +5408,7 @@
                  id="commons-codec-1.4.jar">
              </library>
              <library
-                 id="commons-collections-3.2.1.jar">
+                 id="commons-collections-3.2.2.jar">
              </library>
              <library
                  id="commons-io-2.4.jar">
@@ -5546,7 +5543,7 @@
 	             id="commons-codec-1.4.jar">
 	         </library>
 	         <library
-	             id="commons-collections-3.2.1.jar">
+	             id="commons-collections-3.2.2.jar">
 	         </library>
 	         <library
 	             id="protobuf-java-2.5.0.jar">
@@ -5660,7 +5657,7 @@
                  id="commons-codec-1.4.jar">
              </library>
              <library
-                 id="commons-collections-3.2.1.jar">
+                 id="commons-collections-3.2.2.jar">
              </library>
              <library
                  id="protobuf-java-2.5.0.jar">
@@ -6276,7 +6273,7 @@
 	             id="commons-codec-1.4.jar">
 	         </library>
 	         <library
-	             id="commons-collections-3.2.1.jar">
+	             id="commons-collections-3.2.2.jar">
 	         </library>
 	         <library
 	             id="protobuf-java-2.5.0.jar">
@@ -6423,7 +6420,7 @@
 	             id="commons-codec-1.4.jar">
 	         </library>
 	         <library
-	             id="commons-collections-3.2.1.jar">
+	             id="commons-collections-3.2.2.jar">
 	         </library>
 	         <library
 	             id="protobuf-java-2.5.0.jar">
@@ -6531,7 +6528,7 @@
 	             id="commons-codec-1.4.jar">
 	         </library>
 	         <library
-	             id="commons-collections-3.2.1.jar">
+	             id="commons-collections-3.2.2.jar">
 	         </library>
 	         <library
 	             id="protobuf-java-2.5.0.jar">
@@ -6580,7 +6577,7 @@
             <library id="avro-1.7.5.jar"/>
             <library id="commons-cli-1.2.jar"/>
             <library id="commons-codec-1.4.jar"/>
-            <library id="commons-collections-3.2.1.jar"/>
+            <library id="commons-collections-3.2.2.jar"/>
             <library id="commons-configuration-1.6.jar"/>
             <library id="commons-httpclient-3.0.1.jar"/>
             <library id="commons-io-2.4.jar"/>
@@ -6710,7 +6707,7 @@
 	             id="commons-codec-1.4.jar">
 	         </library>
 	         <library
-	             id="commons-collections-3.2.1.jar">
+	             id="commons-collections-3.2.2.jar">
 	         </library>
 	         <library
 	             id="protobuf-java-2.5.0.jar">
@@ -6857,7 +6854,7 @@
                  id="commons-codec-1.4.jar">
              </library>
              <library
-                 id="commons-collections-3.2.1.jar">
+                 id="commons-collections-3.2.2.jar">
              </library>
              <library
                  id="slf4j-api-1.7.5.jar">
@@ -6992,7 +6989,7 @@
 	             id="commons-codec-1.4.jar">
 	         </library>
 	         <library
-	             id="commons-collections-3.2.1.jar">
+	             id="commons-collections-3.2.2.jar">
 	         </library>
 	         <library
 	             id="protobuf-java-2.5.0.jar">
@@ -7122,7 +7119,7 @@
                  id="commons-codec-1.4.jar">
              </library>
              <library
-                 id="commons-collections-3.2.1.jar">
+                 id="commons-collections-3.2.2.jar">
              </library>
              <library
                  id="protobuf-java-2.5.0.jar">
@@ -7258,7 +7255,7 @@
                  id="commons-codec-1.4.jar">
              </library>
              <library
-                 id="commons-collections-3.2.1.jar">
+                 id="commons-collections-3.2.2.jar">
              </library>
              <library
                  id="protobuf-java-2.5.0.jar">
@@ -7693,7 +7690,7 @@
                 name="TEZ-LIB-HDP_2_3">
             <library id="commons-cli-1.2.jar"/>
             <library id="commons-codec-1.4.jar"/>
-            <library id="commons-collections-3.2.1.jar"/>
+            <library id="commons-collections-3.2.2.jar"/>
             <library id="commons-collections4-4.0.jar"/>
             <library id="commons-io-2.4.jar"/>
             <library id="commons-lang-2.6.jar"/>
@@ -7758,7 +7755,7 @@
                 id="commons-collections4-4.0.jar">
             </library>
             <library
-                id="commons-collections-3.2.1.jar">
+                id="commons-collections-3.2.2.jar">
             </library>
             <library
                 id="commons-io-2.4.jar">
@@ -8069,7 +8066,7 @@
 	             id="commons-logging-1.1.3.jar">
 	         </library>
 	         <library
-	             id="commons-collections-3.2.1.jar">
+	             id="commons-collections-3.2.2.jar">
 	         </library>
 	         <library
 	             id="commons-configuration-1.6.jar">
