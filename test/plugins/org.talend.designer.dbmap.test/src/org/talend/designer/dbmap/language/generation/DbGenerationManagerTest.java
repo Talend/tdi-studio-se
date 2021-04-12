@@ -25,6 +25,7 @@ import org.talend.core.model.metadata.IMetadataColumn;
 import org.talend.core.model.metadata.IMetadataTable;
 import org.talend.core.model.metadata.MetadataColumn;
 import org.talend.core.model.metadata.MetadataTable;
+import org.talend.core.model.metadata.types.JavaTypesManager;
 import org.talend.core.model.process.EConnectionType;
 import org.talend.core.model.process.IConnection;
 import org.talend.core.model.process.IContextParameter;
@@ -1443,5 +1444,222 @@ public class DbGenerationManagerTest extends DbGenerationManagerTestHelper {
                 + "\" + context.schema2+\"." + "\"+lookup_table+ \" a2\"";
         String query = dbManager.buildSqlSelect(dbMapComponent, "grade");
         assertEquals(expectedQuery, query);
+    }
+
+    @Test
+    public void testELTMapUpdate_ContextCase1() {
+        String schema = "context.schema";
+        String main_table = "src1";
+        String main_alias = "";
+        String lookup_table = "src2";
+        String lookup_alias = "";
+        String outTable1 = "tar";
+
+        init4ELTMapUpdate(schema, main_table, main_alias, lookup_table, lookup_alias, outTable1);
+        String query = dbManager.buildSqlSelect(dbMapComponent, schema + "." + outTable1);
+        String expectedQuery = "\"UPDATE \" +context.schema+ \".tar\n" + "SET tarColumn = A.id,\n" + "tarColumn1 = A.name\n"
+                + "FROM \" +context.schema+\".\"+src1+ \" A , \" +context.schema+\".\"+src2+ \" B\n" + "WHERE\n"
+                + "  B.id = A.id\"";
+
+        assertEquals(expectedQuery, query);
+    }
+
+    @Test
+    public void testELTMapUpdate_ContextCase2() {
+        String schema = "context.schema";
+        String main_table = "context.src1";
+        String lookup_table = "src2";
+        String outTable1 = "tar";
+        String main_alias = "";
+        String lookup_alias = "";
+
+        init4ELTMapUpdate(schema, main_table, main_alias, lookup_table, lookup_alias, outTable1);
+        String query = dbManager.buildSqlSelect(dbMapComponent, schema + "." + outTable1);
+        String expectedQuery = "\"UPDATE \" +context.schema+ \".tar\n" + "SET tarColumn = A.id,\n" + "tarColumn1 = A.name\n"
+                + "FROM \" +context.schema+\".\"+context.src1+ \" A , \" +context.schema+\".\"+src2+ \" B\n" + "WHERE\n"
+                + "  B.id = A.id\"";
+
+        assertEquals(expectedQuery, query);
+    }
+
+    @Test
+    public void testELTMapUpdate_ContextCase3() {
+        String schema = "context.schema";
+        String main_table = "context.src1";
+        String lookup_table = "context.src2";
+        String outTable1 = "tar";
+        String main_alias = "";
+        String lookup_alias = "";
+
+        init4ELTMapUpdate(schema, main_table, main_alias, lookup_table, lookup_alias, outTable1);
+        String query = dbManager.buildSqlSelect(dbMapComponent, schema + "." + outTable1);
+        String expectedQuery = "\"UPDATE \" +context.schema+ \".tar\n" + "SET tarColumn = A.id,\n" + "tarColumn1 = A.name\n"
+                + "FROM \" +context.schema+\".\"+context.src1+ \" A , \" +context.schema+\".\"+context.src2+ \" B\n" + "WHERE\n"
+                + "  B.id = A.id\"";
+
+        assertEquals(expectedQuery, query);
+    }
+
+    @Test
+    public void testELTMapUpdate_ContextCase4() {
+        String schema = "context.schema";
+        String main_table = "context.src1";
+        String lookup_table = "context.src2";
+        String outTable1 = "context.tar";
+        String main_alias = "";
+        String lookup_alias = "";
+
+        init4ELTMapUpdate(schema, main_table, main_alias, lookup_table, lookup_alias, outTable1);
+        String query = dbManager.buildSqlSelect(dbMapComponent, schema + "." + outTable1);
+        String expectedQuery = "\"UPDATE \" +context.schema+ \".\" +context.tar+ \"\n" + "SET tarColumn = A.id,\n"
+                + "tarColumn1 = A.name\n"
+                + "FROM \" +context.schema+\".\"+context.src1+ \" A , \" +context.schema+\".\"+context.src2+ \" B\n" + "WHERE\n"
+                + "  B.id = A.id\"";
+
+        assertEquals(expectedQuery, query);
+    }
+
+    protected void init4ELTMapUpdate(String schema, String main_table, String main_alias, String lookup_table,
+            String lookup_alias, String outTable1) {
+        dbMapComponent = new DbMapComponent();
+
+        List<IMetadataTable> metadataList = new ArrayList<IMetadataTable>();
+
+        MetadataTable metadataTable = getMetadataTable(new String[] { "newColumn", "newColumn1" }, new String[] { "id", "name" });
+        metadataTable.setLabel(schema + "." + outTable1);
+        metadataList.add(metadataTable);
+
+        dbMapComponent.setMetadataList(metadataList);
+
+        // main table
+        ExternalDbMapData externalData = new ExternalDbMapData();
+        List<ExternalDbMapTable> inputs = new ArrayList<ExternalDbMapTable>();
+        List<ExternalDbMapTable> outputs = new ArrayList<ExternalDbMapTable>();
+        // main table
+        ExternalDbMapTable inputTable = new ExternalDbMapTable();
+        inputTable.setTableName(schema + "." + main_table);
+        inputTable.setName(schema + "." + main_table);
+        inputTable.setAlias("A");
+        List<ExternalDbMapEntry> entities = getMetadataEntities(new String[] { "newColumn", "newColumn1" }, new String[2]);
+        inputTable.setMetadataTableEntries(entities);
+        inputs.add(inputTable);
+
+        // lookup table
+        inputTable = new ExternalDbMapTable();
+        inputTable.setTableName(schema + "." + lookup_table);
+        inputTable.setName(schema + "." + lookup_table);
+        inputTable.setAlias("B");
+        entities = getMetadataEntities(new String[] { "newColumn", "newColumn1" }, new String[2]);
+        ExternalDbMapEntry newColumn = entities.get(0);
+        newColumn.setExpression("A.newColumn");
+        newColumn.setOperator("=");
+        inputTable.setJoinType("INNER_JOIN");
+        newColumn.setJoin(true);
+        inputTable.setMetadataTableEntries(entities);
+        inputs.add(inputTable);
+
+        // output
+        ExternalDbMapTable outputTable = new ExternalDbMapTable();
+        outputTable.setName(schema + "." + outTable1);
+        outputTable.setTableName(outTable1);
+        String[] names = new String[] { "tarColumn", "tarColumn1" };
+        String[] expressions = new String[] { "A.newColumn", "A.newColumn1" };
+        outputTable.setMetadataTableEntries(getMetadataEntities(names, expressions));
+        outputs.add(outputTable);
+
+        externalData.setInputTables(inputs);
+        externalData.setOutputTables(outputs);
+        dbMapComponent.setExternalData(externalData);
+
+        List<IConnection> incomingConnections = new ArrayList<IConnection>();
+        incomingConnections.add(
+                mockConnection(schema, main_table, new String[] { "newColumn", "newColumn1" }, new String[] { "id", "name" }));
+        incomingConnections.add(
+                mockConnection(schema, lookup_table, new String[] { "newColumn", "newColumn1" }, new String[] { "id", "name" }));
+        dbMapComponent.setIncomingConnections(incomingConnections);
+
+        List<IConnection> outputConnections = new ArrayList<IConnection>();
+        Node map1 = mockNode(dbMapComponent);
+        IConnection connection = mockConnection(map1, schema, main_table, new String[] { "id", "name" });
+        targetComponent = ComponentsFactoryProvider.getInstance().get("tELTMSSqlOutput",
+                ComponentCategory.CATEGORY_4_DI.getName());
+        connection.getMetadataTable().getColumn("id").setLabel("newColumn");
+        connection.getMetadataTable().getColumn("name").setLabel("newColumn1");
+        // add target
+        DataNode output = new DataNode();
+        List<IElementParameter> paraList = new ArrayList<IElementParameter>();
+        ElementParameter param = new ElementParameter(output);
+        param.setName("USE_UPDATE_STATEMENT"); //$NON-NLS-1$
+        param.setValue("true"); //$NON-NLS-1$
+        paraList.add(param);
+        param = new ElementParameter(output);
+        param.setName("ELT_SCHEMA_NAME");
+        param.setValue(schema);
+        paraList.add(param);
+        output.setElementParameters(paraList);
+        output.setComponent(targetComponent);
+
+        DataConnection dataConnection = new DataConnection();
+        dataConnection.setName(schema + "." + outTable1);
+        dataConnection.setActivate(true);
+        dataConnection.setLineStyle(EConnectionType.FLOW_MAIN);
+        dataConnection.setTarget(output);
+        IMetadataTable table = new MetadataTable();
+        table.setLabel(outTable1);
+        table.setTableName(outTable1);
+        List<IMetadataColumn> listColumns = new ArrayList<IMetadataColumn>();
+        for (String columnName : new String[] { "id", "name" }) {
+            IMetadataColumn column = new MetadataColumn();
+            column.setLabel(columnName);
+            column.setOriginalDbColumnName(columnName);
+            listColumns.add(column);
+        }
+        table.setListColumns(listColumns);
+        dataConnection.setMetadataTable(table);
+        // List<DataConnection> dataConnections = new ArrayList<>();
+        outputConnections.add(dataConnection);
+        outputConnections.add(connection);
+        dbMapComponent.setOutgoingConnections(outputConnections);
+
+        Process process = mock(Process.class);
+        when(process.getContextManager()).thenReturn(createTestJobContextManager());
+        dbMapComponent.setProcess(process);
+
+        IContextParameter lookupTableContext = new JobContextParameter();
+        lookupTableContext.setName("lookup");
+        lookupTableContext.setValue("lookupTable");
+        lookupTableContext.setType("String");
+    }
+
+    private JobContextManager createTestJobContextManager() {
+        JobContextManager contextManager = new JobContextManager();
+        List<IContextParameter> contextParameterList = contextManager.getDefaultContext().getContextParameterList();
+
+        // create context parameters
+        IContextParameter contextParam = new JobContextParameter();
+        contextParam.setName("schema");
+        contextParam.setType(JavaTypesManager.getDefaultJavaType().getId());
+        contextParam.setValue("schema");
+        contextParameterList.add(contextParam);
+
+        contextParam = new JobContextParameter();
+        contextParam.setName("src1");
+        contextParam.setType(JavaTypesManager.getDefaultJavaType().getId());
+        contextParam.setValue("src1");
+        contextParameterList.add(contextParam);
+
+        contextParam = new JobContextParameter();
+        contextParam.setName("src2");
+        contextParam.setType(JavaTypesManager.getDefaultJavaType().getId());
+        contextParam.setValue("src2");
+        contextParameterList.add(contextParam);
+
+        contextParam = new JobContextParameter();
+        contextParam.setName("tar");
+        contextParam.setType(JavaTypesManager.getDefaultJavaType().getId());
+        contextParam.setValue("tar");
+        contextParameterList.add(contextParam);
+
+        return contextManager;
     }
 }
