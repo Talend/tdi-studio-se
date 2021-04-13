@@ -94,6 +94,7 @@ try {
 %>
 
 int nbLineInput_<%=cid%> = 0;
+globalMap.put("<%=cid %>_NB_LINE", nbLineInput_<%=cid%>);
 
 org.talend.sdk.component.runtime.di.JobStateAware.init(tempMapper_<%=cid%>, globalMap);
 tempMapper_<%=cid%>.start();
