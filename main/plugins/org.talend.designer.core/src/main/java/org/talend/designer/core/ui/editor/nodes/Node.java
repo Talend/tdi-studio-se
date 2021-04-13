@@ -5363,6 +5363,13 @@ public class Node extends Element implements IGraphicalNode {
         return isJoblet;
     }
 
+    public boolean isProcessNode() {
+        if ("tRunJob".equals(getComponent().getName()) || isJoblet()) {
+            return true;
+        }
+        return false;
+    }
+
     public boolean isJoblet() {
         boolean isJoblet = false;
         if (PluginChecker.isJobLetPluginLoaded()) {
