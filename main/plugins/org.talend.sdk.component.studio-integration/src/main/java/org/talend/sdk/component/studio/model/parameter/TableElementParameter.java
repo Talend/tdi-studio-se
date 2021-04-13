@@ -30,6 +30,7 @@ import org.talend.core.model.process.IElement;
 import org.talend.core.model.process.IElementParameter;
 import org.talend.designer.core.model.components.ElementParameter;
 import org.talend.sdk.component.studio.model.action.IActionParameter;
+import org.talend.sdk.component.studio.util.TaCoKitUtil;
 
 /**
  * Represents Table parameter. Table parameter is ElementParameter, which EParameterFieldType is TABLE
@@ -56,6 +57,7 @@ public class TableElementParameter extends TaCoKitElementParameter {
         for (final IElementParameter param : columns) {
             columnNames.add(param.getName());
             displayNames.add(param.getDisplayName());
+            TaCoKitUtil.fillDefaultItemsList(param, null);
         }
         setListItemsDisplayName(displayNames.toArray(new String[0]));
         setListItemsDisplayCodeName(columnNames.toArray(new String[0]));

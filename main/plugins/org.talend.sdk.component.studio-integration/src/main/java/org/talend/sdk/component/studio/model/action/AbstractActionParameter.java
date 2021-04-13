@@ -28,6 +28,10 @@ public abstract class AbstractActionParameter implements IActionParameter {
      */
     private final String parameter;
 
+    protected int rowNumber = -1;
+
+    protected boolean missingRequired;
+
     /**
      * Creates ActionParameter
      *
@@ -72,5 +76,20 @@ public abstract class AbstractActionParameter implements IActionParameter {
             return TaCoKitUtil.isDataStoreParameter((INode) parameter.getElement(), parameter.getName());
         }
         return false;
+    }
+    public int getRowNumber() {
+        return this.rowNumber;
+    }
+
+    public void setRowNumber(int rowNumber) {
+        this.rowNumber = rowNumber;
+    }
+
+    public boolean isMissingRequired() {
+        return this.missingRequired;
+    }
+
+    public void setMissingRequired(boolean missingRequired) {
+        this.missingRequired = missingRequired;
     }
 }

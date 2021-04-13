@@ -1269,7 +1269,8 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
 
     private boolean isTable(final IElementParameter parameter) {
         return parameter.getFieldType().equals(EParameterFieldType.TABLE) ||
-                parameter.getFieldType().equals(EParameterFieldType.TACOKIT_SUGGESTABLE_TABLE);
+                parameter.getFieldType().equals(EParameterFieldType.TACOKIT_SUGGESTABLE_TABLE)
+                || parameter.getFieldType().equals(EParameterFieldType.TACOKIT_TABLE);
     }
 
     protected boolean isNeedConvertToHex(String value) {
@@ -2223,7 +2224,8 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
                                 IElementParameter columnParam = (IElementParameter) element;
                                 if (columnParam.getFieldType() == EParameterFieldType.COLUMN_LIST
                                         || columnParam.getFieldType() == EParameterFieldType.PREV_COLUMN_LIST
-                                        || columnParam.getFieldType() == EParameterFieldType.LOOKUP_COLUMN_LIST) {
+                                        || columnParam.getFieldType() == EParameterFieldType.LOOKUP_COLUMN_LIST
+                                        || columnParam.getFieldType() == EParameterFieldType.TACOKIT_VALUE_SELECTION) {
                                     for (Map<String, Object> columnMap : values) {
                                         Object column = columnMap.get(columnParam.getName());
                                         if (column == null || "".equals(column)) { //$NON-NLS-1$

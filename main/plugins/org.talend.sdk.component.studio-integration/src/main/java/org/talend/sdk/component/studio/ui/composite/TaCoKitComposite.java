@@ -15,8 +15,8 @@
  */
 package org.talend.sdk.component.studio.ui.composite;
 
-import static java.util.stream.Stream.of;
-import static org.talend.sdk.component.studio.model.parameter.SchemaElementParameter.guessButtonName;
+import static java.util.stream.Stream.*;
+import static org.talend.sdk.component.studio.model.parameter.SchemaElementParameter.*;
 
 import java.beans.PropertyChangeListener;
 import java.util.List;
@@ -381,8 +381,12 @@ public class TaCoKitComposite extends MissingSettingsMultiThreadDynamicComposite
     }
 
     protected Control addWidget(final Composite parent, final IElementParameter parameter, final Control previous) {
-        final AbstractElementPropertySectionController controller =
-                generator.getController(parameter.getFieldType(), this);
+        EParameterFieldType fieldType = parameter.getFieldType();
+        // Use tacokit table controller but still keep TABLE type for the parameter.
+        if (EParameterFieldType.TABLE == parameter.getFieldType()) {
+            fieldType = EParameterFieldType.TACOKIT_TABLE;
+        }
+        final AbstractElementPropertySectionController controller = generator.getController(fieldType, this);
         return controller.createControl(parent, parameter, 1, 1, OPTIONS_INDENT, previous);
     }
 
