@@ -138,38 +138,10 @@ String identityKey = ElementParameterParser.getValue(node, "__IDENTITY_FIELD__")
 getManager(dbmsId, cid, node).setIsSpecifyIdentityKey(isSpecifyIdentityKey);
 %>
 
+<%@ include file="@{org.talend.designer.components.localprovider}/components/templates/DB/Output/CheckKeysForUpdateAndDelete.javajet"%>
+
 <%
-if(("UPDATE").equals(dataAction) || ("INSERT_OR_UPDATE").equals(dataAction) || ("UPDATE_OR_INSERT").equals(dataAction)) {
-    int updateKeyCount = 0;
-    if(stmtStructure != null) {
-        for(Column column : stmtStructure) {
-            if(column.isUpdateKey() && !column.isDynamic()) {
-                updateKeyCount++;
-            }
-        }
-        %>
-        int updateKeyCount_<%=cid%> = <%=updateKeyCount%>;
-        if(updateKeyCount_<%=cid%> < 1) {
-            throw new RuntimeException("For update, Schema must have a key");
-        }
-        <%
-    }
-} else if(("DELETE").equals(dataAction)) {
-    int deleteKeyCount = 0;
-    if(stmtStructure != null) {
-        for(Column column : stmtStructure) {
-            if(column.isDeleteKey() && !column.isDynamic()) {
-                deleteKeyCount++;
-            }
-        }
-        %>
-        int deleteKeyCount_<%=cid%> = <%=deleteKeyCount%>;
-        if(deleteKeyCount_<%=cid%> < 1) {
-            throw new RuntimeException("For delete, Schema must have a key");
-        }
-        <%
-    }
-} else if (("INSERT_IF_NOT_EXIST").equals(dataAction)){
+ if (("INSERT_IF_NOT_EXIST").equals(dataAction)){
 	int insertKeyCount = 0;
     if(stmtStructure != null) {
         for(Column column : stmtStructure) {

@@ -90,7 +90,7 @@ public class PerformancePreferencePage extends FieldEditorPreferencePage impleme
             textControl.setEnabled(getPreferenceStore().getBoolean(ITalendCorePrefConstants.DB_CONNECTION_TIMEOUT_ACTIVED));
             addField(dbConnTimeoutActive);
             addField(dbConnTimeout);
-            addSVNInforAutoCheckFiled();
+            addRemoteInforAutoCheckFiled();
         } else {
             addField(new BooleanFieldEditor(ITalendCorePrefConstants.DEACTIVE_REPOSITORY_UPDATE,
                     Messages.getString("PerformancePreferencePage.display.deactiveRepositoryUpdate"), //$NON-NLS-1$
@@ -137,7 +137,7 @@ public class PerformancePreferencePage extends FieldEditorPreferencePage impleme
             // addField(new BooleanFieldEditor(ITalendCorePrefConstants.ADD_SYSTEM_ROUTINES, Messages
             // .getString("PerformancePreferencePage.addAllSystemRoutines"),//$NON-NLS-1$
             // getFieldEditorParent()));
-            addSVNInforAutoCheckFiled();
+            addRemoteInforAutoCheckFiled();
         }
         IntegerFieldEditor codeFormatTimeout = new IntegerFieldEditor(
                 ITalendCorePrefConstants.PERFORMANCE_JAVA_PROCESS_CODE_FORMATE_TIMEOUT,
@@ -155,31 +155,34 @@ public class PerformancePreferencePage extends FieldEditorPreferencePage impleme
         addField(hbaseOrMaprDBScanLimit);
     }
 
-    private void addSVNInforAutoCheckFiled() {
-        if (PluginChecker.isSVNProviderPluginLoaded()) {
-            final CheckBoxFieldEditor autoCheckField = new CheckBoxFieldEditor(
-                    ITalendCorePrefConstants.SVN_UPDATE_INFO_AUTO_CHECK,
-                    Messages.getString("PerformancePreferencePage.autoCheckField"), getFieldEditorParent()); //$NON-NLS-1$
-            addField(autoCheckField);
-            final IntegerFieldEditor autoCheckTime = new IntegerFieldEditor(
-                    ITalendCorePrefConstants.SVN_UPDATE_INFO_AUTO_CHECK_TIME_INTERVAL,
-                    Messages.getString("PerformancePreferencePage.autoCheckTime"), //$NON-NLS-1$
-                    getFieldEditorParent());
-            autoCheckTime.setValidRange(1, 30);
-            autoCheckTime.setEnabled(getPreferenceStore().getBoolean(ITalendCorePrefConstants.SVN_UPDATE_INFO_AUTO_CHECK),
-                    getFieldEditorParent());
-            addField(autoCheckTime);
-            autoCheckField.getButton().addSelectionListener(new SelectionAdapter() {
+    private void addRemoteInforAutoCheckFiled() {
+        if (PluginChecker.isRemoteProviderPluginLoaded()) {
+            if (PluginChecker.isSVNProviderPluginLoaded()) {
+                final CheckBoxFieldEditor autoCheckField = new CheckBoxFieldEditor(
+                        ITalendCorePrefConstants.SVN_UPDATE_INFO_AUTO_CHECK,
+                        Messages.getString("PerformancePreferencePage.autoCheckField"), getFieldEditorParent()); //$NON-NLS-1$
+                addField(autoCheckField);
+                final IntegerFieldEditor autoCheckTime = new IntegerFieldEditor(
+                        ITalendCorePrefConstants.SVN_UPDATE_INFO_AUTO_CHECK_TIME_INTERVAL,
+                        Messages.getString("PerformancePreferencePage.autoCheckTime"), //$NON-NLS-1$
+                        getFieldEditorParent());
+                autoCheckTime.setValidRange(1, 30);
+                autoCheckTime.setEnabled(getPreferenceStore().getBoolean(ITalendCorePrefConstants.SVN_UPDATE_INFO_AUTO_CHECK),
+                        getFieldEditorParent());
+                addField(autoCheckTime);
+                autoCheckField.getButton().addSelectionListener(new SelectionAdapter() {
 
-                @Override
-                public void widgetSelected(SelectionEvent e) {
-                    if (autoCheckField.getButton().getSelection()) {
-                        autoCheckTime.setEnabled(true, getFieldEditorParent());
-                    } else {
-                        autoCheckTime.setEnabled(false, getFieldEditorParent());
+                    @Override
+                    public void widgetSelected(SelectionEvent e) {
+                        if (autoCheckField.getButton().getSelection()) {
+                            autoCheckTime.setEnabled(true, getFieldEditorParent());
+                        } else {
+                            autoCheckTime.setEnabled(false, getFieldEditorParent());
+                        }
                     }
-                }
-            });
+                });
+            }
+
             final CheckBoxFieldEditor autoRefreshLocksField = new CheckBoxFieldEditor(ITalendCorePrefConstants.AUTO_REFRESH_LOCKS,
                     Messages.getString("PerformancePreferencePage.autoRefreshLocksField"), getFieldEditorParent()); //$NON-NLS-1$
             addField(autoRefreshLocksField);

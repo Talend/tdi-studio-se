@@ -498,8 +498,10 @@ public final class CodeGeneratorEmittersPoolFactory {
 
                 jetBean.addClassPath("EXTERNAL_COMPONENT_" + component.getPluginExtension().toUpperCase().replaceAll("\\.", "_"), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
                         component.getPluginExtension());
-                jetBean.setClassLoader(
-                        ExternalNodesFactory.getInstance(component.getPluginExtension()).getClass().getClassLoader());
+                if (ExternalNodesFactory.getInstance(component.getPluginExtension()) != null) {
+	                jetBean.setClassLoader(
+	                        ExternalNodesFactory.getInstance(component.getPluginExtension()).getClass().getClassLoader());
+                }
             } else {
                 jetBean.setClassLoader(new CodeGeneratorEmittersPoolFactory().getClass().getClassLoader());
             }

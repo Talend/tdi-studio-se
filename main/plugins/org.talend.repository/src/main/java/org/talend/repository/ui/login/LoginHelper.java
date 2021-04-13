@@ -151,14 +151,23 @@ public class LoginHelper {
     }
 
     protected void init() {
-        if (PluginChecker.isSVNProviderPluginLoaded()) {
+        if (PluginChecker.isRemoteProviderPluginLoaded()) {
+            GlobalServiceRegister gsr = GlobalServiceRegister.getDefault();
             try {
-                svnProviderService = (ISVNProviderService) GlobalServiceRegister.getDefault().getService(
-                        ISVNProviderService.class);
-                gitProviderService = (IGITProviderService) GlobalServiceRegister.getDefault().getService(
-                        IGITProviderService.class);
+                if (gsr.isServiceRegistered(ISVNProviderService.class)) {
+                    svnProviderService = (ISVNProviderService) GlobalServiceRegister.getDefault()
+                            .getService(ISVNProviderService.class);
+                }
+            } catch (Exception e) {
+                ExceptionHandler.process(e);
+            }
+            try {
+                if (gsr.isServiceRegistered(IGITProviderService.class)) {
+                    gitProviderService = (IGITProviderService) GlobalServiceRegister.getDefault()
+                            .getService(IGITProviderService.class);
+                }
             } catch (RuntimeException e) {
-                // nothing to do
+                ExceptionHandler.process(e);
             }
         }
         prefManipulator = new PreferenceManipulator(CorePlugin.getDefault().getPreferenceStore());
@@ -935,7 +944,7 @@ public class LoginHelper {
         if (brandingConfiguration != null) {
             isOnlyRemoteConnection = brandingConfiguration.isOnlyRemoteConnection();
         }
-        if (!isOnlyRemoteConnection && PluginChecker.isSVNProviderPluginLoaded()) {
+        if (!isOnlyRemoteConnection && PluginChecker.isRemoteProviderPluginLoaded()) {
             // if this plugin loaded, then means support remote connections, then no need to filter
             return filteredConnections;
         }

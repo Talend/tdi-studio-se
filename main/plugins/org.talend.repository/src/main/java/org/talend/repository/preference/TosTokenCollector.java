@@ -13,9 +13,11 @@
 package org.talend.repository.preference;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.emf.common.util.EList;
@@ -42,10 +44,14 @@ import org.talend.core.model.repository.DynaEnum;
 import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.core.model.repository.IRepositoryViewObject;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
+import org.talend.core.runtime.maven.MavenArtifact;
+import org.talend.core.runtime.maven.MavenUrlHelper;
 import org.talend.core.ui.token.AbstractTokenCollector;
 import org.talend.core.ui.token.TokenInforUtil;
 import org.talend.core.ui.token.TokenKey;
 import org.talend.designer.core.model.utils.emf.talendfile.ContextType;
+import org.talend.designer.core.model.utils.emf.talendfile.ElementParameterType;
+import org.talend.designer.core.model.utils.emf.talendfile.ElementValueType;
 import org.talend.designer.core.model.utils.emf.talendfile.NodeType;
 import org.talend.designer.core.model.utils.emf.talendfile.ProcessType;
 import org.talend.repository.ProjectManager;
@@ -66,6 +72,12 @@ public class TosTokenCollector extends AbstractTokenCollector {
     private static final TokenKey PROJECTS = new TokenKey("projects"); //$NON-NLS-1$
 
     private static final TokenKey TYPE = new TokenKey("type"); //$NON-NLS-1$
+
+    private static final String TARGET_COMPONENT = "cMessagingEndpoint";
+
+    private static final String NODE_CAMEL_COMPONENTS = "camel.components";
+
+    private static final String NODE_CUSTOM_CAMEL_COMPONENTS = "custom.camel.components";
 
     /**
      * ggu JobTokenCollector constructor comment.
@@ -151,7 +163,7 @@ public class TosTokenCollector extends AbstractTokenCollector {
                         typeStats.put("nb", nb); //$NON-NLS-1$
                         if (ERepositoryObjectType.getAllTypesOfProcess().contains(type)) {
                             JSONObject jobDetails = new JSONObject();
-                            collectJobDetails(all, jobDetails);
+                            collectJobDetails(all, jobDetails, type);
                             typeStats.put("details", jobDetails); //$NON-NLS-1$
                         }
 
@@ -206,9 +218,11 @@ public class TosTokenCollector extends AbstractTokenCollector {
      *
      * @param all
      * @param jobDetails
+     * @param type
      * @throws JSONException
      */
-    private void collectJobDetails(List<IRepositoryViewObject> allRvo, JSONObject jobDetails) throws JSONException {
+    private void collectJobDetails(List<IRepositoryViewObject> allRvo, JSONObject jobDetails, DynaEnum type)
+            throws JSONException {
         IProxyRepositoryFactory factory = ProxyRepositoryFactory.getInstance();
         IWorkbenchWindow ww = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
         IEditorReference[] reference = new IEditorReference[0];
@@ -226,6 +240,8 @@ public class TosTokenCollector extends AbstractTokenCollector {
 
         int contextVarsNum = 0;
         int nbComponentsUsed = 0;
+        Map<String, JSONObject> camelComponentMap = new HashMap<>();
+        Map<String, JSONObject> customCamelComponentMap = new HashMap<>();
         for (IRepositoryViewObject rvo : allRvo) {
             Item item = rvo.getProperty().getItem();
             if (item instanceof ProcessItem) {
@@ -249,6 +265,53 @@ public class TosTokenCollector extends AbstractTokenCollector {
                     }
                     component_names.put("component_name", componentName);
                     component_names.put("count", nbComp + 1);
+
+                    if (TARGET_COMPONENT.equals(componentName)
+                            && (type == ERepositoryObjectType.PROCESS_ROUTE || type == ERepositoryObjectType.PROCESS_ROUTELET)) {
+
+                        JSONArray camelComponentsArray = component_names.has(NODE_CAMEL_COMPONENTS)
+                                ? component_names.getJSONArray(NODE_CAMEL_COMPONENTS)
+                                : new JSONArray();
+                        component_names.put(NODE_CAMEL_COMPONENTS, camelComponentsArray);
+                        JSONArray customCamelComponentsArray = component_names.has(NODE_CUSTOM_CAMEL_COMPONENTS)
+                                ? component_names.getJSONArray(NODE_CUSTOM_CAMEL_COMPONENTS)
+                                : new JSONArray();
+                        component_names.put(NODE_CUSTOM_CAMEL_COMPONENTS, customCamelComponentsArray);
+                        
+                        String library = "";
+                        String useLibrary = "";
+                        EList elementParameter = node.getElementParameter();
+                        for (Object obj : elementParameter) {
+                            if (obj instanceof ElementParameterType) {
+                                ElementParameterType ep = (ElementParameterType) obj;
+                                if (ep.getName().equalsIgnoreCase("HOTLIBS")) {
+                                    EList elementValue = ep.getElementValue();
+                                    for (Object ob : elementValue) {
+                                        String value = ((ElementValueType) ob).getValue();
+                                        record(camelComponentsArray, camelComponentMap, value.toLowerCase());
+                                    }
+                                } else if (ep.getName().equalsIgnoreCase("LIBRARY")) {
+                                    library = ep.getValue();
+                                } else if (ep.getName().equalsIgnoreCase("USE_CUSTOM_COMPONENT")) {
+                                    useLibrary = ep.getValue();
+                                }
+                            }
+                        }
+
+                        if (Boolean.toString(true).equalsIgnoreCase(useLibrary) && !library.isEmpty()) {
+                            library = uncloakQuotation(library);
+                            MavenArtifact artifact = null;
+                            try {
+                                artifact = MavenUrlHelper.parseMvnUrl(library);
+                            } catch (Exception e) {
+                            }
+
+                            if (artifact != null) {
+                                String fileName = artifact.getFileName();
+                                record(customCamelComponentsArray, customCamelComponentMap, fileName);
+                            }
+                        }
+                    }
                     nbComponentsUsed++;
                 }
                 // context variable per job
@@ -268,9 +331,54 @@ public class TosTokenCollector extends AbstractTokenCollector {
                 item.eResource().unload();
             }
         }
+        camelComponentMap.clear();
+        customCamelComponentMap.clear();
+
         jobDetails.put("components", components);
         jobDetails.put("nb.contextVars", contextVarsNum);
         jobDetails.put("nb.components", nbComponentsUsed);
+    }
+
+    private void record(JSONArray componentsArray, Map<String, JSONObject> camelComponentMap, String component) {
+        try {
+            JSONObject json = camelComponentMap.containsKey(component) ? camelComponentMap.get(component)
+                    : new JSONObject();
+            for (int i = 0; i < componentsArray.length(); i++) {
+                if (componentsArray.get(i) == json) {
+                    componentsArray.remove(i);
+                    break;
+                }
+            }
+
+            int num = json.has(component) ? json.getInt(component) : 0;
+            json.put(component, num + 1);
+            camelComponentMap.put(component, json);
+            componentsArray.put(json);
+
+        } catch (JSONException e) {
+            ExceptionHandler.process(e);
+        }
+    }
+
+    private String uncloakQuotation(String mvnUrlWithQuotation) {
+        int index = 0, lastIndex = mvnUrlWithQuotation.length() - 1;
+        for (int i = 0; i < mvnUrlWithQuotation.length(); i++) {
+            char charAt = mvnUrlWithQuotation.charAt(i);
+            if (charAt != '\"' && charAt != '\'') {
+                index = i;
+                break;
+            }
+        }
+
+        for (int i = mvnUrlWithQuotation.length() - 1; i >= 0; i--) {
+            char charAt = mvnUrlWithQuotation.charAt(i);
+            if (charAt != '\"' && charAt != '\'') {
+                lastIndex = i;
+                break;
+            }
+        }
+
+        return mvnUrlWithQuotation.substring(index, lastIndex + 1);
     }
 
     /*

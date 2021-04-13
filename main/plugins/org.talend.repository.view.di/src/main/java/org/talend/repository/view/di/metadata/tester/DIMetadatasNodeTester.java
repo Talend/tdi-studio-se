@@ -51,6 +51,18 @@ public class DIMetadatasNodeTester extends CoMetadataNodeTester {
     private static final String IS_MDM = "isMDM"; //$NON-NLS-1$
 
     @Override
+    protected Boolean testProperty(Object receiver, String property, Object[] args, Object expectedValue) {
+        if (IS_MDM.equals(property) && ERepositoryObjectType.METADATA_MDMCONNECTION == null) {
+            /**
+             * If mdm connection plugin is not loaded, it is impossible to be a mdm connection node
+             */
+            return Boolean.FALSE;
+        } else {
+            return super.testProperty(receiver, property, args, expectedValue);
+        }
+    }
+
+    @Override
     protected ERepositoryObjectType findType(String property) {
         if (property != null) {
             if (IS_DB_CONNECTION.equals(property)) {

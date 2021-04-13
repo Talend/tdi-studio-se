@@ -32,7 +32,7 @@ public class CustomComponentProjectSettingPageTester implements IProjectSettingP
      */
     @Override
     public boolean valid(IConfigurationElement element, IPreferenceNode node) {
-        if (PluginChecker.isSVNProviderPluginLoaded() && !ProjectManager.getInstance().getCurrentProject().isLocal()) {
+        if (PluginChecker.isRemoteProviderPluginLoaded() && !ProjectManager.getInstance().getCurrentProject().isLocal()) {
             return true;
         }
         return false;

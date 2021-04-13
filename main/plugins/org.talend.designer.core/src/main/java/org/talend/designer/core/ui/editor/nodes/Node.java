@@ -3425,6 +3425,17 @@ public class Node extends Element implements IGraphicalNode {
             }
         }
     }
+    
+    //TUP-30345: special process for tcompv0
+    private boolean isDerivedTJDBCRowCommitComponent() {
+        if ( getComponentProperties() != null) {
+            if ("TJDBCRowProperties".equals(getComponentProperties().getClass().getSimpleName()) 
+                || "TJDBCCommitProperties".equals(getComponentProperties().getClass().getSimpleName()) ) {
+                return true;
+            }
+        }
+        return false;
+    }
 
     public void checkLinks() {
         boolean isJoblet = false;
@@ -3465,7 +3476,8 @@ public class Node extends Element implements IGraphicalNode {
             }
         } else if ((Boolean) getPropertyValue(EParameterName.STARTABLE.getName())) {
             for (INodeConnector connector : getConnectorsFromType(EConnectionType.FLOW_MAIN)) {
-                if (connector.isShow() && (connector.getMaxLinkInput() == 0) && (connector.getMaxLinkOutput() != 0)) {
+                if (connector.isShow() && (connector.getMaxLinkInput() == 0) && (connector.getMaxLinkOutput() != 0) 
+                    && !isDerivedTJDBCRowCommitComponent()) {  //TUP-30345
                     if ((getCurrentActiveLinksNbOutput(EConnectionType.FLOW_MAIN) == 0)
                             && (getCurrentActiveLinksNbOutput(EConnectionType.FLOW_MERGE) == 0)
                             && (getCurrentActiveLinksNbOutput(EConnectionType.FLOW_REF) == 0)
@@ -5361,6 +5373,13 @@ public class Node extends Element implements IGraphicalNode {
             }
         }
         return isJoblet;
+    }
+
+    public boolean isProcessNode() {
+        if ("tRunJob".equals(getComponent().getName()) || isJoblet()) {
+            return true;
+        }
+        return false;
     }
 
     public boolean isJoblet() {

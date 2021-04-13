@@ -383,7 +383,7 @@ public class CustomComponentSettingPage extends ProjectSettingPage {
         }
         final IProxyRepositoryFactory prf = CorePlugin.getDefault().getProxyRepositoryFactory();
 
-        if (PluginChecker.isSVNProviderPluginLoaded() && (!sharedAdded.isEmpty() || !backAdded.isEmpty())) {
+        if (PluginChecker.isRemoteProviderPluginLoaded() && (!sharedAdded.isEmpty() || !backAdded.isEmpty())) {
             RepositoryWorkUnit repositoryWorkUnit = new RepositoryWorkUnit("Update custom components") {
 
                 @Override

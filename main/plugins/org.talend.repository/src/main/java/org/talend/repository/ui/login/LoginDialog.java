@@ -159,7 +159,7 @@ public class LoginDialog extends TrayDialog {
         base.setLayoutData(new GridData(GridData.FILL_BOTH));
         stackLayout = new StackLayout();
         base.setLayout(stackLayout);
-        if (!PluginChecker.isSVNProviderPluginLoaded()) {// tos
+        if (!PluginChecker.isRemoteProviderPluginLoaded()) {// tos
             loginComposite = new LoginComposite(base, SWT.NONE, this, tosLoginComposite, stackLayout);
             loginComposite.populateProjectList();
             tosLoginComposite = new TOSLoginComposite(base, SWT.NONE, loginComposite, this);
@@ -172,7 +172,7 @@ public class LoginDialog extends TrayDialog {
         loginComposite.setLayoutData(data);
         stackLayout.topControl = loginComposite;
         base.layout();
-        if (!PluginChecker.isSVNProviderPluginLoaded()) {
+        if (!PluginChecker.isRemoteProviderPluginLoaded()) {
             Project[] projectList = readProject();
             if (projectList.length > 0) {
                 advanced();
@@ -242,7 +242,7 @@ public class LoginDialog extends TrayDialog {
         if (LoginComposite.isRestart) {
             super.okPressed();
         } else {
-            if (PluginChecker.isSVNProviderPluginLoaded()) {
+            if (PluginChecker.isRemoteProviderPluginLoaded()) {
                 boolean isLogInOk = logIn(loginComposite.getProject());
                 if (isLogInOk) {
                     super.okPressed();
@@ -388,7 +388,7 @@ public class LoginDialog extends TrayDialog {
             dialog.run(true, true, runnable);
 
         } catch (final InvocationTargetException e) {
-            if (PluginChecker.isSVNProviderPluginLoaded()) {
+            if (PluginChecker.isRemoteProviderPluginLoaded()) {
                 loginComposite.populateProjectList();
                 if (e.getTargetException() instanceof OperationCancelException) {
                     Display.getDefault().syncExec(new Runnable() {
@@ -409,7 +409,7 @@ public class LoginDialog extends TrayDialog {
             }
             return false;
         } catch (InterruptedException e) {
-            if (PluginChecker.isSVNProviderPluginLoaded()) {
+            if (PluginChecker.isRemoteProviderPluginLoaded()) {
                 loginComposite.populateProjectList();
             } else {
                 loginComposite.populateTOSProjectList();

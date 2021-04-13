@@ -25,6 +25,7 @@ import org.eclipse.help.AbstractTocProvider;
 import org.eclipse.help.HelpSystem;
 import org.eclipse.help.IContext;
 import org.eclipse.help.ITocContribution;
+import org.talend.commons.exception.ExceptionHandler;
 import org.talend.sdk.component.server.front.model.ComponentDetail;
 import org.talend.sdk.component.server.front.model.ComponentIndex;
 import org.talend.sdk.component.studio.Lookups;
@@ -44,6 +45,15 @@ public class TaCoKitTocProvider extends AbstractTocProvider {
 
     @Override
     public ITocContribution[] getTocContributions(final String language) {
+        try {
+            return getTocContributionsInner(language);
+        } catch (Exception e) {
+            ExceptionHandler.process(e);
+        }
+        return new ITocContribution[0];
+    }
+
+    private ITocContribution[] getTocContributionsInner(final String language) throws Exception {
         ITocContribution[] contributions = languagePack.get(language);
         if(contributions != null) {
             return contributions;

@@ -136,14 +136,23 @@ public class ProjectRefSettingPage extends ProjectSettingPage {
     @Override
     protected Control createContents(Composite parent) {
         noDefaultAndApplyButton();
-        if (PluginChecker.isSVNProviderPluginLoaded()) {
+        if (PluginChecker.isRemoteProviderPluginLoaded()) {
+            GlobalServiceRegister gsr = GlobalServiceRegister.getDefault();
             try {
-                svnProviderService = (ISVNProviderService) GlobalServiceRegister.getDefault()
-                        .getService(ISVNProviderService.class);
-                gitProviderService = (IGITProviderService) GlobalServiceRegister.getDefault()
-                        .getService(IGITProviderService.class);
+                if (gsr.isServiceRegistered(ISVNProviderService.class)) {
+                    svnProviderService = (ISVNProviderService) GlobalServiceRegister.getDefault()
+                            .getService(ISVNProviderService.class);
+                }
+            } catch (Exception e) {
+                ExceptionHandler.process(e);
+            }
+            try {
+                if (gsr.isServiceRegistered(IGITProviderService.class)) {
+                    gitProviderService = (IGITProviderService) GlobalServiceRegister.getDefault()
+                            .getService(IGITProviderService.class);
+                }
             } catch (RuntimeException e) {
-                // nothing to do
+                ExceptionHandler.process(e);
             }
         }
         Project currentProject = ProjectManager.getInstance().getCurrentProject();

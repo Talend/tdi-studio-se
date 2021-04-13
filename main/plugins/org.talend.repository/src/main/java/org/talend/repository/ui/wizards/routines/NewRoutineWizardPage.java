@@ -13,6 +13,7 @@
 package org.talend.repository.ui.wizards.routines;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -28,6 +29,10 @@ import org.talend.commons.exception.PersistenceException;
 import org.talend.core.model.properties.Property;
 import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.core.model.repository.IRepositoryViewObject;
+import org.talend.core.model.routines.CodesJarInfo;
+import org.talend.core.model.routines.RoutinesUtil;
+import org.talend.core.repository.model.ProxyRepositoryFactory;
+import org.talend.core.utils.CodesJarResourceCache;
 import org.talend.metadata.managment.ui.wizard.PropertiesWizardPage;
 import org.talend.repository.ProjectManager;
 import org.talend.repository.i18n.Messages;
@@ -123,6 +128,20 @@ public class NewRoutineWizardPage extends PropertiesWizardPage {
         if (nameStatus.getSeverity() == IStatus.OK) {
             evaluateNameInJob();
         }
+    }
+
+    @Override
+    protected List<IRepositoryViewObject> loadRepositoryViewObjectList() throws PersistenceException {
+        if (!RoutinesUtil.isInnerCodes(property)) {
+            return super.loadRepositoryViewObjectList();
+        }
+        if (destinationPath != null && destinationPath.segmentCount() > 0) {
+            String jarLabel = destinationPath.segment(0);
+            CodesJarInfo info = CodesJarResourceCache.getCodesJarByLabel(RoutinesUtil.getInnerCodeType(property),
+                    ProjectManager.getInstance().getCurrentProject().getTechnicalLabel(), jarLabel);
+            return ProxyRepositoryFactory.getInstance().getAllInnerCodes(info);
+        }
+        return Collections.emptyList();
     }
 
     @Override

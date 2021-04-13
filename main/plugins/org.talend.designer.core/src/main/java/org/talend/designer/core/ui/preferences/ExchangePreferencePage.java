@@ -85,7 +85,7 @@ public class ExchangePreferencePage extends FieldEditorPreferencePage implements
         logonButton.setText(userAccount != null ? Messages.getString("ExchangePreferencePage.signOutExchangeTitle") : Messages
                 .getString("ExchangePreferencePage.signInExchangeTitle"));
 
-        if (PluginChecker.isSVNProviderPluginLoaded()) {
+        if (PluginChecker.isRemoteProviderPluginLoaded()) {
             BooleanFieldEditor checkTisLogonExchangeDialog = new BooleanFieldEditor(
                     ITalendCorePrefConstants.EXCHANGE_CHECK_TIS_VERSION,
                     Messages.getString("ExchangePreferencePage.checkTisLogonExchangeTitle"), getFieldEditorParent()); //$NON-NLS-1$

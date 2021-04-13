@@ -1380,15 +1380,6 @@
        <projecttask
              beforeLogon="false"
              breaks="5.1.1"
-             class="org.talend.repository.model.migration.MergeTosMetadataMigrationTask"
-             description="merge metadata"
-             id="org.talend.repository.MergeTosMetadataMigrationTask"
-             name="MergeTosMetadataMigrationTask"
-             version="5.1.2">
-       </projecttask>
-       <projecttask
-             beforeLogon="false"
-             breaks="5.1.1"
              class="org.talend.repository.model.migration.AddWebServiceOutputTableMigrationTask"
              description="modify metadataTable"
              id="org.talend.repository.AddWebServiceOutputTableMigrationTask"
@@ -3605,6 +3596,14 @@
        </projecttask>
        <projecttask
              beforeLogon="false"
+             breaks="7.3.0"
+             class="org.talend.repository.model.migration.SpecialUpdateELTEnableColumnAliasMigrationTask"
+             description="Update ELT to enable oracle column alias"
+             id="org.talend.repository.model.migration.SpecialUpdateELTEnableColumnAliasMigrationTask"
+             name="SpecialUpdateELTEnableColumnAliasMigrationTask"
+             version="7.3.1">
+        </projecttask>
+		<projecttask
              breaks="7.4.0"
              class="org.talend.repository.model.migration.ChangeGreenplumDefaultDriverMigrationTask"
              description="change Greenplum default driver"

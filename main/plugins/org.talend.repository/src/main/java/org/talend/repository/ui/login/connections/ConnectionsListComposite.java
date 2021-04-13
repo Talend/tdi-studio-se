@@ -140,7 +140,7 @@ public class ConnectionsListComposite extends Composite {
 
             @Override
             protected ExtendedToolbarView initToolBar() {
-                if (!PluginChecker.isSVNProviderPluginLoaded()) {
+                if (!PluginChecker.isRemoteProviderPluginLoaded()) {
                     return null;
                 }
                 return new ConnectionsListButtonsToolBar(getMainComposite(), SWT.NONE, getExtendedTableViewer());
