@@ -36,12 +36,11 @@ public class SettingsActionParameter extends AbstractActionParameter {
         this.setting = setting;
     }
 
-    private String getValue() {
-        final String value = setting.getStringValue();
+    private String getValue(Object value) {
         if (value == null) {
             return "";
         } else {
-            return Strings.removeQuotes(value);
+            return Strings.removeQuotes(String.valueOf(value));
         }
     }
 
@@ -55,7 +54,12 @@ public class SettingsActionParameter extends AbstractActionParameter {
     @Override
     public Collection<Pair<String, String>> parameters() {
         final String key = getParameter();
-        final String value = getValue();
+        String value = null;
+        if (isUseExistConnection(setting) && isDataStoreParameter(setting)) {
+            value = getValue(getParameterValueFromConnection(setting, setting.getName()));       
+        } else {
+            value = getValue(setting.getStringValue());
+        }
         final Pair<String, String> parameter = new Pair<>(key, value);
         return Collections.singletonList(parameter);
     }

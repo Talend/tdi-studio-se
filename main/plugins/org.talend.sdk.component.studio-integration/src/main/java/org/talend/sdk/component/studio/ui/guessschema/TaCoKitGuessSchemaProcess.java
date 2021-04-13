@@ -45,6 +45,7 @@ import org.talend.sdk.component.studio.enums.ETaCoKitComponentType;
 import org.talend.sdk.component.studio.i18n.Messages;
 import org.talend.sdk.component.studio.metadata.model.ComponentModelSpy;
 import org.talend.sdk.component.studio.util.TaCoKitConst;
+import org.talend.sdk.component.studio.util.TaCoKitUtil;
 
 /**
  * DOC cmeng class global comment. Detailled comment
@@ -174,6 +175,9 @@ public class TaCoKitGuessSchemaProcess {
                             node.setIncomingConnections(new ArrayList<>());
                             nodes.add(node);
                         }
+                        if (TaCoKitUtil.isUseExistConnection(node)) {
+                            updateDatastoreParameterFromConnection(node);
+                        }
                     }
                 }
                 /**
@@ -267,6 +271,14 @@ public class TaCoKitGuessSchemaProcess {
             componentSpy.spyTemplateNamePrefix(guessComponent.getTemplateNamePrefix());
             componentSpy.spyAvailableCodeParts(guessComponent.getAvailableCodeParts());
             return componentSpy;
+        }
+
+        private void updateDatastoreParameterFromConnection(INode node) {
+            for (IElementParameter parameter : node.getElementParameters()) {
+                if (TaCoKitUtil.isDataStoreParameter(node, parameter.getName())) {
+                    parameter.setValue(TaCoKitUtil.getParameterValueFromConnection(node, parameter.getName()));
+                }
+            }
         }
     }
 
