@@ -18,8 +18,10 @@ import static java.util.stream.Collectors.joining;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
@@ -87,6 +89,8 @@ public class TaCoKitGuessSchemaProcess {
         private final ExecutorService executorService;
 
         private java.lang.Process executeProcess;
+        
+        private Map<String, IElementParameter> clonedDatastoreParameters = new HashMap<String, IElementParameter>();
 
         public Task(final Property property, final IContext context, final INode node, final String actionName,
                 final String connectionName, final ExecutorService executorService) {
@@ -108,7 +112,8 @@ public class TaCoKitGuessSchemaProcess {
                             singletonList(debug).toArray(new String[0]),
                     IProcessor.NO_STATISTICS,
                     IProcessor.NO_TRACES);
-
+            
+            restoreDatastoreParameters(node);
             final Future<String> result = executorService.submit(() -> {
                 try (
                         final BufferedReader reader = new BufferedReader(
@@ -142,6 +147,7 @@ public class TaCoKitGuessSchemaProcess {
 
         public synchronized void kill() {
             if (executeProcess != null && executeProcess.isAlive()) {
+                restoreDatastoreParameters(node);
                 final java.lang.Process p = executeProcess.destroyForcibly();
                 try {
                     p.waitFor(20, TimeUnit.SECONDS);
@@ -149,7 +155,8 @@ public class TaCoKitGuessSchemaProcess {
                     Thread.currentThread().interrupt();
                 }
             }
-        }
+        }     
+        
 
         private void buildProcess() {
             IProcess originalProcess;
@@ -274,11 +281,28 @@ public class TaCoKitGuessSchemaProcess {
         }
 
         private void updateDatastoreParameterFromConnection(INode node) {
+            clonedDatastoreParameters.clear();
             for (IElementParameter parameter : node.getElementParameters()) {
                 if (TaCoKitUtil.isDataStoreParameter(node, parameter.getName())) {
+                    IElementParameter clonedParam = parameter.getClone();
+                    clonedDatastoreParameters.put(clonedParam.getName(), clonedParam);
                     parameter.setValue(TaCoKitUtil.getParameterValueFromConnection(node, parameter.getName()));
                 }
             }
+            IElementParameter useExistConnectionParameter = node
+                    .getElementParameter(TaCoKitConst.PARAMETER_USE_EXISTING_CONNECTION);
+            IElementParameter clonedParam = useExistConnectionParameter.getClone();
+            clonedDatastoreParameters.put(useExistConnectionParameter.getName(), clonedParam);
+            useExistConnectionParameter.setValue(false);
+        }
+
+        private void restoreDatastoreParameters(INode node) {
+            for (IElementParameter parameter : node.getElementParameters()) {
+                if (clonedDatastoreParameters.containsKey(parameter.getName())) {
+                    parameter.setValue(clonedDatastoreParameters.get(parameter.getName()).getValue());
+                }
+            }
+            clonedDatastoreParameters.clear();
         }
     }
 
