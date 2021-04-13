@@ -141,11 +141,24 @@
     </PARAMETER>
   </PARAMETERS>
   
+  <ADVANCED_PARAMETERS>
+	<PARAMETER
+      NAME="FORCE_COPY_DELETE"
+      FIELD="CHECK"
+      REQUIRED="true"
+      NUM_ROW="10"
+      REPOSITORY_VALUE="FORCE_COPY_DELETE"
+      SHOW_IF="REMOVE_FILE=='true'"
+    >
+      <DEFAULT>false</DEFAULT>
+    </PARAMETER>
+  </ADVANCED_PARAMETERS>
+  
   <CODEGENERATION>
     <IMPORTS>
-      <IMPORT NAME="filecopy" MODULE="filecopy-2.0.1.jar" 
-              MVN="mvn:org.talend.components/filecopy/2.0.1"
-              UrlPath="platform:/plugin/org.talend.libraries.custom/lib/filecopy-2.0.1.jar"
+      <IMPORT NAME="filecopy-2.0.2" MODULE="filecopy-2.0.2.jar" 
+              MVN="mvn:org.talend.components/filecopy/2.0.2"
+              UrlPath="platform:/plugin/org.talend.libraries.custom/lib/filecopy-2.0.2.jar"
               REQUIRED="true" />
     </IMPORTS>
   </CODEGENERATION>
