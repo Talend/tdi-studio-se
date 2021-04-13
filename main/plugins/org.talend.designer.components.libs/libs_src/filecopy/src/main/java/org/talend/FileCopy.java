@@ -66,7 +66,7 @@ public class FileCopy {
 
         Files.copy(source, destination, StandardCopyOption.REPLACE_EXISTING);
         Files.delete(source);
-        new File(desFileName).setLastModified(lastModifiedTime);
+        destination.toFile().setLastModified(lastModifiedTime);
     }
 
 }
