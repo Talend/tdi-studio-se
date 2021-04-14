@@ -292,7 +292,7 @@ public class TaCoKitGuessSchemaProcess {
             IElementParameter useExistConnectionParameter = node
                     .getElementParameter(TaCoKitConst.PARAMETER_USE_EXISTING_CONNECTION);
             IElementParameter clonedParam = useExistConnectionParameter.getClone();
-            clonedDatastoreParameters.put(useExistConnectionParameter.getName(), clonedParam);
+            clonedDatastoreParameters.put(clonedParam.getName(), clonedParam);
             useExistConnectionParameter.setValue(false);
         }
 
