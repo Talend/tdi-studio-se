@@ -475,6 +475,10 @@ public class JavaProcessUtil {
         ModuleNeeded junitModule = new ModuleNeeded("junit", "junit.jar", null, true); //$NON-NLS-1$ //$NON-NLS-2$
         junitModule.setMavenUri("mvn:junit/junit/4.13/jar");
         modulesNeeded.add(junitModule);
+        //junit4 required dependencies
+        ModuleNeeded requiredMoule = new ModuleNeeded("hamcrest-core", "hamcrest-core-1.3.jar", null, true);
+        requiredMoule.setMavenUri("mvn:org.hamcrest/hamcrest-core/1.3/jar");
+        modulesNeeded.add(requiredMoule);
     }
 
     /**
