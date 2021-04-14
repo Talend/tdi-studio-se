@@ -12,10 +12,7 @@
  */
 package org.talend.sdk.component.studio.util;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -31,17 +28,13 @@ import java.util.Optional;
 import java.util.Properties;
 import java.util.Set;
 import java.util.Stack;
-import java.util.jar.JarEntry;
-import java.util.jar.JarFile;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.emf.common.util.EList;
-import org.eclipse.m2e.core.MavenPlugin;
 import org.talend.commons.utils.data.container.Container;
 import org.talend.commons.utils.system.EnvironmentUtils;
 import org.talend.core.model.components.ComponentCategory;
@@ -57,9 +50,7 @@ import org.talend.core.model.properties.ProcessItem;
 import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.core.model.repository.IRepositoryViewObject;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
-import org.talend.core.runtime.maven.MavenArtifact;
 import org.talend.core.runtime.maven.MavenConstants;
-import org.talend.core.runtime.maven.MavenUrlHelper;
 import org.talend.core.ui.component.ComponentsFactoryProvider;
 import org.talend.designer.core.model.utils.emf.talendfile.NodeType;
 import org.talend.designer.core.utils.UnifiedComponentUtil;
@@ -82,7 +73,6 @@ import org.talend.sdk.component.studio.model.parameter.PropertyDefinitionDecorat
 import org.talend.sdk.component.studio.model.parameter.PropertyNode;
 import org.talend.sdk.component.studio.model.parameter.ValueSelectionParameter;
 import org.talend.updates.runtime.utils.PathUtils;
-import org.talend.utils.io.FilesUtils;
 
 /**
  * DOC cmeng class global comment. Detailled comment
@@ -688,50 +678,6 @@ public class TaCoKitUtil {
             }
         }
         return null;
-    }
-    
-    public static void checkM2TacokitStatus() throws Exception {
-        File studioConfigFile = PathUtils.getStudioConfigFile();
-        Properties configuration = PathUtils.readProperties(studioConfigFile);
-        String repositoryType = configuration.getProperty("maven.repository", ""); //$NON-NLS-1$ //$NON-NLS-2$
-        String m2RootFromContext = System.getProperty("maven.local.repository"); //$NON-NLS-1$
-        if (StringUtils.isBlank(m2RootFromContext) || !"global".equals(repositoryType)) {
-            return;
-        }
-        // zero-install CI mode
-        List<GAV> cars = TaCoKitUtil.getInstalledComponents(new NullProgressMonitor());
-        java.nio.file.Path basePath = new File(MavenPlugin.getMaven().getLocalRepositoryPath()).toPath();
-        java.nio.file.Path defaultBasePath = new File(System.getProperty("user.home"), ".m2/repository/").toPath(); //$NON-NLS-1$ //$NON-NLS-2$
-        cars.stream().map(c -> {
-            String mvnUrl = MavenUrlHelper.generateMvnUrl(c.getGroupId(), c.getArtifactId(), c.getVersion(), c.getType(),
-                    c.getClassifier());
-            MavenArtifact mavenArtifact = MavenUrlHelper.parseMvnUrl(mvnUrl);
-            return MavenUrlHelper.getArtifactPath(mavenArtifact);
-        }).forEach(s -> {
-            File target = basePath.resolve(s).toFile();
-            if (!target.exists()) {
-                copyJar(defaultBasePath, basePath, s);
-                try (JarFile jar = new JarFile(target)) {
-                    JarEntry entry = jar.getJarEntry("TALEND-INF/dependencies.txt"); //$NON-NLS-1$
-                    try (BufferedReader reader = new BufferedReader(new InputStreamReader(jar.getInputStream(entry)))) {
-                        reader.lines().map(l -> gavToMvnPath(l)).forEach(dep -> copyJar(defaultBasePath, basePath, dep));
-                    }
-                } catch (IOException e) {
-                    throw new IllegalArgumentException("Failed to read jar:", e); //$NON-NLS-1$
-                }
-            }
-        });
-    }
-
-    private static void copyJar(java.nio.file.Path sourceBasePath, java.nio.file.Path targetBasePath, String mvnPath) {
-        try {
-            File source = sourceBasePath.resolve(mvnPath).toFile();
-            if (source.exists()) {
-                FilesUtils.copyFile(source, targetBasePath.resolve(mvnPath).toFile());
-            }
-        } catch (IOException e) {
-            throw new IllegalArgumentException("Failed to re-deploy jar:", e);
-        }
     }
 
     public static void updateElementParameter(final IElement element, final IElementParameter param, int rowNumber) {
