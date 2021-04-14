@@ -662,7 +662,7 @@ public abstract class DbGenerationManager {
                 }
             }
             // Update
-            String targetSchemaTable = getDifferentTable(dbMapComponent, outTableName);
+            String targetSchemaTable = getDifferentTable(dbMapComponent, outputTableName);
             if (targetSchemaTable == null) {
                 targetSchemaTable = outTableName;
             }
