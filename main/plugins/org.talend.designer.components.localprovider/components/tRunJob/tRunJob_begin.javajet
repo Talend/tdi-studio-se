@@ -215,6 +215,9 @@ try {
 		java.util.Map<String,List<String>> childJob_commandLine_Mapper_<%=cid%> = new java.util.HashMap<String,List<String>>();
 		java.util.List<String> childJob_commandLine_<%=cid%> = null;
 		String classpathSeparator_<%=cid%> = System.getProperty("path.separator");
+		if (classpathSeparator_<%=cid%> != null && classpathSeparator_<%=cid%>.length() > 1) {
+			throw new RuntimeException("path separator should be single character");
+		}
 		<%
 	
 		//issue 19108: The context text field waits for a context name without quotes. The component removes the first quote and the last quote if they exist.
