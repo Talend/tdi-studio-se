@@ -123,7 +123,7 @@ public class TalendJavaCompletionProcessor extends JavaCompletionProcessor {
      */
     @Override
     protected boolean checkDefaultEnablement(CompletionProposalCategory category) {
-        return true;
+        return category.isIncluded();
     }
 
     /*

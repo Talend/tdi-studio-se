@@ -49,6 +49,7 @@ import org.talend.sdk.component.studio.model.parameter.LayoutParameter;
 import org.talend.sdk.component.studio.model.parameter.Level;
 import org.talend.sdk.component.studio.model.parameter.TaCoKitElementParameter;
 import org.talend.sdk.component.studio.ui.composite.problemmanager.IProblemManager;
+import org.talend.sdk.component.studio.util.TaCoKitConst;
 
 /**
  * Registers PropertyChangeListener for each IElementParameter during instantiation
@@ -211,7 +212,8 @@ public class TaCoKitComposite extends MissingSettingsMultiThreadDynamicComposite
      */
     protected Composite addCommonWidgets() {
         final Composite propertyComposite = addPropertyType(composite);
-        final Composite schemaComposite = addSchemas(composite, propertyComposite);
+        final Composite existConnectionComposite = addUseExistConnection(composite, propertyComposite);
+        final Composite schemaComposite = addSchemas(composite, existConnectionComposite);
         final Composite lastComposite = addStatCatcher(schemaComposite);
         return lastComposite;
     }
@@ -224,6 +226,37 @@ public class TaCoKitComposite extends MissingSettingsMultiThreadDynamicComposite
         final IElementParameter propertyType = elem.getElementParameter("PROPERTY");
         addWidgetIfActive(propertyComposite, propertyType);
         return propertyComposite;
+    }
+    
+    protected Composite addUseExistConnection(final Composite parent, final Composite previous) {
+        Composite previousComposite = previous;
+        IElementParameter useExistConnectionParameter = null, connectionParameter = null;
+        for (IElementParameter p : parameters) {
+            if (TaCoKitConst.PARAMETER_USE_EXISTING_CONNECTION.equals(p.getName())) {
+                useExistConnectionParameter = p;
+            }
+            if (TaCoKitConst.PARAMETER_CONNECTION.equals(p.getName())) {
+                connectionParameter = p;
+            }
+        }
+        if (useExistConnectionParameter != null || connectionParameter != null) {
+            final Composite connectionComposite = new Composite(parent, SWT.NONE);
+            connectionComposite.setBackground(parent.getBackground());
+            connectionComposite.setLayout(new FormLayout());
+            connectionComposite.setLayoutData(levelLayoutData(previousComposite));
+            previousComposite = connectionComposite;
+            if (useExistConnectionParameter != null) {
+                if (doShow(useExistConnectionParameter)) {
+                    Control connectionControl = addWidget(connectionComposite, useExistConnectionParameter, null);
+                    if (doShow(connectionParameter)) {
+                        addWidget(connectionComposite, connectionParameter, connectionControl);
+                    }
+                }
+            } else if (connectionParameter != null && doShow(connectionParameter)) {
+                addWidget(connectionComposite, connectionParameter, null);
+            }
+        }
+        return previousComposite;
     }
 
     /**
