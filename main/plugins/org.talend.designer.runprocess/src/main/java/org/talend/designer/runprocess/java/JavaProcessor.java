@@ -1354,11 +1354,12 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
         }
 
         // may have blank and # in classpath since use absolute path.
-        String[] specialChars = new String[] {" ", "#"}; //$NON-NLS-1$ //$NON-NLS-2$
+        String[] specialChars = new String[] { " ", "#" }; //$NON-NLS-1$ //$NON-NLS-2$
         try {
-        for (int i = 0; i < specialChars.length; i++) {
-                libsStr = StringUtils.replace(libsStr, specialChars[i], URLEncoder.encode(specialChars[i], StandardCharsets.UTF_8.toString()));
-            } 
+            for (int i = 0; i < specialChars.length; i++) {
+                libsStr = StringUtils.replace(libsStr, specialChars[i],
+                        URLEncoder.encode(specialChars[i], StandardCharsets.UTF_8.toString()));
+            }
         } catch (UnsupportedEncodingException e) {
             throw new ProcessorException(e);
         }
