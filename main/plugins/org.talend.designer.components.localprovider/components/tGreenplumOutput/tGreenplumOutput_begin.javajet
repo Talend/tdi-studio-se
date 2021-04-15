@@ -114,7 +114,6 @@ if(dbschema_<%=cid%> == null || dbschema_<%=cid%>.trim().length() == 0) {
 }
 
 <%@ include file="@{org.talend.designer.components.localprovider}/components/templates/DB/Output/CheckKeysForUpdateAndDelete.javajet"%>
-
 int nb_line_<%=cid%> = 0;
 int nb_line_update_<%=cid%> = 0;
 int nb_line_inserted_<%=cid%> = 0;
@@ -124,7 +123,6 @@ int nb_line_rejected_<%=cid%> = 0;
 int deletedCount_<%=cid%>=0;
 int updatedCount_<%=cid%>=0;
 int insertedCount_<%=cid%>=0;
-int rowsToCommitCount_<%=cid%>=0;
 int rejectedCount_<%=cid%>=0;
 
 boolean whetherReject_<%=cid%> = false;
@@ -184,20 +182,20 @@ if(columnList != null && columnList.size()>0) {
             %>
             try (java.sql.Statement stmtDrop_<%=cid%> = conn_<%=cid%>.createStatement();
                     java.sql.Statement stmtCreate_<%=cid%> = conn_<%=cid%>.createStatement()) {
-                <%dbLog.table().dropTry(dbLog.varForTableName("tableName", dbmsId));%>
+                <%dbLog.table().dropTry(dbLog.var("tableName"));%>
                 stmtDrop_<%=cid%>.execute("<%=manager.getDropTableSQL()%>");
-                <%dbLog.table().dropDone(dbLog.varForTableName("tableName", dbmsId));%>
-                <%dbLog.table().createTry(dbLog.varForTableName("tableName", dbmsId));%>
+                <%dbLog.table().dropDone(dbLog.var("tableName"));%>
+                <%dbLog.table().createTry(dbLog.var("tableName"));%>
                 stmtCreate_<%=cid%>.execute("<%=manager.getCreateTableSQL(stmtStructure)%>)");
-                <%dbLog.table().createDone(dbLog.varForTableName("tableName", dbmsId));%>
+                <%dbLog.table().createDone(dbLog.var("tableName"));%>
             }
             <%
         } else if(("CREATE").equals(tableAction)) {
             %>
             try (java.sql.Statement stmtCreate_<%=cid%> = conn_<%=cid%>.createStatement()) {
-                <%dbLog.table().createTry(dbLog.varForTableName("tableName", dbmsId));%>
+                <%dbLog.table().createTry(dbLog.var("tableName"));%>
                 stmtCreate_<%=cid%>.execute("<%=manager.getCreateTableSQL(stmtStructure)%>)");
-                <%dbLog.table().createDone(dbLog.varForTableName("tableName", dbmsId));%>
+                <%dbLog.table().createDone(dbLog.var("tableName"));%>
             }
             <%
         } else if(("CREATE_IF_NOT_EXISTS").equals(tableAction) || ("DROP_IF_EXISTS_AND_CREATE").equals(tableAction)) {
@@ -228,9 +226,9 @@ if(columnList != null && columnList.size()>0) {
                 %>
                 if(!whetherExist_<%=cid%>) {
                     try (java.sql.Statement stmtCreate_<%=cid%> = conn_<%=cid%>.createStatement()) {
-                        <%dbLog.table().createTry(dbLog.varForTableName("tableName", dbmsId));%>
+                        <%dbLog.table().createTry(dbLog.var("tableName"));%>
                         stmtCreate_<%=cid%>.execute("<%=manager.getCreateTableSQL(stmtStructure)%>)");
-                        <%dbLog.table().createDone(dbLog.varForTableName("tableName", dbmsId));%>
+                        <%dbLog.table().createDone(dbLog.var("tableName"));%>
                     }
                 }
                 <%
@@ -238,15 +236,15 @@ if(columnList != null && columnList.size()>0) {
                 %>
                 if(whetherExist_<%=cid%>) {
                     try (java.sql.Statement stmtDrop_<%=cid%> = conn_<%=cid%>.createStatement()) {
-                        <%dbLog.table().dropTry(dbLog.varForTableName("tableName", dbmsId));%>
+                        <%dbLog.table().dropTry(dbLog.var("tableName"));%>
                         stmtDrop_<%=cid%>.execute("<%=manager.getDropTableSQL()%>");
-                        <%dbLog.table().dropDone(dbLog.varForTableName("tableName", dbmsId));%>
+                        <%dbLog.table().dropDone(dbLog.var("tableName"));%>
                     }
                 }
                 try (java.sql.Statement stmtCreate_<%=cid%> = conn_<%=cid%>.createStatement()) {
-                    <%dbLog.table().createTry(dbLog.varForTableName("tableName", dbmsId));%>
+                    <%dbLog.table().createTry(dbLog.var("tableName"));%>
                     stmtCreate_<%=cid%>.execute("<%=manager.getCreateTableSQL(stmtStructure)%>)");
-                    <%dbLog.table().createDone(dbLog.varForTableName("tableName", dbmsId));%>
+                    <%dbLog.table().createDone(dbLog.var("tableName"));%>
                 }
             <%
             }
@@ -255,9 +253,9 @@ if(columnList != null && columnList.size()>0) {
             try (java.sql.Statement stmtClearCount_<%=cid%> = conn_<%=cid%>.createStatement();
                     java.sql.ResultSet rsClearCount_<%=cid%> = stmtClearCount_<%=cid%>.executeQuery("<%=manager.getSelectionSQL()%>");
                     java.sql.Statement stmtClear_<%=cid%> = conn_<%=cid%>.createStatement()) {
-                <%dbLog.table().clearTry(dbLog.varForTableName("tableName", dbmsId));%>
+                <%dbLog.table().clearTry(dbLog.var("tableName"));%>
                 stmtClear_<%=cid%>.executeUpdate("<%=manager.getTruncateTableSQL()%>");
-                <%dbLog.table().clearDone(dbLog.varForTableName("tableName", dbmsId));%>
+                <%dbLog.table().clearDone(dbLog.var("tableName"));%>
                 while(rsClearCount_<%=cid%>.next()) {
                     deletedCount_<%=cid%> += rsClearCount_<%=cid%>.getInt(1);
                 }
