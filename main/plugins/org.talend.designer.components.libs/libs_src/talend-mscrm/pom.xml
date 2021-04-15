@@ -18,6 +18,12 @@
 		<axis2.version>1.7.9</axis2.version>
 		<httpclient.version>4.5.13</httpclient.version>
 		<httpcore.version>4.4.13</httpcore.version>
+		<junit.version>4.13.2</junit.version>
+		<adal4j.version>1.6.4-20200824</adal4j.version>
+
+		<!-- plugin's versions -->
+		<maven-jar-plugin.version>3.2.0</maven-jar-plugin.version>
+		<maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
 	</properties>
 	
 	<distributionManagement>
@@ -114,13 +120,13 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>4.13.2</version>
-			<scope>test</scope>
+            <version>${junit.version}</version>
+            <scope>test</scope>
         </dependency>
         <dependency>
 	    <groupId>com.microsoft.azure</groupId>
             <artifactId>adal4j</artifactId>
-            <version>1.6.4-20200824</version>
+            <version>${adal4j.version}</version>
         </dependency>
 	</dependencies>
 	<build>
@@ -134,7 +140,9 @@
 		</resources>
 		<plugins>
 			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-jar-plugin</artifactId>
+				<version>${maven-jar-plugin.version}</version>
 				<executions>
 					<execution>
 						<id>default-jar</id>
@@ -151,6 +159,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
+                <version>${maven-compiler-plugin.version}</version>
                 <configuration>
                     <source>1.8</source>
                     <target>1.8</target>
