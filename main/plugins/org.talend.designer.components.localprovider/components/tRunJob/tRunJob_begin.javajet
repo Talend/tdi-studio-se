@@ -51,7 +51,15 @@ class DealChildJobLibrary_<%=cid%> {
 		String crcMapPath = new java.io.File("../crcMap").getCanonicalPath();
 		if (isNeedAddLibsPath( crcMapPath)) {
 			java.util.Map<String, String> crcMap = null;
-			java.io.ObjectInputStream ois = new ObjectInputStream(new java.io.FileInputStream(crcMapPath));
+			java.io.ObjectInputStream ois = new java.io.ObjectInputStream(new java.io.FileInputStream(crcMapPath)) {
+				@Override
+				public Class<?> resolveClass(java.io.ObjectStreamClass desc) throws java.io.IOException, ClassNotFoundException {
+					if(!"java.util.HashMap".equals(desc.getName())) {
+						throw new java.io.InvalidClassException("Unauthorized deserialization attempt : " + desc.getName());
+					}
+					return super.resolveClass(desc);
+				}
+			};
 			crcMap = (java.util.Map<String, String>) ois.readObject();
 			ois.close();
 			classPathLine = addLibsPath(originalClassPathLine, crcMap);
