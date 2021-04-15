@@ -1,21 +1,17 @@
 <%
 if(("UPDATE").equals(dataAction) || ("INSERT_OR_UPDATE").equals(dataAction) || ("UPDATE_OR_INSERT").equals(dataAction)) {
-    boolean isDynamicSchema = false;
     int updateKeyCount = 0;
     if(stmtStructure != null) {
         for(Column column : stmtStructure) {
-            if(column.isUpdateKey()) {
+            if(column.isUpdateKey() && !column.isDynamic()) {
                 updateKeyCount++;
-            }
-            if (column.isDynamic()) {
-                isDynamicSchema = true;
             }
         }
 %>
         int updateKeyCount_<%=cid%> = <%=updateKeyCount%>;
         if(updateKeyCount_<%=cid%> < 1) {
             throw new RuntimeException("For update, Schema must have a key");
-        } else if (updateKeyCount_<%=cid%> == <%=stmtStructure.size() %> && <%=!isDynamicSchema%>) {
+        } else if (updateKeyCount_<%=cid%> == <%=stmtStructure.size() %>) {
 <%
             String errorMessageUpdateKeys = "For update, every Schema column can not be a key";
             if(("UPDATE").equals(dataAction)) {
@@ -41,7 +37,7 @@ if(("UPDATE").equals(dataAction) || ("INSERT_OR_UPDATE").equals(dataAction) || (
     int deleteKeyCount = 0;
     if(stmtStructure != null) {
         for(Column column : stmtStructure) {
-            if(column.isDeleteKey()) {
+            if(column.isDeleteKey() && !column.isDynamic()) {
                 deleteKeyCount++;
             }
         }

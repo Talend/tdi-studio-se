@@ -1,19 +1,15 @@
 <%
 if ("INSERT_ON_DUPLICATE_KEY_UPDATE".equals(dataAction)) {
     int updateKeyCount = 0;
-    boolean isDynamicSchema = false;
     if(stmtStructure != null) {
         for(Column column : stmtStructure) {
-            if(column.isUpdateKey()) {
+            if(column.isUpdateKey() && !column.isDynamic()) {
                 updateKeyCount++;
-            }
-            if (column.isDynamic()) {
-                isDynamicSchema = true;
             }
         }
 %>
         int updateKeyCount_<%=cid%> = <%=updateKeyCount%>;
-         if (updateKeyCount_<%=cid%> == <%=stmtStructure.size() %> && <%=!isDynamicSchema%>) {
+         if (updateKeyCount_<%=cid%> == <%=stmtStructure.size() %>) {
             throw new RuntimeException("For update, every Schema column can not be a key");
         }
 <%
