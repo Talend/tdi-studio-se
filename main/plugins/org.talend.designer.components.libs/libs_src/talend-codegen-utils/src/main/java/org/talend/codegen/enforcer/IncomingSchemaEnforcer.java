@@ -24,8 +24,10 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TimeZone;
 
 import org.apache.avro.Schema;
@@ -33,9 +35,11 @@ import org.apache.avro.Schema.Field;
 import org.apache.avro.SchemaBuilder;
 import org.apache.avro.generic.GenericData;
 import org.apache.avro.generic.IndexedRecord;
+import org.apache.avro.SchemaParseException;
 import org.talend.codegen.DiSchemaConstants;
 import org.talend.daikon.avro.AvroUtils;
 import org.talend.daikon.avro.LogicalTypeUtils;
+import org.talend.daikon.avro.NameUtil;
 import org.talend.daikon.avro.SchemaConstants;
 
 /**
@@ -133,6 +137,7 @@ public class IncomingSchemaEnforcer {
         }
     }
 
+    //TODO remove this method as no place use it now in javajet
     /**
      * Take all of the parameters from the dynamic metadata and adapt it to a field for the runtime Schema.
      *
@@ -143,6 +148,12 @@ public class IncomingSchemaEnforcer {
             String format, String description, boolean isKey, boolean isNullable, String refFieldName, String refModuleName) {
         addDynamicField(name, type, null, format, description, isNullable);
     }
+
+    private Set<String> existNames;
+
+    private Map<String, String> unvalidName2ValidName;
+
+    private int index = 0;
 
     /**
      * Recreates dynamic field from parameters retrieved from DI dynamic metadata
@@ -165,7 +176,25 @@ public class IncomingSchemaEnforcer {
             fieldSchema = SchemaBuilder.nullable().type(fieldSchema);
         }
 
-        Schema.Field field = new Schema.Field(name, fieldSchema, description, (Object) null);
+        Schema.Field field;
+        try {
+            field = new Schema.Field(name, fieldSchema, description, (Object) null);
+        } catch (SchemaParseException e) {
+            //if the name contains special char which can't pass avro name check like $ and #, 
+            //but uniode like Japanese which can pass too though that is not expected
+            if (existNames == null) {
+                existNames = new HashSet<>();
+                unvalidName2ValidName = new HashMap<>();
+            }
+
+            String validName = NameUtil.correct(name, index++, existNames);
+            existNames.add(validName);
+            unvalidName2ValidName.put(name, validName);
+
+            field = new Schema.Field(validName, fieldSchema, description, (Object) null);
+            field.addProp(SchemaConstants.TALEND_COLUMN_DB_COLUMN_NAME, name);
+        }
+
         // Set pattern for date type
         if ("id_Date".equals(diType) && fieldPattern != null) {
             field.addProp(SchemaConstants.TALEND_COLUMN_PATTERN, fieldPattern);
@@ -390,6 +419,9 @@ public class IncomingSchemaEnforcer {
         return designSchema;
     }
 
+    //here we do special process for dynamic input name, but in fact, 
+    //we have issue which support Japanese char or special char as label for basic talend column too,
+    //so not only dynamic columns may have special name, but also basic may have, but here, we don't consider that, that's TODO
     /**
      * Converts DI data value to Avro format and put it into record by field name
      *
@@ -397,9 +429,16 @@ public class IncomingSchemaEnforcer {
      * @param diValue data value
      */
     public void put(String name, Object diValue) {
+        if (unvalidName2ValidName != null) {
+            String validName = unvalidName2ValidName.get(name);
+            if (validName != null) {
+                name = validName;
+            }
+        }
         put(columnToFieldIndex.get(name), diValue);
     }
 
+    //TODO make it private, no place to call it except current class?
     /**
      * Converts DI data value to Avro format and put it into record by field index
      *
