@@ -13,6 +13,8 @@
 package org.talend.designer.runprocess.bigdata;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -140,7 +142,7 @@ public abstract class BigDataJavaProcessor extends MavenJavaProcessor implements
     }
     
     private List<String> makeUpCommandSegments(boolean ignoreCustomJVMSetting) {
-    	List<String> commands = new ArrayList<String>();
+        List<String> commands = new ArrayList<String>();
         commands.addAll(extractAheadCommandSegments());
         commands.addAll(extractJavaCommandSegments(ignoreCustomJVMSetting));
         commands.addAll(extractCPCommandSegments());
@@ -173,7 +175,7 @@ public abstract class BigDataJavaProcessor extends MavenJavaProcessor implements
 
         commandSegments.add(command);
         if(!ignoreCustomJVMSetting) {
-        	commandSegments.addAll(extractJavaVMArguments());
+            commandSegments.addAll(extractJavaVMArguments());
         }
         return commandSegments;
     }
@@ -307,6 +309,19 @@ public abstract class BigDataJavaProcessor extends MavenJavaProcessor implements
             libJars.append(getTalendJavaProject().getTargetFolder().getLocation().toPortableString() + "/" + makeupJobJarName()); //$NON-NLS-1$
         }
         list.add(libJars.toString());
+        if(isWinTargetPlatform() && !isExport) {
+            PrintWriter out = null;
+            try {
+                String fileOutput = libDir.toString().replaceAll("\\\\", "/") + "/libJars" + process.getName() + ".txt";
+                out = new PrintWriter(fileOutput);
+                out.print(list.get(1));
+                list.set(1, fileOutput);
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            } finally {
+                out.close();
+            }
+        }
         return list;
     }
 
