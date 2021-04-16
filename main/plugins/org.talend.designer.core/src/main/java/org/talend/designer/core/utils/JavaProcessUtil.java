@@ -472,8 +472,8 @@ public class JavaProcessUtil {
     }
 
     public static void addJunitNeededModules(Collection<ModuleNeeded> modulesNeeded) {
-        ModuleNeeded junitModule = new ModuleNeeded("junit", "junit.jar", null, true); //$NON-NLS-1$ //$NON-NLS-2$
-        junitModule.setMavenUri("mvn:junit/junit/4.13/jar");
+        ModuleNeeded junitModule = new ModuleNeeded("junit-4.13.2", "junit-4.13.2.jar", null, true); //$NON-NLS-1$ //$NON-NLS-2$
+        junitModule.setMavenUri("mvn:junit/junit/4.13.2/jar");
         modulesNeeded.add(junitModule);
         //junit4 required dependencies
         ModuleNeeded requiredMoule = new ModuleNeeded("hamcrest-core", "hamcrest-core-1.3.jar", null, true);
