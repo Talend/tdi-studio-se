@@ -211,7 +211,7 @@ public class TaCoKitCache {
     }
 
     public ComponentDetail getComponentDetailById(String componentId) {
-        if (VIRTUAL_COMPONENT_NAME_CACHE.containsKey(componentId)) {
+        if (VIRTUAL_COMPONENT_ID_CACHE.containsKey(componentId)) {
             return VIRTUAL_COMPONENT_ID_CACHE.get(componentId).getDetail();
         }
         return null;
