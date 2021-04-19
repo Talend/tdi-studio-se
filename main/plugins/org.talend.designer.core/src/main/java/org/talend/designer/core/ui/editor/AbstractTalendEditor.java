@@ -1273,8 +1273,8 @@ public abstract class AbstractTalendEditor extends GraphicalEditorWithFlyoutPale
         // public void run() {
         Map<String, Object> results = saveOutlinePicture((ScrollingGraphicalViewer) getGraphicalViewer());
         IProcess2 process = getProcess();
-        process.setPropertyValue(IProcess.SCREEN_OFFSET_X, (String)results.get(IProcess.SCREEN_OFFSET_X));
-        process.setPropertyValue(IProcess.SCREEN_OFFSET_Y, (String)results.get(IProcess.SCREEN_OFFSET_Y));
+        process.setPropertyValue(IProcess.SCREEN_OFFSET_X, (String) results.get(IProcess.SCREEN_OFFSET_X));
+        process.setPropertyValue(IProcess.SCREEN_OFFSET_Y, (String) results.get(IProcess.SCREEN_OFFSET_Y));
         process.getScreenshots().put("process", (byte[]) results.get("process"));
         // }
         //
