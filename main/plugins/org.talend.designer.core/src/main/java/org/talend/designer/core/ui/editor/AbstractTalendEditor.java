@@ -2420,7 +2420,7 @@ public abstract class AbstractTalendEditor extends GraphicalEditorWithFlyoutPale
         }
 
         protected void hookOutlineViewer() {
-            // getSelectionSynchronizer().addViewer(getViewer());
+            getSelectionSynchronizer().addViewer(getViewer());
         }
 
         protected void initializeOutlineViewer() {
