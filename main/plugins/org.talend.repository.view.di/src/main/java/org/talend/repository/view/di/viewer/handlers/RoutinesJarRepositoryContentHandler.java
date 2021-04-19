@@ -24,13 +24,13 @@ import org.talend.commons.ui.runtime.image.IImage;
 import org.talend.core.model.properties.Item;
 import org.talend.core.model.properties.PropertiesPackage;
 import org.talend.core.model.properties.Property;
-import org.talend.core.model.properties.RoutinesJarItem;
 import org.talend.core.model.repository.AbstractRepositoryContentHandler;
 import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.core.model.repository.IRepositoryViewObject;
 import org.talend.core.model.repository.RepositoryViewObject;
 import org.talend.core.model.routines.CodesJarInfo;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
+import org.talend.core.utils.CodesJarResourceCache;
 import org.talend.repository.model.IRepositoryNode.ENodeType;
 import org.talend.repository.model.IRepositoryNode.EProperties;
 import org.talend.repository.model.RepositoryNode;
@@ -76,14 +76,15 @@ public class RoutinesJarRepositoryContentHandler extends AbstractRepositoryConte
     @Override
     public void addNode(ERepositoryObjectType type, RepositoryNode recBinNode, IRepositoryViewObject repositoryObject,
             RepositoryNode node) {
-        Property property = repositoryObject.getProperty();
-        if (type != ERepositoryObjectType.ROUTINESJAR
-                || (property.getItem() != null && !(property.getItem() instanceof RoutinesJarItem))) {
+        if (type != ERepositoryObjectType.ROUTINESJAR) {
+            return;
+        }
+        CodesJarInfo info = CodesJarResourceCache.getCodesJarById(node.getId());
+        if (info == null) {
             return;
         }
         try {
-            List<IRepositoryViewObject> innerRoutinesObj = ProxyRepositoryFactory.getInstance()
-                    .getAllInnerCodes(CodesJarInfo.create(property));
+            List<IRepositoryViewObject> innerRoutinesObj = ProxyRepositoryFactory.getInstance().getAllInnerCodes(info);
             for (IRepositoryViewObject innerRoutineObj : innerRoutinesObj) {
                 Property innerRoutineProperty = innerRoutineObj.getProperty();
                 RepositoryNode innerRoutineNode = new RepositoryNode(new RepositoryViewObject(innerRoutineProperty),
