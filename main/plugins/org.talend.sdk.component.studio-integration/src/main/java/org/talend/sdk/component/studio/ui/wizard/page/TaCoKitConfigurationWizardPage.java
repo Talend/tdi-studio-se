@@ -193,7 +193,7 @@ public class TaCoKitConfigurationWizardPage extends AbsTaCoKitWizardPage {
     @Override
     public IWizardPage getNextPage() {
         IWizardPage next = super.getNextPage();
-        if (next == null && tacokitComposite != null) {
+        if (EComponentCategory.ADVANCED == category && next == null && tacokitComposite != null) {
             tacokitComposite.setPropertyResized(true);
             tacokitComposite.addComponents(true);
             tacokitComposite.refresh();
