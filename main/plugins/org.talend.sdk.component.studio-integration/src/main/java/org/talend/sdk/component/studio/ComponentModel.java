@@ -323,13 +323,15 @@ public class ComponentModel extends AbstractBasicComponent implements IAdditiona
         errorMessage.setAvailability(AFTER);
         returnVariables.add(errorMessage);
 
-        NodeReturn numberLinesMessage = new NodeReturn();
-        numberLinesMessage.setType(JavaTypesManager.INTEGER.getId());
-        numberLinesMessage.setDisplayName(ComponentReturnVariableUtils
-                .getTranslationForVariable(RETURN_TOTAL_RECORD_COUNT, RETURN_TOTAL_RECORD_COUNT));
-        numberLinesMessage.setName(ComponentReturnVariableUtils.getStudioNameFromVariable(RETURN_TOTAL_RECORD_COUNT));
-        numberLinesMessage.setAvailability(AFTER);
-        returnVariables.add(numberLinesMessage);
+        if(!ETaCoKitComponentType.standalone.equals(getTaCoKitComponentType())) {
+            NodeReturn numberLinesMessage = new NodeReturn();
+            numberLinesMessage.setType(JavaTypesManager.INTEGER.getId());
+            numberLinesMessage.setDisplayName(ComponentReturnVariableUtils.getTranslationForVariable(RETURN_TOTAL_RECORD_COUNT,
+                    RETURN_TOTAL_RECORD_COUNT));
+            numberLinesMessage.setName(ComponentReturnVariableUtils.getStudioNameFromVariable(RETURN_TOTAL_RECORD_COUNT));
+            numberLinesMessage.setAvailability(AFTER);
+            returnVariables.add(numberLinesMessage);
+        }
 
         return returnVariables;
     }
