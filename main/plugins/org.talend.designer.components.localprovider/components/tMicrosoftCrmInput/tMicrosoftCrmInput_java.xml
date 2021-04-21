@@ -27855,9 +27855,9 @@
                 MVN="mvn:com.fasterxml.jackson.core/jackson-annotations/2.11.4"
                 REQUIRED_IF="(((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA' OR API_VERSION=='API_2018_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016' OR MS_CRM_VERSION == 'CRM_2018')))" />
             <IMPORT
-                NAME="json-smart-2.2.1.jar"
-                MODULE="json-smart-2.2.1.jar"
-                MVN="mvn:net.minidev/json-smart/2.2.1"
+                NAME="json-smart-2.4.2.jar"
+                MODULE="json-smart-2.4.2.jar"
+                MVN="mvn:net.minidev/json-smart/2.4.2"
                 REQUIRED_IF="(((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA' OR API_VERSION=='API_2018_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016' OR MS_CRM_VERSION == 'CRM_2018')))" />
             <IMPORT
                 NAME="accessors-smart-1.1"
