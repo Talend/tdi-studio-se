@@ -2522,7 +2522,7 @@ public abstract class AbstractTalendEditor extends GraphicalEditorWithFlyoutPale
             }
             showOutlineAction = null;
             showOverviewAction = null;
-            // getSelectionSynchronizer().removeViewer(getViewer());
+            getSelectionSynchronizer().removeViewer(getViewer());
             if (disposeListener != null && getEditor() != null && !getEditor().isDisposed()) {
                 getEditor().removeDisposeListener(disposeListener);
             }
