@@ -261,7 +261,7 @@
     >
     <DEFAULT>""</DEFAULT>
     </PARAMETER>
-    
+
     <PARAMETER
       NAME="FILE"
       FIELD="FILE"
@@ -270,7 +270,7 @@
     >
       <DEFAULT>"__COMP_DEFAULT_FILE_DIR__/out.csv"</DEFAULT>
     </PARAMETER>
-    
+
     <PARAMETER
         NAME="ENABLE_SERVER_SIDE_ENCRYPTION"
         FIELD="CHECK"
@@ -499,11 +499,47 @@
 	    >
 	      <DEFAULT>""</DEFAULT>
 	    </PARAMETER>
-      	
+
+		<PARAMETER
+		  NAME="OBJECT_LOCK_ENABLED"
+		  FIELD="CHECK"
+		  NUM_ROW="49"
+		  NB_LINES="5"
+		  GROUP="OBJECT_LOCK"
+		  REQUIRED="true"
+		>
+		</PARAMETER>
+
+		<PARAMETER 
+			NAME="OBJECT_LOCK_MODE" 
+			FIELD="CLOSED_LIST" 
+			RAW="true" 
+			NUM_ROW="50" 
+			REQUIRED="true" 
+			GROUP="OBJECT_LOCK"
+			SHOW_IF="(OBJECT_LOCK_ENABLED =='true')"
+		>
+			<ITEMS DEFAULT="GOVERNANCE">
+				<ITEM NAME="GOVERNANCE" VALUE="GOVERNANCE"/>
+				<ITEM NAME="COMPLIANCE" VALUE="COMPLIANCE"/>
+			</ITEMS>
+		</PARAMETER>
+
+        <PARAMETER
+    	  	NAME="OBJECT_LOCK_RETENTION_DAYS"
+    	  	FIELD="TEXT"
+    	  	NUM_ROW="50"
+    	  	REQUIRED="true"
+			GROUP="OBJECT_LOCK"
+			SHOW_IF="(OBJECT_LOCK_ENABLED =='true')"
+    	>
+    	  <DEFAULT>3650</DEFAULT>
+    	</PARAMETER>
+
         <PARAMETER
     	  NAME="PART_SIZE"
     	  FIELD="TEXT"
-    	  NUM_ROW="49"
+    	  NUM_ROW="51"
     	  REQUIRED="true"
     	>
     	  <DEFAULT>5</DEFAULT>
@@ -512,7 +548,7 @@
     	<PARAMETER
           NAME="ENABLE_ACCELERATE"
           FIELD="CHECK"
-          NUM_ROW="50"
+          NUM_ROW="52"
           SHOW_IF="(USE_EXISTING_CONNECTION == 'false')"
         >   	
         <DEFAULT>false</DEFAULT>

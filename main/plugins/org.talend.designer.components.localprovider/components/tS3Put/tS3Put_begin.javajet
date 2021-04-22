@@ -6,6 +6,9 @@ imports="
 	java.util.List
 	java.util.ArrayList
 	java.util.Map
+	java.util.Date
+	java.time.LocalDate
+	java.time.ZoneId
 " 
 %>
 	<%
@@ -32,6 +35,15 @@ imports="
 	List<Map<String, String>> paramsACL = ElementParameterParser.getTableValue(node,"__ACL__");
 	final String cannedACL = ElementParameterParser.getValue(node, "__CANNED_ACCESS_CONTROL_LIST__");
 	final boolean enableCannedACL = (cannedACL != null) && (!cannedACL.isEmpty()) && !("\"NONE\"".equals(cannedACL));
+	
+	boolean enableObjectLock = "true".equals(ElementParameterParser.getValue(node,"__OBJECT_LOCK_ENABLED__"));
+	String objectLockMode =  ElementParameterParser.getValue(node,"__OBJECT_LOCK_MODE__");
+	String objectLockRetention = ElementParameterParser.getValue(node, "__OBJECT_LOCK_RETENTION_DAYS__");
+
+	if(objectLockRetention == null) {
+		objectLockRetention = "3650";
+	}
+
 	%>
 	<%@ include file="../tS3Connection/S3Client.javajet" %>
 	String key_<%=cid%> = <%=key%>;
@@ -150,7 +162,16 @@ accessCtrlList.grantPermission(grantee_<%=cid%>_<%=grantee_id%>, com.amazonaws.s
 				   }
 				}
 			<%}%>
-			
+
+			<%if (enableObjectLock) {%>
+				{
+					final java.util.Date retention_date_<%=cid%> = java.util.Date.from(java.time.LocalDate.now().plusDays(<%=objectLockRetention%>).atStartOfDay(java.time.ZoneId.systemDefault()).toInstant());
+
+					putRequest_<%=cid%>.withObjectLockMode(com.amazonaws.services.s3.model.ObjectLockMode.<%=objectLockMode%>)
+						.withObjectLockRetainUntilDate(retention_date_<%=cid%>);
+				}
+			<%}%>
+
   			<%@ include file="./set_kms.javajet"%>
   		
   			com.amazonaws.services.s3.transfer.Upload upload_<%=cid%> = tm_<%=cid%>.upload(putRequest_<%=cid%>);
@@ -185,6 +206,7 @@ accessCtrlList.grantPermission(grantee_<%=cid%>_<%=grantee_id%>, com.amazonaws.s
                     <%if (enableACL) {%>
 				          putRequest_<%=cid%>.withAccessControlList(accessCtrlList);
 			        <%}%>
+    				
     				<%if (enableCannedACL) {%>
 				         {
 				             final String cannedACLChoice = <%= cannedACL %>;
@@ -193,6 +215,15 @@ accessCtrlList.grantPermission(grantee_<%=cid%>_<%=grantee_id%>, com.amazonaws.s
 				             }
 				         }
 			        <%}%>
+					<%if (enableObjectLock) {%>
+						{
+							final java.util.Date retention_date_<%=cid%> = java.util.Date.from(java.time.LocalDate.now().plusDays(<%=objectLockRetention%>).atStartOfDay(java.time.ZoneId.systemDefault()).toInstant());
+
+							putRequest_<%=cid%>.withObjectLockMode(com.amazonaws.services.s3.model.ObjectLockMode.<%=objectLockMode%>)
+								.withObjectLockRetainUntilDate(retention_date_<%=cid%>);
+						}
+					<%}%>
+
     				<%@ include file="./set_kms.javajet"%>
     				
     				conn_<%=cid%>.putObject(putRequest_<%=cid%>);
@@ -203,6 +234,7 @@ accessCtrlList.grantPermission(grantee_<%=cid%>_<%=grantee_id%>, com.amazonaws.s
                 <%if (enableACL) {%>
 				putRequest_<%=cid%>.withAccessControlList(accessCtrlList);
 			    <%}%>
+      			
       			<%if (enableCannedACL) {%>
 				{
 				    final String cannedACLChoice = <%= cannedACL %>;
@@ -211,6 +243,16 @@ accessCtrlList.grantPermission(grantee_<%=cid%>_<%=grantee_id%>, com.amazonaws.s
 				    }
 				}
 			    <%}%>
+
+				<%if (enableObjectLock) {%>
+					{
+						final java.util.Date retention_date_<%=cid%> = java.util.Date.from(java.time.LocalDate.now().plusDays(<%=objectLockRetention%>).atStartOfDay(java.time.ZoneId.systemDefault()).toInstant());
+
+						putRequest_<%=cid%>.withObjectLockMode(com.amazonaws.services.s3.model.ObjectLockMode.<%=objectLockMode%>)
+							.withObjectLockRetainUntilDate(retention_date_<%=cid%>);
+					}
+				<%}%>
+
       			<%@ include file="./set_kms.javajet"%>
       			
       			com.amazonaws.services.s3.model.InitiateMultipartUploadResult initResponse_<%=cid%> = conn_<%=cid%>.initiateMultipartUpload(putRequest_<%=cid%>);
