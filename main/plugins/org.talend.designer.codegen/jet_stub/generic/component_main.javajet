@@ -120,7 +120,8 @@ if(hasInput){
                             dm_<%=cid%>.getLogicalType(),
                             dm_<%=cid%>.getFormat(),
                             dm_<%=cid%>.getDescription(),
-                            dm_<%=cid%>.isNullable());
+                            dm_<%=cid%>.isNullable(),
+                            dm_<%=cid%>.isKey());
                 }
                 incomingEnforcer_<%=cid%>.createRuntimeSchema();
             }

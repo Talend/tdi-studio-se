@@ -838,8 +838,8 @@ public class DefaultRunProcessService implements IRunProcessService {
     }
 
     @Override
-    public void buildCodesJavaProject(IProgressMonitor monitor) {
-        AggregatorPomsHelper.buildCodesProject();
+    public void buildCodesJavaProject(IProgressMonitor monitor, Set<CodesJarInfo> toUpdate) {
+        AggregatorPomsHelper.buildCodesProject(monitor, toUpdate);
     }
 
     @Override
