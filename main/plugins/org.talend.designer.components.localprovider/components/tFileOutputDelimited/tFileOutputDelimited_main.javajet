@@ -585,7 +585,7 @@ if(("false").equals(ElementParameterParser.getValue(node,"__CSV_OPTION__"))) {
                             %>FormatterUtils.format_Date(<%=conn.getName() %>.<%=column.getLabel() %>, <%= pattern %>);
                             <%
                                 }else if(javaType == JavaTypesManager.BYTE_ARRAY){
-                            %>java.nio.charset.Charset.defaultCharset().decode(java.nio.ByteBuffer.wrap(<%=conn.getName() %>.<%=column.getLabel() %>)).toString();
+                            %>java.nio.charset.Charset.forName(<%=encoding %>).decode(java.nio.ByteBuffer.wrap(<%=conn.getName() %>.<%=column.getLabel() %>)).toString();
                             <%
                                 } else if(advancedSeparator && JavaTypesManager.isNumberType(javaType, column.isNullable())) {
                                     if(javaType == JavaTypesManager.BIGDECIMAL) {%>FormatterUtils.format_Number(<%=column.getPrecision() == null? conn.getName() + "." + column.getLabel() : conn.getName() + "." + column.getLabel() + ".setScale(" + column.getPrecision() + ", java.math.RoundingMode.HALF_UP)" %>.toPlainString(), <%= thousandsSeparator %>, <%= decimalSeparator %>);
