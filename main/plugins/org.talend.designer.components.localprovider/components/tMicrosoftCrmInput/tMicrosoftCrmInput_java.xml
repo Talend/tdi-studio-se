@@ -27808,9 +27808,9 @@
                 REQUIRED_IF="(((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA' OR API_VERSION=='API_2018_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016' OR MS_CRM_VERSION == 'CRM_2018')))" />
             <IMPORT
                 NAME="apache-commons-io"
-                MODULE="commons-io-2.4.jar"
-                MVN="mvn:commons-io/commons-io/2.4"
-                UrlPath="platform:/plugin/org.talend.libraries.apache.common/lib/commons-io-2.4.jar"
+                MODULE="commons-io-2.7.jar"
+                MVN="mvn:commons-io/commons-io/2.7"
+                UrlPath="platform:/plugin/org.talend.libraries.apache.common/lib/commons-io-2.7.jar"
                 REQUIRED_IF="(((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA' OR API_VERSION=='API_2018_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016' OR MS_CRM_VERSION == 'CRM_2018')))" />
             <IMPORT
                 NAME="commons-lang3-3.8.1.jar"

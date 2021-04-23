@@ -427,7 +427,7 @@
 	      	<IMPORT NAME="httpcore-4.4.13" MODULE="httpcore-4.4.13.jar" MVN="mvn:org.apache.httpcomponents/httpcore/4.4.13" REQUIRED="true"/>
 	      	<IMPORT MODULE="httpmime-4.3.1.jar" NAME="httpmime" MVN="mvn:org.talend.libraries/httpmime-4.3.1/6.0.0" UrlPath="platform:/plugin/org.talend.libraries.apache.http/lib/httpmime-4.3.1.jar" REQUIRED="true"/>
             <IMPORT MODULE="org.json.jar" NAME="json" MVN="mvn:org.talend.libraries/org.json/6.0.0" UrlPath="platform:/plugin/org.talend.libraries.jackson/lib/org.json.jar" REQUIRED="true"/>
-            <IMPORT MODULE="commons-io-2.4.jar" NAME="commons-io" MVN="mvn:commons-io/commons-io/2.4" UrlPath="platform:/plugin/org.talend.libraries.apache.common/lib/commons-io-2.4.jar" REQUIRED="true"/>
+            <IMPORT MODULE="commons-io-2.7.jar" NAME="commons-io" MVN="mvn:commons-io/commons-io/2.7" UrlPath="platform:/plugin/org.talend.libraries.apache.common/lib/commons-io-2.7.jar" REQUIRED="true"/>
         </IMPORTS>
     </CODEGENERATION>
     <RETURNS>

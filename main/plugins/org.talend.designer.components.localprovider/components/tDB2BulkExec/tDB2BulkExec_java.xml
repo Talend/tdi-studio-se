@@ -681,7 +681,7 @@
         <IMPORT NAME="Driver-DB2" MODULE="db2jcc4.jar" MVN="mvn:org.talend.libraries/db2jcc4/6.0.0"  REQUIRED="true" />
         <IMPORT NAME="Driver-DB2" MODULE="db2jcc_license_cu.jar" MVN="mvn:org.talend.libraries/db2jcc_license_cu/6.0.0"  REQUIRED="true" />
         <IMPORT NAME="Driver-DB2" MODULE="db2jcc_license_cisuz.jar" MVN="mvn:org.talend.libraries/db2jcc_license_cisuz/6.0.0"  REQUIRED="true" />
-        <IMPORT NAME="commons-io-2.4" MODULE="commons-io-2.4.jar" MVN="mvn:commons-io/commons-io/2.4"  UrlPath="platform:/plugin/org.talend.libraries.apache.common/lib/commons-io-2.4.jar" REQUIRED="true" />
+        <IMPORT NAME="commons-io-2.7" MODULE="commons-io-2.7.jar" MVN="mvn:commons-io/commons-io/2.7"  UrlPath="platform:/plugin/org.talend.libraries.apache.common/lib/commons-io-2.7.jar" REQUIRED="true" />
     </IMPORTS>
   </CODEGENERATION>
 

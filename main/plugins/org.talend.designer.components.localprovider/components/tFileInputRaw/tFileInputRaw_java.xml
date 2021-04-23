@@ -62,7 +62,7 @@
 
    <CODEGENERATION>
 	<IMPORTS>
-		<IMPORT NAME="commons-io-2.4" MODULE="commons-io-2.4.jar" MVN="mvn:commons-io/commons-io/2.4"  UrlPath="platform:/plugin/org.talend.libraries.apache.common/lib/commons-io-2.4.jar" REQUIRED="true" />
+		<IMPORT NAME="commons-io-2.7" MODULE="commons-io-2.7.jar" MVN="mvn:commons-io/commons-io/2.7"  UrlPath="platform:/plugin/org.talend.libraries.apache.common/lib/commons-io-2.7.jar" REQUIRED="true" />
 	</IMPORTS>
   </CODEGENERATION>
 

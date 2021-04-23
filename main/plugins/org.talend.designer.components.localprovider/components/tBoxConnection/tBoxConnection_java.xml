@@ -101,8 +101,8 @@
                 UrlPath="platform:/plugin/org.talend.libraries.apache.common/lib/commons-lang-2.6.jar"
             	REQUIRED="true" BundleID="" />
             <IMPORT NAME="apache-commons-io"
-                MODULE="commons-io-2.4.jar" MVN="mvn:commons-io/commons-io/2.4" 
-                UrlPath="platform:/plugin/org.talend.libraries.apache.common/lib/commons-io-2.4.jar"
+                MODULE="commons-io-2.7.jar" MVN="mvn:commons-io/commons-io/2.7" 
+                UrlPath="platform:/plugin/org.talend.libraries.apache.common/lib/commons-io-2.7.jar"
             	REQUIRED="true" />
 		</IMPORTS>
    </CODEGENERATION>

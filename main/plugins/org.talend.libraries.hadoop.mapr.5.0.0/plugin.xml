@@ -221,7 +221,7 @@
                  id="commons-lang-2.6.jar">
            </library>
            <library
-                 id="commons-io-2.4.jar">
+                 id="commons-io-2.7.jar">
            </library>
         </libraryNeededGroup>        
         <libraryNeededGroup
@@ -300,7 +300,7 @@
                   id="commons-codec-1.5.jar">
             </library>
             <library
-                  id="commons-io-2.4.jar">
+                  id="commons-io-2.7.jar">
             </library>
             <library
                   id="jackson-core-asl-1.8.8.jar">

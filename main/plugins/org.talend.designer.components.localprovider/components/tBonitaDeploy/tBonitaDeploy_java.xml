@@ -269,7 +269,7 @@
 			<IMPORT NAME="httpcore-4.4.13.jar" MODULE="httpcore-4.4.13.jar" MVN="mvn:org.apache.httpcomponents/httpcore/4.4.13" REQUIRED_IF="(DB_VERSION=='BONITA_724') AND (CLIENT_MODE=='JAVA_CLIENT')" />
 			<IMPORT NAME="commons-logging-1.2.jar" MODULE="commons-logging-1.2.jar" MVN="mvn:commons-logging/commons-logging/1.2" REQUIRED_IF="(DB_VERSION=='BONITA_724') AND (CLIENT_MODE=='JAVA_CLIENT')" />
 			<IMPORT NAME="commons-codec-1.14.jar" MODULE="commons-codec-1.14.jar" MVN="mvn:commons-codec/commons-codec/1.14" REQUIRED_IF="(DB_VERSION=='BONITA_724') AND (CLIENT_MODE=='JAVA_CLIENT')" />
-			<IMPORT NAME="commons-io-2.4.jar" MODULE="commons-io-2.4.jar" MVN="mvn:org.talend.libraries/commons-io-2.4/6.0.0" UrlPath="platform:/plugin/org.talend.libraries.apache.common/lib/commons-io-2.4.jar" REQUIRED_IF="(DB_VERSION=='BONITA_724') AND (CLIENT_MODE=='JAVA_CLIENT')" />
+			<IMPORT NAME="commons-io-2.7.jar" MODULE="commons-io-2.7.jar" MVN="mvn:org.talend.libraries/commons-io-2.7/6.0.0" UrlPath="platform:/plugin/org.talend.libraries.apache.common/lib/commons-io-2.7.jar" REQUIRED_IF="(DB_VERSION=='BONITA_724') AND (CLIENT_MODE=='JAVA_CLIENT')" />
 	     </IMPORTS>
 	</CODEGENERATION>
 
