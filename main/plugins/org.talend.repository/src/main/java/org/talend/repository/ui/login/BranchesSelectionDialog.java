@@ -163,7 +163,7 @@ public class BranchesSelectionDialog extends Dialog {
         FormData branchesTreeLayoutData = new FormData();
         branchesTreeLayoutData.top = new FormAttachment(0, 0);
         branchesTreeLayoutData.left = new FormAttachment(0, 0);
-        branchesTreeLayoutData.right = new FormAttachment(200, 0);
+        branchesTreeLayoutData.right = new FormAttachment(100, 0);
         branchesTreeLayoutData.bottom = new FormAttachment(100, 0);
         branchesTree.setLayoutData(branchesTreeLayoutData);
         TreeViewer branchesViewer = branchesTree.getViewer();
