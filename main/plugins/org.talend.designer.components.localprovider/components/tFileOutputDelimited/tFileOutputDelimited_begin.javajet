@@ -279,7 +279,7 @@ if ((metadatas!=null)&&(metadatas.size()>0)) {//A1
                                 <%
                                 }else if(javaType == JavaTypesManager.BYTE_ARRAY){
                                 %>
-                                    java.nio.charset.Charset.defaultCharset().decode(java.nio.ByteBuffer.wrap(<%=conn.getName() %>.<%=column.getLabel() %>)).toString();
+                                    java.nio.charset.Charset.forName(<%=encoding %>).decode(java.nio.ByteBuffer.wrap(<%=conn.getName() %>.<%=column.getLabel() %>)).toString();
                                 <%
                                 }else if(advancedSeparator && JavaTypesManager.isNumberType(javaType, column.isNullable())) {
                                     if(javaType == JavaTypesManager.BIGDECIMAL) {%>
