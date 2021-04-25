@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2021 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -103,6 +103,7 @@ public class JobErrorsChecker {
                         .getInstance()
                         .getRoutinesNeededWithSubjobPerJob(LastGenerationInfo.getInstance().getLastMainJob().getJobId(),
                                 LastGenerationInfo.getInstance().getLastMainJob().getJobVersion());
+                // TODO find a way to check codesjar's innercode compilation error
                 if (routinesObjects != null) {
                     for (IRepositoryViewObject obj : routinesObjects) {
                         Property property = obj.getProperty();
@@ -383,6 +384,7 @@ public class JobErrorsChecker {
                 .getInstance()
                 .getRoutinesNeededWithSubjobPerJob(LastGenerationInfo.getInstance().getLastMainJob().getJobId(),
                         LastGenerationInfo.getInstance().getLastMainJob().getJobVersion());
+        // TODO find a way to check codesjar's innercode compilation error
 
         // from Problems
         List<Problem> errors = Problems.getProblemList().getProblemsBySeverity(ProblemStatus.ERROR);

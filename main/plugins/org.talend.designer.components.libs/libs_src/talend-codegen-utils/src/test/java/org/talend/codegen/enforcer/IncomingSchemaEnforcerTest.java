@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2021 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -52,6 +52,8 @@ public class IncomingSchemaEnforcerTest {
      */
     private IndexedRecord componentRecord;
 
+    private IndexedRecord componentRecordWithSpecialName;
+
     @Rule
     public ExpectedException thrown = ExpectedException.none();
 
@@ -72,9 +74,29 @@ public class IncomingSchemaEnforcerTest {
         componentRecord.put(3, true);
         componentRecord.put(4, "Main Street");
         componentRecord.put(5, "This is a record with six columns.");
+
+        Schema componentSchemaWithSpecialName = SchemaBuilder.builder().record("Record").fields() //
+                .name("id").type().intType().noDefault() //
+                .name("name").type().stringType().noDefault() //
+                .name("age").type().intType().noDefault() //
+                .name("性别").type().booleanType().noDefault() //why this don't store the origin name, as it can pass the avro name check, it's a avro bug
+                .name("address_").prop(SchemaConstants.TALEND_COLUMN_DB_COLUMN_NAME, "address#").type().stringType().noDefault() //
+                .name("comment_").prop(SchemaConstants.TALEND_COLUMN_DB_COLUMN_NAME, "comment$").type().stringType().noDefault() //
+                .endRecord();
+        componentRecordWithSpecialName = new GenericData.Record(componentSchemaWithSpecialName);
+        componentRecordWithSpecialName.put(0, 1);
+        componentRecordWithSpecialName.put(1, "User");
+        componentRecordWithSpecialName.put(2, 100);
+        componentRecordWithSpecialName.put(3, true);
+        componentRecordWithSpecialName.put(4, "Main Street");
+        componentRecordWithSpecialName.put(5, "This is a record with six columns.");
     }
 
     private void checkEnforcerWithComponentRecordData(IncomingSchemaEnforcer enforcer) {
+        checkEnforcerWithComponentRecordData(enforcer, false);
+    }
+
+    private void checkEnforcerWithComponentRecordData(IncomingSchemaEnforcer enforcer, boolean specialName) {
         // The enforcer must be ready to receive values.
         assertThat(enforcer.needsInitDynamicColumns(), is(false));
 
@@ -88,15 +110,25 @@ public class IncomingSchemaEnforcerTest {
         IndexedRecord adapted = enforcer.createIndexedRecord();
 
         // Ensure that the result is the same as the expected component record.
-        assertThat(adapted, is(componentRecord));
+        if (specialName) {
+            assertThat(adapted, is(componentRecordWithSpecialName));
+        } else {
+            assertThat(adapted, is(componentRecord));
+        }
 
         // Ensure that we create a new instance when we give it another value.
         enforcer.put("id", 2);
         enforcer.put("name", "User2");
         enforcer.put("age", 200);
-        enforcer.put("valid", false);
-        enforcer.put("address", "2 Main Street");
-        enforcer.put("comment", "2 This is a record with six columns.");
+        if (specialName) {
+            enforcer.put("性别", false);
+            enforcer.put("address#", "2 Main Street");
+            enforcer.put("comment$", "2 This is a record with six columns.");
+        } else {
+            enforcer.put("valid", false);
+            enforcer.put("address", "2 Main Street");
+            enforcer.put("comment", "2 This is a record with six columns.");
+        }
         IndexedRecord adapted2 = enforcer.createIndexedRecord();
 
         // It should have the same schema, but not be the same instance.
@@ -390,6 +422,39 @@ public class IncomingSchemaEnforcerTest {
 
         // Put values into the enforcer and get them as an IndexedRecord.
         checkEnforcerWithComponentRecordData(enforcer);
+    }
+
+    @Test
+    public void testDynamicColumnWithSpecialName() {
+        Schema designSchema = SchemaBuilder.builder().record("Record") //
+                .prop(DiSchemaConstants.TALEND6_DYNAMIC_COLUMN_POSITION, "3") //
+                .prop(SchemaConstants.INCLUDE_ALL_FIELDS, "true") //
+                .fields() //
+                .name("id").type().intType().noDefault() //
+                .name("name").type().stringType().noDefault() //
+                .name("age").type().intType().noDefault() //
+                .endRecord();
+
+        IncomingSchemaEnforcer enforcer = new IncomingSchemaEnforcer(designSchema);
+
+        // The enforcer isn't usable yet.
+        assertThat(enforcer.getDesignSchema(), is(designSchema));
+        assertFalse(enforcer.areDynamicFieldsInitialized());
+        assertThat(enforcer.getRuntimeSchema(), nullValue());
+
+        enforcer.addDynamicField("性别", "id_Boolean", null, null, null, false, false);
+        enforcer.addDynamicField("address#", "id_String", null, null, null, false, false);
+        enforcer.addDynamicField("comment$", "id_String", null, null, null, false, false);
+        assertFalse(enforcer.areDynamicFieldsInitialized());
+        enforcer.createRuntimeSchema();
+        assertTrue(enforcer.areDynamicFieldsInitialized());
+
+        // Check the run-time schema was created.
+        assertThat(enforcer.getDesignSchema(), is(designSchema));
+        assertThat(enforcer.getRuntimeSchema(), not(nullValue()));
+
+        // Put values into the enforcer and get them as an IndexedRecord.
+        checkEnforcerWithComponentRecordData(enforcer, true);
     }
 
     @Test
@@ -697,6 +762,28 @@ public class IncomingSchemaEnforcerTest {
         IndexedRecord record = enforcer.createIndexedRecord();
         assertThat(record.get(0), is((Object) new BigDecimal("630.1020")));
         assertThat(record.get(1), is((Object) new Date(1234567891011L)));
+    }
+
+    /**
+     * Checks key field setting
+     */
+    @Test
+    public void testAddDynamicFieldKey() {
+        Schema expectedRuntimeSchema = SchemaBuilder.builder().record("Record").fields().name("id")
+                .prop(SchemaConstants.TALEND_COLUMN_IS_KEY, "true").type().intType().noDefault().endRecord();
+
+        Schema designSchema = SchemaBuilder.builder().record("Record").prop(SchemaConstants.INCLUDE_ALL_FIELDS, "true")
+                .prop(DiSchemaConstants.TALEND6_DYNAMIC_COLUMN_POSITION, "0").fields().endRecord();
+
+        IncomingSchemaEnforcer enforcer = new IncomingSchemaEnforcer(designSchema);
+
+        enforcer.addDynamicField("id", "id_Integer", null, null, null, false, true);
+
+        enforcer.createRuntimeSchema();
+        assertTrue(enforcer.areDynamicFieldsInitialized());
+
+        Schema actualRuntimeSchema = enforcer.getRuntimeSchema();
+        assertEquals(expectedRuntimeSchema, actualRuntimeSchema);
     }
 
     /**

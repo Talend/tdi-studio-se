@@ -1,5 +1,5 @@
 <%/*
-  Copyright (C) 2006-2019 Talend Inc. - www.talend.com
+  Copyright (C) 2006-2021 Talend Inc. - www.talend.com
    Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
   You may obtain a copy of the License at
@@ -56,6 +56,45 @@
 
     final org.talend.sdk.component.runtime.output.Processor processorImpl_<%=cid%> = mgr_<%=cid%>.findProcessor("<%=family%>", "<%=originalName%>", <%=version%>, configuration_<%=cid%>)
                                                                                  .orElseThrow(() -> new IllegalArgumentException("Can't find <%=family%>#<%=originalName%>"));
+    
+    <%
+    boolean useExistedConnection = "true".equals(ElementParameterParser.getValue(node,"__USE_EXISTING_CONNECTION__"));
+    String connection = ElementParameterParser.getValue(node,"__CONNECTION__");
+    if(useExistedConnection) {//}
+    %>
+    try {
+        java.lang.reflect.Field field_<%=cid%> = processorImpl_<%=cid%>.getClass().getSuperclass().getDeclaredField("delegate");
+        if (!field_<%=cid%>.isAccessible()) {
+            field_<%=cid%>.setAccessible(true);
+        }
+        Object v_<%=cid%> = field_<%=cid%>.get(processorImpl_<%=cid%>);
+        Object con_<%=cid%> = globalMap.get("conn_<%=connection%>");
+        if(con_<%=cid%>==null) {
+            throw new RuntimeException("can't find the connection object");
+        }
+        
+        Class<?> current_<%=cid%> = v_<%=cid%>.getClass();
+        while (current_<%=cid%> != null && current_<%=cid%> != Object.class) {
+            java.util.stream.Stream.of(current_<%=cid%>.getDeclaredFields()).filter(f_<%=cid%> -> f_<%=cid%>.isAnnotationPresent(org.talend.sdk.component.api.service.connection.Connection.class)).forEach(f_<%=cid%> -> {
+                if (!f_<%=cid%>.isAccessible()) {
+                    f_<%=cid%>.setAccessible(true);
+                }
+                try {
+                    f_<%=cid%>.set(v_<%=cid%>, con_<%=cid%>);
+                } catch (final IllegalAccessException e_<%=cid%>) {
+                    throw new IllegalStateException(e_<%=cid%>);
+                }
+            });
+            current_<%=cid%> = current_<%=cid%>.getSuperclass();
+        }
+    } catch (Exception e_<%=cid%>) {
+        throw e_<%=cid%>;
+    }
+    <%
+    //{
+    }
+    %>
+                                                                                 
     final javax.json.bind.Jsonb jsonb_<%=cid%> = (javax.json.bind.Jsonb)mgr_<%=cid%>.findPlugin(processorImpl_<%=cid%>.plugin()).get()
                      .get(org.talend.sdk.component.runtime.manager.ComponentManager.AllServices.class)
                      .getServices().get(javax.json.bind.Jsonb.class);

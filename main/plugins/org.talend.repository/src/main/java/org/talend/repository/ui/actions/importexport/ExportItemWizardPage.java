@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2021 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -308,7 +308,7 @@ public class ExportItemWizardPage extends WizardPage {
 
     private Set<IRepositoryNode> getBeansWithIds(Set<String> ids) {
         RepositoryNode codeRepositoryNode = ProjectRepositoryNode.getInstance().getRootRepositoryNode(
-                ERepositoryObjectType.valueOf("BEANS"));
+                ERepositoryObjectType.BEANS);
 
         Set<IRepositoryNode> repositoryNodes = new HashSet<IRepositoryNode>();
 
@@ -1046,7 +1046,7 @@ public class ExportItemWizardPage extends WizardPage {
 
     private void registerRelatedBeans(Collection<Item> items) {
         RepositoryNode codeRepositoryNode = ProjectRepositoryNode.getInstance().getRootRepositoryNode(
-                ERepositoryObjectType.valueOf("BEANS"));
+                ERepositoryObjectType.BEANS);
         if (codeRepositoryNode != null) {
             List<IRepositoryNode> checkedNodesBeans = codeRepositoryNode.getChildren();
             for (Item item : items) {

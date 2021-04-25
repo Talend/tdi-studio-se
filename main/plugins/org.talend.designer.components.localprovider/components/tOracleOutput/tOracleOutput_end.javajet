@@ -192,6 +192,7 @@ imports="
     } else { // dataAction equals "INSERT" or "UPDATE" or "DELETE"
     	if (useBatch) {
         %>
+        if(batchSizeCounter_<%=cid%> > 0) {
             try {
             	if (pstmt_<%=cid %> != null) {
 					<%dbLog.batch().executeTry(dbLog.str(dataAction));%>
@@ -243,7 +244,9 @@ imports="
     	    	}
     	    	%>
     	    	+= (tmp_batchUpdateCount_<%=cid%>!=-1?tmp_batchUpdateCount_<%=cid%>:0);
+				rowsToCommitCount_<%=cid%> += (tmp_batchUpdateCount_<%=cid%>!=-1?tmp_batchUpdateCount_<%=cid%>:0);
             }
+        }
         <%
         }
        	%>
@@ -289,7 +292,6 @@ imports="
    	<%
 	}
     %>
-
 
 	<%@ include file="../templates/DB/Output/DBOutputEndGlobalVars.javajet"%>
 

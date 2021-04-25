@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2021 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -58,6 +59,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class UnifiedComponentUtil {
 
     private static Logger log = Logger.getLogger(UnifiedComponentUtil.class);
+
+    public static List<String> JDBC_COMPONENT_BLACKLIST = Arrays
+            .asList(new String[] { "tJDBCOutputBulk", "tJDBCOutputBulkExec", "tJDBCBulkExec" });
 
     private static Map<String, UnifiedJDBCBean> additionalJDBCCache = new HashMap<String, UnifiedJDBCBean>();
 
@@ -156,15 +160,12 @@ public class UnifiedComponentUtil {
                         continue;
                     }
                 }
-                if (isAdditionalJDBC(dbTypeName)) {
-                    String compKey = StringUtils.deleteWhitespace(
-                            service.getUnifiedCompDisplayName(service.getDelegateComponent(component), component.getName()));
-                    if (StringUtils.isNotBlank(compKey) && isUnsupportedComponent(
-                            component.getName().replaceFirst(compKey, "JDBC"), getAdditionalJDBC().get(dbTypeName))) {
-                        // filter delegate component like {tDBSP(JDBC), tDBSP(SingleStore)...}
-                        // as Delta Lake unsupport SP
+                if ("JDBC".equals(dbTypeName) || isAdditionalJDBC(dbTypeName)) {
+                    String compDBType = service.getUnifiedCompDisplayName(service.getDelegateComponent(component), component.getName());
+                    if (!dbTypeName.equals(compDBType)) {
                         continue;
                     }
+
                 }
                 IComponent delegateComponent = service.getDelegateComponent(component);
                 if (delegateComponent != null) {

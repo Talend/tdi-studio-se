@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2021 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -15,9 +15,12 @@ package org.talend.repository.ui.wizards.exportjob.scriptsmanager.esb;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.lang3.BooleanUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.talend.core.CorePlugin;
 import org.talend.core.model.process.IElementParameter;
 import org.talend.core.model.process.INode;
@@ -25,7 +28,11 @@ import org.talend.core.model.process.IProcess;
 import org.talend.core.model.properties.ProcessItem;
 import org.talend.core.utils.TalendQuoteUtils;
 import org.talend.designer.core.IDesignerCoreService;
+import org.talend.designer.core.model.utils.emf.talendfile.ElementParameterType;
+import org.talend.designer.core.model.utils.emf.talendfile.NodeType;
 import org.talend.designer.runprocess.ItemCacheManager;
+import org.talend.utils.json.JSONException;
+import org.talend.utils.json.JSONObject;
 
 /**
  * OSGi DataSource
@@ -57,12 +64,81 @@ public class DataSourceConfig {
         }
         Collection<String> aliases = new HashSet<String>();
 
-        List<? extends INode> generatingNodes = processItem.getGeneratingNodes();
-        for (INode node : generatingNodes) {
-        	getDatasourceAliasesFrom(node, aliases, "SPECIFY_DATASOURCE_ALIAS", "DATASOURCE_ALIAS");
-        	getDatasourceAliasesFrom(node, aliases, "useDataSource", "dataSource");
-        }
+//        List<? extends INode> generatingNodes = processItem.getGeneratingNodes();
+//
+//
+//        for (INode node : generatingNodes) {
+//            getDatasourceAliasesFrom(node, aliases, "SPECIFY_DATASOURCE_ALIAS", "DATASOURCE_ALIAS");
+//            getDatasourceAliasesFrom(node, aliases, "useDataSource", "dataSource");
+//        }
+
+        getAliases(processItem.getId(), aliases);
         return aliases;
+    }
+
+    /**
+     * DOC sunchaoqun Comment method "getAliases".
+     * 
+     * @param id
+     * @param ds
+     * @return
+     */
+    private static void getAliases(String id, Collection<String> ds) {
+        ProcessItem pi = ItemCacheManager.getProcessItem(id);
+        for (Iterator<?> e = pi.getProcess().getNode().iterator(); e.hasNext();) {
+            NodeType node = (NodeType) e.next();
+            if (TRUN_JOB.equals(node.getComponentName())) {
+                for (Iterator<?> iterator = node.getElementParameter().iterator(); iterator.hasNext();) {
+                    ElementParameterType elementParameter = (ElementParameterType) iterator.next();
+                    if (StringUtils.equals(elementParameter.getName(), "PROCESS:PROCESS_TYPE_PROCESS")) {
+                        getAliases((String) elementParameter.getValue(), ds);
+                    }
+                }
+            } else {
+
+                boolean useDS = false;
+                String value = null;
+
+                for (Iterator<?> iterator = node.getElementParameter().iterator(); iterator.hasNext();) {
+                    ElementParameterType elementParameter = (ElementParameterType) iterator.next();
+
+                    if (StringUtils.equals(elementParameter.getName(), "PROPERTIES")) {
+                        JSONObject val = null;
+                        try {
+                            val = new JSONObject(elementParameter.getValue());
+                            if (val != null && val.get("dataSource") instanceof JSONObject) {
+                                JSONObject dataSource = (JSONObject) val.get("dataSource");
+                                if (dataSource != null) {
+                                    String storeValue = (String) dataSource.get("storedValue");
+                                    if (StringUtils.isNoneBlank(storeValue)) {
+                                        useDS = true;
+                                        value = storeValue;
+                                    }
+                                }
+                            }
+                        } catch (JSONException ee) {
+                            ee.printStackTrace();
+                        }
+                    }
+
+                    if ((StringUtils.equals(elementParameter.getName(), "SPECIFY_DATASOURCE_ALIAS")
+                            || StringUtils.equals(elementParameter.getName(), "useDataSource"))
+                            && BooleanUtils.toBoolean(elementParameter.getValue()) && elementParameter.isShow()) {
+                        useDS = true;
+                    }
+
+                    if (StringUtils.equals(elementParameter.getName(), "DATASOURCE_ALIAS")
+                            || StringUtils.equals(elementParameter.getName(), "dataSource")) {
+                        String result = elementParameter.getValue() == null ? null : elementParameter.getValue().toString();
+                        value = TalendQuoteUtils.removeQuotes(result.trim());
+                    }
+
+                    if (useDS && StringUtils.isNotBlank(value)) {
+                        ds.add(value);
+                    }
+                }
+            }
+        }
     }
 
     @Deprecated

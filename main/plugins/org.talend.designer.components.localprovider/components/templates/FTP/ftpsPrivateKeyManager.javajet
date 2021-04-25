@@ -1,0 +1,26 @@
+<%@ jet 
+%>
+	class PrivateKeyManager_<%=cid %> {
+		private javax.net.ssl.KeyManager[] getKeyManagers()
+            throws java.security.KeyStoreException, java.security.NoSuchAlgorithmException,
+                java.security.cert.CertificateException, java.security.UnrecoverableKeyException,
+                java.io.IOException {
+            java.security.KeyStore ks = java.security.KeyStore.getInstance("JKS");
+<%
+			passwordFieldName = "__KEYSTORE_PASS__";
+			if (ElementParameterParser.canEncrypt(node, passwordFieldName)) {
+%> 
+				String decryptedKeyStorePassword = routines.system.PasswordEncryptUtil.decryptPassword(<%=ElementParameterParser.getEncryptedValue(node, passwordFieldName)%>);
+<%
+			} else {
+%>
+				String decryptedKeyStorePassword = <%= ElementParameterParser.getValue(node, passwordFieldName)%>;
+<%
+			}
+%>
+			ks.load(new java.io.FileInputStream(<%=keystoreFile%>), decryptedKeyStorePassword.toCharArray());
+			javax.net.ssl.KeyManagerFactory kmf = javax.net.ssl.KeyManagerFactory.getInstance(javax.net.ssl.KeyManagerFactory.getDefaultAlgorithm());
+			kmf.init(ks, decryptedKeyStorePassword.toCharArray());
+			return kmf.getKeyManagers();
+		}
+	}

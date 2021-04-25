@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2021 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -284,7 +284,7 @@ public class ProjectSettingsPreferenceDialog extends PreferenceDialog implements
     private void unloadProject() {
         Project currentProject = ProjectManager.getInstance().getCurrentProject();
         final ProxyRepositoryFactory instance = ProxyRepositoryFactory.getInstance();
-        if (PluginChecker.isSVNProviderPluginLoaded()) {
+        if (PluginChecker.isRemoteProviderPluginLoaded()) {
             try {
                 if (!instance.isLocalConnectionProvider()) {
                     // instance.getRepositoryFactoryFromProvider().reloadProject(currentProject);

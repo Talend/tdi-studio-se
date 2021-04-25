@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2021 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -34,13 +34,18 @@ import org.talend.commons.utils.VersionUtils;
 import org.talend.core.PluginChecker;
 import org.talend.core.model.general.Project;
 import org.talend.core.model.general.TalendJobNature;
+import org.talend.core.model.properties.ItemState;
 import org.talend.core.model.properties.ProcessItem;
 import org.talend.core.model.properties.PropertiesFactory;
 import org.talend.core.model.properties.Property;
+import org.talend.core.model.properties.RoutinesJarItem;
+import org.talend.core.model.properties.RoutinesJarType;
 import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.core.model.repository.RepositoryObject;
+import org.talend.core.model.routines.CodesJarInfo;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
 import org.talend.core.runtime.process.ITalendProcessJavaProject;
+import org.talend.core.utils.CodesJarResourceCache;
 import org.talend.designer.core.model.utils.emf.talendfile.ProcessType;
 import org.talend.designer.core.model.utils.emf.talendfile.TalendFileFactory;
 import org.talend.designer.maven.model.TalendJavaProjectConstants;
@@ -154,12 +159,51 @@ public class TalendJavaProjectManagerTest {
     }
 
     @Test
+    public void testGetTalendCodesJarJavaProject() throws Exception {
+        RoutinesJarItem jarItem = PropertiesFactory.eINSTANCE.createRoutinesJarItem();
+        String id = ProxyRepositoryFactory.getInstance().getNextId();
+        try {
+            RoutinesJarType jarType = PropertiesFactory.eINSTANCE.createRoutinesJarType();
+            jarItem.setRoutinesJarType(jarType);
+            ItemState state = PropertiesFactory.eINSTANCE.createItemState();
+            state.setPath("");
+            jarItem.setState(state);
+            Property jarProperty = PropertiesFactory.eINSTANCE.createProperty();
+            jarProperty.setId(id);
+            jarProperty.setLabel("TalendJavaProjectManagerTest_testGetTalendCodesJarJavaProject_routinejar1");
+            jarProperty.setVersion("1.0");
+            jarProperty.setItem(jarItem);
+            ProxyRepositoryFactory.getInstance().create(jarItem, new Path(""));
+
+            CodesJarInfo info = CodesJarResourceCache.getCodesJarById(id);
+            ITalendProcessJavaProject talendJavaProject = TalendJavaProjectManager.getTalendCodesJarJavaProject(info);
+
+            validateProject(talendJavaProject, true);
+
+            String projectName = (info.getProjectTechName() + "_" + info.getType().name() + "_" + info.getLabel())
+                    .toUpperCase();
+            assertEquals(projectName, talendJavaProject.getProject().getName());
+        } finally {
+            ProxyRepositoryFactory.getInstance().deleteObjectPhysical(new RepositoryObject(jarItem.getProperty()));
+        }
+    }
+
+    @Test
     public void testGetTempJavaProject() throws Exception {
         ITalendProcessJavaProject talendJavaProject = TalendJavaProjectManager.getTempJavaProject();
 
         validateProject(talendJavaProject, true);
 
         assertEquals(TalendMavenConstants.PROJECT_NAME, talendJavaProject.getProject().getName());
+    }
+
+    @Test
+    public void testGetCodeProjectId() {
+        String projectTechName = "testProject";
+        String routinesId = TalendJavaProjectManager.getCodeProjectId(ERepositoryObjectType.ROUTINES, projectTechName);
+        assertEquals(projectTechName + "|ROUTINES", routinesId);
+        String beansId = TalendJavaProjectManager.getCodeProjectId(ERepositoryObjectType.BEANS, projectTechName);
+        assertEquals(projectTechName + "|BEANS", beansId);
     }
 
     @Test

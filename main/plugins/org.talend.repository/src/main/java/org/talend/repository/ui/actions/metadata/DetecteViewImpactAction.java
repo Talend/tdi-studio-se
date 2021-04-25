@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2021 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -137,6 +137,7 @@ public class DetecteViewImpactAction extends AContextualAction {
                         canWork = true;
                     } else if (objectType == ERepositoryObjectType.BUSINESS_PROCESS
                             || objectType == ERepositoryObjectType.PROCESS || objectType == ERepositoryObjectType.ROUTINES
+                            || objectType == ERepositoryObjectType.ROUTINESJAR || objectType == ERepositoryObjectType.BEANSJAR
                             || objectType == ERepositoryObjectType.JOB_SCRIPT
                             || objectType == ERepositoryObjectType.SQLPATTERNS || objectType == ERepositoryObjectType.JOB_DOC
                             || objectType == ERepositoryObjectType.JOBLET_DOC

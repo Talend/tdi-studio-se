@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2019 Talend Inc. - www.talend.com
+ * Copyright (C) 2006-2021 Talend Inc. - www.talend.com
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,12 +15,10 @@
  */
 package org.talend.sdk.component.studio.model.parameter;
 
-import static java.util.Collections.emptyMap;
-import static java.util.Collections.unmodifiableList;
-import static java.util.Optional.ofNullable;
-import static java.util.function.Function.identity;
-import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toMap;
+import static java.util.Collections.*;
+import static java.util.Optional.*;
+import static java.util.function.Function.*;
+import static java.util.stream.Collectors.*;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -34,7 +32,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.TreeMap;
-import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -596,6 +593,7 @@ public class SettingVisitor implements PropertyVisitor {
         final SettingVisitor creator =
                 new SettingVisitor(new FakeElement("table"), redrawParameter, actions).withCategory(category);
         columns.forEach(creator::visit);
+        parameterResolvers.addAll(creator.getParameterResolvers());
         return unmodifiableList(new ArrayList<>(creator.settings.values()));
     }
 
@@ -633,4 +631,7 @@ public class SettingVisitor implements PropertyVisitor {
         }
     }
 
+    public List<ParameterResolver> getParameterResolvers() {
+        return this.parameterResolvers;
+    }
 }

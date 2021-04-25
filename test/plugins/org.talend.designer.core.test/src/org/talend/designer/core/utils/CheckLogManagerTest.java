@@ -20,6 +20,7 @@ import org.talend.core.model.process.EParameterFieldType;
 import org.talend.core.model.process.IElementParameter;
 import org.talend.core.model.process.INode;
 import org.talend.core.model.process.IProcess;
+import org.talend.core.runtime.process.TalendProcessOptionConstants;
 import org.talend.core.ui.component.ComponentsFactoryProvider;
 import org.talend.designer.core.model.components.DummyComponent;
 import org.talend.designer.core.model.components.ElementParameter;
@@ -49,6 +50,7 @@ public class CheckLogManagerTest {
             BigDataNode sparkConfigurationNode = new BigDataNode(sparkConfigurationComponent, SPARK_CONFIGURATION + "_1");
             sparkConfigurationNode.setSubProcessStart(true);
             sparkConfigurationNode.setActivate(true);
+            sparkConfigurationNode.getElementParameter("SPARK_LOCAL_VERSION").setValue("SPARK_2_4_0");
             nodes.add(sparkConfigurationNode);
 
             ElementParameter storageConfigurationParam = createElementParameter(node, "STORAGE_CONFIGURATION",
@@ -56,13 +58,13 @@ public class CheckLogManagerTest {
             List<IElementParameter> nodeParams = (List<IElementParameter>) node.getElementParameters();
             nodeParams.add(storageConfigurationParam);
 
-            Set<ModuleNeeded> neededLibraries1 = CorePlugin.getDefault().getDesignerCoreService()
-                    .getNeededLibrariesForProcess(processbig, false);
+            Set<ModuleNeeded> neededLibraries = CorePlugin.getDefault().getDesignerCoreService()
+                    .getNeededLibrariesForProcess(processbig, TalendProcessOptionConstants.MODULES_DEFAULT);
             boolean selectLog4j2 = Log4jPrefsSettingManager.getInstance().isSelectLog4j2();
 
             List<String> modules4log4j = new ArrayList<>();
-            for (ModuleNeeded moule : neededLibraries1) {
-                modules4log4j.add(moule.getModuleName());
+            for (ModuleNeeded module : neededLibraries) {
+                modules4log4j.add(module.getModuleName());
             }
             if (!selectLog4j2) {
                 // case1: if original job need commons-logging:commons-logging:ja for log4j1
@@ -105,7 +107,7 @@ public class CheckLogManagerTest {
             modules4log4j.add(moule.getModuleName());
         }
         assertTrue(modules4log4j.contains("log4j-1.2-api-2.12.1.jar"));
-        
+
         process.setComponentsType(ComponentCategory.CATEGORY_4_STORM.getName());
         UpdateLog4jJarUtils.addLog4jToModuleList(modulesNeeded, true, process);
         modules4log4j.clear();

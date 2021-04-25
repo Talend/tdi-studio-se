@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2021 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -357,7 +357,8 @@ public class ChangeValuesFromRepository extends ChangeMetadataCommand {
                     param.setRepositoryValueUsed(true);
                 }
                 if (!isJDBCRepValue && connection instanceof DatabaseConnection
-                        && StringUtils.equals("MAPPING", param.getName())) {//$NON-NLS-1$
+                        && EParameterFieldType.MAPPING_TYPE.equals(param.getFieldType())
+                        && StringUtils.equals(EParameterName.MAPPING.getName(), param.getName())) {// $NON-NLS-1$
                     repositoryValue = param.getName();
                 }
                 if (repositoryValue == null
@@ -680,7 +681,8 @@ public class ChangeValuesFromRepository extends ChangeMetadataCommand {
                     if (param.isRepositoryValueUsed()) {
                         if (("GENERATION_MODE").equals(param.getName())) {
                             param.setReadOnly(true);
-                        } else if (isJDBCRepValue && "MAPPING".equals(param.getName())) {
+                        } else if (isJDBCRepValue && EParameterFieldType.MAPPING_TYPE.equals(param.getFieldType())
+                                && EParameterName.MAPPING.getName().equals(param.getName())) {
                             param.setReadOnly(true);
                         } else {
                             param.setReadOnly(false);

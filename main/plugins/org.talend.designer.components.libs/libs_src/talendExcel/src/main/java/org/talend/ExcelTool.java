@@ -79,6 +79,10 @@ public class ExcelTool {
 
     private boolean isTrackAllColumns = false;
 
+    private boolean isTruncateExceedingCharacters = false;
+
+    private static final int CELL_CHARACTERS_LIMIT = 32767;
+
     private String password = null;
     
     private Map<CellStyle, CellStyle> existedOriginToClone;
@@ -309,7 +313,10 @@ public class ExcelTool {
 
     public void addCellValue(String stringValue) {
         addCell();
-        curCell.setCellValue(stringValue);
+        String value = isTruncateExceedingCharacters && stringValue != null && stringValue.length() > CELL_CHARACTERS_LIMIT
+                ? stringValue.substring(0, CELL_CHARACTERS_LIMIT)
+                        : stringValue;
+        curCell.setCellValue(value);
         curCell.setCellStyle(getNormalCellStyle());
     }
 
@@ -409,6 +416,10 @@ public class ExcelTool {
 
     public void setPasswordProtection(String password) {
         this.password = password;
+    }
+
+    public void setTruncateExceedingCharacters(boolean isTruncateExceedingCharacters) {
+        this.isTruncateExceedingCharacters = isTruncateExceedingCharacters;
     }
 
 }

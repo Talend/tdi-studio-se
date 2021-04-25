@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2019 Talend Inc. - www.talend.com
+ * Copyright (C) 2006-2021 Talend Inc. - www.talend.com
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,8 @@ import java.util.Objects;
 
 import org.talend.core.model.process.INode;
 import org.talend.sdk.component.server.front.model.ComponentDetail;
+import org.talend.sdk.component.studio.ComponentModel;
+import org.talend.sdk.component.studio.VirtualComponentModel;
 
 /**
  * Creates appropriate {@link ConnectorCreator} according component meta
@@ -32,7 +34,10 @@ public final class ConnectorCreatorFactory {
         new AssertionError();
     }
 
-    public static ConnectorCreator create(final ComponentDetail component, final INode node) {
+    public static ConnectorCreator create(final ComponentModel componentModel, final ComponentDetail component, final INode node) {
+        if (componentModel instanceof VirtualComponentModel ) {
+            return new VirtualComponentConnectorCreator(component, node);
+        }
         if (isStandAlone(component)) {
             return new StandAloneConnectorCreator(component, node);
         }

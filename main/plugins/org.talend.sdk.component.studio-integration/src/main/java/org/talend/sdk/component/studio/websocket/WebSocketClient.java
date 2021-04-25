@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2019 Talend Inc. - www.talend.com
+ * Copyright (C) 2006-2021 Talend Inc. - www.talend.com
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -54,6 +54,7 @@ import javax.websocket.Session;
 import javax.websocket.WebSocketContainer;
 
 import org.apache.tomcat.websocket.Constants;
+import org.talend.sdk.component.server.front.model.ActionList;
 import org.talend.sdk.component.server.front.model.ComponentDetail;
 import org.talend.sdk.component.server.front.model.ComponentDetailList;
 import org.talend.sdk.component.server.front.model.ComponentIndex;
@@ -291,6 +292,10 @@ public class WebSocketClient implements AutoCloseable {
         public <T> T execute(final Class<T> expectedResponse, final String family, final String type, final String action, final Map<String, String> payload) {
             return root.sendAndWait("/v1/post/action/execute", "/action/execute?family=" + family + "&type=" + type + "&action=" + action, payload, expectedResponse, true);
         }
+        
+        public ActionList getActionList(final String family) {
+            return root.sendAndWait("/v1/get/action/index/", "/action/index?family=" + family, null, ActionList.class, true);
+        }
     }
 
     public static class V1Documentation {
@@ -340,7 +345,7 @@ public class WebSocketClient implements AutoCloseable {
             }
             return root.sendAndWait("/v1/get/component/details", "/component/details?language=" + language + Stream.of(identifiers).map(i -> "identifiers=" + i).collect(Collectors.joining("&", "&", "")), null, ComponentDetailList.class, true);
         }
-
+        
         public Stream<Pair<ComponentIndex, ComponentDetail>> details(final String language) {
             final List<ComponentIndex> components = getIndex(language).getComponents();
             // create bundles

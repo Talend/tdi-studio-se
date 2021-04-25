@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2021 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -141,7 +141,7 @@ public class OracleGenerationManager extends DbGenerationManager {
                         String exp = replaceVariablesForExpression(component, expression);
                         appendSqlQuery(sb, exp);
                         boolean needAlias = needAlias(columns, dbMapEntry, expression);
-                        if (!added && needAlias) {
+                        if (!added && needAlias && isUseAliasInOutputTable()) {
                             String name = DbMapSqlConstants.SPACE + DbMapSqlConstants.AS + DbMapSqlConstants.SPACE
                                     + getAliasOf(dbMapEntry.getName());
                             appendSqlQuery(sb, name);

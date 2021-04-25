@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2021 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -184,6 +184,7 @@ import org.talend.designer.core.ui.views.jobsettings.JobSettingsView;
 import org.talend.designer.core.ui.views.problems.Problems;
 import org.talend.designer.maven.utils.MavenProjectUtils;
 import org.talend.designer.runprocess.IProcessor;
+import org.talend.designer.runprocess.IRunProcessService;
 import org.talend.designer.runprocess.ProcessorException;
 import org.talend.designer.runprocess.ProcessorUtilities;
 import org.talend.repository.ProjectManager;
@@ -825,8 +826,18 @@ public abstract class AbstractMultiPageTalendEditor extends MultiPageEditorPart 
                         oldProcess.getProperty());
             }
             if (item instanceof ProcessItem) {
-
                 ((Process) oldProcess).updateProcess(processType);
+                if (processType.getParameters() != null && processType.getParameters().getRoutinesParameter() != null) {
+                    List<RoutinesParameterType> routineTypes = processType.getParameters().getRoutinesParameter();
+                    if (routineTypes.stream().anyMatch(r -> r.getType() != null)) {
+                        try {
+                            MavenProjectUtils.updateMavenProject(new NullProgressMonitor(),
+                                    IRunProcessService.get().getTalendJobJavaProject(item.getProperty()).getProject());
+                        } catch (CoreException e) {
+                            ExceptionHandler.process(e);
+                        }
+                    }
+                }
             } else if (item instanceof JobletProcessItem) {
                 ((Process) oldProcess).updateProcess(processType);
             }

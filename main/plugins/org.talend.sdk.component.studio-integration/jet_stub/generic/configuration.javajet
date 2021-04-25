@@ -1,5 +1,5 @@
 <%/*
-  Copyright (C) 2006-2019 Talend Inc. - www.talend.com
+  Copyright (C) 2006-2021 Talend Inc. - www.talend.com
    Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
   You may obtain a copy of the License at
@@ -16,6 +16,12 @@ final java.util.Map<String, String> configuration_<%=cid%> = new java.util.HashM
 final java.util.Map<String, String> registry_metadata_<%=cid%> = new java.util.HashMap<>();
 <%
     final List<ElementParameter> params = List.class.cast(node.getElementParametersWithChildrens());
+    
+    //set the datastore parameters when use existed connection for passing the parameter check like @Required and @Pattern 
+    final boolean reuseConnection = "true".equals(ElementParameterParser.getValue(node,"__USE_EXISTING_CONNECTION__"));
+    String conn_param_prefix = null;
+    java.util.List<String> passwordKeys = new java.util.ArrayList<String>();
+    
     if (params != null && !params.isEmpty()) {
         for (final ElementParameter p : params) {
             Object pluginValue = p.getTaggedValue("org.talend.sdk.component.source");
@@ -31,7 +37,7 @@ final java.util.Map<String, String> registry_metadata_<%=cid%> = new java.util.H
             }
             //TODO: modify this part for Maps and nested lists.
             if (p.getFieldType() == EParameterFieldType.TABLE || p.getFieldType() == EParameterFieldType.TACOKIT_SUGGESTABLE_TABLE) {
-				java.util.List<java.util.Map<String, String>> tableValues = ElementParameterParser.createTableValues((java.util.List<java.util.Map<String, Object>>) p.getValue(), p);
+                java.util.List<java.util.Map<String, String>> tableValues = ElementParameterParser.createTableValues((java.util.List<java.util.Map<String, Object>>) p.getValue(), p);
                 String[] items = p.getListItemsDisplayCodeName();
                 String tableName = p.getName().replace('$', '.');
                 boolean primitiveTable = items.length == 1 && items[0].equals(tableName + "[]");
@@ -180,11 +186,20 @@ final java.util.Map<String, String> registry_metadata_<%=cid%> = new java.util.H
                     }
                     key = keyBuilder.toString();
                 }
+                // Do not put in configuration hidden parameters
+                if (!p.isShow(params) && !key.endsWith("__version")) {
+                %>
+                // <%=key%> is hidden, skipping.
+                <%
+                    continue;
+                }
                 String value = null;
                 if(p.getFieldType() == EParameterFieldType.PASSWORD) {
                     value = ElementParameterParser.getPasswordValue(node, p.getVariableName());
                     if (value == null || value.trim().isEmpty()) {
                         value = null;
+                    } else {
+                        passwordKeys.add(key);
                     }
                 } else {
                     value = ElementParameterParser.getStringElementParameterValue(p);
@@ -217,11 +232,37 @@ final java.util.Map<String, String> registry_metadata_<%=cid%> = new java.util.H
                        }
                     }
                 }
+                
+                //need to get the common prefix for datastore
+                if (reuseConnection && key.matches("\\w+\\.\\w+\\.\\w+\\.__version") && !p.isShow(params)) {
+                    conn_param_prefix = key.substring(0, key.lastIndexOf(".__version"));
+                }
 %>
                     configuration_<%=cid%>.put("<%=key%>", <%=value%>);
 <%
                 } // else do not put value in configuration
             }
+        }
+        
+        if (reuseConnection && conn_param_prefix!=null) {
+            final String connectionKey = ElementParameterParser.getValue(node,"__CONNECTION__");
+%>
+            final java.util.Map<String, String> config_from_connection_<%=cid%> = (java.util.Map<String, String>)globalMap.get("configuration_<%=connectionKey%>");
+            final String conn_param_prefix_<%=cid%> = "<%=conn_param_prefix%>";
+            if(config_from_connection_<%=cid%>!=null && conn_param_prefix_<%=cid%>!=null) {
+                final String prefix_<%=cid%> = config_from_connection_<%=cid%>.keySet().stream()
+                    .filter(key_<%=cid%> -> key_<%=cid%>.endsWith(".__version"))
+                    .findFirst()
+                    .map(key_<%=cid%> -> key_<%=cid%>.substring(0, key_<%=cid%>.lastIndexOf(".__version")))
+                    .orElse(null);
+                    
+                if(prefix_<%=cid%>!=null) {
+                    config_from_connection_<%=cid%>.entrySet().stream().filter(entry_<%=cid%>->entry_<%=cid%>.getKey().startsWith(prefix_<%=cid%>)).forEach(entry_<%=cid%>->{
+                        configuration_<%=cid%>.put(entry_<%=cid%>.getKey().replaceFirst(prefix_<%=cid%>, conn_param_prefix_<%=cid%>), entry_<%=cid%>.getValue());
+                    });
+                }
+            }
+<%
         }
     }
 %>

@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2021 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -702,7 +702,7 @@ public class Connection extends Element implements IConnection, IPerformance, IA
         param.setName(EParameterName.TRACES_CONNECTION_ENABLE.getName());
         param.setDisplayName(EParameterName.TRACES_CONNECTION_ENABLE.getDisplayName());
         param.setFieldType(EParameterFieldType.CHECK);
-        param.setValue(Boolean.FALSE);
+        param.setValue(Boolean.TRUE);
         param.setCategory(EComponentCategory.ADVANCED);
         param.setShow(false);
         param.setNumRow(1);

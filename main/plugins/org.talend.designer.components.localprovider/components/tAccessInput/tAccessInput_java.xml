@@ -121,7 +121,7 @@
 		<IMPORT NAME="Driver-JACKCESS" MODULE="jackcess-2.1.12.jar" MVN="mvn:com.healthmarketscience.jackcess/jackcess/2.1.12" REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false')"/>
 		
 		<IMPORT NAME="jackcess-encrypt-2.1.4" MODULE="jackcess-encrypt-2.1.4.jar" MVN="mvn:com.healthmarketscience.jackcess/jackcess-encrypt/2.1.4" REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false')"/>
-		<IMPORT NAME="bcprov-jdk15on-1.60" MODULE="bcprov-jdk15on-1.60.jar" MVN="mvn:org.bouncycastle/bcprov-jdk15on/1.60" REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false')"/>
+		<IMPORT NAME="bcprov-jdk15on-1.68" MODULE="bcprov-jdk15on-1.68.jar" MVN="mvn:org.bouncycastle/bcprov-jdk15on/1.68" REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false')"/>
 		<IMPORT NAME="talend-ucanaccess-utils-1.0.0" MODULE="talend-ucanaccess-utils-1.0.0.jar" MVN="mvn:org.talend.libraries/talend-ucanaccess-utils-1.0.0/6.4.0" REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false')"/>
 		
 		<IMPORT NAME="common2.6" MODULE="commons-lang-2.6.jar" MVN="mvn:commons-lang/commons-lang/2.6"   UrlPath="platform:/plugin/org.talend.libraries.apache.common/lib/commons-lang-2.6.jar" REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false')"/>

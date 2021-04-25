@@ -1,0 +1,88 @@
+<%/*
+  Copyright (C) 2006-2021 Talend Inc. - www.talend.com
+   Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+*/%>
+
+<%@ jet
+    imports="
+        org.talend.core.model.process.INode
+        org.talend.core.runtime.IAdditionalInfo
+        org.talend.designer.codegen.config.CodeGeneratorArgument
+        org.talend.designer.core.model.components.EParameterName
+        org.talend.designer.core.model.components.ElementParameter
+        org.talend.core.model.process.ElementParameterParser
+        org.talend.core.model.process.EParameterFieldType
+        org.talend.core.model.metadata.IMetadataColumn
+        org.talend.core.model.metadata.IMetadataTable
+        org.talend.core.model.process.IConnection
+        org.talend.core.model.process.IConnectionCategory
+        org.talend.core.model.process.EConnectionType
+        org.talend.core.model.utils.NodeUtil
+        java.util.List
+    "
+%>
+<%
+final CodeGeneratorArgument codeGenArgument = CodeGeneratorArgument.class.cast(argument);
+final INode node = INode.class.cast(codeGenArgument.getArgument());
+if(node == null) {
+    throw new IllegalArgumentException("node cannot be null");
+}
+final String cid = node.getUniqueName();
+final String originalName = (String)node.getElementParameter(EParameterName.COMPONENT_NAME.getName()).getValue();
+final String plugin = (String)node.getElementParameter("___TACOKIT_COMPONENT_PLUGIN_NAME___").getValue();
+final String version = (String)node.getElementParameter(EParameterName.VERSION.getName()).getValue();
+%>
+
+final org.talend.sdk.component.runtime.manager.ComponentManager mgr_<%=cid%> = org.talend.sdk.component.runtime.manager.ComponentManager.instance();
+if (mgr_<%=cid%>.getContainer().findAll().isEmpty()) {
+    mgr_<%=cid%>.autoDiscoverPlugins(false, true);
+}
+
+<%
+String connection = ElementParameterParser.getValue(node,"__CONNECTION__");
+%>
+
+mgr_<%=cid%>.findPlugin("<%=plugin%>")
+    .get()
+    .get(org.talend.sdk.component.runtime.manager.ContainerComponentRegistry.class)
+    .getServices()
+    .stream()
+    .flatMap(s_<%=cid%> -> s_<%=cid%>.getActions().stream())
+    .filter(actionMeta_<%=cid%> -> "close_connection".equals(actionMeta_<%=cid%>.getType()))
+    .forEach(actionMeta_<%=cid%> -> {
+        Object result_<%=cid%> = actionMeta_<%=cid%>.getInvoker().apply(null);
+        org.talend.sdk.component.api.service.connection.CloseConnectionObject cco_<%=cid%> = (org.talend.sdk.component.api.service.connection.CloseConnectionObject) result_<%=cid%>;
+        Object con_<%=cid%> = globalMap.get("conn_<%=connection%>");
+        if(con_<%=cid%>==null) {
+            throw new RuntimeException("can't find the connection object");
+        }
+        
+        globalMap.remove("conn_<%=connection%>");
+        
+        Class<?> current_<%=cid%> = cco_<%=cid%>.getClass();
+        while (current_<%=cid%> != null && current_<%=cid%> != Object.class) {
+            java.util.stream.Stream.of(current_<%=cid%>.getDeclaredFields()).filter(f_<%=cid%> -> f_<%=cid%>.isAnnotationPresent(org.talend.sdk.component.api.service.connection.Connection.class)).forEach(f_<%=cid%> -> {
+                if (!f_<%=cid%>.isAccessible()) {
+                    f_<%=cid%>.setAccessible(true);
+                }
+                try {
+                    f_<%=cid%>.set(cco_<%=cid%>, con_<%=cid%>);
+                } catch (final IllegalAccessException e_<%=cid%>) {
+                    throw new IllegalStateException(e_<%=cid%>);
+                }
+            });
+            current_<%=cid%> = current_<%=cid%>.getSuperclass();
+        }
+        
+        boolean r_<%=cid%> = cco_<%=cid%>.close();
+    });
