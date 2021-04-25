@@ -16,11 +16,9 @@ import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.lang.ref.SoftReference;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -34,10 +32,8 @@ import java.util.Set;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
-import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
-import org.eclipse.core.runtime.Platform;
 import org.eclipse.emf.common.util.BasicEList;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.URI;
@@ -59,7 +55,6 @@ import org.talend.commons.ui.runtime.exception.MessageBoxExceptionHandler;
 import org.talend.commons.ui.utils.image.ColorUtils;
 import org.talend.core.CorePlugin;
 import org.talend.core.GlobalServiceRegister;
-import org.talend.core.ILibraryManagerService;
 import org.talend.core.PluginChecker;
 import org.talend.core.language.ECodeLanguage;
 import org.talend.core.language.LanguageManager;
@@ -76,7 +71,6 @@ import org.talend.core.model.components.IMultipleComponentItem;
 import org.talend.core.model.components.IMultipleComponentManager;
 import org.talend.core.model.general.InstallModule;
 import org.talend.core.model.general.ModuleNeeded;
-import org.talend.core.model.general.ModuleNeeded.ELibraryInstallStatus;
 import org.talend.core.model.metadata.IMetadataColumn;
 import org.talend.core.model.metadata.IMetadataTable;
 import org.talend.core.model.metadata.MetadataColumn;
@@ -157,9 +151,7 @@ import org.talend.hadoop.distribution.model.DistributionBean;
 import org.talend.hadoop.distribution.model.DistributionVersion;
 import org.talend.hadoop.distribution.model.DistributionVersionModule;
 import org.talend.hadoop.distribution.utils.ComponentConditionUtil;
-import org.talend.librariesmanager.model.ExtensionModuleManager;
 import org.talend.librariesmanager.model.ModulesNeededProvider;
-import org.talend.librariesmanager.model.service.LibrariesIndexManager;
 import org.talend.librariesmanager.prefs.LibrariesManagerUtils;
 
 /**
@@ -3484,69 +3476,9 @@ public class EmfComponent extends AbstractBasicComponent {
             componentImportNeedsList.addAll(componentHadoopDistributionImportNeedsList);
         }
         
-        installLibs();
-
         return componentImportNeedsList;
     }
 
-    private void installLibs() {
-        // check and install
-        ILibraryManagerService librairesManagerService = (ILibraryManagerService) GlobalServiceRegister.getDefault().getService(
-                ILibraryManagerService.class);
-        if(librairesManagerService == null){
-            return;
-        }
-        componentImportNeedsList.forEach(m->{
-            // already installed
-            if (m.getStatus() == ELibraryInstallStatus.INSTALLED) {
-                return;
-            }
-            LibrariesIndexManager.getInstance().AddMavenLibs(m.getModuleName(), m.getMavenUri());
-            String urlPath = m.getModuleLocaion();
-            String absolutePath = null;
-            if (!StringUtils.isEmpty(urlPath) && urlPath.startsWith(ExtensionModuleManager.URIPATH_PREFIX)) {
-                try {
-                    String plugin = urlPath.substring(17);
-                    plugin = plugin.substring(0, plugin.indexOf("/"));
-                    String path = urlPath.substring(17 + plugin.length());
-                    URL url = FileLocator.find(Platform.getBundle(plugin), new Path(path), null);
-                    if (url != null) {
-                        URL url2 = FileLocator.toFileURL(url);
-                        File file = new File(url2.getFile());
-                        if (file.exists()) {
-                            absolutePath = file.getAbsolutePath();
-                        }
-                    }
-                } catch (Exception e) {
-                    // do nothing
-                }
-
-                if (absolutePath==null) {
-                    try {
-                        java.net.URI uri = new java.net.URI(urlPath);
-                        URL url = FileLocator.toFileURL(uri.toURL());
-                        File file = new File(url.getFile());
-                        if (file.exists()) {
-                            absolutePath = file.getAbsolutePath();
-                        }
-                    } catch (Exception e) {
-                        // do nothing
-                    }
-                }
-                if (absolutePath != null) {
-                    LibrariesIndexManager.getInstance().AddStudioLibs(m.getModuleName(), m.getModuleLocaion());
-                    try {
-                        librairesManagerService.deploy(new java.net.URI(absolutePath), m.getMavenUri(), false);
-                    } catch (Exception e) {
-                        // do nothing
-                    }
-                } else {
-                    m.setModuleLocaion(null);
-                }
-            }
-        });
-    }
-    
     private boolean isRequired(List<IMPORTType> importTypes, String valueIndex) {
         for(IMPORTType type : importTypes) {
             if(type.getMODULE().equals(valueIndex)) {
