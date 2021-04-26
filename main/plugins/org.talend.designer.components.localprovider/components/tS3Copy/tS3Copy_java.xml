@@ -423,6 +423,15 @@
 	    >
 	      <DEFAULT>""</DEFAULT>
 	    </PARAMETER>
+
+		<PARAMETER
+		  NAME="MULTIPART_THRESHOLD"
+		  FIELD="TEXT"
+		  NUM_ROW="49"
+		  REQUIRED="true"
+		>
+		  <DEFAULT>5120</DEFAULT>
+		</PARAMETER>
     	
     	<PARAMETER
     	  NAME="PART_SIZE"
