@@ -300,6 +300,8 @@ public class IncomingSchemaEnforcer {
             fieldSchema = AvroUtils._decimal();
         } else if ("id_Date".equals(diType)) {
             fieldSchema = AvroUtils._date();
+        } else if ("id_byte[]".equals(diType)) {
+            fieldSchema = AvroUtils._bytes();
         } else {
             throw new UnsupportedOperationException("Unrecognized type " + diType);
         }
