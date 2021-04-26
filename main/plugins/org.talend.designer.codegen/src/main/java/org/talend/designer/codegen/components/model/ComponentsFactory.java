@@ -107,7 +107,7 @@ public class ComponentsFactory implements IComponentsFactory {
 
     private static Logger log = Logger.getLogger(ComponentsFactory.class);
 
-    private static Set<IComponent> componentList = null;
+    private static Set<IComponent> componentList = Collections.synchronizedSet(new HashSet<IComponent>());
 
     private static HashSet<IComponent> customComponentList = null;
 
@@ -165,13 +165,13 @@ public class ComponentsFactory implements IComponentsFactory {
 			} catch (IOException ex) {
 				ExceptionHandler.process(ex);
 			} // not used anymore
+
             long startTime = System.currentTimeMillis();
 
             // TimeMeasure.display = true;
             // TimeMeasure.displaySteps = true;
             // TimeMeasure.measureActive = true;
             // TimeMeasure.begin("initComponents");
-            componentList = Collections.synchronizedSet(new HashSet<IComponent>());
             customComponentList = new HashSet<IComponent>();
             skeletonList = new ArrayList<String>();
             userComponentList = new HashSet<IComponent>();
@@ -246,9 +246,6 @@ public class ComponentsFactory implements IComponentsFactory {
     }
 
     protected void initComponentNameMap() {
-        if (componentList == null) {
-            return;
-        }
         /**
          * component names example: <br>
          * 1. xmlMapComponent <br>
@@ -668,19 +665,13 @@ public class ComponentsFactory implements IComponentsFactory {
 
     @Override
     public int size() {
-        wait4InitialiseFinish();
-        if (componentList == null) {
-            init(false);
-        }
+        init(false);
         return componentList.size();
     }
 
     @Override
     public IComponent get(String name) {
-        wait4InitialiseFinish();
-        if (componentList == null) {
-            init(false);
-        }
+        init(false);
 
         for (IComponent comp : componentList) {
             if (comp != null && comp.getName().equals(name)
@@ -699,10 +690,8 @@ public class ComponentsFactory implements IComponentsFactory {
      */
     @Override
     public IComponent get(String name, String paletteType) {
-        wait4InitialiseFinish();
-        if (componentList == null) {
-            init(false);
-        }
+        init(false);
+
         for (IComponent comp : componentList) {
             if (comp != null && comp.getName().equals(name) && paletteType.equals(comp.getPaletteType())) {
                 return comp;
@@ -714,10 +703,7 @@ public class ComponentsFactory implements IComponentsFactory {
 
     @Override
     public IComponent getJobletComponent(String name, String paletteType) {
-        wait4InitialiseFinish();
-        if (componentList == null) {
-            init(false);
-        }
+        init(false);
 
         // check if reference joblet component presents
         JobletUtil jobletUtils = new JobletUtil();
@@ -740,10 +726,7 @@ public class ComponentsFactory implements IComponentsFactory {
     @Override
     public void initializeComponents(IProgressMonitor monitor) {
         this.monitor = monitor;
-        wait4InitialiseFinish();
-        if (componentList == null) {
-            init(false);
-        }
+        init(false);
         this.monitor = null;
         this.subMonitor = null;
     }
@@ -751,10 +734,7 @@ public class ComponentsFactory implements IComponentsFactory {
     @Override
     public void initializeComponents(IProgressMonitor monitor, boolean duringLogon) {
         this.monitor = monitor;
-        wait4InitialiseFinish();
-        if (componentList == null) {
-            init(duringLogon);
-        }
+        init(duringLogon);
         this.monitor = null;
         this.subMonitor = null;
     }
@@ -766,10 +746,7 @@ public class ComponentsFactory implements IComponentsFactory {
      */
     @Override
     public Set<IComponent> getComponents() {
-        wait4InitialiseFinish();
-        if (componentList == null) {
-            init(false);
-        }
+        init(false);
         return componentList;
     }
 
@@ -790,19 +767,13 @@ public class ComponentsFactory implements IComponentsFactory {
 
     @Override
     public Map<String, Map<String, Set<IComponent>>> getComponentNameMap() {
-        wait4InitialiseFinish();
-        if (componentNameMap == null) {
-            init(false);
-        }
+        init(false);
         return componentNameMap;
     }
 
     @Override
     public List<IComponent> getCustomComponents() {
-        wait4InitialiseFinish();
-        if (customComponentList == null) {
-            init(false);
-        }
+        init(false);
         return new ArrayList<IComponent>(customComponentList);
     }
 
@@ -813,16 +784,13 @@ public class ComponentsFactory implements IComponentsFactory {
      */
     @Override
     public List<String> getSkeletons() {
-        wait4InitialiseFinish();
-        if (skeletonList == null) {
-            init(false);
-        }
+        init(false);
         return skeletonList;
     }
 
     @Override
     public void reset() {
-        componentList = null;
+        componentList.clear();
         skeletonList = null;
         customComponentList = null;
         Collection<IComponentFactoryFilter> filters = ComponentsFactoryProviderManager.getInstance().getProviders();
@@ -971,6 +939,10 @@ public class ComponentsFactory implements IComponentsFactory {
     	String bundle = componentsProvider.getComponentsBundle();
     	return ComponentBundleToPath.getPathFromBundle(bundle);
     	
+    }
+
+    public Set<IComponent> getComponentsForInit() {
+        return this.componentList;
     }
 
 }
