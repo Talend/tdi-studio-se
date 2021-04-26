@@ -339,7 +339,7 @@ public class ComponentModel extends AbstractBasicComponent implements IAdditiona
                 String key = split[0];
                 String type = split[1];
                 // if description is empty we use as description the key value
-                String description = split[2].isEmpty() ? split[0] : split[2];
+                String description = split.length < 3 || split[2].isEmpty() ? split[0] : split[2];
 
                 NodeReturn returnNode = new NodeReturn();
                 String javaType = JavaTypesManager.getJavaTypeFromCanonicalName(type).getId();
