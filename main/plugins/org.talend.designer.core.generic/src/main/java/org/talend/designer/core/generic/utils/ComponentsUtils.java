@@ -123,14 +123,28 @@ public class ComponentsUtils {
     }
 
     public static void loadComponents(ComponentService service) {
-        if (service == null) {
-            return;
-        }
         IComponentsFactory componentsFactory = null;
         if (componentsFactory == null) {
             componentsFactory = ComponentsFactoryProvider.getInstance();
         }
         Set<IComponent> componentsList = componentsFactory.getComponents();
+        readComponents(service, componentsList);
+    }
+
+    public static void initComponents() {
+        IComponentsFactory componentsFactory = null;
+        if (componentsFactory == null) {
+            componentsFactory = ComponentsFactoryProvider.getInstance();
+        }
+        Set<IComponent> componentsList = componentsFactory.getComponentsForInit();
+        readComponents(getComponentService(), componentsList);
+    }
+
+    public static void readComponents(ComponentService service, Set<IComponent> componentsList) {
+        if (service == null) {
+            return;
+        }
+
         if (components == null) {
             components = new HashSet<>();
         } else {

@@ -63,7 +63,7 @@ public class TaCoKitGenericProvider implements IGenericProvider {
 
         final ComponentService service = Lookups.service();
         final IComponentsFactory factory = ComponentsFactoryProvider.getInstance();
-        final Set<IComponent> components = factory.getComponents();
+        final Set<IComponent> components = factory.getComponentsForInit();
         final Set<String> createdConnectionFamiliySet = new HashSet<String>();
         final Set<String> createdCloseFamiliySet = new HashSet<String>();
         synchronized (components) {
@@ -77,9 +77,12 @@ public class TaCoKitGenericProvider implements IGenericProvider {
 
             final String reportPath =
                     CorePlugin.getDefault().getPluginPreferences().getString(ITalendCorePrefConstants.IREPORT_PATH);
-            final boolean isCatcherAvailable =
-                    ComponentsFactoryProvider.getInstance().get(EmfComponent.TSTATCATCHER_NAME,
-                            ComponentCategory.CATEGORY_4_DI.getName()) != null;
+            final boolean isCatcherAvailable = false;
+            for (IComponent comp : components) {
+                if (comp != null && comp.getName().equals(EmfComponent.TSTATCATCHER_NAME) && ComponentCategory.CATEGORY_4_DI.getName().equals(comp.getPaletteType())) {
+                    isCatcherAvailable = true;
+                }
+            }
             details.forEach(pair -> {
                 ComponentIndex index = pair.getFirst();
                 ComponentDetail detail = pair.getSecond();
@@ -94,7 +97,7 @@ public class TaCoKitGenericProvider implements IGenericProvider {
                 }
                 ComponentModel componentModel = new ComponentModel(index, detail, configTypes, imageDesc, reportPath, isCatcherAvailable);
                 components.add(componentModel);
-                
+
                 if (ETaCoKitComponentType.input.equals(componentModel.getTaCoKitComponentType())) {
                     ActionList actionList = Lookups.taCoKitCache().getActionList(index.getFamilyDisplayName());
                     IComponent connectionModel = createConnectionComponent(index, detail, configTypes, reportPath, isCatcherAvailable, createdConnectionFamiliySet, actionList);
@@ -104,12 +107,12 @@ public class TaCoKitGenericProvider implements IGenericProvider {
                     IComponent closeModel = createCloseConnectionComponent(index, detail, configTypes, reportPath, isCatcherAvailable, createdCloseFamiliySet, actionList);
                     if (closeModel != null) {
                         components.add(closeModel);
-                    }   
-                }            
+                    }
+                }
             });
         }
     }
-    
+
     private VirtualComponentModel createCloseConnectionComponent(final ComponentIndex index, final ComponentDetail detail,
             final ConfigTypeNodes configTypeNodes, String reportPath, boolean isCatcherAvailable, Set<String> createdFamiliySet, ActionList actionList) {
         boolean isSupport = false;
@@ -175,5 +178,5 @@ public class TaCoKitGenericProvider implements IGenericProvider {
     public List<?> addPaletteEntry() {
         return emptyList();
     }
- 
+
 }
