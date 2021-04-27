@@ -379,41 +379,50 @@
 		<%
 		} // end if (assumeRole)
 		%>
+		
         <% if(encrypt) { %>
-            com.amazonaws.services.s3.AmazonS3 conn_<%=cid%> = com.amazonaws.services.s3.AmazonS3EncryptionClientBuilder.standard()
-                .withEncryptionMaterials(encryptionMaterialsProvider_<%=cid%>)
+            com.amazonaws.services.s3.AmazonS3EncryptionClientBuilder builder_<%=cid%> = com.amazonaws.services.s3.AmazonS3EncryptionClientBuilder.standard()
+                .withEncryptionMaterials(encryptionMaterialsProvider_<%=cid%>);
             <% if("KMS_CMK".equals(key_type) && set_region) { %>
                 .withCryptoConfiguration(new com.amazonaws.services.s3.model.CryptoConfiguration()
-                .withAwsKmsRegion(com.amazonaws.regions.RegionUtils.getRegion(<%=region%>)))
+                .withAwsKmsRegion(com.amazonaws.regions.RegionUtils.getRegion(<%=region%>)));
             <% } %>
         <% } else { %>
-            com.amazonaws.services.s3.AmazonS3 conn_<%=cid%> = com.amazonaws.services.s3.AmazonS3ClientBuilder.standard()
+            com.amazonaws.services.s3.AmazonS3ClientBuilder builder_<%=cid%> = com.amazonaws.services.s3.AmazonS3ClientBuilder.standard();
         <% } %>
 
-        <% if(useRegionEndpoint && regionEndpoint != null && !regionEndpoint.isEmpty()) { %>
+        final boolean useRegionEndpoint_<%=cid%> = <%=useRegionEndpoint%>;
+        final String regionEndpoint_<%=cid%> = <%=regionEndpoint%>;
+        final boolean enableAccelerateMode_<%=cid%> = <%=enableAccelerateMode%>;
+        final boolean enablePathStyleAccess_<%=cid%> = <%=enablePathStyleAccess%>;
+        
+        if(useRegionEndpoint_<%=cid%> && regionEndpoint_<%=cid%> != null && !regionEndpoint_<%=cid%>.isEmpty()) {
             <%if(!set_region){%>
-                .withEndpointConfiguration(new com.amazonaws.client.builder.AwsClientBuilder.EndpointConfiguration(<%=regionEndpoint%>,null))
-                .withForceGlobalBucketAccessEnabled(true)
+                builder_<%=cid%>.withEndpointConfiguration(new com.amazonaws.client.builder.AwsClientBuilder.EndpointConfiguration(regionEndpoint_<%=cid%>,null))
+                .withForceGlobalBucketAccessEnabled(true);
             <% } else { %>
-                .withEndpointConfiguration(new com.amazonaws.client.builder.AwsClientBuilder.EndpointConfiguration(<%=regionEndpoint%>,<%=region%>))
+                builder_<%=cid%>.withEndpointConfiguration(new com.amazonaws.client.builder.AwsClientBuilder.EndpointConfiguration(regionEndpoint_<%=cid%>,<%=region%>));
             <% } %>
-        <% } else { %>
+        } else {
             <% if(!set_region) { %>
-                .withRegion("us-east-1") // The first region to try your request against
-                .withForceGlobalBucketAccessEnabled(true) // If a bucket is in a different region, try again in the correct region
+                builder_<%=cid%>.withRegion("us-east-1") // The first region to try your request against
+                .withForceGlobalBucketAccessEnabled(true); // If a bucket is in a different region, try again in the correct region
             <% } else { %>
-                .withRegion(<%=region%>)
+                builder_<%=cid%>.withRegion(<%=region%>);
             <% } %>
-        <% } %>
-        <% if(enableAccelerateMode) { %>
-                .withAccelerateModeEnabled(true)
-        <% } %>
-                .withCredentials(credentialsProvider_<%=cid%>)
-                .withClientConfiguration(cc_<%=cid%>)
-        <% if(useRegionEndpoint && enablePathStyleAccess) { %>
-                .enablePathStyleAccess()
-        <% } %>
-                .build();
+        }
+                
+        if(enableAccelerateMode_<%=cid%>) {
+            builder_<%=cid%>.withAccelerateModeEnabled(true);
+        }
+        
+        builder_<%=cid%>.withCredentials(credentialsProvider_<%=cid%>).withClientConfiguration(cc_<%=cid%>);
+            
+        if(useRegionEndpoint_<%=cid%> && enablePathStyleAccess_<%=cid%>) {
+            builder_<%=cid%>.enablePathStyleAccess();
+        }
+        
+        com.amazonaws.services.s3.AmazonS3 conn_<%=cid%> = builder_<%=cid%>.build();
 		<%
 		if(isLog4jEnabled){
 		%>
