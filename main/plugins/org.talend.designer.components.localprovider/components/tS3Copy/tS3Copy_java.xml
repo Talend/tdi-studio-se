@@ -424,23 +424,23 @@
 	      <DEFAULT>""</DEFAULT>
 	    </PARAMETER>
 
-		<PARAMETER
-		  NAME="MULTIPART_THRESHOLD"
-		  FIELD="TEXT"
-		  NUM_ROW="49"
-		  REQUIRED="true"
-		>
-		  <DEFAULT>5120</DEFAULT>
-		</PARAMETER>
-    	
-    	<PARAMETER
-    	  NAME="PART_SIZE"
-    	  FIELD="TEXT"
-    	  NUM_ROW="49"
-    	  REQUIRED="true"
-    	>
-    	  <DEFAULT>100</DEFAULT>
-    	</PARAMETER>
+	    <PARAMETER
+	      NAME="MULTIPART_THRESHOLD"
+	      FIELD="TEXT"
+	      NUM_ROW="49"
+	      REQUIRED="true"
+	    >
+	      <DEFAULT>5120</DEFAULT>
+	    </PARAMETER>
+	
+	    <PARAMETER
+	      NAME="PART_SIZE"
+	      FIELD="TEXT"
+	      NUM_ROW="49"
+	      REQUIRED="true"
+	    >
+	      <DEFAULT>100</DEFAULT>
+	    </PARAMETER>
 
     	<PARAMETER NAME="CANNED_ACCESS_CONTROL_LIST" FIELD="OPENED_LIST" NUM_ROW="100" DYNAMIC_SETTINGS="true">
     	  <ITEMS DEFAULT="NONE">
