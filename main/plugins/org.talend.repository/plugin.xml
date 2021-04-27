@@ -410,7 +410,7 @@
         name="AddKafkaExtraInfo"
         version="7.3.1">                     
   </projecttask>
-  
+
   <projecttask
         beforeLogon="true"
         breaks="5.1.1"
@@ -3638,6 +3638,15 @@
               name="RemoveDefaultProxyIPTask"
               version="7.3.1">
         </projecttask>
+       <projecttask
+              beforeLogon="false"
+              breaks="7.3.0"
+              class="org.talend.repository.model.migration.ReplaceInheritCredentialCheckBoxWithDropDownListTask"
+              description="Replace 'inherit credentials' checkbox for drop down list"
+              id="org.talend.repository.model.migration.ReplaceInheritCredentialCheckBoxWithDropDownListTask"
+              name="ReplaceInheritCredentialCheckBoxWithDropDownListTask"
+              version="7.3.1">
+     </projecttask>
    </extension>
 
    <extension

@@ -13,7 +13,10 @@
 package org.talend.sdk.component.studio.util;
 
 import java.io.ByteArrayInputStream;
+import java.util.HashMap;
+import java.util.Map;
 
+import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.swt.graphics.Image;
@@ -27,12 +30,14 @@ import org.talend.core.ui.images.CoreImageProvider;
 import org.talend.sdk.component.server.front.model.ConfigTypeNode;
 import org.talend.sdk.component.studio.GAV;
 import org.talend.sdk.component.studio.Lookups;
+import org.talend.sdk.component.studio.service.ComponentService;
 
 /**
  * DOC jding  class global comment. Detailled comment
  */
 public class TaCokitImageUtil {
-
+    private static final Map<String, ImageDescriptor> CONNECTION_IMAGE_MAP = new HashMap<String, ImageDescriptor>();
+    
     public static Image getTaCoKitImageByRepositoryType(ERepositoryObjectType repObjType) {
         if (!TaCoKitUtil.isTaCoKitType(repObjType)) {
             return null;
@@ -113,5 +118,21 @@ public class TaCokitImageUtil {
         }
         return null;
     }
-
+   
+   public static ImageDescriptor getConnectionImage(String id) throws Exception {
+       if (CommonsPlugin.isHeadless()) {
+           return ComponentService.DEFAULT_IMAGE;
+       }
+       if (CONNECTION_IMAGE_MAP.containsKey(id)) {
+           return CONNECTION_IMAGE_MAP.get(id);
+       }
+       byte[] data = requestFamilyIcon(id);
+       Image image = buildTaCoKitImage(data);
+       if (image != null) {        
+           CONNECTION_IMAGE_MAP.put(id, ImageDescriptor.createFromImage(image));
+       } else {
+           ExceptionHandler.log("Build TCK connection image failed:" + id);
+       }
+       return CONNECTION_IMAGE_MAP.get(id);
+   }
 }
