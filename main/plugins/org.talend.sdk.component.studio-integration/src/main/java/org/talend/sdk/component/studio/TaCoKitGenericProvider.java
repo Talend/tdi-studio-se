@@ -77,12 +77,14 @@ public class TaCoKitGenericProvider implements IGenericProvider {
 
             final String reportPath =
                     CorePlugin.getDefault().getPluginPreferences().getString(ITalendCorePrefConstants.IREPORT_PATH);
-            boolean isCatcherAvailable = false;
+            boolean isCatcherExisted = false;
             for (IComponent comp : components) {
                 if (comp != null && comp.getName().equals(EmfComponent.TSTATCATCHER_NAME) && ComponentCategory.CATEGORY_4_DI.getName().equals(comp.getPaletteType())) {
-                    isCatcherAvailable = true;
+                    isCatcherExisted = true;
                 }
             }
+	    final boolean isCatcherAvailable = isCatcherExisted;
+
             details.forEach(pair -> {
                 ComponentIndex index = pair.getFirst();
                 ComponentDetail detail = pair.getSecond();
