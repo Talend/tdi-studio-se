@@ -10,8 +10,8 @@
 	List<Map<String,String>> clientConfiguration = (List<Map<String,String>>)ElementParameterParser.getObjectValue(node,"__CLIENT_CONFIGURATION__");
 	String region = ElementParameterParser.getValue(node,"__REGION__");
 
-	boolean useRegionEndpoint 	= "true".equals(ElementParameterParser.getValue(node, "__USE_REGION_ENDPOINT__"));
-	String regionEndpoint 		= ElementParameterParser.getValue(node,"__REGION_ENDPOINT__");
+	String useRegionEndpoint = ElementParameterParser.getValue(node, "__USE_REGION_ENDPOINT__");
+	String regionEndpoint = ElementParameterParser.getValue(node,"__REGION_ENDPOINT__");
 
 	boolean assumeRole = "true".equals(ElementParameterParser.getValue(node, "__ASSUME_ROLE__"));
 	String arn = ElementParameterParser.getValue(node,"__ARN__");
@@ -29,8 +29,8 @@
 
 	boolean set_signingRegion = (signingRegion!=null && !signingRegion.isEmpty() && !"DEFAULT".equalsIgnoreCase(signingRegion));
 
-	boolean enableAccelerateMode = "true".equals(ElementParameterParser.getValue(node,"__ENABLE_ACCELERATE__"));
-	boolean enablePathStyleAccess = "true".equals(ElementParameterParser.getValue(node,"__PATHSTYLEACCESS__"));
+	String enableAccelerateMode = ElementParameterParser.getValue(node,"__ENABLE_ACCELERATE__");
+	String enablePathStyleAccess = ElementParameterParser.getValue(node,"__PATHSTYLEACCESS__");
 
 	String sessionDuration = ElementParameterParser.getValue(node,"__SESSION_DURATION__");
 	if(sessionDuration == null || sessionDuration.isEmpty()) {
