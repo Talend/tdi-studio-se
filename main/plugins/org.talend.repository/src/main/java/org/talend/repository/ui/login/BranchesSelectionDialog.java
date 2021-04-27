@@ -373,8 +373,8 @@ public class BranchesSelectionDialog extends Dialog {
         public void setText(String pattern) {
             if (pattern != null) {
                 try {
-                    Pattern.compile(".*" + pattern + ".*");
-                    this.pattern = ".*" + pattern + ".*";
+                    Pattern.compile("(?i).*" + pattern + ".*");
+                    this.pattern = "(?i).*" + pattern + ".*";
                 } catch (PatternSyntaxException e) {
                     this.pattern = pattern;
                 }
