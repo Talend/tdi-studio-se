@@ -20,8 +20,10 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InvalidClassException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.ObjectStreamClass;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -171,7 +173,18 @@ public final class JetSkeletonManager {
         BufferedInputStream bufferedInputStream = null;
         try {
             bufferedInputStream = new BufferedInputStream(new FileInputStream(file));
-            ObjectInputStream objectIn = new ObjectInputStream(bufferedInputStream);
+            ObjectInputStream objectIn = new ObjectInputStream(bufferedInputStream) {
+                @Override
+                protected Class<?> resolveClass(ObjectStreamClass desc) throws IOException, ClassNotFoundException {
+                    // Enforce the types that we are about to deserialize
+                    if (!(desc.getName().startsWith("java.util")
+                        || Long.class.getName().equals(desc.getName())
+                        || String.class.getName().equals(desc.getName())) {
+                        throw new InvalidClassException("Unauthorized deserialization attempt", desc.getName());
+                    }
+                    return super.resolveClass(desc);
+                }
+            };
             alreadyCheckedSkeleton = (Map<String, Long>) objectIn.readObject();
         } catch (Exception e) {
             throw e;

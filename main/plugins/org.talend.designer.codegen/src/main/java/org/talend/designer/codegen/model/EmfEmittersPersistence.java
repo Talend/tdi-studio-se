@@ -17,8 +17,10 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InvalidClassException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.ObjectStreamClass;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -116,7 +118,18 @@ public class EmfEmittersPersistence {
             ByteArrayInputStream stream = new ByteArrayInputStream(poolAsBytes);
             if (stream.available() > 0) {
                 try {
-                    ObjectInputStream oin = new ObjectInputStream(stream);
+                    ObjectInputStream oin = new ObjectInputStream(stream) {
+                        @Override
+                        protected Class<?> resolveClass(ObjectStreamClass desc) throws IOException, ClassNotFoundException {
+                            // Enforce that we are only deserializing a list of LightJetBeans
+                            if (!(desc.getName().startsWith("java.util")
+                                    || LightJetBean.class.getName().equals(desc.getName())
+                                    || String.class.getName().equals(desc.getName())) {
+                                throw new InvalidClassException("Unauthorized deserialization attempt", desc.getName());
+                            }
+                            return super.resolveClass(desc);
+                        }
+                    };
                     emittersToReturn = (List<LightJetBean>) oin.readObject();
                     oin.close();
                     return emittersToReturn;
