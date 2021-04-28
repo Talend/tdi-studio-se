@@ -25,11 +25,9 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-
-import org.apache.axis.components.net.TransportClientProperties;
-import org.apache.axis.components.net.TransportClientPropertiesFactory;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.collections.map.MultiValueMap;
+import org.apache.commons.discovery.tools.ManagedProperties;
 import org.apache.commons.httpclient.HostConfiguration;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.NameValuePair;
@@ -151,14 +149,16 @@ public class ExchangeUtils {
     public static String sendGetRequest(String urlAddress) throws Exception {
         HttpClient httpclient = new HttpClient();
         GetMethod getMethod = new GetMethod(urlAddress);
-        TransportClientProperties tcp = TransportClientPropertiesFactory.create("http");
-        if (tcp.getProxyHost().length() != 0) {
+        String proxyUser = ManagedProperties.getProperty("http.proxyUser");
+        String proxyPassword = ManagedProperties.getProperty("http.proxyPassword");
+        String proxyHost = ManagedProperties.getProperty("http.proxyHost");
+        String proxyPort = ManagedProperties.getProperty("http.proxyPort");
+        if (proxyHost.length() != 0) {
             UsernamePasswordCredentials creds = new UsernamePasswordCredentials(
-                    tcp.getProxyUser() != null ? tcp.getProxyUser() : "",
-                    tcp.getProxyPassword() != null ? tcp.getProxyUser() : "");
+                    proxyUser != null ? proxyUser : "", proxyPassword != null ? proxyPassword : "");
             httpclient.getState().setProxyCredentials(AuthScope.ANY, creds);
             HostConfiguration hcf = new HostConfiguration();
-            hcf.setProxy(tcp.getProxyHost(), Integer.parseInt(tcp.getProxyPort()));
+            hcf.setProxy(proxyHost, Integer.parseInt(proxyPort));
             httpclient.executeMethod(hcf, getMethod);
         } else {
             httpclient.executeMethod(getMethod);
