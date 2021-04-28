@@ -29,10 +29,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Level;
@@ -139,110 +136,79 @@ public class ComponentsFactory implements IComponentsFactory {
 
     protected static Map<String, Map<String, Set<IComponent>>> componentNameMap;
 
-    private AtomicBoolean isInitialising;
+    private AtomicBoolean isInitialising = new AtomicBoolean(true);
 
-    private volatile Lock initialiseLock;
+    private volatile boolean isInitialized = false;
 
     public ComponentsFactory() {
-        isInitialising = new AtomicBoolean(false);
-        initialiseLock = new ReentrantLock();
     }
 
     private void init(boolean duringLogon) {
-        if (wait4InitialiseFinish()) {
+
+        if (isInitialized) {
             return;
         }
-        try {
-            try {
-                initialiseLock.lock();
-            } catch (Exception e) {
-                throw new RuntimeException(e);
+
+        synchronized (this) {
+            if (isInitialized) {
+                return;
             }
-            log.debug("init " + this.hashCode());
-            isInitialising.set(true);
             try {
-				removeOldComponentsUserFolder();
-			} catch (IOException ex) {
-				ExceptionHandler.process(ex);
-			} // not used anymore
 
-            long startTime = System.currentTimeMillis();
-
-            // TimeMeasure.display = true;
-            // TimeMeasure.displaySteps = true;
-            // TimeMeasure.measureActive = true;
-            // TimeMeasure.begin("initComponents");
-            customComponentList = new HashSet<IComponent>();
-            skeletonList = new ArrayList<String>();
-            userComponentList = new HashSet<IComponent>();
-            String installLocation = new Path(Platform.getConfigurationLocation().getURL().getPath()).toFile().getAbsolutePath();
-            componentToProviderMap = new HashMap<IComponent, AbstractComponentsProvider>();
-            boolean isNeedClean = TalendCacheUtils.isSetCleanComponentCache();
-            // if there is no index file or -clean is added to command
-            reGenerateIndex = !hasComponentFile(installLocation) || isNeedClean;
-            if (reGenerateIndex) {
-                ComponentsCache cache = ComponentManager.getComponentCache();
+                log.debug("init " + this.hashCode());
                 try {
-                    cache.getComponentEntryMap().clear();
-                    loadComponentsFromComponentsProviderExtension();
-                    ComponentManager.saveResource();
-                } catch (Exception e) {
-                    ExceptionHandler.process(e);
-                }
-            }
+                    removeOldComponentsUserFolder();
+                } catch (IOException ex) {
+                    ExceptionHandler.process(ex);
+                } // not used anymore
 
-            loadComponentsFromExtensions();
+                long startTime = System.currentTimeMillis();
 
-            ComponentsLoader.getInstance().loadAllComponentsFromIndex(componentList, customComponentList, userComponentList,
-                    componentToProviderMap);
-
-            // init component name map, used to pick specified component immediately
-            initComponentNameMap();
-
-            // TimeMeasure.step("initComponents", "createCache");
-            log.info(componentList.size() + " components loaded in " + (System.currentTimeMillis() - startTime) + " ms"); //$NON-NLS-1$ //$NON-NLS-2$
-
-            // TimeMeasure.end("initComponents");
-            // TimeMeasure.display = false;
-            // TimeMeasure.displaySteps = false;
-            // TimeMeasure.measureActive = false;
-        } finally {
-            isInitialising.set(false);
-            initialiseLock.unlock();
-        }
-    }
-
-    private boolean wait4InitialiseFinish() {
-        if (isInitialising.get()) {
-            try {
-                // wait for 10 min (10 * 60 seconds) by default
-                long timeout = 600L;
-                String timeoutStr = System.getProperty("studio.componentsFactory.init.timeout"); //$NON-NLS-1$
-                if (!StringUtils.isBlank(timeoutStr)) {
+                // TimeMeasure.display = true;
+                // TimeMeasure.displaySteps = true;
+                // TimeMeasure.measureActive = true;
+                // TimeMeasure.begin("initComponents");
+                customComponentList = new HashSet<IComponent>();
+                skeletonList = new ArrayList<String>();
+                userComponentList = new HashSet<IComponent>();
+                String installLocation = new Path(Platform.getConfigurationLocation().getURL().getPath()).toFile()
+                        .getAbsolutePath();
+                componentToProviderMap = new HashMap<IComponent, AbstractComponentsProvider>();
+                boolean isNeedClean = TalendCacheUtils.isSetCleanComponentCache();
+                // if there is no index file or -clean is added to command
+                reGenerateIndex = !hasComponentFile(installLocation) || isNeedClean;
+                if (reGenerateIndex) {
+                    ComponentsCache cache = ComponentManager.getComponentCache();
                     try {
-                        timeout = Long.valueOf(timeoutStr);
+                        cache.getComponentEntryMap().clear();
+                        loadComponentsFromComponentsProviderExtension();
+                        ComponentManager.saveResource();
                     } catch (Exception e) {
                         ExceptionHandler.process(e);
                     }
                 }
-                if (initialiseLock.tryLock(timeout, TimeUnit.SECONDS)) {
-                    initialiseLock.unlock();
-                } else {
-                    // may be track in dead lock, throw exception to try to break dead lock
-                    throw new RuntimeException(Messages.getString("ComponentsFactory.init.waitForFinish.timeout")); //$NON-NLS-1$
-                }
-                // initialise successfully or not
-                return !isInitialising.get();
-            } catch (RuntimeException e) {
-                throw e;
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            } catch (Exception e) {
-                ExceptionHandler.process(e);
+
+                loadComponentsFromExtensions();
+
+                ComponentsLoader.getInstance().loadAllComponentsFromIndex(componentList, customComponentList, userComponentList,
+                        componentToProviderMap);
+
+                // init component name map, used to pick specified component immediately
+                initComponentNameMap();
+
+                isInitialized = true;
+
+                // TimeMeasure.step("initComponents", "createCache");
+                log.info(componentList.size() + " components loaded in " + (System.currentTimeMillis() - startTime) + " ms"); //$NON-NLS-1$ //$NON-NLS-2$
+
+                // TimeMeasure.end("initComponents");
+                // TimeMeasure.display = false;
+                // TimeMeasure.displaySteps = false;
+                // TimeMeasure.measureActive = false;
+            } finally {
+                isInitialising.set(false);
             }
         }
-        // initialise failed, still need to initialise
-        return false;
     }
 
     protected void initComponentNameMap() {
@@ -821,6 +787,7 @@ public class ComponentsFactory implements IComponentsFactory {
             }
         }
         isInitialising.set(false);
+        isInitialized = false;
     }
 
     @Override
