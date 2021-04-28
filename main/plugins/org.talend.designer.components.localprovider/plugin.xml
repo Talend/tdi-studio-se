@@ -47,10 +47,9 @@
         </libraryNeeded>
         <libraryNeeded
             context="plugin:org.talend.libraries.apache.cxf"
-            id="cxf-rt-bindings-xml-2.7.7.jar"
-            name="cxf-rt-bindings-xml-2.7.7.jar"
-            mvn_uri="mvn:org.talend.libraries/cxf-rt-bindings-xml-2.7.7/6.0.0"
-            uripath="platform:/plugin/org.talend.libraries.apache.cxf/lib/cxf-rt-bindings-xml-2.7.7.jar">
+            id="cxf-rt-bindings-xml-3.3.10.jar"
+            name="cxf-rt-bindings-xml-3.3.10.jar"
+            mvn_uri="mvn:org.apache.cxf/cxf-rt-bindings-xml/3.3.10">
         </libraryNeeded>
         <libraryNeeded
             context="plugin:org.talend.libraries.apache.cxf"
@@ -61,17 +60,15 @@
         </libraryNeeded>
         <libraryNeeded
             context="plugin:org.talend.libraries.apache.cxf"
-            id="cxf-rt-frontend-jaxrs-2.7.7.jar"
-            name="cxf-rt-frontend-jaxrs-2.7.7.jar"
-            mvn_uri="mvn:org.talend.libraries/cxf-rt-frontend-jaxrs-2.7.7/6.0.0"
-            uripath="platform:/plugin/org.talend.libraries.apache.cxf/lib/cxf-rt-frontend-jaxrs-2.7.7.jar">
+            id="cxf-rt-frontend-jaxrs-3.3.10.jar"
+            name="cxf-rt-frontend-jaxrs-3.3.10.jar"
+            mvn_uri="mvn:org.apache.cxf/cxf-rt-frontend-jaxrs/3.3.10">
         </libraryNeeded>
         <libraryNeeded
             context="plugin:org.talend.libraries.apache.cxf"
-            id="cxf-rt-transports-http-2.7.7.jar"
-            name="cxf-rt-transports-http-2.7.7.jar"
-            mvn_uri="mvn:org.talend.libraries/cxf-rt-transports-http-2.7.7/6.0.0"
-            uripath="platform:/plugin/org.talend.libraries.apache.cxf/lib/cxf-rt-transports-http-2.7.7.jar">
+            id="cxf-rt-transports-http-3.3.10.jar"
+            name="cxf-rt-transports-http-3.3.10.jar"
+            mvn_uri="mvn:org.apache.cxf/cxf-rt-transports-http/3.3.10">
         </libraryNeeded>
         <libraryNeeded
             context="plugin:org.talend.libraries.jackson"
@@ -7881,10 +7878,10 @@
                 name="HD_INSIGHT_COMMON_LIBRARIES_LATEST">
             <library id="talend-bigdata-launcher-1.1.0-20160405.jar" />
             <library id="cxf-api-2.7.7.jar" />
-            <library id="cxf-rt-bindings-xml-2.7.7.jar" />
+            <library id="cxf-rt-bindings-xml-3.3.10.jar" />
             <library id="cxf-rt-core-2.7.7.jar" />
-            <library id="cxf-rt-frontend-jaxrs-2.7.7.jar" />
-            <library id="cxf-rt-transports-http-2.7.7.jar" />
+            <library id="cxf-rt-frontend-jaxrs-3.3.10.jar" />
+            <library id="cxf-rt-transports-http-3.3.10.jar" />
             <library id="json_simple-1.1.jar" />
             <library id="javax.ws.rs-api-2.0-m10.jar" />
             <library id="wsdl4j-1.6.3.jar" />
