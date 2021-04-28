@@ -17,6 +17,7 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -229,6 +230,10 @@ public class LoginProjectPage extends AbstractLoginActionPage {
     private Composite backgroundTaskPanel;
 
     private Label backgroundTaskIcon;
+    
+    private List<String> projectBranches = new ArrayList<String>();
+    
+    private String lastSelectedBranch;
 
     public LoginProjectPage(Composite parent, LoginDialogV2 dialog, int style) {
         super(parent, dialog, style);
@@ -361,7 +366,7 @@ public class LoginProjectPage extends AbstractLoginActionPage {
 
             @Override
             protected IStatus run(IProgressMonitor monitor) {
-                final List<String> projectBranches = new ArrayList<String>();
+                projectBranches = new ArrayList<String>();
                 try {
                     Boolean forceRefreshBranch = null;
                     String projTechLabel = Optional.ofNullable(currentProjectSettings).map(p -> p.getTechnicalLabel())
@@ -390,30 +395,19 @@ public class LoginProjectPage extends AbstractLoginActionPage {
                     if (monitor.isCanceled() || Thread.currentThread().isInterrupted()) {
                         return;
                     }
-                    branchesViewer.setInput(projectBranches);
-                    String storage = null;
-                    try {
-                        storage = getStorage(currentProjectSettings);
-                    } catch (Exception e) {
-                        ExceptionHandler.process(e);
-                    }
+                    String lastLogonBranch = getLastLogonBranch(currentProjectSettings);
+                    List<String> popularBranches = getPopularBranches(projectBranches, lastLogonBranch);
+                    branchesViewer.setInput(popularBranches);
                     if (monitor.isCanceled() || Thread.currentThread().isInterrupted()) {
                         return;
                     }
-                    if ("svn".equals(storage) && projectBranches.size() != 0) {
-                        branchesViewer.setSelection(new StructuredSelection(
-                                new Object[] { projectBranches.contains("trunk") ? "trunk" : projectBranches.get(0) }));
-                    } else if ("git".equals(storage) && projectBranches.size() != 0) {
-                        String defaultBranch = null;
-                        if (projectBranches.contains(SVNConstant.NAME_MAIN)) {
-                            defaultBranch = SVNConstant.NAME_MAIN;
-                        } else if (projectBranches.contains(SVNConstant.NAME_MASTER)) {
-                            defaultBranch = SVNConstant.NAME_MASTER;
-                        } else {
-                            defaultBranch = projectBranches.get(0);
-                        }
-                        if (StringUtils.isNotBlank(defaultBranch)) {
-                            branchesViewer.setSelection(new StructuredSelection(new Object[] { defaultBranch }));
+                    if ( StringUtils.isNotBlank(lastLogonBranch)) {
+                        branchesViewer.setSelection(new StructuredSelection(new Object[] { lastLogonBranch }));
+                        lastSelectedBranch = lastLogonBranch;
+                    } else {
+                        if ( popularBranches.size() > 0 ) {
+                            branchesViewer.setSelection(new StructuredSelection(new Object[] { popularBranches.get(0) }));
+                            lastSelectedBranch = popularBranches.get(0);
                         }
                     }
                     // svnBranchCombo.getCombo().setFont(originalFont);
@@ -1179,6 +1173,21 @@ public class LoginProjectPage extends AbstractLoginActionPage {
 
             @Override
             public void selectionChanged(SelectionChangedEvent event) {
+                IStructuredSelection selection = (IStructuredSelection) event.getSelection();
+                String branch = (String) selection.getFirstElement();
+                if (StringUtils.equals(branch, Messages.getString("MoreRemoteBranchesAction.remoteBranches.more"))) {
+                    BranchesSelectionDialog dialog = new BranchesSelectionDialog(getShell(), getBranch(), projectBranches,true);
+                    dialog.open();
+                    String selectedBranch  = dialog.getSelection();
+                    if (selectedBranch !=null) {
+                        branchesViewer.setInput(getPopularBranches(projectBranches,selectedBranch));
+                        branchesViewer.setSelection(new StructuredSelection(new Object[] { selectedBranch }));
+                    } else {
+                        branchesViewer.setSelection(new StructuredSelection(new Object[] { lastSelectedBranch }));
+                    }
+                } else {
+                    lastSelectedBranch = branch;
+                }
 
                 // last used branch of project will be saved when click finish
                 // String branch = getBranch();
@@ -2224,7 +2233,87 @@ public class LoginProjectPage extends AbstractLoginActionPage {
             }
         }
     }
-
+    
+    private List<String> getPopularBranches(List<String> brancheNames, String defaultBranch){
+        if (brancheNames == null) return null;
+        final int maxSize = 10;
+        List<String> popularBranches = new LinkedList<>();
+        String storage = null;
+        try {
+            storage = getStorage(currentProjectSettings);
+        } catch (Exception e) {
+            ExceptionHandler.process(e);
+        }
+        for (final String branchName : brancheNames) {
+            if ("svn".equals(storage) ) {
+                if ( StringUtils.equals("trunk", branchName)) {
+                    popularBranches.add(0,branchName);
+                } else if ( StringUtils.equals(defaultBranch, branchName)) {
+                    int index = 0;
+                    if (popularBranches.contains("trunk")) {
+                        index++;
+                    } 
+                    popularBranches.add(index,branchName);
+                } else {
+                    popularBranches.add(branchName);
+                }
+            } else if ("git".equals(storage)) {
+                if ( StringUtils.equals(SVNConstant.NAME_MAIN, branchName)) {
+                    popularBranches.add(0,branchName);
+                } else if ( StringUtils.equals(SVNConstant.NAME_MASTER, branchName)) {
+                    int index = 0;
+                    if (popularBranches.contains(SVNConstant.NAME_MAIN)) {
+                        index++;
+                    } 
+                    popularBranches.add(index,branchName);
+                } else if ( StringUtils.equals(defaultBranch, branchName)) {
+                    int index = 0;
+                    if (popularBranches.contains(SVNConstant.NAME_MAIN)) {
+                        index++;
+                    } 
+                    if (popularBranches.contains(SVNConstant.NAME_MASTER)) {
+                        index++;
+                    } 
+                    popularBranches.add(index,branchName);
+                    
+                } else {
+                    popularBranches.add(branchName);
+                }
+            }
+        }
+        if (maxSize < popularBranches.size()) {
+            popularBranches = popularBranches.subList(0, maxSize);
+            popularBranches.add(Messages.getString("MoreRemoteBranchesAction.remoteBranches.more"));
+        } else {
+            int i = popularBranches.size();
+            for (final String remoteBranchName : popularBranches) {
+                if (maxSize <= i) {
+                    break;
+                }
+                if (popularBranches.contains(remoteBranchName)) {
+                    continue;
+                }
+                popularBranches.add(remoteBranchName);
+                i++;
+            }
+        }
+        
+        return popularBranches;
+    }
+    
+    private String getLastLogonBranch(Project project) {
+        if (project == null) return null;
+        String lastLogonBranch = null;
+        try {
+            String jsonStr = project.getEmfProject().getUrl();
+            lastLogonBranch = loginHelper.getPrefManipulator()
+                                    .getLastSVNBranch(new JSONObject(jsonStr).getString("location"), project.getTechnicalLabel());
+        } catch (JSONException e) {
+            ExceptionHandler.process(e);
+        }
+        return lastLogonBranch;
+    }
+    
     private void selectProject(Project goodProject) throws JSONException {
         try {
             disableBranchRefresh = true;
@@ -2285,6 +2374,7 @@ public class LoginProjectPage extends AbstractLoginActionPage {
                 projectBranches.add("trunk"); //$NON-NLS-1$
                 branchesViewer.setInput(projectBranches);
                 branchesViewer.setSelection(new StructuredSelection(new Object[] { "trunk" })); //$NON-NLS-1$
+                lastSelectedBranch = "trunk";
             } else if ("git".equals(storage)) { //$NON-NLS-1$
                 branchesViewer.setInput(projectBranches);
             }
