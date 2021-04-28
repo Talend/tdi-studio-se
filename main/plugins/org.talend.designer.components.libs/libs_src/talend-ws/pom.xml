@@ -12,7 +12,7 @@
 
 		<talend.nexus.url>https://artifacts-oss.talend.com</talend.nexus.url>
 
-		<cxf.version>3.3.7</cxf.version>
+		<cxf.version>3.3.10</cxf.version>
 		<odata.version>4.3.0</odata.version>
 		<slf4j.version>1.7.12</slf4j.version>
 		<httpclient.version>4.5.13</httpclient.version>
