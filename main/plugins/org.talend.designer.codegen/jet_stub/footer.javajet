@@ -1170,9 +1170,23 @@ if (execStat) {
             Object obj_conn;
 <%    for (INode sqlDbComponent : sqlDbComponentsList) { %>
             obj_conn = globalMap.remove("conn_<%=sqlDbComponent.getUniqueName() %>");
+
+            java.sql.Connection conn = (java.sql.Connection)obj_conn;
+
+            String originalURL = conn.getMetaData().getURL();
+            java.sql.Driver drv = java.sql.DriverManager.getDriver(originalURL);
+            String driverClass = drv.getClass().getName();
+
             if (null != obj_conn) {
                 ((java.sql.Connection) obj_conn).close();
             }
+
+            if("com.mysql.cj.jdbc.Driver".equals(driverClass)
+                && routines.system.BundleUtils.inOSGi()) {
+                    Class.forName("com.mysql.cj.jdbc.AbandonedConnectionCleanupThread").
+                        getMethod("uncheckedShutdown").invoke(null, (Object[]) null);
+            }
+
 <%    } %>
         } catch (java.lang.Exception e) {
         }
