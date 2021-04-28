@@ -3633,7 +3633,7 @@
               beforeLogon="false"
               breaks="7.3.0"
               class="org.talend.repository.model.migration.AddEncodingToPostParametersFortFileFetchMigrationTask"
-              description="Add charset default 'UTF-8' post method parameters"
+              description="Add charset default 'US-ASCII' post method parameters"
               id="org.talend.repository.model.migration.AddEncodingToPostParametersFortFileFetchMigrationTask"
               name="AddEncodingToPostParametersFortFileFetchMigrationTask"
               version="7.3.1">
