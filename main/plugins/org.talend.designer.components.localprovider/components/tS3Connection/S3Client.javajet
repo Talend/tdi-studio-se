@@ -384,7 +384,7 @@
             com.amazonaws.services.s3.AmazonS3EncryptionClientBuilder builder_<%=cid%> = com.amazonaws.services.s3.AmazonS3EncryptionClientBuilder.standard()
                 .withEncryptionMaterials(encryptionMaterialsProvider_<%=cid%>);
             <% if("KMS_CMK".equals(key_type) && set_region) { %>
-                .withCryptoConfiguration(new com.amazonaws.services.s3.model.CryptoConfiguration()
+                builder_<%=cid%>.withCryptoConfiguration(new com.amazonaws.services.s3.model.CryptoConfiguration()
                 .withAwsKmsRegion(com.amazonaws.regions.RegionUtils.getRegion(<%=region%>)));
             <% } %>
         <% } else { %>
