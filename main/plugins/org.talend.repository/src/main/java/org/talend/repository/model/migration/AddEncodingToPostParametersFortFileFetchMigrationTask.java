@@ -69,7 +69,7 @@ public class AddEncodingToPostParametersFortFileFetchMigrationTask extends Abstr
 					ComponentUtilities.addNodeProperty(node,
 							"COMMON_PARAMS_CHARSET", "OPENED_LIST"); //$NON-NLS-1$ //$NON-NLS-2$
 					ComponentUtilities.setNodeValue(node,
-							"COMMON_PARAMS_CHARSET", "&quot;US-ASCII&quot;"); //$NON-NLS-1$ //$NON-NLS-2$
+							"COMMON_PARAMS_CHARSET", "\"US-ASCII\""); //$NON-NLS-1$ //$NON-NLS-2$
 				}
 			}
 
