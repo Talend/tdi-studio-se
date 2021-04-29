@@ -582,7 +582,7 @@ public final class JAXBUtils {
     public static void setNamespaceWrapper(final Map<String, String> nspref, Marshaller marshaller) throws PropertyException {
         Object mapper = null;
         if (marshaller.getClass().getName().contains(".internal.")) {
-            mapper = createNamespaceWrapper(nspref);
+            mapper = createNamespaceWrapper(null, nspref);
             if (mapper == null) {
                 LOG.log(Level.INFO, "Could not create namespace mapper for JDK internal" + " JAXB implementation.");
             } else {
@@ -597,6 +597,31 @@ public final class JAXBUtils {
             }
             marshaller.setProperty("com.sun.xml.bind.namespacePrefixMapper", mapper);
         }
+    }
+
+    /*
+     * To avoid possible runtime collision.
+     */
+    public static Object setNamespaceMapper(Bus bus, final Map<String, String> nspref,
+            Marshaller marshaller) throws PropertyException {
+        Object mapper = null;
+        if (marshaller.getClass().getName().contains(".internal.")) {
+            mapper = createNamespaceWrapper(bus, nspref);
+            if (mapper == null) {
+                LOG.log(Level.INFO, "Could not create namespace mapper for JDK internal" + " JAXB implementation.");
+            } else {
+                marshaller.setProperty("com.sun.xml.internal.bind.namespacePrefixMapper", mapper);
+            }
+        } else {
+            try {
+                Class<?> cls = Class.forName("org.apache.cxf.common.jaxb.NamespaceMapper");
+                mapper = cls.getConstructor(Map.class).newInstance(nspref);
+            } catch (Exception ex) {
+                LOG.log(Level.INFO, "Could not create NamespaceMapper", ex);
+            }
+            marshaller.setProperty("com.sun.xml.bind.namespacePrefixMapper", mapper);
+        }
+        return mapper;
     }
 
     public static BridgeWrapper createBridge(Set<Class<?>> ctxClasses, QName qname, Class<?> refcls, Annotation anns[])
@@ -1022,16 +1047,17 @@ public final class JAXBUtils {
         return false;
     }
 
-    private static synchronized Object createNamespaceWrapper(Map<String, String> map) {
+    private static synchronized Object createNamespaceWrapper(Bus bus, Map<String, String> map) {
         ASMHelper helper = new ASMHelperImpl();
         String className = "org.apache.cxf.jaxb.NamespaceMapperInternal";
-        Class<?> cls = NamespaceMapperClassGenerator.INSTANCE.findClass(className, JAXBUtils.class);
+        NamespaceMapperClassGenerator nmcg = new NamespaceMapperClassGenerator(bus);
+        Class<?> cls = nmcg.findClass(className, JAXBUtils.class);
         if (cls == null) {
             ClassWriter cw = helper.createClassWriter();
             if (cw == null) {
                 return null;
             }
-            cls = createNamespaceWrapperInternal(helper, cw);
+            cls = createNamespaceWrapperInternal(helper, cw, nmcg);
         }
         try {
             return cls.getConstructor(Map.class).newInstance(map);
@@ -1040,7 +1066,7 @@ public final class JAXBUtils {
         }
     }
 
-    private static Class<?> createNamespaceWrapperInternal(ASMHelper helper, ClassWriter cw) {
+    private static Class<?> createNamespaceWrapperInternal(ASMHelper helper, ClassWriter cw, NamespaceMapperClassGenerator nmcg) {
         String className = "org.apache.cxf.jaxb.NamespaceMapperInternal";
         FieldVisitor fv;
         MethodVisitor mv;
@@ -1131,7 +1157,7 @@ public final class JAXBUtils {
             }
         }
 
-        return NamespaceMapperClassGenerator.INSTANCE.loadClass(className, cls, bts);
+        return nmcg.loadClass(className, cls, bts);
     }
 
     public static JAXBBeanInfo getBeanInfo(JAXBContextProxy context, Class<?> cls) {
@@ -1144,10 +1170,8 @@ public final class JAXBUtils {
 
     private static class NamespaceMapperClassGenerator extends ClassGeneratorClassLoader {
 
-        private static final NamespaceMapperClassGenerator INSTANCE = new NamespaceMapperClassGenerator(BusFactory.getDefaultBus());
-
         private NamespaceMapperClassGenerator(Bus bus) {
-            super(bus);
+            super(bus == null ? BusFactory.getDefaultBus() : bus);
         }
 
         @Override
