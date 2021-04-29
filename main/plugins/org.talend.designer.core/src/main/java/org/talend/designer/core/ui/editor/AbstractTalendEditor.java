@@ -2352,6 +2352,25 @@ public abstract class AbstractTalendEditor extends GraphicalEditorWithFlyoutPale
             getViewer().setEditPartFactory(new ProcessTreePartFactory());
             getViewer().setKeyHandler(getCommonKeyHandler());
             IToolBarManager tbm = getSite().getActionBars().getToolBarManager();
+            linkWithEditorAction = new Action() {
+
+                @Override
+                public void run() {
+                    ISelection selection = getViewer().getSelection();
+                    if (selection != null) {
+                        if (selection instanceof IStructuredSelection) {
+                            Object input = ((IStructuredSelection) selection).getFirstElement();
+                            if (input instanceof NodeTreeEditPart) {
+                                isSynchronizer = true;
+                                getViewer().setSelection(selection);
+                                isSynchronizer = false;
+                            }
+                        }
+                    }
+                }
+            };
+            linkWithEditorAction.setImageDescriptor(ImageDescriptor.createFromFile(DesignerPlugin.class, "/icons/synced.png")); //$NON-NLS-1$
+            tbm.add(linkWithEditorAction);
             showOutlineAction = new Action() {
 
                 @Override
@@ -2380,25 +2399,6 @@ public abstract class AbstractTalendEditor extends GraphicalEditorWithFlyoutPale
             };
             showOverviewAction.setImageDescriptor(ImageDescriptor.createFromFile(DesignerPlugin.class, "/icons/overview.gif")); //$NON-NLS-1$
             tbm.add(showOverviewAction);
-            linkWithEditorAction = new Action() {
-
-                @Override
-                public void run() {
-                    ISelection selection = getViewer().getSelection();
-                    if (selection != null) {
-                        if (selection instanceof IStructuredSelection) {
-                            Object input = ((IStructuredSelection) selection).getFirstElement();
-                            if (input instanceof NodeTreeEditPart) {
-                                isSynchronizer = true;
-                                getViewer().setSelection(selection);
-                                isSynchronizer = false;
-                            }
-                        }
-                    }
-                }
-            };
-            linkWithEditorAction.setImageDescriptor(ImageDescriptor.createFromFile(DesignerPlugin.class, "/icons/synced.png")); //$NON-NLS-1$
-            tbm.add(linkWithEditorAction);
             getSite().getActionBars().updateActionBars();
 
             showPage(ID_OUTLINE);
