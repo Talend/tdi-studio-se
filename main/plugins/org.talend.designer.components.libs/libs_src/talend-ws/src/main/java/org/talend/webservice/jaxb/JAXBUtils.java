@@ -42,14 +42,18 @@ import javax.xml.transform.Result;
 import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.stream.StreamResult;
 
+import org.apache.cxf.Bus;
+import org.apache.cxf.BusFactory;
 import org.apache.cxf.common.jaxb.JAXBBeanInfo;
 import org.apache.cxf.common.jaxb.JAXBContextProxy;
 import org.apache.cxf.common.logging.LogUtils;
+import org.apache.cxf.common.spi.ClassGeneratorClassLoader;
 import org.apache.cxf.common.util.ASMHelper;
 import org.apache.cxf.common.util.ASMHelper.ClassWriter;
 import org.apache.cxf.common.util.ASMHelper.FieldVisitor;
 import org.apache.cxf.common.util.ASMHelper.Label;
 import org.apache.cxf.common.util.ASMHelper.MethodVisitor;
+import org.apache.cxf.common.util.ASMHelperImpl;
 import org.apache.cxf.common.util.CachedClass;
 import org.apache.cxf.common.util.PackageUtils;
 import org.apache.cxf.common.util.ReflectionInvokationHandler;
@@ -1019,9 +1023,9 @@ public final class JAXBUtils {
     }
 
     private static synchronized Object createNamespaceWrapper(Map<String, String> map) {
-        ASMHelper helper = new ASMHelper();
+        ASMHelper helper = new ASMHelperImpl();
         String className = "org.apache.cxf.jaxb.NamespaceMapperInternal";
-        Class<?> cls = helper.findClass(className, JAXBUtils.class);
+        Class<?> cls = NamespaceMapperClassGenerator.INSTANCE.findClass(className, JAXBUtils.class);
         if (cls == null) {
             ClassWriter cw = helper.createClassWriter();
             if (cw == null) {
@@ -1127,7 +1131,7 @@ public final class JAXBUtils {
             }
         }
 
-        return helper.loadClass(className, cls, bts);
+        return NamespaceMapperClassGenerator.INSTANCE.loadClass(className, cls, bts);
     }
 
     public static JAXBBeanInfo getBeanInfo(JAXBContextProxy context, Class<?> cls) {
@@ -1138,4 +1142,22 @@ public final class JAXBUtils {
         return ReflectionInvokationHandler.createProxyWrapper(o, JAXBBeanInfo.class);
     }
 
+    private static class NamespaceMapperClassGenerator extends ClassGeneratorClassLoader {
+
+        private static final NamespaceMapperClassGenerator INSTANCE = new NamespaceMapperClassGenerator(BusFactory.getDefaultBus());
+
+        private NamespaceMapperClassGenerator(Bus bus) {
+            super(bus);
+        }
+
+        @Override
+        protected Class<?> findClass(String className, Class<?> cls) {
+            return super.findClass(className, cls);
+        }
+
+        @Override
+        protected Class<?> loadClass(String className, Class<?> cls, byte[] bytes) {
+            return super.loadClass(className, cls, bytes);
+        }
+    }
 }
