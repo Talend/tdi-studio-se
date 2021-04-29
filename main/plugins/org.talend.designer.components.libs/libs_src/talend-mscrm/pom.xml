@@ -3,18 +3,21 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.talend.components</groupId>
 	<artifactId>talend-mscrm</artifactId>
-	<version>3.4-20201208</version>
+	<version>3.4-20210428</version>
 	<packaging>jar</packaging>
 	
 	<name>talend-mscrm</name>
 	
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<talend.nexus.url>https://artifacts-oss.talend.com</talend.nexus.url>
+
 		<cxf.version>3.1.1</cxf.version>
 		<odata.version>4.7.1</odata.version>
 		<slf4j.version>1.7.12</slf4j.version>
-		<talend.nexus.url>https://artifacts-oss.talend.com</talend.nexus.url>
 		<axis2.version>1.7.9</axis2.version>
+		<httpclient.version>4.5.13</httpclient.version>
+		<httpcore.version>4.4.13</httpcore.version>
 	</properties>
 	
 	<distributionManagement>
@@ -54,12 +57,12 @@
 		<dependency>
     		<groupId>org.apache.httpcomponents</groupId>
     		<artifactId>httpclient</artifactId>
-    		<version>4.5.2</version>
+    		<version>${httpclient.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.httpcomponents</groupId>
 			<artifactId>httpcore</artifactId>
-			<version>4.4.9</version>
+			<version>${httpcore.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.axis2</groupId>
@@ -105,13 +108,14 @@
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
-            <version>1.7.11</version>
+            <version>${slf4j.version}</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>4.12</version>
+            <version>4.13.2</version>
+			<scope>test</scope>
         </dependency>
         <dependency>
 	    <groupId>com.microsoft.azure</groupId>
