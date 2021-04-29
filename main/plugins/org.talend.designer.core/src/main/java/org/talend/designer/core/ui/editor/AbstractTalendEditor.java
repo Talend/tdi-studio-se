@@ -216,6 +216,7 @@ import org.talend.designer.core.ui.editor.nodecontainer.NodeContainer;
 import org.talend.designer.core.ui.editor.nodes.Node;
 import org.talend.designer.core.ui.editor.nodes.NodePart;
 import org.talend.designer.core.ui.editor.notes.Note;
+import org.talend.designer.core.ui.editor.outline.NodeReturnsTreeEditPart;
 import org.talend.designer.core.ui.editor.outline.NodeTreeEditPart;
 import org.talend.designer.core.ui.editor.outline.ProcessTreePartFactory;
 import org.talend.designer.core.ui.editor.palette.TalendCombinedTemplateCreationEntry;
@@ -2360,7 +2361,7 @@ public abstract class AbstractTalendEditor extends GraphicalEditorWithFlyoutPale
                     if (selection != null) {
                         if (selection instanceof IStructuredSelection) {
                             Object input = ((IStructuredSelection) selection).getFirstElement();
-                            if (input instanceof NodeTreeEditPart) {
+                            if (input instanceof NodeTreeEditPart || input instanceof NodeReturnsTreeEditPart) {
                                 isSynchronizer = true;
                                 getViewer().setSelection(selection);
                                 isSynchronizer = false;
