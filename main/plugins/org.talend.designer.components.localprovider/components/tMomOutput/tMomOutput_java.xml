@@ -433,7 +433,7 @@
   <CODEGENERATION>
     <IMPORTS>
       <!-- ActiveMQ -->
-      <IMPORT NAME="activemq-client-5.15.10.jar" MODULE="activemq-client-5.15.10.jar" MVN="mvn:org.apache.activemq/activemq-client/5.15.10" REQUIRED_IF="(USE_CONNECTION=='false' AND SERVER == 'ACTIVEMQ')" BundleID="" />
+      <IMPORT NAME="activemq-client-5.15.13.jar" MODULE="activemq-client-5.15.13.jar" MVN="mvn:org.apache.activemq/activemq-client/5.15.13" REQUIRED_IF="(USE_CONNECTION=='false' AND SERVER == 'ACTIVEMQ')" BundleID="" />
       <IMPORT NAME="geronimo-jms_1.1_spec-1.1.1.jar" MODULE="geronimo-jms_1.1_spec-1.1.1.jar" MVN="mvn:org.talend.libraries/geronimo-jms_1.1_spec-1.1.1/6.3.0" REQUIRED_IF="(USE_CONNECTION=='false' AND SERVER == 'ACTIVEMQ')" />
       <IMPORT NAME="geronimo-j2ee-management_1.1_spec-1.0.1.jar" MODULE="geronimo-j2ee-management_1.1_spec-1.0.1.jar" MVN="mvn:org.talend.libraries/geronimo-j2ee-management_1.1_spec-1.0.1/6.3.0" REQUIRED_IF="(USE_CONNECTION=='false' AND SERVER == 'ACTIVEMQ')" />
       <IMPORT NAME="hawtbuf-1.11.jar" MODULE="hawtbuf-1.11.jar" MVN="mvn:org.talend.libraries/hawtbuf-1.11/6.3.0" REQUIRED_IF="(USE_CONNECTION=='false' AND SERVER == 'ACTIVEMQ')" />
