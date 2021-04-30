@@ -1981,6 +1981,9 @@ public abstract class AbstractElementPropertySectionController implements Proper
         String hiveThriftPort = TalendQuoteUtils.removeQuotes(getValueFromRepositoryName(elem, "THRIFTPORT")); //$NON-NLS-1$
         connParameters.getParameters().put(ConnParameterKeys.CONN_PARA_KEY_HIVE_THRIFTPORT, hiveThriftPort);
 
+        String hiveThriftHost = TalendQuoteUtils.removeQuotes(getValueFromRepositoryName(elem, "THRIFTHOST")); //$NON-NLS-1$
+        connParameters.getParameters().put(ConnParameterKeys.CONN_PARA_KEY_HIVE_THRIFTHOST, hiveThriftHost);
+
     }
 
     /**
