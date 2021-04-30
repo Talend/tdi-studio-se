@@ -33,6 +33,7 @@ for (IConnection conn : conns) {
 			for (int i = 0; i < sizeColumns; i++) {
 						
 				IMetadataColumn column = columns.get(i);
+                String pattern = column.getPattern();
 				JavaType javaType = JavaTypesManager.getJavaTypeFromId(column.getTalendType());
 				boolean isPrimitive = JavaTypesManager.isJavaPrimitiveType(javaType, column.isNullable());
 			    if(!isPrimitive){
@@ -41,19 +42,30 @@ for (IConnection conn : conns) {
 			    <%
 			    }
 				if (javaType == JavaTypesManager.DATE && column.getPattern() != null && column.getPattern().trim().length() != 0) {
-					String pattern = column.getPattern();
 					%>
 					jsonRow<%=cid%>.put("<%=column.getLabel()%>",FormatterUtils.format_Date(<%=conn.getName()%>.<%=column.getLabel()%>, <%=pattern%>));
-				<%
-				}else if(javaType == JavaTypesManager.CHARACTER){
+				<%}
+				else if(javaType == JavaTypesManager.CHARACTER){
 				%>
 					jsonRow<%=cid%>.put("<%=column.getLabel()%>", String.valueOf(<%=conn.getName()%>.<%=column.getLabel()%>));
 				<%
-				}else{
+				}
+				// add dynamic schema support here
+				else if(column.getTalendType().equals("id_Dynamic")) {
+				%>
+					Dynamic col= (Dynamic) <%=conn.getName()%>.<%=column.getLabel()%>;
+					for (int i = 0; i < col.getColumnCount(); i++) {
+						DynamicMetadata metadata = col.getColumnMetadata(i);
+						Object val=col.getColumnValue(i);
+						if(val instanceof Date) val=FormatterUtils.format_Date((Date)val, metadata.getFormat());
+						jsonRow<%=cid%>.put(metadata.getName(),val);
+                    }
+				<%
+				} //end of add dynamic support here  (this assumes dynamic datatype does not contain nested dynamic datatype fields)
+				else {
 				%>
 					jsonRow<%=cid%>.put("<%=column.getLabel()%>", <%=conn.getName()%>.<%=column.getLabel()%>);
-				<%
-				}
+				<%}
 				if(!isPrimitive){
 				%>
 					}else{
