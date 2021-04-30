@@ -323,8 +323,8 @@
             />
             <IMPORT
                 NAME="talend-ws"
-                MODULE="talend-ws-1.0.3-20210428.jar"
-                MVN="mvn:org.talend.components/talend-ws/1.0.3-20210428"
+                MODULE="talend-ws-1.0.4-20210429.jar"
+                MVN="mvn:org.talend.components/talend-ws/1.0.4-20210429"
                 REQUIRED="true"
             />
 
