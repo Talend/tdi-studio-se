@@ -436,6 +436,11 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
                                 // CamelPropertiesPackage Line 516 int ROUTELET_PROCESS_ITEM = 4;
                                 needContextInJar = true;
                             }
+                        } else {
+                            // for case normal job and not for build, should be resource folder
+                            if (!ProcessorUtilities.isExportConfig()) {
+                                needContextInJar = true;
+                            }
                         }
                     }
                 }
@@ -2219,52 +2224,6 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
             if (oidcEnabled) {
                 copyEsbConfigFile(esbConfigsSourceFolder, esbConfigsTargetFolder, "oidc.properties"); //$NON-NLS-1$
             }
-        }
-
-        try {
-
-            ITalendProcessJavaProject tProcessJvaProject = this.getTalendJavaProject();
-            if (tProcessJvaProject == null) {
-                return;
-            }
-            Item item = property.getItem();
-            if (item == null) {
-                // may be a guess schema process
-                return;
-            }
-            IFolder externalResourcesFolder = tProcessJvaProject.getExternalResourcesFolder();
-            IFolder resourcesFolder = tProcessJvaProject.getResourcesFolder();
-            String jobClassPackageFolder = JavaResourcesHelper.getJobClassPackageFolder(item, false);
-            IPath jobContextFolderPath = new Path(jobClassPackageFolder).append(JavaUtils.JAVA_CONTEXTS_DIRECTORY);
-
-            IFolder extResourcePath = externalResourcesFolder.getFolder(jobContextFolderPath);
-            IFolder resourcesPath = resourcesFolder.getFolder(jobContextFolderPath);
-            
-            if (!extResourcePath.exists()) {
-                tProcessJvaProject.createSubFolder(null, externalResourcesFolder, jobContextFolderPath.toString());
-            }
-
-            extResourcePath.refreshLocal(IResource.DEPTH_INFINITE, null);
-
-            if(!resourcesPath.exists()) {
-                tProcessJvaProject.createSubFolder(null, resourcesFolder, jobContextFolderPath.toString());
-            }
-
-            resourcesPath.refreshLocal(IResource.DEPTH_INFINITE, null);
-
-            for (IResource resource : extResourcePath.members()) {
-                IFile context = resourcesPath.getFile(resource.getName());
-
-                if (context.exists()) {
-                    context.delete(true, null);
-                }
-                resource.copy(context.getFullPath(), true, null);
-            }
-
-            resourcesPath.refreshLocal(IResource.DEPTH_INFINITE, null);
-
-        } catch (Exception e) {
-            e.printStackTrace();
         }
     }
 
