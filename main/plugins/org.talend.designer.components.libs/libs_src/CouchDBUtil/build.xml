@@ -15,7 +15,7 @@
 	<path id="compile.classpath">
 		<pathelement location="${couchdb.lib.home}/lightcouch-0.0.6.jar" />
 		<pathelement location="${couchdb.lib.home}/gson-2.2.4.jar" />
-		<pathelement location="${apache.lib.home}/commons-codec-1.6.jar" />
+		<pathelement location="${apache.lib.home}/commons-codec-1.15.jar" />
 		<pathelement location="${apache.lib.home}/commons-logging-1.1.jar" />
 		<pathelement location="${http.lib.home}/httpclient-4.2.5.jar" />
 		<pathelement location="${http.lib.home}/httpcore-4.2.4.jar" />
