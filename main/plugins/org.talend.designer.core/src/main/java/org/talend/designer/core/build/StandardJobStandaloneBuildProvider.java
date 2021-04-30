@@ -167,6 +167,11 @@ public class StandardJobStandaloneBuildProvider extends RepositoryObjectTypeBuil
         }
 
         final Property itemProperty = ((Item) item).getProperty();
+        
+        if (((Map<String, Object>)argumentsMap).containsKey(TalendProcessArgumentConstant.ARG_BUILD_TYPE)) {
+        	itemProperty.getAdditionalProperties().put(TalendProcessArgumentConstant.ARG_BUILD_TYPE, 
+        			((Map<String, Object>)argumentsMap).get(TalendProcessArgumentConstant.ARG_BUILD_TYPE));
+        }
 
         CreateMavenJobPom creator = null;
         if ("ROUTE".equals(itemProperty.getAdditionalProperties().get(TalendProcessArgumentConstant.ARG_BUILD_TYPE))) {
