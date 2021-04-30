@@ -21,10 +21,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.LineNumberReader;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.nio.ByteBuffer;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -1353,16 +1350,9 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
             libsStr += classPathSeparator;
         }
 
-        // may have blank and # in classpath since use absolute path.
-        String[] specialChars = new String[] { " ", "#" }; //$NON-NLS-1$ //$NON-NLS-2$
-        try {
-            for (int i = 0; i < specialChars.length; i++) {
-                libsStr = StringUtils.replace(libsStr, specialChars[i],
-                        URLEncoder.encode(specialChars[i], StandardCharsets.UTF_8.toString()));
-            }
-        } catch (UnsupportedEncodingException e) {
-            throw new ProcessorException(e);
-        }
+        // may have blank in classpath since use absolute path.
+        libsStr = StringUtils.replace(libsStr, " ", "%20"); //$NON-NLS-1$ //$NON-NLS-2$
+
         // create classpath.jar
         if (!isExportConfig() && !isSkipClasspathJar() && isCorrespondingOS()) {
             try {
