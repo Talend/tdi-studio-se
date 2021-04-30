@@ -595,6 +595,7 @@ for (VarTable varsTable : varsTables) {
 									sb.append(outputTableName + "_aggregate = new " + outputTableName + "Struct();" + cr);
 									sb.append(outputTableName + "_aggregate." + outputTableEntry.getName() + " = new " + typeToGenerate + "();" + cr);
 									sb.append(outputTableName + "_aggregate." + outputTableEntry.getName() + ".setDocument(gen_Doc_" + outputTableName + "_" + cid + ".getDocument());");
+                                    sb.append(outputTableName + "_aggregate.formData = gen_Doc_" + outputTableName + "_" + cid + ".getFormData();");
 									sb.append(cr + cr);
 									sb.append("//construct the resultset" + cr);
 									sb.append("allOutsForAggregate_" + uniqueNameComponent + ".add(" + outputTableName + "_aggregate);" + cr);

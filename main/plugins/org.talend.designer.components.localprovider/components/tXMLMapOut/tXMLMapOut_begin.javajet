@@ -52,11 +52,11 @@
 	}
 
 	XmlMapData xmlMapData =(XmlMapData)ElementParameterParser.getObjectValueXMLTree(node);
-	
+
 	final boolean isLog4jEnabled = ("true").equals(ElementParameterParser.getValue(node.getProcess(), "__LOG4J_ACTIVATE__"));
-	
+
 	final boolean keepOrder4Document = "true".equals(ElementParameterParser.getValue(node, "__KEEP_ORDER_FOR_DOCUMENT__"));
-	
+
 	EList<InputXmlTree> inputTables = xmlMapData.getInputTrees();
 	EList<OutputXmlTree> outputTables = xmlMapData.getOutputTrees();
 	EList<VarTable> varTables = xmlMapData.getVarTables();
@@ -66,7 +66,7 @@
 	for(IConnection connection : inputConnections){
 		hNameToConnection.put(connection.getName(), connection);
 	}
-	
+
 	List<InputXmlTree> inputTableTrees = new ArrayList<InputXmlTree>();
 	for(int i=0; i<inputTables.size(); i++){
 		InputXmlTree  currentTree = inputTables.get(i);
@@ -74,15 +74,15 @@
 			inputTableTrees.add(currentTree);
 		}
 	}
-	
+
 	boolean hasDocumentInAnyLookupTable = false;
 	List<TreeNode> lookupDocumentTreeNodes = new ArrayList<TreeNode>();
-	
+
 	int lstSizeInputs = inputTableTrees.size();
 	for(int i = 1; i<lstSizeInputs; i++){//TA8080
 		InputXmlTree inputTable = (InputXmlTree)inputTableTrees.get(i);
 		String tableName = inputTable.getName();
-		
+
 		EList<TreeNode> treeNodes = inputTable.getNodes();
 		if(treeNodes!=null) {
 			for(TreeNode treeNode : treeNodes) {
@@ -91,13 +91,13 @@
 					lookupDocumentTreeNodes.add(treeNode);
 				}
 			}
-		}		
-		
+		}
+
 		List<IMetadataTable> treeNodeEntries = node.getMetadataList();
 		if(treeNodeEntries == null){
 		      continue;
 	    }
-		
+
 		boolean isAllRows = "ALL_ROWS".equals(inputTable.getMatchingMode());
 		String className = tableName + "Struct";
 		String lookupMode = inputTable.getLookupMode();
@@ -107,9 +107,9 @@
 		if(inputTable.isPersistent()){
 %>
 
-	org.talend.designer.components.lookup.persistent.Persistent<%= isAllRows ? "" : "Sorted" %>LookupManager<<%=tableName%>Struct> tHash_Lookup_<%=tableName%> = 
-		(org.talend.designer.components.lookup.persistent.Persistent<%= isAllRows ? "" : "Sorted" %>LookupManager<<%=tableName%>Struct>) 
-			((org.talend.designer.components.lookup.persistent.Persistent<%= isAllRows ? "" : "Sorted" %>LookupManager<<%=tableName%>Struct>) 
+	org.talend.designer.components.lookup.persistent.Persistent<%= isAllRows ? "" : "Sorted" %>LookupManager<<%=tableName%>Struct> tHash_Lookup_<%=tableName%> =
+		(org.talend.designer.components.lookup.persistent.Persistent<%= isAllRows ? "" : "Sorted" %>LookupManager<<%=tableName%>Struct>)
+			((org.talend.designer.components.lookup.persistent.Persistent<%= isAllRows ? "" : "Sorted" %>LookupManager<<%=tableName%>Struct>)
 				 globalMap.get( "tHash_Lookup_<%=tableName%>" ))
 				<%
 				if(hasConcurrencyContext) {
@@ -120,12 +120,12 @@
 		} else {
 	%>
 	org.talend.designer.components.lookup.memory.AdvancedMemoryLookup<<%=tableName%>Struct> tHash_Lookup_<%=tableName%> = <%
-	
+
 	if(isOneOfReloadLookupMode) {
 		 %>null;<%
 	} else {
-		%>(org.talend.designer.components.lookup.memory.AdvancedMemoryLookup<<%=tableName%>Struct>) 
-			((org.talend.designer.components.lookup.memory.AdvancedMemoryLookup<<%=tableName%>Struct>) 
+		%>(org.talend.designer.components.lookup.memory.AdvancedMemoryLookup<<%=tableName%>Struct>)
+			((org.talend.designer.components.lookup.memory.AdvancedMemoryLookup<<%=tableName%>Struct>)
 				globalMap.get( "tHash_Lookup_<%=tableName%>" ))
 				<%
 				if(hasConcurrencyContext) {
@@ -140,7 +140,7 @@
 	String matchingModeStr = inputTable.getMatchingMode();
 	if(isCacheOrReloadLookupMode) {
 	%>
-	
+
 	routines.system.DocumentLookupCache tHash_Lookup_Cache_<%=tableName%> = new routines.system.DocumentLookupCache("<%=matchingModeStr%>");
 	<%}
 	if(isAllRows && !isOneOfReloadLookupMode) {
@@ -153,10 +153,10 @@
 	<%
 	}//TA8080
 	%>
-	
+
 	<%
 	class RepalceTableXpath {
-		
+
 		public void replaceTableXpath(TreeNode root){
 			String xpath = root.getXpath();
 			int index_p = xpath.indexOf(".");
@@ -171,7 +171,7 @@
 		}
 	}
 	RepalceTableXpath replaceXpath = new RepalceTableXpath();
-	
+
 	if(inputTables.size() > 0 && !inputTables.get(0).isLookup()) {
 		InputXmlTree inputMainTable = inputTables.get(0);
 		for(TreeNode tmpnode : inputMainTable.getNodes()) {
@@ -221,24 +221,24 @@ class GenerateMethodUtil {
 	java.util.Map<String, String> pathTypeMap = new java.util.HashMap<String, String>(); // Map<input table xpath, typeToGenerate>
 	java.util.Map<String, String> pathPatternMap = new java.util.HashMap<String, String>(); // Map<input table xpath, Pattern>
 	java.util.Map<String, String> pathTypeToGenMap = new java.util.HashMap<String, String>(); // Map<"/root/name","String">
-	
+
 	void generateExprCode(String expression){
 			StringBuilder strBuilder = new StringBuilder();
 			if(expression==null || ("").equals(expression)) {
 				return;
 			}
-	
+
 			String currentExpression = expression;
 			String tmpXpath = "";
 			java.util.regex.Pattern expressionFromDoc = java.util.regex.Pattern.compile("\\[.*\\..*:.*\\]");
 			java.util.regex.Matcher matcherFromDoc;
-			
+
 			boolean end = false;
-			
+
 			if(expression.indexOf("[")>-1) {
 				strBuilder.append(expression.substring(0, expression.indexOf("[")));
 				currentExpression = currentExpression.substring(currentExpression.indexOf("["), currentExpression.length());
-				
+
 				while(currentExpression.length()>0 && !end) {
 					expression = this.getXPathExpression(currentExpression);
 					currentExpression = currentExpression.substring(expression.length(), currentExpression.length());
@@ -258,7 +258,7 @@ class GenerateMethodUtil {
 							} else {
 								strBuilder.append("treeNodeAPI.get_String(\""+ tmpXpath + "\")");
 							}
-						}				
+						}
 					} else {
 						strBuilder.append(expression);
 					}
@@ -269,14 +269,14 @@ class GenerateMethodUtil {
 						strBuilder.append(currentExpression);
 						end=true;
 					}
-				
+
 				}
 			} else {
 				strBuilder.append(expression);
 			}
 			%><%=strBuilder.toString()%><%
 		}
-		
+
 		private String getXPathExpression(String currentExpression) {
 			int count = 0;
 			int i = 0;
@@ -294,7 +294,7 @@ class GenerateMethodUtil {
 			}
 			return currentExpression.substring(0,i+1);
 		}
-		
+
 		public List<TreeNode> getGroupByNodeList(TreeNode group) {
 			List<TreeNode> list = new ArrayList<TreeNode>();
 			for (TreeNode attri : group.getChildren()) {
@@ -322,16 +322,16 @@ class GenerateMethodUtil {
 			return list;
 		}
 
-	
+
 	void generateCode(List<TreeNode> nodes, String cid){
 %>
 class TreeNode_API_<%=cid %> {
 	java.util.Map<String, String> xpath_value_map = new java.util.HashMap<String, String>();
-	
+
 	void clear(){
 		xpath_value_map.clear();
 	}
-	
+
 	void put(String xpath, String value){
 		xpath_value_map.put(xpath, value);
 	}
@@ -344,23 +344,23 @@ class TreeNode_API_<%=cid %> {
 }
 <%
 	}
-	
+
 	void generateMethodCodeForAll(List<TreeNode> nodes, String cid) {
 		for(TreeNode node : nodes) {
 			generateMethodCodeForOne(node,cid);
 		}
 	}
-	
+
 	boolean methodExist = false;
-	
+
 	void generateMethodCodeForOne(TreeNode node, String cid) {
-		
+
 		if(!(node.getChildren().size()>0) || node.getOutgoingConnections().size()>0 || node.getLookupOutgoingConnections().size()>0 || node.getFilterOutGoingConnections().size()>0){
 			String talendType = node.getType();
 			JavaType javaType = JavaTypesManager.getJavaTypeFromId(talendType);
 			String typeToGenerate = JavaTypesManager.getTypeToGenerate(talendType, node.isNullable());
 			String patternValue = node.getPattern() == null || node.getPattern().trim().length() == 0 ? null : node.getPattern();
-			
+
 			pathTypeMap.put(node.getXpath(), talendType);
 			pathPatternMap.put(node.getXpath(), patternValue);
 			pathTypeToGenMap.put(node.getXpath(), typeToGenerate);
@@ -383,7 +383,7 @@ class TreeNode_API_<%=cid %> {
 		return ParserUtils.parseTo_Date(content, pattern);
 	}
 <%
-				} else if("id_byte[]".equals(talendType)){ 
+				} else if("id_byte[]".equals(talendType)){
 %>
 	byte[] get_Bytes(String xpath){
 		String content = xpath_value_map.get(xpath);
@@ -403,7 +403,7 @@ class TreeNode_API_<%=cid %> {
 				}
 			}
 		}
-		
+
 		for(TreeNode tmpNode : node.getChildren()) {
 			generateMethodCodeForOne(tmpNode,cid);
 		}
@@ -440,16 +440,16 @@ class TreeNode_API_<%=cid %> {
 		}
 
         for (OutputXmlTree table : outputTables) {
-        
+
             EList<OutputTreeNode> tableEntries = table.getNodes();
             if (tableEntries == null || nameToOutputConnection.get(table.getName()) == null) {
                 continue;
             }
             String tableName1 = table.getName();
-            
+
             String instanceVarName = tableName1 + "__" + node.getUniqueName();
             String className = tableName1 + "Struct";
-            
+
 %>
 <%= className %> <%= tableName1 %>_tmp = new <%= className %>();
 <%= className %> <%= tableName1 %>_save = null;
@@ -468,7 +468,7 @@ java.util.List<Object> allOutsForAggregate_<%=uniqueNameComponent %> = new java.
 globalMap.put("allOutsForAggregate_<%=uniqueNameComponent %>",allOutsForAggregate_<%=uniqueNameComponent %>);
 // ###############################
 <%
-	
+
 	InputXmlTree mainInputTable = null;  // the main input table
 	if(inputConnections==null || inputConnections.size() < 1) {
 		return "";
@@ -485,7 +485,7 @@ globalMap.put("allOutsForAggregate_<%=uniqueNameComponent %>",allOutsForAggregat
 			}
 		}
 	}
-	
+
 	boolean hasDocumentInMainInputTable = false;
 	//we should consider all document node instead of only main document node
 	TreeNode mainDocumentTreeNode = null;
@@ -499,12 +499,12 @@ globalMap.put("allOutsForAggregate_<%=uniqueNameComponent %>",allOutsForAggregat
 			}
 		}
 	}
-	
+
 	GenerateMethodUtil generateMethodUtil = new GenerateMethodUtil();
 	generateMethodUtil.cid = cid;
 	if(mainInputTable != null) {
 		String mainInputName = mainInputTable.getName();
-		
+
 		boolean hasDocumentInAnyTable = hasDocumentInAnyLookupTable || hasDocumentInMainInputTable;
 		List<TreeNode> AllDocumentTreeNodes = new ArrayList<TreeNode>();
 		if(lookupDocumentTreeNodes.size()!=0) {
@@ -513,21 +513,21 @@ globalMap.put("allOutsForAggregate_<%=uniqueNameComponent %>",allOutsForAggregat
 		if(mainDocumentTreeNode!=null) {
 			AllDocumentTreeNodes.add(mainDocumentTreeNode);
 		}
-		
+
 		if(hasDocumentInAnyTable) {
 			generateMethodUtil.generateCode(AllDocumentTreeNodes, cid); // begin part keep this part
 %>
 			TreeNode_API_<%=cid %> treeNodeAPI_<%=cid %> = new TreeNode_API_<%=cid %>();
 			NameSpaceTool nsTool_<%=cid%> = new NameSpaceTool();
-<%	
+<%
 		}
 %>
-		int nb_line_<%=cid%> = 0; 
-<%		
+		int nb_line_<%=cid%> = 0;
+<%
     }
 
 %>
-	
+
     XML_API_<%=cid%> xml_api_<%=cid%> = new XML_API_<%=cid%>();
 
 <%
@@ -539,16 +539,16 @@ class GenerateToolByDom4j{
 	GenerateMethodUtil generateMethodUtil = null;
 	java.util.List<java.util.List<TreeNode>> groupList = new java.util.ArrayList<java.util.List<TreeNode>>();
 	java.util.List<java.util.List<java.util.List<TreeNode>>> groupbyNodeList = new java.util.ArrayList(new java.util.ArrayList<java.util.List<TreeNode>>());
-	
+
 	java.util.List<TreeNode> loopNodes;
 	java.util.Map<TreeNode,String> loopNodeToParentRef;
 	java.util.Map<TreeNode,String> currentLoopNodeRef;
-	
+
 	void setAllMainNodes(TreeNode root) {
 		loopNodes = new java.util.ArrayList<TreeNode>();
 		loopNodeToParentRef = new java.util.HashMap<TreeNode,String>();
 		currentLoopNodeRef = new java.util.HashMap<TreeNode,String>();
-		
+
 		getLoopNodes(root);
 		int i = 0;
 		for(;i<loopNodes.size();i++) {
@@ -562,16 +562,16 @@ class GenerateToolByDom4j{
 				parent = (TreeNode)parent.eContainer();
 			}
 		}
-		
+
 	}
-	
+
 	private boolean isRoot(TreeNode node) {
 		if(node == null) return false;
 		TreeNode parent = (TreeNode)node.eContainer();
 		if(parent == null) return false;
 		return "id_Document".equals(parent.getType());
 	}
-	
+
 	public void getLoopNodes(TreeNode root) {
 		if(root == null) {
 			return;
@@ -580,50 +580,51 @@ class GenerateToolByDom4j{
 			loopNodes.add(root);
 			return;
 		}
-		
+
 		for(TreeNode node : root.getChildren()){
 			getLoopNodes(node);
 		}
 	}
-	
+
 	private int index = 0;
-	
-	public void generateCode(OutputTreeNode node, String currEleName, String parentName){
+
+	public void generateCode(OutputTreeNode node, OutputTreeNode parentNode, String currEleName, String parentName){
 		if(node.getNodeType()==NodeType.ELEMENT){
 			boolean isVirtualNode = node.isSubstitution() || node.isChoice();
 			if(!isVirtualNode) {
-				createElement(currEleName,node,parentName);
+				createElement(currEleName,node,parentNode,parentName);
 				setText(currEleName,node);
-			
+                addFormParam(currEleName,node,parentNode,parentName);
+
 	    		// add namespace support here in the future
 	    		for(TreeNode child: node.getChildren()) {
 	    			if(child.getNodeType()==NodeType.NAME_SPACE) { // namespaces
 	    				addNameSpace(currEleName, (OutputTreeNode)child);
 	    			}
 	    		}
-	    		
+
 	    		addAttribute(currEleName, node);
     		} else {
     			currEleName = parentName;
     		}
-			
+
 			for(TreeNode child:node.getChildren()){
 				if(!child.isGroup() && !child.isLoop()) {
 					if(isVirtualNode && noUseSubTree(child)) {
 						continue;
 					}
-					generateCode((OutputTreeNode)child,currEleName+"_"+index++,currEleName);
+					generateCode((OutputTreeNode)child,node,currEleName+"_"+index++,currEleName);
 				} else if(child.isLoop()) {
 %>
 					<%=loopNodeToParentRef.get(child)%> = <%=currEleName%>;
 <%
-					
+
 				}
 			}
-			
+
 		}
 	}
-	
+
 	private boolean noUseSubTree(TreeNode node) {
 		if(node.getExpression()!=null && !("").equals(node.getExpression())) {
 			return false;
@@ -635,7 +636,7 @@ class GenerateToolByDom4j{
 		}
 		return true;
 	}
-	
+
 	private void addNameSpace(String currEleName, OutputTreeNode node) {
 		if(node.getDefaultValue()==null || ("").equals(node.getDefaultValue())) {
 %>
@@ -678,33 +679,33 @@ if(valueMap.get("<%=currEleName%>")!=null) {//open if 8080
 			}
 		}
 	}
-	
+
 	private void findElementFromParent(OutputTreeNode node, String parentName, String resultVar) {
 		String elementName = node.getName();
 		int index = elementName.indexOf(":");
-		
+
 		if(index < 1) {
 %>
 			<%=resultVar%>_<%=cid%> = <%=parentName%>.elements("<%=elementName%>");
 <%
 			return;
 		}
-		
+
 		String namespacePrefixOfCurrentElement = elementName.substring(0,index);
 		String localName = elementName.substring(index+1);
 		TreeNode matchedNamespaceNode = null;
-		
+
 		for(TreeNode child: node.getChildren()) {
 			if(child.getNodeType()!=NodeType.NAME_SPACE) {
 				continue;
 			}
-			
+
 			if(namespacePrefixOfCurrentElement.equals(child.getName())) {
 				matchedNamespaceNode = child;
 				break;
 			}
 		}
-		
+
 		if(matchedNamespaceNode!=null) {
 %>
 			<%=resultVar%>_<%=cid%> = <%=parentName%>.elements(
@@ -718,16 +719,16 @@ if(valueMap.get("<%=currEleName%>")!=null) {//open if 8080
 <%
 			return;
 		}
-		
+
 		if(hasParent(node)){
 %>
 			namespace_<%=cid%> = <%=parentName%>.getNamespaceForPrefix("<%=namespacePrefixOfCurrentElement%>");
-			<%=resultVar%>_<%=cid%> = namespace_<%=cid%>!=null ? <%=parentName%>.elements(org.dom4j.DocumentHelper.createQName("<%=localName%>",namespace_<%=cid%>)) : <%=parentName%>.elements("<%=localName%>"); 
+			<%=resultVar%>_<%=cid%> = namespace_<%=cid%>!=null ? <%=parentName%>.elements(org.dom4j.DocumentHelper.createQName("<%=localName%>",namespace_<%=cid%>)) : <%=parentName%>.elements("<%=localName%>");
 <%
 		}
 	}
-	
-	private void createElement(String currEleName, OutputTreeNode node, String parentName){
+
+	private void createElement(String currEleName, OutputTreeNode node, OutputTreeNode parentNode, String parentName){
 %>
 		org.dom4j.Element <%=currEleName%> = null;
 <%
@@ -745,7 +746,7 @@ if(valueMap.get("<%=currEleName%>")!=null) {//open if 8080
 				<%=currEleName%> = org.dom4j.DocumentHelper.createElement("<%=node.getName()%>");
 <%
 			}
-			
+
 			if(isRoot(node)) {
 %>
 				<%=parentName%>.add(<%=currEleName%>);
@@ -776,7 +777,7 @@ if(valueMap.get("<%=currEleName%>")!=null) {//open if 8080
 								List siblingList_<%=cid %> = null;
 <%
 							}
-							
+
 							for(OutputTreeNode sibling : nextSiblings) {
 %>
 								if(!findInsertPosition_<%=cid%>) {
@@ -791,7 +792,7 @@ if(valueMap.get("<%=currEleName%>")!=null) {//open if 8080
 %>
 							allElements_<%=cid %>.add(location_<%=cid%>,<%=currEleName%>);
 						}
-					}	
+					}
 <%
 				}
 			} else {
@@ -813,15 +814,27 @@ if(valueMap.get("<%=currEleName%>")!=null) {//open if 8080
 				<%=currEleName%> = <%=parentName%>.addElement("<%=node.getName()%>");
 <%
 			}
+%>
+            parentReferences.put("<%=currEleName%>", "<%=parentName%>");
+
+            if (nodes.size() > 0) {
+                nodes.putIfAbsent("<%=parentName%>", (java.lang.Object)(new java.util.HashMap<String, java.lang.Object>()));
+            } else {
+                nodes.putIfAbsent("<%=parentName%>", formData);
+            }
+            nodes.putIfAbsent("<%=currEleName%>", (java.lang.Object)(new java.util.HashMap<String, java.lang.Object>()));
+
+            ((java.util.HashMap<String, java.lang.Object>)nodes.get("<%=parentName%>")).put("<%=node.getName()%>", nodes.get("<%=currEleName%>"));
+<%
 		}
-		
+
 		if(node.isGroup() || node.isMain()){
 %>
 		subTreeRootParent = <%=currEleName%>;
 <%
 		}
 	}
-	
+
 	private void addAttribute(String currEleName, OutputTreeNode node){
 		for(TreeNode tmpNode : node.getChildren()) {
 			if(tmpNode.getNodeType()==NodeType.ATTRIBUT) {
@@ -843,12 +856,12 @@ if(valueMap.get("<%=currEleName%>")!=null) {//open if 8080
 				currentValue = "";
 <%
 				}
-				
+
 				String name = tmpNode.getName();
-				
+
         		String prefix = null;
         		String localname = name;
-        		
+
         		int index = name.indexOf(":");
         		if(index > 0) {
         			prefix = name.substring(0,index);
@@ -860,7 +873,7 @@ if(valueMap.get("<%=currEleName%>")!=null) {//open if 8080
 			}
 		}
 	}
-	
+
 	private void setText(String currEleName, OutputTreeNode node){
 		if(node.getExpression()!=null && !("").equals(node.getExpression()) ){
 %>
@@ -871,6 +884,16 @@ if(valueMap.get("<%=currEleName%>")!=null) {//open if 8080
 <%
 		}
 	}
+
+    private void addFormParam(String currEleName, OutputTreeNode node, OutputTreeNode parentNode, String parentName){
+        if(node.getExpression()!=null && !("").equals(node.getExpression()) ){
+%>
+        java.lang.Object formDataObject_<%=currEleName%> = (java.lang.Object)valueMap.get("<%=currEleName%>");
+        ((java.util.HashMap<String,Object>)nodes.get("<%=parentName%>")).put("<%=node.getName()%>", formDataObject_<%=currEleName%>);
+<%
+        }
+    }
+
 	private boolean hasParent(OutputTreeNode node){
 		if(node.eContainer()!=null){
 			OutputTreeNode parent = (OutputTreeNode)node.eContainer();
@@ -903,7 +926,7 @@ if(valueMap.get("<%=currEleName%>")!=null) {//open if 8080
 		}
 		return false;
 	}
-	
+
 	private void generateGroupCode(int index) {
 		if(groupList.get(index).size()>0){
 %>
@@ -919,28 +942,28 @@ if(valueMap.get("<%=currEleName%>")!=null) {//open if 8080
 							if(attr.getExpression()!=null && !("").equals(attr.getExpression()) ){
 %>
 					|| ( groupbyList.get(<%=i%>).get(<%=j%>)!=null ? !groupbyList.get(<%=i%>).get(<%=j%>).equals(FormatterUtils.format(<%generateMethodUtil.generateExprCode(attr.getExpression()); %>,<%=attr.getPattern()%>)) : FormatterUtils.format(<%generateMethodUtil.generateExprCode(attr.getExpression()); %>,<%=attr.getPattern()%>)!=null )
-<% 
+<%
 							}
 						}
-			
+
 %>
 					){
 
 <%
-					generateCode((OutputTreeNode)groupList.get(index).get(i),"group"+i+"_","subTreeRootParent");						
-%>	
+					generateCode((OutputTreeNode)groupList.get(index).get(i),null,"group"+i+"_","subTreeRootParent");
+%>
 					if(groupbyList.size()<=<%=i%>){
 						groupbyList.add(new java.util.ArrayList<String>());
 					}else{
 						groupbyList.get(<%=i%>).clear();
 					}
-<% 
+<%
 					for(int j=0;j<groupbyNodeList.get(index).get(i).size();j++){
 						TreeNode attr = groupbyNodeList.get(index).get(i).get(j);
 						if(attr.getExpression()!=null && !("").equals(attr.getExpression()) ){
 %>
 						groupbyList.get(<%=i%>).add(FormatterUtils.format(<%generateMethodUtil.generateExprCode(attr.getExpression()); %>,<%=attr.getPattern()%>));
-<% 
+<%
 						}
 					}
 %>
@@ -950,24 +973,24 @@ if(valueMap.get("<%=currEleName%>")!=null) {//open if 8080
 					}else{
 						groupElementList.set(<%=i%>,group<%=i%>_);
 					}
-			
+
 				}else{
 					subTreeRootParent=groupElementList.get(<%=i%>);
 				}
 
-			
-<% 
+
+<%
 		}
 	}
 }
-	
-	
+
+
 	private void generateGroupCmpCode(OutputTreeNode node, int index) {
 		for(TreeNode tmpNode : node.getChildren()) {
 			if(tmpNode.isLoop()) {
 				return;
 			}
-			
+
 			if(tmpNode.isGroup()) {
 				boolean isVirtualNode = tmpNode.isSubstitution() || tmpNode.isChoice();
 				if(!isVirtualNode) {
@@ -975,7 +998,7 @@ if(valueMap.get("<%=currEleName%>")!=null) {//open if 8080
 					groupList.get(index).add(tmpNode);
 				}
 			}
-			
+
 			generateGroupCmpCode((OutputTreeNode)tmpNode, index);
 		}
 	}
@@ -994,11 +1017,11 @@ int index = -1;
 for(OutputXmlTree outputTable : outputTables) {
 	boolean allowEmptyElement = outputTable.isEnableEmptyElement();
 	generateToolByDom4j.allowEmpty = allowEmptyElement;
-	
+
 	String tableName = outputTable.getName();
 	for(OutputTreeNode outputNode: outputTable.getNodes()) {
 		if(("id_Document").equals(outputNode.getType())){
-			
+
 			TreeUtil treeUtil = new TreeUtil();
 			//check whether root is loop
 			boolean isRootLoop = treeUtil.isRootLoop(outputNode);
@@ -1012,16 +1035,16 @@ for(OutputXmlTree outputTable : outputTables) {
 %>
 					//init the map,the keys is aggregate columns xpath,the values is all null.
 					aggregateCacheMap_<%=cid%>.put("<%=xpath%>",null);
-<%					
+<%
 				}
 			}
-			
+
 			index+=1;
-			
+
 			//get the group and loop node count(TDI-18000)
 			XMLOrderUtil xmlOrderUtil = new XMLOrderUtil();
 			int groupCount = xmlOrderUtil.getGroupCount(outputNode);
-			
+
 %>
 
 class GenerateDocument_<%=tableName %> {
@@ -1035,23 +1058,24 @@ class GenerateDocument_<%=tableName %> {
 	}
 %>
 	java.util.Map<String,Object> valueMap = null;
-	
+
 	routines.system.DocumentGenerateOrderHelper orderHelper = new routines.system.DocumentGenerateOrderHelper(<%=groupCount + 1%>);
-	
+
 	org.dom4j.Document doc = null;
-	
+
 	org.dom4j.Element root4Group = null;
-	
+
 	org.dom4j.io.OutputFormat format = null;
-	
+
 	java.util.List<java.util.List<String>> groupbyList = null;
 	java.util.List<org.dom4j.Element> groupElementList = null;
+	java.util.Map<String,java.lang.Object> formData;
 	int order = 0;
-	
+
 	boolean isFirst = true;
-	
+
 	boolean	needRoot = true;
-	
+
 	String currentValue = null;
 <%
 //Integer groupSize = new Integer(0);
@@ -1073,28 +1097,33 @@ XMLMapUtil xmu = new XMLMapUtil();
 <%
 	}
 %>
-	
+
     public GenerateDocument_<%=tableName %>() {
 //    	this.treeNodeAPI = treeNodeAPI;
-    	
+
     	valueMap = new java.util.HashMap<String,Object>();
-    	
+    	formData = new java.util.HashMap<String,java.lang.Object>();
+
     	groupbyList =  new java.util.ArrayList<java.util.List<String>>();
 		groupElementList = new java.util.ArrayList<org.dom4j.Element>();
-    	
+
     	doc = org.dom4j.DocumentHelper.createDocument();
     	format = org.dom4j.io.OutputFormat.createPrettyPrint();
     	format.setTrimText(false);
     }
-    
+
     public org.dom4j.Document getDocument(){
     	return this.doc;
     }
-    
+
+    public java.util.Map<String,java.lang.Object> getFormData(){
+        return formData;
+    }
+
 	//We generate the TreeNode_API object only if there is a document in the main input table.
     void generateElements(<%if(hasDocumentInMainInputTable || hasDocumentInAnyLookupTable){%>TreeNode_API_<%=cid %> treeNodeAPI,<%}%>boolean isInnerJoin<%
 		%><%=xmu.createSignature(node, false) %><%
-	
+
 		for (VarTable var : varTables) {
 			String tableName1 = var.getName();
 	        String instanceVarName = tableName1 + "__" + cid;
@@ -1103,18 +1132,20 @@ XMLMapUtil xmu = new XMLMapUtil();
 	<%
 	}
 	%>) {
-	
-	
+
+
 	/*if(this.treeNodeAPI==null) {
 		this.treeNodeAPI = treeNodeAPI;
 	}*/
-	
+
 	org.dom4j.Element subTreeRootParent = null;
-// build root xml tree 
+// build root xml tree
 if (needRoot) {
 	needRoot=false;
+	java.util.HashMap<String, Object> parentReferences = new java.util.HashMap<String, Object>();
+	java.util.HashMap<String, Object> nodes = new java.util.HashMap<String, Object>();
 <%
-	generateToolByDom4j.generateCode(root,"root","doc");
+	generateToolByDom4j.generateCode(root,null,"root","doc");
 %>
 		root4Group = subTreeRootParent;
 	}else{
@@ -1133,16 +1164,16 @@ generateToolByDom4j.generateGroupCode(index);
 			if(!isRootLoop){
 				if(generateToolByDom4j.loopNodes.size() == 1) {
 					OutputTreeNode loop = (OutputTreeNode)generateToolByDom4j.loopNodes.get(0);
-					generateToolByDom4j.generateCode(loop,"loop","subTreeRootParent");
+					generateToolByDom4j.generateCode(loop,null,"loop","subTreeRootParent");
 				} else {
 					for(TreeNode loopNode : generateToolByDom4j.loopNodes) {
 						OutputTreeNode loop = (OutputTreeNode)loopNode;
 						String parentRef = generateToolByDom4j.loopNodeToParentRef.get(loopNode);
-						String isCurrentLoopRef = generateToolByDom4j.currentLoopNodeRef.get(loopNode); 
+						String isCurrentLoopRef = generateToolByDom4j.currentLoopNodeRef.get(loopNode);
 %>
 						if(<%=isCurrentLoopRef%>) {
 <%
-						generateToolByDom4j.generateCode(loop,"loop",parentRef);
+						generateToolByDom4j.generateCode(loop,null,"loop",parentRef);
 %>
 						}
 <%
@@ -1701,4 +1732,3 @@ generateToolByDom4j.generateGroupCode(index);
 	   <%}
 	}
 	%>
-	            
