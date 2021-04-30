@@ -18,6 +18,7 @@ import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
@@ -91,6 +92,7 @@ public class RemoveProjectLibsFolder extends AbstractProjectMigrationTask {
      */
     class ShareProjectLibsMigration extends ShareLibrareisHelper {
 
+        private final Logger LOGGER = Logger.getLogger(ShareProjectLibsMigration.class);
         @Override
         public Map<ModuleNeeded, File> getFilesToShare(IProgressMonitor monitor) {
             Map<ModuleNeeded, File> libsToShare = new HashMap<ModuleNeeded, File>();
@@ -99,7 +101,7 @@ public class RemoveProjectLibsFolder extends AbstractProjectMigrationTask {
                 ModuleNeeded module = new ModuleNeeded("", lib.getName(), "", true);
                 libsToShare.put(module, lib);
             }
-
+            LOGGER.info("ShareProjectLibsMigration, getFilesToShare, libsToShare size: " + libsToShare.size());
             return libsToShare;
         }
 
@@ -113,6 +115,7 @@ public class RemoveProjectLibsFolder extends AbstractProjectMigrationTask {
         public void shareToRepository(File jarFile, MavenArtifact artifact) throws Exception {
             String uri = MavenUrlHelper.generateMvnUrl(artifact.getGroupId(), artifact.getArtifactId(), artifact.getArtifactId(),
                     artifact.getClassifier(), artifact.getVersion());
+            LOGGER.info("ShareProjectLibsMigration, shareToRepository, jarFile: " + jarFile);
             deployer.install(jarFile.getPath(), uri);
         }
     }
