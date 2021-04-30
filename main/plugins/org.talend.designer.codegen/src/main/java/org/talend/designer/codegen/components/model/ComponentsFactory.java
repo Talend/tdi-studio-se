@@ -29,10 +29,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Level;
@@ -103,11 +100,11 @@ public class ComponentsFactory implements IComponentsFactory {
 
     private static final String TALEND_FILE_NAME = "cache";
 
-    private static final String OLD_COMPONENTS_USER_INNER_FOLDER = "user"; //$NON-NLS-1$
+    public static final String OLD_COMPONENTS_USER_INNER_FOLDER = "user"; //$NON-NLS-1$
 
     private static Logger log = Logger.getLogger(ComponentsFactory.class);
 
-    private static Set<IComponent> componentList = null;
+    private static Set<IComponent> componentList = Collections.synchronizedSet(new HashSet<IComponent>());
 
     private static HashSet<IComponent> customComponentList = null;
 
@@ -133,136 +130,88 @@ public class ComponentsFactory implements IComponentsFactory {
 
     private static final String INCLUDEFILEINJET_SUFFIX = ".inc.javajet"; //$NON-NLS-1$
 
-    private boolean isCreated = false;
+    private boolean reGenerateIndex = false;
 
     private IComponentsHandler componentsHandler;// Added by Marvin Wang on Jan. 11, 2012 for M/R.
 
-    private static boolean cleanDone = false;
-
     protected static Map<String, Map<String, Set<IComponent>>> componentNameMap;
 
-    private AtomicBoolean isInitialising;
+    private AtomicBoolean isInitialising = new AtomicBoolean(true);
 
-    private volatile Lock initialiseLock;
+    private volatile boolean isInitialized = false;
 
     public ComponentsFactory() {
-        isInitialising = new AtomicBoolean(false);
-        initialiseLock = new ReentrantLock();
     }
 
     private void init(boolean duringLogon) {
-        if (wait4InitialiseFinish()) {
+
+        if (isInitialized) {
             return;
         }
-        try {
-            try {
-                initialiseLock.lock();
-            } catch (Exception e) {
-                throw new RuntimeException(e);
+
+        synchronized (this) {
+            if (isInitialized) {
+                return;
             }
-            isInitialising.set(true);
             try {
-				removeOldComponentsUserFolder();
-			} catch (IOException ex) {
-				ExceptionHandler.process(ex);
-			} // not used anymore
-            long startTime = System.currentTimeMillis();
 
-            // TimeMeasure.display = true;
-            // TimeMeasure.displaySteps = true;
-            // TimeMeasure.measureActive = true;
-            // TimeMeasure.begin("initComponents");
-            componentList = Collections.synchronizedSet(new HashSet<IComponent>());
-            customComponentList = new HashSet<IComponent>();
-            skeletonList = new ArrayList<String>();
-            userComponentList = new HashSet<IComponent>();
-            String installLocation = new Path(Platform.getConfigurationLocation().getURL().getPath()).toFile().getAbsolutePath();
-            componentToProviderMap = new HashMap<IComponent, AbstractComponentsProvider>();
-            boolean isNeedClean = !cleanDone && TalendCacheUtils.isSetCleanComponentCache();
-            cleanDone = true; // only check this parameter one time, or it will reinitialize things all the time...
-            isCreated = hasComponentFile(installLocation) && !isNeedClean;
-            ComponentsCache cache = ComponentManager.getComponentCache();
-            try {
-                if (isCreated) {
-                    // if cache is created and empty, means we never loaded it before.
-                    // if it was already loaded, then no need to go again, since it's a static variable, it's still in
-                    // memory.
-                    // it avoids to reload from disk again even more for commandline at each logon, since it's no use.
-                    if (cache.getComponentEntryMap().isEmpty()) {
-                        ComponentsCache loadCache = loadComponentResource(installLocation);
-                        cache.getComponentEntryMap().putAll(loadCache.getComponentEntryMap());
-                    }
-                } else {
-                    cache.getComponentEntryMap().clear();
-                }
-            } catch (IOException e) {
-                ExceptionHandler.process(e);
-                cache.getComponentEntryMap().clear();
-                isCreated = false;
-            }
+                log.debug("init " + this.hashCode());
+                try {
+                    removeOldComponentsUserFolder();
+                } catch (IOException ex) {
+                    ExceptionHandler.process(ex);
+                } // not used anymore
 
-            loadComponentsFromComponentsProviderExtension();
+                long startTime = System.currentTimeMillis();
 
-            // TimeMeasure.step("initComponents", "loadComponentsFromProvider");
-            // 2.Load Component from extension point: component_definition
-            loadComponentsFromExtensions();
-            // TimeMeasure.step("initComponents", "loadComponentsFromExtension[joblets?]");
-
-            ComponentManager.saveResource(); // will save only if needed.
-
-            // init component name map, used to pick specified component immediately
-            initComponentNameMap();
-
-            // TimeMeasure.step("initComponents", "createCache");
-            log.debug(componentList.size() + " components loaded in " + (System.currentTimeMillis() - startTime) + " ms"); //$NON-NLS-1$ //$NON-NLS-2$
-
-            // TimeMeasure.end("initComponents");
-            // TimeMeasure.display = false;
-            // TimeMeasure.displaySteps = false;
-            // TimeMeasure.measureActive = false;
-        } finally {
-            isInitialising.set(false);
-            initialiseLock.unlock();
-        }
-    }
-
-    private boolean wait4InitialiseFinish() {
-        if (isInitialising.get()) {
-            try {
-                // wait for 10 min (10 * 60 seconds) by default
-                long timeout = 600L;
-                String timeoutStr = System.getProperty("studio.componentsFactory.init.timeout"); //$NON-NLS-1$
-                if (!StringUtils.isBlank(timeoutStr)) {
+                // TimeMeasure.display = true;
+                // TimeMeasure.displaySteps = true;
+                // TimeMeasure.measureActive = true;
+                // TimeMeasure.begin("initComponents");
+                customComponentList = new HashSet<IComponent>();
+                skeletonList = new ArrayList<String>();
+                userComponentList = new HashSet<IComponent>();
+                String installLocation = new Path(Platform.getConfigurationLocation().getURL().getPath()).toFile()
+                        .getAbsolutePath();
+                componentToProviderMap = new HashMap<IComponent, AbstractComponentsProvider>();
+                boolean isNeedClean = TalendCacheUtils.isSetCleanComponentCache();
+                // if there is no index file or -clean is added to command
+                reGenerateIndex = !hasComponentFile(installLocation) || isNeedClean;
+                if (reGenerateIndex) {
+                    ComponentsCache cache = ComponentManager.getComponentCache();
                     try {
-                        timeout = Long.valueOf(timeoutStr);
+                        cache.getComponentEntryMap().clear();
+                        loadComponentsFromComponentsProviderExtension();
+                        ComponentManager.saveResource();
                     } catch (Exception e) {
                         ExceptionHandler.process(e);
                     }
                 }
-                if (initialiseLock.tryLock(timeout, TimeUnit.SECONDS)) {
-                    initialiseLock.unlock();
-                } else {
-                    // may be track in dead lock, throw exception to try to break dead lock
-                    throw new RuntimeException(Messages.getString("ComponentsFactory.init.waitForFinish.timeout")); //$NON-NLS-1$
-                }
-                // initialise successfully or not
-                return !isInitialising.get();
-            } catch (RuntimeException e) {
-                throw e;
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            } catch (Exception e) {
-                ExceptionHandler.process(e);
+
+                loadComponentsFromExtensions();
+
+                ComponentsLoader.getInstance().loadAllComponentsFromIndex(componentList, customComponentList, userComponentList,
+                        componentToProviderMap);
+
+                // init component name map, used to pick specified component immediately
+                initComponentNameMap();
+
+                isInitialized = true;
+
+                // TimeMeasure.step("initComponents", "createCache");
+                log.info(componentList.size() + " components loaded in " + (System.currentTimeMillis() - startTime) + " ms"); //$NON-NLS-1$ //$NON-NLS-2$
+
+                // TimeMeasure.end("initComponents");
+                // TimeMeasure.display = false;
+                // TimeMeasure.displaySteps = false;
+                // TimeMeasure.measureActive = false;
+            } finally {
+                isInitialising.set(false);
             }
         }
-        // initialise failed, still need to initialise
-        return false;
     }
 
     protected void initComponentNameMap() {
-        if (componentList == null) {
-            return;
-        }
         /**
          * component names example: <br>
          * 1. xmlMapComponent <br>
@@ -305,7 +254,7 @@ public class ComponentsFactory implements IComponentsFactory {
      * @return
      * @throws IOException
      */
-    private ComponentsCache loadComponentResource(String installLocation) throws IOException {
+    public static ComponentsCache loadComponentResource(String installLocation) throws IOException {
         String filePath = ComponentsFactory.TALEND_COMPONENT_CACHE + LanguageManager.getCurrentLanguage().toString().toLowerCase()
                 + ComponentsFactory.TALEND_FILE_NAME;
         URI uri = URI.createFileURI(installLocation).appendSegment(filePath);
@@ -408,6 +357,7 @@ public class ComponentsFactory implements IComponentsFactory {
     }
 
     private void loadComponentsFromFolder(String pathSource, AbstractComponentsProvider provider) {
+
         boolean isCustom = provider.isCustom();
 
         File source;
@@ -585,40 +535,13 @@ public class ComponentsFactory implements IComponentsFactory {
                             ComponentManager.setModified(true); // this will force to save the cache later.
                         }
 
-                        boolean hiddenComponent = false;
-
-                        Collection<IComponentFactoryFilter> filters = ComponentsFactoryProviderManager.getInstance()
-                                .getProviders();
-                        for (IComponentFactoryFilter filter : filters) {
-                            if (!filter.isAvailable(currentComp.getName())) {
-                                hiddenComponent = true;
-                                break;
-                            }
+                        if (ComponentsLoader.skipLoadComponent(currentComp)) {
+                            // continue;
                         }
 
-                        // if the component is not needed in the current branding,
-                        // and that this one IS NOT a specific component for code generation
-                        // just don't load it
-                        if (hiddenComponent
-                                && !(currentComp.getOriginalFamilyName().contains("Technical") || currentComp.isTechnical())) {
-                            continue;
-                        }
+                        ComponentsLoader.setComponentType(currentComp, provider);
 
                         componentToProviderMap.put(currentComp, provider);
-
-                        // if the component is not needed in the current branding,
-                        // and that this one IS a specific component for code generation,
-                        // hide it
-                        if (hiddenComponent
-                                && (currentComp.getOriginalFamilyName().contains("Technical") || currentComp.isTechnical())) {
-                            currentComp.setVisible(false);
-                            currentComp.setTechnical(true);
-                        }
-                        if (provider.getId().contains("Camel")) {
-                            currentComp.setPaletteType(ComponentCategory.CATEGORY_4_CAMEL.getName());
-                        } else {
-                            currentComp.setPaletteType(currentComp.getType());
-                        }
 
                         if (componentList.contains(currentComp)) {
                             log.warn("Component " + currentComp.getName() + " already exists. Cannot load user version."); //$NON-NLS-1$ //$NON-NLS-2$
@@ -631,14 +554,8 @@ public class ComponentsFactory implements IComponentsFactory {
                             if (isCustom) {
                                 customComponentList.add(currentComp);
                             }
-                            if (pathSource != null) {
-                                Path userComponent = new Path(pathSource);
-                                Path templatePath = new Path(IComponentsFactory.COMPONENTS_INNER_FOLDER + File.separatorChar
-                                        + IComponentsFactory.EXTERNAL_COMPONENTS_INNER_FOLDER + File.separatorChar
-                                        + ComponentUtilities.getExtFolder(OLD_COMPONENTS_USER_INNER_FOLDER));
-                                if (userComponent.equals(templatePath)) {
-                                    userComponentList.add(currentComp);
-                                }
+                            if (ComponentsLoader.isUserComponent(pathSource)) {
+                                userComponentList.add(currentComp);
                             }
                         }
 
@@ -714,19 +631,13 @@ public class ComponentsFactory implements IComponentsFactory {
 
     @Override
     public int size() {
-        wait4InitialiseFinish();
-        if (componentList == null) {
-            init(false);
-        }
+        init(false);
         return componentList.size();
     }
 
     @Override
     public IComponent get(String name) {
-        wait4InitialiseFinish();
-        if (componentList == null) {
-            init(false);
-        }
+        init(false);
 
         for (IComponent comp : componentList) {
             if (comp != null && comp.getName().equals(name)
@@ -734,6 +645,7 @@ public class ComponentsFactory implements IComponentsFactory {
                 return comp;
             } // else keep looking
         }
+        log.debug("can not get componentList.size: " + componentList.size() + ",name: " + name);
         return null;
     }
 
@@ -744,25 +656,20 @@ public class ComponentsFactory implements IComponentsFactory {
      */
     @Override
     public IComponent get(String name, String paletteType) {
-        wait4InitialiseFinish();
-        if (componentList == null) {
-            init(false);
-        }
+        init(false);
 
         for (IComponent comp : componentList) {
             if (comp != null && comp.getName().equals(name) && paletteType.equals(comp.getPaletteType())) {
                 return comp;
-            } // else keep looking
+            }
         }
+        log.debug("can not get componentList.size: " + componentList.size() + ",name: " + name + ",paletteType: " + paletteType);
         return null;
     }
 
     @Override
     public IComponent getJobletComponent(String name, String paletteType) {
-        wait4InitialiseFinish();
-        if (componentList == null) {
-            init(false);
-        }
+        init(false);
 
         // check if reference joblet component presents
         JobletUtil jobletUtils = new JobletUtil();
@@ -785,10 +692,7 @@ public class ComponentsFactory implements IComponentsFactory {
     @Override
     public void initializeComponents(IProgressMonitor monitor) {
         this.monitor = monitor;
-        wait4InitialiseFinish();
-        if (componentList == null) {
-            init(false);
-        }
+        init(false);
         this.monitor = null;
         this.subMonitor = null;
     }
@@ -796,10 +700,7 @@ public class ComponentsFactory implements IComponentsFactory {
     @Override
     public void initializeComponents(IProgressMonitor monitor, boolean duringLogon) {
         this.monitor = monitor;
-        wait4InitialiseFinish();
-        if (componentList == null) {
-            init(duringLogon);
-        }
+        init(duringLogon);
         this.monitor = null;
         this.subMonitor = null;
     }
@@ -811,10 +712,7 @@ public class ComponentsFactory implements IComponentsFactory {
      */
     @Override
     public Set<IComponent> getComponents() {
-        wait4InitialiseFinish();
-        if (componentList == null) {
-            init(false);
-        }
+        init(false);
         return componentList;
     }
 
@@ -835,19 +733,13 @@ public class ComponentsFactory implements IComponentsFactory {
 
     @Override
     public Map<String, Map<String, Set<IComponent>>> getComponentNameMap() {
-        wait4InitialiseFinish();
-        if (componentNameMap == null) {
-            init(false);
-        }
+        init(false);
         return componentNameMap;
     }
 
     @Override
     public List<IComponent> getCustomComponents() {
-        wait4InitialiseFinish();
-        if (customComponentList == null) {
-            init(false);
-        }
+        init(false);
         return new ArrayList<IComponent>(customComponentList);
     }
 
@@ -858,16 +750,13 @@ public class ComponentsFactory implements IComponentsFactory {
      */
     @Override
     public List<String> getSkeletons() {
-        wait4InitialiseFinish();
-        if (skeletonList == null) {
-            init(false);
-        }
+        init(false);
         return skeletonList;
     }
 
     @Override
     public void reset() {
-        componentList = null;
+        componentList.clear();
         skeletonList = null;
         customComponentList = null;
         Collection<IComponentFactoryFilter> filters = ComponentsFactoryProviderManager.getInstance().getProviders();
@@ -898,6 +787,7 @@ public class ComponentsFactory implements IComponentsFactory {
             }
         }
         isInitialising.set(false);
+        isInitialized = false;
     }
 
     @Override
@@ -1016,6 +906,10 @@ public class ComponentsFactory implements IComponentsFactory {
     	String bundle = componentsProvider.getComponentsBundle();
     	return ComponentBundleToPath.getPathFromBundle(bundle);
     	
+    }
+
+    public Set<IComponent> getComponentsForInit() {
+        return this.componentList;
     }
 
 }
