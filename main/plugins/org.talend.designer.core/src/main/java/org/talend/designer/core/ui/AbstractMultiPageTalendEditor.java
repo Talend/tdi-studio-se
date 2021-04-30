@@ -90,6 +90,8 @@ import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventConstants;
 import org.osgi.service.event.EventHandler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.talend.commons.exception.BusinessException;
 import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.exception.LoginException;
@@ -116,6 +118,7 @@ import org.talend.core.model.process.IContextManager;
 import org.talend.core.model.process.IContextParameter;
 import org.talend.core.model.process.IElementParameter;
 import org.talend.core.model.process.INode;
+import org.talend.core.model.process.IProcess;
 import org.talend.core.model.process.IProcess2;
 import org.talend.core.model.process.JobInfo;
 import org.talend.core.model.properties.InformationLevel;
@@ -204,6 +207,8 @@ public abstract class AbstractMultiPageTalendEditor extends MultiPageEditorPart 
     public static final String CSS_CLASS_ID = "org-talend-rcp-abstractMultiPageEditor-footer"; //$NON-NLS-1$
 
     private boolean isCheckout = false;
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(AbstractMultiPageTalendEditor.class);
 
     protected AdapterImpl dirtyListener = new AdapterImpl() {
 
@@ -834,8 +839,12 @@ public abstract class AbstractMultiPageTalendEditor extends MultiPageEditorPart 
             List<Node> nodes = (List<Node>) oldProcess.getGraphicalNodes();
             List<Node> newNodes = new ArrayList<Node>();
             newNodes.addAll(nodes);
+            Set<IProcess> processSet = new HashSet<IProcess>();
             for (Node node : newNodes) {
-                node.getProcess().checkStartNodes();
+                if (processSet.add(node.getProcess())) {
+                    node.getProcess().checkStartNodes();
+                    LOGGER.info("checkStartNodes for process: " + node.getProcess().toString());
+                }
                 node.checkAndRefreshNode();
                 IElementParameter ep = node.getElementParameter("ACTIVATE");
                 if (ep != null && ep.getValue().equals(Boolean.FALSE)) {
