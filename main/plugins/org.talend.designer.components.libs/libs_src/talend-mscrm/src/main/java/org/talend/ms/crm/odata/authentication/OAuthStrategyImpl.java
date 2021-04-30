@@ -122,7 +122,12 @@ public class OAuthStrategyImpl implements IAuthStrategy {
             future = context.acquireToken(conf.getResource(), conf.getClientId(), conf.getUserName(), conf.getPassword(), null);
         }
         else if(conf.getAppRegisteredType() == ClientConfiguration.AppRegisteredType.WEB_APP && conf.getWebAppPermission() == ClientConfiguration.WebAppPermission.DELEGATED){
-            future = context.acquireToken(conf.getResource(), new ClientCredential(conf.getClientId(), conf.getClientSecret()), conf.getUserName(), conf.getPassword(), null);
+                if (conf.getUserName()!="" && conf.getPassword()!=""){
+                    future = context.acquireToken(conf.getResource(), new ClientCredential(conf.getClientId(), conf.getClientSecret()), conf.getUserName(), conf.getPassword(), null);
+                }else{
+                    // autenticate only with client appid and secret without check identity (it use SYSTEM internal user, more speedest for crm query.
+                    future = context.acquireToken(conf.getResource(), new ClientCredential(conf.getClientId(), conf.getClientSecret()), null);
+                }
         }
         else{
             throw new Exception("Can't retrieve token with this configuration : registered application type: "+conf.getAppRegisteredType()+", Web application permission: "+conf.getWebAppPermission());
