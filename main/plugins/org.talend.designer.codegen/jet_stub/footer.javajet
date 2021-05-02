@@ -1328,9 +1328,11 @@ if (execStat) {
     private void closeCloseableConnections(String... names) {
 	        java.util.Arrays.stream(names).forEach(name-> {
             try {
-                ((java.io.Closeable)globalMap.remove(name)).close();
+			    Object obj_conn = globalMap.remove(name);
+				if(obj_conn != null){
+				    ((java.io.Closeable)obj_conn).close();
+				}
             } catch (IOException ioException) {
-                
             }
         });
 	}
