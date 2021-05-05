@@ -8,7 +8,7 @@
 		java.util.Map
 	"
 %>
-<%@ include file="../templates/Log4j/Log4jFileUtil.javajet"%>
+<%@ include file="@{org.talend.designer.components.localprovider}/components/templates/Log4j/Log4jFileUtil.javajet"%>
 <%
 CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
 INode node = (INode)codeGenArgument.getArgument();
@@ -48,6 +48,7 @@ if ("http".equals(protocol) || "https".equals(protocol)) {
 	boolean addHeader = "true".equals(ElementParameterParser.getValue(node, "__ADD_HEADER__"));
 	boolean encodeURI = "true".equals(ElementParameterParser.getValue(node, "__ENCODE_URI__"));
 	boolean trustAll = "true".equals(ElementParameterParser.getValue(node, "__TRUST_ALL_SERVER__"));
+	String paramsEncoding = ElementParameterParser.getValue(node, "__ENCODE_PARAMS__");
 %>	
 	java.net.URI uriToFetch_<%=cid %> = null;
 	try {
@@ -329,7 +330,7 @@ if ("http".equals(protocol) || "https".equals(protocol)) {
 			String value = param.get("COMMON_PARAMS_VALUE");
 			varPartList.add("common_" + i + "_" + cid);
 			%>
-			org.apache.commons.httpclient.methods.multipart.StringPart common_<%=i%>_<%=cid%> = new org.apache.commons.httpclient.methods.multipart.StringPart(<%=name %>, <%=value %>);
+			org.apache.commons.httpclient.methods.multipart.StringPart common_<%=i%>_<%=cid%> = new org.apache.commons.httpclient.methods.multipart.StringPart(<%=name %>, <%=value %>, <%=paramsEncoding%>);
 			<%
 		}
 
@@ -668,8 +669,14 @@ if ("http".equals(protocol) || "https".equals(protocol)) {
 		password_<%=cid %> = null;
 	}
 	
-	try {        
-		jcifs.smb.NtlmPasswordAuthentication auth_<%=cid%> = new jcifs.smb.NtlmPasswordAuthentication(<%=domain %>, username_<%=cid %>, password_<%=cid %>);
+	try {
+		java.util.Properties props_<%=cid%> = new java.util.Properties();
+		//https://www.qvera.com/kb/index.php/2243/what-are-the-network-share-configuration-parameters
+		props_<%=cid%>.put("jcifs.smb.client.maxVersion","SMB311");
+
+		jcifs.CIFSContext auth_<%=cid%> = new jcifs.context.BaseContext(new jcifs.config.PropertyConfiguration(props_<%=cid%>));
+		auth_<%=cid%> = auth_<%=cid%>.withCredentials(new jcifs.smb.NtlmPasswordAuthenticator(<%=domain%>, username_<%=cid %>, password_<%=cid%>));
+
 		jcifs.smb.SmbFile sf_<%=cid%> = new jcifs.smb.SmbFile(srcurl_<%=cid %>, auth_<%=cid%>);
 	
 		<%if (bUseCache) {%>
@@ -688,16 +695,24 @@ if ("http".equals(protocol) || "https".equals(protocol)) {
 			in_<%=cid%>.close();
 			out_<%=cid%>.close();
 			} catch (java.io.FileNotFoundException ex) {
-				<%if(isLog4jEnabled){%>
-					log.error("<%=cid%> - " + ex.getMessage());
-				<%}%>
-				System.err.println(ex.getMessage());
-		<%}%> 
+				<% if (bDieOnError) {%>    
+					throw(ex);
+				<%} else {
+					if(isLog4jEnabled){%>
+						log.error("<%=cid%> - " + ex.getMessage());
+					<%}%>
+					System.err.println(ex.getMessage());
+				<%}
+		}%> 
 	} catch (java.lang.Exception e) {
-		<%if(isLog4jEnabled){%>
-			log.error("<%=cid%> - " + e.getMessage());
+		<% if (bDieOnError) {%>    
+				throw(e);
+		<%} else {
+			if(isLog4jEnabled){%>
+				log.error("<%=cid%> - " + e.getMessage());
+			<%}%>
+			System.err.println(e.getMessage());
 		<%}%>
-		System.err.println(e.getMessage());
 	}
 <%}%>
 <%if (bUseCache) {%>
