@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.axis.utils.StringUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Priority;
 import org.eclipse.gef.commands.Command;
 import org.talend.commons.exception.PersistenceException;
@@ -420,7 +420,7 @@ public class QueryGuessCommand extends Command {
                     dbType = EDatabaseTypeName.ORACLE_OCI.getDisplayName();
                 }
             }
-            // data view， conn=null
+            // data view锛� conn=null
             // need add code here for dbtype(oracle)
         }
 
