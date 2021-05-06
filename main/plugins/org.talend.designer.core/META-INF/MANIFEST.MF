@@ -31,7 +31,6 @@ Require-Bundle: org.talend.model,
  org.talend.librariesmanager.ui,
  com.ibm.icu,
  org.eclipse.debug.ui,
- org.apache.axis,
  org.eclipse.ui.workbench,
  org.eclipse.ui.intro,
  org.eclipse.help,
@@ -63,7 +62,8 @@ Require-Bundle: org.talend.model,
  org.slf4j.api,
  org.eclipse.help.ui,
  org.talend.core.runtime,
- org.eclipse.compare
+ org.eclipse.compare,
+ org.talend.libraries.apache.axis2
 Eclipse-LazyStart: true
 Plugin-Class: org.talend.designer.core.DesignerPlugin
 Export-Package: org.talend.designer.core;

@@ -22,10 +22,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
-import org.apache.axis.utils.CLArgsParser;
-import org.apache.axis.utils.CLOption;
-import org.apache.axis.utils.Messages;
-import org.apache.axis.wsdl.WSDL2Java;
+import org.apache.axis2.wsdl.WSDL2Java;
 import org.apache.commons.io.FileUtils;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
@@ -568,36 +565,10 @@ public class WSDL2JAVAController extends AbstractElementPropertySectionControlle
             return hasError;
         }
 
-        @Override
         protected void run(String[] args) {
 
-            // Parse the arguments
-            CLArgsParser argsParser = new CLArgsParser(args, options);
-
-            // Print parser errors, if any
-            if (null != argsParser.getErrorString()) {
-                System.err.println(Messages.getMessage("error01", argsParser.getErrorString())); //$NON-NLS-1$
-                printUsage();
-            }
-
-            // Get a list of parsed options
-            List clOptions = argsParser.getArguments();
-            int size = clOptions.size();
-
             try {
-
-                // Parse the options and configure the emitter as appropriate.
-                for (int i = 0; i < size; i++) {
-                    parseOption((CLOption) clOptions.get(i));
-                }
-
-                // validate argument combinations
-                //
-                validateOptions();
-                parser.run(wsdlURI);
-
-                // everything is good
-                // System.exit(0);
+                WSDL2Java.main(args);
             } catch (Throwable t) {
                 hasError = true;
                 exception = t;
