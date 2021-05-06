@@ -3,6 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.talend.libraries</groupId>
     <artifactId>commons-net-ftps-proxy</artifactId>
+    <!-- please see TDI-46016, now 7.1 use higher version : 3.6.1-talend-20190819, TODO remove current project as not necessary to backport -->
     <version>3.6.1-talend-20190128</version>
 
     <name>commons-net-talend</name>

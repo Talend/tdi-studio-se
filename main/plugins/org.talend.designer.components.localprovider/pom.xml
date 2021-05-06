@@ -17,7 +17,7 @@
 		<thashfile.dir>${project.basedir}/components/tHashInput</thashfile.dir>
 		<thashfile.version>3.0-20170711</thashfile.version>
 		<ftpProxy.dir>${project.basedir}/components/tFTPConnection</ftpProxy.dir>
-		<ftpProxy.version>3.6.1-talend-20190128</ftpProxy.version>
+		<ftpProxy.version>3.6.1-talend-20190819</ftpProxy.version>
 		<tproxy.dir>${project.basedir}/components/tSetProxy</tproxy.dir>
 		<tproxy.version>1.0.1</tproxy.version>
 	</properties>
