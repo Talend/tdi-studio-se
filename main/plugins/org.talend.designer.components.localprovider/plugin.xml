@@ -220,6 +220,27 @@
     	</libraryNeeded>
 
     	<libraryNeeded
+	   		context="plugin:org.talend.libraries.hcatalog"
+        	id="hive-hcatalog-core-cdh5.4-lastest"
+         	name="hive-hcatalog-core-1.1.0-cdh5.4.0.jar" mvn_uri="mvn:org.talend.libraries/hive-hcatalog-core-1.1.0-cdh5.4.0/6.0.0"
+         	uripath="platform:/plugin/org.talend.libraries.hcatalog/lib/hive-hcatalog-core-1.1.0-cdh5.4.0.jar">
+    	</libraryNeeded>
+
+    	<libraryNeeded
+	   		context="plugin:org.talend.libraries.hcatalog"
+        	id="hive-hcatalog-pig-adapter-cdh5.4-lastest"
+         	name="hive-hcatalog-pig-adapter-1.1.0-cdh5.4.0.jar" mvn_uri="mvn:org.talend.libraries/hive-hcatalog-pig-adapter-1.1.0-cdh5.4.0/6.0.0"
+         	uripath="platform:/plugin/org.talend.libraries.hcatalog/lib/hive-hcatalog-pig-adapter-1.1.0-cdh5.4.0.jar">
+    	</libraryNeeded>
+
+    	<libraryNeeded
+	   		context="plugin:org.talend.libraries.hcatalog"
+        	id="hive-hcatalog-server-extensions-cdh5.4-lastest"
+         	name="hive-hcatalog-server-extensions-1.1.0-cdh5.4.0.jar" mvn_uri="mvn:org.talend.libraries/hive-hcatalog-server-extensions-1.1.0-cdh5.4.0/6.0.0"
+         	uripath="platform:/plugin/org.talend.libraries.hcatalog/lib/hive-hcatalog-server-extensions-1.1.0-cdh5.4.0.jar">
+    	</libraryNeeded>
+
+    	<libraryNeeded
 	   		context="plugin:org.talend.libraries.hadoop.cloudera.cdh5.4"
         	id="hive-metastore-cdh5.4-lastest"
          	name="hive-metastore-1.1.0-cdh5.4.0.jar" mvn_uri="mvn:org.talend.libraries/hive-metastore-1.1.0-cdh5.4.0/6.0.0"
@@ -508,13 +529,6 @@
             id="curator-recipes-2.7.1.jar"
             name="curator-recipes-2.7.1.jar" mvn_uri="mvn:org.talend.libraries/curator-recipes-2.7.1/6.0.0"
             uripath="platform:/plugin/org.talend.libraries.hadoop.hdp.2.3/lib/curator-recipes-2.7.1.jar">
-        </libraryNeeded>
-
-        <libraryNeeded
-            context="plugin:org.talend.libraries.hadoop.hdp.2.3"
-            id="derby-10.10.2.0.jar"
-            name="derby-10.10.2.0.jar" mvn_uri="mvn:org.talend.libraries/derby-10.10.2.0/6.1.0"
-            uripath="platform:/plugin/org.talend.libraries.hadoop.hdp.2.3/lib/derby-10.10.2.0.jar">
         </libraryNeeded>
 
         <libraryNeeded
@@ -1930,12 +1944,6 @@
     	</libraryNeeded>
 
     	<libraryNeeded
-	   		context="derby-10.4.2.0"
-        	id="derby-10.4.2.0.jar"
-         	name="derby-10.4.2.0.jar" mvn_uri="mvn:org.talend.libraries/derby-10.4.2.0/6.0.0">
-    	</libraryNeeded>
-
-    	<libraryNeeded
 	   		context="plugin:org.talend.libraries.hadoop.hdp.2.1"
         	id="datanucleus-api-jdo-3.2.6.jar"
          	name="datanucleus-api-jdo-3.2.6.jar" mvn_uri="mvn:org.datanucleus/datanucleus-api-jdo/3.2.6"
@@ -1954,12 +1962,6 @@
         	id="datanucleus-rdbms-3.2.9.jar"
          	name="datanucleus-rdbms-3.2.9.jar" mvn_uri="mvn:org.datanucleus/datanucleus-rdbms/3.2.9"
          	uripath="platform:/plugin/org.talend.libraries.hadoop.hdp.2.1/lib/datanucleus-rdbms-3.2.9.jar">
-    	</libraryNeeded>
-
-    	<libraryNeeded
-	   		context="derby-10.11.1.1"
-        	id="derby-10.11.1.1.jar"
-         	name="derby-10.11.1.1.jar" mvn_uri="mvn:org.talend.libraries/derby-10.11.1.1/6.0.0">
     	</libraryNeeded>
 
     	<libraryNeeded
@@ -6144,9 +6146,6 @@
 	             id="datanucleus-rdbms-3.2.9.jar">
 	         </library>
 	         <library
-	             id="derby-10.11.1.1.jar">
-	         </library>
-	         <library
 	             id="curator-framework-2.6.0.jar">
 	         </library>
 	         <library
@@ -6290,9 +6289,6 @@
 	         <library
 	             id="datanucleus-rdbms-3.2.1.jar">
 	         </library>
-	         <library
-	             id="derby-10.4.2.0.jar">
-	         </library>
 	    </libraryNeededGroup>
 
 	    <libraryNeededGroup
@@ -6398,9 +6394,6 @@
 	         <library
 	             id="datanucleus-rdbms-3.2.1.jar">
 	         </library>
-	         <library
-	             id="derby-10.4.2.0.jar">
-	         </library>
 	    </libraryNeededGroup>
 
 	    <!-- Hive libraries for HDP_2_3 -->
@@ -6423,7 +6416,6 @@
             <library id="datanucleus-api-jdo-3.2.6.jar"/>
             <library id="datanucleus-core-3.2.10.jar"/>
             <library id="datanucleus-rdbms-3.2.9.jar"/>
-            <library id="derby-10.10.2.0.jar"/>
             <library id="guava-11.0.2.jar"/>
             <library id="hadoop-auth-HDP_2_3"/>
             <library id="hadoop-common-HDP_2_3"/>
@@ -6590,9 +6582,6 @@
                  id="datanucleus-rdbms-3.2.1.jar">
              </library>
              <library
-                 id="derby-10.4.2.0.jar">
-             </library>
-             <library
                  id="zookeeper-hdp2.2-lastest">
              </library>
              <library
@@ -6714,9 +6703,6 @@
              </library>
              <library
                  id="datanucleus-rdbms-3.2.9.jar">
-             </library>
-             <library
-                 id="derby-10.11.1.1.jar">
              </library>
              <library
                  id="zookeeper-emr400-latest">
@@ -6859,9 +6845,6 @@
 	         <library
 	             id="datanucleus-rdbms-3.2.1.jar">
 	         </library>
-	         <library
-	             id="derby-10.4.2.0.jar">
-	         </library>
 	    </libraryNeededGroup>
 
         <libraryNeededGroup
@@ -6988,9 +6971,6 @@
              </library>
              <library
                  id="datanucleus-rdbms-3.2.1.jar">
-             </library>
-             <library
-                 id="derby-10.4.2.0.jar">
              </library>
         </libraryNeededGroup>
 
@@ -7124,9 +7104,6 @@
              </library>
              <library
                  id="datanucleus-rdbms-3.2.1.jar">
-             </library>
-             <library
-                 id="derby-10.4.2.0.jar">
              </library>
         </libraryNeededGroup>
 
