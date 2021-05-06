@@ -15,6 +15,7 @@ package org.talend.repository.preference;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
@@ -22,6 +23,7 @@ import org.eclipse.swt.widgets.Text;
 import org.talend.commons.ui.runtime.exception.ExceptionHandler;
 import org.talend.core.CorePlugin;
 import org.talend.core.model.properties.Project;
+import org.talend.core.runtime.CoreRuntimePlugin;
 import org.talend.repository.i18n.Messages;
 import org.talend.repository.model.IProxyRepositoryFactory;
 
@@ -33,6 +35,8 @@ public class GeneralProjectSettingPage extends ProjectSettingPage {
     private Text nameText;
 
     private Text descriptionText;
+    
+    private Button utf8Button;
 
     public GeneralProjectSettingPage() {
         super();
@@ -66,7 +70,13 @@ public class GeneralProjectSettingPage extends ProjectSettingPage {
         descriptionText = new Text(container, SWT.BORDER | SWT.MULTI | SWT.WRAP | SWT.V_SCROLL);
         data = new GridData(GridData.FILL_BOTH);
         data.heightHint = 120;
-        descriptionText.setLayoutData(data);
+        descriptionText.setLayoutData(data);      
+        
+        utf8Button = new Button(container, SWT.CHECK);
+        utf8Button.setText("Allow specific characters (UTF8,...) for columns of schemas");
+        GridData utf8ButtonData = new GridData(GridData.FILL_HORIZONTAL);
+        utf8ButtonData.horizontalSpan = 2;
+        utf8Button.setLayoutData(utf8ButtonData);
 
         updateContent();
         return container;
@@ -79,7 +89,8 @@ public class GeneralProjectSettingPage extends ProjectSettingPage {
         if (emfProject != null && emfProject.getDescription() != null) {
             description = emfProject.getDescription();
         }
-        descriptionText.setText(description);
+        descriptionText.setText(description);       
+        utf8Button.setSelection(CoreRuntimePlugin.getInstance().getProjectPreferenceManager().isAllowSpecificCharacters());       
     }
 
     /*
@@ -105,6 +116,8 @@ public class GeneralProjectSettingPage extends ProjectSettingPage {
     }
 
     protected void apply() {
+        CoreRuntimePlugin.getInstance().getProjectPreferenceManager().setAllowSpecificCharacters(utf8Button.getSelection());
+        CoreRuntimePlugin.getInstance().getProjectPreferenceManager().save();
         if (descriptionText != null) {
             if (descriptionText.getText().equals(pro.getEmfProject().getDescription())) {
                 return;
