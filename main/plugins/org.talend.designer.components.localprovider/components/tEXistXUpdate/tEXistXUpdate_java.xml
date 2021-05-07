@@ -117,7 +117,7 @@ COMPATIBILITY="ALL"
        <IMPORT NAME="Java-xmlrpc-client" MODULE="xmlrpc-client-3.1.3.jar" MVN="mvn:org.apache.xmlrpc/xmlrpc-client/3.1.3" REQUIRED="true" />
        <IMPORT NAME="Java-xmlrpc-common" MODULE="xmlrpc-common-3.1.3.jar" MVN="mvn:org.apache.xmlrpc/xmlrpc-common/3.1.3" REQUIRED="true" />
        <IMPORT NAME="Java-log4j" MODULE="log4j-1.2.17.jar" MVN="mvn:log4j/log4j/1.2.17"  UrlPath="platform:/plugin/org.talend.libraries.apache/lib/log4j-1.2.17.jar" REQUIRED="true" BundleID="" />
-       <IMPORT NAME="Java-ws-commons-util" MODULE="ws-commons-util-1.0.2.jar" MVN="mvn:org.talend.libraries/ws-commons-util-1.0.2/6.0.0"  REQUIRED="true" />
+       <IMPORT NAME="Java-ws-commons-util" MODULE="ws-commons-util-1.0.2.jar" MVN="mvn:org.apache.ws.commons.util/ws-commons-util/1.0.2" REQUIRED="true" />
      </IMPORTS>
    </CODEGENERATION>
   <RETURNS>
