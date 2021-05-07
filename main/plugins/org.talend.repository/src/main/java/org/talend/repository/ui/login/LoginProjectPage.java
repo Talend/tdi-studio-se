@@ -397,21 +397,20 @@ public class LoginProjectPage extends AbstractLoginActionPage {
                     }
                     String lastLogonBranch = getLastLogonBranch(currentProjectSettings);
                     List<String> popularBranches = getPopularBranches(projectBranches, lastLogonBranch);
+                    branchesViewer.getCombo().setEnabled(projectViewer.getControl().isEnabled());
                     branchesViewer.setInput(popularBranches);
                     if (monitor.isCanceled() || Thread.currentThread().isInterrupted()) {
                         return;
                     }
                     if ( StringUtils.isNotBlank(lastLogonBranch)) {
-                        branchesViewer.setSelection(new StructuredSelection(new Object[] { lastLogonBranch }));
+                        branchesViewer.setSelection(new StructuredSelection(new Object[] { lastLogonBranch }), true);
                         lastSelectedBranch = lastLogonBranch;
                     } else {
                         if ( popularBranches.size() > 0 ) {
-                            branchesViewer.setSelection(new StructuredSelection(new Object[] { popularBranches.get(0) }));
+                            branchesViewer.setSelection(new StructuredSelection(new Object[] { popularBranches.get(0) }), true);
                             lastSelectedBranch = popularBranches.get(0);
                         }
                     }
-                    // svnBranchCombo.getCombo().setFont(originalFont);
-                    branchesViewer.getCombo().setEnabled(projectViewer.getControl().isEnabled());
                 });
                 if (monitor.isCanceled()) {
                     return org.eclipse.core.runtime.Status.CANCEL_STATUS;
