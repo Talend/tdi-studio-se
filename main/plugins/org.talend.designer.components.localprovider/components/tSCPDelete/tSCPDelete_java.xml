@@ -140,11 +140,20 @@
     </PARAMETER>
   </PARAMETERS>
 
-  <CODEGENERATION>
-    <IMPORTS>
-    	<IMPORT  NAME="Java_SCP"  MODULE="ganymed-ssh2-261.jar" MVN="mvn:ch.ethz.ganymed/ganymed-ssh2/261"  REQUIRED="true"/>
-    </IMPORTS>
-  </CODEGENERATION>
+    <CODEGENERATION>
+        <IMPORTS>
+            <IMPORT
+                    NAME="SSHD_CORE"
+                    MODULE="sshd-core-2.5.1.jar" MVN="mvn:org.apache.sshd/sshd-core/2.5.1"
+                    REQUIRED="true"
+            />
+            <IMPORT
+                    NAME="SSHD_COMMON"
+                    MODULE="sshd-common-2.5.1.jar" MVN="mvn:org.apache.sshd/sshd-common/2.5.1"
+                    REQUIRED="true"
+            />
+        </IMPORTS>
+    </CODEGENERATION>
   
   <RETURNS>
     <RETURN NAME="STATUS" TYPE="id_String" AVAILABILITY="AFTER"/>

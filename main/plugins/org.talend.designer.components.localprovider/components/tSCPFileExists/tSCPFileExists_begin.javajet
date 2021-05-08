@@ -1,164 +1,143 @@
-<%@ jet 
+<%@ jet
 imports="
-    org.talend.core.model.process.INode 
+    org.talend.core.model.process.INode
     org.talend.core.model.process.ElementParameterParser
     org.talend.designer.codegen.config.CodeGeneratorArgument
     org.talend.core.model.process.IElementParameter
-    org.talend.core.model.utils.NodeUtil 
-  " 
+    org.talend.core.model.utils.NodeUtil
+  "
 %>
-<%@ include file="../templates/Log4j/Log4jFileUtil.javajet"%> 
+<%@ include file="../templates/Log4j/Log4jFileUtil.javajet"%>
 <%
     CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
     INode node = (INode)codeGenArgument.getArgument();
     boolean isLog4jEnabled = ("true").equals(ElementParameterParser.getValue(node.getProcess(), "__LOG4J_ACTIVATE__"));
+	log4jFileUtil.componentStartInfo(node);
     String cid = node.getUniqueName();
-    String host = ElementParameterParser.getValue(
-        node,
-        "__HOST__"
-    );
-    String port = ElementParameterParser.getValue(
-        node,
-        "__PORT__"
-    );
-    String user = ElementParameterParser.getValue(
-        node,
-        "__USERNAME__"
-    );
-    String authMethod = ElementParameterParser.getValue(
-        node,
-        "__AUTH_METHOD__"
-    );
-    String privatekey = ElementParameterParser.getValue(
-        node,
-        "__PRIVATEKEY__"
-    );
-    String password = ElementParameterParser.getValue(
-        node,
-        "__PASSWORD__"
-    );
-    String passphrase = ElementParameterParser.getValue(
-        node,
-        "__PASSPHRASE__"
-    );
+    String host = ElementParameterParser.getValue(node,"__HOST__");
+    String port = ElementParameterParser.getValue(node,"__PORT__");
+    String user = ElementParameterParser.getValue(node,"__USERNAME__");
+    String authMethod = ElementParameterParser.getValue(node,"__AUTH_METHOD__");
+    String privatekey = ElementParameterParser.getValue(node,"__PRIVATEKEY__");
+    String password = ElementParameterParser.getValue(node,"__PASSWORD__");
+    String passphrase = ElementParameterParser.getValue(node,"__PASSPHRASE__");
 %>
-    /* Create a connection instance */
-	<%
-	String useExistingConn = ElementParameterParser.getValue(node, "__USE_EXISTING_CONNECTION__");
-	if(("true").equals(useExistingConn)){
-		String connection = ElementParameterParser.getValue(node, "__CONNECTION__");
-		String conn= "conn_" + connection;
-	%>
-		ch.ethz.ssh2.Connection conn_<%=cid %> = (ch.ethz.ssh2.Connection)globalMap.get("<%=conn %>");
-		<%if(isLog4jEnabled){%>
-			if(conn_<%=cid %>!=null) {
-				log.info("<%=cid%> - Uses an existing connection. Connection hostname: " + conn_<%=cid %>.getHostname() + ". Connection port: " + conn_<%=cid %>.getPort() + "."); 
-			}
-		<%}%>
-	
-	<%}else{%>
-	    String hostname_<%=cid %> = <%=host %>;
-	    String username_<%=cid %> = <%=user %>;
-<%
-        if(("").equals(port)){
-%>
-        	ch.ethz.ssh2.Connection conn_<%=cid%> = new ch.ethz.ssh2.Connection(hostname_<%=cid%>);
-<%
-        } else {
-%>
-        	ch.ethz.ssh2.Connection conn_<%=cid%> = new ch.ethz.ssh2.Connection(hostname_<%=cid%>,<%=port%>);
-<%
-        }
-%>
-              /* Now connect */
-		<%if(isLog4jEnabled){%>
-			log.info("<%=cid%> - Attempt to connect to '" + hostname_<%=cid%> + "' with the username '" + <%=user%> + "'.");
-		<%}%>
-        conn_<%=cid%>.connect();
-		<%if(isLog4jEnabled){%>
-			log.info("<%=cid%> - Connect to '" + hostname_<%=cid%> + "' has succeeded.");
-		<%}%>
-<%        
-        if (("PUBLICKEY").equals(authMethod)) {
-%>
-			<%if(isLog4jEnabled){%>
-				log.info("<%=cid%> - Authentication using a public key");
-				log.debug("<%=cid%> - Private key: '" + <%=privatekey%> + "'." );
-			<%}%>
-	        java.io.File keyfile_<%=cid%> = new java.io.File(<%=privatekey%>); 
-	        
-            <%
-            String passwordFieldName = "__PASSPHRASE__";
-            %>
-            
-            <%@ include file="@{org.talend.designer.components.localprovider}/components/templates/password.javajet"%>	        
-	        
-            boolean isAuthenticated_<%=cid%> = conn_<%=cid%>.authenticateWithPublicKey(username_<%=cid%>, keyfile_<%=cid%>, decryptedPassword_<%=cid%>);
-			if (isAuthenticated_<%=cid%> == false){
-				throw new RuntimeException("Authentication failed.");
-			}	
-			  <%if(isLog4jEnabled){%>
-				log.info("<%=cid%> - Authentication succeeded.");
-			  <%}%>
-<%
-        }
-        if (("PASSWORD").equals(authMethod)) {
-%>
+     /* Create a connection instance */
+ 	<%
+ 	String useExistingConn = ElementParameterParser.getValue(node, "__USE_EXISTING_CONNECTION__");
+ 	if(("true").equals(useExistingConn)){
+ 		String connection = ElementParameterParser.getValue(node, "__CONNECTION__");
+ 		String conn= "conn_" + connection;
+ 		INode connectionNode = NodeUtil.getNodeByUniqueName(node.getProcess(), connection);
+ 		    host = ElementParameterParser.getValue(connectionNode, "__HOST__");
+             port = ElementParameterParser.getValue(connectionNode, "__PORT__");
+             user = ElementParameterParser.getValue(connectionNode,"__USERNAME__");
+ 	%>
+ 		org.apache.sshd.client.SshClient client_<%=cid%> = (org.apache.sshd.client.SshClient)globalMap.get("<%=conn %>");
+ 		String hostname_<%=cid%> = <%=host%>;
+        String username_<%=cid%> = <%=user%>;
+ 		<%if(isLog4jEnabled){%>
+ 			if(client_<%=cid %>!=null) {
+ 				log.info("<%=cid%> - Uses an existing connection. Connection hostname: "+ <%=host %> + ". Connection port: <%=port %>.");
+ 			}
+ 		<%}%>
+ 	<%}else{%>
+ 	    	String hostname_<%=cid%> = <%=host%>;
+             String username_<%=cid%> = <%=user%>;
+            /* Create a connection instance */
+         		<%if(isLog4jEnabled){%>
+         			log.info("<%=cid%> - Connection attempt to '" +hostname_<%=cid%> + "' on the port '"+<%=port%>+"' as '" + username_<%=cid%> + "'.");
+         		<%}%>
+         		org.apache.sshd.client.SshClient client_<%=cid%> = org.apache.sshd.client.SshClient.setUpDefaultClient();
+         			client_<%=cid%>.getProperties().putIfAbsent(org.apache.sshd.common.FactoryManager.IDLE_TIMEOUT, 0L);
+         			client_<%=cid%>.getProperties().putIfAbsent(org.apache.sshd.common.FactoryManager.NIO2_READ_TIMEOUT, 0L);
+         		<%
+                 if (("PUBLICKEY").equals(authMethod)) {
+                 %>
+         		<%if(isLog4jEnabled){%>
+         			log.info("<%=cid%> - Authentication using a public key.");
+         		<%}%>
+         		client_<%=cid%>.setUserAuthFactories(java.util.Collections.singletonList(org.apache.sshd.client.auth.pubkey.UserAuthPublicKeyFactory.INSTANCE));
+         		java.nio.file.Path privateKey_<%=cid%> = java.nio.file.Paths.get(<%=privatekey%>);
+         		java.util.List<String> lines_<%=cid%> = java.nio.file.Files.readAllLines(privateKey_<%=cid%>);
 
-			<%if(isLog4jEnabled){%>
-				log.info("<%=cid%> - Authentication using a password");
-			<%}%>
-			
-            <%
-            String passwordFieldName = "__PASSWORD__";
-            %>
-            
-            <%@ include file="@{org.talend.designer.components.localprovider}/components/templates/password.javajet"%>			
-			
-	        boolean isAuthenticated_<%=cid%> = conn_<%=cid%>.authenticateWithPassword(username_<%=cid%>, decryptedPassword_<%=cid%>);
-	        if (isAuthenticated_<%=cid%> == false){
-	            throw new RuntimeException("Authentication failed.");
-			}
-			<%if(isLog4jEnabled){%>
-				log.info("<%=cid%> - Authentication succeeded.");
-			<%}%>
-<%
-        }
-        if (("KEYBOARDINTERACTIVE").equals(authMethod)) {
-%>
-			<%if(isLog4jEnabled){%>
-				log.info("<%=cid%> - Authentication using an interactive action");
-			<%}%>
-    	    boolean isAuthenticated_<%=cid%> = conn_<%=cid%>.authenticateWithKeyboardInteractive(username_<%=cid%>, 
-        	    new ch.ethz.ssh2.InteractiveCallback() {
-        
-        			public String[] replyToChallenge(String name,
-        				String instruction, int numPrompts,
-        				String[] prompt, boolean[] echo)
-        				throws java.lang.Exception {
-        				String[] reply = new String[numPrompts];
-        				
-                        <%
-                        String passwordFieldName = "__PASSWORD__";
-                        %>
-                        
-                        <%@ include file="@{org.talend.designer.components.localprovider}/components/templates/password.javajet"%>        				
-        				
-        				for (int i = 0; i < reply.length; i++) {
-        					reply[i] = decryptedPassword_<%=cid%>;
-	        			}
-        
-    	    			return reply;
-        			}
-        		}	
-	        );
-        	if (isAuthenticated_<%=cid%> == false){
-            	throw new RuntimeException("Authentication failed.");
-            }
-			<%if(isLog4jEnabled){%>
-				log.info("<%=cid%> - Authentication succeeded.");
-			<%}%>		
-<%
-        }
-	}// if(existconn)
-%>
+         		 org.apache.sshd.common.util.security.bouncycastle.BouncyCastleGeneratorHostKeyProvider keyProvider_<%=cid%> =
+                         new org.apache.sshd.common.util.security.bouncycastle.BouncyCastleGeneratorHostKeyProvider(privateKey_<%=cid%>)
+
+         				{
+
+                             @Override
+                             protected Iterable<java.security.KeyPair> doReadKeyPairs(org.apache.sshd.common.session.SessionContext session,
+                                     org.apache.sshd.common.NamedResource resourceKey, java.io.InputStream inputStream)
+                                     throws java.io.IOException, java.security.GeneralSecurityException {
+                             <%String passwordFieldName = "__PASSPHRASE__";%>
+                             <%@ include file="@{org.talend.designer.components.localprovider}/components/templates/password.javajet"%>
+                                 Iterable<java.security.KeyPair> keyPairs =
+                                         org.apache.sshd.common.util.security.SecurityUtils.loadKeyPairIdentities(session, resourceKey, inputStream,
+                                                 (sessionContext, namedResource, i) -> decryptedPassword_<%=cid%>);
+                                 return keyPairs;
+                             }
+                         };
+         		if (lines_<%=cid%>.size()>0) {
+                     String[] line_<%=cid%> = lines_<%=cid%>.get(0).split(" ");
+                     if ("-----BEGIN".equals(line_<%=cid%>[0])) {
+                         keyProvider_<%=cid%>.setAlgorithm(line_<%=cid%>[1]);
+                     }
+                 }
+         				client_<%=cid%>.setKeyIdentityProvider(keyProvider_<%=cid%>);
+
+                 <%}%>
+         		<%
+                 if (("KEYBOARDINTERACTIVE").equals(authMethod)) {
+                 %>
+
+         		client_<%=cid%>.setUserAuthFactories(java.util.Collections.singletonList(org.apache.sshd.client.auth.keyboard.UserAuthKeyboardInteractiveFactory.INSTANCE));
+
+         		<%if(isLog4jEnabled){%>
+         			log.info("<%=cid%> - Authentication using an interactive action.");
+         		<%}%>
+
+         		        client_<%=cid%>.setUserInteraction(new org.apache.sshd.client.auth.keyboard.UserInteraction() {
+
+                     @Override
+                     public String[] interactive(org.apache.sshd.client.session.ClientSession clientSession, String name, String instruction, String lang, String[] prompt,
+                             boolean[] echo) {
+
+         					<% String passwordFieldName = "__PASSWORD__"; %>
+         					<%@ include file="@{org.talend.designer.components.localprovider}/components/templates/password.javajet"%>
+         					String[] reply = new String[prompt.length];
+         					for (int i = 0; i < reply.length; i++) {
+                 				reply[i] = decryptedPassword_<%=cid%>;
+                 			}
+                         return reply;
+                     }
+
+                     @Override public String getUpdatedPassword(org.apache.sshd.client.session.ClientSession clientSession, String prompt, String lang) {
+                         throw new IllegalStateException("getUpdatedPassword(" + clientSession + ")[" + prompt + "] unexpected call");
+                     }
+                 });
+
+         <%
+                 }
+         %>
+
+                 		<%if (("PASSWORD").equals(authMethod)) {%>
+                 			<%if(isLog4jEnabled){%>
+                 			    log.info("<%=cid%> - Authentication using a password.");
+                 		    <%}%>
+                 	        <%String passwordFieldName = "__PASSWORD__";%>
+                 		    <%@ include file="@{org.talend.designer.components.localprovider}/components/templates/password.javajet"%>
+                 		    client_<%=cid%>.addPasswordIdentity(decryptedPassword_<%=cid%>);
+                 		<%}%>
+                 		client_<%=cid%>.start();
+         <%
+         }//if(isExistingConn)
+         %>
+
+         		/* Create a session */
+
+         		org.apache.sshd.client.session.ClientSession session_<%=cid%> = null;
+         		int port_<%=cid%> = Integer.parseInt(<%=port %>+"");
+         		StringBuilder stringStdout_<%=cid%> =new StringBuilder();
+                StringBuilder stringStderr_<%=cid%> =new StringBuilder();
+         		Integer exit_code_<%=cid%> = null;
