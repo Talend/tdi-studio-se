@@ -130,7 +130,9 @@ imports="
         		    <%@ include file="@{org.talend.designer.components.localprovider}/components/templates/password.javajet"%>
         		    client_<%=cid%>.addPasswordIdentity(decryptedPassword_<%=cid%>);
         		<%}%>
-<%}%>
+<%
+}//if(isExistingConn)
+%>
 
                 client_<%=cid%>.start();
 
@@ -180,7 +182,7 @@ imports="
          <%
             }
          %>
-		/* Create a session */
+		/* Create a Channel */
 		org.apache.sshd.client.channel.ClientChannel channel_<%=cid %> = session_<%=cid %>.createExecChannel((command_<%=cid %>).toString());
 
 				StringBuilder stringStdout_<%=cid%> =new StringBuilder();
