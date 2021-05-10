@@ -80,8 +80,14 @@ public class GenericContextUtil {
                     } else if (GenericTypeUtils.isDoubleType(property)) {
                         type = JavaTypesManager.DOUBLE;
                     }
-                    String value = property == null || property.getValue() == null ? null
-                            : StringEscapeUtils.escapeJava(String.valueOf(property.getValue()));
+                    String value = null;
+                    if (property != null && property.getValue() != null) {
+                        if (property.isFlag(Property.Flags.ENCRYPT)) {
+                            value = String.valueOf(property.getValue());
+                        } else {
+                            value = StringEscapeUtils.escapeJava(String.valueOf(property.getValue()));
+                        }
+                    }
                     ConnectionContextHelper.createParameters(varList, paramName, value, type);
                 }else{
                     Properties properties = componentProperties.getProperties(name);
