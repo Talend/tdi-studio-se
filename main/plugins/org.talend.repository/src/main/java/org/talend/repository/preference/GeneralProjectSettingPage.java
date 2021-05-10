@@ -116,8 +116,11 @@ public class GeneralProjectSettingPage extends ProjectSettingPage {
     }
 
     protected void apply() {
-        CoreRuntimePlugin.getInstance().getProjectPreferenceManager().setAllowSpecificCharacters(utf8Button.getSelection());
-        CoreRuntimePlugin.getInstance().getProjectPreferenceManager().save();
+        if (utf8Button != null && utf8Button.getSelection() != CoreRuntimePlugin.getInstance().getProjectPreferenceManager()
+                .isAllowSpecificCharacters()) {
+            CoreRuntimePlugin.getInstance().getProjectPreferenceManager().setAllowSpecificCharacters(utf8Button.getSelection());
+            CoreRuntimePlugin.getInstance().getProjectPreferenceManager().save();
+        }
         if (descriptionText != null) {
             if (descriptionText.getText().equals(pro.getEmfProject().getDescription())) {
                 return;
