@@ -140,16 +140,8 @@
 
   <CODEGENERATION>
     <IMPORTS>
-      <IMPORT
-              NAME="SSHD_CORE"
-              MODULE="sshd-core-2.5.1.jar" MVN="mvn:org.apache.sshd/sshd-core/2.5.1"
-              REQUIRED="true"
-      />
-      <IMPORT
-              NAME="SSHD_COMMON"
-              MODULE="sshd-common-2.5.1.jar" MVN="mvn:org.apache.sshd/sshd-common/2.5.1"
-              REQUIRED="true"
-      />
+      <IMPORT NAME="SSHD_CORE" MODULE="sshd-core-2.5.1.jar" MVN="mvn:org.apache.sshd/sshd-core/2.5.1" REQUIRED="true"/>
+      <IMPORT NAME="SSHD_COMMON" MODULE="sshd-common-2.5.1.jar" MVN="mvn:org.apache.sshd/sshd-common/2.5.1" REQUIRED="true"/>
     </IMPORTS>
   </CODEGENERATION>
   

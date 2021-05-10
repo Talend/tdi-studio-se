@@ -1,48 +1,11 @@
 <%@ jet 
 imports="
-    org.talend.core.model.process.INode 
-    org.talend.core.model.process.ElementParameterParser
-    org.talend.designer.codegen.config.CodeGeneratorArgument
     java.util.List
     java.util.Map
-    org.talend.core.model.process.IElementParameter
-    org.talend.core.model.utils.NodeUtil 
   " 
 %>
-<%@ include file="../templates/Log4j/Log4jFileUtil.javajet"%> 
+<%@ include file="../tSCPFileExists/tSCPFileExists_begin.javajet"%>
 <%
-    CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
-    INode node = (INode)codeGenArgument.getArgument();
-    boolean isLog4jEnabled = ("true").equals(ElementParameterParser.getValue(node.getProcess(), "__LOG4J_ACTIVATE__"));
-    String cid = node.getUniqueName();
-    String host = ElementParameterParser.getValue(
-        node,
-        "__HOST__"
-    );
-    String port = ElementParameterParser.getValue(
-        node,
-        "__PORT__"
-    );
-    String user = ElementParameterParser.getValue(
-        node,
-        "__USERNAME__"
-    );
-    String authMethod = ElementParameterParser.getValue(
-        node,
-        "__AUTH_METHOD__"
-    );
-    String privatekey = ElementParameterParser.getValue(
-        node,
-        "__PRIVATEKEY__"
-    );
-    String password = ElementParameterParser.getValue(
-        node,
-        "__PASSWORD__"
-    );
-    String passphrase = ElementParameterParser.getValue(
-        node,
-        "__PASSPHRASE__"
-    );
     List<Map<String, String>> filelist =
         (List<Map<String,String>>)ElementParameterParser.getObjectValue(
             node,
@@ -51,127 +14,6 @@ imports="
 %>
 	int nb_file_<%=cid%> = 0;
 	globalMap.put("<%=cid %>_STATUS", "");
-    /* Create a connection instance */
-	<%
-	String useExistingConn = ElementParameterParser.getValue(node, "__USE_EXISTING_CONNECTION__");
-	if(("true").equals(useExistingConn)){
-		String connection = ElementParameterParser.getValue(node, "__CONNECTION__");
-		String conn= "conn_" + connection;
-	%>
-		ch.ethz.ssh2.Connection conn_<%=cid %> = (ch.ethz.ssh2.Connection)globalMap.get("<%=conn %>");
-		<%if(isLog4jEnabled){%>
-			if(conn_<%=cid %>!=null) {
-				log.info("<%=cid%> - Uses an existing connection. Connection hostname: " + conn_<%=cid %>.getHostname() + ". Connection port: " + conn_<%=cid %>.getPort() + "."); 
-			}
-		<%}%>
-	<%}else{%>
-	    String hostname_<%=cid%> = <%=host%>;
-	    String username_<%=cid%> = <%=user%>;
-<%
-        if(("").equals(port)){
-%>
-			ch.ethz.ssh2.Connection conn_<%=cid%> = new ch.ethz.ssh2.Connection(hostname_<%=cid%>);
-<%
-        } else {
-%>
-			ch.ethz.ssh2.Connection conn_<%=cid%> = new ch.ethz.ssh2.Connection(hostname_<%=cid%>,<%=port%>);
-<%
-        }
-%>
-              /* Now connect */
-		<%if(isLog4jEnabled){%>
-			log.info("<%=cid%> - Attempt to connect to '" + hostname_<%=cid%> + "' with the username '" + username_<%=cid%> + "'.");
-		<%}%>
-        conn_<%=cid%>.connect();
-		<%if(isLog4jEnabled){%>
-			log.info("<%=cid%> - Connect to '" + hostname_<%=cid%> + "' has succeeded.");
-		<%}%>
-<%        
-        if (("PUBLICKEY").equals(authMethod)) {
-%>
-			<%if(isLog4jEnabled){%>
-				log.info("<%=cid%> - Authentication using a public key");
-				log.debug("<%=cid%> - Private key: '" + <%=privatekey%> + "'." );
-			<%}%>
-        	java.io.File keyfile_<%=cid%> = new java.io.File(<%=privatekey%>); 
-        	
-            <%
-            String passwordFieldName = "__PASSPHRASE__";
-            %>
-            
-            <%@ include file="@{org.talend.designer.components.localprovider}/components/templates/password.javajet"%>        	
-        	
-            boolean isAuthenticated_<%=cid%> = conn_<%=cid%>.authenticateWithPublicKey(username_<%=cid%>, keyfile_<%=cid%>, decryptedPassword_<%=cid%>);
-			if (isAuthenticated_<%=cid%> == false){
-                throw new RuntimeException("Authentication failed.");
-			}
-			<%if(isLog4jEnabled){%>
-				log.info("<%=cid%> - Authentication succeeded.");
-			<%}%>
-<%
-        }
-        if (("PASSWORD").equals(authMethod)) {
-%>
-			<%if(isLog4jEnabled){%>
-				log.info("<%=cid%> - Authentication using a password");
-			<%}%>
-			
-            <%
-            String passwordFieldName = "__PASSWORD__";
-            %>
-            
-            <%@ include file="@{org.talend.designer.components.localprovider}/components/templates/password.javajet"%>			
-			
-	        boolean isAuthenticated_<%=cid%> = conn_<%=cid%>.authenticateWithPassword(username_<%=cid%>, decryptedPassword_<%=cid%>);
-	        if (isAuthenticated_<%=cid%> == false){
-	            throw new RuntimeException("Authentication failed.");
-	        }
-			<%if(isLog4jEnabled){%>
-				log.info("<%=cid%> - Authentication succeeded.");
-		    <%}%>
-<%
-        }
-        if (("KEYBOARDINTERACTIVE").equals(authMethod)) {
-%>
-			<%if(isLog4jEnabled){%>
-				log.info("<%=cid%> - Authentication using an interactive action");
-			<%}%>
-	        boolean isAuthenticated_<%=cid%> = conn_<%=cid%>.authenticateWithKeyboardInteractive(username_<%=cid%>, 
-	            new ch.ethz.ssh2.InteractiveCallback() {
-	        
-	        		public String[] replyToChallenge(String name,
-	        				String instruction, int numPrompts,
-	        				String[] prompt, boolean[] echo)
-	        				throws java.lang.Exception {
-	        			String[] reply = new String[numPrompts];
-	        			
-                        <%
-                        String passwordFieldName = "__PASSWORD__";
-                        %>
-                        
-                        <%@ include file="@{org.talend.designer.components.localprovider}/components/templates/password.javajet"%>	        			
-	        			
-	        			for (int i = 0; i < reply.length; i++) {
-	        				reply[i] = decryptedPassword_<%=cid%>;
-	        			}
-	        
-	        			return reply;
-	        		}
-	        	}	
-	        );
-	        if (isAuthenticated_<%=cid%> == false){
-	            throw new RuntimeException("Authentication failed.");
-	        }
-			<%if(isLog4jEnabled){%>
-				log.info("<%=cid%> - Authentication succeeded.");
-			<%}%>
-<%
-        }
-	}//if(useExistingConn)
-%>
-
-        ch.ethz.ssh2.SCPClient scp_<%=cid%> = new  ch.ethz.ssh2.SCPClient(conn_<%=cid%>);
-        
         String[] destFileNames_<%=cid%> = new String[]{
          <%
 			for (Map<String, String> file : filelist) {

@@ -17,7 +17,7 @@ imports="
 		<%if(isLog4jEnabled){%>
 			log.info("<%=cid%> - Closing the connection to the server.");
 		<%}%>
-        conn_<%=cid%>.close();
+        client_<%=cid%>.close();
 		<%if(isLog4jEnabled){%>
 			log.info("<%=cid%> - Connection to the server closed.");
 		<%}%>

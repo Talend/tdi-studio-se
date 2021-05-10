@@ -14,7 +14,7 @@ imports="
     String fileExists = ElementParameterParser.getValue(node,"__EXISTFILE__");
     String authMethod = ElementParameterParser.getValue(node,"__AUTH_METHOD__");
     boolean isLog4jEnabled = ("true").equals(ElementParameterParser.getValue(node.getProcess(), "__LOG4J_ACTIVATE__"));
-        String useExistingConn = ElementParameterParser.getValue(node, "__USE_EXISTING_CONNECTION__");
+    String useExistingConn = ElementParameterParser.getValue(node, "__USE_EXISTING_CONNECTION__");
          	if(("true").equals(useExistingConn)){
          	    String connection = ElementParameterParser.getValue(node, "__CONNECTION__");
          	    INode connectionNode = NodeUtil.getNodeByUniqueName(node.getProcess(), connection);
@@ -49,6 +49,7 @@ imports="
 
                 <%if(isLog4jEnabled){%>
                     log.info("<%=cid%> - Open up a session.");
+                    log.debug("<%=cid%> - execute the command: " + command_<%=cid %>.toString());
                 <%}%>
 
                 session_<%=cid%> = client_<%=cid%>.connect(username_<%=cid%>, hostname_<%=cid%>, port_<%=cid%>).verify().getClientSession();
