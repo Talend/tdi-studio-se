@@ -54,8 +54,47 @@ final org.talend.sdk.component.runtime.record.RecordConverters.MappingMetaRegist
 
 final org.talend.sdk.component.runtime.input.Mapper tempMapper_<%=cid%> = mgr_<%=cid%>.findMapper("<%=family%>", "<%=originalName%>", <%=version%>, configuration_<%=cid%>)
     .orElseThrow(() -> new IllegalArgumentException("Can't find <%=family%>#<%=originalName%>"));
+    
+<%
+boolean useExistedConnection = "true".equals(ElementParameterParser.getValue(node,"__USE_EXISTING_CONNECTION__"));
+String connection = ElementParameterParser.getValue(node,"__CONNECTION__");
+if(useExistedConnection) {//}
+%>
+try {
+    java.lang.reflect.Field field_<%=cid%> = tempMapper_<%=cid%>.getClass().getSuperclass().getDeclaredField("delegate");
+    if (!field_<%=cid%>.isAccessible()) {
+        field_<%=cid%>.setAccessible(true);
+    }
+    Object v_<%=cid%> = field_<%=cid%>.get(tempMapper_<%=cid%>);
+    Object con_<%=cid%> = globalMap.get("conn_<%=connection%>");
+    if(con_<%=cid%>==null) {
+        throw new RuntimeException("can't find the connection object");
+    }
+    
+    Class<?> current_<%=cid%> = v_<%=cid%>.getClass();
+    while (current_<%=cid%> != null && current_<%=cid%> != Object.class) {
+        java.util.stream.Stream.of(current_<%=cid%>.getDeclaredFields()).filter(f_<%=cid%> -> f_<%=cid%>.isAnnotationPresent(org.talend.sdk.component.api.service.connection.Connection.class)).forEach(f_<%=cid%> -> {
+            if (!f_<%=cid%>.isAccessible()) {
+                f_<%=cid%>.setAccessible(true);
+            }
+            try {
+                f_<%=cid%>.set(v_<%=cid%>, con_<%=cid%>);
+            } catch (final IllegalAccessException e_<%=cid%>) {
+                throw new IllegalStateException(e_<%=cid%>);
+            }
+        });
+        current_<%=cid%> = current_<%=cid%>.getSuperclass();
+    }
+} catch (Exception e_<%=cid%>) {
+    throw e_<%=cid%>;
+}
+<%
+//{
+}
+%>
 
 int nbLineInput_<%=cid%> = 0;
+globalMap.put("<%=cid %>_NB_LINE", nbLineInput_<%=cid%>);
 
 org.talend.sdk.component.runtime.di.JobStateAware.init(tempMapper_<%=cid%>, globalMap);
 tempMapper_<%=cid%>.start();

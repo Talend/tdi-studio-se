@@ -1,7 +1,7 @@
 package org.talend.sdk.component.studio.model.parameter.resolver;
 
-import static java.util.Comparator.comparing;
-import static java.util.Locale.ROOT;
+import static java.util.Comparator.*;
+import static java.util.Locale.*;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -10,9 +10,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.talend.core.model.process.EParameterFieldType;
 import org.talend.core.model.process.IElementParameter;
 import org.talend.core.model.process.INode;
-import org.talend.core.model.process.IProcess;
 import org.talend.designer.core.model.components.ElementParameter;
 import org.talend.sdk.component.form.internal.converter.impl.widget.path.AbsolutePathResolver;
 import org.talend.sdk.component.server.front.model.ActionReference;
@@ -80,18 +80,37 @@ public abstract class AbstractParameterResolver implements ParameterResolver {
             if (expectedParameters.hasNext()) {
                 final String absolutePath = pathResolver.resolveProperty(getOwnerPath(), relativePath);
                 final SimplePropertyDefinition parameterRoot = expectedParameters.next();
-                findParameters(absolutePath, settings).forEach(parameter -> {
+                List<TaCoKitElementParameter> findParameters = findParameters(absolutePath, settings);
+                if (findParameters.size() == 0) {// table
+                    if (EParameterFieldType.TACOKIT_VALUE_SELECTION.equals(actionOwner.getFieldType())
+                            && actionOwner.getParent() != null
+                            && EParameterFieldType.TABLE.equals(actionOwner.getParent().getFieldType())) {
+                        String tablePath = actionOwner.getProperty().getParentPath();
+                        final TaCoKitElementParameter parameter = (TaCoKitElementParameter) settings.get(tablePath);
+                        if (parameter != null) {
+                            findParameters.add(parameter);
+                        }
+                    }
+                }
+                findParameters.forEach(parameter -> {
                     if (redrawParameter != null) {
                         parameter.setRedrawParameter(redrawParameter);
                     }
-                    final String callbackProperty = parameter.getName()
-                            .replaceFirst(absolutePath, parameterRoot.getPath());
+                    String callbackProperty = null;
+                    if (EParameterFieldType.TABLE.equals(parameter.getFieldType())
+                            && !parameter.getName().contains(absolutePath)) {
+                        callbackProperty = parameterRoot.getPath();
+                    } else {
+                        callbackProperty = parameter.getName().replaceFirst(absolutePath, parameterRoot.getPath());
+                    }
                     final IActionParameter actionParameter = parameter.createActionParameter(callbackProperty);
                     action.addParameter(actionParameter);
                     if (action.getContextManager() == null) {
-                        INode node = INode.class.cast(parameter.getElement());
-                        if (node != null && node.getProcess() != null) {
-                            action.setContextManager(node.getProcess().getContextManager());
+                        if (parameter.getElement() instanceof INode) {
+                            INode node = INode.class.cast(parameter.getElement());
+                            if (node != null && node.getProcess() != null) {
+                                action.setContextManager(node.getProcess().getContextManager());
+                            }
                         }
                     }
                 });

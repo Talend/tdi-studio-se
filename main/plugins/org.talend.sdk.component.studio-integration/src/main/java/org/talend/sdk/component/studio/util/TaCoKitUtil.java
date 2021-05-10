@@ -21,7 +21,9 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -40,12 +42,15 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.m2e.core.MavenPlugin;
-import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.utils.data.container.Container;
 import org.talend.commons.utils.system.EnvironmentUtils;
 import org.talend.core.model.components.ComponentCategory;
 import org.talend.core.model.components.IComponent;
 import org.talend.core.model.general.Project;
+import org.talend.core.model.process.IElement;
+import org.talend.core.model.process.IElementParameter;
+import org.talend.core.model.process.INode;
+import org.talend.core.model.process.IProcess;
 import org.talend.core.model.properties.ConnectionItem;
 import org.talend.core.model.properties.Item;
 import org.talend.core.model.properties.ProcessItem;
@@ -59,16 +64,23 @@ import org.talend.core.ui.component.ComponentsFactoryProvider;
 import org.talend.designer.core.model.utils.emf.talendfile.NodeType;
 import org.talend.designer.core.utils.UnifiedComponentUtil;
 import org.talend.repository.ProjectManager;
+import org.talend.sdk.component.server.front.model.ActionItem;
+import org.talend.sdk.component.server.front.model.ActionList;
 import org.talend.sdk.component.server.front.model.ComponentIndex;
 import org.talend.sdk.component.server.front.model.ConfigTypeNode;
 import org.talend.sdk.component.server.front.model.ConfigTypeNodes;
+import org.talend.sdk.component.server.front.model.SimplePropertyDefinition;
 import org.talend.sdk.component.studio.ComponentModel;
 import org.talend.sdk.component.studio.Lookups;
+import org.talend.sdk.component.studio.VirtualComponentModel;
+import org.talend.sdk.component.studio.VirtualComponentModel.VirtualComponentModelType;
 import org.talend.sdk.component.studio.metadata.TaCoKitCache;
 import org.talend.sdk.component.studio.metadata.WizardRegistry;
 import org.talend.sdk.component.studio.metadata.model.TaCoKitConfigurationModel;
+import org.talend.sdk.component.studio.model.action.SuggestionsAction;
 import org.talend.sdk.component.studio.model.parameter.PropertyDefinitionDecorator;
 import org.talend.sdk.component.studio.model.parameter.PropertyNode;
+import org.talend.sdk.component.studio.model.parameter.ValueSelectionParameter;
 import org.talend.updates.runtime.utils.PathUtils;
 import org.talend.utils.io.FilesUtils;
 
@@ -76,7 +88,6 @@ import org.talend.utils.io.FilesUtils;
  * DOC cmeng class global comment. Detailled comment
  */
 public class TaCoKitUtil {
-
     /**
      * Get ConnectionItem from specified project
      *
@@ -523,7 +534,163 @@ public class TaCoKitUtil {
     public static boolean hasTaCoKitComponents(final Stream<IComponent> components) {
         return components.anyMatch(ComponentModel.class::isInstance);
     }
+    
+    /**
+     * Check the component whether support use exist connection or not
+     * @param component
+     * @return
+     */
+    public static boolean isSupportUseExistConnection(ComponentModel component) {
+        boolean isSupport = false;
+        ActionList actionList = Lookups.taCoKitCache().getActionList(component.getIndex().getFamilyDisplayName());
+        if (actionList != null) {
+            for (ActionItem action : actionList.getItems()) {
+                if (TaCoKitConst.CREATE_CONNECTION_ATCION_NAME.equals(action.getType())
+                        || TaCoKitConst.CLOSE_CONNECTION_ATCION_NAME.equals(action.getType())) {
+                    isSupport = true;
+                    break;
+                }
+            }
+        }
 
+        if (isSupport && component instanceof VirtualComponentModel) {
+            if (((VirtualComponentModel) component).getModelType() == VirtualComponentModelType.CONNECTION) {
+                isSupport = false;
+            }
+        }
+        return isSupport;
+    }
+    
+    /**
+     *  Get component datasotre properties
+     * @param component
+     * @return
+     */
+    public static Map<String, PropertyDefinitionDecorator> getComponentDataStoreProperties(ComponentModel component) {
+        final Map<String, PropertyDefinitionDecorator> tree = new HashMap<>();
+        TaCoKitCache cache = Lookups.taCoKitCache();
+        ConfigTypeNode configTypeNode = cache.findDatastoreConfigTypeNodeByName(component.getDetail().getId().getFamily());
+        if (configTypeNode != null && configTypeNode.getProperties() != null) {
+            final Collection<PropertyDefinitionDecorator> properties = PropertyDefinitionDecorator
+                    .wrap(configTypeNode.getProperties());
+            properties.forEach(p -> tree.put(p.getPath(), p));
+        }
+        return tree;
+    }
+    
+    public static boolean isUseExistConnection(INode node) {
+        if (node != null) {
+            for (IElementParameter ele : node.getElementParameters()) {
+                if (TaCoKitConst.PARAMETER_USE_EXISTING_CONNECTION.equals(ele.getName())) {
+                    if (ele.getValue() != null && Boolean.parseBoolean(ele.getValue().toString())) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+    
+    public static String getUseExistConnectionName(INode node) {
+        if (node != null) {
+            for (IElementParameter ele : node.getElementParameters()) {
+                if (TaCoKitConst.PARAMETER_CONNECTION.equals(ele.getName())) {
+                    if (ele.getValue() == null || StringUtils.isEmpty(ele.getValue().toString())) {
+                        return null;
+                    } else {
+                        return ele.getValue().toString();
+                    }
+                }
+            }
+        }
+        return null;
+    }
+    
+    public static Object getParameterValueFromConnection(INode node, String parameterName) {
+        String connectionName = getUseExistConnectionName(node);
+        if (connectionName != null) {
+            IProcess process = node.getProcess();
+            INode connectionNode = process.getNodeByUniqueName(connectionName);
+            if (connectionNode != null) {
+                String datastoreName = TaCoKitUtil.getDataStorePath((ComponentModel) node.getComponent(), parameterName);
+                IElementParameter param = connectionNode.getElementParameter(datastoreName);
+                if (param != null) {
+                    return param.getValue();
+                } else {
+                    throw new IllegalArgumentException("Can't find parameter:" + parameterName);
+                }
+            } else {
+                throw new IllegalArgumentException("Can't find connection node:" + connectionName);
+            }
+        }
+        return null;
+    }
+    
+    public static boolean isDataStoreParameter(INode node, String parameterName) {
+        if (node.getComponent() instanceof ComponentModel) {
+            ComponentModel model = (ComponentModel) node.getComponent();
+            if (TaCoKitUtil.isDataStorePath(model, parameterName)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     *  Check the path is datastore path or not
+     * @param model
+     * @param path
+     * @return
+     */
+    public static boolean isDataStorePath(ComponentModel model, String path) {
+        return getDataStorePath(model, path) == null ? false : true;
+    }
+
+    /**
+     *  Get current path in datastore
+     * @param model
+     * @param path
+     * @return
+     */
+    public static String getDataStorePath(ComponentModel model, String path) {
+        Map<String, PropertyDefinitionDecorator> datastoreProperties = TaCoKitUtil.getComponentDataStoreProperties(model);
+        if (datastoreProperties.containsKey(path)) {
+            return path;
+        }
+        String configPath = TaCoKitUtil.getConfigurationPath(model.getDetail().getProperties());
+        String datastorePath = TaCoKitUtil.getDatastorePath(model.getDetail().getProperties());
+        if (configPath != null && datastorePath != null) {
+            String replacedPath = path.replaceFirst(datastorePath, configPath);
+            if (datastoreProperties.containsKey(replacedPath)) {
+                return replacedPath;
+            }
+        }
+        return null;
+    }
+    
+    public static String getDatastorePath(Collection<SimplePropertyDefinition> properties) {
+        for (SimplePropertyDefinition p : properties) {
+            if (StringUtils.equalsIgnoreCase(TaCoKitConst.CONFIG_NODE_ID_DATASTORE, p.getName())) {
+                return p.getPath();
+            }
+        }
+        for (SimplePropertyDefinition p : properties) {
+            if (StringUtils.equalsIgnoreCase(TaCoKitConst.CONFIG_NODE_ID_CONNECTION, p.getName())) {
+                return p.getPath();
+            }
+        }
+        return null;
+    }
+    
+    public static String getConfigurationPath(Collection<SimplePropertyDefinition> properties) {
+        for (SimplePropertyDefinition p : properties) {
+            if (StringUtils.equalsIgnoreCase(TaCoKitConst.CONFIG_NODE_ID_CONFIGURATION, p.getName())) {
+                return p.getPath();
+            }
+        }
+        return null;
+    }
+    
     public static void checkM2TacokitStatus() throws Exception {
         File studioConfigFile = PathUtils.getStudioConfigFile();
         Properties configuration = PathUtils.readProperties(studioConfigFile);
@@ -565,6 +732,38 @@ public class TaCoKitUtil {
             }
         } catch (IOException e) {
             throw new IllegalArgumentException("Failed to re-deploy jar:", e);
+        }
+    }
+
+    public static void updateElementParameter(final IElement element, final IElementParameter param, int rowNumber) {
+        if (param instanceof ValueSelectionParameter) {
+            ValueSelectionParameter vsParam = ((ValueSelectionParameter) param);
+            Map<String, String> suggestedValues = new LinkedHashMap<>();
+            SuggestionsAction action = vsParam.getAction();
+            action.setRowNumber(rowNumber);
+            if (!action.isMissingRequired()) {
+                suggestedValues = vsParam.getSuggestionValues();
+            }
+            param.setListItemsDisplayCodeName(suggestedValues.keySet().toArray(new String[suggestedValues.size()]));
+            param.setListItemsValue(suggestedValues.keySet().toArray(new String[suggestedValues.size()]));
+            param.setListItemsDisplayName(suggestedValues.keySet().toArray(new String[suggestedValues.size()]));
+            param.setListItemsNotShowIf(new String[suggestedValues.size()]);
+            param.setListItemsShowIf(new String[suggestedValues.size()]);
+        }
+    }
+
+    public static void fillDefaultItemsList(final IElementParameter param, Object value) {
+        if (param instanceof ValueSelectionParameter) {
+            List<String> itemsList = new ArrayList<String>();
+            if (value != null && value instanceof String && StringUtils.isNotBlank((String) value)) {
+                itemsList.add((String) value);
+            }
+            param.setListItemsDisplayName(itemsList.toArray(new String[0]));
+            param.setListItemsDisplayCodeName(itemsList.toArray(new String[0]));
+            param.setListItemsValue(itemsList.toArray(new String[0]));
+            param.setListItemsNotShowIf(itemsList.toArray(new String[0]));
+            param.setListItemsShowIf(itemsList.toArray(new String[0]));
+            param.setDefaultClosedListValue(""); //$NON-NLS-1$
         }
     }
 

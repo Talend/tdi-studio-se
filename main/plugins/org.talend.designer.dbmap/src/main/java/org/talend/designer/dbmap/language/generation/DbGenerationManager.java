@@ -38,6 +38,7 @@ import org.talend.core.model.metadata.IMetadataTable;
 import org.talend.core.model.metadata.MappingTypeRetriever;
 import org.talend.core.model.metadata.MetadataTalendType;
 import org.talend.core.model.metadata.MetadataToolHelper;
+import org.talend.core.model.metadata.builder.database.ExtractMetaDataUtils;
 import org.talend.core.model.process.EConnectionType;
 import org.talend.core.model.process.IConnection;
 import org.talend.core.model.process.IContext;
@@ -661,7 +662,11 @@ public abstract class DbGenerationManager {
                 }
             }
             // Update
-            String targetSchemaTable = getTargetSchemaTable(component, outTableName);
+            String targetSchemaTable = getDifferentTable(dbMapComponent, outputTableName);
+            if (targetSchemaTable == null) {
+                targetSchemaTable = outTableName;
+            }
+            targetSchemaTable = getTargetSchemaTable(component, targetSchemaTable);
 
             appendSqlQuery(sb, "\"", false); //$NON-NLS-1$
             appendSqlQuery(sb, DbMapSqlConstants.UPDATE);
@@ -894,6 +899,53 @@ public abstract class DbGenerationManager {
             }
         }
         return false;
+    }
+
+    protected String getDifferentTable(DbMapComponent dbMapComponent, String outputTableName) {
+        if (!ExtractMetaDataUtils.SNOWFLAKE.equalsIgnoreCase(getDbType(dbMapComponent))) {
+            return null;
+        }
+        List<IConnection> outputConnections = (List<IConnection>) dbMapComponent.getOutgoingConnections();
+        if (outputConnections != null) {
+            IConnection iconn = this.getConnectonByMetadataName(outputConnections, outputTableName);
+            if (iconn != null && iconn.getTarget() != null) {
+                source = iconn.getTarget();
+                IElementParameter useDifferentTable = source.getElementParameter("USE_DIFFERENT_TABLE"); //$NON-NLS-1$
+                if (useDifferentTable != null && useDifferentTable.isShow(source.getElementParameters())
+                        && useDifferentTable.getValue() != null) {
+                    if (Boolean.valueOf(useDifferentTable.getValue().toString())) {
+                        IElementParameter differentTable = source.getElementParameter("DIFFERENT_TABLE_NAME"); //$NON-NLS-1$
+                        if (differentTable != null && differentTable.getValue() != null) {
+                            String table = TalendTextUtils.removeQuotes(String.valueOf(differentTable.getValue()));
+                            if (org.apache.commons.lang.StringUtils.isNotBlank(table)) {
+                                return table;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
+    protected String getDbType(DbMapComponent component) {
+        IElementParameter mappingPara = component.getElementParameter(EParameterName.MAPPING.getName());
+        if (mappingPara == null) {
+            return null;
+        }
+        String mapping = (String) mappingPara.getValue();
+        if (mapping == null) {
+            return null;
+        }
+        MappingTypeRetriever mappingTypeRetriever = MetadataTalendType.getMappingTypeRetriever(mapping);
+        if (mappingTypeRetriever == null) {
+            return null;
+        }
+        Dbms dbms = mappingTypeRetriever.getDbms();
+        if (dbms == null) {
+            return null;
+        }
+        return dbms.getProduct();
     }
 
     /**
@@ -1280,6 +1332,10 @@ public abstract class DbGenerationManager {
                 isELTDBMap = isELTDBMap(source);
             }
             if (isELTDBMap) {
+                if (commaCouldBeAdded) {
+                    appendSqlQuery(sb, DbMapSqlConstants.COMMA);
+                    appendSqlQuery(sb, DbMapSqlConstants.SPACE);
+                }
                 buildTableDeclaration(component, sb, inputTable);
             } else if (!aliasAlreadyDeclared.contains(inputTable.getName())) {
                 if (crCouldBeAdded) {
