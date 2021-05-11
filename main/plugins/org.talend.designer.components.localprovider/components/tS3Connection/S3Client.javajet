@@ -11,7 +11,15 @@
 	String region = ElementParameterParser.getValue(node,"__REGION__");
 
 	String useRegionEndpoint = ElementParameterParser.getValue(node, "__USE_REGION_ENDPOINT__");
+	//the javajet is refered by some component don't have the parameter
+	if(useRegionEndpoint==null || useRegionEndpoint.isEmpty()) {
+		useRegionEndpoint = "false";
+	}
+	
 	String regionEndpoint = ElementParameterParser.getValue(node,"__REGION_ENDPOINT__");
+	if(regionEndpoint==null || regionEndpoint.isEmpty()) {
+		regionEndpoint = null;
+	}
 
 	boolean assumeRole = "true".equals(ElementParameterParser.getValue(node, "__ASSUME_ROLE__"));
 	String arn = ElementParameterParser.getValue(node,"__ARN__");
@@ -30,7 +38,14 @@
 	boolean set_signingRegion = (signingRegion!=null && !signingRegion.isEmpty() && !"DEFAULT".equalsIgnoreCase(signingRegion));
 
 	String enableAccelerateMode = ElementParameterParser.getValue(node,"__ENABLE_ACCELERATE__");
+	if(enableAccelerateMode==null || enableAccelerateMode.isEmpty()) {
+		enableAccelerateMode = "false";
+	}
+	
 	String enablePathStyleAccess = ElementParameterParser.getValue(node,"__PATHSTYLEACCESS__");
+	if(enablePathStyleAccess==null || enablePathStyleAccess.isEmpty()) {
+		enablePathStyleAccess = "false";
+	}
 
 	String sessionDuration = ElementParameterParser.getValue(node,"__SESSION_DURATION__");
 	if(sessionDuration == null || sessionDuration.isEmpty()) {
