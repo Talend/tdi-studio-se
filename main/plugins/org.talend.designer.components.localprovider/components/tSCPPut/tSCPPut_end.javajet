@@ -22,8 +22,8 @@ imports="
 			log.info("<%=cid%> - Connection to the server closed.");
 		<%}%>
 	<%}%>
-		globalMap.put("<%=cid %>_NB_FILE",nb_file_<%=cid%>);
+		globalMap.put("<%=cid %>_NB_FILE",uploadedSet_<%=cid %>.size());
 			
 		<%if(isLog4jEnabled){%>
-			log.info("<%=cid%> - Uploaded files count: " + nb_file_<%=cid%> +  ".");
+			log.info("<%=cid%> - Uploaded files count: " + uploadedSet_<%=cid %>.size() +  ".");
 		<%}%>

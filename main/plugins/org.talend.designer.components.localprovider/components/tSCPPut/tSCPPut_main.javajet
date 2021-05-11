@@ -30,7 +30,7 @@ imports="
 %>
             java.io.File source_<%=cid%> = new java.io.File(<%=file.get("SOURCE") %>);
 			if((source_<%=cid%>.exists())
-			&& (source_<%=cid%>.isFile())){
+			&& (source_<%=cid%>.isFile()) && (!uploadedSet_<%=cid %>.contains(source_<%=cid%>.toPath()))){
 				sourceList_<%=cid %>.add(source_<%=cid%>.toPath());
 			}else{
                   <%if(isLog4jEnabled){%>
@@ -70,6 +70,7 @@ imports="
                             try{
                                 if(sourceFileNames_<%=cid%>.length > 0){
                                     scp_<%=cid%>.upload(sourceFileNames_<%=cid%>,<%=remotedir %>);
+                                    uploadedSet_<%=cid %>.addAll(java.util.Arrays.asList(sourceFileNames_<%=cid%>));
                                     globalMap.put("<%=cid %>_STATUS", "File put OK.");
                                 }else{
                                     globalMap.put("<%=cid %>_STATUS", "No file transfered.");

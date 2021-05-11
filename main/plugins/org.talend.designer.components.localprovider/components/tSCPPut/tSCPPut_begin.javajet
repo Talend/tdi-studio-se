@@ -2,5 +2,5 @@
 <%@ include file="../tSCPFileExists/tSCPFileExists_begin.javajet"%>
 	int nb_file_<%=cid%> = 0;
 	globalMap.put("<%=cid %>_STATUS", "");
-	java.util.Set<java.nio.file.Path> uploadedList_<%=cid %> = new java.util.HashSet<>();
+	java.util.Set<java.nio.file.Path> uploadedSet_<%=cid %> = new java.util.HashSet<>();
 
