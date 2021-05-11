@@ -27573,7 +27573,7 @@
                 <IMPORT NAME="commons-codec-1.14" MODULE="commons-codec-1.14.jar" MVN="mvn:commons-codec/commons-codec/1.14" REQUIRED_IF="(AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2011')" />
                 <IMPORT NAME="commons-logging" MODULE="commons-logging-1.2.jar" MVN="mvn:commons-logging/commons-logging/1.2"  UrlPath="platform:/base/plugins/org.apache.commons.logging_1.2.0.jar" REQUIRED_IF="(AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2011')"/>
                 <IMPORT NAME="httpcore-4.4.4" MODULE="httpcore-4.4.4.jar" MVN="mvn:org.apache.httpcomponents/httpcore/4.4.4" REQUIRED_IF="(AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2011')" />
-                <IMPORT NAME="httpclient-4.5.2" MODULE="httpclient-4.5.2.jar" MVN="mvn:org.apache.httpcomponents/httpclient/4.5.2" REQUIRED_IF="(AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2011')" />
+                <IMPORT NAME="httpclient-4.5.13" MODULE="httpclient-4.5.13.jar" MVN="mvn:org.apache.httpcomponents/httpclient/4.5.13" REQUIRED_IF="(AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2011')" />
                 <!-- log4j -->
                 <IMPORT NAME="Driver-Commons-log4j-1.2.17" MODULE="log4j-1.2.17.jar" MVN="mvn:log4j/log4j/1.2.17"  UrlPath="platform:/plugin/org.talend.libraries.apache/lib/log4j-1.2.17.jar" REQUIRED="true" BundleID="" />
                 <!-- Jars for CRM 2015 CXF begin -->
@@ -27833,9 +27833,9 @@
                 MVN="mvn:org.apache.httpcomponents/httpcore/4.4.4"
                 REQUIRED_IF="(((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA' OR API_VERSION=='API_2018_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016' OR MS_CRM_VERSION == 'CRM_2018')))" />
             <IMPORT
-                NAME="httpclient-4.5.2"
-                MODULE="httpclient-4.5.2.jar"
-                MVN="mvn:org.apache.httpcomponents/httpclient/4.5.2"
+                NAME="httpclient-4.5.13"
+                MODULE="httpclient-4.5.13.jar"
+                MVN="mvn:org.apache.httpcomponents/httpclient/4.5.13"
                 REQUIRED_IF="(((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA' OR API_VERSION=='API_2018_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016' OR MS_CRM_VERSION == 'CRM_2018')))" />
             <IMPORT
                 NAME="jackson-core-2.11.4.jar"
