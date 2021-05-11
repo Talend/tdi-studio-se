@@ -148,7 +148,7 @@
       REQUIRED="true"
       NUM_ROW="10"
       REPOSITORY_VALUE="FORCE_COPY_DELETE"
-      SHOW_IF="REMOVE_FILE=='true'"
+      SHOW_IF="(REMOVE_FILE=='true') AND (ENABLE_COPY_DIRECTORY=='false')"
     >
       <DEFAULT>false</DEFAULT>
     </PARAMETER>
