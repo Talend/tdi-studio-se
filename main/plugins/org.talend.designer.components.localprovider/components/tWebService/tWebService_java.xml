@@ -282,9 +282,9 @@
                 REQUIRED="true"
             />
             <IMPORT 
-                NAME="httpclient-4.5.12" 
-                MODULE="httpclient-4.5.12.jar" 
-                MVN="mvn:org.apache.httpcomponents/httpclient/4.5.12" 
+                NAME="httpclient-4.5.13"
+                MODULE="httpclient-4.5.13.jar"
+                MVN="mvn:org.apache.httpcomponents/httpclient/4.5.13"
                 REQUIRED="true" 
             />
             <IMPORT 
@@ -327,8 +327,8 @@
             />
             <IMPORT
                 NAME="talend-ws"
-                MODULE="talend-ws-1.0.3-20201222.jar"
-                MVN="mvn:org.talend.components/talend-ws/1.0.3-20201222"
+                MODULE="talend-ws-1.0.4-20210429.jar"
+                MVN="mvn:org.talend.components/talend-ws/1.0.4-20210429"
                 REQUIRED="true"
             />
 
