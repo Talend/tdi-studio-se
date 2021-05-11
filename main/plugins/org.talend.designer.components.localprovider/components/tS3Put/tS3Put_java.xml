@@ -522,6 +522,7 @@
           NAME="ENABLE_ACCELERATE"
           FIELD="CHECK"
           NUM_ROW="50"
+		  DYNAMIC_SETTINGS="true"
           SHOW_IF="(USE_EXISTING_CONNECTION == 'false')"
         >   	
         <DEFAULT>false</DEFAULT>
