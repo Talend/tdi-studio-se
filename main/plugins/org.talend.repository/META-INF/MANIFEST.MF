@@ -8,7 +8,6 @@ Bundle-Localization: plugin
 Eclipse-LazyStart: true
 Bundle-Vendor: .Talend SA.
 Require-Bundle: javax.xml.rpc,
- org.apache.axis,
  org.apache.commons.collections,
  org.apache.commons.logging,
  org.apache.commons.lang,
@@ -55,6 +54,7 @@ Require-Bundle: javax.xml.rpc,
  org.eclipse.swt,
  org.eclipse.core.net,
  org.eclipse.jface
+ org.talend.libraries.apache.axis2
 Export-Package: org.talend.repository,
  org.talend.repository.constants,
  org.talend.repository.i18n,

@@ -25,20 +25,14 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 
-import org.apache.axis.encoding.TypeMappingRegistryImpl;
-import org.apache.axis.utils.CLArgsParser;
-import org.apache.axis.utils.CLOption;
-import org.apache.axis.utils.Messages;
-import org.apache.axis.wsdl.Java2WSDL;
-import org.apache.axis.wsdl.fromJava.Emitter;
 import org.apache.log4j.Logger;
+import org.apache.ws.java2wsdl.Java2WSDL;
 import org.dom4j.Attribute;
 import org.dom4j.Document;
 import org.dom4j.Element;
@@ -356,9 +350,10 @@ public class JobJavaScriptsWSManager extends JobJavaScriptsManager {
                 }
             }
 
-            TalendJava2WSDL.generateWSDL(new String[] { "-T1.2", "-yDOCUMENT", "-uLITERAL", "-o" + wsdlFilePath, "-d", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
-                    "-lhttp://localhost:8080/" + jobName, "-nhttp://talend.org", "-X" + classRoot + pathSeparator + libPaths, //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-                    "-m" + EXPORT_METHOD, projectName + "." + jobFolderName + "." + jobName }); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+            TalendJava2WSDL.generateWSDL(new String[] { "-st", "DOCUMENT", "-u", "LITERAL", "-of", wsdlFilePath, //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
+                    "-l", "http://localhost:8080/" + jobName, "-tn", "http://talend.org", "-cp", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
+                    classRoot + pathSeparator + libPaths, 
+                    "-cn", projectName + "." + jobFolderName + "." + jobName }); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 
             wsdlUrlList.add(new File(wsdlFilePath).toURL());
 
@@ -591,61 +586,9 @@ public class JobJavaScriptsWSManager extends JobJavaScriptsManager {
          * @param args String[] command-line arguments.
          * @return
          */
-        @Override
         protected int run(String[] args) {
-
-            // Parse the arguments
-            CLArgsParser argsParser = new CLArgsParser(args, options);
-
-            // Print parser errors, if any
-            if (null != argsParser.getErrorString()) {
-                System.err.println(Messages.getMessage("j2werror00", argsParser.getErrorString())); //$NON-NLS-1$
-                printUsage();
-
-                return (1);
-            }
-
-            // Get a list of parsed options
-            List clOptions = argsParser.getArguments();
-            int size = clOptions.size();
-
             try {
-
-                // Parse the options and configure the emitter as appropriate.
-                for (int i = 0; i < size; i++) {
-                    if (!parseOption((CLOption) clOptions.get(i))) {
-                        return (1);
-                    }
-                }
-
-                // validate argument combinations
-                if (!validateOptions()) {
-                    return (1);
-                }
-
-                // Set the namespace map
-                if (!namespaceMap.isEmpty()) {
-                    emitter.setNamespaceMap(namespaceMap);
-                }
-
-                TypeMappingRegistryImpl tmr = new TypeMappingRegistryImpl();
-                tmr.doRegisterFromVersion(typeMappingVersion);
-                emitter.setTypeMappingRegistry(tmr);
-
-                // Find the class using the name
-                emitter.setCls(className);
-
-                // Generate a full wsdl, or interface & implementation wsdls
-                if (wsdlImplFilename == null) {
-                    emitter.emit(wsdlFilename, mode);
-                } else {
-                    emitter.emit(wsdlFilename, wsdlImplFilename);
-                }
-
-                if (isDeploy) {
-                    generateServerSide(emitter, (wsdlImplFilename != null) ? wsdlImplFilename : wsdlFilename);
-                }
-                // everything is good
+                Java2WSDL.main(args);
                 return (0);
             } catch (Throwable t) {
 
@@ -654,54 +597,6 @@ public class JobJavaScriptsWSManager extends JobJavaScriptsManager {
                 return (1);
             }
         } // run
-
-        /*
-         * (non-Javadoc)
-         *
-         * @see org.apache.axis.wsdl.Java2WSDL#generateServerSide(org.apache.axis.wsdl.fromJava.Emitter,
-         * java.lang.String)
-         */
-        @Override
-        protected void generateServerSide(Emitter j2w, String wsdlFileName) throws Exception {
-            org.apache.axis.wsdl.toJava.Emitter w2j = new org.apache.axis.wsdl.toJava.Emitter();
-            File wsdlFile = new File(wsdlFileName);
-            w2j.setServiceDesc(j2w.getServiceDesc());
-            w2j.setQName2ClassMap(j2w.getQName2ClassMap());
-            w2j.setOutputDir(wsdlFile.getParent());
-            w2j.setServerSide(true);
-            w2j.setHelperWanted(true);
-
-            // setup namespace-to-package mapping
-            String ns = j2w.getIntfNamespace();
-            String pkg = j2w.getCls().getPackage().getName();
-            w2j.getNamespaceMap().put(ns, pkg);
-
-            Map nsmap = j2w.getNamespaceMap();
-            if (nsmap != null) {
-                for (Iterator i = nsmap.keySet().iterator(); i.hasNext();) {
-                    pkg = (String) i.next();
-                    ns = (String) nsmap.get(pkg);
-                    w2j.getNamespaceMap().put(ns, pkg);
-                }
-            }
-
-            // set 'deploy' mode
-            w2j.setDeploy(true);
-
-            if (j2w.getImplCls() != null) {
-                w2j.setImplementationClassName(j2w.getImplCls().getName());
-            } else {
-                if (!j2w.getCls().isInterface()) {
-                    w2j.setImplementationClassName(j2w.getCls().getName());
-                } else {
-                    throw new Exception(
-                            org.talend.repository.i18n.Messages.getString("JobJavaScriptsWSManager.impClassNotSpecified")); //$NON-NLS-1$
-                }
-            }
-            // w2j.run(wsdlFileName);
-            // Note by xtan: in order to support the "jdk1.6.0_05"
-            w2j.run(wsdlFile.toURI().toString());
-        }
 
     }
 
