@@ -30,6 +30,7 @@ import org.talend.core.context.RepositoryContext;
 import org.talend.core.model.components.ComponentCategory;
 import org.talend.core.model.components.IComponent;
 import org.talend.core.model.components.IComponentsFactory;
+import org.talend.core.model.process.EConnectionType;
 import org.talend.core.model.properties.ByteArray;
 import org.talend.core.model.properties.JobletProcessItem;
 import org.talend.core.model.properties.PropertiesFactory;
@@ -41,10 +42,13 @@ import org.talend.core.model.routines.RoutinesUtil;
 import org.talend.core.repository.ui.view.RepositoryLabelProvider;
 import org.talend.core.ui.component.ComponentsFactoryProvider;
 import org.talend.daikon.properties.Properties;
+import org.talend.designer.core.model.components.EParameterName;
 import org.talend.designer.core.model.process.AbstractProcessProvider;
+import org.talend.designer.core.model.utils.emf.talendfile.ElementParameterType;
 import org.talend.designer.core.model.utils.emf.talendfile.ParametersType;
 import org.talend.designer.core.model.utils.emf.talendfile.RoutinesParameterType;
 import org.talend.designer.core.model.utils.emf.talendfile.TalendFileFactory;
+import org.talend.designer.core.ui.editor.connections.Connection;
 import org.talend.designer.core.ui.editor.nodecontainer.NodeContainer;
 import org.talend.designer.core.ui.editor.nodes.Node;
 import org.talend.designer.core.ui.editor.process.Process;
@@ -181,6 +185,35 @@ public class JobletUtilTest {
         processItem.setJobletProcess(process);
         factory.create(processItem, new Path(""));
         return new RepositoryObject(property);
+    }
+    
+    @Test
+    public void testCloneConnection() throws PersistenceException {
+        String label = "testCloneConnection";
+        String id = factory.getNextId();
+        createRepositoryObject(label, id, VersionUtils.DEFAULT_VERSION);
+        AbstractProcessProvider.loadComponentsFromProviders();
+        IComponent jobleComponent = components.get(label, ComponentCategory.CATEGORY_4_DI.getName());
+        IComponent tMsgComponent1 = components.get("tMsgBox", ComponentCategory.CATEGORY_4_DI.getName());
+        IComponent tMsgComponent2 = components.get("tMsgBox", ComponentCategory.CATEGORY_4_DI.getName());
+
+        Property porperty = new FakePropertyImpl();
+        Process currentProcess = new Process(porperty);
+        Node jobletNode = new Node(jobleComponent, currentProcess);
+        currentProcess.addNodeContainer(new NodeContainer(jobletNode));
+
+        Process jobletProcess = (Process) jobletNode.getComponent().getProcess();
+        Node node1 = new Node(tMsgComponent1, jobletProcess);
+        Node node2 = new Node(tMsgComponent2, jobletProcess);
+        Connection conn = new Connection(node1, node2, EConnectionType.ON_SUBJOB_OK,
+                EConnectionType.ON_SUBJOB_OK.getName(), "OnSubjobOk", "OnSubjobOk", "OnSubjobOk", false);
+        conn.setPropertyValue(EParameterName.UNIQUE_NAME.name(), "OnSubjobOk_new");
+        jobletProcess.addNodeContainer(new NodeContainer(node1));
+        jobletProcess.addNodeContainer(new NodeContainer(node2));
+        
+        JobletUtil jobletutil = new JobletUtil();
+        Connection cloneConn = jobletutil.cloneConnection(conn, node1, node2);
+        Assert.assertEquals(cloneConn.getUniqueName(), "OnSubjobOk_new");
     }
 
 }
