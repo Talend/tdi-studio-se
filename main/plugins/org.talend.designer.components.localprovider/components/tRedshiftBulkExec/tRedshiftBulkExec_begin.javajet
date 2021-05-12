@@ -37,7 +37,7 @@ skeleton="../templates/db_output_bulk.skeleton"
 	if(useExistingS3Connection){
 		current_node = NodeUtil.getNodeByUniqueName(node.getProcess(),s3ConnectionCid,true);
 	}
-	boolean inheritRole = "true".equalsIgnoreCase(ElementParameterParser.getValue(current_node, "__INHERIT_CREDENTIALS__"));
+	boolean inheritRole = "INHERIT_CREDENTIALS".equalsIgnoreCase(ElementParameterParser.getValue(current_node, "__CREDENTIAL_PROVIDER__"));
 	List<IMetadataColumn> columnList = getColumnList(node);
 %>
 	String dbschema_<%=cid%> = null;
