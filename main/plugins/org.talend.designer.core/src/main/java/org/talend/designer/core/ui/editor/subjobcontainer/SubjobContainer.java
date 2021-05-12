@@ -32,11 +32,16 @@ import org.talend.core.model.process.IConnectionCategory;
 import org.talend.core.model.process.INode;
 import org.talend.core.model.process.IProcess2;
 import org.talend.core.model.process.ISubjobContainer;
+import org.talend.core.ui.CoreUIPlugin;
+import org.talend.core.ui.process.IGEFProcess;
+import org.talend.core.ui.services.IDesignerCoreUIService;
 import org.talend.designer.core.DesignerPlugin;
 import org.talend.designer.core.ITestContainerGEFService;
 import org.talend.designer.core.model.components.EParameterName;
 import org.talend.designer.core.model.components.ElementParameter;
+import org.talend.designer.core.ui.AbstractMultiPageTalendEditor;
 import org.talend.designer.core.ui.editor.TalendEditor;
+import org.talend.designer.core.ui.editor.cmd.PropertyChangeCommand;
 import org.talend.designer.core.ui.editor.connections.Connection;
 import org.talend.designer.core.ui.editor.jobletcontainer.AbstractJobletContainer;
 import org.talend.designer.core.ui.editor.jobletcontainer.JobletContainer;
@@ -270,7 +275,7 @@ public class SubjobContainer extends Element implements ISubjobContainer {
         boolean isTestContainer = false;
         ITestContainerGEFService testContainerService = null;
         if (GlobalServiceRegister.getDefault().isServiceRegistered(ITestContainerGEFService.class)) {
-            testContainerService = (ITestContainerGEFService) GlobalServiceRegister.getDefault().getService(
+            testContainerService = GlobalServiceRegister.getDefault().getService(
                     ITestContainerGEFService.class);
             if (testContainerService != null) {
                 isTestContainer = testContainerService.isTestContainer(this.process);
@@ -690,5 +695,39 @@ public class SubjobContainer extends Element implements ISubjobContainer {
 
     public void savePoint(Node node, Point point) {
         pointMap.put(node.getUniqueName(), point);
+    }
+
+    public void executeCollapseCommand(boolean isCollapsed) {
+        IProcess2 process = getProcess();
+        if (!process.isReadOnly()) {
+            PropertyChangeCommand ppc = new PropertyChangeCommand(this, EParameterName.COLLAPSED.getName(), isCollapsed);
+            boolean executed = false;
+            if (process instanceof IGEFProcess) {
+                IDesignerCoreUIService designerCoreUIService = CoreUIPlugin.getDefault().getDesignerCoreUIService();
+                if (designerCoreUIService != null) {
+                    executed = designerCoreUIService.executeCommand((IGEFProcess) process, ppc);
+                }
+            }
+            if (!executed) {
+                ppc.execute();
+            }
+            reSelection();
+        }
+    }
+
+    public void reSelection() {
+        // select the start node.
+        if (isCollapsed()) {
+            IProcess2 process = getProcess();
+            AbstractMultiPageTalendEditor editor = (AbstractMultiPageTalendEditor) process.getEditor();
+            Node startNode = getSubjobStartNode();
+            if (startNode != null && editor != null) {
+                if ((startNode.isJoblet() && !startNode.getNodeContainer().isCollapsed()) || startNode.getJunitNode() != null) {
+                    editor.getTalendEditor().getViewer().deselectAll();
+                    return;
+                }
+                editor.selectNode(startNode);
+            }
+        }
     }
 }
