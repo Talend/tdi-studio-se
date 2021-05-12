@@ -56,25 +56,11 @@ if ((metadatas != null) && (metadatas.size() > 0)) { // metadata
 // Set up the component definition, and the properties for all types of
 // components.
 
-List<? extends IConnection> allInLineJobConns = NodeUtil.getFirstIncomingLineConnectionsOfType(node, "tRESTRequestIn");
-%>
-boolean doesNodeBelongToRequest = <%= allInLineJobConns.size() %> == 0;
-@SuppressWarnings("unchecked")
-java.util.Map<String, Object> restRequest = (java.util.Map<String, Object>)globalMap.get("restRequest");
-String currentTRestRequestOperation = (String)(restRequest != null ? restRequest.get("OPERATION") : null);
-<%
-for (IConnection inLineConn : allInLineJobConns) {
-    %>
-        if("<%= inLineConn.getName() %>".equals(currentTRestRequestOperation)) {
-            doesNodeBelongToRequest = true;
-        }
-	<%
-    }
 %>
 
 org.talend.components.api.component.ComponentDefinition def_<%=cid %> =
         new <%= def.getClass().getName()%>();
-
+        
 org.talend.components.api.component.runtime.Writer writer_<%=cid%> = null;
 org.talend.components.api.component.runtime.Reader reader_<%=cid%> = null;
 
@@ -163,7 +149,7 @@ globalMap.put("TALEND_COMPONENTS_VERSION", "<%=component.getVersion()%>");
 boolean isParallelize ="true".equalsIgnoreCase(ElementParameterParser.getValue(node, "__PARALLELIZE__"));
 if (isParallelize) {
 %>
-final String buffersSizeKey_<%=cid%> = "buffersSizeKey_<%=cid%>_" + Thread.currentThread().getId();
+final String buffersSizeKey_<%=cid%> = "buffersSizeKey_<%=cid%>_" + Thread.currentThread().getId(); 
 <%
 }
 %>
@@ -233,11 +219,9 @@ if(componentRuntime_<%=cid%> instanceof org.talend.components.api.component.runt
 org.talend.components.api.component.runtime.SourceOrSink sourceOrSink_<%=cid%> = null;
 if(componentRuntime_<%=cid%> instanceof org.talend.components.api.component.runtime.SourceOrSink) {
 	sourceOrSink_<%=cid%> = (org.talend.components.api.component.runtime.SourceOrSink)componentRuntime_<%=cid%>;
-	if (doesNodeBelongToRequest) {
-        org.talend.daikon.properties.ValidationResult vr_<%=cid%> = sourceOrSink_<%=cid%>.validate(container_<%=cid%>);
-        if (vr_<%=cid%>.getStatus() == org.talend.daikon.properties.ValidationResult.Result.ERROR ) {
-            throw new RuntimeException(vr_<%=cid%>.getMessage());
-        }
+	org.talend.daikon.properties.ValidationResult vr_<%=cid%> = sourceOrSink_<%=cid%>.validate(container_<%=cid%>);
+	if (vr_<%=cid%>.getStatus() == org.talend.daikon.properties.ValidationResult.Result.ERROR ) {
+    	throw new RuntimeException(vr_<%=cid%>.getMessage());
 	}
 }
 
@@ -313,13 +297,13 @@ if (hasOutputOnly || asInputComponent) {
 
         for (; available_<%=cid%>; available_<%=cid%> = reader_<%=cid%>.advance()) {
 			nb_line_<%=cid %>++;
-
+	
 			<%if(hasDataOutput) {%>
 			if (multi_output_is_allowed_<%=cid%>) {
 				<%if(main!=null){%>
 					<%=main.getName()%> = null;
 				<%}%>
-
+	
 				<%if(reject!=null){%>
 					<%=reject.getName()%> = null;
 				<%}%>
@@ -331,11 +315,11 @@ if (hasOutputOnly || asInputComponent) {
 				<%
 				if (main != null) {
 					%>
-
+	
 					if(multi_output_is_allowed_<%=cid%>) {
 						<%=main.getName()%> = new <%=main.getName() %>Struct();
 					}
-
+	
 					<%
 					irToRow.generateConvertRecord("data_" + cid, main.getName(), main.getMetadataTable().getListColumns());
 				}
@@ -346,7 +330,7 @@ if (hasOutputOnly || asInputComponent) {
 				if (reject!=null) {
 					%>
 					Object data_<%=cid%> = info_<%=cid%>.get("talend_record");
-
+	
 					if (multi_output_is_allowed_<%=cid%>) {
 						<%=reject.getName()%> = new <%=reject.getName() %>Struct();
 					}
@@ -359,19 +343,19 @@ if (hasOutputOnly || asInputComponent) {
 					}
 					<%
 					Set<String> commonColumns = new HashSet<String>();
-
+	
 					for (IMetadataColumn column : columnList) {
 						commonColumns.add(column.getLabel());
 					}
-
+	
 					//pass error columns
 					List<IMetadataColumn> rejectColumns = reject.getMetadataTable().getListColumns();
 					for(IMetadataColumn column : rejectColumns) {
 						String columnName = column.getLabel();
-
+	
 						// JavaType javaType = JavaTypesManager.getJavaTypeFromId(column.getTalendType());
 						String typeToGenerate = JavaTypesManager.getTypeToGenerate(column.getTalendType(), column.isNullable());
-
+	
 						//error columns
 						if(!commonColumns.contains(columnName)) {
 							%>
@@ -401,7 +385,7 @@ if (hasOutputOnly || asInputComponent) {
 				<%
 				}
 			%>
-			} // end of catch
+			} // end of catch 
     <%
     // The for loop around the incoming records from the reader is left open.
 
@@ -413,13 +397,9 @@ if (hasOutputOnly || asInputComponent) {
     	org.talend.components.api.component.runtime.Sink sink_<%=cid%> =
             	(org.talend.components.api.component.runtime.Sink)sourceOrSink_<%=cid%>;
         org.talend.components.api.component.runtime.WriteOperation writeOperation_<%=cid%> = sink_<%=cid%>.createWriteOperation();
-        if (doesNodeBelongToRequest) {
-            writeOperation_<%=cid%>.initialize(container_<%=cid%>);
-        }
+        writeOperation_<%=cid%>.initialize(container_<%=cid%>);
         writer_<%=cid%> = writeOperation_<%=cid%>.createWriter(container_<%=cid%>);
-        if (doesNodeBelongToRequest) {
-            writer_<%=cid%>.open("<%=cid%>");
-        }
+        writer_<%=cid%>.open("<%=cid%>");
 
         resourceMap.put("writer_<%=cid%>", writer_<%=cid%>);
     } // end of "sourceOrSink_<%=cid%> instanceof ...Sink"
@@ -468,7 +448,7 @@ if (hasOutputOnly || asInputComponent) {
     }
 }
  %>
-
+    
                 java.lang.Iterable<?> outgoingMainRecordsList_<%=cid%> = new java.util.ArrayList<Object>();
                 java.util.Iterator outgoingMainRecordsIt_<%=cid%> = null;
 

@@ -3629,6 +3629,15 @@
               name="ReplaceInheritCredentialCheckBoxWithDropDownListTask"
               version="7.3.1">
      </projecttask>
+       <projecttask
+               beforeLogon="false"
+               breaks="7.3.0"
+               class="org.talend.repository.model.migration.SetForceCopyFortFileCopy"
+               description="Set force copy checkbox to true."
+               id="org.talend.repository.model.migration.SetForceCopyFortFileCopy"
+               name="SetForceCopyFortFileCopy"
+               version="7.3.1">
+       </projecttask>
    </extension>
 
    <extension
