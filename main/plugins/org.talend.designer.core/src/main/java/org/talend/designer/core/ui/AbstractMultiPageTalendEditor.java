@@ -296,7 +296,7 @@ public abstract class AbstractMultiPageTalendEditor extends MultiPageEditorPart 
 
     static {
         if (GlobalServiceRegister.getDefault().isServiceRegistered(ISVNProviderService.class)) {
-            svnProviderService = (ISVNProviderService) GlobalServiceRegister.getDefault().getService(ISVNProviderService.class);
+            svnProviderService = GlobalServiceRegister.getDefault().getService(ISVNProviderService.class);
         }
     }
 
@@ -394,7 +394,7 @@ public abstract class AbstractMultiPageTalendEditor extends MultiPageEditorPart 
         ActiveProcessTracker.initialize();
 
         ResourcesPlugin.getWorkspace().addResourceChangeListener(this);
-        IBrandingService brandingService = (IBrandingService) GlobalServiceRegister.getDefault().getService(
+        IBrandingService brandingService = GlobalServiceRegister.getDefault().getService(
                 IBrandingService.class);
         Map<String, Object> settings = brandingService.getBrandingConfiguration().getJobEditorSettings();
         if (settings.containsKey(DISPLAY_CODE_VIEW)) {
@@ -685,6 +685,31 @@ public abstract class AbstractMultiPageTalendEditor extends MultiPageEditorPart 
                 }
             }
         }
+    }
+
+    public EditPart getSelectedNodePart(String nodeName) {
+        GraphicalViewer viewer = designerEditor.getViewer();
+        Object object = viewer.getRootEditPart().getChildren().get(0);
+        if (object instanceof ProcessPart) {
+            // the structure in memory is:
+            // ProcessPart < SubjobContainerPart < NodeContainerPart < NodePart
+            for (EditPart editPart : (List<EditPart>) ((ProcessPart) object).getChildren()) {
+                if (editPart instanceof SubjobContainerPart) {
+                    SubjobContainerPart subjobPart = (SubjobContainerPart) editPart;
+                    for (EditPart part : (List<EditPart>) subjobPart.getChildren()) {
+                        if (part instanceof NodeContainerPart) {
+                            EditPart nodePart = (EditPart) part.getChildren().get(0);
+                            if (nodePart instanceof NodePart) {
+                                if (((Node) ((NodePart) nodePart).getModel()).getLabel().equals(nodeName)) {
+                                    return nodePart;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return null;
     }
 
     private void changeContextsViewStatus(boolean flag) {
@@ -1228,7 +1253,7 @@ public abstract class AbstractMultiPageTalendEditor extends MultiPageEditorPart 
         changeCollapsedState(false, jobletMap);
 
         if (GlobalServiceRegister.getDefault().isServiceRegistered(ITestContainerProviderService.class)) {
-            ITestContainerProviderService testContainerService = (ITestContainerProviderService) GlobalServiceRegister
+            ITestContainerProviderService testContainerService = GlobalServiceRegister
                     .getDefault().getService(ITestContainerProviderService.class);
             if (testContainerService != null) {
                 testContainerService.updateDetect(getProcess(), false);
@@ -1245,7 +1270,7 @@ public abstract class AbstractMultiPageTalendEditor extends MultiPageEditorPart 
 
     public boolean haveDirtyJoblet() {
         if (GlobalServiceRegister.getDefault().isServiceRegistered(IJobletProviderService.class)) {
-            IJobletProviderService service = (IJobletProviderService) GlobalServiceRegister.getDefault().getService(
+            IJobletProviderService service = GlobalServiceRegister.getDefault().getService(
                     IJobletProviderService.class);
             for (INode node : getProcess().getGraphicalNodes()) {
                 if ((node instanceof Node) && ((Node) node).isJoblet()) {
@@ -1814,7 +1839,7 @@ public abstract class AbstractMultiPageTalendEditor extends MultiPageEditorPart 
 
     public void beforeDispose() {
         if (null != jobletEditor) {
-            IColumnSupport cs = (IColumnSupport) jobletEditor.getAdapter(IColumnSupport.class);
+            IColumnSupport cs = jobletEditor.getAdapter(IColumnSupport.class);
             cs.dispose();
         }
     }

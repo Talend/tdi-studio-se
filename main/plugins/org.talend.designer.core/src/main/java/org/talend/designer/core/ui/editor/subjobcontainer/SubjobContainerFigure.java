@@ -92,26 +92,28 @@ public class SubjobContainerFigure extends Figure {
 
             @Override
             public void actionPerformed(ActionEvent event) {
-                IProcess2 process = subjobContainer.getProcess();
-                if (!process.isReadOnly()) {
-                    PropertyChangeCommand ppc = new PropertyChangeCommand(subjobContainer, EParameterName.COLLAPSED.getName(),
-                            !subjobContainer.isCollapsed());
-
-                    boolean executed = false;
-                    if (process instanceof IGEFProcess) {
-                        IDesignerCoreUIService designerCoreUIService = CoreUIPlugin.getDefault().getDesignerCoreUIService();
-                        if (designerCoreUIService != null) {
-                            executed = designerCoreUIService.executeCommand((IGEFProcess) process, ppc);
-                        }
-                    }
-
-                    if (!executed) {
-                        ppc.execute();
-                    }
-                    reSelection();
-                }
+                executeCollapseCommand(!subjobContainer.isCollapsed());
             }
         });
+    }
+
+    public void executeCollapseCommand(boolean isCollapsed) {
+        IProcess2 process = subjobContainer.getProcess();
+        if (!process.isReadOnly()) {
+            PropertyChangeCommand ppc = new PropertyChangeCommand(subjobContainer, EParameterName.COLLAPSED.getName(),
+                    isCollapsed);
+            boolean executed = false;
+            if (process instanceof IGEFProcess) {
+                IDesignerCoreUIService designerCoreUIService = CoreUIPlugin.getDefault().getDesignerCoreUIService();
+                if (designerCoreUIService != null) {
+                    executed = designerCoreUIService.executeCommand((IGEFProcess) process, ppc);
+                }
+            }
+            if (!executed) {
+                ppc.execute();
+            }
+            reSelection();
+        }
     }
 
     /**
@@ -303,4 +305,7 @@ public class SubjobContainerFigure extends Figure {
         super.setSize(w, h);
     }
 
+    public SubjobContainer getSubjobContainer() {
+        return this.subjobContainer;
+    }
 }
