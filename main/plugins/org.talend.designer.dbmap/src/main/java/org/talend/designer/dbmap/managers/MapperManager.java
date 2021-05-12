@@ -962,4 +962,23 @@ public class MapperManager extends AbstractMapperManager {
         return false;
     }
 
+    /**
+     * DOC amaumont Comment method "checkEntryHasValidKey".
+     *
+     * @param inputEntry
+     */
+    public boolean checkEntryHasInvalidUncheckedKey(InputColumnTableEntry inputEntry) {
+        return !inputEntry.getMetadataColumn().isKey() && inputEntry.getExpression() != null
+                && inputEntry.getExpression().trim().length() > 0;
+    }
+
+    /**
+     * DOC amaumont Comment method "checkEntryHasValidKey".
+     *
+     * @param inputEntry
+     */
+    public boolean checkEntryHasInvalidCheckedKey(InputColumnTableEntry inputEntry) {
+        return inputEntry.getMetadataColumn().isKey() && checkEntryHasEmptyExpression(inputEntry);
+    }
+
 }

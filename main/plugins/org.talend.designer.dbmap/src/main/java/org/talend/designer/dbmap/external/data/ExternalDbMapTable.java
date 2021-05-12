@@ -57,6 +57,10 @@ public class ExternalDbMapTable extends AbstractExternalMapTable implements Seri
      */
     private String tableName;
 
+    private boolean activateColumnNameFilter;
+
+    private String columnNameFilter;
+
     /**
      * Used only for inputs.
      */
@@ -245,7 +249,13 @@ public class ExternalDbMapTable extends AbstractExternalMapTable implements Seri
         } else if (!this.tableName.equals(other.tableName)) {
             return false;
         }
-
+        if (this.columnNameFilter == null) {
+            if (other.columnNameFilter != null) {
+                return false;
+            }
+        } else if (!this.columnNameFilter.equals(other.columnNameFilter)) {
+            return false;
+        }
         List<ExternalDbMapEntry> this_customOtherConditionsEntries = null;
         if(this.customOtherConditionsEntries == null){
             this_customOtherConditionsEntries = new ArrayList<ExternalDbMapEntry>();
@@ -344,4 +354,18 @@ public class ExternalDbMapTable extends AbstractExternalMapTable implements Seri
         return true;
     }
 
+    public boolean isActivateColumnNameFilter() {
+        return this.activateColumnNameFilter;
+    }
+
+    public void setActivateColumnNameFilter(boolean activateColumnNameFilter) {
+        this.activateColumnNameFilter = activateColumnNameFilter;
+    }
+    public String getColumnNameFilter() {
+        return this.columnNameFilter;
+    }
+
+    public void setColumnNameFilter(String columnNameFilter) {
+        this.columnNameFilter = columnNameFilter;
+    }
 }

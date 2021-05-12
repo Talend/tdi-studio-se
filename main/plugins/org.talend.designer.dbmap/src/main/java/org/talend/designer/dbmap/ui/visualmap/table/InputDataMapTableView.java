@@ -148,6 +148,9 @@ public class InputDataMapTableView extends DataMapTableView {
         column.setWeight(COLUMN_NAME_SIZE_WEIGHT);
 
         final TableViewerCreatorColumn columnOperator = new TableViewerCreatorColumn(tableViewerCreatorForColumns);
+        CheckboxTableEditorContent checkboxTableEditorContent2 = new CheckboxTableEditorContent();
+        checkboxTableEditorContent.setToolTipText(useInJoinTitle);
+        columnOperator.setTableEditorContent(checkboxTableEditorContent2);
         columnOperator.setTitle(Messages.getString("InputDataMapTableView.columnTitle.Operator")); //$NON-NLS-1$
         columnOperator.setId(DataMapTableView.ID_OPERATOR);
         columnOperator.setToolTipHeader(Messages.getString("InputDataMapTableView.Operator")); //$NON-NLS-1$
@@ -282,6 +285,9 @@ public class InputDataMapTableView extends DataMapTableView {
         }
         dropDownItem.addSelectionListener(new DropDownSelectionListener());
         dropDownItem.setEnabled(!mapperManager.componentIsReadOnly());
+
+        // createActivateFilterCheck();
+        createColumnNameFilterCheck();
         return true;
     }
 
@@ -529,6 +535,18 @@ public class InputDataMapTableView extends DataMapTableView {
 
     public void setEnableJoinTypeDropDown(boolean enabled) {
         dropDownItem.setEnabled(enabled);
+    }
+
+    /*
+     * (non-Javadoc)
+     *
+     * @see org.talend.designer.mapper.ui.visualmap.table.DataMapTableView#notifyFocusLost()
+     */
+    @Override
+    public void notifyFocusLost() {
+        // if (expressionCellEditor != null) {
+        // expressionCellEditor.focusLost();
+        // }
     }
 
 }

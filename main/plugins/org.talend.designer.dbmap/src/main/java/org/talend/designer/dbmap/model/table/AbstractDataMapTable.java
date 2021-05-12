@@ -171,4 +171,8 @@ public abstract class AbstractDataMapTable implements IDataMapTable {
 
     }
 
+    public List<IColumnEntry> getDataMapTableEntries() {
+        return dataMapTableEntries;
+    }
+
 }

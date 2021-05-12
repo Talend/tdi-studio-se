@@ -226,7 +226,7 @@ public class OutputDataMapTableView extends DataMapTableView {
      */
     @Override
     protected boolean addToolItems() {
-        // createFiltersToolItems();
+        createFiltersToolItems();
         createFiltersDropDown();
         // addToolItemSeparator();
         // createToolItems();
@@ -518,5 +518,17 @@ public class OutputDataMapTableView extends DataMapTableView {
 
             initShowMessageErrorListener(_tableForConstraints);
         }
+    }
+
+    /*
+     * (non-Javadoc)
+     *
+     * @see org.talend.designer.mapper.ui.visualmap.table.DataMapTableView#notifyFocusLost()
+     */
+    @Override
+    public void notifyFocusLost() {
+        // if (expressionCellEditor != null) {
+        // expressionCellEditor.focusLost();
+        // }
     }
 }

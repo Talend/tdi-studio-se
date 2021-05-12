@@ -28,6 +28,9 @@ public abstract class AbstractInOutTable extends AbstractDataMapTable {
 
     protected IMetadataTable metadataTable;
 
+    private boolean activateColumnNameFilter;
+
+    private String columnNameFilter;
     /**
      *
      * DOC amaumont AbstractInOutTable constructor comment.
@@ -43,6 +46,8 @@ public abstract class AbstractInOutTable extends AbstractDataMapTable {
 
     protected void initFromExternalData(ExternalDbMapTable externalMapperTable) {
         super.initFromExternalData(externalMapperTable);
+        this.activateColumnNameFilter = externalMapperTable.isActivateColumnNameFilter();
+        this.setColumnNameFilter(externalMapperTable.getColumnNameFilter());
     }
 
     protected abstract AbstractInOutTableEntry getNewTableEntry(IMetadataColumn metadataColumn);
@@ -55,4 +60,19 @@ public abstract class AbstractInOutTable extends AbstractDataMapTable {
         this.metadataTable = metadataTable;
     }
 
+    public boolean isActivateColumnNameFilter() {
+        return this.activateColumnNameFilter;
+    }
+
+    public void setActiveColumnNameFilter(boolean activateColumnNameFilter) {
+        this.activateColumnNameFilter = activateColumnNameFilter;
+    }
+
+    public String getColumnNameFilter() {
+        return this.columnNameFilter;
+    }
+
+    public void setColumnNameFilter(String columnNameFilter) {
+        this.columnNameFilter = columnNameFilter;
+    }
 }

@@ -16,12 +16,15 @@ import java.util.Collection;
 import java.util.List;
 
 import org.eclipse.jface.fieldassist.IContentProposalProvider;
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.ICellEditorListener;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TableViewer;
+import org.eclipse.jface.viewers.Viewer;
+import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.events.ControlEvent;
@@ -49,6 +52,7 @@ import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
@@ -60,6 +64,7 @@ import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
+import org.eclipse.ui.dialogs.SearchPattern;
 import org.talend.commons.ui.runtime.expressionbuilder.IExpressionBuilderDialogController;
 import org.talend.commons.ui.runtime.image.EImage;
 import org.talend.commons.ui.runtime.swt.tableviewer.TableViewerCreatorColumnNotModifiable;
@@ -74,6 +79,7 @@ import org.talend.commons.ui.runtime.swt.tableviewer.data.ModifiedObjectInfo;
 import org.talend.commons.ui.runtime.swt.tableviewer.selection.ILineSelectionListener;
 import org.talend.commons.ui.runtime.swt.tableviewer.selection.LineSelectionEvent;
 import org.talend.commons.ui.runtime.thread.AsynchronousThreading;
+import org.talend.commons.ui.runtime.utils.ControlUtils;
 import org.talend.commons.ui.runtime.utils.TableUtils;
 import org.talend.commons.ui.runtime.ws.WindowSystem;
 import org.talend.commons.ui.swt.colorstyledtext.UnnotifiableColorStyledText;
@@ -88,6 +94,8 @@ import org.talend.commons.utils.data.list.IListenableListListener;
 import org.talend.commons.utils.data.list.ListenableListEvent;
 import org.talend.commons.utils.data.list.ListenableListEvent.TYPE;
 import org.talend.commons.utils.threading.ExecutionLimiter;
+import org.talend.core.CorePlugin;
+import org.talend.core.model.metadata.IMetadataColumn;
 import org.talend.core.model.process.Problem;
 import org.talend.core.ui.metadata.editor.MetadataTableEditorView;
 import org.talend.designer.abstractmap.model.table.IDataMapTable;
@@ -100,10 +108,12 @@ import org.talend.designer.dbmap.managers.MapperManager;
 import org.talend.designer.dbmap.managers.ProblemsManager;
 import org.talend.designer.dbmap.managers.UIManager;
 import org.talend.designer.dbmap.model.table.AbstractInOutTable;
+import org.talend.designer.dbmap.model.table.InputTable;
 import org.talend.designer.dbmap.model.table.OutputTable;
 import org.talend.designer.dbmap.model.tableentry.AbstractInOutTableEntry;
 import org.talend.designer.dbmap.model.tableentry.FilterTableEntry;
 import org.talend.designer.dbmap.model.tableentry.InputColumnTableEntry;
+import org.talend.designer.dbmap.model.tableentry.OutputColumnTableEntry;
 import org.talend.designer.dbmap.ui.color.ColorInfo;
 import org.talend.designer.dbmap.ui.color.ColorProviderMapper;
 import org.talend.designer.dbmap.ui.dialog.ExpressionBuilderDialogForElt;
@@ -219,6 +229,18 @@ public abstract class DataMapTableView extends Composite implements IDataMapTabl
     public static final String COLUMN_NAME = "Column"; //$NON-NLS-1$
 
     private IExpressionBuilderDialogController dialog;
+
+    private ToolItem columnNameFilter;
+
+    private boolean previousColumnNameFilter;
+
+    private Text columnNameTextFilter;
+
+    private Label filterImageLabel;
+
+    public static final String DEFAULT_FILTER = "";//$NON-NLS-1$
+
+    private TableViewer viewer;
 
 
     /**
@@ -344,7 +366,9 @@ public abstract class DataMapTableView extends Composite implements IDataMapTabl
 
         initTableFilters(centerComposite);
 
+        createColumnNameFilter();
         createTableForColumns(centerComposite);
+
 
         new DragNDrop(mapperManager, tableForEntries, true, true);
 
@@ -525,6 +549,12 @@ public abstract class DataMapTableView extends Composite implements IDataMapTabl
 
         };
         tableViewerCreatorForColumns = this.extendedTableViewerForColumns.getTableViewerCreator();
+
+        if (getZone() == Zone.INPUTS || getZone() == Zone.OUTPUTS) {
+            viewer = tableViewerCreatorForColumns.getTableViewer();
+            viewer.addFilter(new selectorViewerFilter());
+        }
+
         this.extendedTableViewerForColumns.setCommandStack(mapperManager.getCommandStack());
 
         tableForEntries = tableViewerCreatorForColumns.getTable();
@@ -1146,6 +1176,8 @@ public abstract class DataMapTableView extends Composite implements IDataMapTabl
 
             });
         }
+        // createActivateFilterCheck();
+        createColumnNameFilterCheck();
     }
 
     synchronized protected void onFiltersToolItemsSelected(SelectionEvent e, TableViewerCreator _tableViewerCreatorForFilters,
@@ -1165,6 +1197,215 @@ public abstract class DataMapTableView extends Composite implements IDataMapTabl
         showTableConstraints(true, _tableViewerCreatorForFilters);
         changeMinimizeState(false);
         _tableViewerCreatorForFilters.layout();
+
+    }
+
+    protected void createColumnNameFilter() {
+        if (getDataMapTable() instanceof AbstractInOutTable) {
+            final AbstractInOutTable table = (AbstractInOutTable) getDataMapTable();
+
+            IPreferenceStore preferenceStore = CorePlugin.getDefault().getPreferenceStore();
+
+            filterImageLabel = new Label(getCenterComposite(), SWT.NONE);
+            filterImageLabel.setImage(ImageProviderMapper.getImage(ImageInfo.TMAP_FILTER_ICON));
+            filterImageLabel.setVisible(table.isActivateColumnNameFilter());
+
+            columnNameTextFilter = new Text(getCenterComposite(), SWT.BORDER);
+
+            if (mapperManager.componentIsReadOnly()) {
+                columnNameTextFilter.setEditable(false);
+                filterImageLabel.setEnabled(false);
+            }
+
+            GridData gridData1 = new GridData();
+            gridData1.exclude = !table.isActivateColumnNameFilter();
+            gridData1.horizontalAlignment = GridData.HORIZONTAL_ALIGN_CENTER;
+            filterImageLabel.setLayoutData(gridData1);
+
+            GridData nameFilterTextGridData = new GridData(GridData.FILL_HORIZONTAL);
+            nameFilterTextGridData.minimumHeight = 10;
+            nameFilterTextGridData.heightHint = 20;
+            nameFilterTextGridData.minimumWidth = 25;
+            nameFilterTextGridData.widthHint = 50;
+            columnNameTextFilter.setLayoutData(nameFilterTextGridData);
+
+            String columnNameFilter = table.getColumnNameFilter();
+            if (columnNameFilter != null && !DEFAULT_FILTER.equals(columnNameFilter.trim())) {
+                columnNameTextFilter.setText(columnNameFilter);
+            } else {
+                columnNameTextFilter.setText(DEFAULT_FILTER);
+            }
+
+            columnNameTextFilter.setVisible(table.isActivateColumnNameFilter());
+            nameFilterTextGridData.exclude = !table.isActivateColumnNameFilter();
+            //
+            columnNameTextFilter.setBackground(ColorProviderMapper.getColor(ColorInfo.COLOR_BACKGROUND_VALID_EXPRESSION_CELL));
+            columnNameTextFilter.setForeground(ColorProviderMapper.getColor(ColorInfo.COLOR_FOREGROUND_VALID_EXPRESSION_CELL));
+
+            columnNameTextFilter.addFocusListener(new FocusListener() {
+
+                public void focusGained(FocusEvent e) {
+                    redrawColumnNameFilter();
+                    Control text = (Control) e.getSource();
+                    if (DEFAULT_FILTER.equals(ControlUtils.getText(text))) {
+                        ControlUtils.setText(text, DEFAULT_FILTER);
+                    }
+                }
+
+                public void focusLost(FocusEvent e) {
+                    Control text = (Control) e.getSource();
+                    String currentContent = ControlUtils.getText(text);
+                    if (currentContent != null && DEFAULT_FILTER.equals(currentContent.trim())) {
+                        ControlUtils.setText(text, DEFAULT_FILTER);
+                        table.setColumnNameFilter(DEFAULT_FILTER);
+                    } else {
+                        table.setColumnNameFilter(currentContent);
+                    }
+                }
+
+            });
+            columnNameTextFilter.addControlListener(new ControlListener() {
+
+                public void controlMoved(ControlEvent e) {
+                    redrawColumnNameFilter();
+                }
+
+                public void controlResized(ControlEvent e) {
+                    redrawColumnNameFilter();
+                }
+
+            });
+
+            columnNameTextFilter.addModifyListener(new ModifyListener() {
+
+                public void modifyText(ModifyEvent e) {
+                    parseColumnNameFilterRefresh();
+                }
+            });
+        }
+    }
+
+    private void redrawColumnNameFilter() {
+        if (!columnNameTextFilter.isDisposed()) {
+            columnNameTextFilter.redraw();
+        }
+    }
+
+    protected Composite getCenterComposite() {
+        return this.centerComposite;
+    }
+
+    protected void createColumnNameFilterCheck() {
+        AbstractInOutTable table = (AbstractInOutTable) getDataMapTable();
+        boolean isErrorReject = false;
+        if (getDataMapTable() instanceof OutputTable) {
+            isErrorReject = getMapperManager().ERROR_REJECT.equals(getDataMapTable().getName());
+        }
+        //
+        columnNameFilter = new ToolItem(toolBarActions, SWT.CHECK);
+        columnNameFilter.setEnabled(!mapperManager.componentIsReadOnly() && !isErrorReject);
+        previousColumnNameFilter = table.isActivateColumnNameFilter();
+        columnNameFilter.setSelection(table.isActivateColumnNameFilter());
+        columnNameFilter.setToolTipText(Messages.getString("DataMapTableView.buttonTooltip.ColumnNameFilter")); //$NON-NLS-1$
+        columnNameFilter.setImage(ImageProviderMapper.getImage(ImageInfo.TMAP_FILTER_ICON));
+
+        if (columnNameFilter != null) {
+
+            columnNameFilter.addSelectionListener(new SelectionListener() {
+
+                public void widgetDefaultSelected(SelectionEvent e) {
+                }
+
+                public void widgetSelected(SelectionEvent e) {
+                    updateColumnNameFilterTextAndLayout(true);
+                    previousColumnNameFilter = columnNameFilter.getSelection();
+                }
+            });
+        }
+    }
+
+    protected void updateColumnNameFilterTextAndLayout(boolean buttonPressed) {
+        final AbstractInOutTable table = (AbstractInOutTable) getDataMapTable();
+        GridData gridData = (GridData) columnNameTextFilter.getLayoutData();
+        GridData gridData1 = (GridData) filterImageLabel.getLayoutData();
+
+        if (columnNameFilter.getSelection()) {
+            columnNameTextFilter.setVisible(true);
+            gridData.exclude = false;
+            table.setActiveColumnNameFilter(true);
+            gridData1.exclude = false;
+            filterImageLabel.setVisible(true);
+
+        } else {
+            columnNameTextFilter.setVisible(false);
+            gridData.exclude = true;
+            table.setActiveColumnNameFilter(false);
+            gridData1.exclude = true;
+            filterImageLabel.setVisible(false);
+
+        }
+        parseColumnNameFilterRefresh();
+        if (buttonPressed) {
+            DataMapTableView.this.changeSize(DataMapTableView.this.getPreferredSize(false, true, false), true, true);
+        }
+        DataMapTableView.this.layout();
+
+        mapperManager.getUiManager().refreshBackground(true, false);
+
+        if (columnNameTextFilter.isVisible() && buttonPressed) {
+            columnNameTextFilter.setFocus();
+        }
+    }
+
+    public abstract void notifyFocusLost();
+
+    private void parseColumnNameFilterRefresh() {
+
+        notifyFocusLost();
+        viewer.refresh();
+        if (abstractDataMapTable instanceof OutputTable) {
+            OutputTable outputTable = (OutputTable) abstractDataMapTable;
+            List<IColumnEntry> oldOuputEntries = outputTable.getDataMapTableEntries();
+            // Table tableViewerForEntries = tableViewerCreatorForColumns.getTableViewer().getTable();
+            if (oldOuputEntries != null) {
+                for (IColumnEntry entry : oldOuputEntries) {
+                    if (entry instanceof OutputColumnTableEntry) {
+                        OutputColumnTableEntry outputEntry = (OutputColumnTableEntry) entry;
+                        if (outputEntry.getExpression() != null) {
+                            String[] expressions = outputEntry.getExpression().split("\\s+");
+                            for (String expression : expressions) {
+                                mapperManager.getUiManager().parseNewFilterColumn(expression, outputEntry, false);
+                                mapperManager.getUiManager().refreshBackground(false, false);
+                            }
+                        }
+                    }
+                }
+                resizeAtExpandedSize();
+            }
+        }
+
+            if (abstractDataMapTable instanceof InputTable) {
+                InputTable inputTable = (InputTable) abstractDataMapTable;
+                List<IColumnEntry> oldInputEntries = inputTable.getDataMapTableEntries();
+                if (oldInputEntries != null) {
+                    for (IColumnEntry entry : oldInputEntries) {
+                        if (entry instanceof InputColumnTableEntry) {
+                            // InputColumnTableEntry inputEntry = (InputColumnTableEntry) entry;
+                            StyledTextHandler textTarget = mapperManager.getUiManager().getTabFolderEditors().getStyledTextHandler();
+                            if (textTarget.getStyledText().getText() != null && textTarget.getCurrentEntry() != null) {
+                                String[] expressions = textTarget.getStyledText().getText().split("\\s+");
+                                for (String expression : expressions) {
+                                    mapperManager.getUiManager().parseNewFilterColumn(expression, textTarget.getCurrentEntry(),
+                                            false);
+                                    mapperManager.getUiManager().refreshBackground(false, false);
+                                }
+                            }
+                            mapperManager.getUiManager().refreshBackground(true, false);
+                        }
+                    }
+                    resizeAtExpandedSize();
+                }
+            }
 
     }
 
@@ -1939,5 +2180,54 @@ public abstract class DataMapTableView extends Composite implements IDataMapTabl
      */
     public AbstractExtendedTableViewer<FilterTableEntry> getEntendedTableViewerForOtherClauses() {
         return this.entendedTableViewerForOtherClauses;
+    }
+
+    public String getNameFilter() {
+        return this.columnNameTextFilter.getText().trim();
+    }
+
+    class selectorViewerFilter extends ViewerFilter {
+
+        @Override
+        public boolean select(Viewer viewer, Object parentElement, Object element) {
+            String pattern = getNameFilter();
+            if (!columnNameFilter.getSelection()) {
+                pattern = "";
+            }
+            SearchPattern matcher = new SearchPattern();
+            // SearchPattern for dynamic search/exact match/fuzzy match
+            matcher.setPattern("*" + pattern.trim() + "*");
+            if (element instanceof OutputColumnTableEntry) {
+                OutputColumnTableEntry outputColumn = (OutputColumnTableEntry) element;
+                //
+                if (outputColumn.getParent() instanceof OutputTable) {
+                    IMetadataColumn metadataColumn = outputColumn.getMetadataColumn();
+                    if (metadataColumn != null && (!matcher.matches(metadataColumn.getLabel()))) {
+                        return false;
+
+                    }
+
+                }
+
+            }
+            if (element instanceof InputColumnTableEntry) {
+                InputColumnTableEntry inputColumn = (InputColumnTableEntry) element;
+                if (inputColumn.getParent() instanceof InputTable) {
+                    IMetadataColumn metadataColumn = inputColumn.getMetadataColumn();
+                    if (metadataColumn != null && (!matcher.matches(metadataColumn.getLabel()))) {
+                        return false;
+
+                    }
+
+                }
+
+            }
+            return true;
+        }
+
+    }
+
+    public Text getColumnNameFilterText() {
+        return this.columnNameTextFilter;
     }
 }
