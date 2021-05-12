@@ -650,6 +650,20 @@ public class JobJavaScriptOSGIForESBManager extends JobJavaScriptsManager {
         return EmfModelUtils.getComponentByName(processItem, "tRESTRequest");
     }
 
+    private static NodeType getMDMComponent(ProcessItem processItem) {
+        NodeType nodeType = EmfModelUtils.getComponentByName(processItem, "tMDMConnection", "tMDMInput", "tMDMOutput");
+        if (nodeType != null) {
+            return nodeType;
+        } 
+        for (JobInfo subjobInfo : ProcessorUtilities.getChildrenJobInfo(processItem)) {
+            nodeType = EmfModelUtils.getComponentByName(subjobInfo.getProcessItem(), "tMDMConnection", "tMDMInput", "tMDMOutput");
+            if (nodeType != null) {
+                return nodeType;
+            }
+        }
+        return null;
+    }
+
     protected static String getPackageName(ProcessItem processItem) {
         return JavaResourcesHelper.getProjectFolderName(processItem)
                 + PACKAGE_SEPARATOR
@@ -1255,6 +1269,13 @@ public class JobJavaScriptOSGIForESBManager extends JobJavaScriptsManager {
                 }
             }
         }
+        
+        //https://jira.talendforge.org/browse/APPINT-32593
+        NodeType mdmComponent = getMDMComponent(processItem);
+        if (null != mdmComponent) {
+            importPackages.add("org.apache.cxf.message");
+        }
+
         for (NodeType node : EmfModelUtils.getComponentsByName(processItem, "tESBConsumer")) { //$NON-NLS-1$
             // https://jira.talendforge.org/browse/TESB-9574
             if (requireBundle == null && EmfModelUtils.computeCheckElementValue("USE_SR", node)) { //$NON-NLS-1$
