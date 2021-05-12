@@ -137,7 +137,7 @@
           FIELD="CLOSED_LIST"
           NUM_ROW="50"
           REQUIRED="true"
-          SHOW_IF="USE_EXISTING_CONNECTION == 'false'"
+          SHOW_IF="USE_EXISTING_CONNECTION_S3 == 'false'"
           GROUP="S3_CONFIG"
         >
           <ITEMS DEFAULT="STATIC_CREDENTIALS"> <!-- It's just a basic one -->
@@ -152,7 +152,7 @@
           FIELD="TEXT"
           NUM_ROW="51"
           REQUIRED="true"
-          SHOW_IF="(USE_EXISTING_CONNECTION == 'false') AND (CREDENTIAL_PROVIDER == 'STATIC_CREDENTIALS')"
+          SHOW_IF="(USE_EXISTING_CONNECTION_S3 == 'false') AND (CREDENTIAL_PROVIDER == 'STATIC_CREDENTIALS')"
           GROUP="S3_CONFIG"
         >
           <DEFAULT>""</DEFAULT>
@@ -164,7 +164,7 @@
           NUM_ROW="51"
           REQUIRED="true"
           GROUP="S3_CONFIG"
-          SHOW_IF="(USE_EXISTING_CONNECTION == 'false') AND (CREDENTIAL_PROVIDER == 'STATIC_CREDENTIALS')"
+          SHOW_IF="(USE_EXISTING_CONNECTION_S3 == 'false') AND (CREDENTIAL_PROVIDER == 'STATIC_CREDENTIALS')"
         >
           <DEFAULT>""</DEFAULT>
         </PARAMETER>
