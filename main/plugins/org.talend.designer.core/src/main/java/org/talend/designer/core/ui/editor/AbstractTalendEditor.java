@@ -212,6 +212,7 @@ import org.talend.designer.core.ui.editor.connections.ConnLabelEditPart;
 import org.talend.designer.core.ui.editor.connections.Connection;
 import org.talend.designer.core.ui.editor.connections.ConnectionPart;
 import org.talend.designer.core.ui.editor.connections.NodeConnectorTool;
+import org.talend.designer.core.ui.editor.jobletcontainer.JobletContainer;
 import org.talend.designer.core.ui.editor.nodecontainer.NodeContainer;
 import org.talend.designer.core.ui.editor.nodes.Node;
 import org.talend.designer.core.ui.editor.nodes.NodePart;
@@ -232,6 +233,7 @@ import org.talend.designer.core.ui.editor.process.Process;
 import org.talend.designer.core.ui.editor.process.ProcessPart;
 import org.talend.designer.core.ui.editor.process.TalendEditorDropTargetListener;
 import org.talend.designer.core.ui.editor.subjobcontainer.SubjobContainer;
+import org.talend.designer.core.ui.editor.subjobcontainer.SubjobContainerFigure;
 import org.talend.designer.core.ui.editor.subjobcontainer.SubjobContainerPart;
 import org.talend.designer.core.ui.views.CodeView;
 import org.talend.designer.core.ui.views.jobsettings.JobSettings;
@@ -2564,9 +2566,16 @@ public abstract class AbstractTalendEditor extends GraphicalEditorWithFlyoutPale
                 protected EditPart convert(EditPartViewer viewer, EditPart part) {
                     EditPart editPart = super.convert(viewer, part);
                     if (editPart == null) {
+                        // Select the joblet start node in job if expand.
+                        editPart = getJobletEditPartIfExpand(part);
+                        if (editPart != null) {
+                            return editPart;
+                        }
                         // maybe, not good, should be only for outline.
                         editPart = super.convert(viewer, part.getParent());
                     }
+                    // Do the expand if sub job is collapse.
+                    executeSubJobExpand(editPart);
                     return editPart;
                 }
 
@@ -2579,9 +2588,49 @@ public abstract class AbstractTalendEditor extends GraphicalEditorWithFlyoutPale
                 }
             };
         }
-
         return synchronizer;
+    }
 
+    protected EditPart getJobletEditPartIfExpand(EditPart part) {
+        Object pmodel = part.getModel();
+        if (pmodel != null && pmodel instanceof Node) {
+            Node node = (Node) pmodel;
+            boolean isJobletNode = node.isJoblet();
+            if (isJobletNode) {
+                NodeContainer nodeContainer = node.getNodeContainer();
+                if (nodeContainer != null && nodeContainer instanceof JobletContainer) {
+                    Node startNode = ((JobletContainer) nodeContainer).getJobletStartNode();
+                    if (startNode != null && parent != null) {
+                        return parent.getSelectedNodePart(startNode.getLabel());
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
+    protected void executeSubJobExpand(EditPart editPart) {
+        if (editPart == null) {
+            return;
+        }
+        EditPart parentEditPart = editPart.getParent();
+        if (parentEditPart != null) {
+            while (parentEditPart != null && !(parentEditPart instanceof SubjobContainerPart)) {
+                parentEditPart = parentEditPart.getParent();
+            }
+        }
+        if (parentEditPart != null && parentEditPart instanceof SubjobContainerPart) {
+            IFigure figure = ((SubjobContainerPart) parentEditPart).getFigure();
+            if (figure != null && figure instanceof SubjobContainerFigure) {
+                SubjobContainerFigure subJobFigure = (SubjobContainerFigure) figure;
+                if (subJobFigure != null) {
+                    SubjobContainer subjobContainer = subJobFigure.getSubjobContainer();
+                    if (subjobContainer != null && subjobContainer.isCollapsed()) {
+                        subJobFigure.executeCollapseCommand(false);
+                    }
+                }
+            }
+        }
     }
 
     /**
