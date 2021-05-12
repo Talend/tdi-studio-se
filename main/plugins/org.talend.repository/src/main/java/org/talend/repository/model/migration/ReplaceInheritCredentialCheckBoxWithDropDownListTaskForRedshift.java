@@ -1,0 +1,73 @@
+package org.talend.repository.model.migration;
+
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import org.talend.commons.exception.ExceptionHandler;
+import org.talend.core.language.ECodeLanguage;
+import org.talend.core.model.components.ComponentUtilities;
+import org.talend.core.model.components.ModifyComponentsAction;
+import org.talend.core.model.components.conversions.IComponentConversion;
+import org.talend.core.model.components.conversions.RemovePropertyComponentConversion;
+import org.talend.core.model.components.filters.NameComponentFilter;
+import org.talend.core.model.migration.AbstractJobMigrationTask;
+import org.talend.core.model.properties.Item;
+import org.talend.designer.core.model.utils.emf.talendfile.ElementParameterType;
+import org.talend.designer.core.model.utils.emf.talendfile.ProcessType;
+
+/**
+ * https://jira.talendforge.org/browse/TDI-46065
+ */
+public class ReplaceInheritCredentialCheckBoxWithDropDownListTaskForRedshift extends AbstractJobMigrationTask {
+
+    public ExecutionResult execute(Item item) {
+        ProcessType processType = getProcessType(item);
+        if (getProject().getLanguage() != ECodeLanguage.JAVA || processType == null) {
+            return ExecutionResult.NOTHING_TO_DO;
+        }
+
+        String[] componentsName = new String[] {"tRedshiftBulkExec", "tRedshiftOutputBulk", "tRedshiftOutputBulkExec"};
+
+        try {
+            IComponentConversion removePropertyComponentConversion = new RemovePropertyComponentConversion("INHERIT_CREDENTIALS");
+            for (int i = 0; i < componentsName.length; i++) {
+                IComponentFilter filter = new NameComponentFilter(componentsName[i]);
+                ModifyComponentsAction.searchAndModify(item, processType, filter,
+                        Arrays.<IComponentConversion> asList(new IComponentConversion() {
+
+                            public void transform(NodeType node) {
+                                if (ComponentUtilities.getNodeProperty(node, "CREDENTIAL_PROVIDER") == null) {
+                                    ComponentUtilities.addNodeProperty(node, "CREDENTIAL_PROVIDER", "CLOSED_LIST");
+                                    ComponentUtilities.getNodeProperty(node, "CREDENTIAL_PROVIDER").setValue("STATIC_CREDENTIALS");
+                                }
+                            }
+                        }));
+                if(componentsName[i] == "tRedshiftBulkExec") {
+                    ModifyComponentsAction.searchAndModify(item, processType, filter,
+                        Arrays.<IComponentConversion> asList(new IComponentConversion() {
+
+                            public void transform(NodeType node) {
+                                    ComponentUtilities.getNodeProperty(node, "CREDENTIAL_PROVIDER").setShow(false);
+                            }
+                    }));
+                }
+                ModifyComponentsAction.searchAndModify(item, processType, filter, Arrays.<IComponentConversion> asList(removePropertyComponentConversion));
+            }
+
+            return ExecutionResult.SUCCESS_NO_ALERT;
+        } catch (Exception e) {
+            ExceptionHandler.process(e);
+            return ExecutionResult.FAILURE;
+        }
+    }
+
+    public Date getOrder() {
+        GregorianCalendar gc = new GregorianCalendar(2021, 05, 12, 12, 0, 0);
+        return gc.getTime();
+    }
+}

@@ -3646,6 +3646,15 @@
                 id="org.talend.repository.model.migration.AddEncodingToPostParametersFortFileFetchMigrationTask"
                 name="AddEncodingToPostParametersFortFileFetchMigrationTask"
                 version="7.3.1">
+        </projecttask>
+       <projecttask
+               beforeLogon="false"
+               breaks="7.3.0"
+               class="org.talend.repository.model.migration.ReplaceInheritCredentialCheckBoxWithDropDownListTaskForRedshift"
+               description="Replace 'inherit credentials' checkbox for drop down list for Redshift components"
+               id="org.talend.repository.model.migration.ReplaceInheritCredentialCheckBoxWithDropDownListTaskForRedshift"
+               name="ReplaceInheritCredentialCheckBoxWithDropDownListTaskForRedshift"
+               version="7.3.1">
        </projecttask>
    </extension>
 
