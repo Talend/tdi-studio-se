@@ -10,8 +10,16 @@
 	List<Map<String,String>> clientConfiguration = (List<Map<String,String>>)ElementParameterParser.getObjectValue(node,"__CLIENT_CONFIGURATION__");
 	String region = ElementParameterParser.getValue(node,"__REGION__");
 
-	boolean useRegionEndpoint 	= "true".equals(ElementParameterParser.getValue(node, "__USE_REGION_ENDPOINT__"));
-	String regionEndpoint 		= ElementParameterParser.getValue(node,"__REGION_ENDPOINT__");
+	String useRegionEndpoint = ElementParameterParser.getValue(node, "__USE_REGION_ENDPOINT__");
+	//the javajet is refered by some component don't have the parameter
+	if(useRegionEndpoint==null || useRegionEndpoint.isEmpty()) {
+		useRegionEndpoint = "false";
+	}
+	
+	String regionEndpoint = ElementParameterParser.getValue(node,"__REGION_ENDPOINT__");
+	if(regionEndpoint==null || regionEndpoint.isEmpty()) {
+		regionEndpoint = null;
+	}
 
 	boolean assumeRole = "true".equals(ElementParameterParser.getValue(node, "__ASSUME_ROLE__"));
 	String arn = ElementParameterParser.getValue(node,"__ARN__");
@@ -29,8 +37,15 @@
 
 	boolean set_signingRegion = (signingRegion!=null && !signingRegion.isEmpty() && !"DEFAULT".equalsIgnoreCase(signingRegion));
 
-	boolean enableAccelerateMode = "true".equals(ElementParameterParser.getValue(node,"__ENABLE_ACCELERATE__"));
-	boolean enablePathStyleAccess = "true".equals(ElementParameterParser.getValue(node,"__PATHSTYLEACCESS__"));
+	String enableAccelerateMode = ElementParameterParser.getValue(node,"__ENABLE_ACCELERATE__");
+	if(enableAccelerateMode==null || enableAccelerateMode.isEmpty()) {
+		enableAccelerateMode = "false";
+	}
+	
+	String enablePathStyleAccess = ElementParameterParser.getValue(node,"__PATHSTYLEACCESS__");
+	if(enablePathStyleAccess==null || enablePathStyleAccess.isEmpty()) {
+		enablePathStyleAccess = "false";
+	}
 
 	String sessionDuration = ElementParameterParser.getValue(node,"__SESSION_DURATION__");
 	if(sessionDuration == null || sessionDuration.isEmpty()) {
@@ -379,41 +394,50 @@
 		<%
 		} // end if (assumeRole)
 		%>
+		
         <% if(encrypt) { %>
-            com.amazonaws.services.s3.AmazonS3 conn_<%=cid%> = com.amazonaws.services.s3.AmazonS3EncryptionClientBuilder.standard()
-                .withEncryptionMaterials(encryptionMaterialsProvider_<%=cid%>)
+            com.amazonaws.services.s3.AmazonS3EncryptionClientBuilder builder_<%=cid%> = com.amazonaws.services.s3.AmazonS3EncryptionClientBuilder.standard()
+                .withEncryptionMaterials(encryptionMaterialsProvider_<%=cid%>);
             <% if("KMS_CMK".equals(key_type) && set_region) { %>
-                .withCryptoConfiguration(new com.amazonaws.services.s3.model.CryptoConfiguration()
-                .withAwsKmsRegion(com.amazonaws.regions.RegionUtils.getRegion(<%=region%>)))
+                builder_<%=cid%>.withCryptoConfiguration(new com.amazonaws.services.s3.model.CryptoConfiguration()
+                .withAwsKmsRegion(com.amazonaws.regions.RegionUtils.getRegion(<%=region%>)));
             <% } %>
         <% } else { %>
-            com.amazonaws.services.s3.AmazonS3 conn_<%=cid%> = com.amazonaws.services.s3.AmazonS3ClientBuilder.standard()
+            com.amazonaws.services.s3.AmazonS3ClientBuilder builder_<%=cid%> = com.amazonaws.services.s3.AmazonS3ClientBuilder.standard();
         <% } %>
 
-        <% if(useRegionEndpoint && regionEndpoint != null && !regionEndpoint.isEmpty()) { %>
+        final boolean useRegionEndpoint_<%=cid%> = <%=useRegionEndpoint%>;
+        final String regionEndpoint_<%=cid%> = <%=regionEndpoint%>;
+        final boolean enableAccelerateMode_<%=cid%> = <%=enableAccelerateMode%>;
+        final boolean enablePathStyleAccess_<%=cid%> = <%=enablePathStyleAccess%>;
+        
+        if(useRegionEndpoint_<%=cid%> && regionEndpoint_<%=cid%> != null && !regionEndpoint_<%=cid%>.isEmpty()) {
             <%if(!set_region){%>
-                .withEndpointConfiguration(new com.amazonaws.client.builder.AwsClientBuilder.EndpointConfiguration(<%=regionEndpoint%>,null))
-                .withForceGlobalBucketAccessEnabled(true)
+                builder_<%=cid%>.withEndpointConfiguration(new com.amazonaws.client.builder.AwsClientBuilder.EndpointConfiguration(regionEndpoint_<%=cid%>,null))
+                .withForceGlobalBucketAccessEnabled(true);
             <% } else { %>
-                .withEndpointConfiguration(new com.amazonaws.client.builder.AwsClientBuilder.EndpointConfiguration(<%=regionEndpoint%>,<%=region%>))
+                builder_<%=cid%>.withEndpointConfiguration(new com.amazonaws.client.builder.AwsClientBuilder.EndpointConfiguration(regionEndpoint_<%=cid%>,<%=region%>));
             <% } %>
-        <% } else { %>
+        } else {
             <% if(!set_region) { %>
-                .withRegion("us-east-1") // The first region to try your request against
-                .withForceGlobalBucketAccessEnabled(true) // If a bucket is in a different region, try again in the correct region
+                builder_<%=cid%>.withRegion("us-east-1") // The first region to try your request against
+                .withForceGlobalBucketAccessEnabled(true); // If a bucket is in a different region, try again in the correct region
             <% } else { %>
-                .withRegion(<%=region%>)
+                builder_<%=cid%>.withRegion(<%=region%>);
             <% } %>
-        <% } %>
-        <% if(enableAccelerateMode) { %>
-                .withAccelerateModeEnabled(true)
-        <% } %>
-                .withCredentials(credentialsProvider_<%=cid%>)
-                .withClientConfiguration(cc_<%=cid%>)
-        <% if(useRegionEndpoint && enablePathStyleAccess) { %>
-                .enablePathStyleAccess()
-        <% } %>
-                .build();
+        }
+                
+        if(enableAccelerateMode_<%=cid%>) {
+            builder_<%=cid%>.withAccelerateModeEnabled(true);
+        }
+        
+        builder_<%=cid%>.withCredentials(credentialsProvider_<%=cid%>).withClientConfiguration(cc_<%=cid%>);
+            
+        if(useRegionEndpoint_<%=cid%> && enablePathStyleAccess_<%=cid%>) {
+            builder_<%=cid%>.enablePathStyleAccess();
+        }
+        
+        com.amazonaws.services.s3.AmazonS3 conn_<%=cid%> = builder_<%=cid%>.build();
 		<%
 		if(isLog4jEnabled){
 		%>

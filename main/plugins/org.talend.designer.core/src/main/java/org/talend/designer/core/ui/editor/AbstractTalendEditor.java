@@ -94,6 +94,7 @@ import org.eclipse.gef.ui.palette.PaletteViewerProvider;
 import org.eclipse.gef.ui.parts.ContentOutlinePage;
 import org.eclipse.gef.ui.parts.GraphicalEditorWithFlyoutPalette;
 import org.eclipse.gef.ui.parts.ScrollingGraphicalViewer;
+import org.eclipse.gef.ui.parts.SelectionSynchronizer;
 import org.eclipse.gef.ui.parts.TreeViewer;
 import org.eclipse.gef.ui.rulers.RulerComposite;
 import org.eclipse.jface.action.Action;
@@ -215,6 +216,7 @@ import org.talend.designer.core.ui.editor.nodecontainer.NodeContainer;
 import org.talend.designer.core.ui.editor.nodes.Node;
 import org.talend.designer.core.ui.editor.nodes.NodePart;
 import org.talend.designer.core.ui.editor.notes.Note;
+import org.talend.designer.core.ui.editor.outline.NodeReturnsTreeEditPart;
 import org.talend.designer.core.ui.editor.outline.NodeTreeEditPart;
 import org.talend.designer.core.ui.editor.outline.ProcessTreePartFactory;
 import org.talend.designer.core.ui.editor.palette.TalendCombinedTemplateCreationEntry;
@@ -250,6 +252,8 @@ public abstract class AbstractTalendEditor extends GraphicalEditorWithFlyoutPale
     private static Logger log = Logger.getLogger(AbstractTalendEditor.class);
 
     private ConnectionPart selectedConnectionPart = null;
+
+    private boolean isSynchronizer = false;
 
     // reflection field to access a private field
     private static Field splitterField, pageField;
@@ -2314,7 +2318,7 @@ public abstract class AbstractTalendEditor extends GraphicalEditorWithFlyoutPale
 
         private Canvas overview;
 
-        private IAction showOutlineAction, showOverviewAction;
+        private IAction showOutlineAction, showOverviewAction, linkWithEditorAction;
 
         static final int ID_OUTLINE = 0;
 
@@ -2349,6 +2353,25 @@ public abstract class AbstractTalendEditor extends GraphicalEditorWithFlyoutPale
             getViewer().setEditPartFactory(new ProcessTreePartFactory());
             getViewer().setKeyHandler(getCommonKeyHandler());
             IToolBarManager tbm = getSite().getActionBars().getToolBarManager();
+            linkWithEditorAction = new Action() {
+
+                @Override
+                public void run() {
+                    ISelection selection = getViewer().getSelection();
+                    if (selection != null) {
+                        if (selection instanceof IStructuredSelection) {
+                            Object input = ((IStructuredSelection) selection).getFirstElement();
+                            if (input instanceof NodeTreeEditPart || input instanceof NodeReturnsTreeEditPart) {
+                                isSynchronizer = true;
+                                getViewer().setSelection(selection);
+                                isSynchronizer = false;
+                            }
+                        }
+                    }
+                }
+            };
+            linkWithEditorAction.setImageDescriptor(ImageDescriptor.createFromFile(DesignerPlugin.class, "/icons/synced.png")); //$NON-NLS-1$
+            tbm.add(linkWithEditorAction);
             showOutlineAction = new Action() {
 
                 @Override
@@ -2420,7 +2443,7 @@ public abstract class AbstractTalendEditor extends GraphicalEditorWithFlyoutPale
         }
 
         protected void hookOutlineViewer() {
-            // getSelectionSynchronizer().addViewer(getViewer());
+            getSelectionSynchronizer().addViewer(getViewer());
         }
 
         protected void initializeOutlineViewer() {
@@ -2522,11 +2545,42 @@ public abstract class AbstractTalendEditor extends GraphicalEditorWithFlyoutPale
             }
             showOutlineAction = null;
             showOverviewAction = null;
-            // getSelectionSynchronizer().removeViewer(getViewer());
+            linkWithEditorAction = null;
+            getSelectionSynchronizer().removeViewer(getViewer());
             if (disposeListener != null && getEditor() != null && !getEditor().isDisposed()) {
                 getEditor().removeDisposeListener(disposeListener);
             }
         }
+    }
+
+    private SelectionSynchronizer synchronizer;
+
+    @Override
+    protected SelectionSynchronizer getSelectionSynchronizer() {
+        if (synchronizer == null) {
+            synchronizer = new SelectionSynchronizer() {
+
+                @Override
+                protected EditPart convert(EditPartViewer viewer, EditPart part) {
+                    EditPart editPart = super.convert(viewer, part);
+                    if (editPart == null) {
+                        // maybe, not good, should be only for outline.
+                        editPart = super.convert(viewer, part.getParent());
+                    }
+                    return editPart;
+                }
+
+                @Override
+                protected void applySelection(EditPartViewer viewer, ISelection selection) {
+                    if (!isSynchronizer) {
+                        return;
+                    }
+                    super.applySelection(viewer, selection);
+                }
+            };
+        }
+
+        return synchronizer;
 
     }
 

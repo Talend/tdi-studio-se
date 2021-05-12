@@ -401,7 +401,7 @@ public class LoginProjectPage extends AbstractLoginActionPage {
                     if (monitor.isCanceled() || Thread.currentThread().isInterrupted()) {
                         return;
                     }
-                    if ( StringUtils.isNotBlank(lastLogonBranch)) {
+                    if (StringUtils.isNotBlank(lastLogonBranch) && popularBranches.contains(lastLogonBranch)) {
                         branchesViewer.setSelection(new StructuredSelection(new Object[] { lastLogonBranch }));
                         lastSelectedBranch = lastLogonBranch;
                     } else {
