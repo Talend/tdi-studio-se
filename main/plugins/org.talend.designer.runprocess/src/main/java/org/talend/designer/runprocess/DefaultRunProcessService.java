@@ -859,12 +859,13 @@ public class DefaultRunProcessService implements IRunProcessService {
      */
     @Override
     public void initializeRootPoms(IProgressMonitor monitor) {
-        if (isCIMode()) {
-            return;
-        }
         try {
             AggregatorPomsHelper helper = new AggregatorPomsHelper();
             helper.installRootPom(false);
+            // root pom is necessary for beans complilation in CI mode (for Routes) 
+            if (isCIMode()) {
+                return;
+            }
             // won't do for CI since all needed modules are already shared to Nexus
             AggregatorPomsHelper.updateAllCodesProjectNeededModules(monitor);
             List<ProjectReference> references = ProjectManager.getInstance().getCurrentProject().getProjectReferenceList(true);
