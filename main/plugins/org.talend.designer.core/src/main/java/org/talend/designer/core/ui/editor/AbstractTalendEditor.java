@@ -2563,15 +2563,10 @@ public abstract class AbstractTalendEditor extends GraphicalEditorWithFlyoutPale
 
                 @Override
                 protected EditPart convert(EditPartViewer viewer, EditPart part) {
-                    Node node = null;
-                    Object pmodel = part.getModel();
-                    if (pmodel != null && pmodel instanceof Node) {
-                        node = (Node) pmodel;
-                    }
                     EditPart editPart = super.convert(viewer, part);
                     if (editPart == null) {
                         // Select the joblet start node in job if expand.
-                        editPart = getJobletEditPartIfExpand(node, part);
+                        editPart = getJobletEditPartIfExpand(part);
                         if (editPart != null) {
                             return editPart;
                         }
@@ -2579,7 +2574,7 @@ public abstract class AbstractTalendEditor extends GraphicalEditorWithFlyoutPale
                         editPart = super.convert(viewer, part.getParent());
                     }
                     // Do the expand if sub job is collapse.
-                    executeSubJobExpand(node, part);
+                    executeSubJobExpand(editPart);
                     return editPart;
                 }
 
@@ -2595,15 +2590,19 @@ public abstract class AbstractTalendEditor extends GraphicalEditorWithFlyoutPale
         return synchronizer;
     }
 
-    protected EditPart getJobletEditPartIfExpand(Node node, EditPart part) {
-        if (node != null) {
-            boolean isJobletNode = node.isJoblet();
-            if (isJobletNode) {
-                NodeContainer nodeContainer = node.getNodeContainer();
-                if (nodeContainer != null && nodeContainer instanceof JobletContainer) {
-                    Node startNode = ((JobletContainer) nodeContainer).getJobletStartNode();
-                    if (startNode != null && parent != null) {
-                        return parent.getSelectedNodePart(startNode.getLabel());
+    protected EditPart getJobletEditPartIfExpand(EditPart part) {
+        if (part != null) {
+            Object pmodel = part.getModel();
+            if (pmodel != null && pmodel instanceof Node) {
+                Node node = (Node) pmodel;
+                boolean isJobletNode = node.isJoblet();
+                if (isJobletNode) {
+                    NodeContainer nodeContainer = node.getNodeContainer();
+                    if (nodeContainer != null && nodeContainer instanceof JobletContainer) {
+                        Node startNode = ((JobletContainer) nodeContainer).getJobletStartNode();
+                        if (startNode != null && parent != null) {
+                            return parent.getSelectedNodePart(startNode.getLabel());
+                        }
                     }
                 }
             }
@@ -2611,13 +2610,17 @@ public abstract class AbstractTalendEditor extends GraphicalEditorWithFlyoutPale
         return null;
     }
 
-    protected void executeSubJobExpand(Node node, EditPart part) {
-        if (node != null) {
-            NodeContainer nodeContainer = node.getNodeContainer();
-            if (nodeContainer != null) {
-                SubjobContainer subjobContainer = nodeContainer.getSubjobContainer();
-                if (subjobContainer != null && subjobContainer.isCollapsed()) {
-                    subjobContainer.executeCollapseCommand(false);
+    protected void executeSubJobExpand(EditPart editPart) {
+        if (editPart != null) {
+            Object pmodel = editPart.getModel();
+            if (pmodel != null && pmodel instanceof Node) {
+                Node node = (Node) pmodel;
+                NodeContainer nodeContainer = node.getNodeContainer();
+                if (nodeContainer != null) {
+                    SubjobContainer subjobContainer = nodeContainer.getSubjobContainer();
+                    if (subjobContainer != null && subjobContainer.isCollapsed()) {
+                        subjobContainer.executeCollapseCommand(false);
+                    }
                 }
             }
         }
