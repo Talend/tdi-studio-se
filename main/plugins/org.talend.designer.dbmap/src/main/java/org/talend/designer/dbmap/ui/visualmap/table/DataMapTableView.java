@@ -12,6 +12,7 @@
 // ============================================================================
 package org.talend.designer.dbmap.ui.visualmap.table;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -51,6 +52,7 @@ import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
@@ -2194,6 +2196,46 @@ public abstract class DataMapTableView extends Composite implements IDataMapTabl
             if (!columnNameFilter.getSelection()) {
                 pattern = "";
             }
+            // List<TableViewerCreatorColumnNotModifiable> columns = tableViewerCreatorForColumns.getColumns();
+            // for (TableViewerCreatorColumnNotModifiable t : columns) {
+            // if ("ID_EXPLICIT_JOIN".equals(t.getId())) {
+            // TableEditorContentNotModifiable tableEditorContent = t.getTableEditorContent();
+            // if (tableEditorContent instanceof CheckboxTableEditorContent) {
+            // CheckboxTableEditorContent c = (CheckboxTableEditorContent) tableEditorContent;
+            // c.setCheckVisible(false);
+            // }
+            // }
+            // }
+            // to collect all check buttons into a list
+            List<Button> btnList = new ArrayList<>();
+            if (tableForEntries != null) {
+                for (Control c : tableForEntries.getChildren()) {
+                    if (c instanceof Button) {
+                        Button b = (Button) c;
+                        btnList.add(b);
+                    }
+                }
+
+            }
+            // to locate the index of the current table column
+            Integer btnIndex = null;
+            if (parentElement != null && parentElement instanceof List) {
+                if (element != null && element instanceof AbstractInOutTableEntry) {
+                    AbstractInOutTableEntry current = (AbstractInOutTableEntry) element;
+                    List parentList = (List) parentElement;
+                    for (int i = 0; i < parentList.size(); i++) {
+                        Object object = parentList.get(i);
+                        if (object instanceof AbstractInOutTableEntry) {
+                            AbstractInOutTableEntry inOutEntry = (AbstractInOutTableEntry) object;
+                            if (inOutEntry.getMetadataColumn().getId().equals(current.getMetadataColumn().getId())) {
+                                btnIndex = i;
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+
             SearchPattern matcher = new SearchPattern();
             // SearchPattern for dynamic search/exact match/fuzzy match
             matcher.setPattern("*" + pattern.trim() + "*");
@@ -2215,8 +2257,15 @@ public abstract class DataMapTableView extends Composite implements IDataMapTabl
                 if (inputColumn.getParent() instanceof InputTable) {
                     IMetadataColumn metadataColumn = inputColumn.getMetadataColumn();
                     if (metadataColumn != null && (!matcher.matches(metadataColumn.getLabel()))) {
+                        // inputColumn.getCheckbox().setVisible(false);
+                        if (btnIndex != null && btnIndex < btnList.size()) {
+                            btnList.get(btnIndex).setVisible(false);
+                        }
                         return false;
-
+                    } else {
+                        if (btnList.size() != 0 && btnIndex != null && btnIndex < btnList.size()) {
+                            btnList.get(btnIndex).setVisible(true);
+                        }
                     }
 
                 }

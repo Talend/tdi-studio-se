@@ -12,6 +12,7 @@
 // ============================================================================
 package org.talend.designer.dbmap.model.tableentry;
 
+import org.eclipse.swt.widgets.Button;
 import org.talend.core.model.metadata.IMetadataColumn;
 import org.talend.designer.abstractmap.model.table.IDataMapTable;
 import org.talend.designer.dbmap.managers.MapperManager;
@@ -27,6 +28,8 @@ public class InputColumnTableEntry extends AbstractInOutTableEntry {
     private String operator;
 
     private boolean join;
+
+    private Button checkbox;
 
     /** unmatch entry with metadata entries */
     private boolean unmatchingEntry;
@@ -100,4 +103,11 @@ public class InputColumnTableEntry extends AbstractInOutTableEntry {
         return ((MapperManager) getParent().getMapperManager()).isUnmatchingEntry(this);
     }
 
+    public Button getCheckbox() {
+        return checkbox;
+    }
+
+    public void setCheckbox(Button checkbox) {
+        this.checkbox = checkbox;
+    }
 }

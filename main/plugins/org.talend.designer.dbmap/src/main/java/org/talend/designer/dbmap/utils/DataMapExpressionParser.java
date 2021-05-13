@@ -94,7 +94,7 @@ public class DataMapExpressionParser {
     public DataMapExpressionParser(IDbLanguage language) {
         super();
         this.language = language;
-        setLocationPattern(language.getLocationPattern());
+        // setLocationPattern(language.getLocationPattern());
     }
 
     /**

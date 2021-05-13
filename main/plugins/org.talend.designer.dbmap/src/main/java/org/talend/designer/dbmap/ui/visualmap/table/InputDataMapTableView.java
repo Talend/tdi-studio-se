@@ -25,6 +25,7 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Menu;
@@ -38,6 +39,7 @@ import org.talend.commons.ui.runtime.swt.tableviewer.TableViewerCreatorColumnNot
 import org.talend.commons.ui.runtime.swt.tableviewer.TableViewerCreatorNotModifiable;
 import org.talend.commons.ui.runtime.swt.tableviewer.behavior.IColumnColorProvider;
 import org.talend.commons.ui.runtime.swt.tableviewer.data.ModifiedObjectInfo;
+import org.talend.commons.ui.runtime.swt.tableviewer.tableeditor.TableEditorContentNotModifiable;
 import org.talend.commons.ui.runtime.ws.WindowSystem;
 import org.talend.commons.ui.swt.tableviewer.TableViewerCreator;
 import org.talend.commons.ui.swt.tableviewer.TableViewerCreatorColumn;
@@ -81,19 +83,23 @@ public class InputDataMapTableView extends DataMapTableView {
 
     @Override
     public void initColumnsOfTableColumns(final TableViewerCreator tableViewerCreatorForColumns) {
-        TableViewerCreatorColumn column = null;
-
+        final TableViewerCreatorColumn columnJoin = new TableViewerCreatorColumn(tableViewerCreatorForColumns);
         String useInJoinTitle = Messages.getString("InputDataMapTableView.columnTitle.ExplicitJoin"); //$NON-NLS-1$
-        column = new TableViewerCreatorColumn(tableViewerCreatorForColumns);
-        column.setTitle(useInJoinTitle);
-        column.setId(ID_EXPLICIT_JOIN);
-        column.setBeanPropertyAccessors(new IBeanPropertyAccessors<InputColumnTableEntry, Boolean>() {
+        columnJoin.setTitle(useInJoinTitle);
+        columnJoin.setId(ID_EXPLICIT_JOIN);
+        columnJoin.setBeanPropertyAccessors(new IBeanPropertyAccessors<InputColumnTableEntry, Boolean>() {
 
             public Boolean get(InputColumnTableEntry bean) {
                 return bean.isJoin();
             }
 
             public void set(InputColumnTableEntry bean, Boolean value) {
+                TableEditorContentNotModifiable tableEditorContent = columnJoin.getTableEditorContent();
+                if (tableEditorContent != null && tableEditorContent instanceof CheckboxTableEditorContent) {
+                    CheckboxTableEditorContent checkBoxEditor = (CheckboxTableEditorContent) tableEditorContent;
+                    Button check = checkBoxEditor.getCheck();
+                    bean.setCheckbox(check);
+                }
                 bean.setJoin(value);
                 boolean enable = true;
                 if (dropDownItem != null && !dropDownItem.isDisposed()) {
@@ -121,17 +127,17 @@ public class InputDataMapTableView extends DataMapTableView {
             }
 
         });
-        column.setModifiable(!mapperManager.componentIsReadOnly());
+        columnJoin.setModifiable(!mapperManager.componentIsReadOnly());
         // column.setWidth(12);
-        column.setWidth(65);
-        column.setDisplayedValue(""); //$NON-NLS-1$
+        columnJoin.setWidth(65);
+        columnJoin.setDisplayedValue(""); //$NON-NLS-1$
         // column.setResizable(false);
         CheckboxTableEditorContent checkboxTableEditorContent = new CheckboxTableEditorContent();
         checkboxTableEditorContent.setToolTipText(useInJoinTitle);
-        column.setTableEditorContent(checkboxTableEditorContent);
-        column.setToolTipHeader(useInJoinTitle);
+        columnJoin.setTableEditorContent(checkboxTableEditorContent);
+        columnJoin.setToolTipHeader(useInJoinTitle);
 
-        column = new TableViewerCreatorColumn(tableViewerCreatorForColumns);
+        TableViewerCreatorColumn column = new TableViewerCreatorColumn(tableViewerCreatorForColumns);
         column.setTitle(DataMapTableView.COLUMN_NAME);
         column.setId(DataMapTableView.ID_NAME_COLUMN);
         column.setBeanPropertyAccessors(new IBeanPropertyAccessors<InputColumnTableEntry, String>() {
@@ -148,9 +154,6 @@ public class InputDataMapTableView extends DataMapTableView {
         column.setWeight(COLUMN_NAME_SIZE_WEIGHT);
 
         final TableViewerCreatorColumn columnOperator = new TableViewerCreatorColumn(tableViewerCreatorForColumns);
-        CheckboxTableEditorContent checkboxTableEditorContent2 = new CheckboxTableEditorContent();
-        checkboxTableEditorContent.setToolTipText(useInJoinTitle);
-        columnOperator.setTableEditorContent(checkboxTableEditorContent2);
         columnOperator.setTitle(Messages.getString("InputDataMapTableView.columnTitle.Operator")); //$NON-NLS-1$
         columnOperator.setId(DataMapTableView.ID_OPERATOR);
         columnOperator.setToolTipHeader(Messages.getString("InputDataMapTableView.Operator")); //$NON-NLS-1$
