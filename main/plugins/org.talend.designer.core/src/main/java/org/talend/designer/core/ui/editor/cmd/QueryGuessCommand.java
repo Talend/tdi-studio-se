@@ -420,7 +420,7 @@ public class QueryGuessCommand extends Command {
                     dbType = EDatabaseTypeName.ORACLE_OCI.getDisplayName();
                 }
             }
-            // data view锛� conn=null
+            // data view, conn=null
             // need add code here for dbtype(oracle)
         }
 
