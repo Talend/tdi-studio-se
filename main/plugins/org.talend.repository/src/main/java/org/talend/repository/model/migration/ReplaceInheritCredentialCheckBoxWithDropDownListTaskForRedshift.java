@@ -1,6 +1,6 @@
 package org.talend.repository.model.migration;
 
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -36,11 +36,10 @@ public class ReplaceInheritCredentialCheckBoxWithDropDownListTaskForRedshift ext
         String[] componentsName = new String[] {"tRedshiftBulkExec", "tRedshiftOutputBulk", "tRedshiftOutputBulkExec"};
 
         try {
-            IComponentConversion removePropertyComponentConversion = new RemovePropertyComponentConversion("INHERIT_CREDENTIALS");
             for (int i = 0; i < componentsName.length; i++) {
                 IComponentFilter filter = new NameComponentFilter(componentsName[i]);
                 ModifyComponentsAction.searchAndModify(item, processType, filter,
-                        Arrays.<IComponentConversion> asList(new IComponentConversion() {
+                        Collections.singletonList(new IComponentConversion() {
 
                             public void transform(NodeType node) {
                                 if (ComponentUtilities.getNodeProperty(node, "CREDENTIAL_PROVIDER") == null) {
@@ -49,16 +48,17 @@ public class ReplaceInheritCredentialCheckBoxWithDropDownListTaskForRedshift ext
                                 }
                             }
                         }));
-                if(componentsName[i] == "tRedshiftBulkExec") {
+                if(componentsName[i].equals("tRedshiftBulkExec")) {
                     ModifyComponentsAction.searchAndModify(item, processType, filter,
-                        Arrays.<IComponentConversion> asList(new IComponentConversion() {
+                        Collections.singletonList(new IComponentConversion() {
 
                             public void transform(NodeType node) {
                                     ComponentUtilities.getNodeProperty(node, "CREDENTIAL_PROVIDER").setShow(false);
                             }
                     }));
                 }
-                ModifyComponentsAction.searchAndModify(item, processType, filter, Arrays.<IComponentConversion> asList(removePropertyComponentConversion));
+                ModifyComponentsAction.searchAndModify(item, processType, filter, 
+                    Collections.singletonList(new RemovePropertyComponentConversion("INHERIT_CREDENTIALS")));
             }
 
             return ExecutionResult.SUCCESS_NO_ALERT;
