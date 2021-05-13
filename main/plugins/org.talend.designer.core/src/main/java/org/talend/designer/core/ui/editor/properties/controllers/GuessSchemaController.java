@@ -89,6 +89,7 @@ import org.talend.core.ui.services.ISQLBuilderService;
 import org.talend.core.utils.CsvArray;
 import org.talend.core.utils.KeywordsValidator;
 import org.talend.core.utils.TalendQuoteUtils;
+import org.talend.cwm.relational.TdColumn;
 import org.talend.designer.core.i18n.Messages;
 import org.talend.designer.core.model.components.EParameterName;
 import org.talend.designer.core.ui.editor.cmd.ChangeMetadataCommand;
@@ -334,7 +335,9 @@ public class GuessSchemaController extends AbstractElementPropertySectionControl
 
     private List<IMetadataColumn> columns = new ArrayList<IMetadataColumn>();
 
-    private void runShadowProcess(final Property property, final Node inputNode, final IContext selectContext,
+    private void runShadowProcess(final IMetadataConnection iMetadataConnection, final String tableName, final Property property,
+            final Node inputNode,
+            final IContext selectContext,
             final IElementParameter switchParam) {
         DatabaseConnection connt = TracesConnectionUtils.createConnection(connParameters);
         String dbmsId = connt.getDbmsId();
@@ -366,7 +369,11 @@ public class GuessSchemaController extends AbstractElementPropertySectionControl
                     }
                 }
                 int numbOfColumn = schemaContent.get(0).length;
-
+                List<TdColumn> metadataColumns = new ArrayList<TdColumn>();
+                if (StringUtils.isNotEmpty(tableName)
+                        && EDatabaseTypeName.INFORMIX.getDisplayName().equals(iMetadataConnection.getDbType())) {
+                    metadataColumns = ExtractMetaDataFromDataBase.returnMetadataColumnsFormTable(iMetadataConnection, tableName);
+                }
                 for (int i = 1; i <= numbOfColumn; i++) {
                     indexsForSameNamedColumn.clear();
                     Boolean b = false;
@@ -410,6 +417,15 @@ public class GuessSchemaController extends AbstractElementPropertySectionControl
                         oneColum.setPrecision(Integer.parseInt(schemaContent.get(2)[i - 1]));
                         oneColum.setLength(Integer.parseInt(schemaContent.get(3)[i - 1]));
                     }
+                    if (EDatabaseTypeName.INFORMIX.getDisplayName().equals(iMetadataConnection.getDbType())) {
+                        for (TdColumn td : metadataColumns) {
+                            if (StringUtils.equals(oneColum.getLabel(), td.getName())) {
+                                oneColum.setPrecision((int) td.getPrecision());
+                                oneColum.setLength((int) td.getLength());
+                            }
+                        }
+                    }
+
                     try {
                         String talendType = null;
                         // to see if the language is java or perl
@@ -775,7 +791,15 @@ public class GuessSchemaController extends AbstractElementPropertySectionControl
          * openContextChooseDialog, added by hyWang
          */
         final IElementParameter switchParam = elem.getElementParameter(EParameterName.REPOSITORY_ALLOW_AUTO_SWITCH.getName());
-
+        IElementParameter tebaleParam = elem.getElementParameter(EParameterName.TABLE.getName());
+        String tebaleParamValue = null;
+        if (tebaleParam != null) {
+            tebaleParamValue = (String) tebaleParam.getValue();
+            if (StringUtils.isNotEmpty(tebaleParamValue)) {
+                tebaleParamValue = TalendTextUtils.removeQuotes(tebaleParamValue);
+            }
+        }
+        final String tablename = tebaleParamValue;
         final Shell parentShell = this.composite.getShell();
         final Node inputNode = (Node) this.curParameter.getElement();
         if (connParameters == null) {
@@ -848,6 +872,7 @@ public class GuessSchemaController extends AbstractElementPropertySectionControl
                     selectContext = dialog.getSelectedContext();
                 }
                 final IContext context = selectContext;
+                final IMetadataConnection metadataConnection = iMetadataConnection;
                 if (context != null) {
                     //
                     final ProgressMonitorDialog pmd = new ProgressMonitorDialog(this.composite.getShell());
@@ -860,7 +885,7 @@ public class GuessSchemaController extends AbstractElementPropertySectionControl
 
                                 @Override
                                 public void run() {
-                                    runShadowProcess(property, inputNode, context, switchParam);
+                                    runShadowProcess(metadataConnection, tablename, property, inputNode, context, switchParam);
                                 }
                             });
                         }
