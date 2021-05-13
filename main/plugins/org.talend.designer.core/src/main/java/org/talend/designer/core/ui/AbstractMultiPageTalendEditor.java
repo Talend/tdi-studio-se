@@ -698,10 +698,11 @@ public abstract class AbstractMultiPageTalendEditor extends MultiPageEditorPart 
                     SubjobContainerPart subjobPart = (SubjobContainerPart) editPart;
                     for (EditPart part : (List<EditPart>) subjobPart.getChildren()) {
                         if (part instanceof NodeContainerPart) {
-                            EditPart nodePart = (EditPart) part.getChildren().get(0);
-                            if (nodePart instanceof NodePart) {
-                                if (((Node) ((NodePart) nodePart).getModel()).getLabel().equals(nodeName)) {
-                                    return nodePart;
+                            for (EditPart nodePart : (List<EditPart>) part.getChildren()) {
+                                if (nodePart instanceof NodePart) {
+                                    if (((Node) ((NodePart) nodePart).getModel()).getLabel().equals(nodeName)) {
+                                        return nodePart;
+                                    }
                                 }
                             }
                         }
