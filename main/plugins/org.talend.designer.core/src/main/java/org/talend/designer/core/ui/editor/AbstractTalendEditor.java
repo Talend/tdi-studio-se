@@ -127,7 +127,10 @@ import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.IKeyBindingService;
+import org.eclipse.ui.IViewPart;
+import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchPart;
+import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.SubActionBars;
@@ -143,6 +146,7 @@ import org.eclipse.ui.part.PageBook;
 import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
 import org.eclipse.ui.views.properties.IPropertySheetPage;
 import org.eclipse.ui.views.properties.tabbed.ITabbedPropertySheetPageContributor;
+import org.talend.commons.exception.CommonExceptionHandler;
 import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.exception.PersistenceException;
 import org.talend.commons.ui.gmf.draw2d.AnimatableZoomManager;
@@ -2363,6 +2367,17 @@ public abstract class AbstractTalendEditor extends GraphicalEditorWithFlyoutPale
                         if (selection instanceof IStructuredSelection) {
                             Object input = ((IStructuredSelection) selection).getFirstElement();
                             if (input instanceof NodeTreeEditPart || input instanceof NodeReturnsTreeEditPart) {
+                                try {
+                                    IWorkbenchWindow activeWorkbenchWindow = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
+                                    if (activeWorkbenchWindow != null) {
+                                        IWorkbenchPage page = activeWorkbenchWindow.getActivePage();
+                                        if (page != null) {
+                                            page.showView(ComponentSettingsView.ID);   
+                                        }
+                                    }
+                                } catch (PartInitException e) {
+                                    CommonExceptionHandler.process(e);
+                                }
                                 isSynchronizer = true;
                                 getViewer().setSelection(selection);
                                 isSynchronizer = false;
