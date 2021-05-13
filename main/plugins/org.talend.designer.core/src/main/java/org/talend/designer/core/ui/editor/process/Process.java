@@ -199,6 +199,7 @@ import org.talend.repository.model.IRepositoryNode;
 import org.talend.repository.model.RepositoryNode;
 import org.talend.repository.model.migration.UpdateTheJobsActionsOnTable;
 import org.talend.repository.ui.utils.Log4jPrefsSettingManager;
+import org.talend.utils.security.StudioEncryption;
 
 /**
  * The diagram will contain all elements (nodes, connections) The xml that describes the diagram will be saved from the
@@ -280,6 +281,8 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
     private static Perl5Matcher matcher;
 
     private static Pattern pattern;
+    
+    private Map<IElementParameter, ElementParameterType> passwordParameterCache = new HashMap<IElementParameter, ElementParameterType>();
 
     static {
         matcher = new Perl5Matcher();
@@ -1249,7 +1252,13 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
                 }
             }
         } else if (param.getFieldType().equals(EParameterFieldType.PASSWORD) && value instanceof String) {
-            pType.setRawValue((String) value);
+            if (passwordParameterCache.containsKey(param)
+                    && StudioEncryption.isLatestKeyResult(passwordParameterCache.get(param).getValue())
+                    && StringUtils.equals(passwordParameterCache.get(param).getRawValue(), (String) value)) {
+                pType.setValue((String) passwordParameterCache.get(param).getValue());
+            } else {
+                pType.setRawValue((String) value);
+            }
         } else {
             if (value == null) {
                 pType.setValue(""); //$NON-NLS-1$
@@ -1599,6 +1608,7 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
                 if (generic && !"tacokit".equalsIgnoreCase(String.valueOf(sourceName))) {
                     param.setValue(value);
                 } else {
+                    passwordParameterCache.put(param, pType);
                     param.setValue(pType.getRawValue());
                 }
             } else if (param.getFieldType().equals(EParameterFieldType.SCHEMA_REFERENCE)) {
@@ -1719,6 +1729,7 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
         contextManager.saveToEmf(processType.getContext(), true);
         // fixe for TDI-24876
         EmfHelper.removeProxy(processType);
+        //encryptParameterCache.clear();
         return processType;
 
     }
