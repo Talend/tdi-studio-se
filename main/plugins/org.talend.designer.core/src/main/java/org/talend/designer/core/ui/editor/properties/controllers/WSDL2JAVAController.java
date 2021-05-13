@@ -265,10 +265,15 @@ public class WSDL2JAVAController extends AbstractElementPropertySectionControlle
                     return;
                 }
                 File dir = new File(getTmpFolder());
+                String filePath = dir.getAbsolutePath();
+                try {
+                    filePath = dir.getCanonicalPath();
+                } catch (IOException e1) {
+                }
 
                 final TalendWSDL2Java java2WSDL = new TalendWSDL2Java();
 
-                boolean hasError = java2WSDL.generateWSDL(new String[] { "-o" + dir, "-p" + PACK, wsdlfile }); //$NON-NLS-1$ //$NON-NLS-2$
+                boolean hasError = java2WSDL.generateWSDL(new String[] { "-o", filePath, "-p", PACK, wsdlfile }); //$NON-NLS-1$ //$NON-NLS-2$
 
                 // give some info about the generate stub.jar result to GUI.
                 final String tempWsdlfile = wsdlfile;
