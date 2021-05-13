@@ -44,7 +44,12 @@ public class ReplaceInheritCredentialCheckBoxWithDropDownListTaskForRedshift ext
                             public void transform(NodeType node) {
                                 if (ComponentUtilities.getNodeProperty(node, "CREDENTIAL_PROVIDER") == null) {
                                     ComponentUtilities.addNodeProperty(node, "CREDENTIAL_PROVIDER", "CLOSED_LIST");
-                                    ComponentUtilities.getNodeProperty(node, "CREDENTIAL_PROVIDER").setValue("STATIC_CREDENTIALS");
+                                    ElementParameterType prevCredProperty = ComponentUtilities.getNodeProperty(node, "INHERIT_CREDENTIALS");
+                                    if (prevCredProperty != null && Boolean.TRUE.toString().equalsIgnoreCase(prevCredProperty.getValue())) {
+                                        ComponentUtilities.getNodeProperty(node, "CREDENTIAL_PROVIDER").setValue("INHERIT_CREDENTIALS");
+                                    } else {
+                                        ComponentUtilities.getNodeProperty(node, "CREDENTIAL_PROVIDER").setValue("STATIC_CREDENTIALS");
+                                    }
                                 }
                             }
                         }));
