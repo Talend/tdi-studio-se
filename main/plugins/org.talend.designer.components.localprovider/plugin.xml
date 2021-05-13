@@ -1873,14 +1873,6 @@
             uripath="platform:/plugin/org.talend.libraries.slf4j/lib/slf4j-log4j12-1.7.5.jar"
             bundleID="" />
 
-	   	<libraryNeeded
-           context="plugin:org.talend.libraries.hadoop.cloudera.cdh5.1"
-           id="jersey-core-1.9.jar"
-           mvn_uri="mvn:com.sun.jersey/jersey-core/1.9"
-           name="jersey-core-1.9.jar"
-           required="true">
-    	</libraryNeeded>
-
     	<libraryNeeded
 	   		context="plugin:org.talend.libraries.jetty"
         	id="jetty-util-6.1.26.hwx.jar"
@@ -2735,40 +2727,6 @@
               uripath="platform:/plugin/org.talend.libraries.hadoop.hdp.2.2/lib/tezServer/jaxb-impl-2.2.3-1.jar">
         </libraryNeeded>
         <libraryNeeded
-              context="plugin:org.talend.libraries.hadoop.hdp.2.2"
-              id="jersey-client-1.9.jar"
-              mvn_uri="mvn:com.sun.jersey/jersey-client/1.9"
-              name="jersey-client-1.9.jar"
-              required="true"
-              uripath="platform:/plugin/org.talend.libraries.hadoop.hdp.2.2/lib/tezServer/jersey-client-1.9.jar">
-        </libraryNeeded>
-        <libraryNeeded
-              context="plugin:org.talend.libraries.hadoop.hdp.2.2"
-              id="jersey-core-1.9.jar"
-              mvn_uri="mvn:com.sun.jersey/jersey-core/1.9"
-              name="jersey-core-1.9.jar"
-              required="true"
-              uripath="platform:/plugin/org.talend.libraries.hadoop.hdp.2.2/lib/tezServer/jersey-core-1.9.jar">
-        </libraryNeeded>
-        <libraryNeeded
-            id="jersey-guice-1.9.jar"
-            name="jersey-guice-1.9.jar" mvn_uri="mvn:org.talend.libraries/jersey-guice-1.9/6.0.0"
-            context="plugin:org.talend.libraries.hadoop.hdp.2.2"
-            uripath="platform:/plugin/org.talend.libraries.hadoop.hdp.2.2/lib/tezServer/jersey-guice-1.9.jar">
-        </libraryNeeded>
-        <libraryNeeded
-            id="jersey-json-1.9.jar"
-            name="jersey-json-1.9.jar" mvn_uri="mvn:org.talend.libraries/jersey-json-1.9/6.0.0"
-            context="plugin:org.talend.libraries.hadoop.hdp.2.2"
-            uripath="platform:/plugin/org.talend.libraries.hadoop.hdp.2.2/lib/tezServer/jersey-json-1.9.jar">
-        </libraryNeeded>
-        <libraryNeeded
-            id="jersey-server-1.9.jar"
-            name="jersey-server-1.9.jar" mvn_uri="mvn:org.talend.libraries/jersey-server-1.9/6.0.0"
-            context="plugin:org.talend.libraries.hadoop.hdp.2.2"
-            uripath="platform:/plugin/org.talend.libraries.hadoop.hdp.2.2/lib/tezServer/jersey-server-1.9.jar">
-        </libraryNeeded>
-        <libraryNeeded
             id="jetty-util-6.1.26.hwx.jar"
             name="jetty-util-6.1.26.hwx.jar" mvn_uri="mvn:org.talend.libraries/jetty-util-6.1.26.hwx/6.0.0"
             context="plugin:org.talend.libraries.hadoop.hdp.2.2"
@@ -3024,9 +2982,6 @@
 	         <library
 	             id="log4j-1.2.17.jar">
 	         </library>
-	         <library
-	             id="jersey-core-1.9.jar">
-	         </library>
 	    </libraryNeededGroup>
 
 	    <!-- HDFS libraries for HDP_2_3 -->
@@ -3046,7 +3001,6 @@
             <library id="hadoop-common-HDP_2_3"/>
             <library id="hadoop-hdfs-HDP_2_3"/>
             <library id="htrace-core-3.1.0-incubating.jar"/>
-            <library id="jersey-core-1.9.jar"/>
             <library id="log4j-1.2.17.jar"/>
             <library id="protobuf-java-2.5.0.jar"/>
             <library id="servlet-api-2.5.jar"/>
@@ -3100,9 +3054,6 @@
 	         </library>
 	         <library
 	             id="log4j-1.2.17.jar">
-	         </library>
-	         <library
-	             id="jersey-core-1.9.jar">
 	         </library>
 	         <library
 	             id="jetty-util-6.1.26.hwx.jar">
@@ -3193,9 +3144,6 @@
              </library>
              <library
                  id="log4j-1.2.17.jar">
-             </library>
-             <library
-                 id="jersey-core-1.9.jar">
              </library>
              <library
                  id="jetty-util-emr400-latest">
@@ -3546,8 +3494,6 @@
             <library id="jackson-jaxrs-1.9.13.jar"/>
             <library id="jackson-mapper-asl-1.9.13.jar"/>
             <library id="jackson-xc-1.9.13.jar"/>
-            <library id="jersey-client-1.9.jar"/>
-            <library id="jersey-core-1.9.jar"/>
             <library id="log4j-1.2.17.jar"/>
             <library id="protobuf-java-2.5.0.jar"/>
             <library id="servlet-api-2.5.jar"/>
@@ -3655,12 +3601,6 @@
                  id="jackson-xc-1.9.13.jar">
              </library>
              <library
-                 id="jersey-client-1.9.jar">
-             </library>
-             <library
-                 id="jersey-core-1.9.jar">
-             </library>
-             <library
                  id="log4j-1.2.17.jar">
              </library>
              <library
@@ -3749,12 +3689,6 @@
              </library>
              <library
                  id="jackson-xc-1.9.13.jar">
-             </library>
-             <library
-                 id="jersey-client-1.9.jar">
-             </library>
-             <library
-                 id="jersey-core-1.9.jar">
              </library>
              <library
                  id="log4j-1.2.17.jar">
@@ -4657,8 +4591,6 @@
             <library id="jackson-jaxrs-1.9.13.jar"/>
             <library id="jackson-mapper-asl-1.9.13.jar"/>
             <library id="jackson-xc-1.9.13.jar"/>
-            <library id="jersey-core-1.9.jar"/>
-            <library id="jersey-client-1.9.jar"/>
             <library id="log4j-1.2.17.jar"/>
             <library id="protobuf-java-2.5.0.jar"/>
             <library id="servlet-api-2.5.jar"/>
@@ -4746,12 +4678,6 @@
              </library>
              <library
                  id="jackson-xc-1.9.13.jar">
-             </library>
-             <library
-                 id="jersey-client-1.9.jar">
-             </library>
-             <library
-                 id="jersey-core-1.9.jar">
              </library>
 	         <library
 	             id="log4j-1.2.17.jar">
@@ -5200,8 +5126,6 @@
             <library id="jackson-jaxrs-1.9.13.jar"/>
             <library id="jackson-mapper-asl-1.9.13.jar"/>
             <library id="jackson-xc-1.9.13.jar"/>
-            <library id="jersey-core-1.9.jar"/>
-            <library id="jersey-client-1.9.jar"/>
             <library id="jline-1.0.jar"/>
             <library id="joda-time-2.8.1.jar"/>
             <library id="log4j-1.2.17.jar"/>
@@ -5292,12 +5216,6 @@
              </library>
              <library
                  id="jackson-xc-1.9.13.jar">
-             </library>
-             <library
-                 id="jersey-client-1.9.jar">
-             </library>
-             <library
-                 id="jersey-core-1.9.jar">
              </library>
              <library
                  id="log4j-1.2.17.jar">
@@ -5406,12 +5324,6 @@
              </library>
              <library
                  id="jackson-xc-1.9.13.jar">
-             </library>
-             <library
-                 id="jersey-client-1.9.jar">
-             </library>
-             <library
-                 id="jersey-core-1.9.jar">
              </library>
              <library
                  id="log4j-1.2.17.jar">
@@ -6574,8 +6486,6 @@
             <library id="jackson-mapper-asl-1.9.13.jar"/>
             <library id="jackson-xc-1.9.13.jar"/>
             <library id="jdo-api-3.0.1.jar"/>
-            <library id="jersey-core-1.9.jar"/>
-            <library id="jersey-client-1.9.jar"/>
             <library id="libfb303-0.9.2.jar"/>
             <library id="libthrift-0.9.2.jar"/>
             <library id="log4j-1.2.17.jar"/>
@@ -6692,12 +6602,6 @@
              </library>
              <library
                  id="jackson-xc-1.9.13.jar">
-             </library>
-             <library
-                 id="jersey-client-1.9.jar">
-             </library>
-             <library
-                 id="jersey-core-1.9.jar">
              </library>
              <library
                  id="log4j-1.2.17.jar">
@@ -7973,11 +7877,10 @@
         </libraryNeeded>
         <libraryNeeded
               context="plugin:org.talend.libraries.jersey"
-              id="jersey-client-1.4.jar"
-              mvn_uri="mvn:org.talend.libraries/jersey-client-1.4/6.0.0"
-              name="jersey-client-1.4.jar"
-              required="true"
-              uripath="platform:/plugin/org.talend.libraries.jersey/lib/jersey-client-1.4.jar">
+              id="jersey-client-1.17.jar"
+              mvn_uri="mvn:org.talend.libraries/jersey-client-1.17/6.1.0"
+              name="jersey-client-1.17.jar"
+              required="true">
         </libraryNeeded>
         <libraryNeeded
               context="plugin:"
@@ -7985,14 +7888,6 @@
               mvn_uri="mvn:org.talend.libraries/jersey-client-1.17/6.1.0"
               name="jersey-client-1.17.jar"
               required="true">
-        </libraryNeeded>
-        <libraryNeeded
-              context="plugin:org.talend.libraries.jersey"
-              id="jersey-core-1.4.jar"
-              mvn_uri="mvn:org.talend.libraries/jersey-core-1.4/6.0.0"
-              name="jersey-core-1.4.jar"
-              required="true"
-              uripath="platform:/plugin/org.talend.libraries.jersey/lib/jersey-core-1.4.jar">
         </libraryNeeded>
         <libraryNeeded
               context="plugin:org.talend.libraries.saaj"
