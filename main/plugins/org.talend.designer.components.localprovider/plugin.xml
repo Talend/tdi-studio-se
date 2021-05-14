@@ -7721,7 +7721,6 @@
                 id="HD_INSIGHT_COMMON_LIBRARIES_LATEST"
                 name="HD_INSIGHT_COMMON_LIBRARIES_LATEST">
             <library id="talend-bigdata-launcher-1.1.0-20160405.jar" />
-            <library id="cxf-api-3.3.10.jar" />
             <library id="cxf-rt-bindings-xml-3.3.10.jar" />
             <library id="cxf-rt-frontend-jaxrs-3.3.10.jar" />
             <library id="cxf-rt-transports-http-3.3.10.jar" />
