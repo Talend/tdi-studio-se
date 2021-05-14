@@ -25,7 +25,6 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Menu;
@@ -39,12 +38,10 @@ import org.talend.commons.ui.runtime.swt.tableviewer.TableViewerCreatorColumnNot
 import org.talend.commons.ui.runtime.swt.tableviewer.TableViewerCreatorNotModifiable;
 import org.talend.commons.ui.runtime.swt.tableviewer.behavior.IColumnColorProvider;
 import org.talend.commons.ui.runtime.swt.tableviewer.data.ModifiedObjectInfo;
-import org.talend.commons.ui.runtime.swt.tableviewer.tableeditor.TableEditorContentNotModifiable;
 import org.talend.commons.ui.runtime.ws.WindowSystem;
 import org.talend.commons.ui.swt.tableviewer.TableViewerCreator;
 import org.talend.commons.ui.swt.tableviewer.TableViewerCreatorColumn;
 import org.talend.commons.ui.swt.tableviewer.behavior.DefaultCellModifier;
-import org.talend.commons.ui.swt.tableviewer.tableeditor.CheckboxTableEditorContent;
 import org.talend.commons.utils.data.bean.IBeanPropertyAccessors;
 import org.talend.designer.abstractmap.model.tableentry.ITableEntry;
 import org.talend.designer.core.model.components.EParameterName;
@@ -94,12 +91,6 @@ public class InputDataMapTableView extends DataMapTableView {
             }
 
             public void set(InputColumnTableEntry bean, Boolean value) {
-                TableEditorContentNotModifiable tableEditorContent = columnJoin.getTableEditorContent();
-                if (tableEditorContent != null && tableEditorContent instanceof CheckboxTableEditorContent) {
-                    CheckboxTableEditorContent checkBoxEditor = (CheckboxTableEditorContent) tableEditorContent;
-                    Button check = checkBoxEditor.getCheck();
-                    bean.setCheckbox(check);
-                }
                 bean.setJoin(value);
                 boolean enable = true;
                 if (dropDownItem != null && !dropDownItem.isDisposed()) {
