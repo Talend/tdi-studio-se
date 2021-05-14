@@ -69,7 +69,7 @@ imports="
                java.nio.file.attribute.PosixFilePermission.OWNER_WRITE,
                java.nio.file.attribute.PosixFilePermission.GROUP_READ,
                java.nio.file.attribute.PosixFilePermission.OTHERS_READ);
-               scp_<%=cid%>.upload(new byte[0],destFile_<%=cid %>,posixFilePermissions,new org.apache.sshd.common.scp.ScpTimestamp(System.nanoTime(),System.nanoTime()));
+               scp_<%=cid%>.upload(new byte[0],<%=remotedir%>+"/"+destFile_<%=cid %>,posixFilePermissions,new org.apache.sshd.common.scp.ScpTimestamp(System.nanoTime(),System.nanoTime()));
                nb_file_<%=cid%> ++;
                globalMap.put("<%=cid %>_STATUS", "File truncate OK.");
            }
