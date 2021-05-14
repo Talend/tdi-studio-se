@@ -313,8 +313,7 @@ if (sftp) {// *** sftp *** //
         currentFilePath_<%=cid%> += "/";
     }
 
-    for (int i = 0; i < fileListTemp_<%=cid %>.size(); i++) {
-        org.apache.commons.net.ftp.FTPFile ftpFile_<%=cid %> = fileListTemp_<%=cid %>.get(i);
+    for (org.apache.commons.net.ftp.FTPFile ftpFile_<%=cid %> : fileListTemp_<%=cid %>) {
         String currentFileName_<%=cid%> = null;
 <%
         if (dirFull) {
