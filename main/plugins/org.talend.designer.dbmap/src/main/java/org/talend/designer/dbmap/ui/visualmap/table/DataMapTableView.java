@@ -1376,11 +1376,7 @@ public abstract class DataMapTableView extends Composite implements IDataMapTabl
                     if (entry instanceof OutputColumnTableEntry) {
                         OutputColumnTableEntry outputEntry = (OutputColumnTableEntry) entry;
                         if (outputEntry.getExpression() != null) {
-                            String[] expressions = outputEntry.getExpression().split("\\s+");
-                            for (String expression : expressions) {
-                                mapperManager.getUiManager().parseNewFilterColumn(expression, outputEntry, false);
-                                mapperManager.getUiManager().refreshBackground(false, false);
-                            }
+                            mapperManager.getUiManager().refreshBackground(false, false);
                         }
                     }
                 }
@@ -1397,12 +1393,7 @@ public abstract class DataMapTableView extends Composite implements IDataMapTabl
                             // InputColumnTableEntry inputEntry = (InputColumnTableEntry) entry;
                             StyledTextHandler textTarget = mapperManager.getUiManager().getTabFolderEditors().getStyledTextHandler();
                             if (textTarget.getStyledText().getText() != null && textTarget.getCurrentEntry() != null) {
-                                String[] expressions = textTarget.getStyledText().getText().split("\\s+");
-                                for (String expression : expressions) {
-                                    mapperManager.getUiManager().parseNewFilterColumn(expression, textTarget.getCurrentEntry(),
-                                            false);
-                                    mapperManager.getUiManager().refreshBackground(false, false);
-                                }
+                                mapperManager.getUiManager().refreshBackground(false, false);
                             }
                             mapperManager.getUiManager().refreshBackground(true, false);
                         }

@@ -19,10 +19,8 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.lang.ArrayUtils;
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jface.dialogs.IInputValidator;
 import org.eclipse.jface.dialogs.InputDialog;
-import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
@@ -50,7 +48,6 @@ import org.talend.commons.ui.runtime.exception.ExceptionHandler;
 import org.talend.commons.ui.runtime.image.ImageUtils;
 import org.talend.commons.ui.runtime.swt.tableviewer.selection.ILineSelectionListener;
 import org.talend.commons.ui.runtime.swt.tableviewer.selection.LineSelectionEvent;
-import org.talend.commons.ui.runtime.thread.AsynchronousThreading;
 import org.talend.commons.ui.runtime.ws.WindowSystem;
 import org.talend.commons.ui.swt.colorstyledtext.UnnotifiableColorStyledText;
 import org.talend.commons.ui.swt.tableviewer.IModifiedBeanListener;
@@ -1929,155 +1926,4 @@ public class UIManager extends AbstractUIManager {
         return checkSourceLocationIsValid(mapperManager.retrieveTableEntry(locationSource), entryTarget);
     }
 
-    public ParseExpressionResult parseFilterColumn(String expression, ITableEntry currentModifiedITableEntry,
-            boolean linkMustHaveSelectedState, boolean checkInputKeyAutomatically, boolean inputExpressionAppliedOrCanceled) {
-
-        if (currentModifiedITableEntry instanceof InputColumnTableEntry) {
-            InputColumnTableEntry entry = (InputColumnTableEntry) currentModifiedITableEntry;
-            if (StringUtils.trimToNull(expression) == null) {
-                entry.setOperator(null);
-            }
-        }
-
-        DataMapTableView dataMapTableView = mapperManager.retrieveDataMapTableView(currentModifiedITableEntry);
-        boolean linkHasBeenAdded = false;
-        boolean linkHasBeenRemoved = false;
-
-        DataMapExpressionParser dataMapExpressionParser = new DataMapExpressionParser(null);
-        TableEntryLocation[] tableEntriesLocationsSources = dataMapExpressionParser.parseTableEntryLocations(expression);
-        Set<TableEntryLocation> alreadyProcessed = new HashSet<TableEntryLocation>();
-        Set<ITableEntry> sourcesForTarget = mapperManager.getSourcesForTarget(currentModifiedITableEntry);
-        Set<ITableEntry> sourcesForTargetToDelete = new HashSet<ITableEntry>(sourcesForTarget);
-
-        boolean isInputEntry = currentModifiedITableEntry instanceof InputColumnTableEntry;
-
-        // ECodeLanguage codeLanguage = LanguageProvider.getCurrentLanguage().getCodeLanguage();
-
-        for (TableEntryLocation tableEntriesLocationsSource : tableEntriesLocationsSources) {
-            TableEntryLocation location = tableEntriesLocationsSource;
-
-            // tests to know if link must be removed if key is unchecked
-            boolean dontRemoveLink = (!isInputEntry
-                    || isInputEntry && (inputExpressionAppliedOrCanceled || !inputExpressionAppliedOrCanceled && !mapperManager
-                            .checkEntryHasInvalidUncheckedKey((InputColumnTableEntry) currentModifiedITableEntry)));
-
-            if (!alreadyProcessed.contains(location) && checkSourceLocationIsValid(location, currentModifiedITableEntry)
-                    && (dontRemoveLink)) {
-                ITableEntry sourceTableEntry = mapperManager.retrieveTableEntry(location);
-                if (sourceTableEntry != null && sourcesForTarget.contains(sourceTableEntry)) {
-                    Set<IMapperLink> targets = mapperManager.getGraphicalLinksFromTarget(currentModifiedITableEntry);
-                    Set<IMapperLink> linksFromTarget = new HashSet<IMapperLink>(targets);
-                    for (IMapperLink link : linksFromTarget) {
-                        link.calculate();
-                    }
-                }
-            }
-        }
-
-        mapperManager.orderLinks();
-
-        if (dataMapTableView.getZone() == Zone.INPUTS) {
-            if (linkHasBeenAdded || linkHasBeenRemoved) {
-                checkTargetInputKey(currentModifiedITableEntry, checkInputKeyAutomatically, inputExpressionAppliedOrCanceled);
-            }
-            if (inputExpressionAppliedOrCanceled) {
-                openChangeKeysDialog((InputDataMapTableView) dataMapTableView);
-            }
-        }
-
-        return new ParseExpressionResult(linkHasBeenAdded, linkHasBeenRemoved);
-    }
-
-    /**
-     *
-     * DOC amaumont Comment method "checkTargetInputKey".
-     *
-     * @param currentModifiedTableEntry
-     * @param inputDataMapTableView
-     * @param checkInputKeyAutomatically
-     * @param appliedOrCanceled TODO
-     */
-    private void checkTargetInputKey(ITableEntry currentModifiedTableEntry, boolean checkInputKeyAutomatically,
-            boolean appliedOrCanceled) {
-        // check key
-        if (checkInputKeyAutomatically && currentModifiedTableEntry instanceof InputColumnTableEntry) {
-
-            IMetadataColumn metadataColumn = ((InputColumnTableEntry) currentModifiedTableEntry).getMetadataColumn();
-            if (!metadataColumn.isKey()) {
-                metadataColumn.setKey(true);
-                refreshInOutTableAndMetaTable((AbstractInOutTableEntry) currentModifiedTableEntry);
-            }
-        }
-    }
-
-    /**
-     * DOC amaumont Comment method "openAddNewOutputDialog".
-     *
-     * @param inputDataMapTableView
-     */
-    private void openChangeKeysDialog(final InputDataMapTableView inputDataMapTableView) {
-
-        new AsynchronousThreading(50, false, inputDataMapTableView.getDisplay(), new Runnable() {
-
-            public void run() {
-
-                if (hasInvalidInputExpressionKeys(inputDataMapTableView)) {
-                    if (MessageDialog.openConfirm(inputDataMapTableView.getShell(),
-                            Messages.getString("UIManager.removeInvalidKeys"), //$NON-NLS-1$
-                            Messages.getString("UIManager.comfirmToRemoveTableKeys") //$NON-NLS-1$
-                                    + inputDataMapTableView.getDataMapTable().getName() + "'")) { //$NON-NLS-1$
-                        removeInvalidInputKeys(inputDataMapTableView);
-                    }
-                    refreshInOutTableAndMetaTable(inputDataMapTableView);
-                }
-
-            }
-        }).start();
-
-    }
-
-    /**
-     *
-     * DOC amaumont Comment method "hasInvalidInputKeys".
-     *
-     * @param newSelectedDataMapTableView
-     * @return
-     */
-    private boolean hasInvalidInputExpressionKeys(InputDataMapTableView inputDataMapTableView) {
-
-        if (inputDataMapTableView.getTableViewerCreatorForColumns() == null) {
-            return false;
-        }
-
-        List<IColumnEntry> targetTableEntries = inputDataMapTableView.getDataMapTable().getColumnEntries();
-        for (IColumnEntry entry : targetTableEntries) {
-            InputColumnTableEntry inputEntry = (InputColumnTableEntry) entry;
-            if (mapperManager.checkEntryHasInvalidCheckedKey(inputEntry)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    /**
-     * DOC amaumont Comment method "removeInvalidKeys".
-     *
-     * @param newSelectedDataMapTableView
-     */
-    private void removeInvalidInputKeys(InputDataMapTableView inputDataMapTableView) {
-        List<IColumnEntry> targetTableEntries = inputDataMapTableView.getDataMapTable().getColumnEntries();
-        for (IColumnEntry entry : targetTableEntries) {
-            InputColumnTableEntry inputEntry = (InputColumnTableEntry) entry;
-            if (mapperManager.checkEntryHasInvalidCheckedKey(inputEntry)) {
-                inputEntry.getMetadataColumn().setKey(false);
-            }
-        }
-    }
-
-    public void parseNewFilterColumn(String expression, ITableEntry currentModifiedITableEntry, boolean appliedOrCanceled) {
-        ParseExpressionResult result = parseFilterColumn(expression, currentModifiedITableEntry, true, true, appliedOrCanceled);
-        // if (result.isAtLeastOneLinkHasBeenAddedOrRemoved()) {
-        // mapperManager.getUiManager().refreshBackground(false, false);
-        // }
-    }
 }
