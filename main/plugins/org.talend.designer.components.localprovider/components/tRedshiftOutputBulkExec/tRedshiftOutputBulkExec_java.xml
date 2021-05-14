@@ -137,7 +137,7 @@
           FIELD="CLOSED_LIST"
           NUM_ROW="50"
           REQUIRED="true"
-          SHOW_IF="USE_EXISTING_CONNECTION_S3 == 'false'"
+          SHOW="false"
           GROUP="S3_CONFIG"
         >
           <ITEMS DEFAULT="STATIC_CREDENTIALS"> <!-- It's just a basic one -->
@@ -629,6 +629,8 @@
 			<TEMPLATE_PARAM SOURCE="self.WEB_IDENTITY_TOKEN_FILE" TARGET="tROB.WEB_IDENTITY_TOKEN_FILE" />
 			<TEMPLATE_PARAM SOURCE="self.WEB_TOKEN_ARN" TARGET="tROB.WEB_TOKEN_ARN" />
 			<TEMPLATE_PARAM SOURCE="self.WEB_TOKEN_ROLE_SESSION_NAME" TARGET="tROB.WEB_TOKEN_ROLE_SESSION_NAME" />
+			<!-- Need to transfer the same three params (WEB_IDENTITY_TOKEN_FILE, WEB_TOKEN_ARN and WEB_TOKEN_ROLE_SESSION_NAME)
+			 to the tRedshiftBulkExec component once it supports them (after Credential Provider list is made visible) -->
 			<TEMPLATE_PARAM SOURCE="self.ASSUME_ROLE_S3" TARGET="tROB.ASSUME_ROLE" />
 			<TEMPLATE_PARAM SOURCE="self.ARN" TARGET="tROB.ARN" />
 			<TEMPLATE_PARAM SOURCE="self.ROLE_SESSION_NAME" TARGET="tROB.ROLE_SESSION_NAME" />

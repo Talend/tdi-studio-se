@@ -44,24 +44,17 @@ public class ReplaceInheritCredentialCheckBoxWithDropDownListTaskForRedshift ext
                             public void transform(NodeType node) {
                                 if (ComponentUtilities.getNodeProperty(node, "CREDENTIAL_PROVIDER") == null) {
                                     ComponentUtilities.addNodeProperty(node, "CREDENTIAL_PROVIDER", "CLOSED_LIST");
-                                    ElementParameterType prevCredProperty = ComponentUtilities.getNodeProperty(node, "INHERIT_CREDENTIALS");
-                                    if (prevCredProperty != null && Boolean.TRUE.toString().equalsIgnoreCase(prevCredProperty.getValue())) {
-                                        ComponentUtilities.getNodeProperty(node, "CREDENTIAL_PROVIDER").setValue("INHERIT_CREDENTIALS");
-                                    } else {
-                                        ComponentUtilities.getNodeProperty(node, "CREDENTIAL_PROVIDER").setValue("STATIC_CREDENTIALS");
-                                    }
+                                    ComponentUtilities.getNodeProperty(node, "CREDENTIAL_PROVIDER").setValue("STATIC_CREDENTIALS");
                                 }
                             }
                         }));
-                if(componentsName[i].equals("tRedshiftBulkExec")) {
-                    ModifyComponentsAction.searchAndModify(item, processType, filter,
-                        Collections.singletonList(new IComponentConversion() {
+                ModifyComponentsAction.searchAndModify(item, processType, filter,
+                    Collections.singletonList(new IComponentConversion() {
 
-                            public void transform(NodeType node) {
-                                    ComponentUtilities.getNodeProperty(node, "CREDENTIAL_PROVIDER").setShow(false);
-                            }
-                    }));
-                }
+                        public void transform(NodeType node) {
+                                ComponentUtilities.getNodeProperty(node, "CREDENTIAL_PROVIDER").setShow(false);
+                        }
+                }));
                 ModifyComponentsAction.searchAndModify(item, processType, filter, 
                     Collections.singletonList(new RemovePropertyComponentConversion("INHERIT_CREDENTIALS")));
             }
@@ -74,7 +67,7 @@ public class ReplaceInheritCredentialCheckBoxWithDropDownListTaskForRedshift ext
     }
 
     public Date getOrder() {
-        GregorianCalendar gc = new GregorianCalendar(2021, 05, 12, 12, 0, 0);
+        GregorianCalendar gc = new GregorianCalendar(2021, 05, 14, 12, 0, 0);
         return gc.getTime();
     }
 }
