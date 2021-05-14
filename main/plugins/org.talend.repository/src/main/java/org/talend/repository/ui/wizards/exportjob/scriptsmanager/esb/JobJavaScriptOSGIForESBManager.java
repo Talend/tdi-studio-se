@@ -1443,7 +1443,7 @@ public class JobJavaScriptOSGIForESBManager extends JobJavaScriptsManager {
             for (String errBlock : errBlocks) {
                 String[] lines = errBlock.trim().replaceAll("\r", "").split("\n");
                 if (lines.length == 4) {
-                    if (lines[3].endsWith("cannot be resolved to a type") || lines[3].endsWith("cannot be resolved")) {
+                    if (lines[3].endsWith("cannot be resolved to a type") || lines[3].endsWith("cannot be resolved to a variable") || lines[3].endsWith("cannot be resolved")) {
                         int markerPos = lines[2].indexOf('^');
                         Matcher m = pattern.matcher(lines[1].substring(markerPos));
                         if (m.find()) {
