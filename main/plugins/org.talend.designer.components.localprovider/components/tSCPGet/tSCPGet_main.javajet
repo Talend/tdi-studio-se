@@ -262,5 +262,7 @@ imports="
 %>
 	}catch(java.lang.Exception e_<%=cid%>){
 		globalMap.put("<%=cid %>_STATUS", "File get fail.");
+		globalMap.put("<%=cid %>_NB_FILE",nb_file_<%=cid%>);
+		globalMap.put("<%=cid %>_ERROR_MESSAGE",e_<%=cid%>.getMessage());
 		throw e_<%=cid%>;
 	}
