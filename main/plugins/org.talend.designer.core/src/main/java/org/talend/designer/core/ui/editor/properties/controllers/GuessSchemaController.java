@@ -370,8 +370,9 @@ public class GuessSchemaController extends AbstractElementPropertySectionControl
                 }
                 int numbOfColumn = schemaContent.get(0).length;
                 List<TdColumn> metadataColumns = new ArrayList<TdColumn>();
-                if (StringUtils.isNotEmpty(tableName)
-                        && EDatabaseTypeName.INFORMIX.getDisplayName().equals(iMetadataConnection.getDbType())) {
+                boolean isInformix = StringUtils.equals(EDatabaseTypeName.INFORMIX.getDisplayName(),
+                        iMetadataConnection.getDbType());
+                if (StringUtils.isNotEmpty(tableName) && isInformix) {
                     metadataColumns = ExtractMetaDataFromDataBase.returnMetadataColumnsFormTable(iMetadataConnection, tableName);
                 }
                 for (int i = 1; i <= numbOfColumn; i++) {
@@ -417,11 +418,12 @@ public class GuessSchemaController extends AbstractElementPropertySectionControl
                         oneColum.setPrecision(Integer.parseInt(schemaContent.get(2)[i - 1]));
                         oneColum.setLength(Integer.parseInt(schemaContent.get(3)[i - 1]));
                     }
-                    if (EDatabaseTypeName.INFORMIX.getDisplayName().equals(iMetadataConnection.getDbType())) {
+                    if (isInformix) {
                         for (TdColumn td : metadataColumns) {
                             if (StringUtils.equals(oneColum.getLabel(), td.getName())) {
                                 oneColum.setPrecision((int) td.getPrecision());
                                 oneColum.setLength((int) td.getLength());
+                                break;
                             }
                         }
                     }
