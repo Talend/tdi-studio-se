@@ -99,4 +99,5 @@ public class InputColumnTableEntry extends AbstractInOutTableEntry {
     public boolean isUnmatchingEntry() {
         return ((MapperManager) getParent().getMapperManager()).isUnmatchingEntry(this);
     }
+
 }
