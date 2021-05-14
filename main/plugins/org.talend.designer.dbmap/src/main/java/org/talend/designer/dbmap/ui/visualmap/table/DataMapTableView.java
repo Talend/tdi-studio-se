@@ -14,7 +14,9 @@ package org.talend.designer.dbmap.ui.visualmap.table;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.jface.fieldassist.IContentProposalProvider;
 import org.eclipse.jface.preference.IPreferenceStore;
@@ -2196,44 +2198,22 @@ public abstract class DataMapTableView extends Composite implements IDataMapTabl
             if (!columnNameFilter.getSelection()) {
                 pattern = "";
             }
-            // List<TableViewerCreatorColumnNotModifiable> columns = tableViewerCreatorForColumns.getColumns();
-            // for (TableViewerCreatorColumnNotModifiable t : columns) {
-            // if ("ID_EXPLICIT_JOIN".equals(t.getId())) {
-            // TableEditorContentNotModifiable tableEditorContent = t.getTableEditorContent();
-            // if (tableEditorContent instanceof CheckboxTableEditorContent) {
-            // CheckboxTableEditorContent c = (CheckboxTableEditorContent) tableEditorContent;
-            // c.setCheckVisible(false);
-            // }
-            // }
-            // }
-            // to collect all check buttons into a list
+            // to collect all check buttons into a map
             List<Button> btnList = new ArrayList<>();
+            Map<String, Button> btnMap = new HashMap<String, Button>();
             if (tableForEntries != null) {
                 for (Control c : tableForEntries.getChildren()) {
                     if (c instanceof Button) {
                         Button b = (Button) c;
+                        Object ID_EXPLICIT_JOIN = b.getData("ID_EXPLICIT_JOIN");
+                        if (ID_EXPLICIT_JOIN != null) {
+                            String columnName = String.valueOf(b.getData("columnName"));
+                            btnMap.put(columnName, b);
+                        }
                         btnList.add(b);
                     }
                 }
 
-            }
-            // to locate the index of the current table column
-            Integer btnIndex = null;
-            if (parentElement != null && parentElement instanceof List) {
-                if (element != null && element instanceof AbstractInOutTableEntry) {
-                    AbstractInOutTableEntry current = (AbstractInOutTableEntry) element;
-                    List parentList = (List) parentElement;
-                    for (int i = 0; i < parentList.size(); i++) {
-                        Object object = parentList.get(i);
-                        if (object instanceof AbstractInOutTableEntry) {
-                            AbstractInOutTableEntry inOutEntry = (AbstractInOutTableEntry) object;
-                            if (inOutEntry.getMetadataColumn().getId().equals(current.getMetadataColumn().getId())) {
-                                btnIndex = i;
-                                break;
-                            }
-                        }
-                    }
-                }
             }
 
             SearchPattern matcher = new SearchPattern();
@@ -2256,15 +2236,16 @@ public abstract class DataMapTableView extends Composite implements IDataMapTabl
                 InputColumnTableEntry inputColumn = (InputColumnTableEntry) element;
                 if (inputColumn.getParent() instanceof InputTable) {
                     IMetadataColumn metadataColumn = inputColumn.getMetadataColumn();
+                    String originalDbColumnName = inputColumn.getMetadataColumn().getOriginalDbColumnName();
+                    Button checkBtn = btnMap.get(originalDbColumnName);
                     if (metadataColumn != null && (!matcher.matches(metadataColumn.getLabel()))) {
-                        // inputColumn.getCheckbox().setVisible(false);
-                        if (btnIndex != null && btnIndex < btnList.size()) {
-                            btnList.get(btnIndex).setVisible(false);
+                        if (checkBtn != null) {
+                            checkBtn.setVisible(false);
                         }
                         return false;
                     } else {
-                        if (btnList.size() != 0 && btnIndex != null && btnIndex < btnList.size()) {
-                            btnList.get(btnIndex).setVisible(true);
+                        if (checkBtn != null) {
+                            checkBtn.setVisible(true);
                         }
                     }
 

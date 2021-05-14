@@ -132,7 +132,7 @@ public class InputDataMapTableView extends DataMapTableView {
         columnJoin.setWidth(65);
         columnJoin.setDisplayedValue(""); //$NON-NLS-1$
         // column.setResizable(false);
-        CheckboxTableEditorContent checkboxTableEditorContent = new CheckboxTableEditorContent();
+        CheckboxTableEditorContentElt checkboxTableEditorContent = new CheckboxTableEditorContentElt();
         checkboxTableEditorContent.setToolTipText(useInJoinTitle);
         columnJoin.setTableEditorContent(checkboxTableEditorContent);
         columnJoin.setToolTipHeader(useInJoinTitle);
