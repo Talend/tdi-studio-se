@@ -1,29 +1,4 @@
-<%@ jet 
-imports="
-    java.util.List
-    java.util.Map
-  " 
-%>
 <%@ include file="../tSCPFileExists/tSCPFileExists_begin.javajet"%>
-<%
-    List<Map<String, String>> filelist =
-        (List<Map<String,String>>)ElementParameterParser.getObjectValue(
-            node,
-            "__FILELIST__"
-    );
-%>
 	int nb_file_<%=cid%> = 0;
 	globalMap.put("<%=cid %>_STATUS", "");
-        String[] destFileNames_<%=cid%> = new String[]{
-         <%
-			for (Map<String, String> file : filelist) {
-         %>
-            	<%=file.get("DESTINATION")%>,
-         <%          
-			}
-         %>
-       };
-		<%if(isLog4jEnabled){%>
-			log.info("<%=cid%> - Truncating file from the server.");
-		<%}%>
-       for(String destFile_<%=cid %> : destFileNames_<%=cid%>){
+	java.util.Set<java.nio.file.Path> uploadedSet_<%=cid %> = new java.util.HashSet<>();
