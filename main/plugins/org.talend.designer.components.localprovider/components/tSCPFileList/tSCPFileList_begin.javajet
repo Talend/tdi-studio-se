@@ -30,13 +30,19 @@ imports="
 	String useExistingConn = ElementParameterParser.getValue(node, "__USE_EXISTING_CONNECTION__");
 	if(("true").equals(useExistingConn)){
 		String connection = ElementParameterParser.getValue(node, "__CONNECTION__");
-		String conn= "conn_" + connection;
 		INode connectionNode = NodeUtil.getNodeByUniqueName(node.getProcess(), connection);
 		    host = ElementParameterParser.getValue(connectionNode, "__HOST__");
             port = ElementParameterParser.getValue(connectionNode, "__PORT__");
             user = ElementParameterParser.getValue(connectionNode,"__USERNAME__");
+            authMethod = ElementParameterParser.getValue(connectionNode,"__AUTH_METHOD__");
 	%>
-		org.apache.sshd.client.SshClient client_<%=cid%> = (org.apache.sshd.client.SshClient)globalMap.get("<%=conn %>");
+		org.apache.sshd.client.SshClient client_<%=cid%> = (org.apache.sshd.client.SshClient)globalMap.get("conn_<%=connection%>");
+		<%
+        if (("PUBLICKEY").equals(authMethod)) {
+        %>
+		java.nio.file.Path privateKey_<%=cid%> = (java.nio.file.Path)globalMap.get("privateKey_<%=connection%>");
+        java.util.List<String> lines_<%=cid%> = (java.util.List<String>)globalMap.get("lines_<%=connection%>");
+        <%}%>
 		<%if(isLog4jEnabled){%>
 			if(client_<%=cid %>!=null) {
 				log.info("<%=cid%> - Uses an existing connection. Connection hostname: "+ <%=host %> + ". Connection port: <%=port %>.");

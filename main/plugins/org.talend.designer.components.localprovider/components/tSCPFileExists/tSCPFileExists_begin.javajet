@@ -32,8 +32,15 @@ imports="
  		    host = ElementParameterParser.getValue(connectionNode, "__HOST__");
              port = ElementParameterParser.getValue(connectionNode, "__PORT__");
              user = ElementParameterParser.getValue(connectionNode,"__USERNAME__");
- 	%>
- 		org.apache.sshd.client.SshClient client_<%=cid%> = (org.apache.sshd.client.SshClient)globalMap.get("<%=conn %>");
+            authMethod = ElementParameterParser.getValue(connectionNode,"__AUTH_METHOD__");
+	%>
+		org.apache.sshd.client.SshClient client_<%=cid%> = (org.apache.sshd.client.SshClient)globalMap.get("conn_<%=connection%>");
+		<%
+        if (("PUBLICKEY").equals(authMethod)) {
+        %>
+		java.nio.file.Path privateKey_<%=cid%> = (java.nio.file.Path)globalMap.get("privateKey_<%=connection%>");
+        java.util.List<String> lines_<%=cid%> = (java.util.List<String>)globalMap.get("lines_<%=connection%>");
+        <%}%>
  		String hostname_<%=cid%> = <%=host%>;
         String username_<%=cid%> = <%=user%>;
  		<%if(isLog4jEnabled){%>
