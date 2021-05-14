@@ -229,3 +229,6 @@ imports="
 		String line_out_<%=cid%> = "";
 		for (int i_<%=cid %> = 0; i_<%=cid %> < split_<%=cid %>.length; i_<%=cid %>++) {
 		line_out_<%=cid%> = split_<%=cid %>[i_<%=cid %>];
+		if( line_out_<%=cid%>==null || line_out_<%=cid%>.isEmpty() ){
+		    continue;
+		}
