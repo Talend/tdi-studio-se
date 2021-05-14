@@ -137,7 +137,7 @@
           FIELD="CLOSED_LIST"
           NUM_ROW="50"
           REQUIRED="true"
-          SHOW="false"
+          SHOW_IF="USE_EXISTING_CONNECTION_S3 == 'false'"
           GROUP="S3_CONFIG"
         >
           <ITEMS DEFAULT="STATIC_CREDENTIALS"> <!-- It's just a basic one -->
