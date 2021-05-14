@@ -27817,7 +27817,6 @@
                 NAME="commons-lang3-3.10.jar"
                 MODULE="commons-lang3-3.10.jar"
                 MVN="mvn:org.apache.commons/commons-lang3/3.10"
-                UrlPath="platform:/plugin/org.talend.libraries.apache.common/lib/commons-lang3-3.10.jar"
                 REQUIRED_IF="(((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2011' OR API_VERSION=='API_2016_ODATA' OR API_VERSION=='API_2018_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016' OR MS_CRM_VERSION == 'CRM_2018')))" />
             <IMPORT
                 NAME="gson-2.3.1"
