@@ -14,8 +14,6 @@ package org.talend.designer.codegen.components.ui;
 
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
-import java.util.HashSet;
-import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -32,7 +30,6 @@ import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Group;
@@ -55,12 +52,6 @@ import org.talend.designer.codegen.i18n.Messages;
 import org.talend.designer.core.DesignerPlugin;
 import org.talend.designer.core.assist.TalendEditorComponentCreationUtil;
 import org.talend.designer.core.ui.preferences.TalendDesignerPrefConstants;
-import org.talend.designer.core.utils.ComponentsHelpUtil;
-import org.talend.updates.runtime.InstallFeatureObserver;
-import org.talend.updates.runtime.engine.ExtraFeaturesUpdatesFactory;
-import org.talend.updates.runtime.model.AbstractExtraFeature;
-import org.talend.updates.runtime.model.ExtraFeature;
-import org.talend.updates.runtime.ui.ShowWizardHandler;
 
 /**
  * This class represents a preference page that is contributed to the Preferences dialog. By subclassing
@@ -80,8 +71,6 @@ public class ComponentsPreferencePage extends FieldEditorPreferencePage implemen
 
     private DirectoryFieldEditor filePathTemp;
 
-    private CheckBoxFieldEditor enableOnLineHelpField;
-
     private final String dataViewer = "Data Viewer"; //$NON-NLS-1$
 
     private final String mapper = "Mapper "; //$NON-NLS-1$
@@ -91,8 +80,6 @@ public class ComponentsPreferencePage extends FieldEditorPreferencePage implemen
     private final String joblet = "Joblet"; //$NON-NLS-1$
 
     private final String assist = "Component Assist"; //$NON-NLS-1$
-
-    private final String HELP_FEATURE_NAME = "Talend Help"; //$NON-NLS-1$
 
     private static String oldPath = null;
 
@@ -222,16 +209,6 @@ public class ComponentsPreferencePage extends FieldEditorPreferencePage implemen
         return group;
     }
 
-    protected Composite createForHelpType(Composite parent) {
-        Group group = createGroup(parent);
-        group.setText(Messages.getString("ComponentsPreferencePage.grpHelp"));
-        Composite composite = createComposite(group);
-        addHelpTypeFiled(composite);
-        GridLayout layout = createLayout();
-        composite.setLayout(layout);
-        return group;
-    }
-
     protected Group createGroup(Composite parent) {
         Group group = new Group(parent, SWT.NONE);
         GridData layoutData = new GridData(GridData.FILL_HORIZONTAL);
@@ -294,46 +271,6 @@ public class ComponentsPreferencePage extends FieldEditorPreferencePage implemen
         addField(enableComponentAssistCheckBoxField);
     }
 
-    protected void addHelpTypeFiled(Composite composite) {
-        enableOnLineHelpField = new CheckBoxFieldEditor(TalendDesignerPrefConstants.HELP_OFFLINE,
-                Messages.getString("ComponentsPreferencePage.enableOnLineHelp"), composite) {
-
-            @Override
-            protected void doLoad() {
-                boolean isOffLine = DesignerPlugin.getDefault().getPreferenceStore().getBoolean(getPreferenceName());
-                Button checkBox = getButton();
-                if (checkBox != null) {
-                    if (isOffLine && !ComponentsHelpUtil.isHelpInstalled()) {
-                        checkBox.setSelection(true);
-                        doStore();
-                    } else {
-                        checkBox.setSelection(!isOffLine);
-                    }
-                }
-            }
-
-            @Override
-            protected void doStore() {
-                Button checkBox = getButton();
-                if (checkBox != null) {
-                    DesignerPlugin.getDefault().getPreferenceStore().setValue(getPreferenceName(), !checkBox.getSelection());
-                }
-
-            }
-
-            @Override
-            protected void doLoadDefault() {
-                Button checkBox = getButton();
-                if (checkBox != null) {
-                    checkBox.setSelection(true);
-                }
-            }
-
-        }; // $NON-NLS-1$
-
-        addField(enableOnLineHelpField);
-    }
-
     @Override
     public void createFieldEditors() {
         final Composite parent = getFieldEditorParent();
@@ -379,7 +316,6 @@ public class ComponentsPreferencePage extends FieldEditorPreferencePage implemen
             createForJoblet(parent);
         }
         createForComponentAssist(parent);
-        createForHelpType(parent);
 
         parent.pack();
     }
@@ -539,57 +475,6 @@ public class ComponentsPreferencePage extends FieldEditorPreferencePage implemen
 
         }
 
-        if (enableOnLineHelpField != null && !enableOnLineHelpField.getBooleanValue()
-                && !ComponentsHelpUtil.isHelpInstalled()
-                && InstallFeatureObserver.getInstance().isNeedLanuchInstallWizard(HELP_FEATURE_NAME)) {
-            if (MessageDialog.openConfirm(getShell(), Messages.getString("ComponentsPreferencePage.titleInstallHelp"),
-                    Messages.getString("ComponentsPreferencePage.msgInstallHelp"))) {
-                installHelpFeature();
-                flag = true;
-            } else {
-                flag = false;
-            }
-        }
         return flag;
-    }
-
-    private void installHelpFeature() {
-        final Set<ExtraFeature> installSet = new HashSet<ExtraFeature>();
-        final IRunnableWithProgress runnable = new IRunnableWithProgress() {
-
-            @Override
-            public void run(final IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
-                ExtraFeaturesUpdatesFactory extraFeaturesFactory = new ExtraFeaturesUpdatesFactory(false);
-                final Set<ExtraFeature> uninstalledExtraFeatures = new HashSet<ExtraFeature>();
-                extraFeaturesFactory.retrieveUninstalledExtraFeatures(monitor, uninstalledExtraFeatures, false);
-                if (monitor.isCanceled()) {
-                    throw new InterruptedException("User cancelled"); //$NON-NLS-1$
-                }
-                for (ExtraFeature feature : uninstalledExtraFeatures) {
-                    if (HELP_FEATURE_NAME.equalsIgnoreCase(feature.getName())) {
-                        if (feature instanceof AbstractExtraFeature) {
-                            ((AbstractExtraFeature) feature).setMustBeInstalled(true);
-                        }
-                        installSet.add(feature);
-                    }
-                    if (monitor.isCanceled()) {
-                        throw new InterruptedException("User cancelled"); //$NON-NLS-1$
-                    }
-                }
-            }
-        };
-        final ProgressMonitorDialog dialog = new ProgressMonitorDialog(null);
-        try {
-            dialog.run(true, true, runnable);
-            synchronized (ShowWizardHandler.showWizardLock) {
-                new ShowWizardHandler().showUpdateWizard(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(),
-                        installSet);
-            }
-        } catch (InvocationTargetException e) {
-            ExceptionHandler.process(e);
-            return;
-        } catch (InterruptedException e) {
-            return;
-        }
     }
 }
