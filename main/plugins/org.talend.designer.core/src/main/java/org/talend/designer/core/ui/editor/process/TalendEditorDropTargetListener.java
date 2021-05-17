@@ -1992,7 +1992,8 @@ public class TalendEditorDropTargetListener extends TemplateTransferDropTargetLi
         boolean isHive = EDatabaseTypeName.HIVE.getDisplayName().toUpperCase().equals(rcSetting.toString());
         boolean isImpala = EDatabaseTypeName.IMPALA.getDisplayName().toUpperCase().equals(rcSetting.toString());
         boolean isJDBC = EDatabaseTypeName.GENERAL_JDBC.name().toUpperCase().equals(rcSetting.toString());
-        if (item != null && item instanceof DatabaseConnectionItem && !isHive && !isImpala && !isJDBC) {
+        boolean isSAS = EDatabaseTypeName.SAS.name().toUpperCase().equals(rcSetting.toString());
+        if (item != null && item instanceof DatabaseConnectionItem && !isHive && !isImpala && !isJDBC && !isSAS) {
             IComponent createTableComponent = ComponentsFactoryProvider.getInstance().get("tCreateTable", //$NON-NLS-1$
                     ComponentCategory.CATEGORY_4_DI.getName());
             neededComponents.add(createTableComponent);
