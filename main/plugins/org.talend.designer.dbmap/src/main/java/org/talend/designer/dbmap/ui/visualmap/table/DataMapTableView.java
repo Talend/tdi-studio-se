@@ -12,7 +12,6 @@
 // ============================================================================
 package org.talend.designer.dbmap.ui.visualmap.table;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -2188,7 +2187,6 @@ public abstract class DataMapTableView extends Composite implements IDataMapTabl
                 pattern = "";
             }
             // to collect all check buttons into a map
-            List<Button> btnList = new ArrayList<>();
             Map<String, Button> btnMap = new HashMap<String, Button>();
             if (tableForEntries != null) {
                 for (Control c : tableForEntries.getChildren()) {
@@ -2199,7 +2197,6 @@ public abstract class DataMapTableView extends Composite implements IDataMapTabl
                             String columnName = String.valueOf(b.getData("columnName"));
                             btnMap.put(columnName, b);
                         }
-                        btnList.add(b);
                     }
                 }
 
