@@ -1150,6 +1150,9 @@ public class JobJavaScriptOSGIForESBManager extends JobJavaScriptsManager {
         importNonRepetitivePackages.remove("javax.annotation" + RESOLUTION_OPTIONAL);
         importNonRepetitivePackages.add("javax.annotation;version=\"[1.3,2)\"" + RESOLUTION_OPTIONAL);
         
+        importNonRepetitivePackages.remove("javax.validation.constraints" + RESOLUTION_OPTIONAL);
+        importNonRepetitivePackages.add("javax.validation.constraints;version=\"[2.0.1.Final,3)\"" + RESOLUTION_OPTIONAL);
+        
         // TESB-32507 make  org.talend.esb.authorization.xacml.rt.pep not optional
         if (importNonRepetitivePackages.contains("org.talend.esb.authorization.xacml.rt.pep" + RESOLUTION_OPTIONAL))  {
             importNonRepetitivePackages.remove("org.talend.esb.authorization.xacml.rt.pep" + RESOLUTION_OPTIONAL);

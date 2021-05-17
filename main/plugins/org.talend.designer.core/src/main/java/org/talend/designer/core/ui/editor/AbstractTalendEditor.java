@@ -127,7 +127,10 @@ import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.IKeyBindingService;
+import org.eclipse.ui.IViewPart;
+import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchPart;
+import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.SubActionBars;
@@ -143,6 +146,7 @@ import org.eclipse.ui.part.PageBook;
 import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
 import org.eclipse.ui.views.properties.IPropertySheetPage;
 import org.eclipse.ui.views.properties.tabbed.ITabbedPropertySheetPageContributor;
+import org.talend.commons.exception.CommonExceptionHandler;
 import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.exception.PersistenceException;
 import org.talend.commons.ui.gmf.draw2d.AnimatableZoomManager;
@@ -212,6 +216,7 @@ import org.talend.designer.core.ui.editor.connections.ConnLabelEditPart;
 import org.talend.designer.core.ui.editor.connections.Connection;
 import org.talend.designer.core.ui.editor.connections.ConnectionPart;
 import org.talend.designer.core.ui.editor.connections.NodeConnectorTool;
+import org.talend.designer.core.ui.editor.jobletcontainer.JobletContainer;
 import org.talend.designer.core.ui.editor.nodecontainer.NodeContainer;
 import org.talend.designer.core.ui.editor.nodes.Node;
 import org.talend.designer.core.ui.editor.nodes.NodePart;
@@ -2362,6 +2367,17 @@ public abstract class AbstractTalendEditor extends GraphicalEditorWithFlyoutPale
                         if (selection instanceof IStructuredSelection) {
                             Object input = ((IStructuredSelection) selection).getFirstElement();
                             if (input instanceof NodeTreeEditPart || input instanceof NodeReturnsTreeEditPart) {
+                                try {
+                                    IWorkbenchWindow activeWorkbenchWindow = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
+                                    if (activeWorkbenchWindow != null) {
+                                        IWorkbenchPage page = activeWorkbenchWindow.getActivePage();
+                                        if (page != null) {
+                                            page.showView(ComponentSettingsView.ID);   
+                                        }
+                                    }
+                                } catch (PartInitException e) {
+                                    CommonExceptionHandler.process(e);
+                                }
                                 isSynchronizer = true;
                                 getViewer().setSelection(selection);
                                 isSynchronizer = false;
@@ -2564,9 +2580,16 @@ public abstract class AbstractTalendEditor extends GraphicalEditorWithFlyoutPale
                 protected EditPart convert(EditPartViewer viewer, EditPart part) {
                     EditPart editPart = super.convert(viewer, part);
                     if (editPart == null) {
+                        // Select the joblet start node in job if expand.
+                        editPart = getJobletEditPartIfExpand(part);
+                        if (editPart != null) {
+                            return editPart;
+                        }
                         // maybe, not good, should be only for outline.
                         editPart = super.convert(viewer, part.getParent());
                     }
+                    // Do the expand if sub job is collapse.
+                    executeSubJobExpand(editPart);
                     return editPart;
                 }
 
@@ -2579,9 +2602,43 @@ public abstract class AbstractTalendEditor extends GraphicalEditorWithFlyoutPale
                 }
             };
         }
-
         return synchronizer;
+    }
 
+    protected EditPart getJobletEditPartIfExpand(EditPart part) {
+        if (part != null) {
+            Object pmodel = part.getModel();
+            if (pmodel != null && pmodel instanceof Node) {
+                Node node = (Node) pmodel;
+                boolean isJobletNode = node.isJoblet();
+                if (isJobletNode) {
+                    NodeContainer nodeContainer = node.getNodeContainer();
+                    if (nodeContainer != null && nodeContainer instanceof JobletContainer) {
+                        Node startNode = ((JobletContainer) nodeContainer).getJobletStartNode();
+                        if (startNode != null && parent != null) {
+                            return parent.getSelectedNodePart(startNode.getLabel());
+                        }
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
+    protected void executeSubJobExpand(EditPart editPart) {
+        if (editPart != null) {
+            Object pmodel = editPart.getModel();
+            if (pmodel != null && pmodel instanceof Node) {
+                Node node = (Node) pmodel;
+                NodeContainer nodeContainer = node.getNodeContainer();
+                if (nodeContainer != null) {
+                    SubjobContainer subjobContainer = nodeContainer.getSubjobContainer();
+                    if (subjobContainer != null && subjobContainer.isCollapsed()) {
+                        subjobContainer.executeCollapseCommand(false);
+                    }
+                }
+            }
+        }
     }
 
     /**

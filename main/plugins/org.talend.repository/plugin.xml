@@ -3638,6 +3638,15 @@
                name="SetForceCopyFortFileCopy"
                version="7.3.1">
        </projecttask>
+        <projecttask
+                beforeLogon="false"
+                breaks="7.3.0"
+                class="org.talend.repository.model.migration.AddEncodingToPostParametersFortFileFetchMigrationTask"
+                description="Add charset default 'US-ASCII' post method parameters"
+                id="org.talend.repository.model.migration.AddEncodingToPostParametersFortFileFetchMigrationTask"
+                name="AddEncodingToPostParametersFortFileFetchMigrationTask"
+                version="7.3.1">
+       </projecttask>
    </extension>
 
    <extension
