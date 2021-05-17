@@ -101,6 +101,26 @@ class FileCopyTest {
     }
 
     @Test
+    void testForceCopyWithDelete() throws Exception {
+        final URL repCopy = Thread.currentThread().getContextClassLoader().getResource("copy");
+
+        File file = this.buildFile("fileToDelete.txt", 10L * 1024L);
+        file.deleteOnExit();
+        File copy = new File(repCopy.getPath(), "fileToDelete.txt");
+        long referenceSize = file.length();
+        if (!copy.exists()) {
+            copy.createNewFile();
+        }
+        copy.deleteOnExit();
+
+        FileCopy.forceCopyAndDelete(file.getPath(), copy.getPath());
+
+        Assertions.assertFalse(file.exists(), "file not delete");
+        Assertions.assertTrue(copy.exists(), "small file : original file deleted");
+        Assertions.assertEquals(referenceSize, copy.length(), "Size error");
+    }
+
+    @Test
     void testLastModifiedTime() throws Exception {
         final URL repCopy = Thread.currentThread().getContextClassLoader().getResource("copy");
 

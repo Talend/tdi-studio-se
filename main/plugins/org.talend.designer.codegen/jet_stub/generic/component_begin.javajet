@@ -58,15 +58,15 @@ if ((metadatas != null) && (metadatas.size() > 0)) { // metadata
 
 List<? extends IConnection> allInLineJobConns = NodeUtil.getFirstIncomingLineConnectionsOfType(node, "tRESTRequestIn");
 %>
-boolean doesNodeBelongToRequest = <%= allInLineJobConns.size() %> == 0;
+boolean doesNodeBelongToRequest_<%=cid%> = <%= allInLineJobConns.size() %> == 0;
 @SuppressWarnings("unchecked")
-java.util.Map<String, Object> restRequest = (java.util.Map<String, Object>)globalMap.get("restRequest");
-String currentTRestRequestOperation = (String)(restRequest != null ? restRequest.get("OPERATION") : null);
+java.util.Map<String, Object> restRequest_<%=cid%> = (java.util.Map<String, Object>)globalMap.get("restRequest");
+String currentTRestRequestOperation_<%=cid%> = (String)(restRequest_<%=cid%> != null ? restRequest_<%=cid%>.get("OPERATION") : null);
 <%
 for (IConnection inLineConn : allInLineJobConns) {
     %>
-        if("<%= inLineConn.getName() %>".equals(currentTRestRequestOperation)) {
-            doesNodeBelongToRequest = true;
+        if("<%= inLineConn.getName() %>".equals(currentTRestRequestOperation_<%=cid%>)) {
+            doesNodeBelongToRequest_<%=cid%> = true;
         }
 	<%
     }
@@ -233,7 +233,7 @@ if(componentRuntime_<%=cid%> instanceof org.talend.components.api.component.runt
 org.talend.components.api.component.runtime.SourceOrSink sourceOrSink_<%=cid%> = null;
 if(componentRuntime_<%=cid%> instanceof org.talend.components.api.component.runtime.SourceOrSink) {
 	sourceOrSink_<%=cid%> = (org.talend.components.api.component.runtime.SourceOrSink)componentRuntime_<%=cid%>;
-	if (doesNodeBelongToRequest) {
+	if (doesNodeBelongToRequest_<%=cid%>) {
         org.talend.daikon.properties.ValidationResult vr_<%=cid%> = sourceOrSink_<%=cid%>.validate(container_<%=cid%>);
         if (vr_<%=cid%>.getStatus() == org.talend.daikon.properties.ValidationResult.Result.ERROR ) {
             throw new RuntimeException(vr_<%=cid%>.getMessage());
@@ -413,11 +413,11 @@ if (hasOutputOnly || asInputComponent) {
     	org.talend.components.api.component.runtime.Sink sink_<%=cid%> =
             	(org.talend.components.api.component.runtime.Sink)sourceOrSink_<%=cid%>;
         org.talend.components.api.component.runtime.WriteOperation writeOperation_<%=cid%> = sink_<%=cid%>.createWriteOperation();
-        if (doesNodeBelongToRequest) {
+        if (doesNodeBelongToRequest_<%=cid%>) {
             writeOperation_<%=cid%>.initialize(container_<%=cid%>);
         }
         writer_<%=cid%> = writeOperation_<%=cid%>.createWriter(container_<%=cid%>);
-        if (doesNodeBelongToRequest) {
+        if (doesNodeBelongToRequest_<%=cid%>) {
             writer_<%=cid%>.open("<%=cid%>");
         }
 

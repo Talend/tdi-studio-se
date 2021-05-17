@@ -307,7 +307,7 @@
 			<IMPORT MODULE_GROUP="GOOGLE-DATAPROC-MANAGE-LIB-DATAPROC14"
 				REQUIRED="true" />
 			<IMPORT NAME="commons-codec"
-				MODULE="commons-codec-1.14" MVN="mvn:commons-codec/commons-codec/1.14" REQUIRED="true"/>
+				MODULE="commons-codec-1.14.jar" MVN="mvn:commons-codec/commons-codec/1.14" REQUIRED="true"/>
 			<IMPORT NAME="log4j"
 				MODULE="log4j-1.2.17.jar" MVN="mvn:log4j/log4j/1.2.17" REQUIRED="true"/>
 		</IMPORTS>
