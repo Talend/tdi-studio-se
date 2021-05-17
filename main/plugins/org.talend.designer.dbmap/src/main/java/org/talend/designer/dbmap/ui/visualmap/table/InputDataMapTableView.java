@@ -531,16 +531,4 @@ public class InputDataMapTableView extends DataMapTableView {
         dropDownItem.setEnabled(enabled);
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see org.talend.designer.mapper.ui.visualmap.table.DataMapTableView#notifyFocusLost()
-     */
-    @Override
-    public void notifyFocusLost() {
-        // if (expressionCellEditor != null) {
-        // expressionCellEditor.focusLost();
-        // }
-    }
-
 }
