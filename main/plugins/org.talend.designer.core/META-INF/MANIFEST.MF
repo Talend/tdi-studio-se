@@ -62,7 +62,8 @@ Require-Bundle: org.talend.model,
  org.talend.designer.maven,
  org.slf4j.api,
  org.eclipse.help.ui,
- org.talend.core.runtime
+ org.talend.core.runtime,
+ org.eclipse.compare
 Eclipse-LazyStart: true
 Plugin-Class: org.talend.designer.core.DesignerPlugin
 Export-Package: org.talend.designer.core;
@@ -123,6 +124,7 @@ Export-Package: org.talend.designer.core;
    org.eclipse.jface.viewers,
    org.talend.repository.ui.actions,
    org.eclipse.gef",
+ org.talend.designer.core.ui.celleditor,
  org.talend.designer.core.ui.dialog,
  org.talend.designer.core.ui.dialog.mergeorder,
  org.talend.designer.core.ui.editor;
@@ -218,6 +220,7 @@ Export-Package: org.talend.designer.core;
  org.talend.designer.core.ui.editor.subjobcontainer.sparkstreaming,
  org.talend.designer.core.ui.editor.update,
  org.talend.designer.core.ui.editor.update.cmd,
+ org.talend.designer.core.ui.event,
  org.talend.designer.core.ui.preferences;
   uses:="org.eclipse.jface.preference,
    org.talend.core.language,

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  Copyright (C) 2006-2019 Talend Inc. - www.talend.com
+  Copyright (C) 2006-2021 Talend Inc. - www.talend.com
    Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
   You may obtain a copy of the License at
@@ -149,6 +149,11 @@
            class="org.talend.sdk.component.studio.ui.composite.generator.TaCoKitTextAreaSelectionGenerator"
            mapping="TACOKIT_TEXT_AREA_SELECTION"
            name="Text Area Selection Generator">
+     </generator>
+     <generator
+           class="org.talend.sdk.component.studio.ui.composite.generator.TaCoKitTableGenerator"
+           mapping="TACOKIT_TABLE"
+           name="TaCoKit Table Generator">
      </generator>
   </extension>
   <extension

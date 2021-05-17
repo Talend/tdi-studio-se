@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2020 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2021 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -30,6 +30,7 @@ import org.talend.core.model.general.Project;
 import org.talend.core.model.migration.AbstractProjectMigrationTask;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
 import org.talend.designer.maven.tools.AggregatorPomsHelper;
+import org.talend.designer.maven.tools.BuildCacheManager;
 
 /*
  * Created by bhe on Sep 29, 2020
@@ -65,6 +66,7 @@ public class RemoveSnapshotJarMigrationTask extends AbstractProjectMigrationTask
                 LOGGER.info("modules: " + model.getModules() + ", isRegeneratePoms: " + isRegeneratePoms);
                 if (isRegeneratePoms) {
                     pomHelper.syncAllPomsWithoutProgress(new NullProgressMonitor());
+                    BuildCacheManager.getInstance().clearAllCodesCache();
                     return ExecutionResult.SUCCESS_NO_ALERT;
                 }
                 return ExecutionResult.NOTHING_TO_DO;

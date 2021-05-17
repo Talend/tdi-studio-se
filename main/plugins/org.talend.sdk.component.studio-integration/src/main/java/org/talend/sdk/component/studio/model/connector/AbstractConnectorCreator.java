@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2019 Talend Inc. - www.talend.com
+ * Copyright (C) 2006-2021 Talend Inc. - www.talend.com
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -119,7 +119,10 @@ abstract class AbstractConnectorCreator implements ConnectorCreator {
 
         ArrayList<INodeConnector> connectors = new ArrayList<>(mainConnectors);
         createRejectConnector().ifPresent(connectors::add);
-        connectors.add(createIterateConnector());
+        INodeConnector connector = createIterateConnector();
+        if (connector != null) {
+            connectors.add(connector);  
+        }
         connectors.addAll(createStandardConnectors());
         connectors.addAll(createRestConnectors());
 

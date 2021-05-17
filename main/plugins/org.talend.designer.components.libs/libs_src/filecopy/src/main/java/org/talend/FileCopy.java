@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2021 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -50,6 +50,23 @@ public class FileCopy {
             Files.copy(source, destination, StandardCopyOption.REPLACE_EXISTING);
             Files.setLastModifiedTime(destination,Files.getLastModifiedTime(source));
         }
+    }
+
+    /**
+     * Force Copy and Delete files.
+     *
+     * @param srcFileName : file name for source file.
+     * @param desFileName : file name for destination file.
+     * @throws IOException : if IO pb.
+     */
+    public static void forceCopyAndDelete(String srcFileName, String desFileName) throws IOException {
+        final Path source = Paths.get(srcFileName);
+        final Path destination =  Paths.get(desFileName);
+        final long lastModifiedTime = new File(srcFileName).lastModified();
+
+        Files.copy(source, destination, StandardCopyOption.REPLACE_EXISTING);
+        Files.delete(source);
+        destination.toFile().setLastModified(lastModifiedTime);
     }
 
 }

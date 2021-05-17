@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2021 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -2426,7 +2426,9 @@ public abstract class DataMapTableView extends Composite implements IDataMapTabl
     private void parseExpression(ModifiedBeanEvent event, TableViewerCreator tableViewerCreator, ITableEntry tableEntry) {
         if (event.column == tableViewerCreator.getColumn(DataMapTableView.ID_EXPRESSION_COLUMN)) {
             mapperManager.getUiManager().parseExpression(tableEntry.getExpression(), tableEntry, false, false, false);
-            mapperManager.getUiManager().refreshBackground(false, false);
+            if (headerComposite != null && !headerComposite.isDisposed()) {
+                mapperManager.getUiManager().refreshBackground(false, false);
+            }
         }
     }
 
@@ -3558,6 +3560,9 @@ public abstract class DataMapTableView extends Composite implements IDataMapTabl
                             oldMappingMap.clear();
                         } finally {
                             DataMapTableView.this.customSized = isCustom;
+                        }
+                        if (canBeResizedAtPreferedSize()) {
+                            changeSize(getPreferredSize(true, false, false), true, true);
                         }
                         return value;
                     }

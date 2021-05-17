@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2021 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -29,8 +29,11 @@ import org.eclipse.swt.widgets.Display;
 import org.talend.commons.ui.runtime.image.ECoreImage;
 import org.talend.commons.ui.runtime.image.ImageProvider;
 import org.talend.core.model.general.Project;
+import org.talend.core.model.properties.Item;
 import org.talend.core.model.properties.Property;
 import org.talend.core.model.properties.RoutineItem;
+import org.talend.core.model.properties.RoutinesJarItem;
+import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.repository.ProjectManager;
 
 /**
@@ -39,25 +42,24 @@ import org.talend.repository.ProjectManager;
 public class ShowRoutineItemsLabelProvider extends LabelProvider implements IColorProvider, ITreeContentProvider,
         ITableLabelProvider {
 
-    private List<RoutineItemRecord> existedRoutinesRecord = null;
+    private List<RoutineItemRecord> existedRecord = null;
 
-    private Map<Project, List<Property>> allRoutineItems = null;
+    private Map<Project, List<Property>> allItems = null;
 
-    public ShowRoutineItemsLabelProvider(Map<Project, List<Property>> allRoutineItems,
-            List<RoutineItemRecord> existedRoutinesRecord) {
+    public ShowRoutineItemsLabelProvider(Map<Project, List<Property>> allItems, List<RoutineItemRecord> existedRecord) {
         super();
-        this.existedRoutinesRecord = existedRoutinesRecord;
-        this.allRoutineItems = allRoutineItems;
+        this.existedRecord = existedRecord;
+        this.allItems = allItems;
     }
 
     public Object[] getElements(Object inputElement) {
-        Set<Project> projects = allRoutineItems.keySet();
+        Set<Project> projects = allItems.keySet();
         List<Object> objects = new ArrayList<Object>();
 
         Project currentProject = ProjectManager.getInstance().getCurrentProject();
         for (Project p : projects) {
             if (p.equals(currentProject)) {
-                List<Property> items = allRoutineItems.get(p);
+                List<Property> items = allItems.get(p);
                 if (items != null) {
                     objects.addAll(items);
                 }
@@ -70,7 +72,7 @@ public class ShowRoutineItemsLabelProvider extends LabelProvider implements ICol
 
     public Object[] getChildren(Object parentElement) {
         if (parentElement instanceof Project) {
-            List<Property> list = allRoutineItems.get(parentElement);
+            List<Property> list = allItems.get(parentElement);
             if (list != null) {
                 return list.toArray();
             }
@@ -141,18 +143,23 @@ public class ShowRoutineItemsLabelProvider extends LabelProvider implements ICol
     }
 
     public boolean existed(Object element) {
-        if (existedRoutinesRecord != null && element != null && element instanceof Property
-                && ((Property) element).getItem() instanceof RoutineItem) {
-            RoutineItem item = (RoutineItem) ((Property) element).getItem();
-            for (RoutineItemRecord record : existedRoutinesRecord) {
-                if (item.getProperty().getLabel().equals(record.getLabel())) {
-                    return true;
-                } else {
-                    if (item.getProperty().getId().equals(record.getId())) {
+        if (existedRecord != null && element != null && element instanceof Property) {
+            Item item = ((Property) element).getItem();
+            String itemType = ERepositoryObjectType.getItemType(item).name();
+            if (item instanceof RoutineItem) {
+                for (RoutineItemRecord record : existedRecord) {
+                    if (item.getProperty().getLabel().equals(record.getLabel())
+                            || item.getProperty().getId().equals(record.getId())) {
                         return true;
                     }
                 }
-
+            } else if (item instanceof RoutinesJarItem) {
+                for (RoutineItemRecord record : existedRecord) {
+                    if (itemType.equals(record.getType()) && (item.getProperty().getLabel().equals(record.getLabel())
+                            || item.getProperty().getId().equals(record.getId()))) {
+                        return true;
+                    }
+                }
             }
         }
         return false;

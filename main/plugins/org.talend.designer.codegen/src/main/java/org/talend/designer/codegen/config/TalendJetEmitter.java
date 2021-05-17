@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2021 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -104,8 +104,20 @@ public class TalendJetEmitter extends JETEmitter {
         super(arg0, arg1);
 
         for (String classKey : globalClasspath.keySet()) {
-            this.addVariable(classKey, globalClasspath.get(classKey));
+            if (classKey != null && globalClasspath.get(classKey) != null) {
+                try {
+                    String bundleId = globalClasspath.get(classKey);
+                    Bundle bundle = Platform.getBundle(bundleId);
+                    if (bundle == null) {
+                        throw new Exception("Plugin [" + bundleId + "] is not loaded.");
+                    }
+                    this.addVariable(classKey, bundleId);
+                } catch (Exception e) {
+                    ExceptionHandler.process(e);
+                }
+            }
         }
+
         this.talendEclipseHelper = new TalendEclipseHelper(progressMonitor, this, rebuild);
     }
 

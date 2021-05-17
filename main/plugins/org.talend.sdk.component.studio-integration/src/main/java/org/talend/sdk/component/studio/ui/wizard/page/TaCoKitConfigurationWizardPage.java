@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2019 Talend Inc. - www.talend.com
+ * Copyright (C) 2006-2021 Talend Inc. - www.talend.com
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
  * the License. You may obtain a copy of the License at
@@ -18,6 +18,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.jface.wizard.IWizardPage;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.FormAttachment;
@@ -66,6 +67,8 @@ public class TaCoKitConfigurationWizardPage extends AbsTaCoKitWizardPage {
     private final EComponentCategory category;
 
     private WizardProblemManager problemManager;
+
+    private TaCoKitWizardComposite tacokitComposite;
 
     public TaCoKitConfigurationWizardPage(final TaCoKitConfigurationRuntimeData runtimeData,
             final String form,
@@ -131,7 +134,7 @@ public class TaCoKitConfigurationWizardPage extends AbsTaCoKitWizardPage {
                                     .map(n -> String.valueOf(n.getVersion())).orElse("-1")))
                     .forEach(p -> configurationModel.setValue(p));
 
-            final TaCoKitWizardComposite tacokitComposite = new TaCoKitWizardComposite(container, SWT.H_SCROLL | SWT.V_SCROLL | SWT.NO_FOCUS, category,
+            tacokitComposite = new TaCoKitWizardComposite(container, SWT.H_SCROLL | SWT.V_SCROLL | SWT.NO_FOCUS, category,
                     element, configurationModel, true, container.getBackground(), isNew, problemManager);
             tacokitComposite.setLayoutData(createMainFormData(runtimeData.isAddContextFields()));
         } catch (Exception e) {
@@ -185,6 +188,17 @@ public class TaCoKitConfigurationWizardPage extends AbsTaCoKitWizardPage {
             return !problemManager.hasError() && !problemManager.hasUnresolvedRequiredElem();
         }
         return super.isPageComplete();
+    }
+
+    @Override
+    public IWizardPage getNextPage() {
+        IWizardPage next = super.getNextPage();
+        if (EComponentCategory.ADVANCED == category && next == null && tacokitComposite != null) {
+            tacokitComposite.setPropertyResized(true);
+            tacokitComposite.addComponents(true);
+            tacokitComposite.refresh();
+        }
+        return next;
     }
 
     private class WizardHandler implements IWizardHandler {

@@ -734,15 +734,10 @@ Thread error_<%=cid %> = new Thread() {
 };
 
 error_<%=cid %>.start();
-
 process_<%=cid %>.waitFor();
-
 int exitCode_<%=cid%> = process_<%=cid %>.exitValue();
-
-
-normal_<%=cid %>.interrupt();
-
-error_<%=cid %>.interrupt();
+normal_<%=cid %>.join();
+error_<%=cid %>.join();
 
 if ("true".equals((String)globalMap.get("<%=cid%>_SQLLOAD_ERROR"))) {
     throw new TalendException(new java.lang.Exception() , "<%=cid%>" , globalMap);

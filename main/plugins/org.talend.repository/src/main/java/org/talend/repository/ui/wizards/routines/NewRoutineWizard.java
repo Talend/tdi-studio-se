@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2021 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -50,7 +50,7 @@ public class NewRoutineWizard extends Wizard {
     private NewRoutineWizardPage mainPage;
 
     /** Created project. */
-    private RoutineItem routineItem;
+    protected RoutineItem routineItem;
 
     private Property property;
 
@@ -66,12 +66,11 @@ public class NewRoutineWizard extends Wizard {
     public NewRoutineWizard(IPath path) {
         super();
         this.path = path;
-
-        this.property = PropertiesFactory.eINSTANCE.createProperty();
-        this.property.setAuthor(((RepositoryContext) CorePlugin.getContext().getProperty(Context.REPOSITORY_CONTEXT_KEY))
-                .getUser());
-        this.property.setVersion(VersionUtils.DEFAULT_VERSION);
-        this.property.setStatusCode(""); //$NON-NLS-1$
+        property = PropertiesFactory.eINSTANCE.createProperty();
+        property.setAuthor(((RepositoryContext) CorePlugin.getContext().getProperty(Context.REPOSITORY_CONTEXT_KEY)).getUser());
+        property.setVersion(VersionUtils.DEFAULT_VERSION);
+        property.setStatusCode(""); //$NON-NLS-1$
+        addAdditionalProperties(property);
 
         routineItem = PropertiesFactory.eINSTANCE.createRoutineItem();
 
@@ -92,6 +91,9 @@ public class NewRoutineWizard extends Wizard {
         }
 
         routineItem.setContent(byteArray);
+    }
+
+    protected void addAdditionalProperties(Property property) {
     }
 
     /**

@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2021 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -213,6 +213,8 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
 
     protected List<INode> nodes = new ArrayList<INode>();
 
+    protected List<INode> processNodes = new ArrayList<INode>();
+
     protected List<Element> elem = new ArrayList<Element>();
 
     protected List<SubjobContainer> subjobContainers = new ArrayList<SubjobContainer>();
@@ -270,10 +272,6 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
     protected Map<Object, Object> additionalProperties = null;
 
     private List<byte[]> externalInnerContents = new ArrayList<byte[]>();
-
-    private Set<String> neededRoutines;
-
-    private Set<String> neededPigudf;
 
     private static final String SOURCE_JAVA_PIGUDF = "pigudf";
 
@@ -716,8 +714,11 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
      */
     public void addNodeContainer(final NodeContainer nodeContainer) {
         elem.add(nodeContainer);
-        nodes.add(nodeContainer.getNode());
-
+        Node node = nodeContainer.getNode();
+        nodes.add(node);
+        if (node.isProcessNode()) {
+            processNodes.add(node);
+        }
         // fireStructureChange(NEED_UPDATE_JOB, elem);
     }
 
@@ -735,6 +736,16 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
             removeUniqueNodeNamesInJoblet((AbstractJobletContainer) nodeContainer, readedContainers);
         }
         removeNode(uniqueName);
+        if (nodeContainer.getNode().isProcessNode() && uniqueName != null) {
+            Iterator<INode> nodeIter = processNodes.iterator();
+            while (nodeIter.hasNext()) {
+                INode processNode = nodeIter.next();
+                if (uniqueName.equals(processNode.getUniqueName())) {
+                    nodeIter.remove();
+                }
+            }
+        }
+
         Element toRemove = nodeContainer;
         List<Element> toAdd = new ArrayList<Element>();
         for (Object o : elem) {
@@ -809,6 +820,11 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
     @Override
     public List<? extends INode> getGraphicalNodes() {
         return this.nodes;
+    }
+
+    @Override
+    public List<? extends INode> getProcessNodes() {
+        return this.processNodes;
     }
 
     protected IGeneratingProcess generatingProcess = null;
@@ -1090,17 +1106,17 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
     }
     
     private boolean isDefaultValue(IElementParameter param) {
-    	if (param != null && param.getName().equals(EParameterName.JOB_RUN_VM_ARGUMENTS.getName())) {
-    		if(param.getElement() instanceof Process) {
-    			IElementParameter jvmOptParam = ((Process)param.getElement()).getElementParameter(EParameterName.JOB_RUN_VM_ARGUMENTS_OPTION.getName());
-    			if(jvmOptParam != null && param.isValueSetToDefault() && jvmOptParam.isValueSetToDefault()) {
-    				return true;
-    			}else {
-    				return false;
-    			}
-    		}
+        if (param != null && param.getName().equals(EParameterName.JOB_RUN_VM_ARGUMENTS.getName())) {
+            if(param.getElement() instanceof Process) {
+                IElementParameter jvmOptParam = ((Process)param.getElement()).getElementParameter(EParameterName.JOB_RUN_VM_ARGUMENTS_OPTION.getName());
+                if(jvmOptParam != null && param.isValueSetToDefault() && jvmOptParam.isValueSetToDefault()) {
+                    return true;
+                }else {
+                    return false;
+                }
+            }
         }
-    	return param.isValueSetToDefault();
+        return param.isValueSetToDefault();
     }
 
     private void saveElementParameter(IElementParameter param, ProcessType process, TalendFileFactory fileFact,
@@ -1115,7 +1131,7 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
             }
         }
         if (isDefaultValue(param)) {
-        	return;
+            return;
         }
 
         if (param.getFieldType().equals(EParameterFieldType.SCHEMA_TYPE)
@@ -1273,7 +1289,8 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
 
     private boolean isTable(final IElementParameter parameter) {
         return parameter.getFieldType().equals(EParameterFieldType.TABLE) ||
-                parameter.getFieldType().equals(EParameterFieldType.TACOKIT_SUGGESTABLE_TABLE);
+                parameter.getFieldType().equals(EParameterFieldType.TACOKIT_SUGGESTABLE_TABLE)
+                || parameter.getFieldType().equals(EParameterFieldType.TACOKIT_TABLE);
     }
 
     protected boolean isNeedConvertToHex(String value) {
@@ -1846,8 +1863,11 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
         }
     }
 
+    @SuppressWarnings("unchecked")
     protected void checkRoutineDependencies() {
+        boolean init = false;
         if (routinesDependencies == null) {
+            init = true;
             routinesDependencies = new ArrayList<RoutinesParameterType>();
         }
         try {
@@ -1868,17 +1888,15 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
             Iterator<RoutinesParameterType> iterator = routinesDependencies.iterator();
             while (iterator.hasNext()) {
                 RoutinesParameterType routine = iterator.next();
-                if (!allRoutinesSet.contains(routine.getName())) {
+                if (routine.getType() == null && !allRoutinesSet.contains(routine.getName())) {
                     iterator.remove();
                 }
             }
             List<String> possibleRoutines = new ArrayList<String>();
             List<String> routinesToAdd = new ArrayList<String>();
             String additionalString = LanguageManager.getCurrentLanguage() == ECodeLanguage.JAVA ? "." : "";
-            List<String> routinesAlreadySetup = new ArrayList<String>();
-            for (RoutinesParameterType routine : routinesDependencies) {
-                routinesAlreadySetup.add(routine.getName());
-            }
+            List<String> routinesAlreadySetup = routinesDependencies.stream().filter(r -> r.getName() != null)
+                    .map(r -> r.getName()).collect(Collectors.toList());
             for (Project project : referenceProjects) {
                 List<IRepositoryViewObject> refRoutines = factory.getAll(project, ERepositoryObjectType.ROUTINES);
                 for (IRepositoryViewObject object : refRoutines) {
@@ -1985,6 +2003,14 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
                     }
                 }
             }
+            if (init) {
+                if (getProcessType() != null && getProcessType().getParameters() != null
+                        && getProcessType().getParameters().getRoutinesParameter() != null) {
+                    EList<RoutinesParameterType> allRoutines = getProcessType().getParameters().getRoutinesParameter();
+                    routinesDependencies
+                            .addAll(allRoutines.stream().filter(r -> r.getType() != null).collect(Collectors.toList()));
+                }
+            }
         } catch (PersistenceException e) {
             ExceptionHandler.process(e);
         }
@@ -2063,7 +2089,7 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
             for (Object o : process.getParameters().getRoutinesParameter()) {
                 RoutinesParameterType type = (RoutinesParameterType) o;
                 if (StringUtils.equals(type.getId(), routineType.getId())
-                        || StringUtils.equals(type.getName(), routineType.getName())) {
+                        || (type.getName() != null && StringUtils.equals(type.getName(), routineType.getName()))) {
                     found = true;
                     break;
                 }
@@ -2082,7 +2108,8 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
             for (RoutinesParameterType type : routinesParameters) {
                 found = false;
                 for (RoutinesParameterType existedType : routinesDependencies) {
-                    if (type.getId().equals(existedType.getId()) || type.getName().equals(existedType.getName())) {
+                    if (type.getId().equals(existedType.getId())
+                            || (type.getName() != null && type.getName().equals(existedType.getName()))) {
                         found = true;
                         break;
                     }
@@ -2222,7 +2249,8 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
                                 IElementParameter columnParam = (IElementParameter) element;
                                 if (columnParam.getFieldType() == EParameterFieldType.COLUMN_LIST
                                         || columnParam.getFieldType() == EParameterFieldType.PREV_COLUMN_LIST
-                                        || columnParam.getFieldType() == EParameterFieldType.LOOKUP_COLUMN_LIST) {
+                                        || columnParam.getFieldType() == EParameterFieldType.LOOKUP_COLUMN_LIST
+                                        || columnParam.getFieldType() == EParameterFieldType.TACOKIT_VALUE_SELECTION) {
                                     for (Map<String, Object> columnMap : values) {
                                         Object column = columnMap.get(columnParam.getName());
                                         if (column == null || "".equals(column)) { //$NON-NLS-1$
@@ -4636,6 +4664,7 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
 
         elem.clear();
         nodes.clear();
+        processNodes.clear();
         notes.clear();
         subjobContainers.clear();
         setGeneratingProcess(null);
@@ -4701,7 +4730,15 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
 
     @Override
     public Set<String> getNeededRoutines() {
-        return getNeededCodeItem(neededRoutines, ERepositoryObjectType.ROUTINES);
+        Set<String> neededRoutines = new HashSet<>();
+        neededRoutines.addAll(getNeededCodeItem(neededRoutines, ERepositoryObjectType.ROUTINES));
+        // neededRoutines.addAll(getNeededCodeItem(neededRoutines, ERepositoryObjectType.ROUTINESJAR));
+        return neededRoutines;
+    }
+
+    // TODO add a new API to get all needed codesjar
+    public Set<Property> getNeededCodesJars() {
+        return null;
     }
 
     private Set<String> getNeededCodeItem(Set<String> neededCodeItem, ERepositoryObjectType itemType) {
@@ -4717,7 +4754,7 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
         Iterator<RoutinesParameterType> iterator = routinesDependencies.iterator();
         while (iterator.hasNext()) {
             RoutinesParameterType routine = iterator.next();
-            if (StringUtils.isEmpty(routine.getId()) || StringUtils.isEmpty(routine.getName())) {
+            if (StringUtils.isEmpty(routine.getId()) || (routine.getType() == null && StringUtils.isEmpty(routine.getName()))) {
                 iterator.remove();
             }
         }
@@ -4727,7 +4764,9 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
 
         Set<String> listRoutines = new HashSet<String>();
         for (RoutinesParameterType routine : routinesDependencies) {
-            listRoutines.add(routine.getName());
+            if (routine.getName() != null) {
+                listRoutines.add(routine.getName());
+            }
         }
 
         IJobletProviderService jobletService = null;
@@ -4817,14 +4856,6 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
             // }
             node.setPropertyValue(EParameterName.REPAINT.getName(), Boolean.TRUE);
         }
-    }
-
-    public void setNeededRoutines(Set<String> neededRoutines) {
-        this.neededRoutines = neededRoutines;
-    }
-
-    public void setNeededPigudf(Set<String> neededPigudf) {
-        this.neededPigudf = neededPigudf;
     }
 
     public List<RoutinesParameterType> getRoutineDependencies() {
@@ -4938,4 +4969,8 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
         return this.generatingProcess;
     }
 
+    @Override
+    public INode getNodeByUniqueName(String uniqueName) {
+        return getGeneratingNodes().stream().filter(n -> n.getUniqueName().equals(uniqueName)).findAny().orElse(null);
+    }
 }

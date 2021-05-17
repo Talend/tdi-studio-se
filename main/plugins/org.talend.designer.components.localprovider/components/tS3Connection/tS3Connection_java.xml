@@ -37,11 +37,24 @@
     <PARAMETERS>
 
     <PARAMETER
+       NAME="CREDENTIAL_PROVIDER"
+       FIELD="CLOSED_LIST"
+       NUM_ROW="15"
+       REQUIRED="true"
+    >
+      <ITEMS DEFAULT="STATIC_CREDENTIALS"> <!-- It's just a basic one -->
+        <ITEM NAME="STATIC_CREDENTIALS" VALUE="STATIC_CREDENTIALS" SHOW_IF="true" />
+        <ITEM NAME="INHERIT_CREDENTIALS" VALUE="INHERIT_CREDENTIALS" SHOW_IF="true" />
+        <ITEM NAME="WEB_TOKEN" VALUE="WEB_TOKEN" SHOW_IF="true" />
+      </ITEMS>
+    </PARAMETER>
+
+    <PARAMETER
       NAME="ACCESS_KEY"
       FIELD="TEXT"
-      NUM_ROW="15"
+      NUM_ROW="16"
       REQUIRED="true"
-      SHOW_IF="INHERIT_CREDENTIALS == 'false'"
+      SHOW_IF="CREDENTIAL_PROVIDER == 'STATIC_CREDENTIALS'"
     >
       <DEFAULT>""</DEFAULT>
     </PARAMETER>
@@ -49,22 +62,13 @@
     <PARAMETER
       NAME="SECRET_KEY"
       FIELD="PASSWORD"
-      NUM_ROW="15"
+      NUM_ROW="16"
       REQUIRED="true"
-      SHOW_IF="INHERIT_CREDENTIALS == 'false'"
+      SHOW_IF="CREDENTIAL_PROVIDER == 'STATIC_CREDENTIALS'"
     >
       <DEFAULT>""</DEFAULT>
     </PARAMETER>
-    
-    <PARAMETER
-      NAME="INHERIT_CREDENTIALS"
-      FIELD="CHECK"
-      NUM_ROW="16"
-      REQUIRED="true"
-    >
-      <DEFAULT>false</DEFAULT>
-    </PARAMETER>
-    
+
     <PARAMETER
       NAME="ASSUME_ROLE"
       FIELD="CHECK"
@@ -162,7 +166,7 @@
 	    FIELD="CLOSED_LIST" 
 	    RAW="true" 
 	    NUM_ROW="30"
-	    SHOW_IF="isShow[KEY_TYPE] AND (KEY_TYPE == 'SYMMETRIC_MASTER_KEY')" 
+	    SHOW_IF="isShow[KEY_TYPE] AND (KEY_TYPE == 'SYMMETRIC_MASTER_KEY')"
 	    REQUIRED="true" 
 	    GROUP="ENCRYPT_GROUP"
 	 >
@@ -229,7 +233,7 @@
 
     <ADVANCED_PARAMETERS>
     
-    <PARAMETER 	NAME="USE_REGION_ENDPOINT" FIELD="CHECK" NUM_ROW="5" REQUIRED="true"	GROUP="REGION_ENDPOINT_GROUP" >
+    <PARAMETER 	NAME="USE_REGION_ENDPOINT" FIELD="CHECK" NUM_ROW="5" REQUIRED="true" DYNAMIC_SETTINGS="true" GROUP="REGION_ENDPOINT_GROUP" >
 	   <DEFAULT>false</DEFAULT>
   	</PARAMETER>
     
@@ -242,19 +246,47 @@
       <DEFAULT>"s3.amazonaws.com"</DEFAULT>
     </PARAMETER>
 
-    <PARAMETER  NAME="PATHSTYLEACCESS" 
+    <PARAMETER  NAME="PATHSTYLEACCESS"
           FIELD="CHECK" 
           NUM_ROW="6" 
-          REQUIRED="false" 
+          REQUIRED="false"
+          DYNAMIC_SETTINGS="true"
           GROUP="REGION_ENDPOINT_GROUP" 
           SHOW_IF="USE_REGION_ENDPOINT == 'true'" >
       <DEFAULT>false</DEFAULT>
     </PARAMETER>
 
     <PARAMETER
+      NAME="WEB_IDENTITY_TOKEN_FILE"
+      FIELD="FILE"
+      NUM_ROW="10"
+      REQUIRED="false"
+      GROUP="WEB_IDENTITY_TOKEN"
+      SHOW_IF="CREDENTIAL_PROVIDER == 'WEB_TOKEN'"
+    />
+
+    <PARAMETER
+      NAME="WEB_TOKEN_ARN"
+      FIELD="TEXT"
+      NUM_ROW="11"
+      REQUIRED="false"
+      GROUP="WEB_IDENTITY_TOKEN"
+      SHOW_IF="CREDENTIAL_PROVIDER == 'WEB_TOKEN'"
+    />
+
+    <PARAMETER
+      NAME="WEB_TOKEN_ROLE_SESSION_NAME"
+      FIELD="TEXT"
+      NUM_ROW="12"
+      REQUIRED="false"
+      GROUP="WEB_IDENTITY_TOKEN"
+      SHOW_IF="CREDENTIAL_PROVIDER == 'WEB_TOKEN'"
+    />
+
+    <PARAMETER
       NAME="CONFIG_CLIENT"
       FIELD="CHECK"
-      NUM_ROW="10"
+      NUM_ROW="15"
       NB_LINES="5"
       GROUP="CLIENT_CONFIG"
     >
@@ -437,6 +469,7 @@
       NAME="ENABLE_ACCELERATE"
       FIELD="CHECK"
       NUM_ROW="50"
+      DYNAMIC_SETTINGS="true"
     >   	
     <DEFAULT>false</DEFAULT>
     </PARAMETER>
@@ -450,20 +483,20 @@
        <IMPORT NAME="aws-java-sdk-1.11.848.jar" MODULE="aws-java-sdk-1.11.848.jar"
 			MVN="mvn:com.amazonaws/aws-java-sdk/1.11.848"
 			REQUIRED="true" />
-		<IMPORT NAME="jackson-core-2.10.1.jar" MODULE="jackson-core-2.10.1.jar"
-			MVN="mvn:com.fasterxml.jackson.core/jackson-core/2.10.1"
+		<IMPORT NAME="jackson-core-2.11.4.jar" MODULE="jackson-core-2.11.4.jar"
+			MVN="mvn:com.fasterxml.jackson.core/jackson-core/2.11.4"
 			REQUIRED="true" />
-		<IMPORT NAME="jackson-databind-2.10.1.jar" MODULE="jackson-databind-2.10.1.jar"
-			MVN="mvn:com.fasterxml.jackson.core/jackson-databind/2.10.1"
+		<IMPORT NAME="jackson-databind-2.11.4.jar" MODULE="jackson-databind-2.11.4.jar"
+			MVN="mvn:com.fasterxml.jackson.core/jackson-databind/2.11.4"
 			REQUIRED="true" />
-		<IMPORT NAME="jackson-annotations-2.10.1.jar" MODULE="jackson-annotations-2.10.1.jar"
-			MVN="mvn:com.fasterxml.jackson.core/jackson-annotations/2.10.1"
+		<IMPORT NAME="jackson-annotations-2.11.4.jar" MODULE="jackson-annotations-2.11.4.jar"
+			MVN="mvn:com.fasterxml.jackson.core/jackson-annotations/2.11.4"
 			REQUIRED="true" />
 		<IMPORT NAME="httpcore-4.4.13.jar" MODULE="httpcore-4.4.13.jar"
 			MVN="mvn:org.apache.httpcomponents/httpcore/4.4.13"
 			REQUIRED="true" />
-		<IMPORT NAME="httpclient-4.5.12.jar" MODULE="httpclient-4.5.12.jar"
-			MVN="mvn:org.apache.httpcomponents/httpclient/4.5.12"
+		<IMPORT NAME="httpclient-4.5.13.jar" MODULE="httpclient-4.5.13.jar"
+			MVN="mvn:org.apache.httpcomponents/httpclient/4.5.13"
 			REQUIRED="true" />
 		<IMPORT NAME="joda-time-2.8.1.jar" MODULE="joda-time-2.8.1.jar"
 			MVN="mvn:joda-time/joda-time/2.8.1"

@@ -151,7 +151,7 @@
 			<!-- USER_ACCOUNT_HMAC -->
 			<IMPORT NAME="jets3t-0.9.1" MODULE="jets3t-0.9.1.jar" MVN="mvn:org.talend.libraries/jets3t-0.9.1/6.0.0"  REQUIRED_IF="(#LINK@NODE.CONNECTION.AUTH_TYPE == 'USER_ACCOUNT_HMAC') OR (AUTH_TYPE == 'USER_ACCOUNT_HMAC')" />
 			<IMPORT NAME="commons-logging-1.2" MODULE="commons-logging-1.2.jar" MVN="mvn:commons-logging/commons-logging/1.2" REQUIRED="true" />
-			<IMPORT NAME="httpclient-4.5.12" MODULE="httpclient-4.5.12.jar" MVN="mvn:org.apache.httpcomponents/httpclient/4.5.12" REQUIRED="true" />
+			<IMPORT NAME="httpclient-4.5.13" MODULE="httpclient-4.5.13.jar" MVN="mvn:org.apache.httpcomponents/httpclient/4.5.13" REQUIRED="true" />
 			<IMPORT NAME="httpcore-4.4.13" MODULE="httpcore-4.4.13.jar" MVN="mvn:org.apache.httpcomponents/httpcore/4.4.13" REQUIRED="true" />
 			<IMPORT NAME="commons-codec-1.14" MODULE="commons-codec-1.14.jar" MVN="mvn:commons-codec/commons-codec/1.14" REQUIRED="true" />
 
@@ -161,7 +161,7 @@
 				<IMPORT NAME="google-auth-library-credentials-0.20.0" MODULE="google-auth-library-credentials-0.20.0.jar" MVN="mvn:com.google.auth/google-auth-library-credentials/0.20.0" REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false') AND ((AUTH_TYPE == 'SERVICE_ACCOUNT') OR (AUTH_TYPE == 'TOKEN'))" />
 				<IMPORT NAME="google-http-client-1.38.0" MODULE="google-http-client-1.38.0.jar" MVN="mvn:com.google.http-client/google-http-client/1.38.0" REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false') AND ((AUTH_TYPE == 'SERVICE_ACCOUNT') OR (AUTH_TYPE == 'TOKEN'))" />
 				<IMPORT NAME="google-http-client-jackson2-1.38.0" MODULE="google-http-client-jackson2-1.38.0.jar" MVN="mvn:com.google.http-client/google-http-client-jackson2/1.38.0" REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false') AND ((AUTH_TYPE == 'SERVICE_ACCOUNT') OR (AUTH_TYPE == 'TOKEN'))" />
-				<IMPORT NAME="jackson-core-2.10.1" MODULE="jackson-core-2.10.1.jar" MVN="mvn:com.fasterxml.jackson.core/jackson-core/2.10.1" REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false') AND ((AUTH_TYPE == 'SERVICE_ACCOUNT') OR (AUTH_TYPE == 'TOKEN'))" />
+				<IMPORT NAME="jackson-core-2.11.4" MODULE="jackson-core-2.11.4.jar" MVN="mvn:com.fasterxml.jackson.core/jackson-core/2.11.4" REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false') AND ((AUTH_TYPE == 'SERVICE_ACCOUNT') OR (AUTH_TYPE == 'TOKEN'))" />
 				<IMPORT NAME="guava-30.0-jre.jar" MODULE="guava-30.0-jre.jar" MVN="mvn:com.google.guava/guava/30.0-jre" REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false') AND ((AUTH_TYPE == 'SERVICE_ACCOUNT') OR (AUTH_TYPE == 'TOKEN'))" />
 				<IMPORT NAME="failureaccess-1.0.1.jar" MODULE="failureaccess-1.0.1.jar" MVN="mvn:com.google.guava/failureaccess/1.0.1" REQUIRED="true" />
 

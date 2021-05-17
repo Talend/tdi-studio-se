@@ -25,12 +25,18 @@ imports="
 	if(partSizeMb == null) {
 		partSizeMb = "5";
 	}
+
+	String multipart_threshold_mb = ElementParameterParser.getValue(node, "__MULTIPART_THRESHOLD__");
+	if((multipart_threshold_mb == null) || "".equals(multipart_threshold_mb) || "\"\"".equals(multipart_threshold_mb)) {
+        multipart_threshold_mb = "5";
+    }
 	
 	boolean enableServerSideEncryption = "true".equals(ElementParameterParser.getValue(node, "__ENABLE_SERVER_SIDE_ENCRYPTION__"));
 
 	boolean enableACL = "true".equals(ElementParameterParser.getValue(node, "__ACCESS_CONTROL_LIST__"));
 	List<Map<String, String>> paramsACL = ElementParameterParser.getTableValue(node,"__ACL__");
-	
+	final String cannedACL = ElementParameterParser.getValue(node, "__CANNED_ACCESS_CONTROL_LIST__");
+	final boolean enableCannedACL = (cannedACL != null) && (!cannedACL.isEmpty()) && !("\"NONE\"".equals(cannedACL));
 	%>
 	<%@ include file="../tS3Connection/S3Client.javajet" %>
 	String key_<%=cid%> = <%=key%>;
@@ -128,7 +134,7 @@ accessCtrlList.grantPermission(grantee_<%=cid%>_<%=grantee_id%>, com.amazonaws.s
 		if(!useStream_<%=cid%>) {
 				java.io.File inputFile_<%=cid%> = new java.io.File((String)fileOrStream_<%=cid%>);
 				
-				long multipart_upload_threshold_<%=cid%> = 5 * 1024 * 1024;
+				long multipart_upload_threshold_<%=cid%> = <%=multipart_threshold_mb%> * 1024 * 1024;
 				
     		tm_<%=cid%> = com.amazonaws.services.s3.transfer.TransferManagerBuilder
     			.standard()
@@ -141,7 +147,15 @@ accessCtrlList.grantPermission(grantee_<%=cid%>_<%=grantee_id%>, com.amazonaws.s
 			<%if (enableACL) {%>
 				putRequest_<%=cid%>.withAccessControlList(accessCtrlList);
 			<%}%>
-
+		    <%if (enableCannedACL) {%>
+				{
+				   final String cannedACLChoice = <%= cannedACL %>;
+				   if (cannedACLChoice != null && (!cannedACLChoice.isEmpty()) && !("NONE".equals(cannedACLChoice))) {
+				       putRequest_<%=cid%>.withCannedAcl(com.amazonaws.services.s3.model.CannedAccessControlList.valueOf(cannedACLChoice));
+				   }
+				}
+			<%}%>
+			
   			<%@ include file="./set_kms.javajet"%>
   		
   			com.amazonaws.services.s3.transfer.Upload upload_<%=cid%> = tm_<%=cid%>.upload(putRequest_<%=cid%>);
@@ -176,7 +190,14 @@ accessCtrlList.grantPermission(grantee_<%=cid%>_<%=grantee_id%>, com.amazonaws.s
                     <%if (enableACL) {%>
 				          putRequest_<%=cid%>.withAccessControlList(accessCtrlList);
 			        <%}%>
-    				
+    				<%if (enableCannedACL) {%>
+				         {
+				             final String cannedACLChoice = <%= cannedACL %>;
+				             if (cannedACLChoice != null && (!cannedACLChoice.isEmpty()) && !("NONE".equals(cannedACLChoice))) {
+				                 putRequest_<%=cid%>.withCannedAcl(com.amazonaws.services.s3.model.CannedAccessControlList.valueOf(cannedACLChoice));
+				             }
+				         }
+			        <%}%>
     				<%@ include file="./set_kms.javajet"%>
     				
     				conn_<%=cid%>.putObject(putRequest_<%=cid%>);
@@ -187,7 +208,14 @@ accessCtrlList.grantPermission(grantee_<%=cid%>_<%=grantee_id%>, com.amazonaws.s
                 <%if (enableACL) {%>
 				putRequest_<%=cid%>.withAccessControlList(accessCtrlList);
 			    <%}%>
-      			
+      			<%if (enableCannedACL) {%>
+				{
+				    final String cannedACLChoice = <%= cannedACL %>;
+				    if (cannedACLChoice != null && (!cannedACLChoice.isEmpty()) && !("NONE".equals(cannedACLChoice))) {
+				        putRequest_<%=cid%>.withCannedACL(com.amazonaws.services.s3.model.CannedAccessControlList.valueOf(cannedACLChoice));
+				    }
+				}
+			    <%}%>
       			<%@ include file="./set_kms.javajet"%>
       			
       			com.amazonaws.services.s3.model.InitiateMultipartUploadResult initResponse_<%=cid%> = conn_<%=cid%>.initiateMultipartUpload(putRequest_<%=cid%>);

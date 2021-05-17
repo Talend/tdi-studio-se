@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2020 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2021 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -65,7 +65,12 @@ public class PropertySetDialog extends Dialog {
         delimitedIdentifiersButton.setText(Messages.getString("PropertySetDialog.delimitedIdentifiers.title")); //$NON-NLS-1$
 
         useAliasButton = new Button(container, SWT.CHECK);
-        useAliasButton.setText(Messages.getString("PropertySetDialog.useAlias.title")); //$NON-NLS-1$
+        String useAliasTitle = Messages.getString("PropertySetDialog.useAlias.title");//$NON-NLS-1$
+        IComponent component = mapperManager.getComponent().getComponent();
+        if (component != null && "tELTOracleMap".equals(component.getName())) { //$NON-NLS-1$
+            useAliasTitle = Messages.getString("PropertySetDialog.useAlias.oracle.title");//$NON-NLS-1$
+        }
+        useAliasButton.setText(useAliasTitle);
 
         init();
         addListener();
@@ -77,10 +82,10 @@ public class PropertySetDialog extends Dialog {
         delimitedIdentifiersButton.setSelection(generationManager.isUseDelimitedIdentifiers());
         useAliasButton.setSelection(generationManager.isUseAliasInOutputTable());
 
-        // Implement the column alias only for tELTTeradataMap now.
+        // Implement the column alias only for tELTTeradataMap/tELTOracleMap now.
         boolean enabled = false;
         IComponent component = mapperManager.getComponent().getComponent();
-        if (component != null && "tELTTeradataMap".equals(component.getName())) { //$NON-NLS-1$
+        if (component != null && ("tELTTeradataMap".equals(component.getName()) || "tELTOracleMap".equals(component.getName()))) { //$NON-NLS-1$ //$NON-NLS-2$
             enabled = true;
         }
         useAliasButton.setVisible(enabled);

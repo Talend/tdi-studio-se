@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2021 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -20,20 +20,18 @@ import org.eclipse.jface.viewers.ViewerFilter;
 import org.talend.core.model.general.Project;
 import org.talend.core.model.properties.Property;
 import org.talend.core.model.properties.RoutineItem;
+import org.talend.core.model.properties.RoutinesJarItem;
 
 /**
  * ggu class global comment. Detailled comment
  */
 public class ShowRoutineItemsViewerFilter extends ViewerFilter {
 
-    private boolean system;
+    private Map<Project, List<Property>> allItems;
 
-    private Map<Project, List<Property>> allRoutineItems;
-
-    public ShowRoutineItemsViewerFilter(Map<Project, List<Property>> allRoutineItems, boolean system) {
+    public ShowRoutineItemsViewerFilter(Map<Project, List<Property>> allItems) {
         super();
-        this.system = system;
-        this.allRoutineItems = allRoutineItems;
+        this.allItems = allItems;
     }
 
     /*
@@ -45,10 +43,14 @@ public class ShowRoutineItemsViewerFilter extends ViewerFilter {
     @Override
     public boolean select(Viewer viewer, Object parentElement, Object element) {
         if (element instanceof Property && ((Property) element).getItem() instanceof RoutineItem
-                && ((RoutineItem) ((Property) element).getItem()).isBuiltIn() == system) {
+                && ((RoutineItem) ((Property) element).getItem()).isBuiltIn() == false) {
             return true;
-        } else if (element instanceof Project) {
-            List<Property> list = allRoutineItems.get(element);
+        }
+        if (element instanceof Property && ((Property) element).getItem() instanceof RoutinesJarItem) {
+            return true;
+        }
+        if (element instanceof Project) {
+            List<Property> list = allItems.get(element);
             boolean has = false;
             if (list != null) {
                 for (Property p : list) {

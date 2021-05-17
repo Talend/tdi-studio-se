@@ -32,8 +32,6 @@ public class Log4jSettingPage extends ProjectSettingPage {
 
     private StyledText templateTxt;
 
-    private boolean reset = false;
-
     Button log4jBtn;
 
     Button log4jVersion1Btn;
@@ -216,40 +214,18 @@ public class Log4jSettingPage extends ProjectSettingPage {
     }
 
     private void saveLog4jSetting() {
-        IRunProcessService service = null;
-        if (GlobalServiceRegister.getDefault().isServiceRegistered(IRunProcessService.class)) {
-            service = (IRunProcessService) GlobalServiceRegister.getDefault().getService(IRunProcessService.class);
+        if (log4jBtn != null && !log4jBtn.isDisposed()) {
+            Log4jPrefsSettingManager.getInstance().saveLog4jNodeIntoPref(Log4jPrefsConstants.LOG4J_ENABLE_NODE,
+                    String.valueOf(log4jBtn.getSelection()));
         }
-        if (reset) {
-            if (service != null) {
-                Log4jPrefsSettingManager.getInstance().saveLog4jNodeIntoPref(Log4jPrefsConstants.LOG4J_ENABLE_NODE,
-                        String.valueOf(false));
-                if (isNewProject) {
-                    Log4jPrefsSettingManager.getInstance().saveLog4jNodeIntoPref(Log4jPrefsConstants.LOG4J_CONTENT_NODE,
-                            service.getLogTemplate(Log4jPrefsConstants.LOG4J_VERSION2_FILEPATH));
-                    Log4jPrefsSettingManager.getInstance().saveLog4jNodeIntoPref(Log4jPrefsConstants.LOG4J_SELECT_VERSION2,
-                            String.valueOf(true));
-                } else {
-                    Log4jPrefsSettingManager.getInstance().saveLog4jNodeIntoPref(Log4jPrefsConstants.LOG4J_CONTENT_NODE,
-                            service.getLogTemplate(Log4jPrefsConstants.LOG4JFILEPATH));
-                    Log4jPrefsSettingManager.getInstance().saveLog4jNodeIntoPref(Log4jPrefsConstants.LOG4J_SELECT_VERSION2,
-                            String.valueOf(false));
-                }
-            }
-        } else {
-            if (log4jBtn != null && !log4jBtn.isDisposed()) {
-                Log4jPrefsSettingManager.getInstance().saveLog4jNodeIntoPref(Log4jPrefsConstants.LOG4J_ENABLE_NODE,
-                        String.valueOf(log4jBtn.getSelection()));
-            }
-            Log4jPrefsSettingManager.getInstance().saveLog4jNodeIntoPref(Log4jPrefsConstants.LOG4J_CONTENT_NODE,
-                    templateTxt.getText());
-            if (combo != null) {
-                int selectionIndex = combo.getSelectionIndex();
-                Log4jPrefsSettingManager.getInstance().saveLog4jNodeIntoPref(Log4jPrefsConstants.LOG4J_SELECT_VERSION2,
-                        String.valueOf(selectionIndex == 1));
-            }
+        Log4jPrefsSettingManager.getInstance().saveLog4jNodeIntoPref(Log4jPrefsConstants.LOG4J_CONTENT_NODE,
+                templateTxt.getText());
+        if (combo != null) {
+            int selectionIndex = combo.getSelectionIndex();
+            Log4jPrefsSettingManager.getInstance().saveLog4jNodeIntoPref(Log4jPrefsConstants.LOG4J_SELECT_VERSION2,
+                    String.valueOf(selectionIndex == 1));
         }
-        reset = false;
+        
         log4jVersion = Boolean
                 .valueOf(Log4jPrefsSettingManager.getInstance().getValueOfPreNode(Log4jPrefsConstants.LOG4J_SELECT_VERSION2))
                         ? Log4jPrefsConstants.LOG4J2
@@ -277,7 +253,6 @@ public class Log4jSettingPage extends ProjectSettingPage {
     protected void performDefaults() {
         super.performDefaults();
         if (templateTxt != null && !templateTxt.isDisposed()) {
-            reset = true;
             if (log4jBtn != null && !log4jBtn.isDisposed()) {
                 log4jBtn.setSelection(Log4jUtil.isEnable());
             }

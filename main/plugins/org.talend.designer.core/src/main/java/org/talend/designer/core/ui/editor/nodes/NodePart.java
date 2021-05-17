@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2021 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement availe at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -19,6 +19,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.compare.internal.CompareEditor;
 import org.eclipse.draw2d.ChopboxAnchor;
 import org.eclipse.draw2d.ConnectionAnchor;
 import org.eclipse.draw2d.IFigure;
@@ -582,7 +583,12 @@ public class NodePart extends AbstractGraphicalEditPart implements PropertyChang
                 if (isOriginalNode && (testContainerService != null)) {
                     testContainerService.renameConnection(node, false);
                 }
-            } else {
+                
+            } else if (externalNode != null && (part instanceof CompareEditor)) {
+                externalNode.setReadOnly(true);
+                externalNode.open(getViewer().getControl().getShell());
+            }
+            else {
                 // add for feature 13361
                 boolean isJoblet = false;
 
