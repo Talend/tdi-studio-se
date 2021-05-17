@@ -859,9 +859,13 @@ public class DefaultRunProcessService implements IRunProcessService {
      */
     @Override
     public void initializeRootPoms(IProgressMonitor monitor) {
-        if (isCIMode()) {
-            return;
-        }
+
+//        skipping of root pom generation and updating code projects
+//        leads to compilation errors and incorrect manifest generation 
+//        for routes and OSGi jobs (APPINT-32995)
+//        if (isCIMode()) {
+//            return;
+//        }
         try {
             AggregatorPomsHelper helper = new AggregatorPomsHelper();
             helper.installRootPom(false);
