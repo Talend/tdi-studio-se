@@ -46,8 +46,10 @@ public abstract class AbstractInOutTable extends AbstractDataMapTable {
 
     protected void initFromExternalData(ExternalDbMapTable externalMapperTable) {
         super.initFromExternalData(externalMapperTable);
-        this.activateColumnNameFilter = externalMapperTable.isActivateColumnNameFilter();
-        this.setColumnNameFilter(externalMapperTable.getColumnNameFilter());
+        if (externalMapperTable != null) {
+            this.activateColumnNameFilter = externalMapperTable.isActivateColumnNameFilter();
+            this.setColumnNameFilter(externalMapperTable.getColumnNameFilter());
+        }
     }
 
     protected abstract AbstractInOutTableEntry getNewTableEntry(IMetadataColumn metadataColumn);
