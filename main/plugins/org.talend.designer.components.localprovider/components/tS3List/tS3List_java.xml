@@ -405,8 +405,8 @@
 		<IMPORT NAME="httpcore-4.4.13.jar" MODULE="httpcore-4.4.13.jar"
 			MVN="mvn:org.apache.httpcomponents/httpcore/4.4.13"
 			REQUIRED_IF="USE_EXISTING_CONNECTION == 'false'" />
-		<IMPORT NAME="httpclient-4.5.12.jar" MODULE="httpclient-4.5.12.jar"
-			MVN="mvn:org.apache.httpcomponents/httpclient/4.5.12"
+		<IMPORT NAME="httpclient-4.5.13.jar" MODULE="httpclient-4.5.13.jar"
+			MVN="mvn:org.apache.httpcomponents/httpclient/4.5.13"
 			REQUIRED_IF="USE_EXISTING_CONNECTION == 'false'" />
 		<IMPORT NAME="joda-time-2.8.1.jar" MODULE="joda-time-2.8.1.jar"
 			MVN="mvn:joda-time/joda-time/2.8.1"
@@ -423,6 +423,12 @@
     <RETURNS>
         <RETURN NAME="CURRENT_BUCKET" TYPE="id_String" AVAILABILITY="FLOW" />
         <RETURN NAME="CURRENT_KEY" TYPE="id_String" AVAILABILITY="FLOW" />
+		<RETURN NAME="CURRENT_SIZE" TYPE="id_Long" AVAILABILITY="FLOW" />
+		<RETURN NAME="CURRENT_LASTMODIFIED" TYPE="id_Date" AVAILABILITY="FLOW" />
+		<RETURN NAME="CURRENT_OWNER" TYPE="id_String" AVAILABILITY="FLOW" />
+		<RETURN NAME="CURRENT_OWNER_ID" TYPE="id_String" AVAILABILITY="FLOW" />
+		<RETURN NAME="CURRENT_ETAG" TYPE="id_String" AVAILABILITY="FLOW" />
+		<RETURN NAME="CURRENT_STORAGECLASS" TYPE="id_String" AVAILABILITY="FLOW" />
         <RETURN NAME="NB_BUCKET" TYPE="id_Integer" AVAILABILITY="AFTER" />
         <RETURN NAME="NB_BUCKET_OBJECT" TYPE="id_Integer" AVAILABILITY="AFTER" />
     </RETURNS>

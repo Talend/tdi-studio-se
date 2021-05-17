@@ -460,16 +460,32 @@ public class JobletUtil {
         List<? extends IElementParameter> elementParas = conn.getElementParameters();
 
         for (IElementParameter elementPara : elementParas) {
-            if (elementPara.getName() != null && !elementPara.getName().equals("UNIQUE_NAME")) {
-                IElementParameter cloneElement = cloneConn.getElementParameter(elementPara.getName());
-                Object paValue = elementPara.getValue();
-                if (paValue instanceof List) {
-                    List list = new ArrayList();
-                    list.addAll((List) paValue);
-                    cloneElement.setValue(list);
+            if (elementPara.getName() != null) {
+                if (!elementPara.getName().equals("UNIQUE_NAME")) {
+                    IElementParameter cloneElement = cloneConn.getElementParameter(elementPara.getName());
+                    Object paValue = elementPara.getValue();
+                    if (paValue instanceof List) {
+                        List list = new ArrayList();
+                        list.addAll((List) paValue);
+                        cloneElement.setValue(list);
+                    } else {
+                        cloneElement.setContextMode(elementPara.isContextMode());
+                        cloneElement.setValue(elementPara.getValue());
+                    }
                 } else {
-                    cloneElement.setContextMode(elementPara.isContextMode());
-                    cloneElement.setValue(elementPara.getValue());
+                    //TUP-30430. 
+                    //see 3443, these links should have unique name. But for joblet, the unified name 
+                    //is used for performance data and it is unique. Clone unique name from definition and no need 
+                    //to generate a new one.
+                    if (conn.getLineStyle().equals(EConnectionType.ON_COMPONENT_OK)
+                            || conn.getLineStyle().equals(EConnectionType.ON_COMPONENT_ERROR)
+                            || conn.getLineStyle().equals(EConnectionType.ON_SUBJOB_OK)
+                            || conn.getLineStyle().equals(EConnectionType.ON_SUBJOB_ERROR)
+                            || conn.getLineStyle().equals(EConnectionType.RUN_IF)
+                            || conn.getLineStyle().equals(EConnectionType.STARTS)) {
+                        String uniqueName = (String)elementPara.getValue();
+                        if (StringUtils.isNotEmpty(uniqueName)) cloneConn.setUniqueName(uniqueName);
+                    }
                 }
 
             }

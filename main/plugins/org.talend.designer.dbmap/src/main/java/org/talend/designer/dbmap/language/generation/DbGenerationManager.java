@@ -1332,6 +1332,10 @@ public abstract class DbGenerationManager {
                 isELTDBMap = isELTDBMap(source);
             }
             if (isELTDBMap) {
+                if (commaCouldBeAdded) {
+                    appendSqlQuery(sb, DbMapSqlConstants.COMMA);
+                    appendSqlQuery(sb, DbMapSqlConstants.SPACE);
+                }
                 buildTableDeclaration(component, sb, inputTable);
             } else if (!aliasAlreadyDeclared.contains(inputTable.getName())) {
                 if (crCouldBeAdded) {

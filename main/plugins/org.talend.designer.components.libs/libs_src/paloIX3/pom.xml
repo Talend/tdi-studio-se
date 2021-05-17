@@ -1,0 +1,100 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>org.talend.components</groupId>
+  <artifactId>paloIX3</artifactId>
+  <version>1.0.1</version>
+  <packaging>jar</packaging>
+
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <talend.nexus.url>https://artifacts-oss.talend.com</talend.nexus.url>
+
+    <!-- Updated just to avoid cve issue.  -->
+    <httpclient.version>4.5.13</httpclient.version>
+    <httpmime.version>4.5.13</httpmime.version>
+    <httpcore.version>4.4.13</httpcore.version>
+  </properties>
+
+  <repositories>
+    <repository>
+      <id>talend_nexus_deployment</id>
+      <url>${talend.nexus.url}/nexus/content/repositories/TalendOpenSourceRelease/</url>
+    </repository>
+  </repositories>
+
+  <distributionManagement>
+    <snapshotRepository>
+      <id>talend_nexus_deployment</id>
+      <url>${talend.nexus.url}/nexus/content/repositories/TalendOpenSourceSnapshot/</url>
+    </snapshotRepository>
+    <repository>
+      <id>talend_nexus_deployment</id>
+      <url>${talend.nexus.url}/nexus/content/repositories/TalendOpenSourceRelease/</url>
+    </repository>
+  </distributionManagement>
+
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>org.apache.httpcomponents</groupId>
+        <artifactId>httpclient</artifactId>
+        <version>${httpclient.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.httpcomponents</groupId>
+        <artifactId>httpmime</artifactId>
+        <version>${httpmime.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.httpcomponents</groupId>
+        <artifactId>httpcore</artifactId>
+        <version>${httpcore.version}</version>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.apache.httpcomponents</groupId>
+      <artifactId>httpclient</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.httpcomponents</groupId>
+      <artifactId>httpmime</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.httpcomponents</groupId>
+      <artifactId>httpcore</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.talend.libraries</groupId>
+      <artifactId>talendcsv</artifactId>
+      <version>6.0.0</version>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <sourceDirectory>src</sourceDirectory>
+    <resources>
+      <resource>
+        <!-- to pack sources in the same jar as it was before -->
+        <directory>src</directory>
+      </resource>
+    </resources>
+
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.8.1</version>
+        <configuration>
+          <source>1.8</source>
+          <target>1.8</target>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+</project>

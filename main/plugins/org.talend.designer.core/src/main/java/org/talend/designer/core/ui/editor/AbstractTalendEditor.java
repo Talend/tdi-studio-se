@@ -94,6 +94,7 @@ import org.eclipse.gef.ui.palette.PaletteViewerProvider;
 import org.eclipse.gef.ui.parts.ContentOutlinePage;
 import org.eclipse.gef.ui.parts.GraphicalEditorWithFlyoutPalette;
 import org.eclipse.gef.ui.parts.ScrollingGraphicalViewer;
+import org.eclipse.gef.ui.parts.SelectionSynchronizer;
 import org.eclipse.gef.ui.parts.TreeViewer;
 import org.eclipse.gef.ui.rulers.RulerComposite;
 import org.eclipse.jface.action.Action;
@@ -126,7 +127,10 @@ import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.IKeyBindingService;
+import org.eclipse.ui.IViewPart;
+import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchPart;
+import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.SubActionBars;
@@ -142,6 +146,7 @@ import org.eclipse.ui.part.PageBook;
 import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
 import org.eclipse.ui.views.properties.IPropertySheetPage;
 import org.eclipse.ui.views.properties.tabbed.ITabbedPropertySheetPageContributor;
+import org.talend.commons.exception.CommonExceptionHandler;
 import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.exception.PersistenceException;
 import org.talend.commons.ui.gmf.draw2d.AnimatableZoomManager;
@@ -211,10 +216,12 @@ import org.talend.designer.core.ui.editor.connections.ConnLabelEditPart;
 import org.talend.designer.core.ui.editor.connections.Connection;
 import org.talend.designer.core.ui.editor.connections.ConnectionPart;
 import org.talend.designer.core.ui.editor.connections.NodeConnectorTool;
+import org.talend.designer.core.ui.editor.jobletcontainer.JobletContainer;
 import org.talend.designer.core.ui.editor.nodecontainer.NodeContainer;
 import org.talend.designer.core.ui.editor.nodes.Node;
 import org.talend.designer.core.ui.editor.nodes.NodePart;
 import org.talend.designer.core.ui.editor.notes.Note;
+import org.talend.designer.core.ui.editor.outline.NodeReturnsTreeEditPart;
 import org.talend.designer.core.ui.editor.outline.NodeTreeEditPart;
 import org.talend.designer.core.ui.editor.outline.ProcessTreePartFactory;
 import org.talend.designer.core.ui.editor.palette.TalendCombinedTemplateCreationEntry;
@@ -250,6 +257,8 @@ public abstract class AbstractTalendEditor extends GraphicalEditorWithFlyoutPale
     private static Logger log = Logger.getLogger(AbstractTalendEditor.class);
 
     private ConnectionPart selectedConnectionPart = null;
+
+    private boolean isSynchronizer = false;
 
     // reflection field to access a private field
     private static Field splitterField, pageField;
@@ -2314,7 +2323,7 @@ public abstract class AbstractTalendEditor extends GraphicalEditorWithFlyoutPale
 
         private Canvas overview;
 
-        private IAction showOutlineAction, showOverviewAction;
+        private IAction showOutlineAction, showOverviewAction, linkWithEditorAction;
 
         static final int ID_OUTLINE = 0;
 
@@ -2349,6 +2358,36 @@ public abstract class AbstractTalendEditor extends GraphicalEditorWithFlyoutPale
             getViewer().setEditPartFactory(new ProcessTreePartFactory());
             getViewer().setKeyHandler(getCommonKeyHandler());
             IToolBarManager tbm = getSite().getActionBars().getToolBarManager();
+            linkWithEditorAction = new Action() {
+                
+                @Override
+                public void run() {
+                    ISelection selection = getViewer().getSelection();
+                    if (selection != null) {
+                        if (selection instanceof IStructuredSelection) {
+                            Object input = ((IStructuredSelection) selection).getFirstElement();
+                            if (input instanceof NodeTreeEditPart || input instanceof NodeReturnsTreeEditPart) {
+                                try {
+                                    IWorkbenchWindow activeWorkbenchWindow = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
+                                    if (activeWorkbenchWindow != null) {
+                                        IWorkbenchPage page = activeWorkbenchWindow.getActivePage();
+                                        if (page != null) {
+                                            page.showView(ComponentSettingsView.ID);   
+                                        }
+                                    }
+                                } catch (PartInitException e) {
+                                    CommonExceptionHandler.process(e);
+                                }
+                                isSynchronizer = true;
+                                getViewer().setSelection(selection);
+                                isSynchronizer = false;
+                            }
+                        }
+                    }
+                }
+            };
+            linkWithEditorAction.setImageDescriptor(ImageDescriptor.createFromFile(DesignerPlugin.class, "/icons/synced.png")); //$NON-NLS-1$
+            tbm.add(linkWithEditorAction);
             showOutlineAction = new Action() {
 
                 @Override
@@ -2420,7 +2459,7 @@ public abstract class AbstractTalendEditor extends GraphicalEditorWithFlyoutPale
         }
 
         protected void hookOutlineViewer() {
-            // getSelectionSynchronizer().addViewer(getViewer());
+            getSelectionSynchronizer().addViewer(getViewer());
         }
 
         protected void initializeOutlineViewer() {
@@ -2522,12 +2561,84 @@ public abstract class AbstractTalendEditor extends GraphicalEditorWithFlyoutPale
             }
             showOutlineAction = null;
             showOverviewAction = null;
-            // getSelectionSynchronizer().removeViewer(getViewer());
+            linkWithEditorAction = null;
+            getSelectionSynchronizer().removeViewer(getViewer());
             if (disposeListener != null && getEditor() != null && !getEditor().isDisposed()) {
                 getEditor().removeDisposeListener(disposeListener);
             }
         }
+    }
 
+    private SelectionSynchronizer synchronizer;
+
+    @Override
+    protected SelectionSynchronizer getSelectionSynchronizer() {
+        if (synchronizer == null) {
+            synchronizer = new SelectionSynchronizer() {
+
+                @Override
+                protected EditPart convert(EditPartViewer viewer, EditPart part) {
+                    EditPart editPart = super.convert(viewer, part);
+                    if (editPart == null) {
+                        // Select the joblet start node in job if expand.
+                        editPart = getJobletEditPartIfExpand(part);
+                        if (editPart != null) {
+                            return editPart;
+                        }
+                        // maybe, not good, should be only for outline.
+                        editPart = super.convert(viewer, part.getParent());
+                    }
+                    // Do the expand if sub job is collapse.
+                    executeSubJobExpand(editPart);
+                    return editPart;
+                }
+
+                @Override
+                protected void applySelection(EditPartViewer viewer, ISelection selection) {
+                    if (!isSynchronizer) {
+                        return;
+                    }
+                    super.applySelection(viewer, selection);
+                }
+            };
+        }
+        return synchronizer;
+    }
+
+    protected EditPart getJobletEditPartIfExpand(EditPart part) {
+        if (part != null) {
+            Object pmodel = part.getModel();
+            if (pmodel != null && pmodel instanceof Node) {
+                Node node = (Node) pmodel;
+                boolean isJobletNode = node.isJoblet();
+                if (isJobletNode) {
+                    NodeContainer nodeContainer = node.getNodeContainer();
+                    if (nodeContainer != null && nodeContainer instanceof JobletContainer) {
+                        Node startNode = ((JobletContainer) nodeContainer).getJobletStartNode();
+                        if (startNode != null && parent != null) {
+                            return parent.getSelectedNodePart(startNode.getLabel());
+                        }
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
+    protected void executeSubJobExpand(EditPart editPart) {
+        if (editPart != null) {
+            Object pmodel = editPart.getModel();
+            if (pmodel != null && pmodel instanceof Node) {
+                Node node = (Node) pmodel;
+                NodeContainer nodeContainer = node.getNodeContainer();
+                if (nodeContainer != null) {
+                    SubjobContainer subjobContainer = nodeContainer.getSubjobContainer();
+                    if (subjobContainer != null && subjobContainer.isCollapsed()) {
+                        subjobContainer.executeCollapseCommand(false);
+                    }
+                }
+            }
+        }
     }
 
     /**

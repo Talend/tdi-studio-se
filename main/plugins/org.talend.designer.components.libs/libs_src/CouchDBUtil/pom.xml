@@ -1,0 +1,88 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>org.talend.components</groupId>
+  <artifactId>CouchDBUtils</artifactId>
+  <!-- Used by: tCouchDBInput_java.xml (tbd-studio-se) -->
+  <version>1.0.0</version>
+  <packaging>jar</packaging>
+
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <talend.nexus.url>https://artifacts-oss.talend.com</talend.nexus.url>
+    <maven.build.timestamp.format>yyyy-MM-dd</maven.build.timestamp.format>
+
+    <!-- Updated just to avoid cve issue.  -->
+    <httpclient.version>4.5.13</httpclient.version>
+  </properties>
+
+  <distributionManagement>
+    <snapshotRepository>
+      <id>talend_nexus_deployment</id>
+      <url>${talend.nexus.url}/nexus/content/repositories/TalendOpenSourceSnapshot/</url>
+    </snapshotRepository>
+    <repository>
+      <id>talend_nexus_deployment</id>
+      <url>${talend.nexus.url}/nexus/content/repositories/TalendOpenSourceRelease/</url>
+    </repository>
+  </distributionManagement>
+
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>org.apache.httpcomponents</groupId>
+        <artifactId>httpclient</artifactId>
+        <version>${httpclient.version}</version>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+
+  <dependencies>
+    <!-- https://mvnrepository.com/artifact/org.lightcouch/lightcouch -->
+    <dependency>
+      <groupId>org.lightcouch</groupId>
+      <artifactId>lightcouch</artifactId>
+      <!-- Updated just to avoid cve issue. The components work with 0.0.6  -->
+      <version>0.2.0</version>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <sourceDirectory>src</sourceDirectory>
+    <resources>
+      <resource>
+        <!-- to pack sources in the same jar as it was before -->
+        <directory>src</directory>
+      </resource>
+    </resources>
+
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.8.1</version>
+        <configuration>
+          <source>1.8</source>
+          <target>1.8</target>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <version>3.2.0</version>
+        <configuration>
+          <archive>
+            <manifestEntries>
+              <Implementation-Vendor>Talend SA</Implementation-Vendor>
+              <Implementation-Title>${project.artifactId}</Implementation-Title>
+              <Implementation-Version>1.0</Implementation-Version>
+              <Built-By>${user.name}</Built-By>
+              <Built-Date>${maven.build.timestamp}</Built-Date>
+            </manifestEntries>
+          </archive>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+</project>
