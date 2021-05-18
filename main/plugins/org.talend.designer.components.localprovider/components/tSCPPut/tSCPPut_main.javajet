@@ -25,21 +25,28 @@ imports="
              		}
 %>
     java.util.List<java.nio.file.Path> sourceList_<%=cid %> = new java.util.ArrayList<java.nio.file.Path>();
+
+    java.io.File[] files_<%=cid%> = new java.io.File[]{
+
 <%
         for (Map<String, String> file : filelist) {
 %>
-            java.io.File source_<%=cid%> = new java.io.File(<%=file.get("SOURCE") %>);
-			if((source_<%=cid%>.exists())
-			&& (source_<%=cid%>.isFile()) && (!uploadedSet_<%=cid %>.contains(source_<%=cid%>.toPath()))){
-				sourceList_<%=cid %>.add(source_<%=cid%>.toPath());
-			}else{
-                  <%if(isLog4jEnabled){%>
-                        log.warn("<%=cid%> - "+<%= file.get("SOURCE") %>+" doesn't exist or it isn't a file.");
-                  <%}%>
-        }
+         new java.io.File(<%=file.get("SOURCE") %>),
 <%
         }
 %>
+        };
+        for (java.io.File file_<%=cid%>:files_<%=cid%>) {
+        			if((file_<%=cid%>.exists())
+        			&& (file_<%=cid%>.isFile()) && (!uploadedSet_<%=cid %>.contains(file_<%=cid%>.toPath()))){
+        				sourceList_<%=cid %>.add(file_<%=cid%>.toPath());
+        			}else{
+                          <%if(isLog4jEnabled){%>
+                                log.warn("<%=cid%> - "+file_<%=cid%>.getPath()+" doesn't exist or it isn't a file.");
+                          <%}%>
+                    }
+        }
+
 		java.nio.file.Path[] sourceFileNames_<%=cid%> = sourceList_<%=cid %>.toArray(new java.nio.file.Path[0]);
 
 
