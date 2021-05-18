@@ -29,14 +29,15 @@ import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.SubMonitor;
 import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.MessageDialogWithToggle;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.operation.IRunnableWithProgress;
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.viewers.CheckStateChangedEvent;
 import org.eclipse.jface.viewers.CheckboxTreeViewer;
 import org.eclipse.jface.viewers.ICheckStateListener;
@@ -62,6 +63,8 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.DirectoryDialog;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
@@ -85,6 +88,7 @@ import org.talend.core.model.relationship.RelationshipItemBuilder;
 import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.core.model.repository.Folder;
 import org.talend.core.model.repository.IExtendedRepositoryNodeHandler;
+import org.talend.core.model.repository.IRepositoryPrefConstants;
 import org.talend.core.model.repository.IRepositoryReviewFilter;
 import org.talend.core.model.repository.IRepositoryViewObject;
 import org.talend.core.model.repository.RepositoryContentManager;
@@ -98,6 +102,7 @@ import org.talend.designer.core.model.utils.emf.talendfile.ElementParameterType;
 import org.talend.designer.core.model.utils.emf.talendfile.NodeType;
 import org.talend.designer.core.model.utils.emf.talendfile.ProcessType;
 import org.talend.repository.ProjectManager;
+import org.talend.repository.RepositoryPlugin;
 import org.talend.repository.i18n.Messages;
 import org.talend.repository.local.ExportItemUtil;
 import org.talend.repository.model.IRepositoryNode;
@@ -162,6 +167,8 @@ public class ExportItemWizardPage extends WizardPage {
     Set checkedDependency = new HashSet();
 
     private String baseViewId;
+    
+    boolean isCanceled = false;
 
     protected ExportItemWizardPage(String pageName, IStructuredSelection selection, String baseViewId) {
         super(pageName);
@@ -240,6 +247,11 @@ public class ExportItemWizardPage extends WizardPage {
         addTreeCheckedSelection();
         // if user has select some items in repository view, mark them as checked
         checkSelectedElements(exportItemsTreeViewer);
+        
+        if (isExportDependenciesDefaultSelected()) {
+            exportDependencies.setSelection(true);
+            exportDependencies.notifyListeners(SWT.Selection, new Event());
+        }     
     }
 
     protected void checkSelectedElements(CheckboxTreeViewer exportItemsTreeViewer) {
@@ -534,7 +546,10 @@ public class ExportItemWizardPage extends WizardPage {
 
             @Override
             public void checkStateChanged(CheckStateChangedEvent event) {
-
+                if ( exportDependencies.getSelection() ) {
+                  exportDependencies.notifyListeners(SWT.Selection, new Event());
+                  return;
+              }
                 ArrayList elementList = new ArrayList();
                 elementList.add(event.getElement());
                 Object[] elements = elementList.toArray();
@@ -868,6 +883,15 @@ public class ExportItemWizardPage extends WizardPage {
 
         });
 
+        directoryPathField.addModifyListener(new ModifyListener() {
+
+            @Override
+            public void modifyText(ModifyEvent e) {
+                lastPath = directoryPathField.getText().trim();
+            }
+
+        });
+
         directoryPathField.addFocusListener(new FocusAdapter() {
 
             @Override
@@ -951,22 +975,49 @@ public class ExportItemWizardPage extends WizardPage {
                     allNode.addAll(initcheckedNodes);
                 }
                 Set toselect = new HashSet();
-                for (Object obj : allNode) {
-                    ERepositoryObjectType objectType = getObjectType(obj);
-                    if (exportDependencies.getSelection()) {
-                        expandRoot(objectType);
-                        expandParent(exportItemsTreeViewer, obj, objectType);
+                //for long UI refresh 
+                Display.getCurrent().asyncExec(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (exportDependencies == null || exportDependencies.isDisposed()) return;
+                        for (Object obj : allNode) {
+                            ERepositoryObjectType objectType = getObjectType(obj);
+                            if (exportDependencies.getSelection()) {
+                                expandRoot(objectType);
+                                expandParent(exportItemsTreeViewer, obj, objectType);
+                            }
+                            checkElement(obj, toselect);
+                        }
+                        exportItemsTreeViewer.setCheckedElements(toselect.toArray());
+                        if (!exportDependencies.getSelection()) {
+                            for (Object unchecked : uncheckedNodes) {
+                                exportItemsTreeViewer.setChecked(unchecked, false);
+                            }
+                        }
                     }
-                    checkElement(obj, toselect);
-                }
-                exportItemsTreeViewer.setCheckedElements(toselect.toArray());
-                if (!exportDependencies.getSelection()) {
-                    for (Object unchecked : uncheckedNodes) {
-                        exportItemsTreeViewer.setChecked(unchecked, false);
-                    }
-                }
+                });
             }
         });
+    }
+    
+    private boolean isExportDependenciesDefaultSelected() {
+        boolean isExportDenpendies = false;
+        IPreferenceStore preferenceStore = RepositoryPlugin.getDefault().getPreferenceStore();;
+        String selected;
+        if (preferenceStore != null) {
+            selected = preferenceStore.getString(IRepositoryPrefConstants.ITEM_EXPORT_DEPENDENCIES);
+            isExportDenpendies = StringUtils.isEmpty(selected) ? true : Boolean.valueOf(selected);
+        }
+        return isExportDenpendies;
+    }
+    
+    private void saveExportDependenciesOption() {
+        //Save export dependencies option to workspace
+        IPreferenceStore preferenceStore = RepositoryPlugin.getDefault().getPreferenceStore();;
+        if (preferenceStore != null) {
+            preferenceStore.setValue(IRepositoryPrefConstants.ITEM_EXPORT_DEPENDENCIES, 
+                    exportDependencies.getSelection() ? Boolean.TRUE.toString() : Boolean.FALSE.toString());
+        }
     }
 
     private String resetExportPath(String exportPath) {
@@ -1096,16 +1147,21 @@ public class ExportItemWizardPage extends WizardPage {
 
             @Override
             public void run(final IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
-                monitor.beginTask("Dependencies", 100);//$NON-NLS-1$
+                SubMonitor subMonitor = SubMonitor.convert(monitor, "Cacualting dependencies", 100);
 
                 //
                 final List<IRepositoryViewObject> repositoryObjects = new ArrayList<IRepositoryViewObject>();
 
                 ProcessUtils.clearFakeProcesses();
                 RepositoryNodeUtilities.checkItemDependencies(selectedItems, repositoryObjects, false, true);
-                monitor.worked(60);
+                subMonitor.worked(60);
+                if (monitor.isCanceled()) {setCanceled(true); return;}
+                SubMonitor childMonitor = subMonitor.split(30);
+                childMonitor.setWorkRemaining(repositoryObjects.size() + selectedItems.size());
                 for (IRepositoryViewObject repositoryObject : repositoryObjects) {
+                    if (monitor.isCanceled()) {setCanceled(true); return;}
                     RepositoryNode repositoryNode = RepositoryNodeUtilities.getRepositoryNode(repositoryObject, monitor);
+                    monitor.setTaskName("Caculating dependencies:" + repositoryNode.getLabel());
                     if (repositoryNode != null) {
                         checkedDependency.add(repositoryNode);
                     } else {
@@ -1118,10 +1174,13 @@ public class ExportItemWizardPage extends WizardPage {
                             checkedDependency.addAll(nodesAndDependencies);
                         }
                     }
+                    childMonitor.worked(1);
                 }
 
                 // check relateion ship for map -->structure
                 for (Item item : selectedItems) {
+                    if (monitor.isCanceled()) {setCanceled(true); return;}
+                    monitor.setTaskName("Caculating dependencies:" + item.getProperty().getLabel());
                     for (IExtendedRepositoryNodeHandler nodeHandler : RepositoryContentManager.getExtendedNodeHandler()) {
                         List nodesAndDependencies = nodeHandler.getRepositoryNodeAndDependencies(new RepositoryObject(item
                                 .getProperty()));
@@ -1129,11 +1188,13 @@ public class ExportItemWizardPage extends WizardPage {
                             checkedDependency.addAll(nodesAndDependencies);
                         }
                     }
+                    childMonitor.worked(1);
                 }
 
-                monitor.worked(90);
+                if (monitor.isCanceled()) {setCanceled(true); return;}
+                subMonitor.worked(90);
                 ProcessUtils.clearFakeProcesses();
-                monitor.done();
+                subMonitor.done();
             }
 
         };
@@ -1142,9 +1203,9 @@ public class ExportItemWizardPage extends WizardPage {
         try {
             dialog.run(true, true, runnable);
         } catch (InvocationTargetException e) {
-            //
+            MessageBoxExceptionHandler.process(e);
         } catch (InterruptedException e) {
-            //
+            MessageBoxExceptionHandler.process(e);
         }
 
     }
@@ -1270,6 +1331,7 @@ public class ExportItemWizardPage extends WizardPage {
         if (!checkExportFile()) {
             return false;
         }
+        saveExportDependenciesOption();
         ProjectManager pManager = ProjectManager.getInstance();
         Project project = pManager.getCurrentProject().getEmfProject();
         String projectPath = lastPath + "\\" + project.getTechnicalLabel(); //$NON-NLS-1$
@@ -1324,9 +1386,34 @@ public class ExportItemWizardPage extends WizardPage {
                 }
             }
 
-            // MOD sgandon 31/03/2010 bug 12229: moved getAllVersion into ExportItemUtil.exportitems() method.
-            exportItemUtil.exportItems(new File(lastPath), selectedItems, folders, true, new NullProgressMonitor());
-
+            IRunnableWithProgress worker = new IRunnableWithProgress() {
+                @Override
+                public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException  {
+                    try {
+                        // MOD sgandon 31/03/2010 bug 12229: moved getAllVersion into ExportItemUtil.exportitems() method.
+                        exportItemUtil.exportItems(new File(lastPath), selectedItems, folders, true, monitor);
+                    } catch (InvocationTargetException iEx) {
+                        throw iEx;
+                    } catch (InterruptedException interruptedEx ) {
+                        throw interruptedEx;
+                    } catch (Exception ex ) {
+                        throw new InvocationTargetException(ex);
+                    }
+                }
+            };
+            try {
+               new ProgressMonitorDialog(getShell()).run(true, true, worker);
+            } catch (InterruptedException iEx) {
+                return false;
+            } catch (InvocationTargetException invoEx) {
+                if ( invoEx.getCause() != null && invoEx.getCause() instanceof IOException) {
+                    MessageDialog.openError(getShell(), "Error", invoEx.getCause().getMessage());//$NON-NLS-1$//$NON-NLS-2$
+                    return false;
+                } else {
+                    throw invoEx;
+                }
+            }
+            
         } catch (Exception e) {
             MessageBoxExceptionHandler.process(e);
         }
@@ -1511,4 +1598,11 @@ public class ExportItemWizardPage extends WizardPage {
         return false;
     }
 
+    public void setCanceled(boolean canceled) {
+        this.isCanceled = canceled;
+    }
+    
+    public boolean isCanceled() {
+        return isCanceled;
+    }
 }
