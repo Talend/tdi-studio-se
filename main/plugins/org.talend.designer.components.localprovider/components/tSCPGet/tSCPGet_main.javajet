@@ -229,7 +229,6 @@ imports="
 		                    	}
 		    					//only delete empty file when exception happen?this is old action,we keep it.
 		                		if(file_<%=cid%>.length() == 0){
-		                		    nb_file_<%=cid%>--;
 		                			file_<%=cid%>.delete();
 		                		}
 		                		throw e_<%=cid%>;
