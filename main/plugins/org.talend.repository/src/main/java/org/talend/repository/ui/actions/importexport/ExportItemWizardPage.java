@@ -1157,11 +1157,12 @@ public class ExportItemWizardPage extends WizardPage {
                 subMonitor.worked(60);
                 if (monitor.isCanceled()) {setCanceled(true); return;}
                 SubMonitor childMonitor = subMonitor.split(30);
-                childMonitor.setWorkRemaining(repositoryObjects.size() + selectedItems.size());
+                childMonitor.setWorkRemaining((repositoryObjects == null ? 0 : repositoryObjects.size()) + 
+                        (selectedItems == null ? 0 : selectedItems.size()));
                 for (IRepositoryViewObject repositoryObject : repositoryObjects) {
                     if (monitor.isCanceled()) {setCanceled(true); return;}
+                    monitor.setTaskName("Caculating dependencies:" + (repositoryObject == null ? "" : repositoryObject.getLabel()));
                     RepositoryNode repositoryNode = RepositoryNodeUtilities.getRepositoryNode(repositoryObject, monitor);
-                    monitor.setTaskName("Caculating dependencies:" + repositoryObject.getLabel());
                     if (repositoryNode != null) {
                         checkedDependency.add(repositoryNode);
                     } else {
@@ -1180,7 +1181,9 @@ public class ExportItemWizardPage extends WizardPage {
                 // check relateion ship for map -->structure
                 for (Item item : selectedItems) {
                     if (monitor.isCanceled()) {setCanceled(true); return;}
-                    monitor.setTaskName("Caculating dependencies:" + item.getProperty().getLabel());
+                    if (item != null && item.getProperty() != null) {
+                        monitor.setTaskName("Caculating dependencies:" + item.getProperty().getLabel());
+                    }
                     for (IExtendedRepositoryNodeHandler nodeHandler : RepositoryContentManager.getExtendedNodeHandler()) {
                         List nodesAndDependencies = nodeHandler.getRepositoryNodeAndDependencies(new RepositoryObject(item
                                 .getProperty()));
