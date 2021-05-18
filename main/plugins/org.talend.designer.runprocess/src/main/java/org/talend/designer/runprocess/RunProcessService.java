@@ -536,6 +536,11 @@ public class RunProcessService implements IRunProcessService {
     }
 
     @Override
+    public boolean getMavenPrefOptionStatus(String prefName) {
+        return delegateService.getMavenPrefOptionStatus(prefName);
+    }
+
+    @Override
     public void deleteTalendCodesJarProject(CodesJarInfo info, boolean deleteContent) {
         delegateService.deleteTalendCodesJarProject(info, deleteContent);
     }

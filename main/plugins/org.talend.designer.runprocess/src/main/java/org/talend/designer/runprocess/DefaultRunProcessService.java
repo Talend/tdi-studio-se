@@ -1042,4 +1042,9 @@ public class DefaultRunProcessService implements IRunProcessService {
         return PomIdsHelper.getIfExcludeDeletedItems(property);
     }
 
+    @Override
+    public boolean getMavenPrefOptionStatus(String prefName) {
+        return PomIdsHelper.getMavenPrefOptionStatus(prefName);
+    }
+
 }
