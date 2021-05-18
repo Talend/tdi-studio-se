@@ -69,7 +69,7 @@ imports="
                             org.apache.sshd.client.scp.ScpClient scp_<%=cid%> = instance_<%=cid%>.createScpClient(session_<%=cid%>);
                             try{
                                 if(sourceFileNames_<%=cid%>.length > 0){
-                                    scp_<%=cid%>.upload(sourceFileNames_<%=cid%>,<%=remotedir %>);
+                                    scp_<%=cid%>.upload(sourceFileNames_<%=cid%>,"\""+<%=remotedir %>+"\"");
                                     uploadedSet_<%=cid %>.addAll(java.util.Arrays.asList(sourceFileNames_<%=cid%>));
                                     globalMap.put("<%=cid %>_STATUS", "File put OK.");
                                 }else{

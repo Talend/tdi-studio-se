@@ -149,7 +149,7 @@ imports="
 						int receive_<%=cid%> = -1;
 						try {
 							out_<%=cid %> = new java.io.FileOutputStream(file_<%=cid %>, true);
-							scp_<%=cid%>.download(sourceFile_<%=cid %>.replaceAll("\\\\","\\\\\\\\").replaceAll(" ","\\\\ "),out_<%=cid %>);
+							scp_<%=cid%>.download("\""+sourceFile_<%=cid %>+"\"",out_<%=cid %>);
 
 						} catch(java.lang.Exception e_<%=cid%>) {
 		                	if(out_<%=cid %> != null){
@@ -221,7 +221,7 @@ imports="
 		    				int receive_<%=cid%> = -1;
 		    				try {
 		    					out_<%=cid %> = new java.io.FileOutputStream(file_<%=cid %>, false);
-		    					scp_<%=cid%>.download(sourceFile_<%=cid %>.replaceAll("\\\\","\\\\\\\\").replaceAll(" ","\\\\ "),out_<%=cid %>);
+		    					scp_<%=cid%>.download("\""+sourceFile_<%=cid %>+"\"",out_<%=cid %>);
 
 		    				} catch(java.lang.Exception e_<%=cid%>) {
 		                    	if(out_<%=cid %> != null){
