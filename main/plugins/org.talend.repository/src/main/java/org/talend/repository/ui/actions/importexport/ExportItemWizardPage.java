@@ -1161,7 +1161,7 @@ public class ExportItemWizardPage extends WizardPage {
                 for (IRepositoryViewObject repositoryObject : repositoryObjects) {
                     if (monitor.isCanceled()) {setCanceled(true); return;}
                     RepositoryNode repositoryNode = RepositoryNodeUtilities.getRepositoryNode(repositoryObject, monitor);
-                    monitor.setTaskName("Caculating dependencies:" + repositoryNode.getLabel());
+                    monitor.setTaskName("Caculating dependencies:" + repositoryObject.getLabel());
                     if (repositoryNode != null) {
                         checkedDependency.add(repositoryNode);
                     } else {
