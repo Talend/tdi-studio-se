@@ -122,6 +122,7 @@ if ((metadatas != null) && (metadatas.size() > 0)) {
 				clientConfig_<%=cid%>.setReuseHttpClient(<%=reuseHttpClient%>);
 				org.talend.ms.crm.odata.DynamicsCRMClient client_<%=cid%> = new org.talend.ms.crm.odata.DynamicsCRMClient(clientConfig_<%=cid%>,<%=serviceURL%>,entitySetName_<%=cid%>);
 				String queryFilter_<%=cid%>=null;
+                                List<String> expands_<%=cid%> = new java.util.ArrayList<>();
 				<%
 	     		String logical = ElementParameterParser.getValue(node,"__LOGICAL_OP__");
 	     		boolean isSpecifyComplexFilter="true".equals(ElementParameterParser.getValue(node, "__SPECIFY_COMPLEX_FILTER__"));
@@ -150,6 +151,31 @@ if ((metadatas != null) && (metadatas.size() > 0)) {
 		        	<%
 		        	}
 	     		}
+
+                        
+		     	List<Map<String, String>> expandArray = (List<Map<String,String>>)ElementParameterParser.getObjectValue(node, "__EXPANDS__");
+                        if(expandArray.size() > 0){
+				%>
+				java.util.List<String> expand_incol_<%=cid%> = new java.util.ArrayList<String>();
+				java.util.List<String> expand_params_<%=cid%> = new java.util.ArrayList<String>();
+				java.util.List<String> expand_outcol_<%=cid%> = new java.util.ArrayList<String>();
+                                <%
+                                for(Map<String, String> expandRow : expandArray) {
+                                    %>
+                                        expand_incol_<%=cid%>.add("<%=expandRow.get("INPUT_COLUMN")%>");
+                                        expand_params_<%=cid%>.add("<%=expandRow.get("EXPAND_PARAMS")%>");
+                                    <%
+                                }
+                                %>
+                                        expands_<%=cid%> = org.talend.ms.crm.odata.QueryExpandUtil.getExpandConfig(expand_incol_<%=cid%>, expand_params_<%=cid%>);
+                                <%
+                        }
+			java.util.List<String> expandOutColNames = new java.util.ArrayList();
+			for(java.util.Map<String, String> expand_row : expandArray){
+				expandOutColNames.add(expand_row.get("OUTPUT_COLUMN"));
+			}
+
+
 	     		boolean isOrderBy="true".equals(ElementParameterParser.getValue(node, "__ORDER_BY__"));
 	     		List<Map<String, String>> orderByColumns = (List<Map<String,String>>)ElementParameterParser.getObjectValue(node, "__ORDER_BY_TABLE__");
 	     		if(isOrderBy && orderByColumns.size()>0){
@@ -170,9 +196,11 @@ if ((metadatas != null) && (metadatas.size() > 0)) {
 	     		}
 	        	StringBuilder sb = new StringBuilder("");
 	        	for(IMetadataColumn column: columnList){
-	  				sb.append("\"");
-	  				sb.append(column.getLabel());
-	  				sb.append("\",");
+					if(!expandOutColNames.contains(column.getLabel())){
+	  				   sb.append("\"");
+	  				   sb.append(column.getLabel());
+	  				   sb.append("\",");
+	        	               }
 	        	}
 	        	sb.deleteCharAt(sb.lastIndexOf(","));
 	        	IConnection outgoingConn = outgoingConns.get(0);
@@ -183,6 +211,7 @@ if ((metadatas != null) && (metadatas.size() > 0)) {
 		        	//TODO need to support top(limit)?
 		        	// queryOption_<%=cid%>.setTop(5000);
 					queryOption_<%=cid%>.setFilter(queryFilter_<%=cid%>);
+					queryOption_<%=cid%>.setExpands(expands_<%=cid%>);
 					<%
 					if(isOrderBy && orderByColumns.size()>0){
 					%>
@@ -200,10 +229,44 @@ if ((metadatas != null) && (metadatas.size() > 0)) {
         				org.apache.olingo.client.api.domain.ClientEntitySet clientEntitySet_<%=cid%> = response_<%=cid%>.getBody();
 		        		for (org.apache.olingo.client.api.domain.ClientEntity entity_<%=cid%>:clientEntitySet_<%=cid%>.getEntities()) {
 		               nb_line_<%=cid%>++;
+
+
+                          // Expanded entities
+	                  final java.util.Map<String, org.apache.olingo.client.api.domain.ClientLink> expandLinks_<%=cid%> = entity_tMicrosoftCrmInput_1.getNavigationLinks().stream().collect(java.util.stream.Collectors.toMap(org.apache.olingo.client.api.domain.ClientLink::getName, java.util.function.Function.identity()));
+	                  <%
+	                  // Begin expand
+                          for(Map<String, String> expandRow : expandArray) {
+				String in_col = expandRow.get("INPUT_COLUMN");
+                          %>
+	
+	                  final String sanitizedName_<%=in_col%>_<%=cid%> = org.talend.ms.crm.odata.QueryExpandUtil.getSanitizedName("<%=in_col%>");
+	                  final org.apache.olingo.client.api.domain.ClientInlineEntity clientInlineEntity_<%=in_col%>_<%=cid%> = expandLinks_tMicrosoftCrmInput_1.get(sanitizedName_<%=in_col%>_<%=cid%>).asInlineEntity();
+	                  if(clientInlineEntity_<%=in_col%>_<%=cid%> != null){
+	                      final java.io.InputStream exp_entity_<%=in_col%>_inputStream_<%=cid%> = client_tMicrosoftCrmInput_1.getClient().getWriter().writeEntity(clientInlineEntity_<%=in_col%>_<%=cid%>.getEntity(), org.apache.olingo.commons.api.format.ContentType.APPLICATION_JSON);
+	                      row1.<%=expandRow.get("OUTPUT_COLUMN")%> = new java.io.BufferedReader(new java.io.InputStreamReader(exp_entity_<%=in_col%>_inputStream_<%=cid%>)).lines().collect(java.util.stream.Collectors.joining("\n"));
+	                  }
+	                  {
+	                      final org.apache.olingo.client.api.domain.ClientInlineEntitySet clientInlineEntitySet_<%=in_col%>_<%=cid%> = expandLinks_tMicrosoftCrmInput_1.get(sanitizedName_<%=in_col%>_<%=cid%>).asInlineEntitySet();
+	                      if(clientInlineEntitySet_<%=in_col%>_<%=cid%> != null){
+	                          final java.io.InputStream exp_entity_<%=in_col%>_inputStream_<%=cid%> = client_tMicrosoftCrmInput_1.getClient().getWriter().writeEntities(clientInlineEntitySet_<%=in_col%>_<%=cid%>.getEntitySet().getEntities(), org.apache.olingo.commons.api.format.ContentType.APPLICATION_JSON);
+	                          row1.<%=expandRow.get("OUTPUT_COLUMN")%> = new java.io.BufferedReader(new java.io.InputStreamReader(exp_entity_<%=in_col%>_inputStream_<%=cid%>)).lines().collect(java.util.stream.Collectors.joining("\n"));
+   	                      }
+	                  }
+
+	                  <%
+			  }
+	                  // End expand
+	                  %>
+                          // End epanded entities -----------------------
+
+
 	                  <%
 							for(int i = 0; i < columnList.size(); i++){//for begin
-	
 								IMetadataColumn column = columnList.get(i);
+	
+								if(expandOutColNames.contains(column.getLabel())){
+									continue;
+								}
 	
 								String typeToGenerate = JavaTypesManager.getTypeToGenerate(column.getTalendType(), column.isNullable());
 	

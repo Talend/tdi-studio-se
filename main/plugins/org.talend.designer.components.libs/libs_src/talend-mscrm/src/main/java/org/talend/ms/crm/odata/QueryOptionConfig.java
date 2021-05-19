@@ -12,6 +12,8 @@
 // ============================================================================
 package org.talend.ms.crm.odata;
 
+import java.util.List;
+
 public class QueryOptionConfig {
 
     private int top = -1;
@@ -23,6 +25,9 @@ public class QueryOptionConfig {
     private String[] returnEntityProperties;
 
     private String filter;
+
+    private List<String> expand;
+
 
     public int getTop() {
         return top;
@@ -63,5 +68,9 @@ public class QueryOptionConfig {
     public void setFilter(String filter) {
         this.filter = filter;
     }
+
+    public void setExpands(List<String> expand) { this.expand = expand;}
+
+    public List<String> getExpands() { return this.expand; }
 
 }
