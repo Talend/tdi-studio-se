@@ -171,8 +171,8 @@ if ((metadatas != null) && (metadatas.size() > 0)) {
                                 <%
                         }
 			java.util.List<String> expandOutColNames = new java.util.ArrayList();
-			for(java.util.Map<String, String> expand_row : expandArray){
-				expandOutColNames.add(expand_row.get("OUTPUT_COLUMN"));
+			for(java.util.Map<String, String> expandArrayRow : expandArray){
+				expandOutColNames.add(expandArrayRow.get("OUTPUT_COLUMN"));
 			}
 
 
