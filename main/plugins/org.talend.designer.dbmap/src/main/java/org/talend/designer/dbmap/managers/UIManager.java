@@ -753,10 +753,16 @@ public class UIManager extends AbstractUIManager {
                     link.setState(LinkState.UNSELECTED);
                     ITableEntry sourceITableEntry = link.getPointLinkDescriptor1().getTableEntry();
                     TableItem tableItem = mapperManager.retrieveTableItem(sourceITableEntry);
-                    tableItem.setBackground(unselectedColor);
+                    if (tableItem != null) {
+                        tableItem.setBackground(unselectedColor);
+                    }
                     ITableEntry targetITableEntry = link.getPointLinkDescriptor2().getTableEntry();
-                    tableItem = mapperManager.retrieveTableItem(targetITableEntry);
-                    tableItem.setBackground(unselectedColor);
+                    if (tableItem != null) {
+                        tableItem = mapperManager.retrieveTableItem(targetITableEntry);
+                    }
+                    if (tableItem != null) {
+                        tableItem.setBackground(unselectedColor);
+                    }
                 }
             }
 
@@ -847,7 +853,9 @@ public class UIManager extends AbstractUIManager {
 
     public void setEntryState(MapperManager pMapperManager, EntryState entryState, ITableEntry entry) {
         TableItem tableItem = pMapperManager.retrieveTableItem(entry);
-        tableItem.setBackground(entryState.getColor());
+        if (tableItem != null) {
+            tableItem.setBackground(entryState.getColor());
+        }
     }
 
     /**
