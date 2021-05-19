@@ -96,6 +96,7 @@ import org.talend.core.model.general.ConnectionBean;
 import org.talend.core.model.general.Project;
 import org.talend.core.model.properties.ProjectReference;
 import org.talend.core.model.properties.User;
+import org.talend.core.model.repository.RepositoryNodeProviderRegistryReader;
 import org.talend.core.model.repository.SVNConstant;
 import org.talend.core.repository.model.IRepositoryFactory;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
@@ -251,6 +252,7 @@ public class LoginProjectPage extends AbstractLoginActionPage {
         finishButtonAction = FINISH_ACTION_OPEN_PROJECT;
         loginHelper = LoginHelper.getInstance();
         loginFetchLicenseHelper = LoginFetchLicenseHelper.getInstance();
+        initRepositoryNodeProviderRegistryReader();
     }
 
     private void scheduleCheckSandboxJob() {
@@ -2773,5 +2775,17 @@ public class LoginProjectPage extends AbstractLoginActionPage {
             }
             return hasError || super.hasError();
         }
+    }
+
+    private void initRepositoryNodeProviderRegistryReader() {
+        new Job("Init RepositoryNodeProviderRegistryReader") {
+
+            @Override
+            protected IStatus run(IProgressMonitor monitor) {
+                RepositoryNodeProviderRegistryReader.getInstance().init();
+                return Status.OK_STATUS;
+            }
+
+        }.schedule();
     }
 }
