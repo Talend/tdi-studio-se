@@ -72,93 +72,13 @@ imports="
                             throw se_<%=cid%>;
                         }
                     }
-                            org.apache.sshd.client.scp.ScpClientCreator instance_<%=cid%> = org.apache.sshd.client.scp.ScpClientCreator.instance();
-                            org.apache.sshd.client.scp.DefaultScpClient scp_<%=cid%> = new org.apache.sshd.client.scp.DefaultScpClient(session_<%=cid%>, instance_<%=cid%>.getScpFileOpener(),
-                            instance_<%=cid%>.getScpTransferEventListener()) {
-                              @Override
-                              protected <T> void runUpload(
-                                      String remote, java.util.Collection<Option> options, java.util.Collection<T> local, org.apache.sshd.client.scp.AbstractScpClient.ScpOperationExecutor<T> executor)
-                                      throws IOException {
-                                  local = org.apache.sshd.common.util.ValidateUtils.checkNotNullAndNotEmpty(local, "Invalid argument local: %s", local);
-                                  remote = org.apache.sshd.common.util.ValidateUtils.checkNotNullAndNotEmpty(remote, "Invalid argument remote: %s", remote);
-                                  if (local.size() > 1) {
-                                      options = addTargetIsDirectory(options);
-                                  }
-
-                                  String cmd = org.apache.sshd.client.scp.ScpClient.createSendCommand(remote, options);
-                                  org.apache.sshd.client.session.ClientSession session = getClientSession();
-                                  org.apache.sshd.client.channel.ChannelExec channel = openCommandChannel(session, cmd);
-                                  try {
-                                      org.apache.sshd.common.FactoryManager manager = session.getFactoryManager();
-                                      org.apache.sshd.common.file.FileSystemFactory factory = manager.getFileSystemFactory();
-                                      java.nio.file.FileSystem fs = factory.createFileSystem(session);
-
-                                      try (java.io.InputStream invOut = channel.getInvertedOut();
-                                              java.io.OutputStream invIn = channel.getInvertedIn()) {
-                                          org.apache.sshd.common.scp.ScpHelper helper = new org.apache.sshd.common.scp.ScpHelper(session, invOut, invIn, fs, opener, listener) {
-
-
-                                                            public int readAck(boolean canEof) throws IOException {
-                                                                int c = in.read();
-                                                                switch (c) {
-                                                                case -1:
-                                                                    if (log.isDebugEnabled()) {
-                                                                        log.debug("readAck({})[EOF={}] received EOF", this, canEof);
-                                                                    }
-                                                                    if (!canEof) {
-                                                                        throw new java.io.EOFException("readAck - EOF before ACK");
-                                                                    }
-                                                                    break;
-                                                                case org.apache.sshd.common.scp.ScpHelper.OK:
-                                                                    if (log.isDebugEnabled()) {
-                                                                        log.debug("readAck({})[EOF={}] read OK", this, canEof);
-                                                                    }
-                                                                    break;
-                                                                case org.apache.sshd.common.scp.ScpHelper.WARNING: {
-                                                                    if (log.isDebugEnabled()) {
-                                                                        log.debug("readAck({})[EOF={}] read warning message", this, canEof);
-                                                                    }
-
-                                                                    String line = readLine();
-                                                                    log.warn("readAck({})[EOF={}] - Received warning: {}", this, canEof, line);
-                                                                    throw new org.apache.sshd.common.scp.ScpException("received error: " + line, c);
-                                                                }
-                                                                case org.apache.sshd.common.scp.ScpHelper.ERROR: {
-                                                                    if (log.isDebugEnabled()) {
-                                                                        log.debug("readAck({})[EOF={}] read error message", this, canEof);
-                                                                    }
-                                                                    String line = readLine();
-                                                                    if (log.isDebugEnabled()) {
-                                                                        log.debug("readAck({})[EOF={}] received error: {}", this, canEof, line);
-                                                                    }
-                                                                    throw new org.apache.sshd.common.scp.ScpException("Received nack: " + line, c);
-                                                                }
-                                                                default:
-                                                                    break;
-                                                                }
-                                                                return c;
-                                                            }
-                                                        };
-                                          executor.execute(helper, local, options);
-                                      } finally {
-                                          try {
-                                              fs.close();
-                                          } catch (UnsupportedOperationException e) {
-                                              if (log.isDebugEnabled()) {
-                                                  log.debug("runUpload({}) {} => {} - failed ({}) to close file system={}: {}",
-                                                          session, remote, local, e.getClass().getSimpleName(), fs, e.getMessage());
-                                              }
-                                          }
-                                      }
-                                      handleCommandExitStatus(cmd, channel);
-                                  } finally {
-                                      channel.close(false);
-                                  }
-                              }
-                            };
+                                        org.apache.sshd.client.scp.ScpClientCreator instance_<%=cid%> = org.talend.components.talendscp.TalendScpClientCreator.INSTANCE;
+                                        org.apache.sshd.client.scp.ScpClient scp_<%=cid%> = instance_<%=cid%>.createScpClient(session_<%=cid%>);
                             try{
                                 if(sourceFileNames_<%=cid%>.length > 0){
-                                    scp_<%=cid%>.upload(sourceFileNames_<%=cid%>,"\""+<%=remotedir %>+"\"");
+                                String remotedir_<%=cid%> = String.valueOf(<%=remotedir %>);
+                                remotedir_<%=cid%> = remotedir_<%=cid%>.endsWith("/")?("\""+remotedir_<%=cid%>+"\""):("\""+remotedir_<%=cid%>+"/\"");
+                                    scp_<%=cid%>.upload(sourceFileNames_<%=cid%>,remotedir_<%=cid%>);
                                     uploadedSet_<%=cid %>.addAll(java.util.Arrays.asList(sourceFileNames_<%=cid%>));
                                     globalMap.put("<%=cid %>_STATUS", "File put OK.");
                                 }else{
