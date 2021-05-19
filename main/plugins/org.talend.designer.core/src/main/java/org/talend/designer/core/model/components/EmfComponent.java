@@ -69,7 +69,6 @@ import org.talend.core.model.components.IComponent;
 import org.talend.core.model.components.IComponentsFactory;
 import org.talend.core.model.components.IMultipleComponentItem;
 import org.talend.core.model.components.IMultipleComponentManager;
-import org.talend.core.model.general.InstallModule;
 import org.talend.core.model.general.ModuleNeeded;
 import org.talend.core.model.metadata.IMetadataColumn;
 import org.talend.core.model.metadata.IMetadataTable;
@@ -117,7 +116,6 @@ import org.talend.designer.core.model.utils.emf.component.FORMATType;
 import org.talend.designer.core.model.utils.emf.component.HEADERType;
 import org.talend.designer.core.model.utils.emf.component.IMPORTSType;
 import org.talend.designer.core.model.utils.emf.component.IMPORTType;
-import org.talend.designer.core.model.utils.emf.component.INSTALLType;
 import org.talend.designer.core.model.utils.emf.component.ITEMSType;
 import org.talend.designer.core.model.utils.emf.component.ITEMType;
 import org.talend.designer.core.model.utils.emf.component.LINKTOType;
@@ -160,7 +158,6 @@ import org.talend.librariesmanager.prefs.LibrariesManagerUtils;
  * $Id$
  */
 public class EmfComponent extends AbstractBasicComponent {
-
 
     private static Logger log = Logger.getLogger(EmfComponent.class);
 
@@ -255,8 +252,6 @@ public class EmfComponent extends AbstractBasicComponent {
 
     private ComponentInfo info;
 
-    private boolean isAlreadyLoad = false;
-
     // weak ref used so that memory is not used by a static ComponentResourceFactoryImpl instance
     private static SoftReference<ComponentResourceFactoryImpl> compResFactorySoftRef;
 
@@ -281,25 +276,13 @@ public class EmfComponent extends AbstractBasicComponent {
         this.name = name;
         this.pathSource = pathSource;
         this.bundleName = bundleId;
-        this.isAlreadyLoad = isload;
         this.provider = provider;
-        if (!isAlreadyLoad) {
-            info = ComponentCacheFactory.eINSTANCE.createComponentInfo();
-            load();
-            setImportTypes();
-            getOriginalFamilyName();
-            getPluginExtension();
-            isTechnical();
-            getVersion();
-            getPluginDependencies();
-            getTranslatedFamilyName();
-            getRepositoryType();
-            getType();
-            getLongName();
-            info.setUriString(uriString);
-            info.setSourceBundleName(bundleId);
-            info.setPathSource(pathSource);
-            info.setProviderClass(provider.getClass().getCanonicalName());
+        if (provider.isCustom() && !isload) {
+            loadForCacheAtrributes();
+            return;
+        }
+        if (!isload) {
+            loadForCacheAtrributes();
 
             if (!cache.getComponentEntryMap().containsKey(getName())) {
                 cache.getComponentEntryMap().put(getName(), new BasicEList<ComponentInfo>());
@@ -316,7 +299,6 @@ public class EmfComponent extends AbstractBasicComponent {
                 }
             }
             componentsInfo.add(info);
-            isAlreadyLoad = true;
         } else {
             EList<ComponentInfo> componentsInfo = cache.getComponentEntryMap().get(getName());
             for (ComponentInfo cInfo : componentsInfo) {
@@ -453,7 +435,7 @@ public class EmfComponent extends AbstractBasicComponent {
                 // exists.
                 if (compType.getHEADER().getEXTENSION() != null) {
                     try {
-                        ExternalNodesFactory.getInstance(this.getPluginExtension());
+                        ExternalNodesFactory.getInstance(compType.getHEADER().getEXTENSION());
                     } catch (RuntimeException re) {// unfortunatly this methos throws a runtime Exception which is bad
                         Exception compLoadException = new Exception("Component " + this.name //$NON-NLS-1$
                                 + " load error.\nbecause the exception:" + re.getCause().getMessage(), re); //$NON-NLS-1$
@@ -2759,36 +2741,14 @@ public class EmfComponent extends AbstractBasicComponent {
 
     @Override
     public String getOriginalFamilyName() {
-        if (compType == null) {
-            isLoaded = false;
-            try {
-                load();
-            } catch (BusinessException e) {
-                ExceptionHandler.process(e);
-            }
-        }
         if (familyName != null) {
             return familyName;
         }
         String originalFamilyName = ""; //$NON-NLS-1$
-        if (!isAlreadyLoad) {
-            int nbTotal = compType.getFAMILIES().getFAMILY().size();
-            int nb = 0;
-            for (Object objFam : compType.getFAMILIES().getFAMILY()) {
-                String curFamily = (String) objFam;
-                originalFamilyName += curFamily;
-                nb++;
-                if (nbTotal != nb) {
-                    originalFamilyName += "|"; //$NON-NLS-1$
-                }
-            }
-            info.setOriginalFamilyName(originalFamilyName);
+        if (info != null) {
+            originalFamilyName = info.getOriginalFamilyName();
         } else {
-            if (info != null) {
-                originalFamilyName = info.getOriginalFamilyName();
-            } else {
-                System.out.println("bug?"); //$NON-NLS-1$
-            }
+            System.out.println("bug?"); //$NON-NLS-1$
         }
         return originalFamilyName;
     }
@@ -2803,76 +2763,35 @@ public class EmfComponent extends AbstractBasicComponent {
         if (newTranslatedFamilyName != null) {
             return newTranslatedFamilyName;
         }
-
-        if (compType == null) {
-            isLoaded = false;
-            try {
-                load();
-            } catch (BusinessException e) {
-                ExceptionHandler.process(e);
-            }
+        if (translatedFamilyName != null) {
+            return translatedFamilyName;
         }
 
-        if (!isAlreadyLoad) {
-            if (translatedFamilyName != null) {
-                info.setTranslatedFamilyName(translatedFamilyName);
-                return translatedFamilyName;
-            }
-            translatedFamilyName = ""; //$NON-NLS-1$
-            IComponentsFactory factory = ComponentsFactoryProvider.getInstance();
-
-            int nbTotal = compType.getFAMILIES().getFAMILY().size();
-            int nb = 0;
-            String transFamilyNames = ""; //$NON-NLS-1$
-            for (Object objFam : compType.getFAMILIES().getFAMILY()) {
-
-                String curFamily = (String) objFam;
-                String[] namesToTranslate = curFamily.split("/"); //$NON-NLS-1$
-                int nbSubTotal = namesToTranslate.length;
-                int nbSub = 0;
-                for (String toTranslate : namesToTranslate) {
-                    String translated = factory.getFamilyTranslation(this, "FAMILY." + toTranslate.replace(" ", "_")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-                    if (translated.startsWith("!!")) { //$NON-NLS-1$
-                        // no key to translate, so use original
-                        translatedFamilyName += toTranslate;
-                    } else {
-                        translatedFamilyName += translated;
-                    }
-                    transFamilyNames += toTranslate + ";"; //$NON-NLS-1$
-                    nbSub++;
-                    if (nbSubTotal != nbSub) {
-                        translatedFamilyName += "/"; //$NON-NLS-1$
-                        transFamilyNames += "/" + ";"; //$NON-NLS-1$ //$NON-NLS-2$
-                    }
+        translatedFamilyName = ""; //$NON-NLS-1$
+        IComponentsFactory factory = ComponentsFactoryProvider.getInstance();
+        String[] familyNames = getOriginalFamilyName().split("\\|"); //$NON-NLS-1$
+        int nbTotal = familyNames.length;
+        int nb = 0;
+        for (String curFamily : familyNames) {
+            String[] namesToTranslate = curFamily.split("/"); //$NON-NLS-1$
+            int nbSubTotal = namesToTranslate.length;
+            int nbSub = 0;
+            for (String toTranslate : namesToTranslate) {
+                String translated = factory.getFamilyTranslation(this, "FAMILY." + toTranslate.replace(" ", "_")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+                if (translated.startsWith("!!")) { //$NON-NLS-1$
+                    // no key to translate, so use original
+                    translatedFamilyName += toTranslate;
+                } else {
+                    translatedFamilyName += translated;
                 }
-                nb++;
-                if (nbTotal != nb) {
-                    translatedFamilyName += "|"; //$NON-NLS-1$
-                    transFamilyNames += "|" + ";"; //$NON-NLS-1$ //$NON-NLS-2$
+                nbSub++;
+                if (nbSubTotal != nbSub) {
+                    translatedFamilyName += "/"; //$NON-NLS-1$
                 }
             }
-            info.setTranslatedFamilyName(transFamilyNames);
-        } else {
-            if (translatedFamilyName == null) {
-                translatedFamilyName = ""; //$NON-NLS-1$
-                if (info != null) {
-                    IComponentsFactory factory = ComponentsFactoryProvider.getInstance();
-                    String transName = info.getTranslatedFamilyName();
-                    String[] transNames = transName.split(";"); //$NON-NLS-1$
-                    for (String toTranslate : transNames) {
-                        if (toTranslate.equals("/") || toTranslate.equals("|")) { //$NON-NLS-1$ //$NON-NLS-2$
-                            translatedFamilyName += toTranslate;
-                        } else {
-                            String translated = factory.getFamilyTranslation(this, "FAMILY." + toTranslate.replace(" ", "_")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-                            if (translated.startsWith("!!")) { //$NON-NLS-1$
-                                // no key to translate, so use original
-                                translatedFamilyName += toTranslate;
-                            } else {
-                                translatedFamilyName += translated;
-                            }
-                        }
-                    }
-                }
+            nb++;
+            if (nbTotal != nb) {
+                translatedFamilyName += "|"; //$NON-NLS-1$
             }
         }
         return translatedFamilyName;
@@ -2938,14 +2857,7 @@ public class EmfComponent extends AbstractBasicComponent {
 
     @Override
     public String getLongName() {
-        if (isAlreadyLoad) {
-            return info.getLongName() == null ? "" : info.getLongName(); //$NON-NLS-1$
-        }
-        String longName = getTranslatedValue(PROP_LONG_NAME);
-        if (info != null) {
-            info.setLongName(longName);
-        }
-        return longName;
+        return getTranslatedValue(PROP_LONG_NAME);
     }
 
     public boolean canStart() {
@@ -3153,31 +3065,10 @@ public class EmfComponent extends AbstractBasicComponent {
 
     @Override
     public String getPluginExtension() {
-        if (compType == null) {
-            isLoaded = false;
-            try {
-                load();
-            } catch (BusinessException e) {
-                ExceptionHandler.process(e);
-            }
+        if (info != null) {
+            return info.getPluginExtension();
         }
-        // String componentsPath = IComponentsFactory.COMPONENTS_LOCATION;
-        // IBrandingService breaningService = (IBrandingService) GlobalServiceRegister.getDefault().getService(
-        // IBrandingService.class);
-        // if (breaningService.isPoweredOnlyCamel()) {
-        // componentsPath = IComponentsFactory.CAMEL_COMPONENTS_LOCATION;
-        // }
-        String pluginFullName = null;
-        if (!isAlreadyLoad) {
-            pluginFullName = compType.getHEADER().getEXTENSION();
-            info.setPluginExtension(pluginFullName);
-        } else {
-            if (info != null) {
-                pluginFullName = info.getPluginExtension();
-            }
-        }
-        // cache.get
-        return pluginFullName;
+        return null;
     }
 
     @Override
@@ -3234,22 +3125,6 @@ public class EmfComponent extends AbstractBasicComponent {
         if (visibleFromComponentDefinition != null) {
             return visibleFromComponentDefinition;
         }
-
-        if (compType == null) {
-            isLoaded = false;
-            try {
-                load();
-            } catch (BusinessException e) {
-                ExceptionHandler.process(e);
-            }
-        }
-
-        if (compType != null) {
-            boolean isVisible = compType.getHEADER().isVISIBLE();
-            info.setIsVisibleInComponentDefinition(isVisible);
-            visibleFromComponentDefinition = isVisible;
-            return isVisible;
-        }
         if (info != null) {
             visibleFromComponentDefinition = info.isIsVisibleInComponentDefinition();
             return visibleFromComponentDefinition;
@@ -3260,23 +3135,7 @@ public class EmfComponent extends AbstractBasicComponent {
 
     @Override
     public String getVersion() {
-        String version = ""; //$NON-NLS-1$
-        if (!isAlreadyLoad) {
-            if (compType == null) {
-                isLoaded = false;
-                try {
-                    load();
-                } catch (BusinessException e) {
-                    ExceptionHandler.process(e);
-                }
-            }
-            version = String.valueOf(compType.getHEADER().getVERSION());
-            info.setVersion(version);
-        } else {
-            version = info.getVersion();
-        }
-
-        return version;
+        return info.getVersion();
     }
 
     private List<ModuleNeeded> componentImportNeedsList = new ArrayList<ModuleNeeded>();
@@ -3284,8 +3143,6 @@ public class EmfComponent extends AbstractBasicComponent {
     private List<ModuleNeeded> hadoopDistributionImportNeedsList = new ArrayList<ModuleNeeded>();
 
     private List<ModuleNeeded> componentHadoopDistributionImportNeedsList = new ArrayList<ModuleNeeded>();
-
-    private static final String DB_VERSION = "DB_VERSION"; //$NON-NLS-1$
 
     /*
      * (non-Javadoc)
@@ -3298,9 +3155,8 @@ public class EmfComponent extends AbstractBasicComponent {
     }
 
     private void setImportTypes() throws BusinessException {
-        load();
         IMPORTSType imports = compType.getCODEGENERATION().getIMPORTS();
-        List<IMPORTType> importTypes = new ArrayList<IMPORTType>();
+        List<IMPORTType> importTypes = new ArrayList<>();
         if (imports != null) {
             importTypes.addAll(ImportModuleManager.getInstance().getImportTypes(imports));
             info.getImportType().addAll(importTypes);
@@ -3309,14 +3165,6 @@ public class EmfComponent extends AbstractBasicComponent {
 
     @Override
     public List<ModuleNeeded> getModulesNeeded(INode node) {
-        if (compType == null) {
-            isLoaded = false;
-            try {
-                load();
-            } catch (BusinessException e) {
-                ExceptionHandler.process(e);
-            }
-        }
         if (componentImportNeedsList != null && componentImportNeedsList.size() > 0) {
             if (areHadoopDistribsLoaded && !areHadoopDistribsImported) {
                 areHadoopDistribsImported = true;
@@ -3328,85 +3176,24 @@ public class EmfComponent extends AbstractBasicComponent {
             }
             return componentImportNeedsList;
         }
-        List<String> moduleNames = new ArrayList<String>();
-        if (!isAlreadyLoad) {
-            IMPORTSType imports = compType.getCODEGENERATION().getIMPORTS();
-            List<IMPORTType> importTypes = info.getImportType();
-            if (imports != null) {
-                for (IMPORTType importType : importTypes) {
-                    ModulesNeededProvider.collectModuleNeeded(this.getName(), importType, componentImportNeedsList);
-                }
-                List<String> componentList = info.getComponentNames();
-                for (IMultipleComponentManager multipleComponentManager : getMultipleComponentManagers()) {
-                    for (IMultipleComponentItem multipleComponentItem : multipleComponentManager.getItemList()) {
-                        IComponent component = ComponentsFactoryProvider.getInstance().get(multipleComponentItem.getComponent());
-                        componentList.add(multipleComponentItem.getComponent());
-                        if (component == null) {
-                            continue;
-                        }
-                        for (ModuleNeeded moduleNeeded : component.getModulesNeeded(node)) {
-                            if (!moduleNames.contains(moduleNeeded.getModuleName())) {
-                                ModuleNeeded componentImportNeeds = new ModuleNeeded(this.getName(),
-                                        moduleNeeded.getModuleName(), moduleNeeded.getInformationMsg(),
-                                        moduleNeeded.isRequired(), moduleNeeded.getInstallURL(), moduleNeeded.getRequiredIf(),
-                                        moduleNeeded.getMavenURIFromConfiguration());
-                                componentImportNeeds.setModuleLocaion(moduleNeeded.getModuleLocaion());
-                                componentImportNeedsList.add(componentImportNeeds);
-                            }
-                        }
-                    }
-                }
-            }
-            EList parametersList = compType.getPARAMETERS().getPARAMETER();
-            for (int i = 0; i < parametersList.size(); i++) {
-                PARAMETERType parameterType = (PARAMETERType) parametersList.get(i);
-                if (parameterType.getNAME().equals(DB_VERSION)) {
-                    EList itemsList = parameterType.getITEMS().getITEM();
-                    for (int j = 0; j < itemsList.size(); j++) {
-                        ITEMType itemType = (ITEMType) itemsList.get(j);
-                        if (itemType.getVALUE().contains(".jar")) { //$NON-NLS-1$
-                            String[] values = itemType.getVALUE().split(";"); //$NON-NLS-1$
-                            for (String value : values) {
-                                String valueIndex = value;
-                                if (!moduleNames.contains(valueIndex)) {
-                                    moduleNames.add(valueIndex);
-                                    String msg = getTranslatedValue(itemType.getNAME() + ".INFO"); //$NON-NLS-1$
-                                    if (msg.startsWith(Messages.KEY_NOT_FOUND_PREFIX)) {
-                                        msg = Messages.getString("modules.required"); //$NON-NLS-1$
-                                    }
-                                    ModuleNeeded componentImportNeeds = new ModuleNeeded(this.getName(), valueIndex, msg, isRequired(importTypes, valueIndex),
-                                            new ArrayList(), getRequiredIF(importTypes, valueIndex), null);
-                                    componentImportNeeds.setShow(false);
-                                    componentImportNeedsList.add(componentImportNeeds);
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        } else {
-            if (info != null) {
-                EList emfImportList = info.getImportType();
-                for (int i = 0; i < emfImportList.size(); i++) {
-                    IMPORTType importType = (IMPORTType) emfImportList.get(i);
-                    ModulesNeededProvider.collectModuleNeeded(this.getName(), importType, componentImportNeedsList);
 
-                }
-                for (String name : info.getComponentNames()) {
-                    IComponent component = ComponentsFactoryProvider.getInstance().get(name);
-                    if (component == null) {
-                        continue;
-                    }
-                    for (ModuleNeeded moduleNeeded : component.getModulesNeeded(node)) {
-                        if (!moduleNames.contains(moduleNeeded.getModuleName())) {
-                            ModuleNeeded componentImportNeeds = new ModuleNeeded(this.getName(), moduleNeeded.getModuleName(),
-                                    moduleNeeded.getInformationMsg(), moduleNeeded.isRequired(), moduleNeeded.getInstallURL(),
-                                    moduleNeeded.getRequiredIf(), moduleNeeded.getMavenURIFromConfiguration());
-                            componentImportNeeds.setModuleLocaion(moduleNeeded.getModuleLocaion());
-                            componentImportNeedsList.add(componentImportNeeds);
-                        }
-                    }
-
+        Set<String> moduleNames = new HashSet<>();
+        List<IMPORTType> importTypes = info.getImportType();
+        for (IMPORTType importType : importTypes) {
+            ModulesNeededProvider.collectModuleNeeded(this.getName(), importType, componentImportNeedsList);
+        }
+        for (String name : info.getComponentNames()) {
+            IComponent component = ComponentsFactoryProvider.getInstance().get(name);
+            if (component == null) {
+                continue;
+            }
+            for (ModuleNeeded moduleNeeded : component.getModulesNeeded(node)) {
+                if (!moduleNames.contains(moduleNeeded.getModuleName())) {
+                    ModuleNeeded componentImportNeeds = new ModuleNeeded(this.getName(), moduleNeeded.getModuleName(),
+                            moduleNeeded.getInformationMsg(), moduleNeeded.isRequired(), moduleNeeded.getInstallURL(),
+                            moduleNeeded.getRequiredIf(), moduleNeeded.getMavenURIFromConfiguration());
+                    componentImportNeeds.setModuleLocaion(moduleNeeded.getModuleLocaion());
+                    componentImportNeedsList.add(componentImportNeeds);
                 }
             }
         }
@@ -3479,27 +3266,6 @@ public class EmfComponent extends AbstractBasicComponent {
         return componentImportNeedsList;
     }
 
-    private boolean isRequired(List<IMPORTType> importTypes, String valueIndex) {
-        for(IMPORTType type : importTypes) {
-            if(type.getMODULE().equals(valueIndex)) {
-                return type.isREQUIRED();
-            }
-        }
-        return true;
-    }
-    
-    private String getRequiredIF(List<IMPORTType> importTypes, String valueIndex) {
-        for(IMPORTType type : importTypes) {
-            if(type.getMODULE().equals(valueIndex)) {
-                String reIF = type.getREQUIREDIF();
-                if(reIF != null && reIF.length() > 0) {
-                    return reIF;
-                }
-            }
-        }
-        return null;
-    }
-
     protected void initBundleID(IMPORTType importType, ModuleNeeded componentImportNeeds) {
         String bundleID = importType.getBundleID();
         if (bundleID != null) {
@@ -3515,27 +3281,6 @@ public class EmfComponent extends AbstractBasicComponent {
             componentImportNeeds.setBundleName(bundleName);
             componentImportNeeds.setBundleVersion(bundleVersion);
         }
-    }
-
-    public List<String> getInstallURL(IMPORTType importType) {
-        List<String> list = new ArrayList<String>();
-        EList emfInstall = importType.getURL();
-        for (int j = 0; j < emfInstall.size(); j++) {
-            String installtype = (String) emfInstall.get(j);
-            list.add(installtype);
-        }
-        return list;
-    }
-
-    public List<InstallModule> getInstallCommand(IMPORTType importType) {
-        List<InstallModule> list = new ArrayList<InstallModule>();
-        EList emfInstall = importType.getINSTALL();
-        for (int j = 0; j < emfInstall.size(); j++) {
-            INSTALLType installtype = (INSTALLType) emfInstall.get(j);
-            InstallModule installModuleNeeds = new InstallModule(installtype.getOS(), installtype.getCOMMAND());
-            list.add(installModuleNeeds);
-        }
-        return list;
     }
 
     /**
@@ -3762,31 +3507,12 @@ public class EmfComponent extends AbstractBasicComponent {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public List<String> getPluginDependencies() {
-        if (compType == null) {
-            isLoaded = false;
-            try {
-                load();
-            } catch (BusinessException e) {
-                ExceptionHandler.process(e);
-            }
-        }
-        List<String> pluginDependencyList = new ArrayList<String>();
-        if (!isAlreadyLoad) {
-            if (this.compType.getPLUGINDEPENDENCIES() != null) {
-                List<PLUGINDEPENDENCYTypeImpl> pti = this.compType.getPLUGINDEPENDENCIES().getPLUGINDEPENDENCY();
-                for (PLUGINDEPENDENCYTypeImpl pt : pti) {
-                    pluginDependencyList.add(pt.getID());
-                }
-            }
-            info.getPluginDependencies().addAll(pluginDependencyList);
+        List<String> pluginDependencyList = new ArrayList<>();
+        if (info != null) {
+            pluginDependencyList = info.getPluginDependencies();
         } else {
-            if (info != null) {
-                pluginDependencyList = info.getPluginDependencies();
-            } else {
-                System.out.println("bug?"); //$NON-NLS-1$
-            }
+            System.out.println("bug?"); //$NON-NLS-1$
         }
         return pluginDependencyList;
     }
@@ -4069,30 +3795,15 @@ public class EmfComponent extends AbstractBasicComponent {
      */
     @Override
     public boolean isTechnical() {
-        boolean isTrchnical = false;
-        if (!isAlreadyLoad) {
-            if (technical != null) {
-                info.setIsTechnical(technical);
-                return technical;
-            }
-            if (compType == null) {
-                isLoaded = false;
-                try {
-                    load();
-                } catch (BusinessException e) {
-                    ExceptionHandler.process(e);
-                }
-            }
-            info.setIsTechnical(compType.getHEADER().isTECHNICAL());
-            isTrchnical = compType.getHEADER().isTECHNICAL();
-        } else {
-            if (info != null) {
-                isTrchnical = info.isIsTechnical();
-            }
+        if (technical != null) {
+            info.setIsTechnical(technical);
+            return technical;
         }
-
+        boolean isTrchnical = false;
+        if (info != null) {
+            isTrchnical = info.isIsTechnical();
+        }
         return isTrchnical;
-
     }
 
     /*
@@ -4141,26 +3852,7 @@ public class EmfComponent extends AbstractBasicComponent {
      */
     @Override
     public String getRepositoryType() {
-        if (!isAlreadyLoad) {
-            isLoaded = false;
-            try {
-                load();
-            } catch (BusinessException e) {
-                // TODO Auto-generated catch block
-                ExceptionHandler.process(e);
-            }
-            for (PARAMETERType pType : (List<PARAMETERType>) compType.getPARAMETERS().getPARAMETER()) {
-                if (pType.getFIELD().equals("PROPERTY_TYPE")) { //$NON-NLS-1$
-                    info.setRepositoryType(pType.getREPOSITORYVALUE());
-                    return pType.getREPOSITORYVALUE();
-                }
-            }
-        } else {
-            if (info != null) {
-                return info.getRepositoryType();
-            }
-        }
-        return null;
+        return info.getRepositoryType();
     }
 
     @Override
@@ -4266,21 +3958,7 @@ public class EmfComponent extends AbstractBasicComponent {
      */
     @Override
     public String getType() {
-        String type = null;
-        if (!isAlreadyLoad) {
-            isLoaded = false;
-            try {
-                load();
-            } catch (BusinessException e) {
-                ExceptionHandler.process(e);
-            }
-            info.setType(compType.getHEADER().getTYPE());
-            type = compType.getHEADER().getTYPE();
-        } else {
-            if (info != null) {
-                type = info.getType();
-            }
-        }
+        String type = info.getType();
         if (type == null) {
             return super.getType();
         }
@@ -4547,4 +4225,95 @@ public class EmfComponent extends AbstractBasicComponent {
         }
         return super.isActiveDbColumns();
     }
+    
+    public ComponentInfo getComponentInfo() {
+        return info;
+    }
+    
+    @SuppressWarnings("unchecked")
+    public void loadForCacheAtrributes() throws BusinessException {
+        info = ComponentCacheFactory.eINSTANCE.createComponentInfo();
+        if (compType == null) {
+            isLoaded = false;
+            try {
+                load();
+            } catch (BusinessException e) {
+                ExceptionHandler.process(e);
+            }
+        }
+
+        // originalFamilyName
+        {
+            String originalFamilyName = "";
+            int nbTotal = compType.getFAMILIES().getFAMILY().size();
+            int nb = 0;
+            for (Object objFam : compType.getFAMILIES().getFAMILY()) {
+                String curFamily = (String) objFam;
+                originalFamilyName += curFamily;
+                nb++;
+                if (nbTotal != nb) {
+                    originalFamilyName += "|"; //$NON-NLS-1$
+                }
+            }
+            info.setOriginalFamilyName(originalFamilyName);
+        }
+
+        // pluginExtension
+        info.setPluginExtension(compType.getHEADER().getEXTENSION());
+
+        // version
+        info.setVersion(String.valueOf(compType.getHEADER().getVERSION()));
+
+
+        // isTechnical
+        info.setIsTechnical(compType.getHEADER().isTECHNICAL());
+
+        // pluginDependencies
+        List<String> pluginDependencyList = new ArrayList<>();
+        if (compType.getPLUGINDEPENDENCIES() != null) {
+            List<PLUGINDEPENDENCYTypeImpl> pti = compType.getPLUGINDEPENDENCIES().getPLUGINDEPENDENCY();
+            for (PLUGINDEPENDENCYTypeImpl pt : pti) {
+                pluginDependencyList.add(pt.getID());
+            }
+        }
+        info.getPluginDependencies().addAll(pluginDependencyList);
+
+        // componentNames
+        List<String> componentList = info.getComponentNames();
+        for (IMultipleComponentManager multipleComponentManager : getMultipleComponentManagers()) {
+            for (IMultipleComponentItem multipleComponentItem : multipleComponentManager.getItemList()) {
+                componentList.add(multipleComponentItem.getComponent());
+            }
+        }
+
+        // importType (modulesNeeded)
+        setImportTypes();
+
+        // isVisibleInComponentDefinition
+        info.setIsVisibleInComponentDefinition(compType.getHEADER().isVISIBLE());
+
+        // uriString
+        info.setUriString(uriString);
+
+        // pathSource
+        info.setPathSource(pathSource);
+
+        // repositoryType
+        for (PARAMETERType pType : (List<PARAMETERType>) compType.getPARAMETERS().getPARAMETER()) {
+            if (pType.getFIELD().equals("PROPERTY_TYPE")) { //$NON-NLS-1$
+                info.setRepositoryType(pType.getREPOSITORYVALUE());
+                break;
+            }
+        }
+
+        // sourceBundleName
+        info.setSourceBundleName(bundleName);
+
+        // type
+        info.setType(compType.getHEADER().getTYPE());
+
+        // providerId
+        info.setProviderId(provider.getId());
+    }
+    
 }
