@@ -245,7 +245,7 @@ if ((metadatas != null) && (metadatas.size() > 0)) {
 	                      final java.io.InputStream exp_entity_<%=in_col%>_inputStream_<%=cid%> = client_tMicrosoftCrmInput_1.getClient().getWriter().writeEntity(clientInlineEntity_<%=in_col%>_<%=cid%>.getEntity(), org.apache.olingo.commons.api.format.ContentType.APPLICATION_JSON);
 	                      row1.<%=expandRow.get("OUTPUT_COLUMN")%> = new java.io.BufferedReader(new java.io.InputStreamReader(exp_entity_<%=in_col%>_inputStream_<%=cid%>)).lines().collect(java.util.stream.Collectors.joining("\n"));
 	                  }
-	                  {
+	                  else {
 	                      final org.apache.olingo.client.api.domain.ClientInlineEntitySet clientInlineEntitySet_<%=in_col%>_<%=cid%> = expandLinks_tMicrosoftCrmInput_1.get(sanitizedName_<%=in_col%>_<%=cid%>).asInlineEntitySet();
 	                      if(clientInlineEntitySet_<%=in_col%>_<%=cid%> != null){
 	                          final java.io.InputStream exp_entity_<%=in_col%>_inputStream_<%=cid%> = client_tMicrosoftCrmInput_1.getClient().getWriter().writeEntities(clientInlineEntitySet_<%=in_col%>_<%=cid%>.getEntitySet().getEntities(), org.apache.olingo.commons.api.format.ContentType.APPLICATION_JSON);
