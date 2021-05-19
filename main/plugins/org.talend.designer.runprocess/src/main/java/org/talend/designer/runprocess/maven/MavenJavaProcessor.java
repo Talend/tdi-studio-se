@@ -388,7 +388,7 @@ public class MavenJavaProcessor extends JavaProcessor {
         boolean isGoalPackage = TalendMavenConstants.GOAL_PACKAGE.equals(goal);
         boolean isGoalInstall = TalendMavenConstants.GOAL_INSTALL.equals(goal);
         boolean isMainJob = LastGenerationInfo.getInstance().isCurrentMainJob();
-        boolean isRoutelet = ERepositoryObjectType.PROCESS_ROUTELET.equals(ERepositoryObjectType.getType(getProperty()));
+        boolean isRoutelet = getProperty() != null && ERepositoryObjectType.PROCESS_ROUTELET.equals(ERepositoryObjectType.getType(getProperty()));
         if ((!isMainJob && isGoalInstall) || isRoutelet) {
             if (!buildCacheManager.isJobBuild(getProperty())) {
                 deleteExistedJobJarFile(talendJavaProject);
