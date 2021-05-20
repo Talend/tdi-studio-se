@@ -426,6 +426,7 @@ if ((metadatas != null) && (metadatas.size() > 0)) {
 	        	com.microsoft.schemas.xrm._2011.contracts.PagingInfo pagingInfo_<%=cid%> = com.microsoft.schemas.xrm._2011.contracts.PagingInfo.Factory.newInstance();
 	        	int pageNumber_<%=cid%> = 1;
 	        	pagingInfo_<%=cid%>.setPageNumber(pageNumber_<%=cid%>);
+	        	pagingInfo_<%=cid%>.setCount(5000);
 	        	<%boolean debugPaging=false;
 	        	if(debugPaging){%>
 	        	pagingInfo_<%=cid%>.setCount(5);
