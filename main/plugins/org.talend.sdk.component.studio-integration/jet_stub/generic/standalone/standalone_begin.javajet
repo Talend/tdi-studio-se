@@ -55,7 +55,9 @@ final org.talend.sdk.component.runtime.standalone.DriverRunner standalone_<%=cid
 <%
 boolean useExistedConnection = "true".equals(ElementParameterParser.getValue(node,"__USE_EXISTING_CONNECTION__"));
 String connection = ElementParameterParser.getValue(node,"__CONNECTION__");
-if(useExistedConnection) {//}
+if(useExistedConnection) {
+//standalone_cid is instance of DriverRunnerImpl class extending LifecycleImpl. LifecycleImpl has a delegate field
+//containing a real DriverRunner object.
 %>
 try {
     java.lang.reflect.Field field_<%=cid%> = standalone_<%=cid%>.getClass().getSuperclass().getDeclaredField("delegate");
