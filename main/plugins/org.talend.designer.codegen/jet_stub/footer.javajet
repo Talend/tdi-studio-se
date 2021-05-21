@@ -1166,29 +1166,35 @@ if (execStat) {
 
 <%  if(exist_tSQLDB) { %>
     private void closeSqlDbConnections() {
+        boolean shutdownAbandonedConnections = false;
         try {
             Object obj_conn;
 <%    for (INode sqlDbComponent : sqlDbComponentsList) { %>
             obj_conn = globalMap.remove("conn_<%=sqlDbComponent.getUniqueName() %>");
 
-            java.sql.Connection conn = (java.sql.Connection)obj_conn;
+            if (obj_conn != null) {
+                java.sql.Connection conn = (java.sql.Connection)obj_conn;
 
-            String originalURL = conn.getMetaData().getURL();
-            java.sql.Driver drv = java.sql.DriverManager.getDriver(originalURL);
-            String driverClass = drv.getClass().getName();
+                String originalURL = conn.getMetaData().getURL();
+                java.sql.Driver drv = java.sql.DriverManager.getDriver(originalURL);
+                String driverClass = drv.getClass().getName();
 
-            if (null != obj_conn) {
-                ((java.sql.Connection) obj_conn).close();
-            }
+                conn.close();
 
-            if("com.mysql.cj.jdbc.Driver".equals(driverClass)
-                && routines.system.BundleUtils.inOSGi()) {
-                    Class.forName("com.mysql.cj.jdbc.AbandonedConnectionCleanupThread").
-                        getMethod("uncheckedShutdown").invoke(null, (Object[]) null);
+                if("com.mysql.cj.jdbc.Driver".equals(driverClass) && routines.system.BundleUtils.inOSGi()) {
+                    shutdownAbandonedConnections = true;
+                }
             }
 
 <%    } %>
         } catch (java.lang.Exception e) {
+        }
+        if (shutdownAbandonedConnections) {
+            try {
+                Class.forName("com.mysql.cj.jdbc.AbandonedConnectionCleanupThread").
+                    getMethod("uncheckedShutdown").invoke(null, (Object[]) null);
+            } catch(java.lang.Exception e) {
+            }
         }
     }
 <%  } %>
