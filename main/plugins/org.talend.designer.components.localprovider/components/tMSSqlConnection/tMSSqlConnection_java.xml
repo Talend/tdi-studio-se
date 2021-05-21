@@ -211,7 +211,7 @@
         <IMPORT NAME="commons-codec" MODULE="commons-codec-1.14.jar" MVN="mvn:commons-codec/commons-codec/1.14"  REQUIRED_IF="(ACTIVE_DIR_AUTH == 'true') AND (DRIVER=='MSSQL_PROP')" />
         <IMPORT NAME="gson" MODULE="gson-2.8.6.jar" MVN="mvn:com.google.code.gson/gson/2.8.6"  REQUIRED_IF="(ACTIVE_DIR_AUTH == 'true') AND (DRIVER=='MSSQL_PROP')" />
         <IMPORT NAME="oauth2-oidc-sdk" MODULE="oauth2-oidc-sdk-6.5.jar" MVN="mvn:com.nimbusds/oauth2-oidc-sdk/6.5"  REQUIRED_IF="(ACTIVE_DIR_AUTH == 'true') AND (DRIVER=='MSSQL_PROP')" />
-        <IMPORT NAME="json-smart" MODULE="json-smart-2.3.jar" MVN="mvn:net.minidev/json-smart/2.3"  REQUIRED_IF="(ACTIVE_DIR_AUTH == 'true') AND (DRIVER=='MSSQL_PROP')" />
+        <IMPORT NAME="json-smart" MODULE="json-smart-2.4.2.jar" MVN="mvn:net.minidev/json-smart/2.4.2"  REQUIRED_IF="(ACTIVE_DIR_AUTH == 'true') AND (DRIVER=='MSSQL_PROP')" />
         <IMPORT NAME="nimbus-jose-jwt" MODULE="nimbus-jose-jwt-8.11.jar" MVN="mvn:com.nimbusds/nimbus-jose-jwt/8.11"  REQUIRED_IF="(ACTIVE_DIR_AUTH == 'true') AND (DRIVER=='MSSQL_PROP')" />
         <IMPORT NAME="javax.mail" MODULE="javax.mail-1.6.2.jar" MVN="mvn:com.sun.mail/javax.mail/1.6.2"  REQUIRED_IF="(ACTIVE_DIR_AUTH == 'true') AND (DRIVER=='MSSQL_PROP')" />
      </IMPORTS>

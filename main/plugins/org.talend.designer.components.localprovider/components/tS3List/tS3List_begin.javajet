@@ -121,6 +121,13 @@ imports="
 						nb_bucket_object_<%=cid%>++;
 						globalMap.put("<%=cid%>_CURRENT_BUCKET", currentBucketName_<%=cid%>);
 						globalMap.put("<%=cid%>_CURRENT_KEY", objectSummary_<%=cid%>.getKey());
+
+						globalMap.put("<%=cid%>_CURRENT_SIZE", objectSummary_<%=cid%>.getSize());
+						globalMap.put("<%=cid%>_CURRENT_LASTMODIFIED", objectSummary_<%=cid%>.getLastModified());
+						globalMap.put("<%=cid%>_CURRENT_OWNER", objectSummary_<%=cid%>.getOwner().getDisplayName());
+						globalMap.put("<%=cid%>_CURRENT_OWNER_ID", objectSummary_<%=cid%>.getOwner().getId());
+						globalMap.put("<%=cid%>_CURRENT_ETAG", objectSummary_<%=cid%>.getETag());
+						globalMap.put("<%=cid%>_CURRENT_STORAGECLASS", objectSummary_<%=cid%>.getStorageClass());
 						<%
 						if(isLog4jEnabled){
 						%>

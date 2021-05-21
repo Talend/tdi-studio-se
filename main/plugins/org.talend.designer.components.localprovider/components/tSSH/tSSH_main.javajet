@@ -39,7 +39,7 @@ if ((metadatas!=null)&&(metadatas.size()>0)) {
 		/* open a session */
 
 			<%if(isLog4jEnabled){%>
-			    log.info("<%=cid%> - Authentication using a password.");
+			    log.info("<%=cid%> - Open up a session.");
 		    <%}%>
 		
 			session_<%=cid%> = client_<%=cid%>.connect(username_<%=cid%>, hostname_<%=cid%>, Integer.parseInt(<%=port %>+"")).verify(<%=("true").equals(useTimeout)?timeout+"L  * 1000":""%>).getClientSession();

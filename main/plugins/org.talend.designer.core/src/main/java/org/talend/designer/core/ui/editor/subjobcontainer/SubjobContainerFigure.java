@@ -27,14 +27,7 @@ import org.eclipse.swt.widgets.Display;
 import org.talend.commons.ui.utils.image.ColorUtils;
 import org.talend.commons.ui.utils.workbench.gef.SimpleHtmlFigure;
 import org.talend.core.model.process.IElementParameter;
-import org.talend.core.model.process.IProcess2;
-import org.talend.core.ui.CoreUIPlugin;
-import org.talend.core.ui.process.IGEFProcess;
-import org.talend.core.ui.services.IDesignerCoreUIService;
 import org.talend.designer.core.model.components.EParameterName;
-import org.talend.designer.core.ui.AbstractMultiPageTalendEditor;
-import org.talend.designer.core.ui.editor.cmd.PropertyChangeCommand;
-import org.talend.designer.core.ui.editor.nodes.Node;
 import org.talend.designer.core.utils.DesignerColorUtils;
 
 /**
@@ -92,24 +85,7 @@ public class SubjobContainerFigure extends Figure {
 
             @Override
             public void actionPerformed(ActionEvent event) {
-                IProcess2 process = subjobContainer.getProcess();
-                if (!process.isReadOnly()) {
-                    PropertyChangeCommand ppc = new PropertyChangeCommand(subjobContainer, EParameterName.COLLAPSED.getName(),
-                            !subjobContainer.isCollapsed());
-
-                    boolean executed = false;
-                    if (process instanceof IGEFProcess) {
-                        IDesignerCoreUIService designerCoreUIService = CoreUIPlugin.getDefault().getDesignerCoreUIService();
-                        if (designerCoreUIService != null) {
-                            executed = designerCoreUIService.executeCommand((IGEFProcess) process, ppc);
-                        }
-                    }
-
-                    if (!executed) {
-                        ppc.execute();
-                    }
-                    reSelection();
-                }
+                subjobContainer.executeCollapseCommand(!subjobContainer.isCollapsed());
             }
         });
     }
@@ -133,22 +109,6 @@ public class SubjobContainerFigure extends Figure {
         } else {
             String strRgb = (String) colorParameter.getValue();
             subjobTitleColor = ColorUtils.parseStringToRGB(strRgb, defaultSubjobColor);
-        }
-    }
-
-    protected void reSelection() {
-        // select the start node.
-        if (subjobContainer.isCollapsed()) {
-            IProcess2 process = subjobContainer.getProcess();
-            AbstractMultiPageTalendEditor editor = (AbstractMultiPageTalendEditor) process.getEditor();
-            Node startNode = subjobContainer.getSubjobStartNode();
-            if (startNode != null && editor != null) {
-                if ((startNode.isJoblet() && !startNode.getNodeContainer().isCollapsed()) || startNode.getJunitNode() != null) {
-                    editor.getTalendEditor().getViewer().deselectAll();
-                    return;
-                }
-                editor.selectNode(startNode);
-            }
         }
     }
 
@@ -302,5 +262,4 @@ public class SubjobContainerFigure extends Figure {
         // TODO Auto-generated method stub
         super.setSize(w, h);
     }
-
 }
