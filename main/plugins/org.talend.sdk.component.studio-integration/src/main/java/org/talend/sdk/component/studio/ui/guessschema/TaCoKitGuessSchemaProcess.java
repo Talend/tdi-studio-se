@@ -105,6 +105,7 @@ public class TaCoKitGuessSchemaProcess {
         @Override
         public GuessSchemaResult call() throws Exception {
             buildProcess();
+            restoreDatastoreParameters(node);
             IProcessor processor = ProcessorUtilities.getProcessor(process, null);
             processor.setContext(context);
             final String debug = System.getProperty("org.talend.tacokit.guessschema.debug", null);
@@ -113,7 +114,7 @@ public class TaCoKitGuessSchemaProcess {
                     IProcessor.NO_STATISTICS,
                     IProcessor.NO_TRACES);
             
-            restoreDatastoreParameters(node);
+            
             final Future<String> result = executorService.submit(() -> {
                 try (
                         final BufferedReader reader = new BufferedReader(
