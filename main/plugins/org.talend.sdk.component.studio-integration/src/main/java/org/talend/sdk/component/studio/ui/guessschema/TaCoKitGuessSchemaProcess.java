@@ -176,12 +176,9 @@ public class TaCoKitGuessSchemaProcess {
                 if (ComponentModel.class.isInstance(nodeComp)) {
                     ComponentModel compModel = (ComponentModel) nodeComp;
                     if (ETaCoKitComponentType.input.equals(compModel.getTaCoKitComponentType())) {
-                        final List<ActionReference> actions = compModel.getDiscoverSchemaActions();
-                        if (actions != null && !actions.isEmpty() && actionName != null
-                                && actions.stream().anyMatch(a -> a.getName().equals(actionName))) {
-                            node.setIncomingConnections(new ArrayList<>());
-                            nodes.add(node);
-                        }
+
+                        node.setIncomingConnections(new ArrayList<>());
+                        nodes.add(node);
                         if (TaCoKitUtil.isUseExistConnection(node)) {
                             updateDatastoreParameterFromConnection(node);
                         }
