@@ -34,6 +34,8 @@
 	boolean failOn = ("true").equals(ElementParameterParser.getValue(node,"__FAILON__"));
 	
 	boolean forceCopyAndDelete = ("true").equals(ElementParameterParser.getValue(node,"__FORCE_COPY_DELETE__")) && reFile;
+
+	boolean preserveModifiedTime = ("true").equals(ElementParameterParser.getValue(node,"__PRESERVE_LAST_MODIFIED_TIME__"));
 	
 	final boolean isLog4jEnabled = ("true").equals(ElementParameterParser.getValue(node.getProcess(), "__LOG4J_ACTIVATE__"));
 	
@@ -84,7 +86,7 @@
 								}
 	
 								try	{				
-									org.talend.FileCopy.copyFile(srcFilePath, desFilePath, false);
+									org.talend.FileCopy.copyFile(srcFilePath, desFilePath, false, <%=preserveModifiedTime%>);
 								} catch (java.lang.Exception e){ 
 <%
 									if (failOn) {
@@ -202,11 +204,11 @@
 			}
 			if(!forceCopyAndDelete) {
 %>
-					org.talend.FileCopy.copyFile(srcFile_<%=cid %>.getPath(), desFile_<%=cid %>.getPath(), <%=reFile %>);
+					org.talend.FileCopy.copyFile(srcFile_<%=cid %>.getPath(), desFile_<%=cid %>.getPath(), <%=reFile %>, <%=preserveModifiedTime%>);
 <%
 			} else {
 %>
-					org.talend.FileCopy.forceCopyAndDelete(srcFile_<%=cid %>.getPath(), desFile_<%=cid %>.getPath());
+					org.talend.FileCopy.forceCopyAndDelete(srcFile_<%=cid %>.getPath(), desFile_<%=cid %>.getPath(),<%=preserveModifiedTime%>);
 <%
 			}
 			if (!failOn) {

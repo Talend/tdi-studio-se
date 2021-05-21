@@ -5,7 +5,7 @@
     SERIAL=""
     VERSION="0.102"
     STATUS="ALPHA"
-    
+
     COMPATIBILITY="ALL"
     AUTHOR="Talend"
     RELEASE_DATE="20050320A"
@@ -42,21 +42,21 @@
       REQUIRED="true"
       REPOSITORY_VALUE="FILE_PATH"
       SHOW_IF="ENABLE_COPY_DIRECTORY=='false'"
-      
-      
-      
+
+
+
     >
       <DEFAULT>"__COMP_DEFAULT_FILE_DIR__/in.csv"</DEFAULT>
     </PARAMETER>
-    
+
     <PARAMETER
      NAME="ENABLE_COPY_DIRECTORY"
      FIELD="CHECK"
      NUM_ROW="20"
     >
      <DEFAULT>false</DEFAULT>
-    </PARAMETER> 
-    
+    </PARAMETER>
+
      <PARAMETER
      NAME="SOURCE_DERECTORY"
      FIELD="DIRECTORY"
@@ -66,22 +66,22 @@
      SHOW_IF="ENABLE_COPY_DIRECTORY=='true'"
     >
     <DEFAULT>"__COMP_DEFAULT_FILE_DIR__"</DEFAULT>
-    </PARAMETER> 
-    
-    
-     
-   
-    
+    </PARAMETER>
+
+
+
+
+
     <PARAMETER
       NAME="DESTINATION"
       FIELD="DIRECTORY"
       NUM_ROW="40"
       REQUIRED="true"
       REPOSITORY_VALUE="DESTINATION_PATH"
-    > 
-    <DEFAULT>"__COMP_DEFAULT_FILE_DIR__"</DEFAULT>  
+    >
+    <DEFAULT>"__COMP_DEFAULT_FILE_DIR__"</DEFAULT>
     </PARAMETER>
-    
+
     <PARAMETER
       NAME="RENAME"
       FIELD="CHECK"
@@ -90,18 +90,18 @@
       SHOW_IF="ENABLE_COPY_DIRECTORY=='false'"
     >
       <DEFAULT>false</DEFAULT>
-    </PARAMETER>    
-    
+    </PARAMETER>
+
     <PARAMETER
       NAME="DESTINATION_RENAME"
       FIELD="TEXT"
       NUM_ROW="50"
       REQUIRED="true"
       SHOW_IF="(ENABLE_COPY_DIRECTORY=='false') AND (RENAME == 'true')"
-    > 
-    <DEFAULT>"NewName.temp"</DEFAULT>  
+    >
+    <DEFAULT>"NewName.temp"</DEFAULT>
     </PARAMETER>
-    
+
    <PARAMETER
       NAME="REMOVE_FILE"
       FIELD="CHECK"
@@ -132,7 +132,7 @@
     >
       <DEFAULT>true</DEFAULT>
     </PARAMETER>
-    <PARAMETER 
+    <PARAMETER
      NAME="FAILON"
      FIELD="CHECK"
      NUM_ROW="70"
@@ -140,7 +140,7 @@
     <DEFAULT>false</DEFAULT>
     </PARAMETER>
   </PARAMETERS>
-  
+
   <ADVANCED_PARAMETERS>
 	<PARAMETER
       NAME="FORCE_COPY_DELETE"
@@ -152,23 +152,33 @@
     >
       <DEFAULT>false</DEFAULT>
     </PARAMETER>
+      <PARAMETER
+              NAME="PRESERVE_LAST_MODIFIED_TIME"
+              FIELD="CHECK"
+              REQUIRED="true"
+              NUM_ROW="20"
+              REPOSITORY_VALUE="FORCE_COPY_DELETE"
+              SHOW_IF="true"
+      >
+          <DEFAULT>false</DEFAULT>
+      </PARAMETER>
   </ADVANCED_PARAMETERS>
-  
+
   <CODEGENERATION>
     <IMPORTS>
-      <IMPORT NAME="filecopy-2.0.2" MODULE="filecopy-2.0.2.jar" 
-              MVN="mvn:org.talend.components/filecopy/2.0.2"
-              UrlPath="platform:/plugin/org.talend.libraries.custom/lib/filecopy-2.0.2.jar"
+      <IMPORT NAME="filecopy-2.0.3" MODULE="filecopy-2.0.3.jar"
+              MVN="mvn:org.talend.components/filecopy/2.0.3"
+              UrlPath="platform:/plugin/org.talend.libraries.custom/lib/filecopy-2.0.3.jar"
               REQUIRED="true" />
     </IMPORTS>
   </CODEGENERATION>
-  
+
   <RETURNS>
   		<RETURN NAME="DESTINATION_FILENAME" TYPE="id_String" AVAILABILITY="AFTER" />
 		  <RETURN NAME="DESTINATION_FILEPATH" TYPE="id_String" AVAILABILITY="AFTER" />
 		  <RETURN NAME="SOURCE_DIRECTORY" TYPE="id_String" AVAILABILITY="AFTER" />
 		  <RETURN NAME="DESTINATION_DIRECTORY" TYPE="id_String" AVAILABILITY="AFTER" />
-		
+
   </RETURNS>
-  
+
 </COMPONENT>
