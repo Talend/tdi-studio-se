@@ -163,4 +163,22 @@ class FileCopyTest {
 
         return generatedFile;
     }
+
+    @Test
+    void testKeepLastModifiedTime() throws Exception {
+        final URL repCopy = Thread.currentThread().getContextClassLoader().getResource("copy");
+
+        File file = this.buildFile("fileLMT.txt", 10L * 1024L);
+        file.deleteOnExit();
+        long referencceTime = 324723894L;
+        file.setLastModified(referencceTime);
+
+        File copy = new File(repCopy.getPath(), "fileLMTDestination.txt");
+        if (copy.exists()) {
+            copy.delete();
+        }
+        copy.deleteOnExit();
+        FileCopy.copyFile(file.getPath(), copy.getPath(), true,true);
+        Assertions.assertEquals(referencceTime, copy.lastModified(), "modified time is not idential");
+    }
 }
