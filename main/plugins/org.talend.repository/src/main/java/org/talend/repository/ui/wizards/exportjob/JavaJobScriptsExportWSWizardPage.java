@@ -1305,7 +1305,6 @@ public class JavaJobScriptsExportWSWizardPage extends JavaJobScriptsExportWizard
             addDockerOptionsListener();
             break;
         default:
-            createOptionsForWS(left, font);
             break;
         }
     }
@@ -1588,93 +1587,6 @@ public class JavaJobScriptsExportWSWizardPage extends JavaJobScriptsExportWizard
             }
         }
         return isDockerValid;
-    }
-
-    protected void createOptionsForWS(Composite optionsGroup, Font font) {
-
-        webXMLButton = new Button(optionsGroup, SWT.CHECK | SWT.LEFT);
-        webXMLButton.setText(Messages.getString("JavaJobScriptsExportWSWizardPage.WEBXML")); //$NON-NLS-1$
-        webXMLButton.setFont(font);
-        GridData gd = new GridData(GridData.FILL_HORIZONTAL);
-        gd.horizontalSpan = 1;
-        webXMLButton.setLayoutData(gd);
-        webXMLButton.setSelection(true);
-
-        configFileButton = new Button(optionsGroup, SWT.CHECK | SWT.LEFT);
-        configFileButton.setText(Messages.getString("JavaJobScriptsExportWSWizardPage.ServerConfigFile")); //$NON-NLS-1$
-        configFileButton.setFont(font);
-        gd = new GridData(GridData.FILL_HORIZONTAL);
-        gd.horizontalSpan = 2;
-        configFileButton.setLayoutData(gd);
-        configFileButton.setSelection(true);
-
-        wsddButton = new Button(optionsGroup, SWT.CHECK | SWT.LEFT);
-        wsddButton.setText(Messages.getString("JavaJobScriptsExportWSWizardPage.WSDDFile")); //$NON-NLS-1$
-        wsddButton.setFont(font);
-        gd = new GridData(GridData.FILL_HORIZONTAL);
-        gd.horizontalSpan = 1;
-        wsddButton.setLayoutData(gd);
-        wsddButton.setSelection(true);
-
-        wsdlButton = new Button(optionsGroup, SWT.CHECK | SWT.LEFT);
-        wsdlButton.setText(Messages.getString("JavaJobScriptsExportWSWizardPage.WSDLFile")); //$NON-NLS-1$
-        wsdlButton.setFont(font);
-        gd = new GridData(GridData.FILL_HORIZONTAL);
-        gd.horizontalSpan = 2;
-        wsdlButton.setLayoutData(gd);
-        wsdlButton.setSelection(true);
-
-        jobScriptButton = new Button(optionsGroup, SWT.CHECK | SWT.LEFT);
-        jobScriptButton.setText(Messages.getString("JobScriptsExportWizardPage.sourceFiles")); //$NON-NLS-1$
-        jobScriptButton.setSelection(true);
-        jobScriptButton.setFont(font);
-        gd = new GridData(GridData.FILL_HORIZONTAL);
-        gd.horizontalSpan = 1;
-        jobScriptButton.setLayoutData(gd);
-
-        axisLibButton = new Button(optionsGroup, SWT.CHECK | SWT.LEFT);
-        axisLibButton.setText(Messages.getString("JavaJobScriptsExportWSWizardPage.AxisLib")); //$NON-NLS-1$
-        axisLibButton.setFont(font);
-        gd = new GridData(GridData.FILL_HORIZONTAL);
-        gd.horizontalSpan = 2;
-        axisLibButton.setLayoutData(gd);
-        axisLibButton.setSelection(true);
-
-        contextButton = new Button(optionsGroup, SWT.CHECK | SWT.LEFT);
-        contextButton.setText(Messages.getString("JobScriptsExportWizardPage.contextPerlScripts")); //$NON-NLS-1$
-        contextButton.setSelection(true);
-        contextButton.setFont(font);
-
-        contextCombo = new Combo(optionsGroup, SWT.PUSH);
-
-        applyToChildrenButton = new Button(optionsGroup, SWT.CHECK | SWT.LEFT);
-        applyToChildrenButton.setText(Messages.getString("JavaJobScriptsExportWSWizardPage.ApplyToChildren")); //$NON-NLS-1$
-        applyToChildrenButton.setSelection(true);
-
-        if (Log4jPrefsSettingManager.getInstance().isLog4jEnable()) {
-            log4jButton = new Button(optionsGroup, SWT.CHECK | SWT.LEFT);
-            log4jButton.setText(Messages.getString("JavaJobScriptsExportWSWizardPage.LOG4jLEVEL")); //$NON-NLS-1$
-            log4jButton.setSelection(true);
-            log4jButton.setFont(font);
-            log4jButton.setSelection(false);
-            log4jButton.addSelectionListener(new SelectionAdapter() {
-
-                @Override
-                public void widgetSelected(SelectionEvent e) {
-                    if (log4jButton.getSelection()) {
-                        log4jLevelCombo.setEnabled(true);
-                    } else {
-                        log4jLevelCombo.setEnabled(false);
-                    }
-                }
-            });
-
-            log4jLevelCombo = new Combo(optionsGroup, SWT.PUSH);
-            gd = new GridData();
-            gd.horizontalSpan = 2;
-            log4jLevelCombo.setLayoutData(gd);
-            log4jLevelCombo.setEnabled(false);
-        }
     }
 
     public String getExtractOption() {
