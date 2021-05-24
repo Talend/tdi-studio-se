@@ -4,18 +4,25 @@
 	<groupId>org.talend.bonita</groupId>
 	<artifactId>talend-bonita-client</artifactId>
 	<name>talend-bonita-client</name>
-	<version>1.0.0</version>
+	<version>1.0.1</version>
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+		<httpmime.version>4.5.13</httpmime.version>
+		<httpclient.version>4.5.13</httpclient.version>
+	</properties>
 
 	<dependencies>
 		<dependency>
 			<groupId>org.apache.httpcomponents</groupId>
 			<artifactId>httpmime</artifactId>
-			<version>4.2.5</version>
+			<version>${httpmime.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.httpcomponents</groupId>
 			<artifactId>httpclient</artifactId>
-			<version>4.2.5</version>
+			<version>${httpclient.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.bonitasoft.engine</groupId>
@@ -36,8 +43,8 @@
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>2.3.2</version>
 				<configuration>
-					<source>1.6</source>
-					<target>1.6</target>
+					<source>1.8</source>
+					<target>1.8</target>
 					<encoding>UTF-8</encoding>
 				</configuration>
 			</plugin>

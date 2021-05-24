@@ -29,7 +29,7 @@
                 <artifactItem>
                   <groupId>org.talend.libraries</groupId>
                   <artifactId>talend-codegen-utils</artifactId>
-                  <version>0.28.0</version>
+                  <version>0.30.0</version>
                 </artifactItem>
                 <artifactItem>
                   <groupId>org.talend.libraries</groupId>
@@ -49,14 +49,14 @@
               <outputDirectory>${project.basedir}/lib</outputDirectory>
               <artifactItems>
                 <artifactItem>
-                  <groupId>org.talend.libraries</groupId>
+                  <groupId>org.talend.components</groupId>
                   <artifactId>talendzip</artifactId>
-                  <version>1.0-20190917</version>
+                  <version>1.1-20201120</version>
                 </artifactItem>
                 <artifactItem>
-                  <groupId>org.talend.libraries</groupId>
+                  <groupId>org.talend.components</groupId>
                   <artifactId>filecopy</artifactId>
-                  <version>2.0.0</version>
+                  <version>2.0.2</version>
                 </artifactItem>
                 <artifactItem>
                   <groupId>org.talend.components.lib</groupId>
@@ -66,7 +66,7 @@
                 <artifactItem>
                   <groupId>org.talend.components.lib</groupId>
                   <artifactId>talend_file_enhanced</artifactId>
-                  <version>1.0</version>
+                  <version>1.1</version>
                 </artifactItem>
               </artifactItems>
             </configuration>

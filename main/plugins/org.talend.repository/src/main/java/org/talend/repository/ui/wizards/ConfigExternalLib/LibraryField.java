@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2021 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -28,6 +28,8 @@ import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
 import org.talend.commons.ui.runtime.image.ECoreImage;
 import org.talend.commons.ui.runtime.image.ImageProvider;
+import org.talend.core.model.properties.RoutineItem;
+import org.talend.core.model.properties.RoutinesJarType;
 import org.talend.designer.core.model.utils.emf.component.IMPORTType;
 import org.talend.repository.i18n.Messages;
 
@@ -71,6 +73,10 @@ public class LibraryField extends TableField {
         colName.setText(Messages.getString("LibraryField.requiredColumn")); //$NON-NLS-1$
         colName.setWidth(70);
 
+        TableColumn moduleUriColumn = new TableColumn(contextTable, SWT.LEFT);
+        moduleUriColumn.setText(Messages.getString("LibraryField.mavenUriColumn")); //$NON-NLS-1$
+        moduleUriColumn.setWidth(300);
+
         TableColumn descriptionColumn = new TableColumn(contextTable, SWT.NONE);
         descriptionColumn.setText(Messages.getString("LibraryField.descriptionColumn")); //$NON-NLS-1$
         descriptionColumn.setWidth(200);
@@ -81,13 +87,15 @@ public class LibraryField extends TableField {
             public void handleEvent(Event event) {
                 if (!readOnly) {
                     final Table contextTable = (Table) event.widget;
-                    final TableItem item = contextTable.getSelection()[0];
-                    if (item.getBounds(1).contains(event.x, event.y)) {
-                        IMPORTType it = (IMPORTType) getList().get(contextTable.getSelectionIndex());
-                        if ("BeanItem".equals(it.eContainer().eClass().getName())
-                                || "RoutineItem".equals(it.eContainer().eClass().getName())) {
-                            it.setREQUIRED(!it.isREQUIRED());
-                            setInput(getList());
+                    TableItem[] selection = contextTable.getSelection();
+                    if (selection.length > 0) {
+                        final TableItem item = selection[0];
+                        if (item.getBounds(1).contains(event.x, event.y)) {
+                            IMPORTType it = (IMPORTType) getList().get(contextTable.getSelectionIndex());
+                            if (it.eContainer() instanceof RoutineItem || it.eContainer() instanceof RoutinesJarType) {
+                                it.setREQUIRED(!it.isREQUIRED());
+                                setInput(getList());
+                            }
                         }
                     }
                 }
@@ -143,6 +151,8 @@ public class LibraryField extends TableField {
                     case 0:
                         return type.getMODULE();
                     case 2:
+                        return type.getMVN();
+                    case 3:
                         return type.getMESSAGE();
                     default:
                         return ""; //$NON-NLS-1$

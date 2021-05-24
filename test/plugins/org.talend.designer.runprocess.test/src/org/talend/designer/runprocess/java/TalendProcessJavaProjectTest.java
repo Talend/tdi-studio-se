@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2021 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -12,7 +12,9 @@
 // ============================================================================
 package org.talend.designer.runprocess.java;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
@@ -24,6 +26,11 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.talend.commons.utils.generation.JavaUtils;
+import org.talend.core.model.properties.PropertiesFactory;
+import org.talend.core.model.properties.Property;
+import org.talend.core.model.properties.RoutinesJarItem;
+import org.talend.core.model.routines.CodesJarInfo;
+import org.talend.core.repository.model.ProxyRepositoryFactory;
 import org.talend.core.runtime.process.ITalendProcessJavaProject;
 import org.talend.designer.maven.model.MavenSystemFolders;
 import org.talend.designer.maven.model.TalendMavenConstants;
@@ -205,6 +212,21 @@ public class TalendProcessJavaProjectTest {
     @Test @Ignore
     public void testGetResourceSubFolder() {
         fail("Not yet implemented");
+    }
+
+    @Test
+    public void testExists() throws Exception {
+        RoutinesJarItem jarItem = PropertiesFactory.eINSTANCE.createRoutinesJarItem();
+        Property jarProperty = PropertiesFactory.eINSTANCE.createProperty();
+        jarProperty.setId(ProxyRepositoryFactory.getInstance().getNextId());
+        jarProperty.setLabel("TalendProcessJavaProjectTest_testExists_routinejar1");
+        jarProperty.setVersion("1.0");
+        jarProperty.setItem(jarItem);
+        CodesJarInfo info = CodesJarInfo.create(jarProperty);
+        ITalendProcessJavaProject jarProject = TalendJavaProjectManager.getTalendCodesJarJavaProject(info);
+        assertTrue(jarProject.exists());
+        TalendJavaProjectManager.deleteTalendCodesJarProject(info, true);
+        assertFalse(jarProject.exists());
     }
 
 }

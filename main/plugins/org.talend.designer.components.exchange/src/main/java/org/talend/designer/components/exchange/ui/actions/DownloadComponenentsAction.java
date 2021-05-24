@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2021 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -52,6 +52,7 @@ import org.talend.core.download.IDownloadHelper;
 import org.talend.core.model.components.ComponentManager;
 import org.talend.core.model.components.IComponent;
 import org.talend.core.model.components.IComponentsFactory;
+import org.talend.core.runtime.util.SharedStudioUtils;
 import org.talend.core.ui.component.ComponentPaletteUtilities;
 import org.talend.core.ui.component.ComponentsFactoryProvider;
 import org.talend.designer.codegen.ICodeGeneratorService;
@@ -312,51 +313,54 @@ public class DownloadComponenentsAction extends Action implements IIntroAction {
 
         protected void afterDownload(IProgressMonitor monitor, ComponentExtension extension, File localZipFile) throws Exception {
             if (UpdatesHelper.isComponentUpdateSite(localZipFile)) {
-                final File workFolder = org.talend.utils.files.FileUtils.createTmpFolder("downloadedComponents", ""); //$NON-NLS-1$  //$NON-NLS-2$
+            	if (!SharedStudioUtils.isSharedStudioMode()) {
+                    final File workFolder = org.talend.utils.files.FileUtils.createTmpFolder("downloadedComponents", ""); //$NON-NLS-1$  //$NON-NLS-2$
 
-                try {
-                    FilesUtils.copyFile(localZipFile, new File(workFolder, localZipFile.getName()));
+                    try {
+                        FilesUtils.copyFile(localZipFile, new File(workFolder, localZipFile.getName()));
 
-                    ComponentsInstallComponent component = LocalComponentInstallHelper.getComponent();
-                    if (component != null) {
-                        try {
-                            component.setComponentFolder(workFolder);
-                            if (component.install()) {
+                        ComponentsInstallComponent component = LocalComponentInstallHelper.getComponent();
+                        if (component != null) {
+                            try {
+                                component.setComponentFolder(workFolder);
+                                if (component.install()) {
 
-                                if (component.needRelaunch()) {
-                                    askReboot();
-                                } else {
-                                    MessageDialog.openInformation(DisplayUtils.getDefaultShell(),
-                                            Messages.getString("DownloadComponenentsAction.installComponentsTitle"),
-                                            component.getInstalledMessages());
+
+                                	if (component.needRelaunch()) {
+                                        askReboot();
+                                    } else {
+                                        MessageDialog.openInformation(DisplayUtils.getDefaultShell(),
+                                                Messages.getString("DownloadComponenentsAction.installComponentsTitle"),
+                                                component.getInstalledMessages());
+                                    }
+                                } else {// install failure
+                                    MessageDialog.openWarning(DisplayUtils.getDefaultShell(),
+                                            Messages.getString("DownloadComponenentsAction_failureTitle"), //$NON-NLS-1$
+                                            Messages.getString("DownloadComponenentsAction_failureMessage", extension.getLabel())); //$NON-NLS-1$
                                 }
-                            } else {// install failure
-                                MessageDialog.openWarning(DisplayUtils.getDefaultShell(),
+                            } finally {
+                                // after install, clear the setting for service.
+                                component.setComponentFolder(null);
+                            }
+                        }
+                    } catch (Exception e) {
+                        // Popup dialog to user to waring install failed.
+                        Display.getDefault().syncExec(new Runnable() {
+
+                            @Override
+                            public void run() {
+                                MessageDialog.openError(DisplayUtils.getDefaultShell(false),
                                         Messages.getString("DownloadComponenentsAction_failureTitle"), //$NON-NLS-1$
                                         Messages.getString("DownloadComponenentsAction_failureMessage", extension.getLabel())); //$NON-NLS-1$
                             }
-                        } finally {
-                            // after install, clear the setting for service.
-                            component.setComponentFolder(null);
-                        }
+                        });
+                        throw e;
+                    } finally {
+                        FilesUtils.deleteFolder(workFolder, true);
                     }
-                } catch (Exception e) {
-                    // Popup dialog to user to waring install failed.
-                    Display.getDefault().syncExec(new Runnable() {
-
-                        @Override
-                        public void run() {
-                            MessageDialog.openError(DisplayUtils.getDefaultShell(false),
-                                    Messages.getString("DownloadComponenentsAction_failureTitle"), //$NON-NLS-1$
-                                    Messages.getString("DownloadComponenentsAction_failureMessage", extension.getLabel())); //$NON-NLS-1$
-                        }
-                    });
-                    throw e;
-                } finally {
-                    FilesUtils.deleteFolder(workFolder, true);
-                }
-                monitor.done();
-                ExchangeManager.getInstance().saveDownloadedExtensionsToFile(extension);
+                    monitor.done();
+                    ExchangeManager.getInstance().saveDownloadedExtensionsToFile(extension);
+            	}
             } else {
                 File installedLocation = ComponentInstaller.unzip(localZipFile.getAbsolutePath(), getComponentsFolder()
                         .getAbsolutePath());

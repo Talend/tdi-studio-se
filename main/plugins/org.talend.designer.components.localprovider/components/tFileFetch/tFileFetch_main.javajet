@@ -47,8 +47,8 @@ if ("http".equals(protocol) || "https".equals(protocol)) {
 	boolean useProxyNTLM = "true".equals(ElementParameterParser.getValue(node, "__PROXY_NTLM__"));
 	boolean addHeader = "true".equals(ElementParameterParser.getValue(node, "__ADD_HEADER__"));
 	boolean encodeURI = "true".equals(ElementParameterParser.getValue(node, "__ENCODE_URI__"));
-
-	String scaccepted_uploadfile = ((uploadFile) ? " || status_"+cid+" == org.apache.commons.httpclient.HttpStatus.SC_ACCEPTED": "");
+	boolean trustAll = "true".equals(ElementParameterParser.getValue(node, "__TRUST_ALL_SERVER__"));
+	String paramsCharset = ElementParameterParser.getValue(node, "__COMMON_PARAMS_CHARSET__");
 %>	
 	java.net.URI uriToFetch_<%=cid %> = null;
 	try {
@@ -118,7 +118,7 @@ globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
                             e.printStackTrace();
                         }
                     }
-                    javax.net.ssl.TrustManager[] trustManagers = new javax.net.ssl.TrustManager[]{new TrustAnyTrustManager()};
+                    javax.net.ssl.TrustManager[] trustManagers = <%=trustAll?"new javax.net.ssl.TrustManager[]{new TrustAnyTrustManager()}":"null"%>;
                     String trustStoreType = java.util.Optional.ofNullable(System.getProperty("javax.net.ssl.trustStoreType")).orElse("");
                     String trustStoreFile = java.util.Optional.ofNullable(System.getProperty("javax.net.ssl.trustStore")).orElse("");
                     String trustStorePassword = java.util.Optional.ofNullable(System.getProperty("javax.net.ssl.trustStorePassword")).orElse("");
@@ -336,7 +336,7 @@ globalMap.put("<%=cid%>_ERROR_MESSAGE",e1.getMessage());
 			String value = param.get("COMMON_PARAMS_VALUE");
 			varPartList.add("common_" + i + "_" + cid);
 			%>
-			org.apache.commons.httpclient.methods.multipart.StringPart common_<%=i%>_<%=cid%> = new org.apache.commons.httpclient.methods.multipart.StringPart(<%=name %>, <%=value %>);
+			org.apache.commons.httpclient.methods.multipart.StringPart common_<%=i%>_<%=cid%> = new org.apache.commons.httpclient.methods.multipart.StringPart(<%=name %>, <%=value %>, <%=paramsCharset %>);
 			<%
 		}
 
@@ -410,7 +410,7 @@ globalMap.put("<%=cid%>_ERROR_MESSAGE",e1.getMessage());
 
 					System.out.println("Redirect to: " + method_<%=cid%>.getURI());
 					finalURL_<%=cid%> = method_<%=cid%>.getURI().toString();
-				} else if (status_<%=cid%> == org.apache.commons.httpclient.HttpStatus.SC_OK<%= scaccepted_uploadfile%>) {
+				} else if (status_<%=cid%> >= 200 && status_<%=cid%> < 300) { //Status code 2XX indicates success
 					redirect_<%=cid%> = false;
 				} else {
 					throw new java.lang.Exception("Method failed: " + method_<%=cid%>.getStatusLine());
@@ -423,7 +423,7 @@ globalMap.put("<%=cid%>_ERROR_MESSAGE",e1.getMessage());
 
 		if (!redirect) {
 		%>
-			if (!(status_<%=cid%> == org.apache.commons.httpclient.HttpStatus.SC_OK<%= scaccepted_uploadfile%>)) {      
+			if (!(status_<%=cid%> >= 200 && status_<%=cid%> < 300)){//Status code 2XX indicates success
 				throw new java.lang.Exception("Method failed: " + method_<%=cid%>.getStatusLine());
 			}
 		<%

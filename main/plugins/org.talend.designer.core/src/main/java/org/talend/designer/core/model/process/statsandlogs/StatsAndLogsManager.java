@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2021 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -1476,7 +1476,7 @@ public class StatsAndLogsManager {
                     if (!moduleNameList.contains(moduleName)) {
                         moduleNameList.add(moduleName);
                     }
-                    String moduleValue = TalendTextUtils.addQuotes(moduleName);
+                    String moduleValue = TalendTextUtils.addQuotes(module.getMavenUri());
                     if (!moduleValueList.contains(moduleValue)) {
                         moduleValueList.add(moduleValue);
                     }

@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2021 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -28,6 +28,7 @@ public enum ImageInfo {
     CHECKED_ICON("/icons/checked.png"), //$NON-NLS-1$
     UNCHECKED_ICON("/icons/unchecked.png"), //$NON-NLS-1$
     ADD_FILTER_ICON("/icons/addfilter.png"), //$NON-NLS-1$
+    PROPERTY_TOOL_ICON("/icons/property.png"), //$NON-NLS-1$
     ;
 
     private String path;

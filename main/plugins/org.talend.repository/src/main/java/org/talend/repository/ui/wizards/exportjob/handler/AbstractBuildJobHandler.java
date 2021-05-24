@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2021 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -209,7 +209,7 @@ public abstract class AbstractBuildJobHandler implements IBuildJobHandler, IBuil
 
         // If the map doesn't contain the assembly key, then take the default value activation from the POM.
         boolean isAssemblyNeeded = (exportChoice.get(ExportChoice.needAssembly) == null
-                || isOptionChoosed(ExportChoice.needAssembly)) && !isOptionChoosed(ExportChoice.buildImage);
+                || isOptionChoosed(ExportChoice.needAssembly));
         addArg(profileBuffer, isAssemblyNeeded, TalendMavenConstants.PROFILE_PACKAGING_AND_ASSEMBLY);
 
         // rules
@@ -237,7 +237,7 @@ public abstract class AbstractBuildJobHandler implements IBuildJobHandler, IBuil
         if (isOptionChoosed(ExportChoice.buildImage)) {
             String dockerHost = (String) exportChoice.get(ExportChoice.dockerHost);
             if (dockerHost != null) {
-                otherArgsBuffer.append("-Ddocker.host=" + dockerHost + " "); //$NON-NLS-1$ //$NON-NLS-2$
+                otherArgsBuffer.append("-Djkube.docker.host=" + dockerHost + " "); //$NON-NLS-1$ //$NON-NLS-2$
             }
             String imageName = (String) exportChoice.get(ExportChoice.imageName);
             if (imageName != null) {
@@ -252,15 +252,15 @@ public abstract class AbstractBuildJobHandler implements IBuildJobHandler, IBuil
         if (isOptionChoosed(ExportChoice.pushImage)) {
             String registry = (String) exportChoice.get(ExportChoice.pushRegistry);
             if (registry != null) {
-                otherArgsBuffer.append("-Ddocker.push.registry=" + registry + " "); //$NON-NLS-1$ //$NON-NLS-2$
+                otherArgsBuffer.append("-Djkube.docker.push.registry=" + registry + " "); //$NON-NLS-1$ //$NON-NLS-2$
             }
             String username = (String) exportChoice.get(ExportChoice.registryUsername);
             if (username != null) {
-                otherArgsBuffer.append("-Ddocker.push.username=" + username + " "); //$NON-NLS-1$ //$NON-NLS-2$
+                otherArgsBuffer.append("-Djkube.docker.username=" + username + " "); //$NON-NLS-1$ //$NON-NLS-2$
             }
             String password = (String) exportChoice.get(ExportChoice.registryPassword);
             if (password != null) {
-                otherArgsBuffer.append("-Ddocker.push.password=" + password + " "); //$NON-NLS-1$ //$NON-NLS-2$
+                otherArgsBuffer.append("-Djkube.docker.password=" + password + " "); //$NON-NLS-1$ //$NON-NLS-2$
             }
 
         }

@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2021 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -870,43 +870,49 @@ public class MapperComponent extends AbstractMapComponent implements IHashableIn
         return super.getIODataComponents();
     }
 
-    public void loadDatasetConditions(boolean isJobValidForDataset){
-    	this.shouldGenerateDatasetCode = isDatasetCompatible(isJobValidForDataset);
+    public void loadDatasetConditions(boolean isJobValidForDataset) {
+        this.shouldGenerateDatasetCode = isDatasetCompatible(isJobValidForDataset);
     }
-    
-    public boolean isDatasetCompatible(boolean isJobValidForDataset) {
-    	boolean res = true;
-    	//spark 2.0 and batch
-    	if (!isJobValidForDataset) {
-    		res = false;
-    	}
-    	//only two input connections
 
+    public boolean isDatasetCompatible(boolean isJobValidForDataset) {
+        //spark 2.0 and batch
+        if (!isJobValidForDataset) {
+            return false;
+        }
+
+        //only two input connections
         if (this.externalData.getInputTables().size() != 2) {
-        	res = false;
+            return false;
         } // one connection must be all matches
         else if (!isAtLeastOneInputTableAllMatch(this.externalData)) {
-        	res = false;
-        }              
+            return false;
+        }
+
+        if (externalData != null) {
+            // Output should not have filter until its implemented in spark dataset lib
+            for (ExternalMapperTable outputTable : externalData.getOutputTables()) {
+                if (outputTable.getExpressionFilter() != null) return false;
+            }
+        }
 
         //only one output, can be equal to 0 when graphically adding component so we avoid NPE
         if (this.externalData.getOutputTables().size() != 1) {
-        	res = false;
+            return false;
         } //no rejects
         else if (this.externalData.getOutputTables().get(0).isRejectInnerJoin()
-        		|| this.externalData.getOutputTables().get(0).isReject()) {
-        	res = false;
+                || this.externalData.getOutputTables().get(0).isReject()) {
+            return false;
         }
-        return res;
+        return true;
     }
-    
+
 
     private boolean isAtLeastOneInputTableAllMatch(ExternalMapperData data) {
-    	return "ALL_MATCHES".equals(data.getInputTables().get(0).getMatchingMode()) || "ALL_MATCHES".equals(data.getInputTables().get(1).getMatchingMode());
+        return "ALL_MATCHES".equals(data.getInputTables().get(0).getMatchingMode()) || "ALL_MATCHES".equals(data.getInputTables().get(1).getMatchingMode());
     }
-    
+
     @Override
     public boolean getShouldGenerateDataset() {
-    	return this.shouldGenerateDatasetCode;
+        return this.shouldGenerateDatasetCode;
     }
 }

@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2021 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -184,7 +184,8 @@ public class GenericTableUtilsTest {
         listString.add("mvn:org.talend.libraries/mysql-connector-java-5.1.30-bin/6.0.0");
         listString.add("mvn:org.talend.libraries/mysql-connector-java-5.1.40-bin/6.0.0");
         String jars = GenericTableUtils.getDriverJarPaths(listString);
-        assertEquals(jars, "mysql-connector-java-5.1.30-bin.jar;mysql-connector-java-5.1.40-bin.jar");
+        assertEquals(jars,
+                "mvn:org.talend.libraries/mysql-connector-java-5.1.30-bin/6.0.0;mvn:org.talend.libraries/mysql-connector-java-5.1.40-bin/6.0.0");
 
         listString = new ArrayList<String>();
         listString.add("mysql-connector-java-5.1.30-bin.jar");

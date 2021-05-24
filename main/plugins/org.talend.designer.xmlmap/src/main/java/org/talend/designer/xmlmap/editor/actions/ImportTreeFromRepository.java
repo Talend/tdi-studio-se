@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2021 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -58,6 +58,7 @@ import org.talend.core.model.properties.XmlFileConnectionItem;
 import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.core.model.utils.TalendTextUtils;
 import org.talend.core.repository.model.ProjectRepositoryNode;
+import org.talend.core.runtime.util.SharedStudioUtils;
 import org.talend.core.ui.IMDMProviderService;
 import org.talend.core.utils.TalendQuoteUtils;
 import org.talend.cwm.helper.ConnectionHelper;
@@ -839,7 +840,7 @@ public class ImportTreeFromRepository extends SelectionAction {
     }
 
     private File getTempTemplateXSDFile() {
-        IPath tempPath = new Path(System.getProperty("user.dir")).append("temp"); //$NON-NLS-1$ //$NON-NLS-2$
+        IPath tempPath = SharedStudioUtils.getTempFolderPath();
         File tempFile = tempPath.toFile();
         if (!tempFile.exists()) {
             tempFile.mkdirs();

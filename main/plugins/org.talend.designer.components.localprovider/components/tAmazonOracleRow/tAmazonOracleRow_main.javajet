@@ -54,11 +54,11 @@ for(IConnection conn : outgoingConns) {
 		<%
 	}
 }
-log4jCodeGenerateUtil.query(node);
 %>
 query_<%=cid %> = <%=dbquery%>;
 whetherReject_<%=cid%> = false;
 <%
+log4jCodeGenerateUtil.query(node, "query_" + cid);
 List<IMetadataTable> metadatas = node.getMetadataList();
 if ((metadatas!=null)&&(metadatas.size()>0)) {
 	IMetadataTable metadata = metadatas.get(0);
@@ -131,7 +131,7 @@ try {
 		<%
 		}
 	}
-	log4jCodeGenerateUtil.logInfo(node,"info",cid+" - Execute the query: '\" + "+dbquery +" + \"' has finished.");
+	log4jCodeGenerateUtil.logInfo(node,"info",cid+" - Execute the query: '\" + query_" + cid  + " + \"' has finished.");
 %>
 <%	//feature 0010425
 	if(usePrepareStatement){

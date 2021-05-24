@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2021 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -784,7 +784,7 @@ public class MainComposite extends AbstractTabComposite {
                                                         RelationshipItemBuilder.getInstance().addOrUpdateItem(repositoryObject.getProperty().getItem());
                                                     }
                                                     proxyRepositoryFactory.save(ProjectManager.getInstance().getCurrentProject(),
-                                                            repositoryObject.getProperty().getItem(), false);
+                                                            repositoryObject.getProperty(), oldName, oldVersion);
                                                     if (needjobletRelateUpdate && GlobalServiceRegister.getDefault()
                                                             .isServiceRegistered(IJobletProviderService.class)) {
                                                         IJobletProviderService jobletService = (IJobletProviderService) GlobalServiceRegister

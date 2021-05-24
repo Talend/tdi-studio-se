@@ -58,6 +58,12 @@
             isReadAction="true"
             level="12"
             name="Read routine"/>
+      <Action
+            class="org.talend.repository.ui.actions.routines.AssignRoutinesToJarAction"
+            id="org.talend.repositorys.actions.assignoutine"
+            level="10"
+            name="Assign Routines to">
+      </Action>
 
        <Action
             class="org.talend.repository.ui.actions.sqlpattern.ReadSqlpatternAction"
@@ -133,6 +139,12 @@
             isEditAction="false"
             isReadAction="false"
             name="Export Items"/>
+      <Action
+            class="org.talend.repository.ui.actions.routinesjar.CreateRoutinesJarAction"
+            id="org.talend.repository.actions.createroutinesjar"
+            level="10"
+            name="Create Routine Jar">
+      </Action>
    </extension>
    <extension
          point="org.eclipse.ui.views.properties.tabbed.propertyContributor">
@@ -388,6 +400,17 @@
    </extension>
    <extension
          point="org.talend.core.migrationTask">
+         
+  <projecttask
+        beforeLogon="true"
+        breaks="7.3.1"
+        class="org.talend.repository.model.migration.spark.AddKafkaExtraInfo"
+        description="Add key, partition and topic to the output schema of tKafkaInput components"
+        id="org.talend.repository.model.migration.spark.AddKafkaExtraInfo"
+        name="AddKafkaExtraInfo"
+        version="7.3.1">                     
+  </projecttask>
+
   <projecttask
         beforeLogon="true"
         breaks="5.1.1"
@@ -1352,15 +1375,6 @@
              description="Add Routine Dependencies for job"
              id="org.talend.repository.model.migration.AddRoutineDependenciesMigrationTask"
              name="Add Routine Dependencies"
-             version="5.1.2">
-       </projecttask>
-       <projecttask
-             beforeLogon="false"
-             breaks="5.1.1"
-             class="org.talend.repository.model.migration.MergeTosMetadataMigrationTask"
-             description="merge metadata"
-             id="org.talend.repository.MergeTosMetadataMigrationTask"
-             name="MergeTosMetadataMigrationTask"
              version="5.1.2">
        </projecttask>
        <projecttask
@@ -3475,11 +3489,181 @@
        <projecttask
           beforeLogon="true"
           breaks="7.3.0"
-          class="org.talend.repository.model.migration.RemoveSnapshotJarMigrationTask"
-          id="org.talend.repository.model.migration.RemoveSnapshotJarMigrationTask"
-          description="Regnerate all poms"
-          name="RemoveSnapshotJarMigrationTask"
+          class="org.talend.repository.model.migration.UpdateDaikonCryptoUtilsMigrationTask"
+          id="org.talend.repository.model.migration.UpdateDaikonCryptoUtilsMigrationTask"
+          description="Update Daikon Crypto Utils"
+          name="UpdateDaikonCryptoUtilsMigrationTask"
           version="7.3.1">
+       </projecttask>
+	   <projecttask
+               beforeLogon="false"
+               breaks="7.3.0"
+               class="org.talend.repository.model.migration.UncheckTrustAllMigrationTask"
+               description="Uncheck Trust all server in tFileFetch"
+               id="org.talend.repository.model.migration.UncheckTrustAllMigrationTask"
+               name="UncheckTrustAllMigrationTask"
+               version="7.3.1">
+       </projecttask>
+       <projecttask
+              beforeLogon="false"
+              breaks="7.4.0"
+              class="org.talend.repository.model.migration.EnabletPersonatorAddressBasicSettingTask"
+              description="Enable the Address Basic Setting of tPersonator"
+              id="org.talend.repository.model.migration.EnabletPersonatorAddressBasicSettingTask"
+              name="EnabletPersonatorAddressBasicSettingTask"
+              version="7.4.1">
+       </projecttask>
+       <projecttask
+              beforeLogon="true"
+              breaks="7.3.0"
+              class="org.talend.repository.model.migration.RemoveSnapshotJarMigrationTask"
+              id="org.talend.repository.model.migration.RemoveSnapshotJarMigrationTask"
+              description="Regnerate all poms"
+              name="RemoveSnapshotJarMigrationTask"
+              version="7.3.1">
+       </projecttask>
+       <projecttask
+              beforeLogon="false"
+              breaks="7.4.0"
+              class="org.talend.repository.model.migration.spark.SetDatasetCheckBoxGlobalOption"
+              description="set global use dataset api checkbox to false for previous versions"
+              id="org.talend.repository.model.migration.spark.SetDatasetCheckBoxGlobalOption"
+              name="SetDatasetCheckBoxGlobalOption"
+              version="7.4.1">
+       </projecttask>
+              <projecttask
+              beforeLogon="false"
+              breaks="7.3.0"
+              class="org.talend.repository.model.migration.spark.SetUseLocalTimezone"
+              description="set use local timezone checkbox to true for previous versions"
+              id="org.talend.repository.model.migration.spark.SetUseLocalTimezone"
+              name="SetUseLocalTimezone"
+              version="7.4.1">
+       </projecttask>
+       <projecttask
+              beforeLogon="false"
+              breaks="7.4.0"
+              class="org.talend.repository.model.migration.ChangeELTPostgresDbVersionMigrationTask"
+              description="Change the tELTPostgresqlMap DB_VERSION to old version if DB_VERSION is not set"
+              id="org.talend.repository.model.migration.ChangeELTPostgresDbVersionMigrationTask"
+              name="ChangeELTPostgresDbVersionMigrationTask"
+              version="7.4.1">
+       </projecttask>
+       <projecttask
+               beforeLogon="false"
+               breaks="7.4.0"
+               class="org.talend.repository.model.migration.SpecialUpdateELTDefaultNameMigrationTask"
+               description="Update ELT default table name or schema name"
+               id="org.talend.repository.model.migration.SpecialUpdateELTDefaultNameMigrationTask"
+               name="SpecialUpdateELTDefaultNameMigrationTask"
+               version="7.4.1">
+       </projecttask>
+       <projecttask
+             beforeLogon="false"
+             breaks="7.4.0"
+             class="org.talend.repository.model.migration.ChangeTMatchGroupConfidentWeightTypeTask"
+             description="change the type of Confident Weight and keep the part of integer only"
+             id="org.talend.repository.model.migration.ChangeTMatchGroupConfidentWeightTypeTask"
+             name="ChangeTMatchGroupConfidentWeightTypeTask"
+             version="7.4.1">
+       </projecttask>
+   	   <projecttask
+               beforeLogon="false"
+               breaks="7.3.0"
+               class="org.talend.repository.model.migration.UncheckUseExtraParameterMigrationTask"
+               description="Uncheck Use Extra Parameters in tGPGDecrypt"
+               id="org.talend.repository.model.migration.UncheckUseExtraParameterMigrationTask"
+               name="UncheckUseExtraParameterMigrationTask"
+               version="7.3.1">
+       </projecttask>
+       <projecttask
+               beforeLogon="false"
+               breaks="7.3.0"
+               class="org.talend.repository.model.migration.ChangeDefaultDriver4GreenplumMigrationTask"
+               description="Change default driver and version for Greenplum components"
+               id="org.talend.repository.model.migration.ChangeDefaultDriver4GreenplumMigrationTask"
+               name="ChangeDefaultDriver4GreenplumMigrationTask"
+               version="7.3.1">
+       </projecttask>
+       <projecttask
+             beforeLogon="false"
+             breaks="7.3.0"
+             class="org.talend.repository.model.migration.ChangeFileInputDynamicFieldLength"
+             description="Change the dynamic field length in file input components"
+             id="org.talend.repository.model.migration.ChangeFileInputDynamicFieldLength"
+             name="ChangeFileInputDynamicFieldLength"
+             version="7.3.1">
+       </projecttask>
+       <projecttask
+             beforeLogon="false"
+             breaks="7.3.0"
+             class="org.talend.repository.model.migration.SpecialUpdateELTEnableColumnAliasMigrationTask"
+             description="Update ELT to enable oracle column alias"
+             id="org.talend.repository.model.migration.SpecialUpdateELTEnableColumnAliasMigrationTask"
+             name="SpecialUpdateELTEnableColumnAliasMigrationTask"
+             version="7.3.1">
+        </projecttask>
+		<projecttask
+             breaks="7.4.0"
+             class="org.talend.repository.model.migration.ChangeGreenplumDefaultDriverMigrationTask"
+             description="change Greenplum default driver"
+             id="org.talend.repository.model.migration.ChangeGreenplumDefaultDriverMigrationTask"
+             name="ChangeGreenplumDefaultDriverMigrationTask"
+             version="7.4.1">
+       </projecttask>
+       <projecttask
+              beforeLogon="false"
+              breaks="7.3.0"
+              class="org.talend.repository.model.migration.FixUpgradePasswordEncryptionAlg4ItemMigrationTask"
+              description="Fix upgrading password encryption Alg 4 item migration task"
+              id="org.talend.repository.model.migration.FixUpgradePasswordEncryptionAlg4ItemMigrationTask"
+              name="FixUpgradePasswordEncryptionAlg4ItemMigrationTask"
+              version="7.3.1">
+        </projecttask>
+        <projecttask
+             beforeLogon="false"
+             breaks="7.4.0"
+             class="org.talend.repository.model.migration.SpecialUpdateELTEnableColumnAliasMigrationTask"
+             description="Update ELT to enable oracle column alias"
+             id="org.talend.repository.model.migration.SpecialUpdateELTEnableColumnAliasMigrationTask"
+             name="SpecialUpdateELTEnableColumnAliasMigrationTask"
+             version="7.4.1">
+	    </projecttask>
+		<projecttask
+              beforeLogon="false"
+              breaks="7.3.0"
+              class="org.talend.repository.model.migration.RemoveDefaultProxyIPTask"
+              description="Replace the unUsed proxy IP to 127.0.0.1"
+              id="org.talend.repository.model.migration.RemoveDefaultProxyIPTask"
+              name="RemoveDefaultProxyIPTask"
+              version="7.3.1">
+        </projecttask>
+       <projecttask
+              beforeLogon="false"
+              breaks="7.3.0"
+              class="org.talend.repository.model.migration.ReplaceInheritCredentialCheckBoxWithDropDownListTask"
+              description="Replace 'inherit credentials' checkbox for drop down list"
+              id="org.talend.repository.model.migration.ReplaceInheritCredentialCheckBoxWithDropDownListTask"
+              name="ReplaceInheritCredentialCheckBoxWithDropDownListTask"
+              version="7.3.1">
+     </projecttask>
+       <projecttask
+               beforeLogon="false"
+               breaks="7.3.0"
+               class="org.talend.repository.model.migration.SetForceCopyFortFileCopy"
+               description="Set force copy checkbox to true."
+               id="org.talend.repository.model.migration.SetForceCopyFortFileCopy"
+               name="SetForceCopyFortFileCopy"
+               version="7.3.1">
+       </projecttask>
+        <projecttask
+                beforeLogon="false"
+                breaks="7.3.0"
+                class="org.talend.repository.model.migration.AddEncodingToPostParametersFortFileFetchMigrationTask"
+                description="Add charset default 'US-ASCII' post method parameters"
+                id="org.talend.repository.model.migration.AddEncodingToPostParametersFortFileFetchMigrationTask"
+                name="AddEncodingToPostParametersFortFileFetchMigrationTask"
+                version="7.3.1">
        </projecttask>
    </extension>
 

@@ -66,6 +66,7 @@ int nb_line_rejected_<%=cid%> = 0;
 int deletedCount_<%=cid%> = 0;
 int updatedCount_<%=cid%> = 0;
 int insertedCount_<%=cid%> = 0;
+int rowsToCommitCount_<%=cid%>=0;
 int rejectedCount_<%=cid%> = 0;
 <%
 getManager(dbmsId, cid, node);
@@ -115,39 +116,7 @@ if(stmtStructure!=null) {
 }
 %>
 
-<%
-if(("UPDATE").equals(dataAction) || ("INSERT_OR_UPDATE").equals(dataAction) || ("UPDATE_OR_INSERT").equals(dataAction)) {
-    int updateKeyCount = 0;
-    if(stmtStructure != null) {
-        for(Column column : stmtStructure) {
-            if(column.isUpdateKey() && !column.isDynamic()) {
-                updateKeyCount++;
-            }
-        }
-        %>
-        int updateKeyCount_<%=cid%> = <%=updateKeyCount%>;
-        if(updateKeyCount_<%=cid%> < 1) {
-            throw new RuntimeException("For update, Schema must have a key");
-        }
-        <%
-    }
-} else if(("DELETE").equals(dataAction)) {
-    int deleteKeyCount = 0;
-    if(stmtStructure != null) {
-        for(Column column : stmtStructure) {
-            if(column.isDeleteKey() && !column.isDynamic()) {
-                deleteKeyCount++;
-            }
-        }
-        %>
-        int deleteKeyCount_<%=cid%> = <%=deleteKeyCount%>;
-        if(deleteKeyCount_<%=cid%> < 1) {
-            throw new RuntimeException("For delete, Schema must have a key");
-        }
-        <%
-    }
-}
-%>
+<%@ include file="@{org.talend.designer.components.localprovider}/components/templates/DB/Output/CheckKeysForUpdateAndDelete.javajet"%>
 
 
 boolean whetherReject_<%=cid%> = false;

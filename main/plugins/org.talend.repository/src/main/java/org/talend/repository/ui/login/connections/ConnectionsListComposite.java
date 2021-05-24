@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2021 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -140,7 +140,7 @@ public class ConnectionsListComposite extends Composite {
 
             @Override
             protected ExtendedToolbarView initToolBar() {
-                if (!PluginChecker.isSVNProviderPluginLoaded()) {
+                if (!PluginChecker.isRemoteProviderPluginLoaded()) {
                     return null;
                 }
                 return new ConnectionsListButtonsToolBar(getMainComposite(), SWT.NONE, getExtendedTableViewer());

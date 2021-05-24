@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2021 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -32,7 +32,7 @@ public class CustomComponentProjectSettingPageTester implements IProjectSettingP
      */
     @Override
     public boolean valid(IConfigurationElement element, IPreferenceNode node) {
-        if (PluginChecker.isSVNProviderPluginLoaded() && !ProjectManager.getInstance().getCurrentProject().isLocal()) {
+        if (PluginChecker.isRemoteProviderPluginLoaded() && !ProjectManager.getInstance().getCurrentProject().isLocal()) {
             return true;
         }
         return false;

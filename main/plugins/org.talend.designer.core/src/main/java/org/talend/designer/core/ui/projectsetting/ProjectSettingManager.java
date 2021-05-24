@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2021 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -621,7 +621,10 @@ public class ProjectSettingManager extends Utils {
             String moduleName = module.getModuleName();
             if (moduleName != null) {
                 moduleNameList.add(moduleName);
-                moduleValueList.add(TalendTextUtils.addQuotes(moduleName));
+                String moduleValue = TalendTextUtils.addQuotes(module.getMavenUri());
+                if (!moduleValueList.contains(moduleValue)) {
+                    moduleValueList.add(moduleValue);
+                }
             }
         }
         Comparator<String> comprarator = new IgnoreCaseComparator();

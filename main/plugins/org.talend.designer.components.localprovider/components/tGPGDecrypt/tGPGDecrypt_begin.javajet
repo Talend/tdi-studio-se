@@ -14,6 +14,8 @@
 	String gpgBin = ElementParameterParser.getValue(node, "__GPGBIN__");		
 	String inputFile  = ElementParameterParser.getValue(node, "__INPUT_FILE__");
 	String outputFile  = ElementParameterParser.getValue(node, "__OUTPUT_FILE__");
+	boolean useExtraParameters = "true".equals(ElementParameterParser.getValue(node, "__USE_EXTRA_PARAMETERS__"));
+	String extraParameters  = ElementParameterParser.getValue(node, "__EXTRA_PARAMETERS__"); 
 
 	boolean noTTY  = "true".equals(ElementParameterParser.getValue(node, "__NOTTY__"));
 	
@@ -28,23 +30,19 @@
    %>
     
    <%@ include file="@{org.talend.designer.components.localprovider}/components/templates/password.javajet"%>
-	
-			String[] cmdArray_<%=cid %> = new String[]{
-											<%=gpgBin %>,
-											<%if(noTTY){%>
-												"--no-tty",
-											<%}%>
-											"--yes",
-											"-q",
-											"-d",
-											"--passphrase",
-											decryptedPassword_<%=cid%>,
-											"-o",
-											<%=outputFile %>,
-											<%=inputFile %>
-							 				};
+   
+   StringBuilder cmdBuilder_<%=cid %> = new StringBuilder();
+   cmdBuilder_<%=cid %>.append(<%=gpgBin %>)
+   <%if(noTTY){%>.append(" --no-tty")<%}%>
+   .append(" --yes").append(" --batch")
+   <%if(useExtraParameters){%>.append(' ').append(<%=extraParameters%>.trim())<%}%>
+   
+   .append(" -q").append(" -d").append(" --passphrase").append(' ').append(decryptedPassword_<%=cid%>).append(" -o")
+   .append(' ').append(<%=outputFile %>).append(' ')
+   .append(<%=inputFile %>);
+   
             Runtime runtime_<%=cid %> = Runtime.getRuntime();
-            final Process ps_<%=cid %> = runtime_<%=cid %>.exec(cmdArray_<%=cid %>);
+            final Process ps_<%=cid %> = runtime_<%=cid %>.exec(cmdBuilder_<%=cid %>.toString().split(" "));
             Thread normal_<%=cid %> = new Thread() {
 
                 public void run() {

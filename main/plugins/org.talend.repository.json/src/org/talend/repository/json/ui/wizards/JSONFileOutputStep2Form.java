@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2021 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Properties;
 
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.IMenuListener;
@@ -51,6 +52,7 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeColumn;
 import org.eclipse.swt.widgets.TreeItem;
+import org.talend.commons.ui.runtime.ws.WindowSystem;
 import org.talend.commons.ui.swt.drawing.link.IExtremityLink;
 import org.talend.commons.ui.swt.drawing.link.LinkDescriptor;
 import org.talend.commons.ui.swt.drawing.link.LinksManager;
@@ -152,6 +154,9 @@ public class JSONFileOutputStep2Form extends AbstractJSONFileStepForm {
         addSchemaViewer(mainSashFormComposite, 300, 100);
         addJSONFileViewer(mainSashFormComposite, 400, 100);
         mainSashFormComposite.setWeights(new int[] { 40, 60 });
+        if (Platform.OS_MACOSX.equals(Platform.getOS())) {
+            mainSashFormComposite.setSashWidth((mainSashFormComposite.getShell().getBounds().width) / 6);
+        }
 
         linker = new JSONFileSchema2TreeLinker(mainSashFormComposite);
         linker.setForm(this);
@@ -379,6 +384,9 @@ public class JSONFileOutputStep2Form extends AbstractJSONFileStepForm {
         column.setText("Schema List");
         column.setWidth(100);
         table.setLayoutData(gridData);
+        if (WindowSystem.isBigSurOrLater()) {
+            table.setLinesVisible(true);
+        }
     }
 
     private void fillContextMenu(IMenuManager manager) {
@@ -422,6 +430,9 @@ public class JSONFileOutputStep2Form extends AbstractJSONFileStepForm {
                     }
                     schemaViewer.setInput(inputList);
                     schemaViewer.refresh();
+                    if (WindowSystem.isBigSurOrLater()) {
+                        schemaViewer.getTable().redraw();
+                    }
 
                     EList columnList = ConnectionHelper.getTables(getConnection()).toArray(new MetadataTable[0])[0].getColumns();
                     columnList.clear();

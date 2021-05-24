@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2021 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -278,7 +278,7 @@ public class UpgradePasswordEncryptionAlg4ItemMigrationTask extends UnifyPasswor
                 if (p instanceof ElementParameterType) {
                     ElementParameterType param = (ElementParameterType) p;
                     // variable name used for Stat&Logs
-                    if ("PASS".equals(param.getName())) { //$NON-NLS-1$
+                    if ("PASS".equals(param.getName()) || EParameterFieldType.PASSWORD.getName().equals(param.getField())) { //$NON-NLS-1$
                         if (reencryptValueIfNeeded(param)) {
                             modified = true;
                         }

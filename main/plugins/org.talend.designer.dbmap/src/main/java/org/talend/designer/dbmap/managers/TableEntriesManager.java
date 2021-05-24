@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2021 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -374,6 +374,17 @@ public class TableEntriesManager {
         }
 
         dataMapTableEntry.setName(newColumnName);
+    }
+
+    public void updateTableEntryLocation(ITableEntry dataMapTableEntry, String oldName, String newName) {
+        TableEntryLocation oldLocation = new TableEntryLocation(oldName, dataMapTableEntry.getName());
+        ITableEntry entry = tableEntries.get(oldLocation);
+        if (entry != dataMapTableEntry) {
+            throw new IllegalStateException(Messages.getString("TableEntriesManager.exceptionMessage.tableEntriesNotSame")); //$NON-NLS-1$
+        }
+        tableEntries.remove(oldLocation);
+        TableEntryLocation newLocation = new TableEntryLocation(newName, dataMapTableEntry.getName());
+        tableEntries.put(newLocation, dataMapTableEntry);
     }
 
     public static TableEntryLocation buildLocation(ITableEntry dataMapTableEntry) {

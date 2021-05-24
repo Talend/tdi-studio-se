@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2019 Talend Inc. - www.talend.com
+ * Copyright (C) 2006-2021 Talend Inc. - www.talend.com
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,6 +37,7 @@ import org.eclipse.swt.graphics.ImageData;
 import org.talend.commons.ui.runtime.image.EImage;
 import org.talend.commons.ui.runtime.image.ImageProvider;
 import org.talend.core.runtime.maven.MavenConstants;
+import org.talend.sdk.component.server.front.model.ActionList;
 import org.talend.sdk.component.server.front.model.ComponentDetail;
 import org.talend.sdk.component.server.front.model.ComponentDetailList;
 import org.talend.sdk.component.server.front.model.ComponentId;
@@ -212,6 +213,9 @@ public class ComponentService {
      * @return ComponentDetail
      */
     public Optional<ComponentDetail> getDetail(final String componentName) {
+        if (Lookups.taCoKitCache().isVirtualComponentName(componentName)) {
+            return Optional.of(Lookups.taCoKitCache().getComponentDetailByName(componentName));
+        }
         final ComponentIndices indices = getComponentIndex();
         final Optional<ComponentId> id = indices.getComponents().stream()
                 .map(ComponentIndex::getId)
@@ -228,6 +232,9 @@ public class ComponentService {
     }
 
     public ComponentDetail getDetailById(final String id) {
+        if (Lookups.taCoKitCache().isVirtualComponentId(id)) {
+            return Lookups.taCoKitCache().getComponentDetailById(id);
+        }
         final ComponentDetailList detailList = client().getDetail(language(), new String[] { id });
         if (detailList.getDetails().size() != 1) {
             throw new IllegalArgumentException("No single detail for id: " + id);
@@ -240,6 +247,10 @@ public class ComponentService {
             index = client().getIndex(language());
         }
         return index;
+    }
+    
+    public ActionList getActionList(final String family) {
+        return Lookups.client().v1().action().getActionList(family);
     }
 
     private V1Component client() {

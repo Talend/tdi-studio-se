@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2021 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -121,6 +121,8 @@ public class DeploymentComposite extends AbstractTabComposite {
     private boolean isServiceItem;
 
     private boolean isDataServiceJob; // Is ESB SOAP Service Job
+    
+    private boolean isChildJob; 
 
     public DeploymentComposite(Composite parent, int style, TabbedPropertySheetWidgetFactory widgetFactory,
             IRepositoryViewObject repositoryViewObject) {
@@ -146,12 +148,20 @@ public class DeploymentComposite extends AbstractTabComposite {
             defaultVersion = getDefaultVersion(process.getVersion());
 
             isDataServiceJob = false;
+            isChildJob = false;
             // Disable widgests in case of the job is for ESB data service
             if (!process.getComponentsType().equals(ComponentCategory.CATEGORY_4_CAMEL.getName())) {
                 List<INode> nodes = (List<INode>) process.getGraphicalNodes();
                 for (INode node : nodes) {
                     if ("tESBProviderRequest".equals(node.getComponent().getName())) {
                         isDataServiceJob = true;
+                        break;
+                    }
+                }
+                
+                for (INode node : nodes) {
+                    if ("tRouteInput".equals(node.getComponent().getName())) {
+                        isChildJob = true;
                         defaultVersion = "";
                         break;
                     }
@@ -217,6 +227,17 @@ public class DeploymentComposite extends AbstractTabComposite {
             messageComposite.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
             widgetFactory.createLabel(messageComposite,
                     "SOAP data service cannot be published, deployment setting is \naccording to the defined service.");
+        }
+        
+        if (isChildJob) {
+            Composite messageComposite = new Composite(this, SWT.NONE);
+            GridLayout layout = new GridLayout(1, false);
+            layout.horizontalSpacing = 10;
+            layout.verticalSpacing = 10;
+            messageComposite.setLayout(layout);
+            messageComposite.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+            widgetFactory.createLabel(messageComposite,
+                    "Deployment parameters will be inherited from parent route during publishing from Studio and Command Line");
         }
         Composite composite = new Composite(this, SWT.NONE);
         GridLayout layout = new GridLayout(2, false);

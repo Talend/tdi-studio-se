@@ -212,6 +212,7 @@ globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
 	    	    	<%
 	    	    	}%>
 	    	    	+= (tmp_batchUpdateCount_<%=cid%>!=-1?tmp_batchUpdateCount_<%=cid%>:0);
+	    	    	rowsToCommitCount_<%=cid%> += tmp_batchUpdateCount_<%=cid%> != -1 ? tmp_batchUpdateCount_<%=cid%> : 0;
                 }
             }
         <% } %>
@@ -226,15 +227,18 @@ globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
 <%
 	if(!useExistingConnection)
 	{
-		if(!("").equals(commitEvery) && !("0").equals(commitEvery))
-		{
-		    %>
-		    if (commitCounter_<%=cid%> > 0 ) {
-    		    <%dbLog.commit().commitTry(null, dbLog.var("commitCounter"));%>
-    		    conn_<%=cid%>.commit();
+		if(!("").equals(commitEvery) && !("0").equals(commitEvery)){
+    		%>
+    		if (commitCounter_<%=cid%> > 0 && rowsToCommitCount_<%=cid%> != 0) {
+    		    <%dbLog.commit().commitTry(null, dbLog.var("rowsToCommitCount"));%>
+    		}
+    		conn_<%=cid%>.commit();
+    		if (commitCounter_<%=cid%> > 0 && rowsToCommitCount_<%=cid%> != 0) {
     		    <%dbLog.commit().commitDone(null);%>
-		    }
-		    <%
+    		    rowsToCommitCount_<%=cid%> = 0;
+    		}
+    		commitCounter_<%=cid%> = 0;
+		<%
 		}
 		%>
 		<%dbLog.conn().closeTry(null);%>

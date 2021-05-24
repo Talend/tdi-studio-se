@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2021 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -14,6 +14,7 @@ package org.talend.designer.runprocess.ui.views;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
+import org.talend.core.model.components.ComponentCategory;
 import org.talend.designer.runprocess.ui.DebugProcessTosComposite;
 import org.talend.designer.runprocess.ui.TraceDebugProcessComposite;
 
@@ -31,6 +32,11 @@ public class DefaultDebugviewHelper implements IDebugViewHelper {
     public TraceDebugProcessComposite getDebugComposite(Composite container) {
         // TODO Auto-generated method stub
         return new DebugProcessTosComposite(container, SWT.NONE);
+    }
+
+    @Override
+    public ComponentCategory getDebugType() {
+        return ComponentCategory.CATEGORY_4_DI;
     }
 
 }

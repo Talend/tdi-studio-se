@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2021 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -25,8 +25,6 @@ import org.talend.repository.model.RepositoryNode;
  * DOC zwzhao class global comment. Detailled comment
  */
 public interface ICreateStormProcessService extends IService {
-
-    public Process createStormProcess(Property property);
 
     public Process createSparkProcess(Property property);
 

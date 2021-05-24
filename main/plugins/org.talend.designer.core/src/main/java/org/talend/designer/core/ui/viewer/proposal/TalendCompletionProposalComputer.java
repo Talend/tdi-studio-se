@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2021 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -234,13 +234,14 @@ public class TalendCompletionProposalComputer implements IJavaCompletionProposal
         }
 
         String message = "<b>" + display + "</b><br><br>" //$NON-NLS-1$ //$NON-NLS-2$
-                + Messages.getString("ContextParameterProposal.Description") + "<br>"; //$NON-NLS-1$ //$NON-NLS-2$
-        message += Messages.getString("ContextParameterProposal.ContextVariable") + "<br><br>"; //$NON-NLS-1$ //$NON-NLS-2$
-        message += Messages.getString("ContextParameterProposal.Type") + "<br><br>"; //$NON-NLS-1$ //$NON-NLS-2$
-        message += Messages.getString("ContextParameterProposal.VariableName"); //$NON-NLS-1$
+                + Messages.getString("ContextParameterProposal.Description.v1") + "<br>"; //$NON-NLS-1$ //$NON-NLS-2$
+        message += Messages.getString("ContextParameterProposal.ContextVariable.v1") + "<br><br>"; //$NON-NLS-1$ //$NON-NLS-2$
+        message += Messages.getString("ContextParameterProposal.Type.v1") + "<br><br>"; //$NON-NLS-1$ //$NON-NLS-2$
+        message += Messages.getString("ContextParameterProposal.VariableName.v1"); //$NON-NLS-1$
 
         MessageFormat format = new MessageFormat(message);
-        Object[] args = new Object[] { desc, contextParameter.getType(), getContextContent(contextParameter) };
+        Object[] args = new Object[] { desc, contextParameter.getContext().getName(), contextParameter.getType(),
+                contextParameter.getValue() };
         return format.format(args);
     }
 

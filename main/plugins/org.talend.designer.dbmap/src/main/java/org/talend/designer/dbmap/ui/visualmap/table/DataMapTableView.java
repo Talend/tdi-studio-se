@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2021 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -1688,6 +1688,11 @@ public abstract class DataMapTableView extends Composite implements IDataMapTabl
 
             uiManager.selectDataMapTableView(DataMapTableView.this, true, false);
         }
+    }
+
+    public void updateSelectedDataMapTableViewTitle() {
+        nameLabel.setText(getTitle());
+        nameLabel.getParent().layout();
     }
 
     /**

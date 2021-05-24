@@ -110,7 +110,6 @@
 		<module>main/plugins/org.talend.libraries.groovy</module>
 		<module>main/plugins/org.talend.libraries.guava</module>
 		<module>main/plugins/org.talend.libraries.jax</module>
-		<module>main/plugins/org.talend.libraries.jetty</module>
 		<module>main/plugins/org.talend.libraries.microsoft</module>
 		<module>main/plugins/org.talend.libraries.mondrian</module>
 		<module>main/plugins/org.talend.libraries.mozilla</module>

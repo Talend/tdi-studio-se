@@ -5,6 +5,7 @@ imports="
     org.talend.designer.codegen.config.CodeGeneratorArgument
     java.util.List
     java.util.Map
+	org.talend.core.model.utils.NodeUtil
 "
 %>
 <%
@@ -16,7 +17,40 @@ imports="
     List<Map<String, String>> filelist = (List<Map<String,String>>)ElementParameterParser.getObjectValue(node,"__FILELIST__");
     boolean isLog4jEnabled = ("true").equals(ElementParameterParser.getValue(node.getProcess(), "__LOG4J_ACTIVATE__"));
     boolean enforceUnixPath = ("true").equals(ElementParameterParser.getValue(node,"__FORCE_UNIX_PATH__"));
+		String authMethod = ElementParameterParser.getValue(node,"__AUTH_METHOD__");
+		String useExistingConn = ElementParameterParser.getValue(node, "__USE_EXISTING_CONNECTION__");
+		if(("true").equals(useExistingConn)){
+		    String connection = ElementParameterParser.getValue(node, "__CONNECTION__");
+		    INode connectionNode = NodeUtil.getNodeByUniqueName(node.getProcess(), connection);
+		    authMethod = ElementParameterParser.getValue(connectionNode,"__AUTH_METHOD__");
+		}
 %>
+/* open a session */
+
+                        <%if(isLog4jEnabled){%>
+                            log.info("<%=cid%> - Open up a session.");
+                        <%}%>
+
+                        session_<%=cid%> = client_<%=cid%>.connect(username_<%=cid%>, hostname_<%=cid%>, port_<%=cid%>).verify().getClientSession();
+                    try {
+                        session_<%=cid%>.auth().verify();
+                    }catch (org.apache.sshd.common.SshException se_<%=cid%>){
+                        globalMap.put("<%=cid %>_EXIT_CODE",se_<%=cid%>.getDisconnectCode());
+                    <%
+                    if (("PUBLICKEY").equals(authMethod)) {
+                    %>
+                        java.nio.file.Files.write(privateKey_<%=cid%>,lines_<%=cid%>);
+                    <%}%>
+                        if(14 == se_<%=cid%>.getDisconnectCode()){
+                            throw new IllegalArgumentException("Authentication failed.");
+                        }else{
+                            throw se_<%=cid%>;
+                        }
+                    }
+                                       org.apache.sshd.client.scp.ScpClientCreator instance_<%=cid%> = org.talend.components.talendscp.TalendScpClientCreator.INSTANCE;
+                                       org.apache.sshd.client.scp.ScpClient scp_<%=cid%> = instance_<%=cid%>.createScpClient(session_<%=cid%>);
+
+
 	String[] sourceFileNames_<%=cid%> = new String[]{
 <%
 		for (Map<String, String> file : filelist) {
@@ -36,10 +70,12 @@ imports="
 <%
 					if (!enforceUnixPath) {
 %>
-						sourceFile_<%=cid %> = sourceFile_<%=cid %>.replaceAll("\\\\","/");
+						    sourceFile_<%=cid %> = sourceFile_<%=cid %>.replaceAll("\\\\","/");
 <%
-					}
+						}
 %>
+
+
 					int index_<%=cid %>=sourceFile_<%=cid %>.lastIndexOf("/");
 					if(index_<%=cid %> >0){
 						dir_<%=cid %> = new java.io.File(<%=localdir %>);
@@ -51,16 +87,11 @@ imports="
 						java.io.FileOutputStream out_<%=cid %> = null;
 						
 						//copy action
-						java.io.InputStream is_<%=cid%> = null;
-						byte[] buffer_<%=cid%> = new byte[8192];
 						int receive_<%=cid%> = -1;
 						try {
 							out_<%=cid %> = new java.io.FileOutputStream(file_<%=cid %>, true);
-							is_<%=cid%> = scp_<%=cid %>.get(sourceFile_<%=cid %>);
-							
-		    				while((receive_<%=cid%> = is_<%=cid%>.read(buffer_<%=cid%>))!=-1) {
-		    					out_<%=cid %>.write(buffer_<%=cid%>, 0, receive_<%=cid%>);
-		    				}
+							scp_<%=cid%>.download("\""+sourceFile_<%=cid %>+"\"",out_<%=cid %>);
+
 						} catch(java.lang.Exception e_<%=cid%>) {
 globalMap.put("<%=cid%>_ERROR_MESSAGE",e_<%=cid%>.getMessage());
 		                	if(out_<%=cid %> != null){
@@ -76,9 +107,7 @@ globalMap.put("<%=cid%>_ERROR_MESSAGE",e_<%=cid%>.getMessage());
 		                		out_<%=cid %>.close();
 		                	}
 		                	
-		                	if(is_<%=cid%> != null) {
-		                		is_<%=cid%>.close();
-		                	}
+
 						}
 						nb_file_<%=cid%> ++ ;
 						<%if(isLog4jEnabled){%>
@@ -130,16 +159,12 @@ globalMap.put("<%=cid%>_ERROR_MESSAGE",e_<%=cid%>.getMessage());
 							}
 							java.io.FileOutputStream out_<%=cid %> = null;
 		    				//copy action
-		    				java.io.InputStream is_<%=cid%> = null;
 		    				byte[] buffer_<%=cid%> = new byte[8192];
 		    				int receive_<%=cid%> = -1;
 		    				try {
 		    					out_<%=cid %> = new java.io.FileOutputStream(file_<%=cid %>, false);
-		    					is_<%=cid%> = scp_<%=cid %>.get(sourceFile_<%=cid %>);
-		    					
-		        				while((receive_<%=cid%> = is_<%=cid%>.read(buffer_<%=cid%>))!=-1) {
-		        					out_<%=cid %>.write(buffer_<%=cid%>, 0, receive_<%=cid%>);
-		        				}
+		    					scp_<%=cid%>.download("\""+sourceFile_<%=cid %>+"\"",out_<%=cid %>);
+
 		    				} catch(java.lang.Exception e_<%=cid%>) {
 globalMap.put("<%=cid%>_ERROR_MESSAGE",e_<%=cid%>.getMessage());
 		                    	if(out_<%=cid %> != null){
@@ -153,9 +178,6 @@ globalMap.put("<%=cid%>_ERROR_MESSAGE",e_<%=cid%>.getMessage());
 		    				} finally {
 		                    	if(out_<%=cid %> != null){
 		                    		out_<%=cid %>.close();
-		                    	}
-		                    	if(is_<%=cid%> != null) {
-		                    		is_<%=cid%>.close();
 		                    	}
 		    				}
 							nb_file_<%=cid%> ++ ;
@@ -184,5 +206,7 @@ globalMap.put("<%=cid%>_ERROR_MESSAGE",e_<%=cid%>.getMessage());
 %>
 	}catch(java.lang.Exception e_<%=cid%>){
 		globalMap.put("<%=cid %>_STATUS", "File get fail.");
+		globalMap.put("<%=cid %>_NB_FILE",nb_file_<%=cid%>);
+		globalMap.put("<%=cid %>_ERROR_MESSAGE",e_<%=cid%>.getMessage());
 		throw e_<%=cid%>;
 	}

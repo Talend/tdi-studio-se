@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2021 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -12,13 +12,11 @@
 // ============================================================================
 package org.talend.ms.crm.odata.authentication;
 
-import javax.naming.AuthenticationException;
-
 import org.talend.ms.crm.odata.ClientConfiguration;
 
 /**
  * Factory for OData authentication strategies.
- *
+ * <p>
  * No need to use singleton pattern since no implementation/extends, static is enough.
  */
 public final class AuthStrategyFactory {
@@ -26,15 +24,18 @@ public final class AuthStrategyFactory {
     private AuthStrategyFactory() {
     }
 
-    public final static IAuthStrategy createAuthStrategy(ClientConfiguration conf) {
+    public static IAuthStrategy createAuthStrategy(ClientConfiguration conf) {
         IAuthStrategy authStrategy = null;
         switch (conf.getAuthStrategy()) {
-        case OAUTH:
-            authStrategy = new OAuthStrategyImpl(conf);
-            break;
-        case NTLM:
-            authStrategy = new NTLMStrategyImpl(conf);
-            break;
+            case OAUTH:
+                authStrategy = new OAuthStrategyImpl(conf);
+                break;
+            case NTLM:
+                authStrategy = new NTLMStrategyImpl(conf);
+                break;
+            case OAUTH_PREMISE:
+                authStrategy = new OAuthPremiseStrategyImpl(conf);
+                break;
         }
 
         return authStrategy;

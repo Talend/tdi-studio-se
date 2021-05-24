@@ -35,12 +35,12 @@ public class ExcelTool {
 
     private Workbook wb = null;
 
-    private Workbook preWb = null;
-
     private String sheetName = null;
 
     private Sheet sheet = null;
 
+    private Workbook preWb = null;
+    
     private Sheet preSheet = null;
 
     private Row curRow = null;
@@ -79,7 +79,13 @@ public class ExcelTool {
 
     private boolean isTrackAllColumns = false;
 
+    private boolean isTruncateExceedingCharacters = false;
+
+    private static final int CELL_CHARACTERS_LIMIT = 32767;
+
     private String password = null;
+    
+    private Map<CellStyle, CellStyle> existedOriginToClone;
 
     public ExcelTool() {
         cellStylesMapping = new HashMap<>();
@@ -161,12 +167,8 @@ public class ExcelTool {
     }
 
     private void appendActionForFile(String fileName) throws Exception {
-        if (password == null) {
-            InputStream inp = new FileInputStream(fileName);
-            wb = WorkbookFactory.create(inp);
-        } else {
-           wb = readEncryptedFile(fileName);
-        }
+        InputStream inp = new FileInputStream(fileName);
+        wb = WorkbookFactory.create(inp, password);
         sheet = wb.getSheet(sheetName);
         if (sheet != null) {
             if (appendSheet) {
@@ -191,26 +193,9 @@ public class ExcelTool {
     }
 
     private void initPreXlsx(String fileName) throws Exception {
-        if(password == null) {
-            InputStream preIns = new FileInputStream(fileName);
-            preWb = WorkbookFactory.create(preIns);
-        } else {
-            preWb = readEncryptedFile(fileName);
-        }
+        InputStream preIns = new FileInputStream(fileName);
+        preWb = WorkbookFactory.create(preIns, password);
         preSheet = preWb.getSheet(sheetName);
-    }
-    
-    private Workbook readEncryptedFile(String fileName)
-            throws IOException, GeneralSecurityException {
-        InputStream inp = new FileInputStream(fileName);
-        POIFSFileSystem fs = new POIFSFileSystem(inp);
-        EncryptionInfo info = new EncryptionInfo(fs);
-        Decryptor decryptor = Decryptor.getInstance(info);
-        if (!decryptor.verifyPassword(password)) {
-            throw new GeneralSecurityException("Error: Incorrect password!");
-        }
-        InputStream dataStream = decryptor.getDataStream(fs);
-        return WorkbookFactory.create(dataStream);
     }
 
     public void setFont(String fontName) {
@@ -222,11 +207,7 @@ public class ExcelTool {
 
     public void addRow() {
         if (isAbsY && keepCellFormat) {
-            if (preSheet != null) {
-                preRow = preSheet.getRow(curY);
-            } else {
-                preRow = null;
-            }
+            preRow = (preSheet != null) ? preSheet.getRow(curY) : null;
         }
         curRow = sheet.getRow(curY);
         if (curRow == null) {
@@ -244,11 +225,7 @@ public class ExcelTool {
 
     private void addCell() {
         if (isAbsY && keepCellFormat) {
-            if (preRow != null) {
-                preCell = preRow.getCell(startX + xOffset);
-            } else {
-                preCell = null;
-            }
+            preCell = (preRow != null) ? preRow.getCell(startX + xOffset) : null;
         }
         curCell = curRow.createCell(startX + xOffset);
         xOffset++;
@@ -267,10 +244,8 @@ public class ExcelTool {
                 cellStylesMapping.put("normal", style);
                 return style;
             }
-        } else {
-            return preCellStyle;
         }
-
+        return preCellStyle;
     }
 
     private CellStyle getDateCellStyle(String pattern) {
@@ -289,13 +264,15 @@ public class ExcelTool {
                 cellStylesMapping.put(pattern, style);
                 return style;
             }
-        } else {
-            return preCellStyle;
         }
+        return preCellStyle;
     }
 
     private CellStyle getPreCellStyle() {
         if (preSheet != null && isAbsY && keepCellFormat) {
+            if(existedOriginToClone==null) {
+                existedOriginToClone = new HashMap<>();
+            }
             CellStyle preCellStyle;
             if (preCell == null) {
                 preCellStyle = preSheet.getColumnStyle(curCell.getColumnIndex());
@@ -303,14 +280,17 @@ public class ExcelTool {
                 preCellStyle = preCell.getCellStyle();
             }
 
-            CellStyle targetCellStyle = wb.createCellStyle();
-            targetCellStyle.cloneStyleFrom(preCellStyle);
+            CellStyle targetCellStyle = existedOriginToClone.get(preCellStyle);
+            if(targetCellStyle==null) {
+                targetCellStyle = wb.createCellStyle();
+                targetCellStyle.cloneStyleFrom(preCellStyle);
+                existedOriginToClone.put(preCellStyle, targetCellStyle);
+            }
 
             return targetCellStyle;
 
-        } else {
-            return null;
         }
+        return null;
     }
 
     public void addCellValue(boolean booleanValue) {
@@ -333,7 +313,10 @@ public class ExcelTool {
 
     public void addCellValue(String stringValue) {
         addCell();
-        curCell.setCellValue(stringValue);
+        String value = isTruncateExceedingCharacters && stringValue != null && stringValue.length() > CELL_CHARACTERS_LIMIT
+                ? stringValue.substring(0, CELL_CHARACTERS_LIMIT)
+                        : stringValue;
+        curCell.setCellValue(value);
         curCell.setCellStyle(getNormalCellStyle());
     }
 
@@ -364,7 +347,13 @@ public class ExcelTool {
         try {
             wb.write(outputStream);
             wb.close();
+            if(preWb != null){
+                preWb.close();
+            }
         } finally {
+            if(existedOriginToClone!=null) {
+                existedOriginToClone = null;
+            }
             if (outputStream != null) {
                 outputStream.close();
             }
@@ -382,13 +371,11 @@ public class ExcelTool {
         if (appendWorkbook && appendSheet && recalculateFormula) {
             evaluateFormulaCell();
         }
-        FileOutputStream fileOutput = new FileOutputStream(fileName);
-        POIFSFileSystem fs = null;
-        try {
+        try (FileOutputStream fileOutput = new FileOutputStream(fileName); 
+             POIFSFileSystem fs = new POIFSFileSystem()) {
             if (password == null) {
                 wb.write(fileOutput);
             } else {
-                fs = new POIFSFileSystem();
                 Encryptor encryptor = new EncryptionInfo(EncryptionMode.agile).getEncryptor();
                 encryptor.confirmPassword(password);
                 OutputStream encryptedDataStream = encryptor.getDataStream(fs);
@@ -397,10 +384,12 @@ public class ExcelTool {
                 fs.writeFilesystem(fileOutput);
             }
         } finally {
+            if(existedOriginToClone!=null) {
+                existedOriginToClone = null;
+            }
             wb.close();
-            fileOutput.close();
-            if (fs != null) {
-                fs.close();
+            if(preWb != null){
+                preWb.close();
             }
         }
     }
@@ -411,8 +400,8 @@ public class ExcelTool {
             sheet = wb.getSheetAt(sheetNum);
             for (Row r : sheet) {
                 for (Cell c : r) {
-                    if (c.getCellTypeEnum() == CellType.FORMULA) {
-                        evaluator.evaluateFormulaCellEnum(c);
+                    if (c.getCellType() == CellType.FORMULA) {
+                        evaluator.evaluateFormulaCell(c);
                     }
                 }
             }
@@ -427,6 +416,10 @@ public class ExcelTool {
 
     public void setPasswordProtection(String password) {
         this.password = password;
+    }
+
+    public void setTruncateExceedingCharacters(boolean isTruncateExceedingCharacters) {
+        this.isTruncateExceedingCharacters = isTruncateExceedingCharacters;
     }
 
 }

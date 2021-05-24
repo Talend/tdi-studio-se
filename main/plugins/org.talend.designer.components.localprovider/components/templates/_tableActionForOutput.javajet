@@ -279,7 +279,7 @@ globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
                             
                             
                             <%
-                            } else if(MYSQL.equalsIgnoreCase(dbmsId)) {
+                            } else if(MYSQL.equalsIgnoreCase(dbmsId) || SINGLESTORE.equalsIgnoreCase(dbmsId)) {
                                 boolean useExistMySQLConn = "true".equalsIgnoreCase(ElementParameterParser.getValue(node,"__USE_EXISTING_CONNECTION__"));
                                 String dbnameMySQL = null;
                                 if (useExistMySQLConn) {

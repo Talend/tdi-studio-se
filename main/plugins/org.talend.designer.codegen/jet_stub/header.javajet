@@ -73,6 +73,9 @@ import pigudf.<%=routine%>;
 import routines.<%=routine%>;
 <%  }
 }%>
+<%for (String codesJar : CodeGeneratorRoutine.getRequiredCodesJarName(process)) {%>
+import <%=codesJar%>;
+<%}%>
 import routines.system.*;
 import routines.system.api.*;
 import java.text.ParseException;
@@ -434,6 +437,20 @@ private RunTrace runTrace = new RunTrace();
 		for (java.util.Map.Entry<String, javax.sql.DataSource> dataSourceEntry : dataSources.entrySet()) {
 			talendDataSources.put(dataSourceEntry.getKey(), new routines.system.TalendDataSource(dataSourceEntry.getValue()));
 		}
+		globalMap.put(KEY_DB_DATASOURCES, talendDataSources);
+		globalMap.put(KEY_DB_DATASOURCES_RAW, new java.util.HashMap<String, javax.sql.DataSource>(dataSources));
+	}
+	
+	public void setDataSourceReferences(List serviceReferences) throws Exception{
+		
+		java.util.Map<String, routines.system.TalendDataSource> talendDataSources = new java.util.HashMap<String, routines.system.TalendDataSource>();
+		java.util.Map<String, javax.sql.DataSource> dataSources = new java.util.HashMap<String, javax.sql.DataSource>();
+		
+		for (java.util.Map.Entry<String, javax.sql.DataSource> entry : BundleUtils.getServices(serviceReferences,  javax.sql.DataSource.class).entrySet()) {
+                    dataSources.put(entry.getKey(), entry.getValue());
+                    talendDataSources.put(entry.getKey(), new routines.system.TalendDataSource(entry.getValue()));
+		}
+
 		globalMap.put(KEY_DB_DATASOURCES, talendDataSources);
 		globalMap.put(KEY_DB_DATASOURCES_RAW, new java.util.HashMap<String, javax.sql.DataSource>(dataSources));
 	}

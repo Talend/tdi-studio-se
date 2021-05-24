@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2021 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -16,13 +16,13 @@ import org.talend.ms.crm.odata.ClientConfiguration.AuthStrategyEnum;
 
 /**
  * Generate the ClientConfiguration according to wanted authentication.
- *
+ * <p>
  * Different authentications need different information.
  */
 public class ClientConfigurationFactory {
 
     public final static ClientConfiguration buildOAuthNativeClientConfiguration(String clientId, String userName, String password,
-            String authoryEndpoint) {
+                                                                                String authoryEndpoint) {
         ClientConfiguration clientConfiguration = new ClientConfiguration(AuthStrategyEnum.OAUTH);
         clientConfiguration.setAppRegisteredType(ClientConfiguration.AppRegisteredType.NATIVE_APP);
         clientConfiguration.setClientId(clientId);
@@ -34,7 +34,7 @@ public class ClientConfigurationFactory {
     }
 
     public final static ClientConfiguration buildOAuthWebClientConfiguration(String clientId, String clientSecret, String userName, String password,
-                                                                                String authoryEndpoint, ClientConfiguration.WebAppPermission permission) {
+                                                                             String authoryEndpoint, ClientConfiguration.WebAppPermission permission) {
         ClientConfiguration clientConfiguration = new ClientConfiguration(AuthStrategyEnum.OAUTH);
         clientConfiguration.setAppRegisteredType(ClientConfiguration.AppRegisteredType.WEB_APP);
         clientConfiguration.setWebAppPermission(permission);
@@ -49,12 +49,26 @@ public class ClientConfigurationFactory {
     }
 
     public final static ClientConfiguration buildNtlmClientConfiguration(String userName, String password, String workstation,
-            String domain) {
+                                                                         String domain) {
         ClientConfiguration clientConfiguration = new ClientConfiguration(AuthStrategyEnum.NTLM);
         clientConfiguration.setUserName(userName);
         clientConfiguration.setPassword(password);
         clientConfiguration.setWorkstation(workstation);
         clientConfiguration.setDomain(domain);
+
+        return clientConfiguration;
+    }
+
+    public final static ClientConfiguration buildOAuthPremiseClientConfiguration(String userName, String password, String authoryEndpoint,
+                                                                                 String serviceAPI, String clientId, String redirectUrl, String forcedResource) {
+        ClientConfiguration clientConfiguration = new ClientConfiguration(AuthStrategyEnum.OAUTH_PREMISE);
+        clientConfiguration.setUserName(userName);
+        clientConfiguration.setPassword(password);
+        clientConfiguration.setAuthoryEndpoint(authoryEndpoint);
+        clientConfiguration.setClientId(clientId);
+        clientConfiguration.setRedirectURL(redirectUrl);
+        clientConfiguration.setServiceAPI(serviceAPI);
+        clientConfiguration.setForceResource(forcedResource);
 
         return clientConfiguration;
     }

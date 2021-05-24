@@ -173,8 +173,8 @@ globalMap.put("<%=cid%>_ERROR_MESSAGE",ioe.getMessage());
 	};
 	error_<%=cid%>.start();
 	ps<%=cid %>.waitFor();
-	normal_<%=cid%>.interrupt();
-	error_<%=cid%>.interrupt();
+	normal_<%=cid%>.join();
+	error_<%=cid%>.join();
 	<%
 	log4jCodeGenerateUtil.logInfo(node,"info",cid+" - Excute '\"+ command_" + cid + "+\"' successfully.");
 } else {

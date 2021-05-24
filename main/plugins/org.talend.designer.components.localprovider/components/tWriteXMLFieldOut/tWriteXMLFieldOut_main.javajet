@@ -666,11 +666,13 @@ if (inConn != null) {
 	}
 				for(IMetadataColumn column :inputColumns){
 %>
-	valueMap_<%=cid%>.put("<%=column.getLabel()%>",<%tool.getValue(column);%>);
+    final Object value_<%=cid%>_<%=column.getId()%> = <% tool.getValue(column); %>;
+	valueMap_<%=cid%>.put("<%=column.getLabel()%>", value_<%=cid%>_<%=column.getId()%> != null ? value_<%=cid%>_<%=column.getId()%>.toString() : null);
 <%
 	if (istWriteJSONField) {
 %>
-	arraysValueMap_<%=cid%>.put("<%=column.getLabel()%>",<%tool.getValue(column, true);%>);
+    final Object valueArray_<%=cid%>_<%=column.getId()%> = <%tool.getValue(column, true); %>;
+	arraysValueMap_<%=cid%>.put("<%=column.getLabel()%>",valueArray_<%=cid%>_<%=column.getId()%> != null ? valueArray_<%=cid%>_<%=column.getId()%>.toString() : null);
 <%
 	}
 				}

@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2021 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -566,6 +566,12 @@ public class TestProcessor implements IProcessor {
         return null;
     }
 
+    @Override
+    public Set<ModuleNeeded> getCodesJarModulesNeededOfJoblets() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
     /*
      * (non-Javadoc)
      *
@@ -573,6 +579,12 @@ public class TestProcessor implements IProcessor {
      */
     @Override
     public Set<JobInfo> getBuildFirstChildrenJobs() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public Set<JobInfo> getBuildChildrenJobsAndJoblets() {
         // TODO Auto-generated method stub
         return null;
     }

@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2021 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -40,6 +40,7 @@ import org.talend.core.model.metadata.Dbms;
 import org.talend.core.model.metadata.MetadataTalendType;
 import org.talend.core.model.process.IElementParameter;
 import org.talend.core.ui.properties.tab.IDynamicProperty;
+import org.talend.core.utils.TalendQuoteUtils;
 import org.talend.designer.core.i18n.Messages;
 import org.talend.designer.core.ui.editor.cmd.PropertyChangeCommand;
 import org.talend.designer.core.ui.editor.nodes.Node;
@@ -274,7 +275,7 @@ public class MappingTypeController extends AbstractElementPropertySectionControl
         if (value instanceof String) {
             String strValue = ""; //$NON-NLS-1$
             int nbInList = 0, nbMax = param.getListItemsValue().length;
-            String name = (String) value;
+            String name = TalendQuoteUtils.removeQuotesIfExist((String) value);
             while (strValue.equals(new String("")) && nbInList < nbMax) { //$NON-NLS-1$
                 if (name.equals(param.getListItemsValue()[nbInList])) {
                     strValue = param.getListItemsDisplayName()[nbInList];

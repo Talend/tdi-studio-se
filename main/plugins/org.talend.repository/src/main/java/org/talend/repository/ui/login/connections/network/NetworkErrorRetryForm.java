@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2021 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -57,13 +57,21 @@ public class NetworkErrorRetryForm extends Composite {
 
     private Throwable ex;
 
+    private boolean showDetails;
+
     public NetworkErrorRetryForm(Composite parent, int style, ICheckListener checkListener, String information, Throwable ex,
             String exMessage) {
+        this(parent, style, checkListener, information, ex, exMessage, true);
+    }
+
+    public NetworkErrorRetryForm(Composite parent, int style, ICheckListener checkListener, String information, Throwable ex,
+            String exMessage, boolean showDetails) {
         super(parent, style);
         this.checkListener = checkListener;
         this.information = information;
         this.ex = ex;
         this.exceptionString = exMessage;
+        this.showDetails = showDetails;
         FormLayout formLayout = new FormLayout();
         formLayout.marginWidth = 10;
         formLayout.marginHeight = 10;
@@ -101,38 +109,40 @@ public class NetworkErrorRetryForm extends Composite {
         formData.left = new FormAttachment(0);
         connectLabel.setLayoutData(formData);
 
-        ExpandableComposite errorComposite = new ExpandableComposite(parent, ExpandableComposite.COMPACT);
-        errorComposite.setLayoutData(new GridData(GridData.FILL, GridData.FILL, true, true, 1, 1));
-        errorComposite.setText(Messages.getString("NetworkErrorRetryForm.details")); //$NON-NLS-1$
-        errorComposite.addExpansionListener(new IExpansionListener() {
+        if (this.showDetails) {
+            ExpandableComposite errorComposite = new ExpandableComposite(parent, ExpandableComposite.COMPACT);
+            errorComposite.setLayoutData(new GridData(GridData.FILL, GridData.FILL, true, true, 1, 1));
+            errorComposite.setText(Messages.getString("NetworkErrorRetryForm.details")); //$NON-NLS-1$
+            errorComposite.addExpansionListener(new IExpansionListener() {
 
-            @Override
-            public void expansionStateChanged(ExpansionEvent e) {
-                int delta = 300;
-                if (!e.getState()) {
-                    delta = -delta;
+                @Override
+                public void expansionStateChanged(ExpansionEvent e) {
+                    int delta = 300;
+                    if (!e.getState()) {
+                        delta = -delta;
+                    }
+                    Point shellSize = getShell().getSize();
+                    Point newSize = new Point(shellSize.x, shellSize.y + delta);
+                    getShell().setSize(newSize);
                 }
-                Point shellSize = getShell().getSize();
-                Point newSize = new Point(shellSize.x, shellSize.y + delta);
-                getShell().setSize(newSize);
-            }
 
-            @Override
-            public void expansionStateChanging(ExpansionEvent e) {
-            }
+                @Override
+                public void expansionStateChanging(ExpansionEvent e) {
+                }
 
-        });
+            });
 
-        formData = new FormData();
-        formData.left = new FormAttachment(0);
-        formData.top = new FormAttachment(connectTimeoutText, ALIGN_VERTICAL, SWT.BOTTOM);
-        formData.right = new FormAttachment(100);
-        formData.bottom = new FormAttachment(100);
-        errorComposite.setLayoutData(formData);
+            formData = new FormData();
+            formData.left = new FormAttachment(0);
+            formData.top = new FormAttachment(connectTimeoutText, ALIGN_VERTICAL, SWT.BOTTOM);
+            formData.right = new FormAttachment(100);
+            formData.bottom = new FormAttachment(100);
+            errorComposite.setLayoutData(formData);
 
-        detailMessageText = new Text(errorComposite, SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL);
-        detailMessageText.setEditable(false);
-        errorComposite.setClient(detailMessageText);
+            detailMessageText = new Text(errorComposite, SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL);
+            detailMessageText.setEditable(false);
+            errorComposite.setClient(detailMessageText);
+        }
 
     }
 
@@ -146,13 +156,17 @@ public class NetworkErrorRetryForm extends Composite {
         connectTimeoutText.setText(timeoutStr);
         connectTimeoutText.setSelection(timeoutStr.length());
 
-        if (exceptionString == null || exceptionString.isEmpty()) {
+        if ((exceptionString == null || exceptionString.isEmpty()) && ex != null) {
             StringWriter stringWriter = new StringWriter();
             ex.printStackTrace(new PrintWriter(stringWriter));
             exceptionString = stringWriter.toString();
+        } else {
+            exceptionString = "";
         }
 
-        detailMessageText.setText(exceptionString);
+        if (this.detailMessageText != null) {
+            detailMessageText.setText(exceptionString);
+        }
     }
 
     private void addListeners() {
@@ -185,6 +199,11 @@ public class NetworkErrorRetryForm extends Composite {
         int timeout = Integer.valueOf(connectTimeoutText.getText());
         networkConfiguration.setConnectionTimeout(timeout);
         networkConfiguration.setReadTimeout(timeout);
+    }
+
+    public void performDefault() {
+        networkConfiguration.reset();
+        initData();
     }
 
     private boolean checkConnectionTimeout() {

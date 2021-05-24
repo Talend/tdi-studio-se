@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2021 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -328,8 +328,6 @@ public class ChangeComponentCommandTest {
                 ComponentCategory.CATEGORY_4_DI.getName());
         IComponent tInterbaseInput = compService.getComponentsFactory().get("tInterbaseInput",
                 ComponentCategory.CATEGORY_4_DI.getName());
-        IComponent tMemSQLInput = compService.getComponentsFactory().get("tMemSQLInput",
-                ComponentCategory.CATEGORY_4_DI.getName());
         IComponent tMSSqlInput = compService.getComponentsFactory().get("tMSSqlInput", ComponentCategory.CATEGORY_4_DI.getName());
         IComponent tMysqlInput = compService.getComponentsFactory().get("tMysqlInput", ComponentCategory.CATEGORY_4_DI.getName());
         IComponent tNetezzaInput = compService.getComponentsFactory().get("tNetezzaInput",
@@ -375,7 +373,6 @@ public class ChangeComponentCommandTest {
         tDBInputs.add(tInformixInput);
         tDBInputs.add(tIngresInput);
         tDBInputs.add(tInterbaseInput);
-        tDBInputs.add(tMemSQLInput);
         tDBInputs.add(tMSSqlInput);
         tDBInputs.add(tMysqlInput);
         tDBInputs.add(tNetezzaInput);

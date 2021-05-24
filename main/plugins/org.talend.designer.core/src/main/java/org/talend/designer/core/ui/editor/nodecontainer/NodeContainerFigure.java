@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2021 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -19,10 +19,13 @@ import org.eclipse.draw2d.FreeformLayout;
 import org.eclipse.draw2d.Graphics;
 import org.eclipse.draw2d.ImageFigure;
 import org.eclipse.draw2d.Label;
+import org.eclipse.draw2d.LineBorder;
+import org.eclipse.draw2d.PositionConstants;
 import org.eclipse.draw2d.RoundedRectangle;
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.Rectangle;
+import org.eclipse.gmf.runtime.draw2d.ui.figures.OneLineBorder;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
@@ -84,6 +87,10 @@ public class NodeContainerFigure extends Figure {
 
     private final Node node;
 
+    private LineBorder breakpointLineBorder;
+
+    private OneLineBorder breakpointBottomLineBorder;
+
     public NodeContainerFigure(NodeContainer nodeContainer) {
         this.nodeContainer = nodeContainer;
         FreeformLayout ffl = new FreeformLayout();
@@ -115,6 +122,10 @@ public class NodeContainerFigure extends Figure {
         breakpointFigure.setSize(breakpointFigure.getPreferredSize());
         this.add(breakpointFigure);
 
+        breakpointLineBorder = new LineBorder(new Color(Display.getDefault(), new RGB(255, 255, 0)), 2);
+        breakpointBottomLineBorder = new OneLineBorder(new Color(Display.getDefault(), new RGB(113, 113, 225)), 3,
+                PositionConstants.BOTTOM);
+        
         errorFigure = new ImageFigure();
         errorFigure.setImage(ImageProvider.getImage(EImage.ERROR_SMALL));
         errorFigure.setVisible(false);
@@ -224,7 +235,7 @@ public class NodeContainerFigure extends Figure {
         } else {
             breakpointFigure.setVisible(false);
         }
-
+        
         if ((status & Process.ERROR_STATUS) != 0) {
             warningFigure.setVisible(false);
             errorFigure.setVisible(true);
@@ -246,6 +257,14 @@ public class NodeContainerFigure extends Figure {
             infoFigure.setVisible(true);
         } else {
             infoFigure.setVisible(false);
+        }
+
+        if ((status & Process.BREAKPOINT_ACTIVE_STATUS) != 0) {
+            breakpointFigure.setBorder(breakpointLineBorder);
+            setBorder(breakpointBottomLineBorder);
+        } else {
+            breakpointFigure.setBorder(null);
+            setBorder(null);
         }
 
         if (errorFigure.isVisible() || warningFigure.isVisible() || infoFigure.isVisible()) {

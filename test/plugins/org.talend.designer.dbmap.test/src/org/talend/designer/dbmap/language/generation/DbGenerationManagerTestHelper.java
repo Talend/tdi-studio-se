@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2021 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -127,6 +127,87 @@ public class DbGenerationManagerTestHelper {
         when(process.getContextManager()).thenReturn(contextManger);
         dbMapComponent.setProcess(process);
 
+    }
+
+    protected void init4ColumnAlias(String schema, String main_table, String main_alias, String lookup_table,
+            String lookup_alias) {
+        List<IConnection> incomingConnections = new ArrayList<IConnection>();
+        String[] mainTableEntities = new String[] { "id", "name", "age" };
+        String[] lookupEndtities = new String[] { "id", "score" };
+        incomingConnections.add(mockConnection(schema, main_table, mainTableEntities));
+        incomingConnections.add(mockConnection(schema, lookup_table, lookupEndtities));
+        dbMapComponent.setIncomingConnections(incomingConnections);
+
+        ExternalDbMapData externalData = new ExternalDbMapData();
+        List<ExternalDbMapTable> inputs = new ArrayList<ExternalDbMapTable>();
+        List<ExternalDbMapTable> outputs = new ArrayList<ExternalDbMapTable>();
+        // main table
+        ExternalDbMapTable inputTable = new ExternalDbMapTable();
+        String mainTableName = "".equals(schema) ? main_table : schema + "." + main_table;
+        // quote will be removed in the ui for connections ,so we do the same for test
+        String mainTableNameNoQuote = TalendTextUtils.removeQuotes(mainTableName);
+        inputTable.setTableName(mainTableNameNoQuote);
+        inputTable.setName(mainTableName);
+        if (main_alias != null && !"".equals(main_alias)) {
+            inputTable.setAlias(main_alias);
+        }
+        List<ExternalDbMapEntry> entities = getMetadataEntities(mainTableEntities, new String[3]);
+        inputTable.setMetadataTableEntries(entities);
+        inputs.add(inputTable);
+        // lookup table
+        inputTable = new ExternalDbMapTable();
+        String lookupName = "".equals(schema) ? lookup_table : schema + "." + lookup_table;
+        inputTable.setTableName(lookupName);
+        inputTable.setName(lookupName);
+        if (lookup_alias != null && !"".equals(lookup_alias)) {
+            inputTable.setAlias(lookup_alias);
+        }
+        entities = getMetadataEntities(lookupEndtities, new String[2]);
+        inputTable.setMetadataTableEntries(entities);
+        inputs.add(inputTable);
+
+        // output
+        ExternalDbMapTable outputTable = new ExternalDbMapTable();
+        outputTable.setName("grade");
+        String[] names = new String[] { "id", "name", "age", "score" };
+        String mainTable = mainTableName;
+        if (main_alias != null && !"".equals(main_alias)) {
+            mainTable = main_alias;
+        }
+        String lookupTable = lookupName;
+        if (lookup_alias != null && !"".equals(lookup_alias)) {
+            lookupTable = lookup_alias;
+        }
+        String[] expressions = new String[] { mainTable + ".id", mainTable + ".name_alias", mainTable + ".age_alias",
+                lookupTable + ".score" };
+        outputTable.setMetadataTableEntries(getMetadataEntities(names, expressions));
+        outputs.add(outputTable);
+
+        externalData.setInputTables(inputs);
+        externalData.setOutputTables(outputs);
+        dbMapComponent.setExternalData(externalData);
+        List<IMetadataTable> metadataList = new ArrayList<IMetadataTable>();
+        MetadataTable metadataTable = getMetadataTable(names);
+        metadataTable.setLabel("grade");
+        metadataList.add(metadataTable);
+        dbMapComponent.setMetadataList(metadataList);
+        JobContext newContext = new JobContext("Default");
+        List<IContextParameter> newParamList = new ArrayList<IContextParameter>();
+        newContext.setContextParameterList(newParamList);
+        JobContextParameter param = new JobContextParameter();
+        param.setName("schema");
+        newParamList.add(param);
+        param = new JobContextParameter();
+        param.setName("main_table");
+        newParamList.add(param);
+        param = new JobContextParameter();
+        param.setName("lookup");
+        newParamList.add(param);
+        process = mock(Process.class);
+        JobContextManager contextManger = new JobContextManager();
+        contextManger.setDefaultContext(newContext);
+        when(process.getContextManager()).thenReturn(contextManger);
+        dbMapComponent.setProcess(process);
     }
 
     protected IConnection mockConnection(String schemaName, String tableName, String[] columns) {

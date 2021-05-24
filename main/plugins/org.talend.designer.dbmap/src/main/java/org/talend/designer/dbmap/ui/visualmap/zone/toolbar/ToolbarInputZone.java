@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2021 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -32,6 +32,8 @@ public class ToolbarInputZone extends ToolbarZone {
 
     private ToolItem addAlias;
 
+    private ToolItem renameAlias;
+
     private ToolItem removeAlias;
 
     public static final String MINIMIZE_TOOLTIP = Messages.getString("ToolbarInputZone.minimizeTooltip"); //$NON-NLS-1$
@@ -61,16 +63,25 @@ public class ToolbarInputZone extends ToolbarZone {
      */
     private void createComponents() {
         addAlias = new ToolItem(getToolBarActions(), SWT.PUSH);
-        addAlias.setToolTipText(Messages.getString("ToolbarInputZone.widgetTooltip.addAlias")); //$NON-NLS-1$
+        addAlias.setToolTipText(Messages.getString("ToolbarInputZone.widgetTooltip.addTable")); //$NON-NLS-1$
         addAlias.setImage(org.talend.commons.ui.runtime.image.ImageProvider.getImage(org.talend.commons.ui.runtime.image.ImageProvider
                 .getImageDesc(EImage.ADD_ICON)));
+        addAlias.setEnabled(!mapperManager.componentIsReadOnly());
 
+        renameAlias = new ToolItem(getToolBarActions(), SWT.PUSH);
+        renameAlias.setEnabled(false);
+        renameAlias.setToolTipText(Messages.getString("ToolbarInputZone.widgetTooltip.renameAlias")); //$NON-NLS-1$
+        renameAlias.setImage(org.talend.commons.ui.runtime.image.ImageProvider
+                .getImage(org.talend.commons.ui.runtime.image.ImageProvider.getImageDesc(EImage.EDIT_ICON)));
+        renameAlias.setEnabled(!mapperManager.componentIsReadOnly());
+        
         removeAlias = new ToolItem(getToolBarActions(), SWT.PUSH);
         removeAlias.setEnabled(false);
         removeAlias.setImage(org.talend.commons.ui.runtime.image.ImageProvider
                 .getImage(org.talend.commons.ui.runtime.image.ImageProvider.getImageDesc(EImage.MINUS_ICON)));
         removeAlias.setToolTipText(Messages.getString("ToolbarInputZone.widgetTooltip.removeAlias")); //$NON-NLS-1$
-
+        removeAlias.setEnabled(!mapperManager.componentIsReadOnly());
+        
         addCommonsComponents();
 
     }
@@ -84,6 +95,14 @@ public class ToolbarInputZone extends ToolbarZone {
 
             public void handleEvent(Event event) {
                 getMapperManager().addInputAliasTable();
+            }
+
+        });
+
+        renameAlias.addListener(SWT.Selection, new Listener() {
+
+            public void handleEvent(Event event) {
+                getMapperManager().renameInputAliasTable();
             }
 
         });
@@ -124,6 +143,10 @@ public class ToolbarInputZone extends ToolbarZone {
         return MOVE_DOWN_TOOLTIP;
     }
 
+    public void setEnabledRenameAliasButton(boolean enabled) {
+        renameAlias.setEnabled(enabled);
+    }
+
     /**
      * DOC amaumont Comment method "setEnabledRemoveTableButton".
      *
@@ -132,5 +155,4 @@ public class ToolbarInputZone extends ToolbarZone {
     public void setEnabledRemoveAliasButton(boolean enabled) {
         removeAlias.setEnabled(enabled);
     }
-
 }

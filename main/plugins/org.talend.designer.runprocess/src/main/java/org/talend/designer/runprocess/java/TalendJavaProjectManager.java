@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2021 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -55,6 +55,7 @@ import org.talend.core.model.properties.ProjectReference;
 import org.talend.core.model.properties.Property;
 import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.core.model.repository.IRepositoryViewObject;
+import org.talend.core.model.routines.CodesJarInfo;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
 import org.talend.core.repository.utils.ItemResourceUtil;
 import org.talend.core.runtime.process.ITalendProcessJavaProject;
@@ -67,9 +68,11 @@ import org.talend.designer.maven.model.MavenSystemFolders;
 import org.talend.designer.maven.model.TalendMavenConstants;
 import org.talend.designer.maven.tools.AggregatorPomsHelper;
 import org.talend.designer.maven.tools.BuildCacheManager;
+import org.talend.designer.maven.tools.CodesJarM2CacheManager;
 import org.talend.designer.maven.tools.MavenPomSynchronizer;
 import org.talend.designer.maven.tools.creator.CreateMavenCodeProject;
 import org.talend.designer.maven.utils.MavenProjectUtils;
+import org.talend.designer.maven.utils.PomUtil;
 import org.talend.designer.maven.utils.TalendCodeProjectUtil;
 import org.talend.designer.runprocess.IProcessor;
 import org.talend.designer.runprocess.ProcessorUtilities;
@@ -84,6 +87,8 @@ import org.talend.utils.io.FilesUtils;
 public class TalendJavaProjectManager {
 
     private static Map<String, ITalendProcessJavaProject> talendCodeJavaProjects = new HashMap<>();
+
+    private static Map<String, ITalendProcessJavaProject> talendCodesJarJavaProjects = new HashMap<>();
 
     private static Map<String, ITalendProcessJavaProject> talendJobJavaProjects = new HashMap<>();
 
@@ -181,7 +186,7 @@ public class TalendJavaProjectManager {
     }
 
     public static ITalendProcessJavaProject getTalendCodeJavaProject(ERepositoryObjectType type, String projectTechName) {
-        String codeProjectId = AggregatorPomsHelper.getCodeProjectId(type, projectTechName);
+        String codeProjectId = getCodeProjectId(type, projectTechName);
         ITalendProcessJavaProject talendCodeJavaProject = talendCodeJavaProjects.get(codeProjectId);
         if (talendCodeJavaProject == null || talendCodeJavaProject.getProject() == null
                 || !talendCodeJavaProject.getProject().exists()) {
@@ -202,6 +207,10 @@ public class TalendJavaProjectManager {
                 }
                 // only update code pom for main project.
                 if (ProjectManager.getInstance().getCurrentProject().getTechnicalLabel().equals(projectTechName)) {
+                    if (ERepositoryObjectType.ROUTINES == type) {
+                        PomUtil.checkExistingLog4j2Dependencies4RoutinePom(projectTechName,
+                                codeProject.getFile(TalendMavenConstants.POM_FILE_NAME));
+                    }
                     helper.updateCodeProjectPom(monitor, type, codeProject.getFile(TalendMavenConstants.POM_FILE_NAME));
                 }
                 talendCodeJavaProject = new TalendProcessJavaProject(javaProject);
@@ -215,6 +224,18 @@ public class TalendJavaProjectManager {
         MavenPomSynchronizer.addChangeLibrariesListener();
 
         return talendCodeJavaProject;
+    }
+
+    public static String getCodeProjectId(ERepositoryObjectType codeType, String projectTechName) {
+        return projectTechName + "|" + codeType.name(); //$NON-NLS-1$
+    }
+
+    public static String getCodesJarProjectId(CodesJarInfo info) {
+        return getCodesJarProjectId(info.getType(), info.getProjectTechName(), info.getLabel());
+    }
+
+    public static String getCodesJarProjectId(ERepositoryObjectType codeType, String projectTechName, String codesJarName) {
+        return projectTechName + "|" + codeType.name() + "|" + codesJarName.toLowerCase(); //$NON-NLS-1$ //$NON-NLS-2$
     }
 
     private static void cleanUpCodeProject(IProgressMonitor monitor, IFolder codeProjectFolder) throws CoreException {
@@ -250,6 +271,46 @@ public class TalendJavaProjectManager {
                 child.delete(true, monitor);
             }
         }
+    }
+
+    public static ITalendProcessJavaProject getTalendCodesJarJavaProject(CodesJarInfo info) {
+        String projectTechName = info.getProjectTechName();
+        ERepositoryObjectType type = info.getType();
+        String codesJarName = info.getLabel();
+        String codeProjectId = getCodesJarProjectId(type, projectTechName, codesJarName);
+        ITalendProcessJavaProject codesJarJavaProject = talendCodesJarJavaProjects.get(codeProjectId);
+        if (codesJarJavaProject == null || codesJarJavaProject.getProject() == null
+                || !codesJarJavaProject.getProject().exists()) {
+            try {
+                IProgressMonitor monitor = new NullProgressMonitor();
+                IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
+                AggregatorPomsHelper helper = new AggregatorPomsHelper(projectTechName);
+                IFolder codeProjectFolder = helper.getCodesJarFolder(info);
+                // cleanUpCodeProject(monitor, codeProjectFolder);
+                IProject codeProject = root.getProject((projectTechName + "_" + type.name() + "_" + codesJarName).toUpperCase()); //$NON-NLS-1$ //$NON-NLS-2$
+                if (!codeProject.exists() || TalendCodeProjectUtil.needRecreate(monitor, codeProject)) {
+                    // always enable maven nature for code projects.
+                    createMavenJavaProject(monitor, codeProject, null, codeProjectFolder, true);
+                }
+                IJavaProject javaProject = JavaCore.create(codeProject);
+                if (!javaProject.isOpen()) {
+                    javaProject.open(monitor);
+                }
+                // only update for main project.
+                if (ProjectManager.getInstance().getCurrentProject().getTechnicalLabel().equals(projectTechName)) {
+                    CodesJarM2CacheManager.updateCodesJarProjectPom(monitor, info);
+                    MavenProjectUtils.updateMavenProject(monitor, codeProject);
+                }
+                codesJarJavaProject = new TalendProcessJavaProject(javaProject);
+                talendCodesJarJavaProjects.put(codeProjectId, codesJarJavaProject);
+            } catch (Exception e) {
+                ExceptionHandler.process(e);
+            }
+        }
+
+        MavenPomSynchronizer.addChangeLibrariesListener();
+
+        return codesJarJavaProject;
     }
 
     public static ITalendProcessJavaProject getTalendJobJavaProject(Property property) {
@@ -343,11 +404,45 @@ public class TalendJavaProjectManager {
     }
 
     public static ITalendProcessJavaProject getExistingTalendCodeProject(ERepositoryObjectType codeType, String projectTechName) {
-        return talendCodeJavaProjects.get(AggregatorPomsHelper.getCodeProjectId(codeType, projectTechName));
+        return talendCodeJavaProjects.get(getCodeProjectId(codeType, projectTechName));
+    }
+
+    public static ITalendProcessJavaProject getExistingTalendCodesJarProject(CodesJarInfo info) {
+        return talendCodesJarJavaProjects.get(getCodesJarProjectId(info));
     }
 
     public static void removeFromCodeJavaProjects(ERepositoryObjectType codeType, String projectTechName) {
-        talendCodeJavaProjects.remove(AggregatorPomsHelper.getCodeProjectId(codeType, projectTechName));
+        talendCodeJavaProjects.remove(getCodeProjectId(codeType, projectTechName));
+    }
+
+    public static void removeFromCodesJarJavaProjects(CodesJarInfo info) {
+        talendCodesJarJavaProjects.remove(getCodesJarProjectId(info));
+    }
+
+    public static void deleteTalendCodesJarProject(CodesJarInfo info, boolean deleteContent) {
+        deleteTalendCodesJarProject(info.getType(), info.getProjectTechName(), info.getLabel(), deleteContent);
+    }
+
+    public static void deleteTalendCodesJarProject(ERepositoryObjectType type, String projectTechName, String codesJarName,
+            boolean deleteContent) {
+        try {
+            String projectId = getCodesJarProjectId(type, projectTechName, codesJarName);
+            ITalendProcessJavaProject project = talendCodesJarJavaProjects.get(projectId);
+
+            if (project != null && project.exists()) {
+                project.getProject().delete(deleteContent, true, null);
+            }
+            if (deleteContent) {
+                IFolder folder = new AggregatorPomsHelper(projectTechName).getCodeFolder(type).getFolder(codesJarName);
+                AggregatorPomsHelper.removeFromParentModules(folder.getFile(TalendMavenConstants.POM_FILE_NAME));
+                if (folder.exists()) {
+                    folder.delete(true, false, null);
+                }
+            }
+            talendCodesJarJavaProjects.remove(projectId);
+        } catch (Exception e) {
+            ExceptionHandler.process(e);
+        }
     }
 
     public static void deleteTalendJobProjectsUnderFolder(ERepositoryObjectType processType, IPath folderPath,
@@ -361,7 +456,7 @@ public class TalendJavaProjectManager {
                 Property property = project.getPropery();
                 if (property != null) {
                     IPath jobPath = ItemResourceUtil.getItemRelativePath(property);
-                    if (folderPath.isPrefixOf(jobPath)) {
+                    if (folderPath.isPrefixOf(jobPath) && project.exists()) {
                         project.getProject().delete(deleteContent, true, null);
                         iterator.remove();
                     }
@@ -371,7 +466,9 @@ public class TalendJavaProjectManager {
                 // delete folder
                 AggregatorPomsHelper helper = new AggregatorPomsHelper();
                 IFolder folder = helper.getProcessFolder(processType).getFolder(folderPath);
-                folder.delete(true, false, null);
+                if (folder.exists()) {
+                    folder.delete(true, false, null);
+                }
             }
         } catch (CoreException e) {
             ExceptionHandler.process(e);
@@ -410,7 +507,9 @@ public class TalendJavaProjectManager {
             String key = iterator.next();
             if (key.contains(id)) {
                 ITalendProcessJavaProject projectToDelete = talendJobJavaProjects.get(key);
-                projectToDelete.getProject().delete(deleteContent, true, null);
+                if (projectToDelete.exists()) {
+                    projectToDelete.getProject().delete(deleteContent, true, null);
+                }
                 String version = key.split("\\|")[1]; //$NON-NLS-1$
                 removedVersions.add(version);
                 iterator.remove();

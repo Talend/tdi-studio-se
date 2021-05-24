@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2021 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -47,6 +47,7 @@ import org.talend.core.ui.component.ComponentsFactoryProvider;
 import org.talend.designer.codegen.CodeGeneratorActivator;
 import org.talend.designer.codegen.config.TemplateUtil;
 import org.talend.designer.codegen.i18n.Messages;
+import org.talend.designer.core.model.components.ComponentBundleToPath;
 
 /**
  * DOC xtan
@@ -256,10 +257,9 @@ public final class JetSkeletonManager {
         };
 
         for (TemplateUtil template : CodeGeneratorInternalTemplatesFactoryProvider.getInstance().getTemplates()) {
-            Bundle b = Platform.getBundle(template.getJetPluginRepository());
             URL resourcesUrl = null;
             try {
-                resourcesUrl = FileLocator.toFileURL(FileLocator.find(b, new Path(template.getTemplateRelativeUri()), null));
+                resourcesUrl = FileLocator.toFileURL(ComponentBundleToPath.findComponentsBundleURL(template.getJetPluginRepository(), new Path(template.getTemplateRelativeUri()), null));
             } catch (IOException e) {
                 ExceptionHandler.process(e);
             }

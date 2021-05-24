@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2021 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -162,16 +162,6 @@ public class GenericTableUtils {
 
     public static String getDriverJarPath(String mvnPath){
         String mvnUrl = TalendQuoteUtils.removeQuotesIfExist(mvnPath);
-        if (MavenUrlHelper.isMvnUrl(mvnUrl)) {
-            for(String key : CustomUriManager.getInstance().keySet()){
-                String value = CustomUriManager.getInstance().get(key);
-                if(mvnUrl.equals(value)){
-                    mvnUrl = key;
-                    break;
-                }
-            }
-            return MavenUrlHelper.generateModuleNameByMavenURI(mvnUrl);
-        }
-        return mvnPath;
+        return mvnUrl;
     }
 }

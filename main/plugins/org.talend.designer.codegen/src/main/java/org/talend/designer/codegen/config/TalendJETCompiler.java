@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2021 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -136,13 +136,11 @@ public class TalendJETCompiler extends JETCompiler {
                     // get the plugin name from fileURI
                     String refPluginName = matcher.group(1);
                     // retrieve the plugin URI by pluginName.
-                    Bundle refBundle = Platform.getBundle(refPluginName);
-                    if (refBundle != null) {
-                        String realURI = TemplateUtil.getPlatformUrlOfBundle(refPluginName);
+                    String realURI = TemplateUtil.getPlatformUrlOfBundle(refPluginName);
+                    if (realURI != null) {
                         // replace the old fileURI to new one by pluginURI
                         String newFileURI = fileURI.replaceFirst(PLUGIN_VAR_PATTERN.pattern(), realURI);
                         return newFileURI;
-
                     }
                 }
             }

@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2021 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -312,6 +312,24 @@ public class ComponentsUtilsTest {
         testProperty.setStoredValue(cList);
         parameterValue = ComponentsUtils.getParameterValue(node, testProperty, testFieldType, testParamName);
         assertEquals("context.jdbc5_drivers", parameterValue); //$NON-NLS-1$
+    }
+
+    @Test
+    public void testGetNameThingFromComponentPropertiesByName() {
+        ComponentProperties componentProperties = ComponentsUtils.getComponentProperties("tJDBCInput");
+        assertNotNull("tJDBCInput not load", componentProperties);
+        NamedThing drivers = ComponentsUtils.getNameThingFromComponentPropertiesByName(componentProperties, "drivers");
+        assertNotNull(drivers);
+        NamedThing userId = ComponentsUtils.getNameThingFromComponentPropertiesByName(componentProperties, "userId");
+        assertNotNull(userId);
+        NamedThing jdbcUrl = ComponentsUtils.getNameThingFromComponentPropertiesByName(componentProperties, "jdbcUrl");
+        assertNotNull(jdbcUrl);
+        NamedThing refComp = ComponentsUtils.getNameThingFromComponentPropertiesByName(componentProperties,
+                "referencedComponent");
+        assertNotNull(refComp);
+        // not exist one
+        NamedThing test = ComponentsUtils.getNameThingFromComponentPropertiesByName(componentProperties, "testNoExist");
+        assertNull(test);
     }
 
     @After

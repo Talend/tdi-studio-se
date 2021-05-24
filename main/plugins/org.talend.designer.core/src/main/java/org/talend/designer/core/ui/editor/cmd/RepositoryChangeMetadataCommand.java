@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2021 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -368,11 +368,7 @@ public class RepositoryChangeMetadataCommand extends ChangeMetadataCommand {
                             if (value instanceof Map) {
                                 Map map = new HashMap();
                                 String driver = String.valueOf(((Map) value).get("drivers"));
-                                MavenArtifact artifact = MavenUrlHelper.parseMvnUrl(TalendTextUtils.removeQuotes(driver));
-                                if (artifact != null) {
-                                    driver = artifact.getFileName();
-                                }
-                                map.put("JAR_NAME", driver);
+                                map.put("JAR_NAME", TalendTextUtils.removeQuotes(driver));
                                 newValue.add(map);
                             }
                         }

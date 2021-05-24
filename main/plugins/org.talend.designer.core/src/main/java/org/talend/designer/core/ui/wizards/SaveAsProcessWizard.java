@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2021 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -12,6 +12,8 @@
 // ============================================================================
 package org.talend.designer.core.ui.wizards;
 
+import java.util.Map;
+
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.IWorkspaceRunnable;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -21,6 +23,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.ISchedulingRule;
+import org.eclipse.gef.ui.parts.ScrollingGraphicalViewer;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.ui.part.EditorPart;
@@ -75,9 +78,12 @@ public class SaveAsProcessWizard extends Wizard {
 
     private boolean isUpdate;
 
+    private Map<String, Object> screenshotProp;
+
     public SaveAsProcessWizard(EditorPart editorPart) {
 
         this.jobEditorInput = (JobEditorInput) editorPart.getEditorInput();
+        this.screenshotProp = (Map<String, Object>) editorPart.getAdapter(ScrollingGraphicalViewer.class);
 
         RepositoryNode repositoryNode = jobEditorInput.getRepositoryNode();
         // see: RepositoryEditorInput.setRepositoryNode(IRepositoryNode repositoryNode)
@@ -128,14 +134,15 @@ public class SaveAsProcessWizard extends Wizard {
             if (isUpdate) {
                 update(processType);
             } else {
-                if (processType.getScreenshots().isEmpty()) {
-                    // force load
+                processType.getScreenshots().clear();
+                if(screenshotProp != null && !screenshotProp.isEmpty()) {
+                    processType.getScreenshots().put("process", (byte[])screenshotProp.get("process"));
+                } else {
                     XmiResourceManager resourceManager = new XmiResourceManager();
                     Property property = loadedProcess.getProperty();
                     if (property.eResource() == null) {
                         property = ProxyRepositoryFactory.getInstance().getUptodateProperty(property);
                     }
-                    processType = ((ProcessItem) property.getItem()).getProcess();
                     resourceManager.loadScreenshots(property, processType);
                 }
                 processItem.setProcess(processType);

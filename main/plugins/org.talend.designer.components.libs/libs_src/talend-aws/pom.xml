@@ -1,0 +1,66 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>org.talend.components.lib</groupId>
+	<artifactId>talend-aws</artifactId>
+	<version>1.0</version>
+	<packaging>jar</packaging>
+
+	<name>talend-aws</name>
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<talend.nexus.url>https://artifacts-oss.talend.com</talend.nexus.url>
+		<java.source.version>1.8</java.source.version>
+	</properties>
+
+	<distributionManagement>
+		<snapshotRepository>
+			<id>talend_nexus_deployment</id>
+			<url>${talend.nexus.url}/nexus/content/repositories/TalendOpenSourceSnapshot/</url>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+			<releases>
+				<enabled>false</enabled>
+			</releases>
+		</snapshotRepository>
+		<repository>
+			<id>talend_nexus_deployment</id>
+			<url>${talend.nexus.url}/nexus/content/repositories/TalendOpenSourceRelease/</url>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+		</repository>
+	</distributionManagement>
+
+	<dependencies>
+		<dependency>
+			<groupId>com.amazonaws</groupId>
+			<artifactId>aws-java-sdk</artifactId>
+			<version>1.11.848</version>
+		</dependency>
+	</dependencies>
+	<build>
+		<resources>
+			<resource>
+				<directory>src/main/java</directory>
+			</resource>
+		</resources>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>2.3.2</version>
+				<configuration>
+					<source>${java.source.version}</source>
+					<target>${java.source.version}</target>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+</project>

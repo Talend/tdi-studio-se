@@ -4,15 +4,18 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.talend.components</groupId>
 	<artifactId>talend-ws</artifactId>
-	<version>1.0.1-20200824</version>
+	<version>1.0.4-20210429</version>
 	<packaging>jar</packaging>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<cxf.version>3.3.4</cxf.version>
+
+		<talend.nexus.url>https://artifacts-oss.talend.com</talend.nexus.url>
+
+		<cxf.version>3.3.10</cxf.version>
 		<odata.version>4.3.0</odata.version>
 		<slf4j.version>1.7.12</slf4j.version>
-		<talend.nexus.url>https://artifacts-oss.talend.com</talend.nexus.url>
+		<httpclient.version>4.5.13</httpclient.version>
 	</properties>
 
 	<distributionManagement>
@@ -45,11 +48,17 @@
 			<artifactId>commons-codec</artifactId>
 			<version>1.14</version>
 		</dependency>
-		<!-- https://mvnrepository.com/artifact/commons-httpclient/commons-httpclient -->
+		<!-- https://mvnrepository.com/artifact/org.apache.httpcomponents/httpclient -->
 		<dependency>
-			<groupId>commons-httpclient</groupId>
-			<artifactId>commons-httpclient</artifactId>
-			<version>3.1</version>
+			<groupId>org.apache.httpcomponents</groupId>
+			<artifactId>httpclient</artifactId>
+			<version>${httpclient.version}</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.apache.httpcomponents/httpcore -->
+		<dependency>
+			<groupId>org.apache.httpcomponents</groupId>
+			<artifactId>httpcore</artifactId>
+			<version>4.4.13</version>
 		</dependency>
 		<!-- https://mvnrepository.com/artifact/org.codehaus.woodstox/stax2-api -->
 		<dependency>
@@ -244,6 +253,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.8.1</version>
 				<configuration>
 					<source>1.8</source>
 					<target>1.8</target>

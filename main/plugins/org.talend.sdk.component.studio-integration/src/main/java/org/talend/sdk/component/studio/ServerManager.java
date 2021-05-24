@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2019 Talend Inc. - www.talend.com
+ * Copyright (C) 2006-2021 Talend Inc. - www.talend.com
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -124,9 +124,15 @@ public class ServerManager {
             manager = new ProcessManager(GAV.INSTANCE.getGroupId(), mvnResolverImpl);
             manager.start();
 
-            client = new WebSocketClient("ws://localhost:" + manager.getPort() + "/websocket/v1",
+            client = new WebSocketClient("ws://", String.valueOf(manager.getPort()), "/websocket/v1",
                     Long.getLong("talend.component.websocket.client.timeout", Constants.IO_TIMEOUT_MS_DEFAULT));
-            client.setSynch(() -> manager.waitForServer(() -> client.v1().healthCheck()));
+            client.setSynch(() -> {
+                manager.waitForServer(() -> {
+                    client.setServerHost(manager.getServerAddress());
+                    client.v1().healthCheck();
+                });
+                client.setServerHost(manager.getServerAddress());
+            });
 
             services.add(ctx.registerService(ProcessManager.class.getName(), manager, new Hashtable<>()));
             services.add(ctx.registerService(WebSocketClient.class.getName(), client, new Hashtable<>()));

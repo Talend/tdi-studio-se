@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2021 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -58,8 +58,5 @@ public class StatsAndLogsElement extends Element {
     @Override
     public void setPropertyValue(String id, Object value) {
         super.setPropertyValue(id, value);
-        if(id.equals(EParameterName.DRIVER_JAR.getName())){
-            ConnectionUtil.getDriverJar(value);
-        }
     }
 }

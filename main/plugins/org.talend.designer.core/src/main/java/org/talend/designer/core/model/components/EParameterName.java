@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2021 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -336,6 +336,11 @@ public enum EParameterName {
     // Route Component Type
     ROUTE_COMPONENT_TYPE("ROUTE_COMPONENT_TYPE"), //$NON-NLS-1$
 
+    // Route Breakpoint Type
+    ROUTE_BREAKPOINT_LANGUAGES("Languages"), //$NON-NLS-1$
+    ROUTE_BREAKPOINT_EXPRESSION("Expression"), //$NON-NLS-1$
+    ROUTE_BREAKPOINT_EXAMPLE("Example"), //$NON-NLS-1$
+    
     // Automatic Parlization
     PARTITIONER(Messages.getString("Connection.paral_partitioner")), //$NON-NLS-1$
     DEPARTITIONER(Messages.getString("Connection.paral_departitioner")), //$NON-NLS-1$
@@ -383,6 +388,8 @@ public enum EParameterName {
     UNIFIED_COMPONENTS("Database"),
 
     ACTIVE_DATABASE_DELIMITED_IDENTIFIERS("Active database delimited identifiers"), //$NON-NLS-1$
+
+    USE_ALIAS_IN_OUTPUT_TABLE("Use alias in output table"), //$NON-NLS-1$
 
     // for tDataprepRun
     PREPARATION_ID("PREPARATION_ID");

@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2019 Talend Inc. - www.talend.com
+ * Copyright (C) 2006-2021 Talend Inc. - www.talend.com
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -63,7 +63,7 @@ public class AsciidoctorService {
             final RubyInstanceConfig config = new RubyInstanceConfig();
             config.setLoader(Thread.currentThread().getContextClassLoader());
             try {
-                instance = JRubyAsciidoctor.create(singletonList("uri:classloader:/gems/asciidoctor-2.0.10/lib"));
+                instance = JRubyAsciidoctor.create(singletonList("uri:classloader:/gems/asciidoctor-2.0.12/lib"));
             } catch (final Throwable e) {
                 LOGGER.error("Can't load asciidoctor. Components documentation will not be available", e);
             } finally {

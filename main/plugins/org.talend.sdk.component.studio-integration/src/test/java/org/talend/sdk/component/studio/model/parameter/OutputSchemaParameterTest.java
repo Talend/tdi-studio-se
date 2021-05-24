@@ -30,7 +30,7 @@ class OutputSchemaParameterTest {
     @Test
     void testCreateActionParameter() {
         final Node nodeMock = mockNode(metadata());
-        final OutputSchemaParameter parameter = new OutputSchemaParameter(nodeMock, "schema", CONNECTOR_NAME, null, true);
+        final OutputSchemaParameter parameter = new OutputSchemaParameter(nodeMock, "schema", CONNECTOR_NAME, null, true, Collections.emptyList());
         final IActionParameter actionParameter = parameter.createActionParameter("param");
         final Collection<Pair<String, String>> parameters = actionParameter.parameters();
 
@@ -43,28 +43,28 @@ class OutputSchemaParameterTest {
     @Test
     void testGetValue() {
         final Node nodeMock = mockNode(metadata());
-        final OutputSchemaParameter parameter = new OutputSchemaParameter(nodeMock, "schema", CONNECTOR_NAME, null, true);
+        final OutputSchemaParameter parameter = new OutputSchemaParameter(nodeMock, "schema", CONNECTOR_NAME, null, true, Collections.emptyList());
         assertEquals(Arrays.asList("c1", "c2"), parameter.getValue());
     }
 
     @Test
     void testGetValueNoMetadata() {
         final Node nodeMock = mockNode(null);
-        final OutputSchemaParameter parameter = new OutputSchemaParameter(nodeMock, "schema", CONNECTOR_NAME, null, true);
+        final OutputSchemaParameter parameter = new OutputSchemaParameter(nodeMock, "schema", CONNECTOR_NAME, null, true, Collections.emptyList());
         assertEquals(Collections.emptyList(), parameter.getValue());
     }
 
     @Test
     void testGetStringValue() {
         final Node nodeMock = mockNode(metadata());
-        final OutputSchemaParameter parameter = new OutputSchemaParameter(nodeMock, "schema", CONNECTOR_NAME, null, true);
+        final OutputSchemaParameter parameter = new OutputSchemaParameter(nodeMock, "schema", CONNECTOR_NAME, null, true, Collections.emptyList());
         assertEquals("[c1, c2]", parameter.getStringValue());
     }
 
     @Test
     void testGetStringValueNoMetadata() {
         final Node nodeMock = mockNode(null);
-        final OutputSchemaParameter parameter = new OutputSchemaParameter(nodeMock, "schema", CONNECTOR_NAME, null, true);
+        final OutputSchemaParameter parameter = new OutputSchemaParameter(nodeMock, "schema", CONNECTOR_NAME, null, true, Collections.emptyList());
         assertEquals("[]", parameter.getStringValue());
     }
 
@@ -72,7 +72,7 @@ class OutputSchemaParameterTest {
     void testSetValue() {
         final IMetadataTable metadata = new MetadataTable();
         final Node nodeMock = mockNode(metadata);
-        final OutputSchemaParameter parameter = new OutputSchemaParameter(nodeMock, "schema", CONNECTOR_NAME, null, true);
+        final OutputSchemaParameter parameter = new OutputSchemaParameter(nodeMock, "schema", CONNECTOR_NAME, null, true, Collections.emptyList());
 
         final List<String> schema = Arrays.asList("c1", "c2", "c3");
         parameter.setValue(schema);
@@ -100,7 +100,7 @@ class OutputSchemaParameterTest {
     @Test
     void testSetValueNoMetadata() {
         final Node nodeMock = mockNode(null);
-        final OutputSchemaParameter parameter = new OutputSchemaParameter(nodeMock, "schema", CONNECTOR_NAME, null, true);
+        final OutputSchemaParameter parameter = new OutputSchemaParameter(nodeMock, "schema", CONNECTOR_NAME, null, true, Collections.emptyList());
 
         final List<String> schema = Arrays.asList("c1", "c2", "c3");
         parameter.setValue(schema);
@@ -108,7 +108,7 @@ class OutputSchemaParameterTest {
 
     @Test
     void testIsPersisted() {
-        final OutputSchemaParameter parameter = new OutputSchemaParameter(null, "schema", CONNECTOR_NAME, null, true);
+        final OutputSchemaParameter parameter = new OutputSchemaParameter(null, "schema", CONNECTOR_NAME, null, true, Collections.emptyList());
         Assertions.assertTrue(parameter.isPersisted());
     }
 

@@ -39,7 +39,7 @@
     String skipEmptyRows = "true"; //("true").equals(ElementParameterParser.getValue(node, "__SKIP_EMPTY_ROWS__"));
 	boolean trimAll = ("true").equals(ElementParameterParser.getValue(node,"__TRIMALL__"));
 	String encoding = ElementParameterParser.getValue(node,"__ENCODING__");
-	//need to process rows longger than 100,000 characters, the property SafetySwitch(in talend_file_enhanced-1.0.jar) should be sent to false.(the default is true)
+	//need to process rows longger than 100,000 characters, the property SafetySwitch(in talend_file_enhanced-1.1.jar) should be sent to false.(the default is true)
     //that means if check the option(true), the logic value of bSafetySwitch should be changed to false (negate the property)
 	boolean bSafetySwitch = !(("true").equals(ElementParameterParser.getValue(node, "__PROCESS_LONG_ROW__")));
 	String advancedSeparatorStr = ElementParameterParser.getValue(node, "__ADVANCED_SEPARATOR__");

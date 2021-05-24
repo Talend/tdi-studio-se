@@ -131,7 +131,7 @@
             icon="icons/routines.png"
             id="org.talend.repository.viewer.code.routines"
             labelProvider="org.talend.repository.viewer.label.RepositoryViewLabelProvider"
-            name="%NavigatorContent.routines"
+            name="%NavigatorContent.globalroutines"
             priority="higher">
          <triggerPoints>
             <and>
@@ -171,6 +171,67 @@
                   <test
                         forcePluginActivation="true"
                         property="org.talend.repository.node.code.isRoutines">
+                  </test>
+                  <not>
+                     <test
+                           forcePluginActivation="true"
+                           property="org.talend.repository.node.isDeleted">
+                     </test>
+                  </not>
+               </and>
+            </enablement>
+         </actionProvider>
+      </navigatorContent>
+      <navigatorContent
+            activeByDefault="true"
+            contentProvider="org.talend.repository.view.di.viewer.content.code.RoutinesJarContentProvider"
+            icon="icons/routinesjar.png"
+            id="org.talend.repository.viewer.code.routinesjar"
+            labelProvider="org.talend.repository.viewer.label.RepositoryViewLabelProvider"
+            name="%NavigatorContent.routinesjar"
+            priority="higher">
+         <triggerPoints>
+            <and>
+               <instanceof
+                     value="org.talend.repository.model.RepositoryNode">
+               </instanceof>
+               <test
+                     forcePluginActivation="true"
+                     property="org.talend.repository.node.code.isNeedShowCustomJarNode">
+               </test>
+               <or>
+                  <test
+                        forcePluginActivation="true"
+                        property="org.talend.repository.node.code.isRoutinesJar">
+                  </test>
+                  <test
+                        forcePluginActivation="true"
+                        property="org.talend.repository.node.isCodeTopNode">
+                  </test>
+               </or>
+            </and>
+         </triggerPoints>
+         <possibleChildren>
+            <and>
+               <instanceof
+                     value="org.talend.repository.model.RepositoryNode">
+               </instanceof>
+               <test
+                     forcePluginActivation="true"
+                     property="org.talend.repository.node.code.isRoutinesJar">
+               </test>
+            </and>
+         </possibleChildren>
+         <actionProvider
+               class="org.talend.repository.view.di.viewer.action.DIRepositoryNodeActionProvider">
+            <enablement>
+               <and>
+                  <instanceof
+                        value="org.talend.repository.model.RepositoryNode">
+                  </instanceof>
+                  <test
+                        forcePluginActivation="true"
+                        property="org.talend.repository.node.code.isRoutinesJar">
                   </test>
                   <not>
                      <test
@@ -328,6 +389,12 @@
             id="org.talend.repository.viewer.filter.StandardJobNodeFilter"
             name="StandardJobNode Filter">
       </commonFilter>
+      <commonFilter
+            activeByDefault="true"
+            class="org.talend.repository.view.di.viewer.filter.InnerRoutinesNodeFilter"
+            id="org.talend.repository.viewer.filter.InnerRoutinesNodeFilter"
+            name="InnerRoutinesNode Filter">
+      </commonFilter>
    </extension>
    <extension
          point="org.eclipse.core.expressions.propertyTesters">
@@ -374,6 +441,13 @@
             type="org.talend.repository.model.RepositoryNode">
       </propertyTester>
       <propertyTester
+            class="org.talend.repository.view.di.viewer.tester.RoutinesJarNodeTester"
+            id="org.talend.repository.node.tester.code.routinesjar"
+            namespace="org.talend.repository.node.code"
+            properties="isRoutinesJar,isNeedShowCustomJarNode"
+            type="org.talend.repository.model.RepositoryNode">
+      </propertyTester>
+      <propertyTester
             class="org.talend.repository.view.di.viewer.tester.doc.DocumentationNodeTester"
             id="org.talend.repository.node.tester.doc"
             namespace="org.talend.repository.node.doc"
@@ -414,7 +488,7 @@
             icon="icons/routines.png"
             isResouce="true"
             key="repository.routines"
-            label="%NavigatorContent.routines"
+            label="%NavigatorContent.globalroutines"
             ordinal="1"
             parentNodeType="CODE"
             products="DI"
@@ -459,6 +533,17 @@
             parentNodeType="METADATA"
             products="DI"
             type="METADATA_RULES_MANAGEMENT">
+      </repositoryNode>
+      <repositoryNode
+            folder="code/routinesjar"
+            icon="icons/routinesjar.png"
+            isResouce="true"
+            key="repository.routinesjar"
+            label="%NavigatorContent.routinesjar"
+            ordinal="2"
+            parentNodeType="CODE"
+            products="DI"
+            type="ROUTINESJAR">
       </repositoryNode>
    </extension>
    <extension
@@ -517,6 +602,26 @@
             priority="NORMAL">
          <importResoucesHandler
                class="org.talend.repository.view.di.viewer.handlers.RoutineImportHandler">
+         </importResoucesHandler>
+      </importResourcesProvider>
+      <importItemsProvider
+            id="org.talend.repository.view.di.importProvider.routinesJar"
+            name="Routines Jar importer"
+            priority="HIGH">
+         <importItemsHandler
+               class="org.talend.repository.view.di.viewer.handlers.RoutinesJarImportHandler">
+            <parameter
+                  name="type"
+                  value="ROUTINESJAR">
+            </parameter>
+         </importItemsHandler>
+      </importItemsProvider>
+      <importResourcesProvider
+            id="org.talend.repository.view.di.importResourcesProvider.routineJar"
+            name="Routines Jar Resource importer"
+            priority="NORMAL">
+         <importResoucesHandler
+               class="org.talend.repository.view.di.viewer.handlers.RoutinesJarImportHandler">
          </importResoucesHandler>
       </importResourcesProvider>
    </extension>
@@ -1514,6 +1619,19 @@
             name="Routine Sorter"
             order="10">
       </sorter>
+   </extension>
+   <extension
+         point="org.talend.core.repository.repository_content">
+      <RepositoryContent
+            class="org.talend.repository.view.di.viewer.handlers.RoutinesJarRepositoryContentHandler">
+      </RepositoryContent>
+   </extension>
+   <extension
+         point="org.talend.core.repository.checkDeleteItemReference">
+      <check
+            class="org.talend.repository.view.di.viewer.handlers.CheckCodeJarsDeleteReference"
+            priority="normal">
+      </check>
    </extension>
 
 

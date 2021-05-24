@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2021 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -12,20 +12,12 @@
 // ============================================================================
 package org.talend.designer.core.utils;
 
-import java.io.File;
-import java.io.IOException;
-import java.net.URL;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import org.eclipse.core.runtime.FileLocator;
-import org.eclipse.core.runtime.Path;
-import org.eclipse.core.runtime.Platform;
-import org.osgi.framework.Bundle;
-import org.talend.commons.exception.ExceptionHandler;
 import org.talend.core.hadoop.HadoopConstants;
 import org.talend.core.hadoop.version.EHadoopDistributions;
 import org.talend.core.model.general.ModuleNeeded;
@@ -203,32 +195,6 @@ public class BigDataJobUtil {
                 } else {
                     currentModule.setExcluded(true);
                 }
-            }
-        }
-        // only left is: isBDJobWithFramework(ERepositoryObjectType.PROCESS_STORM, HadoopConstants.FRAMEWORK_STORM))
-        // which must be true
-
-        Set<String> stormJarNames = new HashSet<>();
-        try {
-            // from org.talend.libraries.apache.storm/lib
-            Bundle bundle = Platform.getBundle("org.talend.libraries.apache.storm"); //$NON-NLS-1$
-            if (bundle != null) {
-                URL stormLibUrl = FileLocator.toFileURL(FileLocator.find(bundle, new Path("lib"), null)); //$NON-NLS-1$
-                if (stormLibUrl != null) {
-                    File file = new File(stormLibUrl.getFile());
-                    File[] jars = file.listFiles();
-                    for (File f : jars) {
-                        stormJarNames.add(f.getName());
-                    }
-                }
-            }
-        } catch (IOException e) {
-            ExceptionHandler.process(e);
-        }
-
-        for (ModuleNeeded currentModule : modulesNeeded) {
-            if (stormJarNames.contains(currentModule.getModuleName())) {
-                excludedModules.add(currentModule);
             }
         }
 

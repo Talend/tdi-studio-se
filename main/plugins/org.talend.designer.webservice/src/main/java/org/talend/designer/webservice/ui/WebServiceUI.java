@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2021 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -58,6 +58,7 @@ import org.eclipse.ui.PlatformUI;
 import org.talend.commons.ui.runtime.exception.ExceptionHandler;
 import org.talend.commons.ui.runtime.image.EImage;
 import org.talend.commons.ui.runtime.image.ImageProvider;
+import org.talend.commons.ui.runtime.ws.WindowSystem;
 import org.talend.commons.ui.swt.advanced.dataeditor.AbstractDataTableEditorView;
 import org.talend.commons.ui.swt.drawing.background.BackgroundRefresher;
 import org.talend.commons.ui.swt.drawing.link.IExtremityLink;
@@ -2044,6 +2045,23 @@ public class WebServiceUI implements AbstractWebService {
         getInConnList();
         initLinksForIn();
         inputComposite.setWeights(new int[] { 5, 2, 5 });
+
+        if (WindowSystem.isBigSurOrLater()) {
+            backgroundRefresher.setBackgroundColor(tabTotabLinkForin.getBgDrawableComposite().getBackground());
+            Composite comp = expressinPutTableView.getTable().getParent();
+            while (comp != null && comp != inputComposite) {
+                comp.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_TRANSPARENT));
+                comp = comp.getParent();
+            }
+            comp = columnInPutTableView.getTable().getParent();
+            while (comp != null && comp != inputComposite) {
+                comp.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_TRANSPARENT));
+                comp = comp.getParent();
+            }
+            comforRow1.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_TRANSPARENT));
+            inputComposite.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_TRANSPARENT));
+        }
+
         return inputComposite;
     }
 
@@ -2198,6 +2216,8 @@ public class WebServiceUI implements AbstractWebService {
             @Override
             public void widgetSelected(SelectionEvent e) {
                 TableItem[] selectedItem = expressTableForIn.getSelection();
+                if (selectedItem == null || selectedItem.length == 0)
+                    return;
                 currentElementIndexForIn = expressTableForIn.getSelectionIndex();
 
                 currentInputMappingData = (InputMappingData) selectedItem[0].getData();
@@ -2837,6 +2857,23 @@ public class WebServiceUI implements AbstractWebService {
         initLinksForOut();
         addListenerForOutputCom();
         outputComposite.setWeights(new int[] { 5, 2, 5 });
+
+        if (WindowSystem.isBigSurOrLater()) {
+            backgroundRefresher.setBackgroundColor(tabTotabLinkForout.getBgDrawableComposite().getBackground());
+            tabTotabLinkForout.getBgDrawableComposite().setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_TRANSPARENT));
+            Composite comp = expressoutPutTableView.getTable().getParent();
+            while (comp != null && comp != outputComposite) {
+                comp.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_TRANSPARENT));
+                comp = comp.getParent();
+            }
+            comp = rowoutPutTableView.getTable().getParent();
+            while (comp != null && comp != outputComposite) {
+                comp.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_TRANSPARENT));
+                comp = comp.getParent();
+            }
+            comforRow1.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_TRANSPARENT));
+        }
+
         return outputComposite;
     }
 
@@ -2885,6 +2922,8 @@ public class WebServiceUI implements AbstractWebService {
             @Override
             public void widgetSelected(SelectionEvent e) {
                 TableItem[] items = expressTableForout.getSelection();
+                if (items == null || items.length == 0)
+                    return;
                 currentIndexForOutExpress = expressTableForout.getSelectionIndex();
                 currentSelectedOutExpress = (OutPutMappingData) items[0].getData();
 
@@ -3435,6 +3474,13 @@ public class WebServiceUI implements AbstractWebService {
         TableItem[] items = rowTableForin.getItems();
         TableItem[] tarItems = expressinPutTableView.getTable().getItems();
 
+        // tableItem.getdata() returned null without this.
+        for (TableItem tableItem : tarItems) {
+            tableItem.getText();
+        }
+        for (TableItem item : items) {
+            item.getText();
+        }
         WebServiceExpressionParser webParser = new WebServiceExpressionParser("\\s*(\\w+)\\s*\\.\\s*(\\w+)\\s*"); //$NON-NLS-1$
         for (Map<String, String> map : inputparaValue) {
             if (map.get("SOURCE") != null && map.get("SOURCE") instanceof String) { //$NON-NLS-1$ //$NON-NLS-2$
@@ -3505,6 +3551,13 @@ public class WebServiceUI implements AbstractWebService {
         List<Map<String, String>> outputMap = (List<Map<String, String>>) OUTPUT_PARAMSPara.getValue();
         TableItem[] items = rowoutPutTableView.getTable().getItems();
         TableItem[] tarItems = expressoutPutTableView.getTable().getItems();
+        // tabeItem.getData() returned null without this.
+        for (TableItem tableItem : tarItems) {
+            tableItem.getText();
+        }
+        for (TableItem item : items) {
+            item.getText();
+        }
         WebServiceExpressionParser webParser = new WebServiceExpressionParser("\\s*\\w+(\\[\\d+?\\])?\\s*"); //$NON-NLS-1$
         for (Map<String, String> map : outputMap) {
             if (map.get("SOURCE") != null && map.get("SOURCE") instanceof String) { //$NON-NLS-1$ //$NON-NLS-2$

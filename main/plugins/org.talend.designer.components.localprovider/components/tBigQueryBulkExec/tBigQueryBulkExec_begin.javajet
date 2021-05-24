@@ -1,10 +1,10 @@
 <%@ jet
 	    imports="
-		org.talend.core.model.process.INode 	
-		org.talend.core.model.process.ElementParameterParser 
+		org.talend.core.model.process.INode
+		org.talend.core.model.process.ElementParameterParser
 		org.talend.designer.codegen.config.CodeGeneratorArgument
-		org.talend.core.model.metadata.IMetadataTable 
-		org.talend.core.model.metadata.IMetadataColumn 
+		org.talend.core.model.metadata.IMetadataTable
+		org.talend.core.model.metadata.IMetadataColumn
 		org.talend.core.model.process.IConnection
 		java.util.List
 	    "
@@ -37,7 +37,7 @@
 	boolean useCustomNullMarker = ElementParameterParser.getBooleanValue(node, "__USE_CUSTOM_NULL_MARKER__");
 	String nullMarker = useCustomNullMarker ? ElementParameterParser.getValue(node, "__CUSTOM_NULL_MARKER__") : "\"\\\\N\"";
 	String passwordFieldName = "";
-	
+
 	IConnection incomingConnection = null;
 	if(node.getUniqueName().startsWith("tBigQueryOutput_")) {
 		List< ? extends IConnection> conns = node.getIncomingConnections();
@@ -49,7 +49,7 @@
 			incomingConnection = virtConnection.getSource().getIncomingConnections().get(0);
 		}
 	}
-	
+
     if (authMode.equals("OAUTH")) {
 		%>
 		/* ----START-CREATING-CLIENT (OAuth 2.0)---- */
@@ -58,22 +58,22 @@
 	    <%
 	    passwordFieldName = "__CLIENT_SECRET__";
 	    %>
-	    
-	    <%@ include file="@{org.talend.designer.components.localprovider}/components/templates/password.javajet"%>	
-		
+
+	    <%@ include file="@{org.talend.designer.components.localprovider}/components/templates/password.javajet"%>
+
 		final String CLIENT_SECRET_<%=cid%> = "{\"web\": {\"client_id\": \""+<%=clientId%>+"\",\"client_secret\": \"" +decryptedPassword_<%=cid%>+ "\",\"auth_uri\": \"https://accounts.google.com/o/oauth2/auth\",\"token_uri\": \"https://accounts.google.com/o/oauth2/token\"}}";
 		final String PROJECT_ID_<%=cid %> = <%=projectId %>;
-	
+
 		// Static variables for API scope, callback URI, and HTTP/JSON functions
 		final List<String> SCOPES_<%=cid%> = java.util.Arrays.asList("https://www.googleapis.com/auth/bigquery");
 		final String REDIRECT_URI_<%=cid%> = "urn:ietf:wg:oauth:2.0:oob";
 		final com.google.api.client.http.HttpTransport TRANSPORT_<%=cid %> = new com.google.api.client.http.javanet.NetHttpTransport();
 		final com.google.api.client.json.JsonFactory JSON_FACTORY_<%=cid %> = new com.google.api.client.json.jackson2.JacksonFactory();
-	
+
 		com.google.api.client.googleapis.auth.oauth2.GoogleClientSecrets clientSecrets_<%=cid%> = com.google.api.client.googleapis.auth.oauth2.GoogleClientSecrets.load(
 						new com.google.api.client.json.jackson2.JacksonFactory(), new java.io.InputStreamReader(new java.io.ByteArrayInputStream(
 								CLIENT_SECRET_<%=cid%>.getBytes())));
-	
+
 		com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeFlow flow_<%=cid%> = null;
 		com.google.api.services.bigquery.Bigquery bigqueryclient_<%=cid%> = null;
 		long nb_line_<%=cid%> = 0;
@@ -112,7 +112,7 @@ globalMap.put("<%=cid%>_ERROR_MESSAGE",e_<%=cid%>.getMessage());
 			%>
 		}
 		String storedRefreshToken_<%=cid%> = (String) properties_<%=cid%>.get("refreshtoken");
-	
+
 		// Check to see if the an existing refresh token was loaded.
 		// If so, create a credential and call refreshToken() to get a new
 		// access token.
@@ -121,7 +121,7 @@ globalMap.put("<%=cid%>_ERROR_MESSAGE",e_<%=cid%>.getMessage());
 			com.google.api.client.googleapis.auth.oauth2.GoogleCredential credential_<%=cid%> = new com.google.api.client.googleapis.auth.oauth2. GoogleCredential.Builder().setTransport(TRANSPORT_<%=cid%>)
 					.setJsonFactory(JSON_FACTORY_<%=cid%>).setClientSecrets(clientSecrets_<%=cid%>)
 					.build().setFromTokenResponse(new com.google.api.client.auth.oauth2.TokenResponse().setRefreshToken(storedRefreshToken_<%=cid%>));
-			
+
 			credential_<%=cid%>.refreshToken();
 			<%
 			if(isLog4jEnabled){
@@ -187,13 +187,13 @@ globalMap.put("<%=cid%>_ERROR_MESSAGE",e_<%=cid%>.getMessage());
 				if (outputStream_<%=cid%> != null) {
 				    outputStream_<%=cid%>.close();
 				}
-	
+
 				bigqueryclient_<%=cid%> = new com.google.api.services.bigquery.Bigquery.Builder(new com.google.api.client.http.javanet.NetHttpTransport(),new com.google.api.client.json.jackson2.JacksonFactory(),credential_<%=cid%>).build();
 			}
 		}
-	
+
 		/* ----END-CREATING-CLIENT (OAuth 2.0)---- */
-	
+
 	<%
 	} else if (authMode.equals("SERVICEACCOUNT")) {
 	%>
@@ -215,8 +215,34 @@ globalMap.put("<%=cid%>_ERROR_MESSAGE",e_<%=cid%>.getMessage());
 
 		long nb_line_<%=cid%> = 0;
 	<%
+  } else if (authMode.equals("TOKEN")) {
+    if (ElementParameterParser.canEncrypt(node, "__ACCESS_TOKEN__")) {%>
+       final String decryptedAccessToken_<%=cid%> = routines.system.PasswordEncryptUtil.decryptPassword(<%=ElementParameterParser.getEncryptedValue(node, "__ACCESS_TOKEN__")%>);
+  <%} else {%>
+       final String decryptedAccessToken_<%=cid%> = <%= ElementParameterParser.getValue(node, "__ACCESS_TOKEN__")%>;
+  <%}%>
+	/* ----START-CREATING-CLIENT (OAuth based Token)---- */
+		final String PROJECT_ID_<%=cid %> = <%=projectId %>;
+
+		com.google.api.client.auth.oauth2.Credential cred_<%=cid%> =
+		new com.google.api.client.auth.oauth2.Credential(com.google.api.client.auth.oauth2.BearerToken.authorizationHeaderAccessMethod()).setFromTokenResponse(
+			(new com.google.api.client.auth.oauth2.TokenResponse()).setAccessToken(decryptedAccessToken_<%=cid%>));
+
+		com.google.api.services.bigquery.Bigquery bigqueryclient_<%=cid%> = null;
+		long nb_line_<%=cid%> = 0;
+		<%
+		if(isLog4jEnabled){
+		%>
+			log.info("<%=cid%> - Creating client.");
+		<%
+		}
+		%>
+		bigqueryclient_<%=cid%> =
+		new com.google.api.services.bigquery.Bigquery.Builder(new com.google.api.client.http.javanet.NetHttpTransport(), new com.google.api.client.json.jackson2.JacksonFactory(), cred_<%=cid%>).setApplicationName("Talend").build();
+	/* ----END-CREATING-CLIENT (OAuth based Token)---- */
+	<%
 	} else {
-		throw new IllegalArgumentException("authentication mode should be either \"SERVICEACCOUNT\" or \"OAUTH\", but it is " + authMode);
+		throw new IllegalArgumentException("authentication mode should be either \"SERVICEACCOUNT\", \"OAUTH\" or \"TOKEN\", but it is " + authMode);
 	}
 	boolean bulkFileAlreadyExists = ElementParameterParser.getBooleanValue(node, "__BULK_FILE_ALREADY_EXIST__");
 	String accessKey = ElementParameterParser.getValue(node, "__GS_ACCESS_KEY__");
@@ -228,17 +254,17 @@ globalMap.put("<%=cid%>_ERROR_MESSAGE",e_<%=cid%>.getMessage());
 
 
 	if(!bulkFileAlreadyExists) {
-		if (!useServiceAccountForConnection){
+		if ("USER_ACCOUNT_HMAC".equals(authType)){
 			%>
 			/* ----START-UPLOADING-FILE WITH HMAC ACCOUNT---- */
 			<%
 			passwordFieldName = "__GS_SECRET_KEY__";
 			%>
-			
-			<%if (ElementParameterParser.canEncrypt(node, passwordFieldName)) {%> 
+
+			<%if (ElementParameterParser.canEncrypt(node, passwordFieldName)) {%>
 				final String decryptedPwd_<%=cid%> = routines.system.PasswordEncryptUtil.decryptPassword(<%=ElementParameterParser.getEncryptedValue(node, passwordFieldName)%>);
 			<%} else {%>
-				final String decryptedPwd_<%=cid%> = <%= ElementParameterParser.getValue(node, passwordFieldName)%>; 
+				final String decryptedPwd_<%=cid%> = <%= ElementParameterParser.getValue(node, passwordFieldName)%>;
 			<%}%>
 
 
@@ -264,33 +290,36 @@ globalMap.put("<%=cid%>_ERROR_MESSAGE",e_<%=cid%>.getMessage());
 			<%
 			}
 		} else {
-			String pathToServerAccoutKeyFile = ElementParameterParser.getValue(node, "__GS_SERVICE_ACCOUNT_KEY__");
+			<%}%>
+
+
+			org.jets3t.service.security.GSCredentials gsCredentials_<%=cid%> = new org.jets3t.service.security.GSCredentials(<%=accessKey%>, decryptedPwd_<%=cid%>);
+			<%final String GoogleTracker = org.talend.core.utils.TrackerUtil.getGoogleTracker();%>
+			org.jets3t.service.impl.rest.httpclient.GoogleStorageService gsService_<%=cid%> = new org.jets3t.service.impl.rest.httpclient.GoogleStorageService(gsCredentials_<%=cid%>," <%=GoogleTracker%>",null);
+
+			java.io.File fileData_<%=cid%> = new java.io.File(<%=localFilename%>);
+			org.jets3t.service.model.GSObject fileObject_<%=cid%> = new org.jets3t.service.model.GSObject(fileData_<%=cid%>);
+			<%
+			if(isLog4jEnabled){
 			%>
-			/* ----START-UPLOADING-FILE WITH SERVICE ACCOUNT---- */
-			com.google.cloud.storage.Storage storage_<%=cid%> = null;
-			com.google.auth.Credentials credential_<%=cid%> = null;
-			try {
-				credential_<%=cid%> = com.google.auth.oauth2.GoogleCredentials
-						.fromStream(new java.io.FileInputStream(<%=pathToServerAccoutKeyFile%>));
-			} catch (IOException e_<%=cid%>) {
-globalMap.put("<%=cid%>_ERROR_MESSAGE",e_<%=cid%>.getMessage());
-				<%
-				if (("true").equals(dieOnError)) {
-				%>
-					throw(e_<%=cid%>);
-				<%
-				}
-				%>
-				<%
-				if(isLog4jEnabled){
-				%>
-					log.error("<%=cid%> - Exception in component <%=cid%>.", e_<%=cid%>);
-				<%
-				}
-				%>
+				log.info("<%=cid%> - Upload "+<%=localFilename%> + " to Google Service Bucket: "+<%=bucketName%>);
+			<%
 			}
-			com.google.cloud.storage.StorageOptions.Builder builder = com.google.cloud.storage.StorageOptions.newBuilder();
-			storage_<%=cid%> = builder.setCredentials(credential_<%=cid%>).build().getService();
+			%>
+			gsService_<%=cid%>.putObject(<%=bucketName%>, fileObject_<%=cid%>);
+			/* ----END-UPLOADING-FILE---- */
+			<%
+			if(isLog4jEnabled){
+			%>
+				log.info("<%=cid%> - Upload Done.");
+			<%
+			}
+		} else {
+      boolean useExistingConn = false;
+      String gsProjectID = projectId;
+      String connection = cid;
+			%>
+      <%@ include file="@{org.talend.designer.components.localprovider}/components/templates/googleStorageConnection.javajet"%>
 
 			java.io.File file_<%=cid%> = new java.io.File(<%=localFilename%>);
 
@@ -304,6 +333,7 @@ globalMap.put("<%=cid%>_ERROR_MESSAGE",e_<%=cid%>.getMessage());
 			<%
 			}
 			%>
+			/* ----END-UPLOADING-FILE---- */
 			<%
 		}
 	}
@@ -315,7 +345,7 @@ globalMap.put("<%=cid%>_ERROR_MESSAGE",e_<%=cid%>.getMessage());
 	int currIndex_<%=cid%> = 0;
 	<%
 	}
-    if (authMode.equals("OAUTH")) {
+    if (authMode.equals("OAUTH") || authMode.equals("TOKEN")) {
 		if(isLog4jEnabled){
 		%>
 			log.info("<%=cid%> - Starting build a job.");
@@ -325,12 +355,15 @@ globalMap.put("<%=cid%>_ERROR_MESSAGE",e_<%=cid%>.getMessage());
 		/* ----START-CREATING-JOB (OAuth 2.0)---- */
 		com.google.api.services.bigquery.model.Job job_<%=cid%> = new com.google.api.services.bigquery.model.Job();
 		job_<%=cid%>.setJobReference(new com.google.api.services.bigquery.model.JobReference().setProjectId(PROJECT_ID_<%=cid%>));
-	
+
 		com.google.api.services.bigquery.model.JobConfiguration config_<%=cid%> = new com.google.api.services.bigquery.model.JobConfiguration();
 		com.google.api.services.bigquery.model.JobConfigurationLoad queryLoad_<%=cid%> = new com.google.api.services.bigquery.model.JobConfigurationLoad();
-		
+
 		<%if (dropTable) {%>
 			try {
+				<% if(authMode.equals("TOKEN") && !ElementParameterParser.canEncrypt(node, "__ACCESS_TOKEN__")) { %>
+				cred_<%=cid%>.setAccessToken(<%= ElementParameterParser.getValue(node, "__ACCESS_TOKEN__")%>);
+				<% } %>
 				bigqueryclient_<%=cid%>.tables().delete(PROJECT_ID_<%=cid%>, <%=dataset%>, <%=table%>).execute();
 			} catch (com.google.api.client.googleapis.json.GoogleJsonResponseException e_<%=cid%>) {
 globalMap.put("<%=cid%>_ERROR_MESSAGE",e_<%=cid%>.getMessage());
@@ -354,10 +387,13 @@ globalMap.put("<%=cid%>_ERROR_MESSAGE",e_<%=cid%>.getMessage());
 				}
 			}
 		<%}%>
-		
+
 		<%if (createTableIfNotExist) { %>
-			
+
 			try {
+				<% if(authMode.equals("TOKEN") && !ElementParameterParser.canEncrypt(node, "__ACCESS_TOKEN__")) { %>
+				cred_<%=cid%>.setAccessToken(<%= ElementParameterParser.getValue(node, "__ACCESS_TOKEN__")%>);
+				<% } %>
 				com.google.api.services.bigquery.model.Table getTable = bigqueryclient_<%=cid%>.tables().get(PROJECT_ID_<%=cid%>, <%=dataset%>, <%=table%>).execute();
 				queryLoad_<%=cid%>.setCreateDisposition("CREATE_NEVER");
 			} catch (com.google.api.client.googleapis.json.GoogleJsonResponseException e_<%=cid%>){
@@ -501,15 +537,17 @@ globalMap.put("<%=cid%>_ERROR_MESSAGE",e_<%=cid%>.getMessage());
 		destinationTable_<%=cid%>.setProjectId(PROJECT_ID_<%=cid%>);
 		destinationTable_<%=cid%>.setDatasetId(<%=dataset%>);
 		destinationTable_<%=cid%>.setTableId(<%=table%>);
-	
+
 		queryLoad_<%=cid%>.setDestinationTable(destinationTable_<%=cid%>);
 		queryLoad_<%=cid%>.setSourceUris(java.util.Arrays.asList(<%=gsFile%>));
 		queryLoad_<%=cid%>.setSkipLeadingRows(<%=gsFileHeader%>);
 		queryLoad_<%=cid%>.setNullMarker(<%= nullMarker %>);
 		config_<%=cid%>.setLoad(queryLoad_<%=cid%>);
-		
+
 		job_<%=cid%>.setConfiguration(config_<%=cid%>);
-	
+    <% if(authMode.equals("TOKEN") && !ElementParameterParser.canEncrypt(node, "__ACCESS_TOKEN__")) { %>
+    cred_<%=cid%>.setAccessToken(<%= ElementParameterParser.getValue(node, "__ACCESS_TOKEN__")%>);
+    <% } %>
 		com.google.api.services.bigquery.Bigquery.Jobs.Insert insertReq_<%=cid%> = bigqueryclient_<%=cid%>.jobs().insert("", job_<%=cid%>);
 		insertReq_<%=cid%>.setProjectId(PROJECT_ID_<%=cid%>);
 		<%
@@ -518,11 +556,17 @@ globalMap.put("<%=cid%>_ERROR_MESSAGE",e_<%=cid%>.getMessage());
 			log.info("<%=cid%> - Build a job successfully.");
 			log.info("<%=cid%> - Starting load the job.");
 		<%
+		} else {
+		%>
+			System.out.println("Starting load job.");
+		<%
 		}
 		%>
-		System.out.println("Starting load job.");
 		com.google.api.services.bigquery.model.Job jobExec_<%=cid%> = null;
 		try {
+			<% if(authMode.equals("TOKEN") && !ElementParameterParser.canEncrypt(node, "__ACCESS_TOKEN__")) { %>
+      cred_<%=cid%>.setAccessToken(<%= ElementParameterParser.getValue(node, "__ACCESS_TOKEN__")%>);
+      <% } %>
 			jobExec_<%=cid%> = insertReq_<%=cid%>.execute();
 		} catch (Exception ee_<%=cid%>) {
 globalMap.put("<%=cid%>_ERROR_MESSAGE",ee_<%=cid%>.getMessage());
@@ -545,9 +589,15 @@ globalMap.put("<%=cid%>_ERROR_MESSAGE",ee_<%=cid%>.getMessage());
 		}
 		if (jobExec_<%=cid%>.getStatus().getState().equals("RUNNING")
 				|| jobExec_<%=cid%>.getStatus().getState().equals("PENDING")) {
+					<% if(authMode.equals("TOKEN") && !ElementParameterParser.canEncrypt(node, "__ACCESS_TOKEN__")) { %>
+			cred_<%=cid%>.setAccessToken(<%= ElementParameterParser.getValue(node, "__ACCESS_TOKEN__")%>);
+					<% } %>
             		com.google.api.services.bigquery.model.Job pollJob_<%=cid%> = bigqueryclient_<%=cid%>.jobs().get(PROJECT_ID_<%=cid%>,jobExec_<%=cid%>.getJobReference().getJobId()).setLocation(jobExec_<%=cid%>.getJobReference().getLocation()).execute();
 			while (pollJob_<%=cid%>.getStatus().getState().equals("RUNNING") || pollJob_<%=cid%>.getStatus().getState().equals("PENDING")) {
 				Thread.sleep(1000);
+				<% if(authMode.equals("TOKEN") && !ElementParameterParser.canEncrypt(node, "__ACCESS_TOKEN__")) { %>
+				cred_<%=cid%>.setAccessToken(<%= ElementParameterParser.getValue(node, "__ACCESS_TOKEN__")%>);
+				<% } %>
 				pollJob_<%=cid%> = bigqueryclient_<%=cid%>.jobs().get(PROJECT_ID_<%=cid%>,jobExec_<%=cid%>.getJobReference().getJobId()).setLocation(jobExec_<%=cid%>.getJobReference().getLocation()).execute();
 				System.out.println(String.format(
 						"Waiting on job %s ... Current status: %s", jobExec_<%=cid%>
@@ -561,14 +611,17 @@ globalMap.put("<%=cid%>_ERROR_MESSAGE",ee_<%=cid%>.getMessage());
 				}
 				%>
 			}
-	
+
+			<% if(authMode.equals("TOKEN") && !ElementParameterParser.canEncrypt(node, "__ACCESS_TOKEN__")) { %>
+      cred_<%=cid%>.setAccessToken(<%= ElementParameterParser.getValue(node, "__ACCESS_TOKEN__")%>);
+      <% } %>
 			com.google.api.services.bigquery.model.Job doneJob_<%=cid%> = pollJob_<%=cid%>;
-	
+
 			if ((doneJob_<%=cid%>.getStatus() != null) && (doneJob_<%=cid%>.getStatus().getErrors() != null)) {
 				status = "failure";
 				throw new Exception(doneJob_<%=cid%>.getStatus().getErrors().toString());
 			}
-	
+
 			System.out.println("Done: " + doneJob_<%=cid%>.toString());
 			com.google.api.services.bigquery.model.JobStatistics jobStatistics_<%=cid%>= doneJob_<%=cid%>.getStatistics();
 			if(jobStatistics_<%=cid%>!=null && jobStatistics_<%=cid%>.getLoad() != null){
@@ -610,11 +663,11 @@ globalMap.put("<%=cid%>_ERROR_MESSAGE",ee_<%=cid%>.getMessage());
 		/* ----START-CREATING-JOB (Cloud API)---- */
 		com.google.cloud.bigquery.TableId tableId_<%=cid%> = com.google.cloud.bigquery.TableId.of(<%=projectId%>, <%=dataset%>, <%=table%>);
 		com.google.cloud.bigquery.LoadJobConfiguration.Builder loadJobBuilder_<%=cid%> = com.google.cloud.bigquery.LoadJobConfiguration.newBuilder(tableId_<%=cid%>, <%=gsFile%>);
-		
+
 		boolean dropTable_<%=cid%> = <%=dropTable%>;
 
 		if (dropTable_<%=cid%> && bigquery_<%=cid%>.getTable(tableId_<%=cid%>) != null) {
-			boolean deleted = bigquery_<%=cid%>.delete(tableId_<%=cid%>);	
+			boolean deleted = bigquery_<%=cid%>.delete(tableId_<%=cid%>);
 			if (deleted) {
 				<%
 				if(isLog4jEnabled){
@@ -650,10 +703,10 @@ globalMap.put("<%=cid%>_ERROR_MESSAGE",ee_<%=cid%>.getMessage());
 								} else if ("id_Short".equals(column.getTalendType()) || "id_Integer".equals(column.getTalendType()) || "id_Long".equals(column.getTalendType())) {
 									typeToGenerate = "com.google.cloud.bigquery.LegacySQLTypeName.INTEGER";
 								} else if ("id_BigDecimal".equals(column.getTalendType())) {
-									typeToGenerate = "com.google.cloud.bigquery.LegacySQLTypeName.NUMERIC";						
+									typeToGenerate = "com.google.cloud.bigquery.LegacySQLTypeName.NUMERIC";
 								} else if ("id_Boolean".equals(column.getTalendType())) {
 									typeToGenerate = "com.google.cloud.bigquery.LegacySQLTypeName.BOOLEAN";
-								} else if ("id_Date".equals(column.getTalendType())) {							
+								} else if ("id_Date".equals(column.getTalendType())) {
 									String pattern = column.getPattern();
 									if(pattern.length() == 12 || pattern.isEmpty() || "\"\"".equals(pattern)) {
 										typeToGenerate = "com.google.cloud.bigquery.LegacySQLTypeName.DATE";
@@ -665,11 +718,11 @@ globalMap.put("<%=cid%>_ERROR_MESSAGE",ee_<%=cid%>.getMessage());
 								}
 								String modeType = (!column.isNullable()) ? "REQUIRED" : "NULLABLE";
 							%>
-							
+
 							com.google.cloud.bigquery.Field field_<%=i%> = com.google.cloud.bigquery.Field.newBuilder("<%=columnName%>", <%=typeToGenerate%>)
 																										  .setMode(com.google.cloud.bigquery.Field.Mode.valueOf("<%=modeType%>"))
 																										  .build();
-							fields_<%=cid%>.add(field_<%=i%>);		
+							fields_<%=cid%>.add(field_<%=i%>);
 								<%
 								if(isLog4jEnabled){
 								%>
@@ -758,32 +811,32 @@ globalMap.put("<%=cid%>_ERROR_MESSAGE",ee_<%=cid%>.getMessage());
 					}
 				}
 				%>
-			
+
 				com.google.cloud.bigquery.Schema schema_<%=cid%> = com.google.cloud.bigquery.Schema.of(fields_<%=cid%>);
 				com.google.cloud.bigquery.TableInfo tableInfo_<%=cid%> = com.google.cloud.bigquery.TableInfo.newBuilder(tableId_<%=cid%>, com.google.cloud.bigquery.StandardTableDefinition.of(schema_<%=cid%>)).build();
 				com.google.cloud.bigquery.Table table_<%=cid%> = bigquery_<%=cid%>.create(tableInfo_<%=cid%>);
 				loadJobBuilder_<%=cid%>.setSchema(schema_<%=cid%>);
 				loadJobBuilder_<%=cid%>.setCreateDisposition(com.google.cloud.bigquery.JobInfo.CreateDisposition.CREATE_IF_NEEDED);
-       
+
 			} else {
 				loadJobBuilder_<%=cid%>.setCreateDisposition(com.google.cloud.bigquery.JobInfo.CreateDisposition.CREATE_NEVER);
 			}
 		<%} else {%>
 				loadJobBuilder_<%=cid%>.setCreateDisposition(com.google.cloud.bigquery.JobInfo.CreateDisposition.CREATE_NEVER);
 		<%}%>
-			
-			loadJobBuilder_<%=cid%>.setWriteDisposition(com.google.cloud.bigquery.JobInfo.WriteDisposition.WRITE_<%=actionOnData%>);	
+
+			loadJobBuilder_<%=cid%>.setWriteDisposition(com.google.cloud.bigquery.JobInfo.WriteDisposition.WRITE_<%=actionOnData%>);
 			loadJobBuilder_<%=cid%>.setDestinationTable(tableId_<%=cid%>);
 	        com.google.cloud.bigquery.CsvOptions.Builder csvOptions_<%=cid%> = com.google.cloud.bigquery.CsvOptions.newBuilder();
 			csvOptions_<%=cid%>.setAllowQuotedNewLines(true);
 			csvOptions_<%=cid%>.setSkipLeadingRows(<%=gsFileHeader%>);
-																				
+
 			<%if(setFieldDelimiter) {
 	        %>
 	         	csvOptions_<%=cid%>.setFieldDelimiter(<%=fieldDelimiter%>);
 	        <%
 	        }
-	        %>		
+	        %>
 			loadJobBuilder_<%=cid%>.setFormatOptions(csvOptions_<%=cid%>.build());
 			loadJobBuilder_<%=cid%>.setNullMarker(<%= nullMarker %>);
 			com.google.cloud.bigquery.Job job_<%=cid%> = bigquery_<%=cid%>.create(com.google.cloud.bigquery.JobInfo.of(loadJobBuilder_<%=cid%>.build()));
@@ -800,10 +853,10 @@ globalMap.put("<%=cid%>_ERROR_MESSAGE",ee_<%=cid%>.getMessage());
 				List<com.google.cloud.bigquery.BigQueryError> errorList = job_<%=cid%>.getStatus().getExecutionErrors();
 				throw new RuntimeException("Job failed: " + errorList.get(errorList.size() - 1));
 			}
-		
+
 		/* ----END-CREATING-JOB (Cloud API)---- */
 	<%
 	} else {
-		throw new IllegalArgumentException("authentication mode should be either \"SERVICEACCOUNT\" or \"OAUTH\", but it is " + authMode);
+		throw new IllegalArgumentException("authentication mode should be either \"SERVICEACCOUNT\", \"OAUTH\" or \"TOKEN\", but it is " + authMode);
 	}
 	%>

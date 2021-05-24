@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2021 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -36,7 +36,6 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.PlatformUI;
 import org.talend.commons.CommonsPlugin;
-import org.talend.commons.exception.BusinessException;
 import org.talend.commons.exception.ClientException;
 import org.talend.commons.exception.CommonExceptionHandler;
 import org.talend.commons.exception.InformException;
@@ -75,7 +74,6 @@ import org.talend.repository.RepositoryPlugin;
 import org.talend.repository.i18n.Messages;
 import org.talend.repository.model.IRepositoryService;
 import org.talend.repository.model.RepositoryConstants;
-import org.talend.repository.ui.dialog.OverTimePopupDialogTask;
 import org.talend.repository.ui.login.AbstractLoginActionPage.ErrorManager;
 import org.talend.repository.ui.login.connections.ConnectionUserPerReader;
 import org.talend.utils.json.JSONException;
@@ -153,14 +151,23 @@ public class LoginHelper {
     }
 
     protected void init() {
-        if (PluginChecker.isSVNProviderPluginLoaded()) {
+        if (PluginChecker.isRemoteProviderPluginLoaded()) {
+            GlobalServiceRegister gsr = GlobalServiceRegister.getDefault();
             try {
-                svnProviderService = (ISVNProviderService) GlobalServiceRegister.getDefault().getService(
-                        ISVNProviderService.class);
-                gitProviderService = (IGITProviderService) GlobalServiceRegister.getDefault().getService(
-                        IGITProviderService.class);
+                if (gsr.isServiceRegistered(ISVNProviderService.class)) {
+                    svnProviderService = (ISVNProviderService) GlobalServiceRegister.getDefault()
+                            .getService(ISVNProviderService.class);
+                }
+            } catch (Exception e) {
+                ExceptionHandler.process(e);
+            }
+            try {
+                if (gsr.isServiceRegistered(IGITProviderService.class)) {
+                    gitProviderService = (IGITProviderService) GlobalServiceRegister.getDefault()
+                            .getService(IGITProviderService.class);
+                }
             } catch (RuntimeException e) {
-                // nothing to do
+                ExceptionHandler.process(e);
             }
         }
         prefManipulator = new PreferenceManipulator(CorePlugin.getDefault().getPreferenceStore());
@@ -465,7 +472,10 @@ public class LoginHelper {
             }
             List<String> branches = null;
             try {
-                branches = getProjectBranches(lastUsedProject);
+                /**
+                 * Auto login, means there should be local repository
+                 */
+                branches = getProjectBranches(lastUsedProject, true);
             } catch (JSONException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
@@ -687,6 +697,7 @@ public class LoginHelper {
         if (connBean == null) {
             return null;
         }
+        Thread retrieveProjectThread = Thread.currentThread();
         Project[] projects = null;
         if (connBean != null) {
             String user2 = connBean.getUser();
@@ -712,6 +723,9 @@ public class LoginHelper {
         if (!connBean.isComplete()) {
             return projects;
         }
+        if (retrieveProjectThread.isInterrupted()) {
+            return null;
+        }
 
         boolean initialized = false;
 
@@ -723,55 +737,64 @@ public class LoginHelper {
                 String warnings = e.getMessage();
                 if (warnings != null && !warnings.equals(lastWarnings)) {
                     lastWarnings = warnings;
-                    if (errorManager != null) {
-                        errorManager.setWarnMessage(warnings);
-                    } else {
-                        final Shell shell = DisplayUtils.getDefaultShell(false);
-                        MessageDialog.openWarning(shell, Messages.getString("LoginComposite.warningTitle"), warnings); //$NON-NLS-1$
+                    if (retrieveProjectThread.isInterrupted()) {
+                        return null;
                     }
+                    Display.getDefault().syncExec(() -> {
+                        if (retrieveProjectThread.isInterrupted()) {
+                            return;
+                        }
+                        if (errorManager != null) {
+                            errorManager.setWarnMessage(warnings);
+                        } else {
+                            final Shell shell = DisplayUtils.getDefaultShell(false);
+                            MessageDialog.openWarning(shell, Messages.getString("LoginComposite.warningTitle"), warnings); //$NON-NLS-1$
+                        }
+                    });
                 }
             }
 
-            OverTimePopupDialogTask<Boolean> overTimePopupDialogTask = new OverTimePopupDialogTask<Boolean>() {
-
-                @Override
-                public Boolean run() throws Throwable {
-                    ProxyRepositoryFactory.getInstance().initialize();
-                    return null;
-                }
-            };
-            overTimePopupDialogTask.setNeedWaitingProgressJob(false);
-            overTimePopupDialogTask.runTask();
+            if (retrieveProjectThread.isInterrupted()) {
+                return null;
+            }
+            ProxyRepositoryFactory.getInstance().initialize();
+            if (retrieveProjectThread.isInterrupted()) {
+                return null;
+            }
 
             initialized = true;
         } catch (Throwable e) {
+            if (retrieveProjectThread.isInterrupted()) {
+                return null;
+            }
             if (isAuthorizationException(e)) {
                 errorManager.setHasAuthException(true);
                 errorManager.setAuthException(e);
             }
             projects = new Project[0];
-            if (errorManager != null) {
-                errorManager.setErrMessage(Messages.getString("LoginComposite.errorMessages1") + newLine + e.getMessage());//$NON-NLS-1$
-            } else {
-                final Shell shell = DisplayUtils.getDefaultShell(false);
-                MessageDialog.openError(shell, Messages.getString("LoginComposite.warningTitle"), //$NON-NLS-1$
-                        Messages.getString("LoginComposite.errorMessages1") + newLine + e.getMessage()); //$NON-NLS-1$
-            }
+            Display.getDefault().syncExec(() -> {
+                if (retrieveProjectThread.isInterrupted()) {
+                    return;
+                }
+                if (errorManager != null) {
+                    errorManager.setErrMessage(Messages.getString("LoginComposite.errorMessages1") + newLine + e.getMessage());//$NON-NLS-1$
+                } else {
+                    final Shell shell = DisplayUtils.getDefaultShell(false);
+                    MessageDialog.openError(shell, Messages.getString("LoginComposite.warningTitle"), //$NON-NLS-1$
+                            Messages.getString("LoginComposite.errorMessages1") + newLine + e.getMessage()); //$NON-NLS-1$
+                }
+            });
         }
 
         if (initialized) {
             try {
-
-                OverTimePopupDialogTask<Project[]> overTimePopupDialogTask = new OverTimePopupDialogTask<Project[]>() {
-
-                    @Override
-                    public Project[] run() throws Throwable {
-                        return ProxyRepositoryFactory.getInstance().readProject();
-                    }
-                };
-                overTimePopupDialogTask.setNeedWaitingProgressJob(false);
-                projects = overTimePopupDialogTask.runTask();
-
+                if (retrieveProjectThread.isInterrupted()) {
+                    return null;
+                }
+                projects = ProxyRepositoryFactory.getInstance().readProject();
+                if (retrieveProjectThread.isInterrupted()) {
+                    return null;
+                }
                 Arrays.sort(projects, new Comparator<Project>() {
 
                     @Override
@@ -780,41 +803,42 @@ public class LoginHelper {
                     }
 
                 });
-            } catch (PersistenceException e) {
-                projects = new Project[0];
-                if (errorManager != null) {
-                    errorManager.setErrMessage(Messages.getString("LoginComposite.errorMessages1") + newLine + e.getMessage());//$NON-NLS-1$
-                } else {
-                    MessageDialog.openError(getUsableShell(), Messages.getString("LoginComposite.errorTitle"), //$NON-NLS-1$
-                            Messages.getString("LoginComposite.errorMessages1") + newLine + e.getMessage()); //$NON-NLS-1$
-                }
-            } catch (BusinessException e) {
-                projects = new Project[0];
-                if (errorManager != null) {
-                    errorManager.setErrMessage(Messages.getString("LoginComposite.errorMessages1") + newLine + e.getMessage());//$NON-NLS-1$
-                } else {
-                    MessageDialog.openError(getUsableShell(), Messages.getString("LoginComposite.errorTitle"), //$NON-NLS-1$
-                            Messages.getString("LoginComposite.errorMessages1") + newLine + e.getMessage()); //$NON-NLS-1$
-                }
             } catch (Throwable e) {
                 projects = new Project[0];
-                if (errorManager != null) {
-                    errorManager.setErrMessage(Messages.getString("LoginComposite.errorMessages1") + newLine + e.getMessage());//$NON-NLS-1$
-                } else {
-                    MessageDialog.openError(getUsableShell(), Messages.getString("LoginComposite.errorTitle"), //$NON-NLS-1$
-                            Messages.getString("LoginComposite.errorMessages1") + newLine + e.getMessage()); //$NON-NLS-1$
+                if (retrieveProjectThread.isInterrupted()) {
+                    return null;
                 }
+                Display.getDefault().syncExec(() -> {
+                    if (retrieveProjectThread.isInterrupted()) {
+                        return;
+                    }
+                    if (errorManager != null) {
+                        errorManager
+                                .setErrMessage(Messages.getString("LoginComposite.errorMessages1") + newLine + e.getMessage());//$NON-NLS-1$
+                    } else {
+                        MessageDialog.openError(getUsableShell(), Messages.getString("LoginComposite.errorTitle"), //$NON-NLS-1$
+                                Messages.getString("LoginComposite.errorMessages1") + newLine + e.getMessage()); //$NON-NLS-1$
+                    }
+                });
             }
         }
 
         return projects;
     }
 
-    public List<String> getProjectBranches(Project p) throws JSONException {
+    /**
+     * get branches of project
+     * 
+     * @param p
+     * @param onlyLocalIfPossible try to only get branches from local repository to improve performance
+     * @return
+     * @throws JSONException
+     */
+    public List<String> getProjectBranches(Project p, boolean onlyLocalIfPossible) throws JSONException {
         IRepositoryService repositoryService = (IRepositoryService) GlobalServiceRegister.getDefault()
                 .getService(IRepositoryService.class);
         if (repositoryService != null) {
-            return repositoryService.getProjectBranch(p);
+            return repositoryService.getProjectBranch(p, onlyLocalIfPossible);
         }
         return Collections.EMPTY_LIST;
     }
@@ -920,7 +944,7 @@ public class LoginHelper {
         if (brandingConfiguration != null) {
             isOnlyRemoteConnection = brandingConfiguration.isOnlyRemoteConnection();
         }
-        if (!isOnlyRemoteConnection && PluginChecker.isSVNProviderPluginLoaded()) {
+        if (!isOnlyRemoteConnection && PluginChecker.isRemoteProviderPluginLoaded()) {
             // if this plugin loaded, then means support remote connections, then no need to filter
             return filteredConnections;
         }

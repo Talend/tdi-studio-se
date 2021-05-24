@@ -14,7 +14,7 @@ imports="
     java.util.Map
     java.util.HashMap
 " 
-skeleton="../templates/db_output_bulk.skeleton"
+skeleton="@{org.talend.designer.components.localprovider}/components/templates/db_output_bulk.skeleton"
 %>
 
 <% 
@@ -67,10 +67,10 @@ skeleton="../templates/db_output_bulk.skeleton"
 		}
 			if(isLog4jEnabled){%>
 				log.info("<%=cid%> - Execute '"+command_<%=cid %>.toString()+"' has finished.");
-				log.info("<%=cid%> - Loaded records count:"+insertedCount_<%=cid%> + ".");
-			<%}
+				log.info("<%=cid%> - Loaded records count:"+ globalMap.get("<%=cid%>_NB_LINE") + ".");
+			<%}%>
+<%
 	}
 %>
 	globalMap.put("<%=cid%>_GPLOAD_OUTPUT", gploadOutput_<%=cid%>.toString());
-	globalMap.put("<%=cid%>_NB_LINE", insertedCount_<%=cid%>);
 	

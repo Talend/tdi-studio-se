@@ -22,6 +22,7 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element name="description" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/&gt;
  *         &lt;element name="name" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/&gt;
  *         &lt;element name="processSteps" type="{http://www.talend.com/mdm}WSTransformerProcessStep" maxOccurs="unbounded" minOccurs="0"/&gt;
+ *         &lt;element name="withAdminPermissions" type="{http://www.w3.org/2001/XMLSchema}boolean" minOccurs="0"/&gt;
  *       &lt;/sequence&gt;
  *     &lt;/restriction&gt;
  *   &lt;/complexContent&gt;
@@ -34,7 +35,8 @@ import javax.xml.bind.annotation.XmlType;
 @XmlType(name = "WSTransformerV2", propOrder = {
     "description",
     "name",
-    "processSteps"
+    "processSteps",
+    "withAdminPermissions"
 })
 public class WSTransformerV2 {
 
@@ -42,6 +44,7 @@ public class WSTransformerV2 {
     protected String name;
     @XmlElement(nillable = true)
     protected List<WSTransformerProcessStep> processSteps;
+    protected Boolean withAdminPermissions;
 
     /**
      * Default no-arg constructor
@@ -55,10 +58,11 @@ public class WSTransformerV2 {
      * Fully-initialising value constructor
      * 
      */
-    public WSTransformerV2(final String description, final String name, final List<WSTransformerProcessStep> processSteps) {
+    public WSTransformerV2(final String description, final String name, final List<WSTransformerProcessStep> processSteps, final Boolean withAdminPermissions) {
         this.description = description;
         this.name = name;
         this.processSteps = processSteps;
+        this.withAdminPermissions = withAdminPermissions;
     }
 
     /**
@@ -138,4 +142,28 @@ public class WSTransformerV2 {
         return this.processSteps;
     }
 
+    /**
+     * Gets the value of the withAdminPermissions property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link Boolean }
+     *     
+     */
+    public Boolean isWithAdminPermissions() {
+        return withAdminPermissions;
+    }
+
+    /**
+     * Sets the value of the withAdminPermissions property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link Boolean }
+     *     
+     */
+    public void setWithAdminPermissions(Boolean value) {
+        this.withAdminPermissions = value;
+    }
+    
 }

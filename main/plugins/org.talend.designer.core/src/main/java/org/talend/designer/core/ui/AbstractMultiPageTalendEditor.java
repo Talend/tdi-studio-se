@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2021 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -116,6 +116,7 @@ import org.talend.core.model.process.IContextManager;
 import org.talend.core.model.process.IContextParameter;
 import org.talend.core.model.process.IElementParameter;
 import org.talend.core.model.process.INode;
+import org.talend.core.model.process.IProcess;
 import org.talend.core.model.process.IProcess2;
 import org.talend.core.model.process.JobInfo;
 import org.talend.core.model.properties.InformationLevel;
@@ -183,6 +184,7 @@ import org.talend.designer.core.ui.views.jobsettings.JobSettingsView;
 import org.talend.designer.core.ui.views.problems.Problems;
 import org.talend.designer.maven.utils.MavenProjectUtils;
 import org.talend.designer.runprocess.IProcessor;
+import org.talend.designer.runprocess.IRunProcessService;
 import org.talend.designer.runprocess.ProcessorException;
 import org.talend.designer.runprocess.ProcessorUtilities;
 import org.talend.repository.ProjectManager;
@@ -294,7 +296,7 @@ public abstract class AbstractMultiPageTalendEditor extends MultiPageEditorPart 
 
     static {
         if (GlobalServiceRegister.getDefault().isServiceRegistered(ISVNProviderService.class)) {
-            svnProviderService = (ISVNProviderService) GlobalServiceRegister.getDefault().getService(ISVNProviderService.class);
+            svnProviderService = GlobalServiceRegister.getDefault().getService(ISVNProviderService.class);
         }
     }
 
@@ -392,7 +394,7 @@ public abstract class AbstractMultiPageTalendEditor extends MultiPageEditorPart 
         ActiveProcessTracker.initialize();
 
         ResourcesPlugin.getWorkspace().addResourceChangeListener(this);
-        IBrandingService brandingService = (IBrandingService) GlobalServiceRegister.getDefault().getService(
+        IBrandingService brandingService = GlobalServiceRegister.getDefault().getService(
                 IBrandingService.class);
         Map<String, Object> settings = brandingService.getBrandingConfiguration().getJobEditorSettings();
         if (settings.containsKey(DISPLAY_CODE_VIEW)) {
@@ -685,6 +687,32 @@ public abstract class AbstractMultiPageTalendEditor extends MultiPageEditorPart 
         }
     }
 
+    public EditPart getSelectedNodePart(String nodeName) {
+        GraphicalViewer viewer = designerEditor.getViewer();
+        Object object = viewer.getRootEditPart().getChildren().get(0);
+        if (object instanceof ProcessPart) {
+            // the structure in memory is:
+            // ProcessPart < SubjobContainerPart < NodeContainerPart < NodePart
+            for (EditPart editPart : (List<EditPart>) ((ProcessPart) object).getChildren()) {
+                if (editPart instanceof SubjobContainerPart) {
+                    SubjobContainerPart subjobPart = (SubjobContainerPart) editPart;
+                    for (EditPart part : (List<EditPart>) subjobPart.getChildren()) {
+                        if (part instanceof NodeContainerPart) {
+                            for (EditPart nodePart : (List<EditPart>) part.getChildren()) {
+                                if (nodePart instanceof NodePart) {
+                                    if (((Node) ((NodePart) nodePart).getModel()).getLabel().equals(nodeName)) {
+                                        return nodePart;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
     private void changeContextsViewStatus(boolean flag) {
         IWorkbenchPage workbenchPage = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
         if (workbenchPage != null) {
@@ -824,8 +852,18 @@ public abstract class AbstractMultiPageTalendEditor extends MultiPageEditorPart 
                         oldProcess.getProperty());
             }
             if (item instanceof ProcessItem) {
-
                 ((Process) oldProcess).updateProcess(processType);
+                if (processType.getParameters() != null && processType.getParameters().getRoutinesParameter() != null) {
+                    List<RoutinesParameterType> routineTypes = processType.getParameters().getRoutinesParameter();
+                    if (routineTypes.stream().anyMatch(r -> r.getType() != null)) {
+                        try {
+                            MavenProjectUtils.updateMavenProject(new NullProgressMonitor(),
+                                    IRunProcessService.get().getTalendJobJavaProject(item.getProperty()).getProject());
+                        } catch (CoreException e) {
+                            ExceptionHandler.process(e);
+                        }
+                    }
+                }
             } else if (item instanceof JobletProcessItem) {
                 ((Process) oldProcess).updateProcess(processType);
             }
@@ -834,8 +872,11 @@ public abstract class AbstractMultiPageTalendEditor extends MultiPageEditorPart 
             List<Node> nodes = (List<Node>) oldProcess.getGraphicalNodes();
             List<Node> newNodes = new ArrayList<Node>();
             newNodes.addAll(nodes);
+            Set<IProcess> processSet = new HashSet<IProcess>();
             for (Node node : newNodes) {
-                node.getProcess().checkStartNodes();
+                if (processSet.add(node.getProcess())) {
+                    node.getProcess().checkStartNodes();
+                }
                 node.checkAndRefreshNode();
                 IElementParameter ep = node.getElementParameter("ACTIVATE");
                 if (ep != null && ep.getValue().equals(Boolean.FALSE)) {
@@ -1213,7 +1254,7 @@ public abstract class AbstractMultiPageTalendEditor extends MultiPageEditorPart 
         changeCollapsedState(false, jobletMap);
 
         if (GlobalServiceRegister.getDefault().isServiceRegistered(ITestContainerProviderService.class)) {
-            ITestContainerProviderService testContainerService = (ITestContainerProviderService) GlobalServiceRegister
+            ITestContainerProviderService testContainerService = GlobalServiceRegister
                     .getDefault().getService(ITestContainerProviderService.class);
             if (testContainerService != null) {
                 testContainerService.updateDetect(getProcess(), false);
@@ -1230,7 +1271,7 @@ public abstract class AbstractMultiPageTalendEditor extends MultiPageEditorPart 
 
     public boolean haveDirtyJoblet() {
         if (GlobalServiceRegister.getDefault().isServiceRegistered(IJobletProviderService.class)) {
-            IJobletProviderService service = (IJobletProviderService) GlobalServiceRegister.getDefault().getService(
+            IJobletProviderService service = GlobalServiceRegister.getDefault().getService(
                     IJobletProviderService.class);
             for (INode node : getProcess().getGraphicalNodes()) {
                 if ((node instanceof Node) && ((Node) node).isJoblet()) {
@@ -1799,7 +1840,7 @@ public abstract class AbstractMultiPageTalendEditor extends MultiPageEditorPart 
 
     public void beforeDispose() {
         if (null != jobletEditor) {
-            IColumnSupport cs = (IColumnSupport) jobletEditor.getAdapter(IColumnSupport.class);
+            IColumnSupport cs = jobletEditor.getAdapter(IColumnSupport.class);
             cs.dispose();
         }
     }

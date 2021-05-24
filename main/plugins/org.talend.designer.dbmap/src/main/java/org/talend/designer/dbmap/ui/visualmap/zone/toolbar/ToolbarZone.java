@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2021 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -37,13 +37,15 @@ public abstract class ToolbarZone {
 
     private Composite composite;
 
-    private MapperManager mapperManager;
+    protected MapperManager mapperManager;
 
     private ToolBar toolBarActions;
 
     private ToolItem upTableButton;
 
     private ToolItem downTableButton;
+
+    private ToolItem propertyButton;
 
     private ToolItem minimizeButton;
 
@@ -72,9 +74,6 @@ public abstract class ToolbarZone {
         }
     }
 
-    /**
-     * DOC amaumont Comment method "createComponents".
-     */
     public void addCommonsComponents() {
 
         upTableButton = new ToolItem(toolBarActions, SWT.PUSH);
@@ -90,6 +89,13 @@ public abstract class ToolbarZone {
         downTableButton.setToolTipText(getMoveDownTooltipText());
 
         new ToolItem(getToolBarActions(), SWT.SEPARATOR);
+
+        if (this instanceof ToolbarInputZone) {
+            propertyButton = new ToolItem(toolBarActions, SWT.PUSH);
+            propertyButton.setImage(ImageProviderMapper.getImage(ImageInfo.PROPERTY_TOOL_ICON));
+            propertyButton.setToolTipText("Setup the configurations of elt map"); //$NON-NLS-1$
+            propertyButton.setEnabled(!getMapperManager().componentIsReadOnly());
+        }
 
         minimizeButton = new ToolItem(toolBarActions, SWT.PUSH);
         minimizeButton.setEnabled(false);
@@ -127,6 +133,14 @@ public abstract class ToolbarZone {
 
         });
 
+        if (propertyButton != null) {
+            propertyButton.addListener(SWT.Selection, new Listener() {
+
+                public void handleEvent(Event event) {
+                    uiManager.openPropertySetDialog();
+                }
+            });
+        }
     }
 
     public Composite getComposite() {

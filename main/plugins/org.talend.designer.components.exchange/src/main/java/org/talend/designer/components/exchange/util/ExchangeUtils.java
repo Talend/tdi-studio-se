@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2021 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -55,6 +55,7 @@ import org.talend.core.language.ECodeLanguage;
 import org.talend.core.language.LanguageManager;
 import org.talend.core.model.components.IComponentsFactory;
 import org.talend.core.model.general.Project;
+import org.talend.core.runtime.util.SharedStudioUtils;
 import org.talend.core.ui.component.ComponentPaletteUtilities;
 import org.talend.core.ui.component.ComponentsFactoryProvider;
 import org.talend.designer.components.exchange.ExchangePlugin;
@@ -205,14 +206,19 @@ public class ExchangeUtils {
      * @return
      */
     public static File getComponentFolder(String componentfolder) {
-        URL url = FileLocator.find(ExchangePlugin.getDefault().getBundle(), new Path(componentfolder), null);
-        try {
-            URL fileUrl = FileLocator.toFileURL(url);
-            return new File(fileUrl.getPath());
-        } catch (Exception e) {
-            ExceptionHandler.process(e);
-        }
-        return null;
+    	if (SharedStudioUtils.isSharedStudioMode()) {
+    		File componentFolder = SharedStudioUtils.getSharedStudioComponentsExtFolder();
+    		return new File (componentFolder, componentfolder);
+    	} else {
+            URL url = FileLocator.find(ExchangePlugin.getDefault().getBundle(), new Path(componentfolder), null);
+            try {
+                URL fileUrl = FileLocator.toFileURL(url);
+                return new File(fileUrl.getPath());
+            } catch (Exception e) {
+                ExceptionHandler.process(e);
+            }
+            return null;
+    	}
     }
 
     /**

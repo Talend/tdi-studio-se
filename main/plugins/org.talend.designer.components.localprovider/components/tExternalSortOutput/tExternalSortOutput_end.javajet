@@ -127,10 +127,9 @@ globalMap.put("<%=cid%>_ERROR_MESSAGE",ioe.getMessage());
 			}
 		};
 		error_<%=cid %>.start();
-
 		ps_<%=cid %>.waitFor();
-		normal_<%=cid %>.interrupt();
-		error_<%=cid %>.interrupt();
+		normal_<%=cid %>.join();
+		error_<%=cid %>.join();
 		
 <%	if(("true").equals(ElementParameterParser.getValue(node, "__ADD_EOF__"))){
 %>final java.io.BufferedWriter re_out_<%=cid %> = new java.io.BufferedWriter(new java.io.OutputStreamWriter(

@@ -1,9 +1,9 @@
-<%@ jet 
+<%@ jet
 	imports="
-	    org.talend.core.model.process.INode 
-	    org.talend.core.model.process.ElementParameterParser 
+	    org.talend.core.model.process.INode
+	    org.talend.core.model.process.ElementParameterParser
 	    org.talend.designer.codegen.config.CodeGeneratorArgument
-	" 
+	"
 %>
 <%
 CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
@@ -19,7 +19,7 @@ if (authType.equals("USER_ACCOUNT_HMAC")){
 %>
 
 	<%@ include file="@{org.talend.designer.components.localprovider}/components/templates/password.javajet"%>
-		
+
 	org.jets3t.service.Jets3tProperties jets3tProperties = org.jets3t.service.Jets3tProperties.getInstance(org.jets3t.service.Constants.JETS3T_PROPERTIES_FILENAME);
 	jets3tProperties.setProperty("httpclient.useragent", "<%=AWSTracker%>");
 	org.jets3t.service.security.GSCredentials credentials_<%=cid%> = new org.jets3t.service.security.GSCredentials(<%=accessKey%>,decryptedPassword_<%=cid%>);
@@ -27,30 +27,13 @@ if (authType.equals("USER_ACCOUNT_HMAC")){
 	service_<%=cid%>.getAccountOwner();
 	globalMap.put("service_" + "<%=cid%>",service_<%=cid%>);
 
-
 <%
-} else if (authType.equals("SERVICE_ACCOUNT")){
-	String pathToServerAccoutKeyFile = ElementParameterParser.getValue(node, "__SERVICE_ACCOUNT_KEY__");
+} else {
+  boolean useExistingConn = false;
+  String gsProjectID=ElementParameterParser.getValue(node,"__GS_PROJECT_ID__");
+  String dieOnError = "false";
+  String connection = cid;
 %>
-	com.google.auth.Credentials credential_<%=cid%> = null;
-	try {
-		credential_<%=cid%> = com.google.auth.oauth2.GoogleCredentials
-				.fromStream(new java.io.FileInputStream(<%=pathToServerAccoutKeyFile%>));
-	} catch (IOException e_<%=cid%>) {
-globalMap.put("<%=cid%>_ERROR_MESSAGE",e_<%=cid%>.getMessage());
-			<%
-			if(isLog4jEnabled){
-			%>
-				log.error("<%=cid%> - Exception in component <%=cid%>.", e_<%=cid%>);
-			<%
-			}
-			%>
-	}
-
-	com.google.cloud.storage.StorageOptions.Builder builder_<%=cid%> = com.google.cloud.storage.StorageOptions.newBuilder();
-	com.google.cloud.storage.Storage storage_<%=cid%> = builder_<%=cid%>.setCredentials(credential_<%=cid%>).build().getService();
-	globalMap.put("service_" + "<%=cid%>",storage_<%=cid%>);
-<%
-}
-%>
-	
+  <%@ include file="@{org.talend.designer.components.localprovider}/components/templates/googleStorageConnection.javajet"%>
+  globalMap.put("service_" + "<%=cid%>",storage_<%=cid%>);
+<% } %>

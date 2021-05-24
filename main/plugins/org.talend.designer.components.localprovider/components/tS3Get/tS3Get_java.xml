@@ -43,12 +43,27 @@
         NUM_ROW="2" SHOW_IF="USE_EXISTING_CONNECTION == 'true'" GROUP="CONNECTION_CONFIG"/>
 
     <PARAMETER
-      NAME="ACCESS_KEY"
-      FIELD="TEXT"
+      NAME="CREDENTIAL_PROVIDER"
+      FIELD="CLOSED_LIST"
       NUM_ROW="20"
       REQUIRED="true"
       GROUP="CONNECTION_CONFIG"
-      SHOW_IF="(USE_EXISTING_CONNECTION == 'false') AND (INHERIT_CREDENTIALS == 'false')"
+      SHOW_IF="USE_EXISTING_CONNECTION == 'false'"
+    >
+      <ITEMS DEFAULT="STATIC_CREDENTIALS"> <!-- It's just a basic one -->
+        <ITEM NAME="STATIC_CREDENTIALS" VALUE="STATIC_CREDENTIALS" SHOW_IF="true" />
+        <ITEM NAME="INHERIT_CREDENTIALS" VALUE="INHERIT_CREDENTIALS" SHOW_IF="true" />
+        <ITEM NAME="WEB_TOKEN" VALUE="WEB_TOKEN" SHOW_IF="true" />
+      </ITEMS>
+    </PARAMETER>
+
+    <PARAMETER
+      NAME="ACCESS_KEY"
+      FIELD="TEXT"
+      NUM_ROW="21"
+      REQUIRED="true"
+      GROUP="CONNECTION_CONFIG"
+      SHOW_IF="(USE_EXISTING_CONNECTION == 'false') AND (CREDENTIAL_PROVIDER == 'STATIC_CREDENTIALS')"
     >
       <DEFAULT>""</DEFAULT>
     </PARAMETER>
@@ -56,25 +71,14 @@
     <PARAMETER
       NAME="SECRET_KEY"
       FIELD="PASSWORD"
-      NUM_ROW="20"
-      REQUIRED="true"
-      GROUP="CONNECTION_CONFIG"
-      SHOW_IF="(USE_EXISTING_CONNECTION == 'false') AND (INHERIT_CREDENTIALS == 'false')"
-    >
-      <DEFAULT>""</DEFAULT>
-    </PARAMETER>
-    
-    <PARAMETER
-      NAME="INHERIT_CREDENTIALS"
-      FIELD="CHECK"
       NUM_ROW="21"
       REQUIRED="true"
       GROUP="CONNECTION_CONFIG"
-      SHOW_IF="USE_EXISTING_CONNECTION == 'false'"
+      SHOW_IF="(USE_EXISTING_CONNECTION == 'false') AND (CREDENTIAL_PROVIDER == 'STATIC_CREDENTIALS')"
     >
-      <DEFAULT>false</DEFAULT>
+        <DEFAULT>""</DEFAULT>
     </PARAMETER>
-    
+
     <PARAMETER
       NAME="ASSUME_ROLE"
       FIELD="CHECK"
@@ -281,15 +285,42 @@
    </PARAMETERS>
 
     <ADVANCED_PARAMETERS>
-    <PARAMETER
-      NAME="CONFIG_CLIENT"
-      FIELD="CHECK"
-      NUM_ROW="10"
-      NB_LINES="5"
-      SHOW_IF="USE_EXISTING_CONNECTION == 'false'"
-      GROUP="CLIENT_CONFIG"
-    >
-    </PARAMETER>
+        <PARAMETER
+          NAME="WEB_IDENTITY_TOKEN_FILE"
+          FIELD="FILE"
+          NUM_ROW="10"
+          REQUIRED="false"
+          GROUP="WEB_IDENTITY_TOKEN"
+          SHOW_IF="isShow[CREDENTIAL_PROVIDER] AND (CREDENTIAL_PROVIDER == 'WEB_TOKEN')"
+        />
+
+        <PARAMETER
+          NAME="WEB_TOKEN_ARN"
+          FIELD="TEXT"
+          NUM_ROW="11"
+          REQUIRED="false"
+          GROUP="WEB_IDENTITY_TOKEN"
+          SHOW_IF="isShow[CREDENTIAL_PROVIDER] AND (CREDENTIAL_PROVIDER == 'WEB_TOKEN')"
+        />
+
+        <PARAMETER
+          NAME="WEB_TOKEN_ROLE_SESSION_NAME"
+          FIELD="TEXT"
+          NUM_ROW="12"
+          REQUIRED="false"
+          GROUP="WEB_IDENTITY_TOKEN"
+          SHOW_IF="isShow[CREDENTIAL_PROVIDER] AND (CREDENTIAL_PROVIDER == 'WEB_TOKEN')"
+        />
+
+        <PARAMETER
+          NAME="CONFIG_CLIENT"
+          FIELD="CHECK"
+          NUM_ROW="15"
+          NB_LINES="5"
+          SHOW_IF="USE_EXISTING_CONNECTION == 'false'"
+          GROUP="CLIENT_CONFIG"
+        >
+        </PARAMETER>
 
     <PARAMETER
       NAME="CLIENT_CONFIGURATION"
@@ -448,6 +479,7 @@
       NAME="ENABLE_ACCELERATE"
       FIELD="CHECK"
       NUM_ROW="50"
+      DYNAMIC_SETTINGS="true"
       SHOW_IF="(USE_EXISTING_CONNECTION == 'false')"
     >   	
     <DEFAULT>false</DEFAULT>
@@ -594,6 +626,11 @@
 		GROUP="SELECT_GROUP">
 		<DEFAULT>"\n"</DEFAULT>
 	</PARAMETER>
+	
+	<PARAMETER NAME="USE_TEMP_FILES_FOR_PARALLEL_DOWNLOAD" FIELD="CHECK" NUM_ROW="120"
+		SHOW_IF="USE_SELECT == 'false'">
+		<DEFAULT>false</DEFAULT>
+	</PARAMETER>
 
     </ADVANCED_PARAMETERS>
 
@@ -602,20 +639,20 @@
        <IMPORT NAME="aws-java-sdk-1.11.848.jar" MODULE="aws-java-sdk-1.11.848.jar"
 			MVN="mvn:com.amazonaws/aws-java-sdk/1.11.848"
 			REQUIRED_IF="USE_EXISTING_CONNECTION == 'false'" />
-		<IMPORT NAME="jackson-core-2.10.1.jar" MODULE="jackson-core-2.10.1.jar"
-			MVN="mvn:com.fasterxml.jackson.core/jackson-core/2.10.1"
+		<IMPORT NAME="jackson-core-2.11.4.jar" MODULE="jackson-core-2.11.4.jar"
+			MVN="mvn:com.fasterxml.jackson.core/jackson-core/2.11.4"
 			REQUIRED_IF="USE_EXISTING_CONNECTION == 'false'" />
-		<IMPORT NAME="jackson-databind-2.10.1.jar" MODULE="jackson-databind-2.10.1.jar"
-			MVN="mvn:com.fasterxml.jackson.core/jackson-databind/2.10.1"
+		<IMPORT NAME="jackson-databind-2.11.4.jar" MODULE="jackson-databind-2.11.4.jar"
+			MVN="mvn:com.fasterxml.jackson.core/jackson-databind/2.11.4"
 			REQUIRED_IF="USE_EXISTING_CONNECTION == 'false'" />
-		<IMPORT NAME="jackson-annotations-2.10.1.jar" MODULE="jackson-annotations-2.10.1.jar"
-			MVN="mvn:com.fasterxml.jackson.core/jackson-annotations/2.10.1"
+		<IMPORT NAME="jackson-annotations-2.11.4.jar" MODULE="jackson-annotations-2.11.4.jar"
+			MVN="mvn:com.fasterxml.jackson.core/jackson-annotations/2.11.4"
 			REQUIRED_IF="USE_EXISTING_CONNECTION == 'false'" />
 		<IMPORT NAME="httpcore-4.4.13.jar" MODULE="httpcore-4.4.13.jar"
 			MVN="mvn:org.apache.httpcomponents/httpcore/4.4.13"
 			REQUIRED_IF="USE_EXISTING_CONNECTION == 'false'" />
-		<IMPORT NAME="httpclient-4.5.12.jar" MODULE="httpclient-4.5.12.jar"
-			MVN="mvn:org.apache.httpcomponents/httpclient/4.5.12"
+		<IMPORT NAME="httpclient-4.5.13.jar" MODULE="httpclient-4.5.13.jar"
+			MVN="mvn:org.apache.httpcomponents/httpclient/4.5.13"
 			REQUIRED_IF="USE_EXISTING_CONNECTION == 'false'" />
 		<IMPORT NAME="joda-time-2.8.1.jar" MODULE="joda-time-2.8.1.jar"
 			MVN="mvn:joda-time/joda-time/2.8.1"
@@ -626,6 +663,9 @@
 		<IMPORT NAME="commons-codec-1.14.jar" MODULE="commons-codec-1.14.jar"
 			MVN="mvn:commons-codec/commons-codec/1.14"
 			REQUIRED_IF="USE_EXISTING_CONNECTION == 'false'" />
+		<IMPORT NAME="talend-aws-1.0.jar" MODULE="talend-aws-1.0.jar"
+			MVN="mvn:org.talend.components.lib/talend-aws/1.0"
+			REQUIRED_IF="(USE_SELECT == 'false') AND (USE_TEMP_FILES_FOR_PARALLEL_DOWNLOAD == 'true')" />
     </IMPORTS>
    </CODEGENERATION>
 

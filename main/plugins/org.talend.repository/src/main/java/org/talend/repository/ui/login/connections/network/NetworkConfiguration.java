@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2021 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -12,6 +12,9 @@
 // ============================================================================
 package org.talend.repository.ui.login.connections.network;
 
+import org.apache.commons.lang3.StringUtils;
+import org.talend.commons.exception.ExceptionHandler;
+import org.talend.commons.utils.system.EclipseCommandLine;
 import org.talend.core.GlobalServiceRegister;
 import org.talend.core.runtime.CoreRuntimePlugin;
 import org.talend.designer.core.IDesignerCoreService;
@@ -20,6 +23,8 @@ import org.talend.designer.core.IDesignerCoreService;
  * DOC cmeng  class global comment. Detailled comment
  */
 public class NetworkConfiguration {
+
+    public static final String ARG_NETWORK_TIMEOUT = "-talend.studio.network.timeout";
 
     public static final int CONNECTION_TIMEOUT_MIN = 0;
 
@@ -45,7 +50,16 @@ public class NetworkConfiguration {
     }
 
     private NetworkConfiguration() {
-        // nothing to do
+        String timeoutStr = EclipseCommandLine.getEclipseArgument(ARG_NETWORK_TIMEOUT);
+        if (StringUtils.isNotBlank(timeoutStr)) {
+            try {
+                Integer timeout = Integer.valueOf(timeoutStr);
+                setConnectionTimeout(timeout);
+                setReadTimeout(timeout);
+            } catch (Throwable e) {
+                ExceptionHandler.process(e);
+            }
+        }
     }
 
     private static IDesignerCoreService getDesignerCoreService() {
@@ -85,6 +99,11 @@ public class NetworkConfiguration {
         if (iDesignerCoreService != null) {
             iDesignerCoreService.setTACReadTimeout(readTimeout);
         }
+    }
+
+    public void reset() {
+        setReadTimeout(READ_TIMEOUT_DEFAULT);
+        setConnectionTimeout(CONNECTION_TIMEOUT_DEFAULT);
     }
 
 }

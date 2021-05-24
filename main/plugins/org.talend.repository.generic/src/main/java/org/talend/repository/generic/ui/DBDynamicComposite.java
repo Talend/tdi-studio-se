@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2021 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -77,7 +77,27 @@ public class DBDynamicComposite extends DynamicComposite{
                         }
 
                     }
-                    genericElementParameter.setValue(list);
+                    boolean setVal = false;
+                    if (genericElementParameter.getValue() == null) {
+                        setVal = true;
+                    } else {
+                        List<Map<String, String>> oldValueList = (List<Map<String, String>>) genericElementParameter.getValue();
+                        if (oldValueList.isEmpty()) {
+                            setVal = true;
+                        } else {
+                            boolean allEmpty = true;
+                            for (Map<String, String> val : oldValueList) {
+                                if (!val.isEmpty()) {
+                                    allEmpty = false;
+                                    break;
+                                }
+                            }
+                            setVal = allEmpty;
+                        }
+                    }
+                    if (setVal) {
+                        genericElementParameter.setValue(list);
+                    }
                 }
             }
             if (genericElementParameter.getName()

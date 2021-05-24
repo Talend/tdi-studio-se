@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2021 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -40,7 +40,6 @@ import org.talend.commons.ui.runtime.swt.tableviewer.behavior.CellEditorValueAda
 import org.talend.commons.ui.runtime.swt.tableviewer.behavior.ColumnCellModifier;
 import org.talend.commons.ui.runtime.swt.tableviewer.behavior.IColumnColorProvider;
 import org.talend.commons.ui.runtime.swt.tableviewer.behavior.IColumnLabelProvider;
-import org.talend.commons.ui.swt.advanced.dataeditor.AbstractDataTableEditorView;
 import org.talend.commons.ui.swt.advanced.dataeditor.ExtendedToolbarView;
 import org.talend.commons.ui.swt.proposal.TextCellEditorWithProposal;
 import org.talend.commons.ui.swt.tableviewer.TableViewerCreator;
@@ -65,6 +64,8 @@ import org.talend.core.model.process.INode;
 import org.talend.core.model.process.IProcess;
 import org.talend.core.model.process.IProcess2;
 import org.talend.core.model.properties.EbcdicConnectionItem;
+import org.talend.core.runtime.maven.MavenArtifact;
+import org.talend.core.runtime.maven.MavenUrlHelper;
 import org.talend.core.service.IEBCDICProviderService;
 import org.talend.core.service.ISAPProviderService;
 import org.talend.core.ui.metadata.celleditor.ModuleListCellEditor;
@@ -73,6 +74,7 @@ import org.talend.core.ui.metadata.celleditor.SchemaCellEditor;
 import org.talend.core.ui.metadata.celleditor.SchemaXPathQuerysCellEditor;
 import org.talend.core.ui.metadata.editor.AbstractMetadataTableEditorView;
 import org.talend.core.ui.proposal.TalendProposalProvider;
+import org.talend.core.utils.TalendQuoteUtils;
 import org.talend.designer.core.model.FakeElement;
 import org.talend.designer.core.model.components.EParameterName;
 import org.talend.designer.core.model.components.ElementParameter;
@@ -89,7 +91,7 @@ import org.talend.designer.core.ui.event.CheckColumnSelectionListener;
  *
  * @param <B>
  */
-public class PropertiesTableEditorView<B> extends AbstractDataTableEditorView<B> {
+public class PropertiesTableEditorView<B> extends AbstractPropertiesTableEditorView<B> {
 
     private final String SINGLE = "SINGLE";
 
@@ -215,6 +217,7 @@ public class PropertiesTableEditorView<B> extends AbstractDataTableEditorView<B>
                 case DBTYPE_LIST:
                 case COMPONENT_LIST:
                 case PREV_COLUMN_LIST:
+                case TACOKIT_VALUE_SELECTION:
                     final ComboBoxCellEditor cellEditor = new ComboBoxCellEditor(table, currentParam.getListItemsDisplayName());
                     final IElementParameter copyOfTmpParam = currentParam;
                     ((CCombo) cellEditor.getControl()).setEditable(false);
@@ -229,40 +232,14 @@ public class PropertiesTableEditorView<B> extends AbstractDataTableEditorView<B>
 
                         @Override
                         public Object getOriginalTypedValue(CellEditor cellEditor, Object cellEditorTypedValue) {
-                            Object returnedValue = null;
-                            if (cellEditorTypedValue != null && cellEditorTypedValue instanceof Integer) {
-                                int index = (Integer) cellEditorTypedValue;
-                                String[] namesSet = ((CCombo) cellEditor.getControl()).getItems();
-                                if (namesSet.length > 0 && index > -1 && index < namesSet.length) {
-                                    returnedValue = namesSet[index];
-                                } else {
-                                    returnedValue = null;
-                                }
-                            } else {
-                                returnedValue = null;
-                            }
-                            return returnedValue;
+                            return getComboBoxCellOriginalTypedValue(tableViewerCreator, element, copyOfTmpParam, cellEditor,
+                                    items[curCol], cellEditorTypedValue);
                         };
 
                         @Override
                         public Object getCellEditorTypedValue(CellEditor cellEditor, Object originalTypedValue) {
-                            CCombo combo = (CCombo) cellEditor.getControl();
-                            int rowNumber = ((Table) combo.getParent()).getSelectionIndex();
-                            String[] listToDisplay = getItemsToDisplay(element, copyOfTmpParam, rowNumber);
-                            if (!Arrays.equals(listToDisplay, ((ComboBoxCellEditor) cellEditor).getItems())) {
-                                ((ComboBoxCellEditor) cellEditor).setItems(listToDisplay);
-                            }
-                            Object returnedValue = 0;
-                            if (originalTypedValue != null) {
-                                String[] namesSet = listToDisplay;
-                                for (int j = 0; j < namesSet.length; j++) {
-                                    if (namesSet[j].equals(originalTypedValue)) {
-                                        returnedValue = j;
-                                        break;
-                                    }
-                                }
-                            }
-                            return returnedValue;
+                            return getComboBoxCellEditorTypedValue(tableViewerCreator, element, copyOfTmpParam, cellEditor,
+                                    items[curCol], originalTypedValue);
                         };
                     });
                     break;
@@ -323,6 +300,7 @@ public class PropertiesTableEditorView<B> extends AbstractDataTableEditorView<B>
                     ModuleListCellEditor moduleEditor = new ModuleListCellEditor(table, currentParam, param);
                     moduleEditor.setTableEditorView(this);
                     column.setCellEditor(moduleEditor);
+                    column.setLabelProvider(new ModuleTableLabelProvider());
                     break;
                 case COLOR:
                     column.setModifiable((!param.isRepositoryValueUsed()) && (!param.isReadOnly())
@@ -696,6 +674,8 @@ public class PropertiesTableEditorView<B> extends AbstractDataTableEditorView<B>
                             case CONNECTION_LIST:
                             case LOOKUP_COLUMN_LIST:
                             case PREV_COLUMN_LIST:
+                            case TACOKIT_VALUE_SELECTION:
+                                fillDefaultItemsList(tmpParam, value);
                             case DBTYPE_LIST:
                                 if (hideValue) {
                                     return "";//$NON-NLS-1$
@@ -827,6 +807,7 @@ public class PropertiesTableEditorView<B> extends AbstractDataTableEditorView<B>
                         case CONNECTION_LIST:
                         case LOOKUP_COLUMN_LIST:
                         case PREV_COLUMN_LIST:
+                        case TACOKIT_VALUE_SELECTION:
                             isNeedReCheck = true;
                             if (value instanceof String) {
                                 Object[] itemNames = ((IElementParameter) itemsValue[curCol]).getListItemsDisplayName();
@@ -839,7 +820,7 @@ public class PropertiesTableEditorView<B> extends AbstractDataTableEditorView<B>
                                         index = j;
                                     }
                                 }
-                                if (value != null && (index >= 0)) {
+                                if (value != null && (index >= 0) && itemValues.length > 0) {
                                     finalValue = itemValues[new Integer(index)];
                                 }
                             }
@@ -939,7 +920,7 @@ public class PropertiesTableEditorView<B> extends AbstractDataTableEditorView<B>
 
     private boolean isEBCDICNode(INode node) {
         if (PluginChecker.isEBCDICPluginLoaded()) {
-            IEBCDICProviderService service = (IEBCDICProviderService) GlobalServiceRegister.getDefault().getService(
+            IEBCDICProviderService service = GlobalServiceRegister.getDefault().getService(
                     IEBCDICProviderService.class);
             if (service != null) {
                 return service.isEbcdicNode(node);
@@ -950,7 +931,7 @@ public class PropertiesTableEditorView<B> extends AbstractDataTableEditorView<B>
 
     private boolean isSAPNode(INode node) {
         if (PluginChecker.isSAPWizardPluginLoaded()) {
-            ISAPProviderService service = (ISAPProviderService) GlobalServiceRegister.getDefault().getService(
+            ISAPProviderService service = GlobalServiceRegister.getDefault().getService(
                     ISAPProviderService.class);
             if (service != null) {
                 return service.isSAPNode(node);
@@ -961,7 +942,7 @@ public class PropertiesTableEditorView<B> extends AbstractDataTableEditorView<B>
 
     private boolean isRepositorySchemaLine(INode node, Map<String, Object> lineValue) {
         if (PluginChecker.isEBCDICPluginLoaded()) {
-            IEBCDICProviderService service = (IEBCDICProviderService) GlobalServiceRegister.getDefault().getService(
+            IEBCDICProviderService service = GlobalServiceRegister.getDefault().getService(
                     IEBCDICProviderService.class);
             if (service != null) {
                 EbcdicConnectionItem repositoryItem = service.getRepositoryItem(node);
@@ -971,15 +952,11 @@ public class PropertiesTableEditorView<B> extends AbstractDataTableEditorView<B>
         return false;
     }
 
-    public PropertiesTableToolbarEditorView getToolBar() {
-        return (PropertiesTableToolbarEditorView) getExtendedToolbar();
-    }
-
     public PropertiesTableEditorModel getModel() {
         return (PropertiesTableEditorModel) getExtendedTableModel();
     }
 
-    private void resetValuesIfNeeded(IElement element, IElementParameter mainParam, Map<String, Object> currentLine) {
+    protected void resetValuesIfNeeded(IElement element, IElementParameter mainParam, Map<String, Object> currentLine) {
         List<Map<String, Object>> tableValues = (List<Map<String, Object>>) mainParam.getValue();
         int rowNumber = tableValues.indexOf(currentLine);
         if (rowNumber != -1) {
@@ -1032,7 +1009,7 @@ public class PropertiesTableEditorView<B> extends AbstractDataTableEditorView<B>
      * @param rowNumber
      * @return
      */
-    private String[] getItemsToDisplay(final IElement element, final IElementParameter param, int rowNumber) {
+    protected String[] getItemsToDisplay(final IElement element, final IElementParameter param, int rowNumber) {
         if (param instanceof ElementParameter) {
             ((ElementParameter) param).setCurrentRow(rowNumber);
         }
@@ -1055,4 +1032,77 @@ public class PropertiesTableEditorView<B> extends AbstractDataTableEditorView<B>
         return listToDisplay;
     }
 
+    class ModuleTableLabelProvider implements IColumnLabelProvider {
+
+        private final String[] KEYS = new String[] { "drivers", "JAR_NAME" };
+
+        @Override
+        public String getLabel(Object bean) {
+            if (bean instanceof Map) {
+                Map<String, String> valueMap = (Map<String, String>) bean;
+                for (String key : KEYS) {
+                    if (valueMap.containsKey(key)) {
+                        String value = valueMap.get(key);
+                        return getModuleName(value);
+                    }
+                }
+            }
+            return "newLine";
+        }
+    }
+
+    protected static String getModuleName(String jarPath) {
+        if (jarPath != null) {
+            jarPath = TalendQuoteUtils.removeQuotes(jarPath);
+            if (jarPath.startsWith(MavenUrlHelper.MVN_PROTOCOL)) {
+                MavenArtifact art = MavenUrlHelper.parseMvnUrl(jarPath);
+                return art.getFileName();
+            }
+        }
+        return jarPath;
+    }
+
+    @Override
+    protected Object getComboBoxCellOriginalTypedValue(final TableViewerCreator<B> tableViewerCreator, IElement element,
+            IElementParameter currentParam, CellEditor cellEditor, String currentKey, Object cellEditorTypedValue) {
+        Object returnedValue = null;
+        if (cellEditorTypedValue != null && cellEditorTypedValue instanceof Integer) {
+            int index = (Integer) cellEditorTypedValue;
+            String[] namesSet = ((CCombo) cellEditor.getControl()).getItems();
+            if (namesSet.length > 0 && index > -1 && index < namesSet.length) {
+                returnedValue = namesSet[index];
+            } else {
+                returnedValue = null;
+            }
+        } else {
+            returnedValue = null;
+        }
+        return returnedValue;
+    }
+
+    @Override
+    protected Object getComboBoxCellEditorTypedValue(final TableViewerCreator<B> tableViewerCreator, IElement element,
+            IElementParameter currentParam, CellEditor cellEditor, String currentKey, Object originalTypedValue) {
+        CCombo combo = (CCombo) cellEditor.getControl();
+        int rowNumber = ((Table) combo.getParent()).getSelectionIndex();
+        String[] listToDisplay = getItemsToDisplay(element, currentParam, rowNumber);
+        if (!Arrays.equals(listToDisplay, ((ComboBoxCellEditor) cellEditor).getItems())) {
+            ((ComboBoxCellEditor) cellEditor).setItems(listToDisplay);
+        }
+        Object returnedValue = 0;
+        if (originalTypedValue != null) {
+            String[] namesSet = listToDisplay;
+            for (int j = 0; j < namesSet.length; j++) {
+                if (namesSet[j].equals(originalTypedValue)) {
+                    returnedValue = j;
+                    break;
+                }
+            }
+        }
+        return returnedValue;
+    }
+
+    @Override
+    protected void fillDefaultItemsList(IElementParameter currentParam, Object originalValue) {
+    }
 }

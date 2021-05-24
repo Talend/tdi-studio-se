@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2021 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -14,10 +14,14 @@ package org.talend.designer.core.ui.editor.update;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.log4j.Priority;
+import org.eclipse.jface.viewers.ILazyTreeContentProvider;
 import org.eclipse.jface.viewers.ITreeContentProvider;
+import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.talend.commons.exception.CommonExceptionHandler;
 import org.talend.commons.exception.PersistenceException;
@@ -41,8 +45,10 @@ import org.talend.repository.model.IProxyRepositoryFactory;
 /**
  * ggu class global comment. Detailled comment
  */
-public class UpdateContentProvider implements ITreeContentProvider {
-
+public class UpdateContentProvider implements ITreeContentProvider, ILazyTreeContentProvider {
+    private TreeViewer viewer;
+    private List<Job> treeViewerInput = new ArrayList<Job>();
+    private Map<String,Job> nameToJobMap = new HashMap<String, Job>();
     @Override
     public Object[] getChildren(Object parentElement) {
         if (parentElement instanceof Job) {
@@ -77,17 +83,31 @@ public class UpdateContentProvider implements ITreeContentProvider {
         return false;
     }
 
-    @Override
-    @SuppressWarnings("unchecked")
     public Object[] getElements(Object inputElement) {
-        List<Job> jobs = new ArrayList<Job>();
-        if (inputElement instanceof Collection) {
-            for (UpdateResult result : (List<UpdateResult>) inputElement) {
+        return treeViewerInput.toArray();
+    }
+
+    @Override
+    public void dispose() {
+
+    }
+
+    @Override
+    public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
+        this.viewer = (TreeViewer)viewer;
+        initViewerData(newInput);
+    }
+    
+    private void initViewerData(Object newInput) {
+        treeViewerInput.clear();
+        nameToJobMap.clear();
+        if (newInput instanceof Collection) {
+            for (UpdateResult result : (List<UpdateResult>) newInput) {
                 String jobName = result.getJobInfor();
                 if (jobName == null) {
                     jobName = UpdatesConstants.EMPTY;
                 }
-                Job job = getJob(jobs, jobName);
+                Job job = nameToJobMap.get(jobName);
                 if (job == null) {
                     job = new Job(jobName);
                     Object job2 = result.getJob();
@@ -171,7 +191,8 @@ public class UpdateContentProvider implements ITreeContentProvider {
                         job.setSparkJoblet(result.isSparkJoblet());
                         job.setSparkStreamingJoblet(result.isSparkStreamingJoblet());
                     }
-                    jobs.add(job);
+                    treeViewerInput.add(job);
+                    nameToJobMap.put(job.getName(), job);
                 }
 
                 Category category = job.getCategory(result.getCategory());
@@ -199,28 +220,42 @@ public class UpdateContentProvider implements ITreeContentProvider {
                 category.addItem(item);
             }
         }
-        return jobs.toArray();
-    }
-
-    private Job getJob(List<Job> jobs, String name) {
-        if (jobs == null || name == null) {
-            return null;
-        }
-        for (Job job : jobs) {
-            if (name.equals(job.getName())) {
-                return job;
-            }
-        }
-        return null;
     }
 
     @Override
-    public void dispose() {
-
+    public void updateElement(Object parent, int index) {
+        Object element = null;
+        if (parent instanceof Job) {
+            element = ((Job) parent).getCategories().get(index);
+        } else if (parent instanceof Category) {
+            element = ((Category) parent).getItems().get(index);
+        } else if (parent instanceof Collection && treeViewerInput.size() > index) {
+            element = treeViewerInput.get(index);
+        }
+        if (element != null) {
+            viewer.replace(parent, index, element);
+            updateChildCount(element, -1);
+        }
     }
 
     @Override
-    public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
-
+    public void updateChildCount(Object element, int currentChildCount) {
+        int count = 0;
+        if (element instanceof Job) {
+            Job job = (Job) element;
+            count = job.getCategories().size();
+        } else if (element instanceof Category) {
+            Category category = (Category) element;
+            count = category.getItems().size();
+        } else if (element instanceof Item) {
+            count = 0;
+        } else if (element instanceof Collection) {
+            count = treeViewerInput.size();
+        }
+        viewer.setChildCount(element, count);
     }
+
+    public List<Job> getTreeViewerInput() {
+        return treeViewerInput;
+    }   
 }

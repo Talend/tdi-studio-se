@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2021 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -15,6 +15,7 @@ package org.talend.repository.ui.login;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
@@ -32,6 +33,7 @@ import org.talend.commons.exception.CommonExceptionHandler;
 import org.talend.commons.exception.PersistenceException;
 import org.talend.commons.ui.runtime.exception.MessageBoxExceptionHandler;
 import org.talend.core.CorePlugin;
+import org.talend.core.GlobalServiceRegister;
 import org.talend.core.context.Context;
 import org.talend.core.context.RepositoryContext;
 import org.talend.core.language.ECodeLanguage;
@@ -41,18 +43,23 @@ import org.talend.core.model.repository.SVNConstant;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
 import org.talend.core.repository.model.RepositoryFactoryProvider;
 import org.talend.core.repository.utils.ProjectHelper;
+import org.talend.core.runtime.util.SharedStudioUtils;
+import org.talend.core.service.IUpdateService;
 import org.talend.core.utils.ProjectUtils;
 import org.talend.repository.i18n.Messages;
 import org.talend.repository.model.IProxyRepositoryFactory;
 import org.talend.repository.ui.actions.importproject.ImportDemoProjectAction;
 import org.talend.repository.ui.actions.importproject.ImportProjectAsAction;
 import org.talend.repository.ui.login.connections.ConnectionsDialog;
+import org.talend.utils.json.JSONException;
 
 /**
  * created by cmeng on May 22, 2015 Detailled comment
  *
  */
 public class LoginFirstTimeStartupActionPage extends AbstractLoginActionPage {
+    
+    protected static Logger log = Logger.getLogger(LoginFirstTimeStartupActionPage.class);
 
     protected static final String FINISH_BUTTON_ACTION_CREATE_NEW_PROJECT = "CREATE_NEW_PROJECT"; //$NON-NLS-1$
 
@@ -209,8 +216,27 @@ public class LoginFirstTimeStartupActionPage extends AbstractLoginActionPage {
 
     @Override
     public void check() {
-        // nothing need to do
+        try {
+            if (SharedStudioUtils.isSharedStudioMode()) {
+                validatePatchForSharedMode();
+            }
+        } catch (JSONException e) {
+            CommonExceptionHandler.process(e);
+            log.error(e);
+        }
     }
+    
+    protected void validatePatchForSharedMode() throws JSONException {
+        String missingPatchVersion = null;
+        if (GlobalServiceRegister.getDefault().isServiceRegistered(IUpdateService.class)) {
+            IUpdateService updateService = GlobalServiceRegister.getDefault().getService(IUpdateService.class);
+            missingPatchVersion = updateService.getSharedStudioMissingPatchVersion();
+        }
+        if (missingPatchVersion != null) {
+            errorManager.setWarnMessage(Messages.getString("LoginProjectPage.sharedModeMissingPatchFile", missingPatchVersion));
+        }
+    }
+
 
     @Override
     protected void addListeners() {

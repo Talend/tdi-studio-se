@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2021 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -148,6 +148,7 @@ public class ComponentsUtils {
                     && componentDefinition.getFamilies()[0].contains("JDBC")) {
                 jdbcDefinitions.add(componentDefinition);
             }
+
             loadComponents(components, componentDefinition);
         }
 
@@ -205,7 +206,7 @@ public class ComponentsUtils {
         // if the component is not needed in the current branding,
         // and that this one IS a specific component for code generation,
         // hide it
-        if (hiddenComponent
+        if (UnifiedComponentUtil.JDBC_COMPONENT_BLACKLIST.contains(currentComponent.getName()) || hiddenComponent
                 && (currentComponent.getOriginalFamilyName().contains("Technical") || currentComponent.isTechnical())) {
             currentComponent.setVisible(false);
             currentComponent.setTechnical(true);
@@ -239,7 +240,8 @@ public class ComponentsUtils {
                             }
                             GenericComponent currentComponent = new GenericComponent(definition, paletteType,
                                     definition.getName().replace("JDBC", bean.getComponentKey()));
-                            afterCreateComponent(componentsList, currentComponent);
+                            // available for jdbc avoid TDI license blacklist
+                            componentsList.add(currentComponent);
                         } catch (BusinessException e) {
                             ExceptionHandler.process(e);
                         }
@@ -409,7 +411,8 @@ public class ComponentsUtils {
                 boolean isEnumProperty = EParameterFieldType.CLOSED_LIST.equals(fieldType) && storedValue != null
                         && storedValue instanceof Enum;
                 if (EParameterFieldType.NAME_SELECTION_AREA.equals(fieldType) || EParameterFieldType.JSON_TABLE.equals(fieldType)
-                        || EParameterFieldType.CHECK.equals(fieldType) || isNameProperty || isEnumProperty) {
+                        || EParameterFieldType.CHECK.equals(fieldType) || EParameterFieldType.MAPPING_TYPE.equals(fieldType)
+                        || isNameProperty || isEnumProperty) {
                     // Disable context support for those filed types and name parameter.
                     param.setSupportContext(false);
                 } else {
@@ -960,5 +963,26 @@ public class ComponentsUtils {
             }
         }
 
+    }
+
+    public static NamedThing getNameThingFromComponentPropertiesByName(Properties properties, String name) {
+        if (properties == null || StringUtils.isBlank(name)) {
+            return null;
+        }
+        NamedThing nameThing = null;
+        for (NamedThing thing : properties.getProperties()) {
+            if (name.equals(thing.getName())) {
+                nameThing = thing;
+                break;
+            }
+            if (thing instanceof Properties) {
+                Properties childProperties = (Properties) thing;
+                nameThing = getNameThingFromComponentPropertiesByName(childProperties, name);
+                if (nameThing != null) {
+                    break;
+                }
+            }
+        }
+        return nameThing;
     }
 }

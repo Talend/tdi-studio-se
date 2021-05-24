@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2021 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -105,7 +105,7 @@ public class ConnectionFigure extends PolylineConnectionEx implements IMapMode {
         }
         this.setLineWidth(2);
         PointList template = new PointList();
-        PolygonDecoration targetDecoration = new DecorationFigure(this, false);
+        PolygonDecoration targetDecoration = new PolygonDecoration();
         targetDecoration.setScale(1, 1);
         template.addPoint(new Point(-11, -5.5));
         template.addPoint(new Point(-2, -5.5));
@@ -116,7 +116,7 @@ public class ConnectionFigure extends PolylineConnectionEx implements IMapMode {
         targetDecoration.setTemplate(template);
         setTargetDecoration(targetDecoration);
 
-        PolygonDecoration sourceDecoration = new DecorationFigure(this, true);
+        PolygonDecoration sourceDecoration = new PolygonDecoration();
         sourceDecoration.setScale(1, 1);
         template = new PointList();
 
@@ -335,19 +335,6 @@ public class ConnectionFigure extends PolylineConnectionEx implements IMapMode {
         setLineStyle(connectionProperty.getLineStyle());
         Color color = ColorUtils.getCacheColor(connectionProperty.getRGB());
         ResourceDisposeUtil.setAndCheckColor(this, color, true);
-    }
-
-    public void disposeColors() {
-        // ResourceDisposeUtil.disposeColor(getForegroundColor());
-    }
-
-    public void disposeResource() {
-        if ((getSourceDecoration() != null) && (getSourceDecoration() instanceof DecorationFigure)) {
-            ((DecorationFigure) getSourceDecoration()).disposeResource();
-        }
-        if ((getTargetDecoration() != null) && (getTargetDecoration() instanceof DecorationFigure)) {
-            ((DecorationFigure) getTargetDecoration()).disposeResource();
-        }
     }
 
     /**

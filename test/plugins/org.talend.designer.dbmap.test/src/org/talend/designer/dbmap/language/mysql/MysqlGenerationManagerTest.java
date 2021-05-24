@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2021 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -12,7 +12,7 @@
 // ============================================================================
 package org.talend.designer.dbmap.language.mysql;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 import java.util.Collections;
 
@@ -153,5 +153,4 @@ public class MysqlGenerationManagerTest extends DbGenerationManagerTestHelper {
         assertEquals(expectedQuery, query);
 
     }
-
 }

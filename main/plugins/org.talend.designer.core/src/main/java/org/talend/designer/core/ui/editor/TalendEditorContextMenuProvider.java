@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2021 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -58,6 +58,7 @@ import org.talend.designer.core.ui.action.ModifyConnectionOrderAction;
 import org.talend.designer.core.ui.action.ModifyMergeOrderAction;
 import org.talend.designer.core.ui.action.ModifyOutputOrderAction;
 import org.talend.designer.core.ui.action.NodeBreakpointAction;
+import org.talend.designer.core.ui.action.NodeConditionalBreakpointAction;
 import org.talend.designer.core.ui.action.OpentRunJobComponentAction;
 import org.talend.designer.core.ui.action.ParallelExecutionAction;
 import org.talend.designer.core.ui.action.SearchComponentAction;
@@ -325,6 +326,11 @@ public class TalendEditorContextMenuProvider extends ContextMenuProvider {
 
             action = new NodeBreakpointAction(part);
             ((NodeBreakpointAction) action).update();
+            if (action.isEnabled()) {
+                menu.appendToGroup(GEFActionConstants.GROUP_REST, action);
+            }
+            action = new NodeConditionalBreakpointAction(part);
+            ((NodeConditionalBreakpointAction) action).update();
             if (action.isEnabled()) {
                 menu.appendToGroup(GEFActionConstants.GROUP_REST, action);
             }

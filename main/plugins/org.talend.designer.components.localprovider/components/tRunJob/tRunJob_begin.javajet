@@ -7,6 +7,7 @@ imports="
 	org.talend.designer.runprocess.ProcessorException
 	java.util.Map
 	java.util.List
+	java.util.Date
 "
 %>
 <%
@@ -50,7 +51,15 @@ class DealChildJobLibrary_<%=cid%> {
 		String crcMapPath = new java.io.File("../crcMap").getCanonicalPath();
 		if (isNeedAddLibsPath( crcMapPath)) {
 			java.util.Map<String, String> crcMap = null;
-			java.io.ObjectInputStream ois = new ObjectInputStream(new java.io.FileInputStream(crcMapPath));
+			java.io.ObjectInputStream ois = new java.io.ObjectInputStream(new java.io.FileInputStream(crcMapPath)) {
+				@Override
+				public Class<?> resolveClass(java.io.ObjectStreamClass desc) throws java.io.IOException, ClassNotFoundException {
+					if(!"java.util.HashMap".equals(desc.getName())) {
+						throw new java.io.InvalidClassException("Unauthorized deserialization attempt : " + desc.getName());
+					}
+					return super.resolveClass(desc);
+				}
+			};
 			crcMap = (java.util.Map<String, String>) ois.readObject();
 			ois.close();
 			classPathLine = addLibsPath(originalClassPathLine, crcMap);
@@ -214,6 +223,9 @@ try {
 		java.util.Map<String,List<String>> childJob_commandLine_Mapper_<%=cid%> = new java.util.HashMap<String,List<String>>();
 		java.util.List<String> childJob_commandLine_<%=cid%> = null;
 		String classpathSeparator_<%=cid%> = System.getProperty("path.separator");
+		if (classpathSeparator_<%=cid%> != null && classpathSeparator_<%=cid%>.length() > 1) {
+			throw new RuntimeException("path separator should be single character");
+		}
 		<%
 	
 		//issue 19108: The context text field waits for a context name without quotes. The component removes the first quote and the last quote if they exist.
@@ -230,16 +242,35 @@ try {
 			%>
 				childJob_commandLine_<%=cid%> = new java.util.ArrayList<String>();
 				<%
-			commandLine = ProcessorUtilities.getCommandLine("win32", false, true, childJobIds[i], context,org.talend.designer.runprocess.IProcessor.NO_STATISTICS,org.talend.designer.runprocess.IProcessor.NO_TRACES, use_custom_jvm_setting, codeOptions);
-			
-			    // remove the frontal 2 lines
-			    if (commandLine.length > 0 && ProcessorUtilities.isExportConfig()){
-					int tmpSize = commandLine.length - 2;
-					String[] tmp = new String[tmpSize];
-					System.arraycopy(commandLine, 2, tmp, 0, tmpSize);
-					commandLine = tmp;
+				String oldInterpreter = ProcessorUtilities.getInterpreter();
+		        String oldCodeLocation = ProcessorUtilities.getCodeLocation();
+		        String oldLibraryPath = ProcessorUtilities.getLibraryPath();
+		        boolean oldExportConfig = ProcessorUtilities.isExportConfig();
+		        Date oldExportTimestamp = ProcessorUtilities.getExportTimestamp();
+		        boolean isJobTest = ProcessorUtilities.isJobTest(node.getProcess().getId(),context,null);
+				if(isJobTest&&ProcessorUtilities.isCIMode()) {
+					 ProcessorUtilities.setExportConfig(false);
+					 ProcessorUtilities.setDynamicJobAndCITest(true);
 				}
 				
+				try {
+			    	commandLine = ProcessorUtilities.getCommandLine("win32", false, true, childJobIds[i], context,org.talend.designer.runprocess.IProcessor.NO_STATISTICS,org.talend.designer.runprocess.IProcessor.NO_TRACES, use_custom_jvm_setting, codeOptions);
+			    
+				    // remove the frontal 2 lines
+				    if (commandLine.length > 0 && ProcessorUtilities.isExportConfig()){
+						int tmpSize = commandLine.length - 2;
+						String[] tmp = new String[tmpSize];
+						System.arraycopy(commandLine, 2, tmp, 0, tmpSize);
+						commandLine = tmp;
+					}
+				} finally {
+					if(isJobTest&&ProcessorUtilities.isCIMode()) {
+				    	ProcessorUtilities.setExportConfig(oldInterpreter, oldCodeLocation, oldLibraryPath, oldExportConfig,
+                    oldExportTimestamp);
+                        ProcessorUtilities.setDynamicJobAndCITest(false);
+			    	}
+			    }
+			    
 				boolean isCP = false;
 				
 				for (int j = 0; j < commandLine.length; j++) {

@@ -576,7 +576,7 @@ globalMap.put("<%=cid%>_ERROR_MESSAGE",ioe.getMessage());
                                String line = "";
                                try {
                                    while((line = reader.readLine()) != null) {
-                                       System.err.println(line);
+										System.err.println(line);
                                    }
                                } finally {
                                    reader.close();
@@ -589,8 +589,8 @@ globalMap.put("<%=cid%>_ERROR_MESSAGE",ioe.getMessage());
                    };
                    error_<%=cid %>.start();
                    process_<%=cid %>.waitFor();
-                   normal_<%=cid %>.interrupt();
-                   error_<%=cid %>.interrupt();
+					normal_<%=cid %>.join();
+					error_<%=cid %>.join();
                    java.nio.file.Files.delete(new java.io.File(scriptPath_<%= cid %>).toPath());
                 <%
         }//-> Tag2

@@ -167,19 +167,9 @@ globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
 						element.setText(value);
 					}
 				}
-
 				public void appendContent(org.dom4j.Element element, org.dom4j.Document doc) {
-					List<org.dom4j.Element> childElements = doc.getRootElement().elements();
-					if(childElements.isEmpty()) {
-						element.appendContent(doc);
-					} else {
-						for(org.dom4j.Element elem : childElements) {
-							org.dom4j.Node node =  elem.detach();
-							element.add(elem);
-						}
-					}
+					element.appendContent(doc);
 				}
-
 				public void replaceDefaultNameSpace(org.dom4j.Element nestRoot){
 					if (nestRoot != null) {
 						boolean isDefaultNameSpaceAtRoot = "".equals(nestRoot.getQName().getNamespace().getPrefix());

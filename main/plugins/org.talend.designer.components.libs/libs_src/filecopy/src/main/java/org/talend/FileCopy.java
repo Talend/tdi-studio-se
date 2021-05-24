@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2021 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -15,7 +15,10 @@ package org.talend;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.nio.file.attribute.FileTime;
 
 /**
  * DOC Administrator class global comment. Detailled comment
@@ -35,15 +38,35 @@ public class FileCopy {
      * @throws IOException : if IO pb.
      */
     public static void copyFile(String srcFileName, String desFileName, boolean delSrc) throws IOException {
-        final File source = new File(srcFileName);
-        final File destination = new File(desFileName);
+        final Path source = Paths.get(srcFileName);
+        final Path destination =  Paths.get(desFileName);
 
         if (delSrc) {
             // move : more efficient if in same FS and mustr delete existing file.
-            Files.move(source.toPath(), destination.toPath(), StandardCopyOption.REPLACE_EXISTING);
+            FileTime lastModifiedTime = Files.getLastModifiedTime(source);
+            Files.move(source, destination, StandardCopyOption.REPLACE_EXISTING);
+            Files.setLastModifiedTime(destination,lastModifiedTime);
         } else {
-            Files.copy(source.toPath(), destination.toPath(), StandardCopyOption.REPLACE_EXISTING);
+            Files.copy(source, destination, StandardCopyOption.REPLACE_EXISTING);
+            Files.setLastModifiedTime(destination,Files.getLastModifiedTime(source));
         }
+    }
+
+    /**
+     * Force Copy and Delete files.
+     *
+     * @param srcFileName : file name for source file.
+     * @param desFileName : file name for destination file.
+     * @throws IOException : if IO pb.
+     */
+    public static void forceCopyAndDelete(String srcFileName, String desFileName) throws IOException {
+        final Path source = Paths.get(srcFileName);
+        final Path destination =  Paths.get(desFileName);
+        final long lastModifiedTime = new File(srcFileName).lastModified();
+
+        Files.copy(source, destination, StandardCopyOption.REPLACE_EXISTING);
+        Files.delete(source);
+        destination.toFile().setLastModified(lastModifiedTime);
     }
 
 }

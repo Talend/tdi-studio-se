@@ -28,17 +28,25 @@ if ((metadatas != null) && (metadatas.size() > 0)) {
 		    
 		    String authType = ElementParameterParser.getValue(node, "__AUTH_TYPE__");
 		    String onlineRegisterApp = ElementParameterParser.getValue(node, "__ONLINE_REGISTERED_APP__");
-			String userName = ElementParameterParser.getValue(node, "__USERNAME__");
-			String domain = ElementParameterParser.getValue(node, "__DOMAIN__");
-            String host = ElementParameterParser.getValue(node, "__HOST__");
-			String serviceURL = ElementParameterParser.getValue(node, "__SERVICE_ROOT_URL__");
-			String applicationId = ElementParameterParser.getValue(node, "__APPLICATION_ID__");
-			String clientSecret = ElementParameterParser.getValue(node, "__CLIENT_SECRET__");
-			String authority = ElementParameterParser.getValue(node, "__AUTHORITY__");
-			String timeout = ElementParameterParser.getValue(node, "__TIMEOUT__");
-			boolean reuseHttpClient = ("true").equals(ElementParameterParser.getValue(node,"__REUSE_HTTP_CLIENT__"));
-			// TODO Because of current retrieve would close httpclient automatically
-        	// Need to recreated httpclient for every page query
+		    String userName = ElementParameterParser.getValue(node, "__USERNAME__");
+		    String domain = ElementParameterParser.getValue(node, "__DOMAIN__");
+		    String host = ElementParameterParser.getValue(node, "__HOST__");
+		    String serviceURL = ElementParameterParser.getValue(node, "__SERVICE_ROOT_URL__");
+		    String applicationId = ElementParameterParser.getValue(node, "__APPLICATION_ID__");
+		    String clientSecret = ElementParameterParser.getValue(node, "__CLIENT_SECRET__");
+		    String authority = ElementParameterParser.getValue(node, "__AUTHORITY__");
+		    String timeout = ElementParameterParser.getValue(node, "__TIMEOUT__");
+		    boolean reuseHttpClient = ("true").equals(ElementParameterParser.getValue(node,"__REUSE_HTTP_CLIENT__"));
+
+		    String redirectUrl = ElementParameterParser.getValue(node, "__REDIRECT_URL__");
+		    String premiseAuth = ElementParameterParser.getValue(node, "__PREMISE_AUTH__");
+
+		    boolean force_oauth_resource = ("true").equals(ElementParameterParser.getValue(node, "__FORCE_OAUTH_RESOURCE__"));
+		    String oauth_resource = ElementParameterParser.getValue(node, "__OAUTH_RESOURCE__");
+		    oauth_resource = force_oauth_resource ? oauth_resource : null;
+
+		    // TODO Because of current retrieve would close httpclient automatically
+        	    // Need to recreated httpclient for every page query
 			reuseHttpClient =false;
 			
 			String passwordFieldName = "__PASSWORD__";
@@ -78,10 +86,18 @@ if ((metadatas != null) && (metadatas.size() > 0)) {
 
 			<%
 			    if(isMsCrm2016OnPremise) {
+				if("NTLM".equals(premiseAuth)){
 			%>
 			    org.talend.ms.crm.odata.ClientConfiguration clientConfig_<%=cid%> = org.talend.ms.crm.odata.ClientConfigurationFactory
                         .buildNtlmClientConfiguration(<%=userName%>, decryptedPassword_<%=cid%>, <%=host%>, <%=domain%>);
 			<%
+				}
+				else{
+			%>
+			    org.talend.ms.crm.odata.ClientConfiguration clientConfig_<%=cid%> = org.talend.ms.crm.odata.ClientConfigurationFactory
+                        .buildOAuthPremiseClientConfiguration(<%=userName%>, decryptedPassword_<%=cid%>, <%=authority%>, <%=serviceURL%>,<%=applicationId%>, <%=redirectUrl%>, <%=oauth_resource%>);
+			<%
+				}
 			    } else {
 			    	if("NATIVE".equals(onlineRegisterApp)){
 					%>

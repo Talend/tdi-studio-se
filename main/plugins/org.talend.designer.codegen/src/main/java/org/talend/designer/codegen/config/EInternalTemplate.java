@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2021 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -47,15 +47,6 @@ public enum EInternalTemplate {
     MR_SUBPROCESS_RUN("mr_subprocess_run", "0.0.1"), //$NON-NLS-1$ //$NON-NLS-2$
     MR_SUBPROCESS_FOOTER("mr_subprocess_footer", "0.0.1"), //$NON-NLS-1$ //$NON-NLS-2$
 
-    STORM_HEADER("storm_header", "0.0.1"), //$NON-NLS-1$ //$NON-NLS-2$
-    STORM_FOOTER("storm_footer", "0.0.1"), //$NON-NLS-1$ //$NON-NLS-2$
-    STORM_COMPONENT_CONFIG_HEADER("storm_component_config_header", "0.0.1"), //$NON-NLS-1$ //$NON-NLS-2$
-    STORM_COMPONENT_CONFIG_FOOTER("storm_component_config_footer", "0.0.1"), //$NON-NLS-1$ //$NON-NLS-2$
-    STORM_SUBPROCESS_HEADER("storm_subprocess_header", "0.0.1"), //$NON-NLS-1$ //$NON-NLS-2$
-    STORM_SUBPROCESS_RUN("storm_subprocess_run", "0.0.1"), //$NON-NLS-1$ //$NON-NLS-2$
-    STORM_SUBPROCESS_FOOTER("storm_subprocess_footer", "0.0.1"), //$NON-NLS-1$ //$NON-NLS-2$
-    STORM_MONITOR_HEADER("storm_monitor_header", "0.0.1"), //$NON-NLS-1$ //$NON-NLS-2$
-    STORM_MONITOR_FOOTER("storm_monitor_footer", "0.0.1"), //$NON-NLS-1$ //$NON-NLS-2$
 
     // just to have compiled templates
     FOOTER_ROUTE("footer_route", "0.0.1"), //$NON-NLS-1$ //$NON-NLS-2$

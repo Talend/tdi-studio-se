@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2021 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -35,6 +35,17 @@ public class ColorProviderMapper {
             return colorFromCache;
         }
         Color color = new Color(Display.getCurrent(), colorInfo.getRed(), colorInfo.getGreen(), colorInfo.getBlue());
+        colorsCache.put(colorInfo, color);
+        return color;
+    }
+
+    public static Color getRGBAColor(ColorInfo colorInfo) {
+        Color colorFromCache = colorsCache.get(colorInfo);
+        if (colorFromCache != null) {
+            return colorFromCache;
+        }
+        Color color = new Color(Display.getCurrent(), colorInfo.getRed(), colorInfo.getGreen(), colorInfo.getBlue(),
+                colorInfo.getAlpha());
         colorsCache.put(colorInfo, color);
         return color;
     }

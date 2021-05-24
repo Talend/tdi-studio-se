@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2021 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -26,14 +26,19 @@ import org.talend.commons.ui.runtime.exception.MessageBoxExceptionHandler;
 import org.talend.commons.ui.runtime.image.ECoreImage;
 import org.talend.commons.ui.runtime.image.ImageProvider;
 import org.talend.commons.ui.runtime.image.OverlayImageProvider;
+import org.talend.core.model.properties.RoutineItem;
 import org.talend.core.model.repository.ERepositoryObjectType;
+import org.talend.core.model.routines.RoutinesUtil;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
+import org.talend.core.utils.CodesJarResourceCache;
+import org.talend.designer.runprocess.IRunProcessService;
 import org.talend.repository.ProjectManager;
 import org.talend.repository.i18n.Messages;
 import org.talend.repository.model.IProxyRepositoryFactory;
 import org.talend.repository.model.IRepositoryNode.EProperties;
 import org.talend.repository.model.RepositoryNode;
 import org.talend.repository.model.RepositoryNodeUtilities;
+import org.talend.repository.ui.wizards.routines.NewInnerRoutineWizard;
 import org.talend.repository.ui.wizards.routines.NewRoutineWizard;
 
 /**
@@ -75,11 +80,19 @@ public class CreateRoutineAction extends AbstractRoutineAction {
         if (canWork) {
             Object o = selection.getFirstElement();
             RepositoryNode node = (RepositoryNode) o;
+            ERepositoryObjectType nodeType = (ERepositoryObjectType) node.getProperties(EProperties.CONTENT_TYPE);
             switch (node.getType()) {
             case SIMPLE_FOLDER:
             case SYSTEM_FOLDER:
-                ERepositoryObjectType nodeType = (ERepositoryObjectType) node.getProperties(EProperties.CONTENT_TYPE);
                 if (nodeType != ERepositoryObjectType.ROUTINES) {
+                    canWork = false;
+                }
+                if (node.getObject() != null && node.getObject().isDeleted()) {
+                    canWork = false;
+                }
+                break;
+            case REPOSITORY_ELEMENT:
+                if (nodeType != ERepositoryObjectType.ROUTINESJAR) {
                     canWork = false;
                 }
                 if (node.getObject() != null && node.getObject().isDeleted()) {
@@ -123,14 +136,25 @@ public class CreateRoutineAction extends AbstractRoutineAction {
             node = (RepositoryNode) obj;
             path = RepositoryNodeUtilities.getPath(node);
         }
-
-        NewRoutineWizard routineWizard = new NewRoutineWizard(path);
+        NewRoutineWizard routineWizard;
+        if (ERepositoryObjectType.ROUTINESJAR == node.getParent().getContentType()) {
+            routineWizard = new NewInnerRoutineWizard(node, path);
+        } else {
+            routineWizard = new NewRoutineWizard(path);
+        }
         WizardDialog dlg = new WizardDialog(Display.getCurrent().getActiveShell(), routineWizard);
 
         if (dlg.open() == Window.OK) {
-
             try {
-                openRoutineEditor(routineWizard.getRoutine(), false);
+                RoutineItem routineItem = routineWizard.getRoutine();
+                openRoutineEditor(routineItem, false);
+                if (RoutinesUtil.isInnerCodes(routineItem.getProperty())) {
+                    IRunProcessService.get()
+                            .getTalendCodesJarJavaProject(CodesJarResourceCache.getCodesJarByInnerCode(routineItem))
+                            .buildWholeCodeProject();
+                } else {
+                    IRunProcessService.get().getTalendCodeJavaProject(ERepositoryObjectType.ROUTINES).buildWholeCodeProject();
+                }
             } catch (PartInitException e) {
                 MessageBoxExceptionHandler.process(e);
             } catch (SystemException e) {

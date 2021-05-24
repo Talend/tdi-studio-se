@@ -402,8 +402,8 @@ public class JobletUtil {
         ComponentProperties nodeComponentProperties = node.getComponentProperties();
         ComponentProperties cloneNodeComponentProperties = cloneNode.getComponentProperties();
         if (nodeComponentProperties != null && cloneNodeComponentProperties != null) {
-            Properties referencedComponentProperties = nodeComponentProperties.getProperties("referencedComponent");//$NON-NLS-1$
-            Properties cloneNodeProperties = cloneNodeComponentProperties.getProperties("referencedComponent");//$NON-NLS-1$
+            Properties referencedComponentProperties = findOutReferencedComponentProperties(nodeComponentProperties);
+            Properties cloneNodeProperties = findOutReferencedComponentProperties(cloneNodeComponentProperties);
             if (referencedComponentProperties != null && cloneNodeProperties != null) {
                 List<NamedThing> nodeProperties = referencedComponentProperties.getProperties();
                 List<NamedThing> cloneProperties = cloneNodeProperties.getProperties();
@@ -418,6 +418,24 @@ public class JobletUtil {
                 }
             }
         }
+    }
+
+    public Properties findOutReferencedComponentProperties(Properties properties) {
+        Properties refProperties = properties.getProperties("referencedComponent");//$NON-NLS-1$
+        if (refProperties != null) {
+            return refProperties;
+        }
+        List<NamedThing> propertiesList = properties.getProperties();
+        for (NamedThing namedThing : propertiesList) {
+            if (namedThing instanceof Properties) {
+                Properties subProperties = (Properties) namedThing;
+                refProperties = findOutReferencedComponentProperties(subProperties);
+                if (refProperties != null) {
+                    break;
+                }
+            }
+        }
+        return refProperties;
     }
 
     public void updateNode(Node cloneNode, Node node) {
@@ -442,16 +460,32 @@ public class JobletUtil {
         List<? extends IElementParameter> elementParas = conn.getElementParameters();
 
         for (IElementParameter elementPara : elementParas) {
-            if (elementPara.getName() != null && !elementPara.getName().equals("UNIQUE_NAME")) {
-                IElementParameter cloneElement = cloneConn.getElementParameter(elementPara.getName());
-                Object paValue = elementPara.getValue();
-                if (paValue instanceof List) {
-                    List list = new ArrayList();
-                    list.addAll((List) paValue);
-                    cloneElement.setValue(list);
+            if (elementPara.getName() != null) {
+                if (!elementPara.getName().equals("UNIQUE_NAME")) {
+                    IElementParameter cloneElement = cloneConn.getElementParameter(elementPara.getName());
+                    Object paValue = elementPara.getValue();
+                    if (paValue instanceof List) {
+                        List list = new ArrayList();
+                        list.addAll((List) paValue);
+                        cloneElement.setValue(list);
+                    } else {
+                        cloneElement.setContextMode(elementPara.isContextMode());
+                        cloneElement.setValue(elementPara.getValue());
+                    }
                 } else {
-                    cloneElement.setContextMode(elementPara.isContextMode());
-                    cloneElement.setValue(elementPara.getValue());
+                    //TUP-30430. 
+                    //see 3443, these links should have unique name. But for joblet, the unified name 
+                    //is used for performance data and it is unique. Clone unique name from definition and no need 
+                    //to generate a new one.
+                    if (conn.getLineStyle().equals(EConnectionType.ON_COMPONENT_OK)
+                            || conn.getLineStyle().equals(EConnectionType.ON_COMPONENT_ERROR)
+                            || conn.getLineStyle().equals(EConnectionType.ON_SUBJOB_OK)
+                            || conn.getLineStyle().equals(EConnectionType.ON_SUBJOB_ERROR)
+                            || conn.getLineStyle().equals(EConnectionType.RUN_IF)
+                            || conn.getLineStyle().equals(EConnectionType.STARTS)) {
+                        String uniqueName = (String)elementPara.getValue();
+                        if (StringUtils.isNotEmpty(uniqueName)) cloneConn.setUniqueName(uniqueName);
+                    }
                 }
 
             }

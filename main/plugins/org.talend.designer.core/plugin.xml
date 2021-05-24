@@ -782,6 +782,33 @@
              name="Fix empty process id parameters for tRunjob node"
              version="7.1.1">
        </projecttask>
+       <projecttask
+             beforeLogon="false"
+             breaks="7.3.0"
+             class="org.talend.designer.core.utils.UpdateModuleListInComponentsMigrationTask"
+             description="Replace jar name by maven uri."
+             id="org.talend.designer.core.utils.UpdateModuleListInComponentsMigrationTask"
+             name="UpdateModuleListInComponentsMigrationTask"
+             version="7.3.1">
+       </projecttask>
+       <projecttask
+             beforeLogon="false"
+             breaks="7.3.0"
+             class="org.talend.designer.core.utils.FixModuleListInBDJDBCMigrationTask"
+             description="Fix context used inside module list."
+             id="org.talend.designer.core.utils.FixModuleListInBDJDBCMigrationTask"
+             name="FixModuleListInBDJDBCMigrationTask"
+             version="7.3.1">
+       </projecttask>
+       <projecttask
+             beforeLogon="false"
+             breaks="7.3.0"
+             class="org.talend.designer.core.utils.UpdateModuleListInComponents2MigrationTask"
+             description="Replace hex type value of maven uri."
+             id="org.talend.designer.core.utils.UpdateModuleListInComponents2MigrationTask"
+             name="UpdateModuleListInComponents2MigrationTask"
+             version="7.3.1">
+       </projecttask>
     </extension>
     <extension
           point="org.talend.repository.projectsetting_page">

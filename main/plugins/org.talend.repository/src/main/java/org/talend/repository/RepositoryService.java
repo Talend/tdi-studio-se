@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2021 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -68,6 +68,7 @@ import org.talend.core.language.ECodeLanguage;
 import org.talend.core.model.action.DisableLanguageActions;
 import org.talend.core.model.components.IComponentsFactory;
 import org.talend.core.model.general.ConnectionBean;
+import org.talend.core.model.general.ModuleNeeded;
 import org.talend.core.model.general.Project;
 import org.talend.core.model.metadata.IMetadataConnection;
 import org.talend.core.model.metadata.builder.connection.DatabaseConnection;
@@ -104,6 +105,7 @@ import org.talend.core.repository.model.RepositoryFactoryProvider;
 import org.talend.core.repository.model.repositoryObject.SalesforceModuleRepositoryObject;
 import org.talend.core.repository.utils.ProjectHelper;
 import org.talend.core.repository.utils.RepositoryPathProvider;
+import org.talend.core.runtime.util.SharedStudioUtils;
 import org.talend.core.services.ICoreTisService;
 import org.talend.core.services.IGITProviderService;
 import org.talend.core.services.ISVNProviderService;
@@ -136,6 +138,8 @@ import org.talend.repository.ui.login.LoginHelper;
 import org.talend.repository.ui.login.connections.ConnectionUserPerReader;
 import org.talend.repository.ui.login.connections.network.NetworkErrorRetryDialog;
 import org.talend.repository.ui.utils.ColumnNameValidator;
+import org.talend.repository.ui.utils.Log4jPrefsSettingManager;
+import org.talend.repository.ui.utils.UpdateLog4jJarUtils;
 import org.talend.repository.ui.views.IRepositoryView;
 import org.talend.utils.json.JSONException;
 import org.talend.utils.json.JSONObject;
@@ -321,7 +325,7 @@ public class RepositoryService implements IRepositoryService, IRepositoryContext
             logged = LoginHelper.getInstance().loginAuto();
         }
         if (!logged) {
-            if (ArrayUtils.contains(Platform.getApplicationArgs(), EclipseCommandLine.LOGIN_ONLINE_UPDATE)) {
+            if (ArrayUtils.contains(Platform.getApplicationArgs(), EclipseCommandLine.LOGIN_ONLINE_UPDATE) && !SharedStudioUtils.isSharedStudioMode()) {
                 ICoreTisService tisService = ICoreTisService.get();
                 if (tisService != null) {
                     LoginHelper loginHelper = LoginHelper.getInstance();
@@ -850,7 +854,7 @@ public class RepositoryService implements IRepositoryService, IRepositoryContext
     }
 
     @Override
-    public List<String> getProjectBranch(Project project) {
+    public List<String> getProjectBranch(Project project, boolean onlyLocalIfPossible) {
         List<String> branchesList = new ArrayList<String>();
         if (!isInitedProviderService) {
             initProviderService();
@@ -865,7 +869,7 @@ public class RepositoryService implements IRepositoryService, IRepositoryContext
                     }
                 }
                 if (!project.isLocal() && gitProviderService != null && gitProviderService.isGITProject(project)) {
-                    branchesList.addAll(Arrays.asList(gitProviderService.getBranchList(project)));
+                    branchesList.addAll(Arrays.asList(gitProviderService.getBranchList(project, onlyLocalIfPossible)));
                 }
             } catch (PersistenceException e) {
                 CommonExceptionHandler.process(e);
@@ -875,14 +879,23 @@ public class RepositoryService implements IRepositoryService, IRepositoryContext
     }
 
     private void initProviderService() {
-        if (PluginChecker.isSVNProviderPluginLoaded()) {
+        if (PluginChecker.isRemoteProviderPluginLoaded()) {
+            GlobalServiceRegister gsr = GlobalServiceRegister.getDefault();
             try {
-                svnProviderService = (ISVNProviderService) GlobalServiceRegister.getDefault()
-                        .getService(ISVNProviderService.class);
-                gitProviderService = (IGITProviderService) GlobalServiceRegister.getDefault()
-                        .getService(IGITProviderService.class);
-            } catch (RuntimeException e) {
-                // nothing to do
+                if (gsr.isServiceRegistered(ISVNProviderService.class)) {
+                    svnProviderService = (ISVNProviderService) GlobalServiceRegister.getDefault()
+                            .getService(ISVNProviderService.class);
+                }
+            } catch (Exception e) {
+                ExceptionHandler.process(e);
+            }
+            try {
+                if (gsr.isServiceRegistered(IGITProviderService.class)) {
+                    gitProviderService = (IGITProviderService) GlobalServiceRegister.getDefault()
+                            .getService(IGITProviderService.class);
+                }
+            } catch (Exception e) {
+                ExceptionHandler.process(e);
             }
         }
         isInitedProviderService = true;
@@ -995,4 +1008,15 @@ public class RepositoryService implements IRepositoryService, IRepositoryContext
             ((RepoViewCommonNavigator) repView).setShouldCheckRepositoryDirty(shouldFlag);
         }
     }
+
+    @Override
+    public boolean isProjectLevelLog4j2() {
+        return Log4jPrefsSettingManager.getInstance().isSelectLog4j2();
+    }
+
+    @Override
+    public List<ModuleNeeded> getLog4j2Modules() {
+        return UpdateLog4jJarUtils.getLog4j2Modules();
+    }
+
 }

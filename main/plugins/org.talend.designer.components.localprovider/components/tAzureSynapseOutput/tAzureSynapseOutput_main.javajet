@@ -581,7 +581,9 @@ if((cid.equals("talendLogs_DB") || cid.equals("talendStats_DB") || cid.equals("t
 %>
                 nb_line_<%=cid%>++;
                 <%if(isEnableDebug){dbLog.data().sqlDebugPrint("globalMap.get(\""+cid+"_QUERY\")");}%>
-                insertedCount_<%=cid%> = insertedCount_<%=cid%> + pstmt_<%=cid %>.executeUpdate();
+                int processedCount_<%=cid%> = pstmt_<%=cid %>.executeUpdate();
+                insertedCount_<%=cid%> += processedCount_<%=cid%>;
+                rowsToCommitCount_<%=cid%> += processedCount_<%=cid%>;
                 <%dbLog.data().inserting(dbLog.var("nb_line"));%>
             } catch(java.lang.Exception e) {
 globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
@@ -704,7 +706,9 @@ globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
 				}
 		%>
 		                if(rowCount<%=cid%> == <%=batchSize%>){
-		                    insertedCount_<%=cid%> = insertedCount_<%=cid%> + pstmt_<%=cid %>.executeUpdate();
+		                    int processedCount_<%=cid%> = pstmt_<%=cid %>.executeUpdate();
+		                    insertedCount_<%=cid%> += processedCount_<%=cid%>;
+		                    rowsToCommitCount_<%=cid%> += processedCount_<%=cid%>;
 		                    sInsertColValueList<%=cid%>.clear();
 		                    rowCount<%=cid%> = 0;
 		                    counter<%=cid%>=1;
@@ -829,7 +833,9 @@ globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
 %>
                 nb_line_<%=cid%>++;
                 <%if(isEnableDebug){dbLog.data().sqlDebugPrint("globalMap.get(\""+cid+"_QUERY\")");}%>
-                updatedCount_<%=cid%> = updatedCount_<%=cid%> + pstmt_<%=cid %>.executeUpdate();
+                int processedCount_<%=cid%> = pstmt_<%=cid %>.executeUpdate();
+                updatedCount_<%=cid%> += processedCount_<%=cid%>;
+                rowsToCommitCount_<%=cid%> += processedCount_<%=cid%>;
         	    <%dbLog.data().updating(dbLog.var("nb_line"));%>
             } catch(java.lang.Exception e) {
 globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
@@ -1000,7 +1006,9 @@ globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
 				}//end issue0010403 date type
 %>
                     <%if(isEnableDebug){dbLog.data().sqlDebugPrint("globalMap.get(\""+cid+"_QUERY\")");}%>
-                    updatedCount_<%=cid%> = updatedCount_<%=cid%> + pstmtUpdate_<%=cid %>.executeUpdate();
+                    int processedCount_<%=cid%> = pstmtUpdate_<%=cid %>.executeUpdate();
+                    updatedCount_<%=cid%> += processedCount_<%=cid%>;
+                    rowsToCommitCount_<%=cid%> += processedCount_<%=cid%>;
                     nb_line_<%=cid%>++;
         			<%dbLog.data().updating(dbLog.var("nb_line"));%>
                 } catch(java.lang.Exception e) {
@@ -1093,7 +1101,9 @@ globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
 				}//end issue0010403 date type
 %>
                     <%if(isEnableDebug){dbLog.data().sqlDebugPrint("globalMap.get(\""+cid+"_QUERY\")");}%>
-                    insertedCount_<%=cid%> = insertedCount_<%=cid%> + pstmtInsert_<%=cid %>.executeUpdate();
+                    int processedCount_<%=cid%> = pstmtInsert_<%=cid %>.executeUpdate();
+                    insertedCount_<%=cid%> += processedCount_<%=cid%>;
+                    rowsToCommitCount_<%=cid%> += processedCount_<%=cid%>;
                     nb_line_<%=cid%>++;
                     <%dbLog.data().inserting(dbLog.var("nb_line"));%>
                 } catch(java.lang.Exception e) {
@@ -1241,6 +1251,7 @@ globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
 %>
                 updateFlag_<%=cid%>=pstmtUpdate_<%=cid %>.executeUpdate();
                 updatedCount_<%=cid%> = updatedCount_<%=cid%>+updateFlag_<%=cid%>;
+                rowsToCommitCount_<%=cid%> += updateFlag_<%=cid%>;
             if(updateFlag_<%=cid%> == 0) {
             	<%
             	if(isEnableDebug) {
@@ -1287,7 +1298,9 @@ globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
                 }
                 %>
 					<%if(isEnableDebug){dbLog.data().sqlDebugPrint("globalMap.get(\""+cid+"_QUERY\")");}%>
-                    insertedCount_<%=cid%> = insertedCount_<%=cid%> + pstmtInsert_<%=cid %>.executeUpdate();
+                    int processedCount_<%=cid%> = pstmtInsert_<%=cid %>.executeUpdate();
+                    insertedCount_<%=cid%> += processedCount_<%=cid%>;
+                    rowsToCommitCount_<%=cid%> += processedCount_<%=cid%>;
 					nb_line_<%=cid%>++;
                     <%dbLog.data().inserting(dbLog.var("nb_line"));%>
     			}else{
@@ -1398,7 +1411,9 @@ globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
 				}//end issue0010403 date type
 %>
                 <%if(isEnableDebug){dbLog.data().sqlDebugPrint("globalMap.get(\""+cid+"_QUERY\")");}%>
-                deletedCount_<%=cid%> = deletedCount_<%=cid%> + pstmt_<%=cid %>.executeUpdate();
+                int processedCount_<%=cid%> = pstmt_<%=cid %>.executeUpdate();
+                deletedCount_<%=cid%> += processedCount_<%=cid%>;
+                rowsToCommitCount_<%=cid%> += processedCount_<%=cid%>;
                 nb_line_<%=cid%>++;
                 <%dbLog.data().deleting(dbLog.var("nb_line"));%>
             } catch(java.lang.Exception e) {
@@ -1518,7 +1533,9 @@ globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
 				}//end issue0010403 date type
 %>
                 <%if(isEnableDebug){dbLog.data().sqlDebugPrint("globalMap.get(\""+cid+"_QUERY\")");}%>
-                insertedCount_<%=cid%> = insertedCount_<%=cid%> + pstmtInsert_<%=cid %>.executeUpdate();
+                int processedCount_<%=cid%> = pstmtInsert_<%=cid %>.executeUpdate();
+                insertedCount_<%=cid%> += processedCount_<%=cid%>;
+                rowsToCommitCount_<%=cid%> += processedCount_<%=cid%>;
                 nb_line_<%=cid%>++;
                 <%dbLog.data().inserting(dbLog.var("nb_line"));%>
             } catch(java.lang.Exception e) {
@@ -1695,14 +1712,17 @@ globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
     		            <%if (("INSERT").equals(dataAction)) {
             	    	%>
             	    		insertedCount_<%=cid%> = new LimitBytesHelper_<%=cid%>().limitBytePart1(insertedCount_<%=cid%>,pstmt_<%=cid %>);
+            	    		rowsToCommitCount_<%=cid%> = insertedCount_<%=cid%>;
             	    	<%
             	    	}else if (("UPDATE").equals(dataAction)) {
             	    	%>
             	    		updatedCount_<%=cid%> = new LimitBytesHelper_<%=cid%>().limitBytePart1(updatedCount_<%=cid%>,pstmt_<%=cid %>);
+            	    		rowsToCommitCount_<%=cid%> = updatedCount_<%=cid%>;
             	    	<%
             	    	}else if (("DELETE").equals(dataAction)) {
             	    	%>
             	    	    deletedCount_<%=cid%> = new LimitBytesHelper_<%=cid%>().limitBytePart1(deletedCount_<%=cid%>,pstmt_<%=cid %>);
+            	    	    rowsToCommitCount_<%=cid%> = deletedCount_<%=cid%>;
             	    	<%
             	    	}%>
             	batchSizeCounter_<%=cid%> = 0;
@@ -1710,9 +1730,14 @@ globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
         <%
         }
         %>
-                	<%dbLog.commit().commitTry(null, dbLog.var("commitCounter"));%>
+                	if(rowsToCommitCount_<%=cid%> != 0){
+                		<%dbLog.commit().commitTry(null, dbLog.var("rowsToCommitCount"));%>
+                	}
                 	conn_<%=cid%>.commit();
-            		<%dbLog.commit().commitDone(null);%>
+                	if(rowsToCommitCount_<%=cid%> != 0){
+                		<%dbLog.commit().commitDone(null);%>
+                		rowsToCommitCount_<%=cid%> = 0;
+                	}
                 	commitCounter_<%=cid%>=0;
                 }
                 <%

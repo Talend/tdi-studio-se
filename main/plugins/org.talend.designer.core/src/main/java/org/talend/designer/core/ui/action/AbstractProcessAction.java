@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2021 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -23,6 +23,7 @@ import org.talend.commons.CommonsPlugin;
 import org.talend.commons.ui.gmf.util.DisplayUtils;
 import org.talend.core.model.process.IProcess2;
 import org.talend.core.ui.editor.JobEditorInput;
+import org.talend.designer.core.i18n.Messages;
 import org.talend.designer.core.model.utils.emf.talendfile.NodeType;
 import org.talend.repository.ui.actions.AContextualAction;
 
@@ -43,7 +44,7 @@ public abstract class AbstractProcessAction extends AContextualAction {
         List<NodeType> unloadedNode = loadedProcess.getUnloadedNode();
         if (unloadedNode != null && !unloadedNode.isEmpty()) {
 
-            String message = "Some Component are not loaded:\n";
+            String message = Messages.getString("ProcessAction.unloadComponent") + "\n";
             for (int i = 0; i < unloadedNode.size(); i++) {
                 message = message + unloadedNode.get(i).getComponentName() + "\n";
             }

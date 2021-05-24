@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2021 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -22,8 +22,11 @@ import java.util.Map;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.gef.commands.Command;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.ComboBoxCellEditor;
+import org.eclipse.jface.viewers.ICellEditorListener;
+import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.custom.CLabel;
@@ -37,6 +40,7 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.ui.views.properties.tabbed.ITabbedPropertyConstants;
 import org.talend.commons.ui.runtime.swt.tableviewer.TableViewerCreatorColumnNotModifiable;
 import org.talend.commons.ui.swt.advanced.dataeditor.control.ExtendedPushButton;
+import org.talend.commons.ui.swt.extended.table.ExtendedTableModel;
 import org.talend.commons.ui.swt.tableviewer.TableViewerCreator;
 import org.talend.commons.utils.data.list.IListenableListListener;
 import org.talend.commons.utils.data.list.ListenableListEvent;
@@ -53,15 +57,20 @@ import org.talend.core.model.process.IElement;
 import org.talend.core.model.process.IElementParameter;
 import org.talend.core.model.properties.ProcessItem;
 import org.talend.core.model.utils.TalendTextUtils;
+import org.talend.core.ui.metadata.celleditor.ModuleListCellEditor;
 import org.talend.core.ui.properties.tab.IDynamicProperty;
 import org.talend.designer.core.IDesignerCoreService;
 import org.talend.designer.core.model.FakeElement;
 import org.talend.designer.core.model.components.EParameterName;
+import org.talend.designer.core.ui.editor.cmd.PropertyChangeCommand;
 import org.talend.designer.core.ui.editor.connections.Connection;
 import org.talend.designer.core.ui.editor.nodes.Node;
+import org.talend.designer.core.ui.editor.properties.macrowidgets.tableeditor.AbstractPropertiesTableEditorView;
 import org.talend.designer.core.ui.editor.properties.macrowidgets.tableeditor.PropertiesTableEditorModel;
 import org.talend.designer.core.ui.editor.properties.macrowidgets.tableeditor.PropertiesTableEditorView;
 import org.talend.designer.core.ui.editor.properties.macrowidgets.tableeditor.PropertiesTableToolbarEditorView;
+import org.talend.designer.core.ui.projectsetting.ImplicitContextLoadElement;
+import org.talend.designer.core.ui.projectsetting.StatsAndLogsElement;
 import org.talend.designer.runprocess.ItemCacheManager;
 
 /**
@@ -70,7 +79,7 @@ import org.talend.designer.runprocess.ItemCacheManager;
  * $Id: TableController.java 1 2006-12-14 下午05:44:30 +0000 (下午05:44:30) yzhang $
  *
  */
-public class TableController extends AbstractElementPropertySectionController {
+public class TableController extends AbstractTableController {
 
     /**
      *
@@ -107,8 +116,7 @@ public class TableController extends AbstractElementPropertySectionController {
         PropertiesTableEditorModel<Map<String, Object>> tableEditorModel = new PropertiesTableEditorModel<Map<String, Object>>();
 
         tableEditorModel.setData(elem, param, getProcess(elem, part));
-        PropertiesTableEditorView<Map<String, Object>> tableEditorView = new PropertiesTableEditorView<Map<String, Object>>(
-                parentComposite, SWT.NONE, tableEditorModel, !param.isBasedOnSchema(), false);
+        AbstractPropertiesTableEditorView<Map<String, Object>> tableEditorView = getPropertiesTableEditorView(parentComposite, SWT.NONE, tableEditorModel,param, !param.isBasedOnSchema(), false);
         tableEditorView.getExtendedTableViewer().setCommandStack(getCommandStack());
         boolean editable = !param.isReadOnly() && (elem instanceof FakeElement || !param.isRepositoryValueUsed());
         tableEditorView.setReadOnly(!editable);
@@ -118,7 +126,70 @@ public class TableController extends AbstractElementPropertySectionController {
         final Table table = tableEditorView.getTable();
 
         table.setToolTipText(VARIABLE_TOOLTIP + param.getVariableName());
+        
+        ExtendedTableModel<Map<String, Object>> extendedTableModel = tableEditorView.getExtendedTableModel();
+        if (extendedTableModel != null) {
+            TableViewer tableViewer = extendedTableModel.getTableViewer();
+            if (tableViewer != null) {
+                CellEditor[] cellEditors = tableViewer.getCellEditors();
+                if (cellEditors != null && cellEditors.length > 0) {
+                    for (CellEditor c : cellEditors) {
+                        if (c instanceof ModuleListCellEditor) {
 
+                            IElementParameter moduleParam = ((ModuleListCellEditor) c).getParam();
+                            if (moduleParam == null) {
+                                continue;
+                            }
+                            EParameterFieldType fieldType = moduleParam.getFieldType();
+                            if (EParameterFieldType.MODULE_LIST != fieldType) {
+                                continue;
+                            }
+
+                            c.addListener(new ICellEditorListener() {
+
+                                @Override
+                                public void editorValueChanged(boolean oldValidState, boolean newValidState) {
+                                }
+
+
+                                @Override
+                                public void applyEditorValue() {
+                                    if (elem instanceof ImplicitContextLoadElement) {
+                                        Object propertyValue = elem.getPropertyValue("DRIVER_JAR_IMPLICIT_CONTEXT");
+                                        if (propertyValue != null) {
+                                            Command cmd = new PropertyChangeCommand(elem, "DRIVER_JAR_IMPLICIT_CONTEXT",
+                                                    propertyValue);
+
+                                            executeCommand(cmd);
+                                        }
+                                    }
+
+                                    if (elem instanceof StatsAndLogsElement) {
+                                        Object propertyValue = elem.getPropertyValue("DRIVER_JAR");
+                                        if (propertyValue != null) {
+                                            Command cmd = new PropertyChangeCommand(elem, "DRIVER_JAR",
+                                                    propertyValue);
+
+                                            executeCommand(cmd);
+                                        }
+                                    }
+                                }
+
+                                @Override
+                                public void cancelEditor() {
+
+                                }
+                            });
+                        }
+                    }
+                }
+
+            }
+
+        }
+
+        
+        
         // add listener to tableMetadata (listen the event of the toolbars)
         tableEditorView.getExtendedTableModel().addAfterOperationListListener(new IListenableListListener() {
 
@@ -233,8 +304,8 @@ public class TableController extends AbstractElementPropertySectionController {
         updateTableValues(param);
 
         tableEditorModel.setData(elem, param, part.getProcess());
-        PropertiesTableEditorView<Map<String, Object>> tableEditorView = new PropertiesTableEditorView<Map<String, Object>>(
-                subComposite, SWT.NONE, tableEditorModel, !param.isBasedOnSchema(), false);
+        AbstractPropertiesTableEditorView<Map<String, Object>> tableEditorView = getPropertiesTableEditorView(subComposite,
+                SWT.NONE, tableEditorModel, param, !param.isBasedOnSchema(), false);
         tableEditorView.getExtendedTableViewer().setCommandStack(getCommandStack());
         tableEditorView.setReadOnly(param.isReadOnly());
         final Table table = tableEditorView.getTable();
@@ -310,7 +381,8 @@ public class TableController extends AbstractElementPropertySectionController {
                         IElementParameter columnParam = (IElementParameter) element;
                         if (columnParam.getFieldType() == EParameterFieldType.COLUMN_LIST
                                 || columnParam.getFieldType() == EParameterFieldType.PREV_COLUMN_LIST
-                                || columnParam.getFieldType() == EParameterFieldType.LOOKUP_COLUMN_LIST) {
+                                || columnParam.getFieldType() == EParameterFieldType.LOOKUP_COLUMN_LIST
+                                || param.getFieldType() == EParameterFieldType.TACOKIT_VALUE_SELECTION) {
                             for (Map<String, Object> columnMap : values) {
                                 Object column = columnMap.get(columnParam.getName());
                                 if (column == null || "".equals(column)) { //$NON-NLS-1$
@@ -491,7 +563,8 @@ public class TableController extends AbstractElementPropertySectionController {
                     IElementParameter tmpParam = (IElementParameter) itemsValue[j];
                     if (tmpParam.getFieldType() == EParameterFieldType.COLUMN_LIST
                             || tmpParam.getFieldType() == EParameterFieldType.PREV_COLUMN_LIST
-                            || tmpParam.getFieldType() == EParameterFieldType.LOOKUP_COLUMN_LIST) {
+                            || tmpParam.getFieldType() == EParameterFieldType.LOOKUP_COLUMN_LIST
+                            || param.getFieldType() == EParameterFieldType.TACOKIT_VALUE_SELECTION) {
                         if ((j + 1) >= colList.size()) {
                             break;
                         }
@@ -506,8 +579,7 @@ public class TableController extends AbstractElementPropertySectionController {
                         List<Map<String, Object>> paramValues = (List<Map<String, Object>>) param.getValue();
                         String[] items = param.getListItemsDisplayCodeName();
 
-                        for (int currentIndex = 0; currentIndex < paramValues.size(); currentIndex++) {
-                            Map<String, Object> currentLine = paramValues.get(currentIndex);
+                        for (Map<String, Object> currentLine : paramValues) {
                             Object o = currentLine.get(items[j]);
                             if (o instanceof Integer) {
                                 Integer nb = (Integer) o;
@@ -563,8 +635,7 @@ public class TableController extends AbstractElementPropertySectionController {
                         List<Map<String, Object>> paramValues = (List<Map<String, Object>>) param.getValue();
                         String[] items = param.getListItemsDisplayCodeName();
 
-                        for (int currentIndex = 0; currentIndex < paramValues.size(); currentIndex++) {
-                            Map<String, Object> currentLine = paramValues.get(currentIndex);
+                        for (Map<String, Object> currentLine : paramValues) {
                             Object o = currentLine.get(items[j]);
                             if (o instanceof Integer) {
                                 Integer nb = (Integer) o;
@@ -618,8 +689,7 @@ public class TableController extends AbstractElementPropertySectionController {
                         List<Map<String, Object>> paramValues = (List<Map<String, Object>>) param.getValue();
                         String[] items = param.getListItemsDisplayCodeName();
 
-                        for (int currentIndex = 0; currentIndex < paramValues.size(); currentIndex++) {
-                            Map<String, Object> currentLine = paramValues.get(currentIndex);
+                        for (Map<String, Object> currentLine : paramValues) {
                             Object o = currentLine.get(items[j]);
                             if (o instanceof Integer) {
                                 Integer nb = (Integer) o;
@@ -746,8 +816,7 @@ public class TableController extends AbstractElementPropertySectionController {
                         List<Map<String, Object>> paramValues = (List<Map<String, Object>>) param.getValue();
                         String[] items = param.getListItemsDisplayCodeName();
 
-                        for (int currentIndex = 0; currentIndex < paramValues.size(); currentIndex++) {
-                            Map<String, Object> currentLine = paramValues.get(currentIndex);
+                        for (Map<String, Object> currentLine : paramValues) {
                             Object o = currentLine.get(items[j]);
                             if (o instanceof Integer) {
                                 Integer nb = (Integer) o;
@@ -796,6 +865,7 @@ public class TableController extends AbstractElementPropertySectionController {
         case DBTYPE_LIST:
         case LOOKUP_COLUMN_LIST:
         case PREV_COLUMN_LIST:
+        case TACOKIT_VALUE_SELECTION:
             line.put(items[0], new Integer(tmpParam.getIndexOfItemFromList((String) tmpParam.getDefaultClosedListValue())));
             break;
         case SCHEMA_TYPE:
@@ -823,6 +893,7 @@ public class TableController extends AbstractElementPropertySectionController {
             case CONNECTION_LIST:
             case LOOKUP_COLUMN_LIST:
             case PREV_COLUMN_LIST:
+            case TACOKIT_VALUE_SELECTION:
                 line.put(items[i], new Integer(tmpParam.getIndexOfItemFromList((String) tmpParam.getDefaultClosedListValue())));
                 break;
             default: // TEXT or CHECK or COLOR (means String or Boolean)
@@ -879,4 +950,13 @@ public class TableController extends AbstractElementPropertySectionController {
         return false;
 
     }
+
+    @Override
+    protected AbstractPropertiesTableEditorView getPropertiesTableEditorView(Composite parentComposite, int mainCompositeStyle,
+            PropertiesTableEditorModel tableEditorModel,
+            IElementParameter param, boolean toolbarVisible, boolean labelVisible) {
+        return new PropertiesTableEditorView<Map<String, Object>>(parentComposite, SWT.NONE, tableEditorModel,
+                !param.isBasedOnSchema(),
+                false);
+    } 
 }

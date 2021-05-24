@@ -33,6 +33,8 @@
 	
 	boolean failOn = ("true").equals(ElementParameterParser.getValue(node,"__FAILON__"));
 	
+	boolean forceCopyAndDelete = ("true").equals(ElementParameterParser.getValue(node,"__FORCE_COPY_DELETE__")) && reFile;
+	
 	final boolean isLog4jEnabled = ("true").equals(ElementParameterParser.getValue(node.getProcess(), "__LOG4J_ACTIVATE__"));
 	
 	log4jFileUtil.componentStartInfo(node);
@@ -198,9 +200,15 @@
 				try {
 <%
 			}
+			if(!forceCopyAndDelete) {
 %>
 					org.talend.FileCopy.copyFile(srcFile_<%=cid %>.getPath(), desFile_<%=cid %>.getPath(), <%=reFile %>);
 <%
+			} else {
+%>
+					org.talend.FileCopy.forceCopyAndDelete(srcFile_<%=cid %>.getPath(), desFile_<%=cid %>.getPath());
+<%
+			}
 			if (!failOn) {
 %>
 				} catch (Exception e) {

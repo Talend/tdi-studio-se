@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2021 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -30,6 +30,7 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.Priority;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
@@ -294,6 +295,9 @@ public class JSONFileStep2Form extends AbstractJSONFileStepForm implements IRefr
         this.jsonToSchemaSash = new SashForm(mainComposite, SWT.HORIZONTAL | SWT.SMOOTH);
         jsonToSchemaSash.setLayoutData(new GridData(GridData.FILL_BOTH));
         jsonToSchemaSash.setBackgroundMode(SWT.INHERIT_FORCE);
+        if (Platform.OS_MACOSX.equals(Platform.getOS())) {
+            jsonToSchemaSash.setSashWidth((mainComposite.getShell().getBounds().width) / 6);
+        }
 
         addGroupJSONFileSettings(jsonToSchemaSash, 400, 110);
         addGroupSchemaTarget(jsonToSchemaSash, 300, 110);

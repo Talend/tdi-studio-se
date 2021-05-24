@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2021 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -46,6 +46,9 @@ public class DataMapExpressionParser {
     private static String TABLE_PATTERN = EXPRESSION + SEPARATOR;
 
     private static final String GLOBALMAP_PATTERN = "\\s*(\\(\\s*\\(\\s*String\\s*\\)\\s*globalMap\\s*\\.\\s*get\\s*\\(\\s*\\\"(.+?)\\\"\\s*\\)\\s*\\))\\s*";
+
+    private static final String GLOBALMAP_PATTERN2 = "\\s*(\\(\\s*\\(\\s*[a-zA-Z]+\\s*\\)\\s*globalMap\\s*\\.\\s*get\\s*\\(\\s*\\\"(.+?)\\\"\\s*\\)\\s*\\))\\s*";
+
     private static final String GLOBALMAP_PATTERN_ALL = "\\s*\\+\\s*(\\(\\w*\\))?globalMap.get\\s*\\(\\s*\\\"(.+?)\\\"\\s*\\)\\s*\\+\\s*";
     
     private static final String GLOBALMAP_TABLE_EXPRESSION = "(" + GLOBALMAP_PATTERN + "\\." + GLOBALMAP_PATTERN + ")|("
@@ -216,7 +219,7 @@ public class DataMapExpressionParser {
             } else {
                 patternMatcherInput.setInput(sqlQuery);
             }
-            recompilePatternIfNecessary(GLOBALMAP_PATTERN);
+            recompilePatternIfNecessary(GLOBALMAP_PATTERN2);
             while (matcher.contains(patternMatcherInput, pattern)) {
                 MatchResult matchResult = matcher.getMatch();
                 if (matchResult.group(1) != null) {

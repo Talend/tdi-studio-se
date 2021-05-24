@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2021 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -15,25 +15,20 @@ package org.talend.repository.preference;
 import java.io.File;
 import java.io.FileFilter;
 import java.lang.reflect.InvocationTargetException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.IWorkspaceRunnable;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
-import org.eclipse.core.runtime.Path;
-import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.jobs.ISchedulingRule;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.layout.GridDataFactory;
@@ -57,7 +52,6 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
-import org.osgi.framework.Bundle;
 import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.exception.PersistenceException;
 import org.talend.commons.ui.runtime.image.EImage;
@@ -68,7 +62,6 @@ import org.talend.core.CorePlugin;
 import org.talend.core.GlobalServiceRegister;
 import org.talend.core.PluginChecker;
 import org.talend.core.model.components.IComponent;
-import org.talend.core.model.components.IComponentsFactory;
 import org.talend.core.model.properties.CustomComponentSetting;
 import org.talend.core.model.properties.PropertiesFactory;
 import org.talend.core.model.repository.ERepositoryObjectType;
@@ -390,7 +383,7 @@ public class CustomComponentSettingPage extends ProjectSettingPage {
         }
         final IProxyRepositoryFactory prf = CorePlugin.getDefault().getProxyRepositoryFactory();
 
-        if (PluginChecker.isSVNProviderPluginLoaded() && (!sharedAdded.isEmpty() || !backAdded.isEmpty())) {
+        if (PluginChecker.isRemoteProviderPluginLoaded() && (!sharedAdded.isEmpty() || !backAdded.isEmpty())) {
             RepositoryWorkUnit repositoryWorkUnit = new RepositoryWorkUnit("Update custom components") {
 
                 @Override
@@ -408,15 +401,12 @@ public class CustomComponentSettingPage extends ProjectSettingPage {
                             String targetRoot = eclipseProject.getLocation().toString() + "/"
                                     + ERepositoryObjectType.getFolderName(ERepositoryObjectType.COMPONENTS);
                             File componentFolder = new File(targetRoot);
-                            URL url = null;
                             try {
                                 if (!componentFolder.exists()) {
                                     FilesUtils.createFoldersIfNotExists(targetRoot, false);
                                 }
-                                Bundle b = Platform.getBundle(IComponentsFactory.COMPONENTS_LOCATION);
-                                url = FileLocator.toFileURL(FileLocator.find(b, new Path(""), null));
 
-                                String sourceRoot = url.getFile();
+                                String sourceRoot = ComponentsFactoryProvider.getInstance().getCustomComponentBundlePath() + "/";
 
                                 // delete share
                                 for (IComponent component : backAdded.keySet()) {

@@ -2,7 +2,7 @@
 //
 // Talend Community Edition
 //
-// Copyright (C) 2006-2019 Talend – www.talend.com
+// Copyright (C) 2006-2021 Talend – www.talend.com
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -62,7 +62,8 @@ public class BuildOSGiBundleHandler extends BuildJobHandler {
                 IProcessor.NO_STATISTICS, IProcessor.NO_TRACES);
 
         osgiMavenManager.setJobVersion(version);
-        osgiMavenManager.setBundleVersion(getArtifactVersion(processItem));
+        osgiMavenManager.setBundleVersion(exportChoiceMap.containsKey(ExportChoice.bundleVersion) ?
+        		(String)exportChoiceMap.get(ExportChoice.bundleVersion) : getArtifactVersion(processItem)); 
     }
 
     protected String getArtifactVersion(ProcessItem processItem) {

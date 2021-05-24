@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2021 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -13,6 +13,7 @@
 package org.talend.designer.runprocess.ui.views;
 
 import org.eclipse.swt.widgets.Composite;
+import org.talend.core.model.components.ComponentCategory;
 import org.talend.designer.runprocess.ui.TraceDebugProcessComposite;
 
 /**
@@ -21,4 +22,7 @@ import org.talend.designer.runprocess.ui.TraceDebugProcessComposite;
 public interface IDebugViewHelper {
 
     public TraceDebugProcessComposite getDebugComposite(final Composite container);
+
+    public ComponentCategory getDebugType();
+
 }

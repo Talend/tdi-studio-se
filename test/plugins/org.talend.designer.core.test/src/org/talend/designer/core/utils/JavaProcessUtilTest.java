@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2021 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -37,6 +37,7 @@ import org.talend.core.model.process.EParameterFieldType;
 import org.talend.core.model.process.IElementParameter;
 import org.talend.core.model.process.INode;
 import org.talend.core.model.process.IProcess2;
+import org.talend.core.runtime.maven.MavenUrlHelper;
 import org.talend.core.runtime.process.TalendProcessOptionConstants;
 import org.talend.designer.core.model.components.DummyComponent;
 import org.talend.designer.core.model.components.EParameterName;
@@ -221,4 +222,21 @@ public class JavaProcessUtilTest {
         return moduleNeededSet;
     }
 
+    @Test
+    public void testGetCoordinate() {
+        String context = "tHiveConnection";
+        String informationMsg = "Required for using this component.";
+        boolean required = false;
+        String[] mvnUris = { "mvn:org.talend.libraries/httpcore-4.4.6/6.3.0/jar", "mvn:org.talend.libraries/spring-context-5.1.18.RELEASE/6.0.0-SNAPSHOT/jar", "mvn:org.apache.httpcomponents/httpcore/4.4.6",
+                "mvn:https://studio-dl-client:enc:system.encryption.key.v1:xgJc9IaLeJSt6UpaabOusZUBcK4bLUJipmAhuD6dHI8fBqoB7pm4UDWlWLk=@talend-update.talend.com/nexus/content/groups/dynamicdistribution/!org.apache.httpcomponents/httpcore/4.4.6/jar" };
+        String[] expectedCoordinates = { "org.talend.libraries:httpcore-4.4.6:jar:6.3.0", "org.talend.libraries:spring-context-5.1.18.RELEASE:jar:6.0.0",
+                "org.apache.httpcomponents:httpcore:jar:4.4.6", "org.apache.httpcomponents:httpcore:jar:4.4.6" };
+        for (int i = 0; i < mvnUris.length; i++) {
+            String mvnUri = mvnUris[i];
+            ModuleNeeded module = new ModuleNeeded(context,informationMsg,required,mvnUri);
+            String coordinate = MavenUrlHelper.getCoordinate(module.getMavenUri());
+            assertEquals(expectedCoordinates[i], coordinate);
+        }
+        
+    }
 }

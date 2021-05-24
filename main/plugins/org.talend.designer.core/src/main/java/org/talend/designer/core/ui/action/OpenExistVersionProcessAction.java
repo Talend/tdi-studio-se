@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2021 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -35,6 +35,7 @@ import org.talend.commons.ui.runtime.image.ECoreImage;
 import org.talend.commons.ui.runtime.image.ImageProvider;
 import org.talend.core.model.metadata.builder.database.ExtractMetaDataUtils;
 import org.talend.core.model.process.IProcess2;
+import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.core.model.repository.RepositoryObject;
 import org.talend.core.services.IUIRefresher;
 import org.talend.core.ui.editor.JobEditorInput;
@@ -96,7 +97,8 @@ public class OpenExistVersionProcessAction extends EditPropertiesAction {
         }
         super.init(viewer, selection);
         // Camel Route have own action
-        if (isEnabled() && isInstanceofCamelRoutes(((IRepositoryNode) selection.getFirstElement()).getObjectType())) {
+        ERepositoryObjectType type = ((IRepositoryNode) selection.getFirstElement()).getObjectType();
+        if (isEnabled() && (ERepositoryObjectType.getAllTypesOfCodesJar().contains(type) || isInstanceofCamelRoutes(type))) {
             setEnabled(false);
         }
     }
@@ -134,8 +136,7 @@ public class OpenExistVersionProcessAction extends EditPropertiesAction {
         IProcess2 loadedProcess = fileEditorInput.getLoadedProcess();
         List<NodeType> unloadedNode = loadedProcess.getUnloadedNode();
         if (unloadedNode != null && !unloadedNode.isEmpty()) {
-
-            String message = "Some Component are not loaded:\n";
+            String message = Messages.getString("ProcessAction.unloadComponent") + "\n";
             for (int i = 0; i < unloadedNode.size(); i++) {
                 message = message + unloadedNode.get(i).getComponentName() + "\n";
             }

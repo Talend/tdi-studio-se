@@ -98,7 +98,7 @@ skeleton="../templates/db_output_bulk.skeleton"
 		isSpecifyIdentityKey = false;
 	}
     String identityKey = ElementParameterParser.getValue(node, "__IDENTITY_FIELD__");
-	if(identityInsert && useExistingConnection ) {
+	if(identityInsert && useExistingConnection) {
         %>
 		if ( isShareIdentity_<%=cid%> ) {
 			String setIdentityInsertONSQL_<%=cid%> = "SET IDENTITY_INSERT ["+ tableName_<%=cid%> +"] ON";
@@ -379,7 +379,9 @@ skeleton="../templates/db_output_bulk.skeleton"
 
 		    row2Count<%=cid%>++;
 		}
-		insertedCount_<%=cid%> = insertedCount_<%=cid%> + pstmt_<%=cid %>.executeUpdate();
+		int processedCount_<%=cid%> = pstmt_<%=cid %>.executeUpdate();
+		insertedCount_<%=cid%> += processedCount_<%=cid%>;
+		rowsToCommitCount_<%=cid%> += processedCount_<%=cid%>;
 		}
    <% }else {
    %>
@@ -396,6 +398,7 @@ skeleton="../templates/db_output_bulk.skeleton"
 								}
 								countSum_<%=cid%> += countEach_<%=cid%>;
 							}
+							rowsToCommitCount_<%=cid%> += countSum_<%=cid%>;
 							<%dbLog.batch().executeDone(dbLog.str(dataAction));%>
 						}
             	    	<%if (("INSERT").equals(dataAction)) {
@@ -423,6 +426,7 @@ globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
 					for(int countEach_<%=cid%>: e.getUpdateCounts()) {
 						countSum_<%=cid%> += (countEach_<%=cid%> < 0 ? 0 : countEach_<%=cid%>);
 					}
+					rowsToCommitCount_<%=cid%> += countSum_<%=cid%>;
 					<%if (("INSERT").equals(dataAction)) {
             	    	%>
             	    		insertedCount_<%=cid%> += countSum_<%=cid%>;
@@ -479,9 +483,15 @@ if(identityInsert){
         if(!("").equals(commitEvery) && !("0").equals(commitEvery))
         {
             %>
-            <%dbLog.commit().commitTry(null, dbLog.var("commitCounter"));%>
+            if(rowsToCommitCount_<%=cid%> != 0){
+            	<%dbLog.commit().commitTry(null, dbLog.var("rowsToCommitCount"));%>
+            }
             conn_<%=cid%>.commit();
-			<%dbLog.commit().commitDone(null);%>
+            if(rowsToCommitCount_<%=cid%> != 0){
+            	<%dbLog.commit().commitDone(null);%>
+            	rowsToCommitCount_<%=cid%> = 0;
+            }
+            commitCounter_<%=cid%> = 0;
             <%
         }
 

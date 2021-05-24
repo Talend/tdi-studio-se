@@ -126,8 +126,16 @@
 
     boolean exist_tSCP = false;
     List<INode> scpComponentsList = (List<INode>)process.getNodesOfType("tSCPConnection");
-    if (scpComponentsList.size() > 0) {
+	String parameterNames = "";
+	int scpsize = scpComponentsList.size();
+    if (scpsize > 0) {
         exist_tSCP = true;
+        for (int i = 0; i < scpsize; i++) {
+            parameterNames += "\"conn_" + scpComponentsList.get(i).getUniqueName() + "\"";
+			if(i < scpsize-1){
+			    parameterNames += ",";
+			}
+        }
     }
 
     boolean exist_tCassandra = false;
@@ -641,6 +649,15 @@
 <%
         }
 %>
+        boolean inOSGi = routines.system.BundleUtils.inOSGi();
+
+        if (inOSGi) {
+            java.util.Dictionary<String, Object> jobProperties = routines.system.BundleUtils.getJobProperties(jobName);
+
+            if (jobProperties != null) {
+                contextStr = (String)jobProperties.get("context");
+            }
+        }
 
         try {
             //call job/subjob with an existing context, like: --context=production. if without this parameter, there will use the default context instead.
@@ -649,13 +666,15 @@
                 inContext = <%=className%>.class.getClassLoader().getResourceAsStream("config/contexts/" + contextStr + ".properties");
             }
             if (inContext != null) {
-                //defaultProps is in order to keep the original context value
-                if(context != null && context.isEmpty()) {
+                try {
+                    //defaultProps is in order to keep the original context value
+                    if(context != null && context.isEmpty()) {
 	                defaultProps.load(inContext);
 	                context = new ContextProperties(defaultProps);
+                    }
+                } finally {
+                    inContext.close();
                 }
-                
-                inContext.close();
             } else if (!isDefaultContext) {
                 //print info and job continue to run, for case: context_param is not empty.
                 System.err.println("Could not find the context " + contextStr);
@@ -1181,9 +1200,12 @@ this.globalResumeTicket = true;//to run tPostJob
     closeJmsConnections();
 <% } %>
 
-<% if (exist_tSCP) { %>
-    closeScpConnections();
-<% } %>
+<% if (exist_tSCP) { 
+%>
+    closeCloseableConnections(<%=parameterNames%>);
+<% 
+} 
+%>
 
 <%
     if (stats) {
@@ -1237,7 +1259,7 @@ if (execStat) {
     closeJmsConnections();
 <% } %>
 <% if(exist_tSCP) { %>
-    closeScpConnections();
+    closeCloseableConnections(<%=parameterNames%>);
 <% } %>
 <% if (exist_tSQLDB) { %>
     closeSqlDbConnections();
@@ -1305,22 +1327,17 @@ if (execStat) {
 <%
     if(exist_tSCP) {
 %>
-    private void closeScpConnections() {
-        try {
-            Object obj_conn;
-<%
-            for (INode scpNode : scpComponentsList) {
-%>
-            obj_conn = globalMap.remove("conn_<%=scpNode.getUniqueName() %>");
-            if (null != obj_conn) {
-                ((ch.ethz.ssh2.Connection) obj_conn).close();
+    private void closeCloseableConnections(String... names) {
+	        java.util.Arrays.stream(names).forEach(name-> {
+            try {
+			    Object obj_conn = globalMap.remove(name);
+				if(obj_conn != null){
+				    ((java.io.Closeable)obj_conn).close();
+				}
+            } catch (IOException ioException) {
             }
-<%
-            }
-%>
-        } catch (java.lang.Exception e) {
-        }
-    }
+        });
+	}
 <%
     }
 %>

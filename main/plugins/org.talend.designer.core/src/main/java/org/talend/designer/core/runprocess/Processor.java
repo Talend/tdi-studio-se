@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2021 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -65,6 +65,8 @@ public abstract class Processor implements IProcessor, IEclipseProcessor, Talend
     private static Logger log = Logger.getLogger(Processor.class);
 
     public static final String CTX_ARG = TalendProcessArgumentConstant.CMD_ARG_CONTEXT_NAME;
+
+    public static final String DEBUG_ROUTE_ID_ARG = "DEBUG_ROUTE_ID_ARG"; //$NON-NLS-1$
 
     private static final String STAT_PORT_ARG = TalendProcessArgumentConstant.CMD_ARG_STATS_PORT;
 

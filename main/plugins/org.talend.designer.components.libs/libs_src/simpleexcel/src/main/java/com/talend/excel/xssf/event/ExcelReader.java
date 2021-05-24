@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2021 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -28,9 +28,12 @@ import org.xml.sax.helpers.XMLReaderFactory;
 
 import java.io.File;
 import java.io.InputStream;
+import java.text.DateFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.FutureTask;
 
@@ -58,6 +61,8 @@ public class ExcelReader implements Callable {
     private List<Integer> sheetPositions = new ArrayList<Integer>();
 
     private List<Boolean> asRegexs = new ArrayList<Boolean>();
+
+    private final Map<Integer, DateFormat> columnDateFormats = new HashMap<>();
 
     DefaultTalendSheetContentsHandler sheetContentsHandler = null;
 
@@ -101,6 +106,10 @@ public class ExcelReader implements Callable {
         if (!this.sheetPositions.contains(position)) {
             this.sheetPositions.add(position);
         }
+    }
+
+    public void addDateFormat(Integer columnIndex, DateFormat dateFormat) {
+        this.columnDateFormats.put(columnIndex, dateFormat);
     }
 
     public void stopRead() {
@@ -157,7 +166,7 @@ public class ExcelReader implements Callable {
 
             XMLReader parser = XMLReaderFactory.createXMLReader();
             ContentHandler handler = new TalendXSSFSheetXMLHandler(styles, strings, sheetContentsHandler, formatter,
-                    formulasNotResults);
+                    formulasNotResults, columnDateFormats);
             parser.setContentHandler(handler);
 
             XSSFReader.SheetIterator sheets = (XSSFReader.SheetIterator) r.getSheetsData();

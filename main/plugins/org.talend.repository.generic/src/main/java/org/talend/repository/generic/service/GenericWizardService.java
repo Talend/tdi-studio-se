@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2021 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -415,14 +415,22 @@ public class GenericWizardService implements IGenericWizardService {
             connection.setPassword(null);
             connection.setURL(bean.getUrl());
             connection.setDriverClass(bean.getDriverClass());
-            String driverJarPaths = GenericTableUtils.getDriverJarPaths(bean.getPaths());
+            // add quotes for driver jar path
+            List<String> jarPaths = new ArrayList<String>();
+            for (String jar : bean.getPaths()) {
+                String quotedJarPath = TalendQuoteUtils.addQuotesIfNotExist(jar);
+                if (StringUtils.isNotBlank(quotedJarPath)) {
+                    jarPaths.add(quotedJarPath);
+                }
+            }
+            String driverJarPaths = GenericTableUtils.getDriverJarPaths(jarPaths);
             if (StringUtils.isNotBlank(driverJarPaths)) {
                 connection.setDriverJarPath(driverJarPaths);
             }
             UnifiedJDBCBean unifiedJDBCBean = additionalJDBC.get(dbType);
             Dbms dbms = MetadataTalendType.getDefaultDbmsFromProduct(unifiedJDBCBean.getDatabaseId());
             String dbmsId = null;
-            if (dbms.getProduct().equals(unifiedJDBCBean.getDatabaseId())) {
+            if (dbms != null && dbms.getProduct().equals(unifiedJDBCBean.getDatabaseId())) {
                 dbmsId = dbms.getId();
             } else {
                 // avoid not found return default one
@@ -439,7 +447,7 @@ public class GenericWizardService implements IGenericWizardService {
             Map<String, Object> map = new HashMap<String, Object>();
             map.put("jdbcUrl", TalendQuoteUtils.addQuotes(bean.getUrl()));
             map.put("driverClass", TalendQuoteUtils.addQuotes(bean.getDriverClass()));
-            map.put("drivers", bean.getPaths());
+            map.put("drivers", jarPaths);
             UnifiedComponentUtil.setCompPropertiesForJDBC(componentProperties, map);
         } else {
             // set to empty original jdbc for switch dbtype

@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2021 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -28,6 +28,7 @@ import org.talend.core.model.properties.PropertiesFactory;
 import org.talend.core.model.properties.Property;
 import org.talend.core.model.utils.ProcessStreamTrashReaderUtil;
 import org.talend.core.prefs.ITalendCorePrefConstants;
+import org.talend.core.runtime.util.SharedStudioUtils;
 import org.talend.core.utils.CsvArray;
 import org.talend.designer.core.i18n.Messages;
 import org.talend.designer.core.ui.editor.process.Process;
@@ -61,7 +62,7 @@ public abstract class AbstractGuessSchemaProcess {
 
     private IContext selectContext;
 
-    private String currentProcessEncoding = "UTF-8"; //$NON-NLS-1$
+    protected String currentProcessEncoding = "UTF-8"; //$NON-NLS-1$
 
     public AbstractGuessSchemaProcess(final Property property, final INode node, final IContext selectContext) {
         this.property = property;
@@ -75,7 +76,7 @@ public abstract class AbstractGuessSchemaProcess {
     abstract protected boolean isCheckError();
 
     protected void initOutpath() {
-        outpath = new Path(System.getProperty("user.dir")).append("Temp"); //$NON-NLS-1$ //$NON-NLS-2$
+        outpath = SharedStudioUtils.getTempFolderPath();
     }
 
     protected void configContext(Process inProcess, INode inNode) {

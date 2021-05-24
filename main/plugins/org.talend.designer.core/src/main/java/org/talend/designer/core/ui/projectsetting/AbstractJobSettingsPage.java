@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2021 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -64,6 +64,7 @@ import org.talend.core.model.update.UpdatesConstants;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
 import org.talend.core.ui.CoreUIPlugin;
 import org.talend.core.ui.services.IDesignerCoreUIService;
+import org.talend.core.utils.TalendQuoteUtils;
 import org.talend.designer.core.i18n.Messages;
 import org.talend.designer.core.model.components.EParameterName;
 import org.talend.designer.core.model.components.EmfComponent;
@@ -72,7 +73,6 @@ import org.talend.designer.core.ui.editor.cmd.ChangeValuesFromRepository;
 import org.talend.designer.core.ui.editor.cmd.LoadProjectSettingsCommand;
 import org.talend.designer.core.ui.editor.process.Process;
 import org.talend.designer.core.ui.views.properties.WidgetFactory;
-import org.talend.designer.core.utils.ConnectionUtil;
 import org.talend.designer.core.utils.DetectContextVarsUtils;
 import org.talend.metadata.managment.ui.wizard.metadata.ShowAddedContextdialog;
 import org.talend.repository.UpdateRepositoryUtils;
@@ -174,9 +174,6 @@ public abstract class AbstractJobSettingsPage extends ProjectSettingPage {
                             if (repValue == null) {
                                 continue;
                             }
-                            if (repositoryValue.equals("connection.driverTable")) {// PASSWORD
-                                ConnectionUtil.resetDriverValue(repValue);
-                            }
                             if (repositoryValue.equals(UpdatesConstants.TYPE)) { // datebase type
                                 boolean found = false;
                                 String[] list = param.getListRepositoryItems();
@@ -193,7 +190,14 @@ public abstract class AbstractJobSettingsPage extends ProjectSettingPage {
 
                             } else {
                                 // check the value
-                                if (!param.getValue().equals(repValue)) {
+                                if ((param.getName().equals("DRIVER_JAR")
+                                        || param.getName().equals("DRIVER_JAR_IMPLICIT_CONTEXT")) && param.getValue() != null) {
+                                    sameValues = isSameDriverList((List<Map<String, String>>) param.getValue(),
+                                            (List<Map<String, String>>) repValue);
+                                    if (!sameValues) {
+                                        break;
+                                    }
+                                } else if (!param.getValue().equals(repValue)) {
                                     sameValues = false;
                                     break;
                                 }
@@ -216,6 +220,7 @@ public abstract class AbstractJobSettingsPage extends ProjectSettingPage {
                 } else {
                     MessageDialog.openInformation(getShell(), getDisplayName(),
                             "Connection has been deleted ,change to build in automaticlly");
+                    elem.setPropertyValue("REPOSITORY_PROPERTY_TYPE", "");
                     ChangeValuesFromRepository changeValuesFromRepository1 = new ChangeValuesFromRepository(elem, null,
                             getPropertyTypeName(), EmfComponent.BUILTIN);
                     changeValuesFromRepository1.execute();
@@ -226,6 +231,42 @@ public abstract class AbstractJobSettingsPage extends ProjectSettingPage {
 
         }
 
+    }
+
+    protected boolean isSameDriverList(List<Map<String, String>> driverList1, List<Map<String, String>> driverList2) {
+        if (driverList1 == null) {
+            if (driverList2 == null) {
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+            if (driverList2 == null) {
+                return false;
+            } else {
+                // compare
+                if (driverList1.size() != driverList2.size()) {
+                    return false;
+                }
+                Set<String> driverSet1 = new HashSet<String>();
+                Set<String> driverSet2 = new HashSet<String>();
+
+                for (Map<String, String> driverMap : driverList1) {
+                    String jar = driverMap.get("drivers");
+                    if (jar != null) {
+                        driverSet1.add(TalendQuoteUtils.removeQuotes(jar));
+                    }
+                }
+                for (Map<String, String> driverMap : driverList2) {
+                    String jar = driverMap.get("drivers");
+                    if (jar != null) {
+                        driverSet2.add(TalendQuoteUtils.removeQuotes(jar));
+                    }
+                }
+
+                return driverSet1.equals(driverSet2);
+            }
+        }
     }
 
     protected abstract void checkSettingExisted();

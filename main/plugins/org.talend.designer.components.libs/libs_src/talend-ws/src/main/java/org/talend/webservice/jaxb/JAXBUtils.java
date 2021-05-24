@@ -42,14 +42,18 @@ import javax.xml.transform.Result;
 import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.stream.StreamResult;
 
+import org.apache.cxf.Bus;
+import org.apache.cxf.BusFactory;
 import org.apache.cxf.common.jaxb.JAXBBeanInfo;
 import org.apache.cxf.common.jaxb.JAXBContextProxy;
 import org.apache.cxf.common.logging.LogUtils;
+import org.apache.cxf.common.spi.ClassGeneratorClassLoader;
 import org.apache.cxf.common.util.ASMHelper;
 import org.apache.cxf.common.util.ASMHelper.ClassWriter;
 import org.apache.cxf.common.util.ASMHelper.FieldVisitor;
 import org.apache.cxf.common.util.ASMHelper.Label;
 import org.apache.cxf.common.util.ASMHelper.MethodVisitor;
+import org.apache.cxf.common.util.ASMHelperImpl;
 import org.apache.cxf.common.util.CachedClass;
 import org.apache.cxf.common.util.PackageUtils;
 import org.apache.cxf.common.util.ReflectionInvokationHandler;
@@ -578,7 +582,7 @@ public final class JAXBUtils {
     public static void setNamespaceWrapper(final Map<String, String> nspref, Marshaller marshaller) throws PropertyException {
         Object mapper = null;
         if (marshaller.getClass().getName().contains(".internal.")) {
-            mapper = createNamespaceWrapper(nspref);
+            mapper = createNamespaceWrapper(null, nspref);
             if (mapper == null) {
                 LOG.log(Level.INFO, "Could not create namespace mapper for JDK internal" + " JAXB implementation.");
             } else {
@@ -593,6 +597,31 @@ public final class JAXBUtils {
             }
             marshaller.setProperty("com.sun.xml.bind.namespacePrefixMapper", mapper);
         }
+    }
+
+    /*
+     * To avoid possible runtime collision.
+     */
+    public static Object setNamespaceMapper(Bus bus, final Map<String, String> nspref,
+            Marshaller marshaller) throws PropertyException {
+        Object mapper = null;
+        if (marshaller.getClass().getName().contains(".internal.")) {
+            mapper = createNamespaceWrapper(bus, nspref);
+            if (mapper == null) {
+                LOG.log(Level.INFO, "Could not create namespace mapper for JDK internal" + " JAXB implementation.");
+            } else {
+                marshaller.setProperty("com.sun.xml.internal.bind.namespacePrefixMapper", mapper);
+            }
+        } else {
+            try {
+                Class<?> cls = Class.forName("org.apache.cxf.common.jaxb.NamespaceMapper");
+                mapper = cls.getConstructor(Map.class).newInstance(nspref);
+            } catch (Exception ex) {
+                LOG.log(Level.INFO, "Could not create NamespaceMapper", ex);
+            }
+            marshaller.setProperty("com.sun.xml.bind.namespacePrefixMapper", mapper);
+        }
+        return mapper;
     }
 
     public static BridgeWrapper createBridge(Set<Class<?>> ctxClasses, QName qname, Class<?> refcls, Annotation anns[])
@@ -1018,16 +1047,17 @@ public final class JAXBUtils {
         return false;
     }
 
-    private static synchronized Object createNamespaceWrapper(Map<String, String> map) {
-        ASMHelper helper = new ASMHelper();
+    private static synchronized Object createNamespaceWrapper(Bus bus, Map<String, String> map) {
+        ASMHelper helper = new ASMHelperImpl();
         String className = "org.apache.cxf.jaxb.NamespaceMapperInternal";
-        Class<?> cls = helper.findClass(className, JAXBUtils.class);
+        NamespaceMapperClassGenerator nmcg = new NamespaceMapperClassGenerator(bus);
+        Class<?> cls = nmcg.findClass(className, JAXBUtils.class);
         if (cls == null) {
             ClassWriter cw = helper.createClassWriter();
             if (cw == null) {
                 return null;
             }
-            cls = createNamespaceWrapperInternal(helper, cw);
+            cls = createNamespaceWrapperInternal(helper, cw, nmcg);
         }
         try {
             return cls.getConstructor(Map.class).newInstance(map);
@@ -1036,7 +1066,7 @@ public final class JAXBUtils {
         }
     }
 
-    private static Class<?> createNamespaceWrapperInternal(ASMHelper helper, ClassWriter cw) {
+    private static Class<?> createNamespaceWrapperInternal(ASMHelper helper, ClassWriter cw, NamespaceMapperClassGenerator nmcg) {
         String className = "org.apache.cxf.jaxb.NamespaceMapperInternal";
         FieldVisitor fv;
         MethodVisitor mv;
@@ -1127,7 +1157,7 @@ public final class JAXBUtils {
             }
         }
 
-        return helper.loadClass(className, cls, bts);
+        return nmcg.loadClass(className, cls, bts);
     }
 
     public static JAXBBeanInfo getBeanInfo(JAXBContextProxy context, Class<?> cls) {
@@ -1138,4 +1168,20 @@ public final class JAXBUtils {
         return ReflectionInvokationHandler.createProxyWrapper(o, JAXBBeanInfo.class);
     }
 
+    private static class NamespaceMapperClassGenerator extends ClassGeneratorClassLoader {
+
+        private NamespaceMapperClassGenerator(Bus bus) {
+            super(bus == null ? BusFactory.getDefaultBus() : bus);
+        }
+
+        @Override
+        protected Class<?> findClass(String className, Class<?> cls) {
+            return super.findClass(className, cls);
+        }
+
+        @Override
+        protected Class<?> loadClass(String className, Class<?> cls, byte[] bytes) {
+            return super.loadClass(className, cls, bytes);
+        }
+    }
 }

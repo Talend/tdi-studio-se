@@ -62,6 +62,18 @@
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-assembly-plugin</artifactId>
+						<dependencies>
+							<dependency>
+				              	<groupId>commons-codec</groupId>
+								<artifactId>commons-codec</artifactId>
+								<version>1.15</version>
+				            </dependency>
+				            <dependency>
+								<groupId>org.apache.commons</groupId>
+								<artifactId>commons-compress</artifactId>
+							<version>1.19</version>
+						</dependency>
+						</dependencies>
 						<executions>
 							<execution>
 								<phase>package</phase>
@@ -102,6 +114,13 @@
 								</goals>
 							</execution>
 						</executions>
+						<dependencies>
+							<dependency>
+				              	<groupId>commons-codec</groupId>
+								<artifactId>commons-codec</artifactId>
+								<version>1.15</version>
+				            </dependency>
+						</dependencies>
 					</plugin>
 				</plugins>
 			</build>
@@ -275,27 +294,17 @@
 				<microservice.configs.dir>${current.resources.dir}/</microservice.configs.dir>
 				<microservice.running.configs.dir>${current.int-resources.dir}/</microservice.running.configs.dir>
 			</properties>
-			<dependencies>
-				<dependency>
-					<groupId>io.micrometer</groupId>
-					<artifactId>micrometer-registry-prometheus</artifactId>
-					<version>1.1.1</version>
-				</dependency>
-				<dependency>
-					<groupId>io.prometheus.jmx</groupId>
-					<artifactId>collector</artifactId>
-					<version>0.13.0</version>
-				</dependency>
-				<dependency>
-					<groupId>org.springframework.boot</groupId>
-					<artifactId>spring-boot-starter-security</artifactId>
-					<version>2.1.2.RELEASE</version>
-				</dependency>
-			</dependencies>
 			<build>
 			    <plugins>
 			        <plugin>
 			            <artifactId>maven-assembly-plugin</artifactId>
+			            <dependencies>
+							<dependency>
+								<groupId>org.apache.commons</groupId>
+								<artifactId>commons-compress</artifactId>
+								<version>1.19</version>
+							</dependency>
+						</dependencies>
 			            <executions>
 			                <execution>
 			                    <phase>package</phase>
