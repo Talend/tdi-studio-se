@@ -20,3 +20,9 @@
 %>
 
 processor_<%=cid%>.flush(outputs_<%=cid%>);
+
+// extract after variables from the processor map and put to after variables map of job
+final java.util.Map<String, Object> afterVariablesMap_<%=cid%> = org.talend.sdk.component.runtime.di.studio.AfterVariableExtracter.extractAfterVariables(processorImpl_<%=cid%>);
+for (java.util.Map.Entry<String, Object> entry_<%=cid %> : afterVariablesMap_<%=cid%>.entrySet()) {
+    globalMap.put("<%=cid %>_"+entry_<%=cid %>.getKey(), entry_<%=cid %>.getValue());
+}
