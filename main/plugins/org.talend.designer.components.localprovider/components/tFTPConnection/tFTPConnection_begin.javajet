@@ -113,18 +113,7 @@ if (!sftp && !ftps) { // *** ftp *** //
 		}
 	};
 	final com.jcraft.jsch.UserInfo defaultUserInfo_<%=cid%> = new MyUserInfo();
-	com.jcraft.jsch.JSch jsch_<%=cid%> = new com.jcraft.jsch.JSch(); 
 
-	<%if (("PUBLICKEY").equals(authMethod)){%>
-		<%if(isLog4jEnabled){%>
-			log.info("<%=cid%> - SFTP authentication using a public key.");
-			log.debug("<%=cid%> - Private key: '" + <%=privateKey%> + "'.");
-		<%}%>
-		jsch_<%=cid%>.addIdentity(<%=privateKey %>, defaultUserInfo_<%=cid%>.getPassphrase());
-	<%}%>
-	
-	com.jcraft.jsch.Session session_<%=cid%> = jsch_<%=cid%>.getSession(<%=user%>, <%=host%>, <%=port%>);
-	session_<%=cid%>.setConfig("PreferredAuthentications", "publickey,password,keyboard-interactive,gssapi-with-mic");
 
 	<%@ include file="@{org.talend.designer.components.localprovider}/components/templates/FTP/sftp_connect.javajet"%>
 
