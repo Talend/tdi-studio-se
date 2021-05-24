@@ -457,6 +457,18 @@ public class ExportItemWizardPage extends WizardPage {
         if (nodeObject instanceof ProjectRepositoryNode
                 || ((nodeObject instanceof RepositoryNode) && ((RepositoryNode) nodeObject).getContentType() == ERepositoryObjectType.REFERENCED_PROJECTS)) {
             viewer.expandToLevel(nodeObject, 3);
+            //For referenced project which is one depth deeper than normal
+            if (nodeObject instanceof ProjectRepositoryNode) {
+                ProjectRepositoryNode projetRepNode = (ProjectRepositoryNode)nodeObject;
+                List<IRepositoryNode> children = projetRepNode.getChildren();
+                if ( children != null ) {
+                    for (IRepositoryNode child: children ) {
+                        if ((child != null) && (((RepositoryNode) child).getContentType() == ERepositoryObjectType.REFERENCED_PROJECTS)) {
+                            viewer.expandToLevel(child, 3);
+                        }
+                    }
+                }
+            }
         } else {
             viewer.expandToLevel(nodeObject, 1);
         }
@@ -546,61 +558,9 @@ public class ExportItemWizardPage extends WizardPage {
 
             @Override
             public void checkStateChanged(CheckStateChangedEvent event) {
-                if ( exportDependencies.getSelection() ) {
+                if (exportDependencies.getSelection()) {
                   exportDependencies.notifyListeners(SWT.Selection, new Event());
                   return;
-              }
-                ArrayList elementList = new ArrayList();
-                elementList.add(event.getElement());
-                Object[] elements = elementList.toArray();
-                Object[] routeElements = getRoutes(elements);
-                Map<String, Item> items = new HashMap<String, Item>();
-                collectNodes(items, routeElements);
-
-                Set<IRepositoryNode> beanDependencies = getBeanDependencies(items.values());
-                
-                Set toselect = new HashSet();
-                if (event.getChecked()) {
-                    initcheckedNodes.add(event.getElement());
-                    
-                    checkedDependency.addAll(beanDependencies);
-                    
-                    if (beanDependencies != null) {
-                        for (Object obj : beanDependencies) {
-                            ERepositoryObjectType objectType = getObjectType(obj);
-                            expandRoot(objectType);
-                            expandParent(exportItemsTreeViewer, obj, objectType);
-                            checkElement(obj, toselect);
-                        }
-                    }
-                    uncheckedNodes.removeAll(beanDependencies);
-                    for (Object repNode : toselect) {
-                        exportItemsTreeViewer.setChecked(repNode, true);
-                    }
- 
-                    // remove children and parent from uncheckednodes
-                    TreeItem treeItem = getTreeItem(exportItemsTreeViewer.getTree().getItems(), event.getElement());
-                    Set subItems = collectSubData(treeItem);
-                    Set parent = collectParentData(treeItem);
-                    uncheckedNodes.removeAll(subItems);
-                    uncheckedNodes.removeAll(parent);
-                } else {
-                    uncheckedNodes.add(event.getElement());
-                    // remove children from initcheckedNodes
-                    TreeItem treeItem = getTreeItem(exportItemsTreeViewer.getTree().getItems(), event.getElement());
-                    Set subItems = collectSubData(treeItem);
-                    initcheckedNodes.removeAll(subItems);
-                    
-                    if (beanDependencies != null) {
-                        for (Object obj : beanDependencies) {
-                            ERepositoryObjectType objectType = getObjectType(obj);
-                            checkElement(obj, toselect);
-                        }
-                    }
-                    for (Object repNode : toselect) {
-                        exportItemsTreeViewer.setChecked(repNode, false);
-                    }
-                    uncheckedNodes.addAll(beanDependencies);
                 }
             }
         });
@@ -960,6 +920,7 @@ public class ExportItemWizardPage extends WizardPage {
 
             @Override
             public void widgetSelected(SelectionEvent e) {
+                if (!exportDependencies.getSelection()) return;
                 checkedDependency.clear();
                 implicitDependences.clear();
                 CheckboxTreeViewer exportItemsTreeViewer = getItemsTreeViewer();
@@ -988,7 +949,11 @@ public class ExportItemWizardPage extends WizardPage {
                             }
                             checkElement(obj, toselect);
                         }
-                        exportItemsTreeViewer.setCheckedElements(toselect.toArray());
+                        for (Object tocheck : toselect) {
+                            if (!exportItemsTreeViewer.getChecked(tocheck)) {
+                               exportItemsTreeViewer.setChecked(tocheck, true);
+                            }
+                        }
                         if (!exportDependencies.getSelection()) {
                             for (Object unchecked : uncheckedNodes) {
                                 exportItemsTreeViewer.setChecked(unchecked, false);
