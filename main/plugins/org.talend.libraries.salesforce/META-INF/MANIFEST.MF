@@ -4,7 +4,6 @@ Bundle-Name: Salesforce
 Bundle-SymbolicName: org.talend.libraries.salesforce;singleton:=true
 Bundle-Version: 7.3.1.qualifier
 Require-Bundle: org.eclipse.core.runtime,
- org.apache.axis,
  javax.xml.rpc,
  org.talend.libraries.apache.axis2;visibility:=reexport
 Bundle-ClassPath: .,
