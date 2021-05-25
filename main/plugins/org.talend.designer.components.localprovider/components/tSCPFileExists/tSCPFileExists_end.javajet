@@ -1,6 +1,6 @@
-<%@ jet 
+<%@ jet
 imports="
-    org.talend.core.model.process.INode 
+    org.talend.core.model.process.INode
     org.talend.designer.codegen.config.CodeGeneratorArgument
     org.talend.core.model.process.ElementParameterParser
 "
@@ -11,14 +11,14 @@ imports="
     boolean isLog4jEnabled = ("true").equals(ElementParameterParser.getValue(node.getProcess(), "__LOG4J_ACTIVATE__"));
     String cid = node.getUniqueName();
     String useExistingConn = ElementParameterParser.getValue(node,"__USE_EXISTING_CONNECTION__");
-	if(!("true").equals(useExistingConn)){
-%>  	
+    if(!("true").equals(useExistingConn)){
+%>
         /* Close the connection */
-		<%if(isLog4jEnabled){%>
-			log.info("<%=cid%> - Closing the connection to the server.");
-		<%}%>
-        conn_<%=cid%>.close();
-		<%if(isLog4jEnabled){%>
-			log.info("<%=cid%> - Connection to the server closed.");
-		<%}%>
-<%	}%> 
+        <%if(isLog4jEnabled){%>
+            log.info("<%=cid%> - Closing the connection to the server.");
+        <%}%>
+        client_<%=cid%>.close();
+        <%if(isLog4jEnabled){%>
+            log.info("<%=cid%> - Connection to the server closed.");
+        <%}%>
+<%  }%>

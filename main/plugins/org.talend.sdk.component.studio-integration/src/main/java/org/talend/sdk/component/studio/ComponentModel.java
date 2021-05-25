@@ -74,6 +74,7 @@ import org.talend.sdk.component.studio.model.parameter.ElementParameterCreator;
 import org.talend.sdk.component.studio.model.parameter.Metadatas;
 import org.talend.sdk.component.studio.mvn.Mvn;
 import org.talend.sdk.component.studio.service.ComponentService;
+import org.talend.sdk.component.studio.util.TaCoKitConst;
 import org.talend.sdk.component.studio.util.TaCoKitUtil;
 
 public class ComponentModel extends AbstractBasicComponent implements IAdditionalInfo {
@@ -176,7 +177,7 @@ public class ComponentModel extends AbstractBasicComponent implements IAdditiona
      * @return
      */
     private List<ECodePart> createCodePartList() {
-        return Collections.unmodifiableList(ETaCoKitComponentType.input.equals(getTaCoKitComponentType())
+        return Collections.unmodifiableList(ETaCoKitComponentType.input.equals(getTaCoKitComponentType()) || ETaCoKitComponentType.standalone.equals(getTaCoKitComponentType())
                 ? Arrays.asList(ECodePart.BEGIN, ECodePart.END, ECodePart.FINALLY)
                 : (useLookup()
                 ?
@@ -323,13 +324,34 @@ public class ComponentModel extends AbstractBasicComponent implements IAdditiona
         errorMessage.setAvailability(AFTER);
         returnVariables.add(errorMessage);
 
-        NodeReturn numberLinesMessage = new NodeReturn();
-        numberLinesMessage.setType(JavaTypesManager.INTEGER.getId());
-        numberLinesMessage.setDisplayName(ComponentReturnVariableUtils
-                .getTranslationForVariable(RETURN_TOTAL_RECORD_COUNT, RETURN_TOTAL_RECORD_COUNT));
-        numberLinesMessage.setName(ComponentReturnVariableUtils.getStudioNameFromVariable(RETURN_TOTAL_RECORD_COUNT));
-        numberLinesMessage.setAvailability(AFTER);
-        returnVariables.add(numberLinesMessage);
+        if(!ETaCoKitComponentType.standalone.equals(getTaCoKitComponentType())) {
+            NodeReturn numberLinesMessage = new NodeReturn();
+            numberLinesMessage.setType(JavaTypesManager.INTEGER.getId());
+            numberLinesMessage.setDisplayName(ComponentReturnVariableUtils.getTranslationForVariable(RETURN_TOTAL_RECORD_COUNT,
+                    RETURN_TOTAL_RECORD_COUNT));
+            numberLinesMessage.setName(ComponentReturnVariableUtils.getStudioNameFromVariable(RETURN_TOTAL_RECORD_COUNT));
+            numberLinesMessage.setAvailability(AFTER);
+            returnVariables.add(numberLinesMessage);
+        }
+
+        if (detail.getMetadata().containsKey(TaCoKitConst.META_KEY_AFTER_VARIABLE)) {
+            String afterVariableMetaValue = detail.getMetadata().getOrDefault(TaCoKitConst.META_KEY_AFTER_VARIABLE, "");
+            for (String string : afterVariableMetaValue.split(TaCoKitConst.AFTER_VARIABLE_LINE_DELIMITER)) {
+                String[] split = string.split(TaCoKitConst.AFTER_VARIABLE_VALUE_DELIMITER);
+                String key = split[0];
+                String type = split[1];
+                // if description is empty we use as description the key value
+                String description = split.length < 3 || split[2].isEmpty() ? split[0] : split[2];
+
+                NodeReturn returnNode = new NodeReturn();
+                String javaType = JavaTypesManager.getJavaTypeFromCanonicalName(type).getId();
+                returnNode.setType(javaType);
+                returnNode.setDisplayName(description);
+                returnNode.setName(key);
+                returnNode.setAvailability(AFTER);
+                returnVariables.add(returnNode);
+            }
+        }
 
         return returnVariables;
     }

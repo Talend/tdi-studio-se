@@ -51,7 +51,15 @@ class DealChildJobLibrary_<%=cid%> {
 		String crcMapPath = new java.io.File("../crcMap").getCanonicalPath();
 		if (isNeedAddLibsPath( crcMapPath)) {
 			java.util.Map<String, String> crcMap = null;
-			java.io.ObjectInputStream ois = new ObjectInputStream(new java.io.FileInputStream(crcMapPath));
+			java.io.ObjectInputStream ois = new java.io.ObjectInputStream(new java.io.FileInputStream(crcMapPath)) {
+				@Override
+				public Class<?> resolveClass(java.io.ObjectStreamClass desc) throws java.io.IOException, ClassNotFoundException {
+					if(!"java.util.HashMap".equals(desc.getName())) {
+						throw new java.io.InvalidClassException("Unauthorized deserialization attempt : " + desc.getName());
+					}
+					return super.resolveClass(desc);
+				}
+			};
 			crcMap = (java.util.Map<String, String>) ois.readObject();
 			ois.close();
 			classPathLine = addLibsPath(originalClassPathLine, crcMap);
@@ -215,6 +223,9 @@ try {
 		java.util.Map<String,List<String>> childJob_commandLine_Mapper_<%=cid%> = new java.util.HashMap<String,List<String>>();
 		java.util.List<String> childJob_commandLine_<%=cid%> = null;
 		String classpathSeparator_<%=cid%> = System.getProperty("path.separator");
+		if (classpathSeparator_<%=cid%> != null && classpathSeparator_<%=cid%>.length() > 1) {
+			throw new RuntimeException("path separator should be single character");
+		}
 		<%
 	
 		//issue 19108: The context text field waits for a context name without quotes. The component removes the first quote and the last quote if they exist.

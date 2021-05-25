@@ -54,7 +54,8 @@ final org.talend.sdk.component.runtime.record.RecordConverters.MappingMetaRegist
 
 final org.talend.sdk.component.runtime.input.Mapper tempMapper_<%=cid%> = mgr_<%=cid%>.findMapper("<%=family%>", "<%=originalName%>", <%=version%>, configuration_<%=cid%>)
     .orElseThrow(() -> new IllegalArgumentException("Can't find <%=family%>#<%=originalName%>"));
-    
+final java.util.Map<String, Object> afterVariablesMap_<%=cid%> = org.talend.sdk.component.runtime.di.studio.AfterVariableExtracter.extractAfterVariables(tempMapper_<%=cid%>);
+
 <%
 boolean useExistedConnection = "true".equals(ElementParameterParser.getValue(node,"__USE_EXISTING_CONNECTION__"));
 String connection = ElementParameterParser.getValue(node,"__CONNECTION__");
@@ -70,7 +71,7 @@ try {
     if(con_<%=cid%>==null) {
         throw new RuntimeException("can't find the connection object");
     }
-    
+
     Class<?> current_<%=cid%> = v_<%=cid%>.getClass();
     while (current_<%=cid%> != null && current_<%=cid%> != Object.class) {
         java.util.stream.Stream.of(current_<%=cid%>.getDeclaredFields()).filter(f_<%=cid%> -> f_<%=cid%>.isAnnotationPresent(org.talend.sdk.component.api.service.connection.Connection.class)).forEach(f_<%=cid%> -> {
@@ -94,6 +95,7 @@ try {
 %>
 
 int nbLineInput_<%=cid%> = 0;
+globalMap.put("<%=cid %>_NB_LINE", nbLineInput_<%=cid%>);
 
 org.talend.sdk.component.runtime.di.JobStateAware.init(tempMapper_<%=cid%>, globalMap);
 tempMapper_<%=cid%>.start();
