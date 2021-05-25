@@ -152,6 +152,7 @@ public class ExchangeUtils {
         String proxyUser = ManagedProperties.getProperty("http.proxyUser");
         String proxyPassword = ManagedProperties.getProperty("http.proxyPassword");
         String proxyHost = ManagedProperties.getProperty("http.proxyHost");
+        proxyHost = proxyHost != null ? proxyHost : "";
         String proxyPort = ManagedProperties.getProperty("http.proxyPort");
         if (proxyHost.length() != 0) {
             UsernamePasswordCredentials creds = new UsernamePasswordCredentials(
