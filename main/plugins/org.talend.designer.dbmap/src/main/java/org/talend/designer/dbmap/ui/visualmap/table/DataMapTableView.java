@@ -354,7 +354,7 @@ public abstract class DataMapTableView extends Composite implements IDataMapTabl
         GridData centerData = new GridData(GridData.FILL_BOTH);
         centerComposite.setLayoutData(centerData);
 
-        GridLayout centerLayout = new GridLayout();
+        GridLayout centerLayout = new GridLayout(3, false);
         int marginCenterLayout = 0;
         centerLayout.marginLeft = marginCenterLayout;
         centerLayout.marginRight = marginCenterLayout;
@@ -564,6 +564,7 @@ public abstract class DataMapTableView extends Composite implements IDataMapTabl
 
         GridData tableEntriesGridData = new GridData(GridData.FILL_BOTH);
         tableEntriesGridData.grabExcessVerticalSpace = true;
+        tableEntriesGridData.horizontalSpan = 3;
         tableEntriesGridData.minimumHeight = tableForEntries.getHeaderHeight() + tableForEntries.getItemHeight();
         // tableEntriesGridData.heightHint = 50;
         // tableEntriesGridData.grabExcessVerticalSpace = false;
