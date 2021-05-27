@@ -120,7 +120,8 @@ if ((metadatas!=null)&&(metadatas.size()>0)) {
 		org.apache.sshd.client.channel.ClientChannelEvent.CLOSED,org.apache.sshd.client.channel.ClientChannelEvent.EXIT_STATUS), 0L);
 		exit_code_<%=cid%> = channel_<%=cid%>.getExitStatus();
 		channel_<%=cid%>.close();
-		session_<%=cid%>.close();
+		org.apache.sshd.common.future.CloseFuture close_session_<%=cid%> = session_<%=cid%>.close(false);
+		close_session_<%=cid%>.awaitUninterruptibly();
 		<%if(isLog4jEnabled){%>
 			log.debug("Channel Events: "+ java.util.Arrays.toString(clientChannelEvents_<%=cid %>.toArray()));
 		<%}%>

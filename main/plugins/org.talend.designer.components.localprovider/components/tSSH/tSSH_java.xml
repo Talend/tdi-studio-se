@@ -179,6 +179,11 @@
         MODULE="sshd-common-2.5.1.jar" MVN="mvn:org.apache.sshd/sshd-common/2.5.1"
         REQUIRED="true"
       />
+    <IMPORT
+        NAME="EDDSA"
+        MODULE="eddsa-0.3.0.jar" MVN="mvn:net.i2p.crypto/eddsa/0.3.0"
+        REQUIRED="true"
+      />
     </IMPORTS>
   </CODEGENERATION>
 
