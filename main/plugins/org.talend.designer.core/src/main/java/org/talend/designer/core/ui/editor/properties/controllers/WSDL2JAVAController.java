@@ -273,7 +273,7 @@ public class WSDL2JAVAController extends AbstractElementPropertySectionControlle
 
                 final TalendWSDL2Java java2WSDL = new TalendWSDL2Java();
 
-                boolean hasError = java2WSDL.generateWSDL(new String[] { "-o", filePath, "-p", PACK, wsdlfile }); //$NON-NLS-1$ //$NON-NLS-2$
+                boolean hasError = java2WSDL.generateWSDL(new String[] { "-o", filePath, "-uri", wsdlfile, "-p", PACK }); //$NON-NLS-1$ //$NON-NLS-2$
 
                 // give some info about the generate stub.jar result to GUI.
                 final String tempWsdlfile = wsdlfile;
