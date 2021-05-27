@@ -1,0 +1,10 @@
+<%@ jet 
+%>
+
+if(enableObjectLock_<%=cid %>) {
+	if("GOVERNANCE".equals(retentionMode_<%=cid %>)) {
+		putRequest_<%=cid%>.withObjectLockMode(com.amazonaws.services.s3.model.ObjectLockMode.GOVERNANCE).withObjectLockRetainUntilDate(date_<%=cid %>);
+	} else if("COMPLIANCE".equals(retentionMode_<%=cid %>)) {
+		putRequest_<%=cid%>.withObjectLockMode(com.amazonaws.services.s3.model.ObjectLockMode.COMPLIANCE).withObjectLockRetainUntilDate(date_<%=cid %>);
+	}
+}

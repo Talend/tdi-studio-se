@@ -551,6 +551,45 @@
 	        <ITEM NAME="BUCKET_OWNER_FULL_CONTROL" VALUE="&quot;BucketOwnerFullControl&quot;" />
           </ITEMS>
         </PARAMETER>
+        <PARAMETER
+          NAME="ENABLE_OBJECT_LOCK"
+          FIELD="CHECK"
+          NUM_ROW="110"
+        >   	
+        <DEFAULT>false</DEFAULT>
+        </PARAMETER>
+        <PARAMETER
+	      NAME="RETENTION_MODE"
+	      FIELD="CLOSED_LIST"
+	      NUM_ROW="111"
+	      SHOW_IF="ENABLE_OBJECT_LOCK == 'true'"
+	    >
+	      <ITEMS DEFAULT="GOVERNANCE">
+	        <ITEM NAME="GOVERNANCE" VALUE="GOVERNANCE" />
+	        <ITEM NAME="COMPLIANCE" VALUE="COMPLIANCE" />
+	      </ITEMS>
+	    </PARAMETER>
+	    <PARAMETER
+	      NAME="RETENTION_PERIOD"
+	      FIELD="TEXT"
+	      NUM_ROW="111"
+	      REQUIRED="true"
+	      SHOW_IF="ENABLE_OBJECT_LOCK == 'true'"
+	    >
+	      <DEFAULT>1</DEFAULT>
+	    </PARAMETER>
+	    <PARAMETER
+	      NAME="RETENTION_PERIOD_TYPE"
+	      FIELD="CLOSED_LIST"
+	      NUM_ROW="111"
+	      SHOW_IF="ENABLE_OBJECT_LOCK == 'true'"
+	    >
+	      <ITEMS DEFAULT="DAYS">
+	        <ITEM NAME="DAYS" VALUE="DAYS" />
+	        <ITEM NAME="YEARS" VALUE="YEARS" />
+	      </ITEMS>
+	    </PARAMETER>
+        
     </ADVANCED_PARAMETERS>
 
    <CODEGENERATION>

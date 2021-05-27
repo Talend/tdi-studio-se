@@ -6,6 +6,8 @@ imports="
 	java.util.List
 	java.util.ArrayList
 	java.util.Map
+	java.util.Date
+	java.util.GregorianCalendar
 " 
 %>
 	<%
@@ -37,6 +39,10 @@ imports="
 	List<Map<String, String>> paramsACL = ElementParameterParser.getTableValue(node,"__ACL__");
 	final String cannedACL = ElementParameterParser.getValue(node, "__CANNED_ACCESS_CONTROL_LIST__");
 	final boolean enableCannedACL = (cannedACL != null) && (!cannedACL.isEmpty()) && !("\"NONE\"".equals(cannedACL));
+	boolean enableObjectLock = "true".equals(ElementParameterParser.getValue(node, "__ENABLE_OBJECT_LOCK__"));
+	String retentionMode = ElementParameterParser.getValue(node, "__RETENTION_MODE__");
+	String retentionPeriod = ElementParameterParser.getValue(node, "__RETENTION_PERIOD__");
+	String retentionPeriodType = ElementParameterParser.getValue(node, "__RETENTION_PERIOD_TYPE__");
 	%>
 	<%@ include file="../tS3Connection/S3Client.javajet" %>
 	String key_<%=cid%> = <%=key%>;
@@ -130,7 +136,25 @@ accessCtrlList.grantPermission(grantee_<%=cid%>_<%=grantee_id%>, com.amazonaws.s
 			}
 		}
   		%>
+		boolean enableObjectLock_<%=cid %> = <%=enableObjectLock %>;
+		String retentionMode_<%=cid %> = "<%=retentionMode %>";
+		Integer retentionPeriod_<%=cid %> = <%=retentionPeriod %>;
+		String retentionPeriodType_<%=cid %> = "<%=retentionPeriodType %>";
+		java.util.Date date_<%=cid %> = null;
+		java.util.GregorianCalendar calendar_<%=cid %> = null;
 		
+		if(enableObjectLock_<%=cid %>) {
+			date_<%=cid %> = new java.util.Date();
+    		calendar_<%=cid %> = new java.util.GregorianCalendar();
+    		calendar_<%=cid %>.setTime(date_<%=cid %>);
+    		
+    		if("DAYS".equals(retentionPeriodType_<%=cid %>)) {
+    			calendar_<%=cid %>.add(calendar_<%=cid %>.DATE,retentionPeriod_<%=cid %>);
+    		} else if("YEARS".equals(retentionPeriodType_<%=cid %>)) {
+    			calendar_<%=cid %>.add(calendar_<%=cid %>.YEAR,retentionPeriod_<%=cid %>);
+    		}
+    		date_<%=cid %> = calendar_<%=cid %>.getTime();
+		}
 		if(!useStream_<%=cid%>) {
 				java.io.File inputFile_<%=cid%> = new java.io.File((String)fileOrStream_<%=cid%>);
 				
@@ -142,7 +166,7 @@ accessCtrlList.grantPermission(grantee_<%=cid%>_<%=grantee_id%>, com.amazonaws.s
     			.withMultipartUploadThreshold(multipart_upload_threshold_<%=cid%>)
     			.withS3Client(conn_<%=cid%>)
     			.build();
-    			
+
   			com.amazonaws.services.s3.model.PutObjectRequest putRequest_<%=cid%> = new com.amazonaws.services.s3.model.PutObjectRequest(<%=bucket%>, key_<%=cid%>, inputFile_<%=cid%>).withMetadata(objectMetadata_<%=cid%>);
 			<%if (enableACL) {%>
 				putRequest_<%=cid%>.withAccessControlList(accessCtrlList);
@@ -157,6 +181,8 @@ accessCtrlList.grantPermission(grantee_<%=cid%>_<%=grantee_id%>, com.amazonaws.s
 			<%}%>
 			
   			<%@ include file="./set_kms.javajet"%>
+  			
+  			<%@ include file="./enable_object_lock.javajet"%>
   		
   			com.amazonaws.services.s3.transfer.Upload upload_<%=cid%> = tm_<%=cid%>.upload(putRequest_<%=cid%>);
   		
@@ -166,15 +192,15 @@ accessCtrlList.grantPermission(grantee_<%=cid%>_<%=grantee_id%>, com.amazonaws.s
 				java.io.InputStream sourceStream_<%=cid%> = ((java.io.InputStream)fileOrStream_<%=cid%>);
 				
   			class S3StreamUtil {
-    	    public int getLength(byte[] output) {
-    		    for (int i = output.length - 1; i > 0; i--) {
-    			    if (output[i] != 0) {
-    				    return i + 1;
-    			    }
-    		    }
-    		    return 0;
-    	    }
-      	}
+	    	    public int getLength(byte[] output) {
+	    		    for (int i = output.length - 1; i > 0; i--) {
+	    			    if (output[i] != 0) {
+	    				    return i + 1;
+	    			    }
+	    		    }
+	    		    return 0;
+	    	    }
+	      	}
       	
       	S3StreamUtil streamUtil_<%=cid%> = new S3StreamUtil();
     		byte[] buffer_<%=cid%> = new byte[partSizeInBytes_<%=cid%>];
@@ -200,6 +226,8 @@ accessCtrlList.grantPermission(grantee_<%=cid%>_<%=grantee_id%>, com.amazonaws.s
 			        <%}%>
     				<%@ include file="./set_kms.javajet"%>
     				
+    				<%@ include file="./enable_object_lock.javajet"%>
+    				
     				conn_<%=cid%>.putObject(putRequest_<%=cid%>);
     		} else {
     				uploadStream_<%=cid%> = new java.io.ByteArrayInputStream(buffer_<%=cid%>);
@@ -217,6 +245,8 @@ accessCtrlList.grantPermission(grantee_<%=cid%>_<%=grantee_id%>, com.amazonaws.s
 				}
 			    <%}%>
       			<%@ include file="./set_kms.javajet"%>
+      			
+      			<%@ include file="./enable_object_lock.javajet"%>
       			
       			com.amazonaws.services.s3.model.InitiateMultipartUploadResult initResponse_<%=cid%> = conn_<%=cid%>.initiateMultipartUpload(putRequest_<%=cid%>);
       			String uploadId_<%=cid%> = initResponse_<%=cid%>.getUploadId();
