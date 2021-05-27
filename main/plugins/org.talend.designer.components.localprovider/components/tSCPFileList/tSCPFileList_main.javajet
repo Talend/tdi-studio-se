@@ -10,6 +10,5 @@ imports="
     String cid = node.getUniqueName();
 %>
 		nb_line_<%=cid %>++;
-		stringStdout_<%=cid%>.append(line_out_<%=cid%> + "\n");
 		globalMap.put("<%=cid %>_NB_LINE", nb_line_<%=cid %>);
 		globalMap.put("<%=cid %>_CURRENT_LINE", line_out_<%=cid%>);

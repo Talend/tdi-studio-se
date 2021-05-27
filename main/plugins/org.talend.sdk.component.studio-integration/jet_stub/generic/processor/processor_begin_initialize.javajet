@@ -108,3 +108,4 @@
     globalMap.put("processor_<%=cid%>", processor_<%=cid%>);
 
     int nbLineInput_<%=cid%> = 0;
+    globalMap.put("<%=cid %>_NB_LINE", nbLineInput_<%=cid%>);

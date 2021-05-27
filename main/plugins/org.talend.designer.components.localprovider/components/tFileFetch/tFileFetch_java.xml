@@ -246,6 +246,18 @@ COMPATIBILITY="ALL"
     >
 	<DEFAULT>false</DEFAULT>
 	</PARAMETER>
+	<PARAMETER
+      NAME="COMMON_PARAMS_CHARSET"
+      FIELD="OPENED_LIST"
+      NUM_ROW="7"
+      SHOW_IF="((PROTO == 'HTTP_PROTO') or (PROTO == 'HTTPS_PROTO')) AND (POST == 'true')"
+    >
+        <ITEMS DEFAULT="UTF8">
+          <ITEM NAME="USASCII" VALUE="&quot;US-ASCII&quot;" />
+          <ITEM NAME="UTF8"    VALUE="&quot;UTF-8&quot;" />
+          <ITEM NAME="WIN1252" VALUE="&quot;windows-1252&quot;" />
+      </ITEMS>
+    </PARAMETER>
      <PARAMETER
     	NAME="PRINT"
     	FIELD="CHECK"

@@ -233,7 +233,7 @@
 
     <ADVANCED_PARAMETERS>
     
-    <PARAMETER 	NAME="USE_REGION_ENDPOINT" FIELD="CHECK" NUM_ROW="5" REQUIRED="true"	GROUP="REGION_ENDPOINT_GROUP" >
+    <PARAMETER 	NAME="USE_REGION_ENDPOINT" FIELD="CHECK" NUM_ROW="5" REQUIRED="true" DYNAMIC_SETTINGS="true" GROUP="REGION_ENDPOINT_GROUP" >
 	   <DEFAULT>false</DEFAULT>
   	</PARAMETER>
     
@@ -246,10 +246,11 @@
       <DEFAULT>"s3.amazonaws.com"</DEFAULT>
     </PARAMETER>
 
-    <PARAMETER  NAME="PATHSTYLEACCESS" 
+    <PARAMETER  NAME="PATHSTYLEACCESS"
           FIELD="CHECK" 
           NUM_ROW="6" 
-          REQUIRED="false" 
+          REQUIRED="false"
+          DYNAMIC_SETTINGS="true"
           GROUP="REGION_ENDPOINT_GROUP" 
           SHOW_IF="USE_REGION_ENDPOINT == 'true'" >
       <DEFAULT>false</DEFAULT>
@@ -468,6 +469,7 @@
       NAME="ENABLE_ACCELERATE"
       FIELD="CHECK"
       NUM_ROW="50"
+      DYNAMIC_SETTINGS="true"
     >   	
     <DEFAULT>false</DEFAULT>
     </PARAMETER>
@@ -493,8 +495,8 @@
 		<IMPORT NAME="httpcore-4.4.13.jar" MODULE="httpcore-4.4.13.jar"
 			MVN="mvn:org.apache.httpcomponents/httpcore/4.4.13"
 			REQUIRED="true" />
-		<IMPORT NAME="httpclient-4.5.12.jar" MODULE="httpclient-4.5.12.jar"
-			MVN="mvn:org.apache.httpcomponents/httpclient/4.5.12"
+		<IMPORT NAME="httpclient-4.5.13.jar" MODULE="httpclient-4.5.13.jar"
+			MVN="mvn:org.apache.httpcomponents/httpclient/4.5.13"
 			REQUIRED="true" />
 		<IMPORT NAME="joda-time-2.8.1.jar" MODULE="joda-time-2.8.1.jar"
 			MVN="mvn:joda-time/joda-time/2.8.1"
