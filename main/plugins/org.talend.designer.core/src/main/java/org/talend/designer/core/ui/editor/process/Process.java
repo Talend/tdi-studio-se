@@ -213,6 +213,8 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
 
     protected List<INode> nodes = new ArrayList<INode>();
 
+    protected List<INode> processNodes = new ArrayList<INode>();
+
     protected List<Element> elem = new ArrayList<Element>();
 
     protected List<SubjobContainer> subjobContainers = new ArrayList<SubjobContainer>();
@@ -712,8 +714,11 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
      */
     public void addNodeContainer(final NodeContainer nodeContainer) {
         elem.add(nodeContainer);
-        nodes.add(nodeContainer.getNode());
-
+        Node node = nodeContainer.getNode();
+        nodes.add(node);
+        if (node.isProcessNode()) {
+            processNodes.add(node);
+        }
         // fireStructureChange(NEED_UPDATE_JOB, elem);
     }
 
@@ -731,6 +736,16 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
             removeUniqueNodeNamesInJoblet((AbstractJobletContainer) nodeContainer, readedContainers);
         }
         removeNode(uniqueName);
+        if (nodeContainer.getNode().isProcessNode() && uniqueName != null) {
+            Iterator<INode> nodeIter = processNodes.iterator();
+            while (nodeIter.hasNext()) {
+                INode processNode = nodeIter.next();
+                if (uniqueName.equals(processNode.getUniqueName())) {
+                    nodeIter.remove();
+                }
+            }
+        }
+
         Element toRemove = nodeContainer;
         List<Element> toAdd = new ArrayList<Element>();
         for (Object o : elem) {
@@ -805,6 +820,11 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
     @Override
     public List<? extends INode> getGraphicalNodes() {
         return this.nodes;
+    }
+
+    @Override
+    public List<? extends INode> getProcessNodes() {
+        return this.processNodes;
     }
 
     protected IGeneratingProcess generatingProcess = null;
@@ -4639,6 +4659,7 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
 
         elem.clear();
         nodes.clear();
+        processNodes.clear();
         notes.clear();
         subjobContainers.clear();
         setGeneratingProcess(null);
