@@ -23,7 +23,13 @@ final CodeGeneratorArgument codeGenArgument = CodeGeneratorArgument.class.cast(a
 final INode node = INode.class.cast(codeGenArgument.getArgument());
 final String cid = node.getUniqueName();
 %>
-}
+} // while
+
+    // extract after variables from the processor map and put to after variables map of job
+    for (java.util.Map.Entry<String, Object> entry_<%=cid %> : afterVariablesMap_<%=cid%>.entrySet()) {
+        globalMap.put("<%=cid %>_"+entry_<%=cid %>.getKey(), entry_<%=cid %>.getValue());
+    }
+
     boolean swallowNextException_<%=cid%> = false;
     try {
         if (input_<%=cid%> != null) {

@@ -38,10 +38,10 @@ public class TaCoKitConst {
      */
     public static final String GUESS_SCHEMA_PARAMETER_PLUGIN_NAME =
             "___TACOKIT_GUESS_SCHEMA_PARAMETER_PLUGIN_NAME___"; //$NON-NLS-1$
-    
+
     /**
      * DON'T modify the value, otherwise please also modify it in connection_begin.javajet and close_begin.javajet
-     * In fact, the same meaning with GUESS_SCHEMA_PARAMETER_PLUGIN_NAME, but not sure if that is stored in .item or any location, 
+     * In fact, the same meaning with GUESS_SCHEMA_PARAMETER_PLUGIN_NAME, but not sure if that is stored in .item or any location,
      * so keep duplicated now
      */
     public static final String TACOKIT_COMPONENT_PLUGIN_NAME =
@@ -88,12 +88,18 @@ public class TaCoKitConst {
     public static final String CONFIG_NODE_ID_DATASTORE = "datastore";
 
     public static final String CONFIG_NODE_ID_DATASET = "dataset";
-    
+
     public static final String CONFIG_NODE_ID_CONFIGURATION = "configuration";
-    
+
     public static final String CONFIG_NODE_ID_CONNECTION="connection";
-    
+
     public static final String CLOSE_CONNECTION_ATCION_NAME = "close_connection";
-    
+
     public static final String CREATE_CONNECTION_ATCION_NAME = "create_connection";
+
+    public static final String META_KEY_AFTER_VARIABLE = "variables::after::value"; //$NON-NLS-1$
+
+    public static final String AFTER_VARIABLE_VALUE_DELIMITER = "\\\\:";
+
+    public static final String AFTER_VARIABLE_LINE_DELIMITER = "\\\\;";
 }

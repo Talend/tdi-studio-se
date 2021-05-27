@@ -320,12 +320,17 @@ public class ExportItemUtil {
             Map<String,String> jarNameAndUrl = new HashMap<String,String>();
             Iterator<Item> iterator = allItems.iterator();
             Set<String> projectHasTdm = new HashSet<String>();
+            int done = 1, total = allItems.size();
             while (iterator.hasNext()) {
                 Item item = iterator.next();
 
                 project = pManager.getProject(item);
 
                 String label = item.getProperty().getLabel();
+                if (progressMonitor.isCanceled()) {
+                    throw new InterruptedException();
+                }
+                progressMonitor.setTaskName(Messages.getString("ExportItemWizardPage.progressMessage", done++, total, label));
                 // project
                 addTalendProjectFile(toExport, destinationDirectory);
                 // Item context link file
@@ -464,7 +469,7 @@ public class ExportItemUtil {
             }
 
         } catch (Exception e) {
-            ExceptionHandler.process(e);
+            throw e;
         }
 
         finally {
