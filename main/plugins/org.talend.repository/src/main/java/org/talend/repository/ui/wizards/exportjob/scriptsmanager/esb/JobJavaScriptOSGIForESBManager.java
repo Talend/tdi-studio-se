@@ -365,7 +365,7 @@ public class JobJavaScriptOSGIForESBManager extends JobJavaScriptsManager {
                 ICamelDesignerCoreService camelService = (ICamelDesignerCoreService) GlobalServiceRegister.getDefault().getService(
                         ICamelDesignerCoreService.class);
 
-                Collection<String> unselectList = camelService.getUnselectDependenciesBundle(processItem);
+                Map<String, Boolean> unselectList = camelService.getUnselectDependenciesBundle(processItem);
                 List<URL> unselectListURLs = new ArrayList<>();
 
                 for(Set<URL> set:libResource.getAllResources()) {
@@ -373,7 +373,7 @@ public class JobJavaScriptOSGIForESBManager extends JobJavaScriptsManager {
                     for (URL url : set) {
 
                         boolean exist = false;
-                        for(String name: unselectList) {
+                        for(String name: unselectList.keySet()) {
                             if (name.equals(new File(new File(url.getFile()).toURI()).getName())) {
                                exist = true;
                             }
