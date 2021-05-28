@@ -43,6 +43,21 @@ imports="
 	String retentionMode = ElementParameterParser.getValue(node, "__RETENTION_MODE__");
 	String retentionPeriod = ElementParameterParser.getValue(node, "__RETENTION_PERIOD__");
 	String retentionPeriodType = ElementParameterParser.getValue(node, "__RETENTION_PERIOD_TYPE__");
+	
+	String millisecTime = null;
+	if(enableObjectLock) {
+		Date date = new Date();
+		GregorianCalendar calendar = new GregorianCalendar();
+		calendar.setTime(date);
+		
+		if("DAYS".equals(retentionPeriodType)) {
+			calendar.add(calendar.DATE,Integer.valueOf(retentionPeriod));
+		} else if("YEARS".equals(retentionPeriodType)) {
+			calendar.add(calendar.YEAR,Integer.valueOf(retentionPeriod));
+		}
+		date = calendar.getTime();
+		millisecTime = String.valueOf(date.getTime());
+	}
 	%>
 	<%@ include file="../tS3Connection/S3Client.javajet" %>
 	String key_<%=cid%> = <%=key%>;
@@ -136,25 +151,7 @@ accessCtrlList.grantPermission(grantee_<%=cid%>_<%=grantee_id%>, com.amazonaws.s
 			}
 		}
   		%>
-		boolean enableObjectLock_<%=cid %> = <%=enableObjectLock %>;
-		String retentionMode_<%=cid %> = "<%=retentionMode %>";
-		Integer retentionPeriod_<%=cid %> = <%=retentionPeriod %>;
-		String retentionPeriodType_<%=cid %> = "<%=retentionPeriodType %>";
-		java.util.Date date_<%=cid %> = null;
-		java.util.GregorianCalendar calendar_<%=cid %> = null;
 		
-		if(enableObjectLock_<%=cid %>) {
-			date_<%=cid %> = new java.util.Date();
-    		calendar_<%=cid %> = new java.util.GregorianCalendar();
-    		calendar_<%=cid %>.setTime(date_<%=cid %>);
-    		
-    		if("DAYS".equals(retentionPeriodType_<%=cid %>)) {
-    			calendar_<%=cid %>.add(calendar_<%=cid %>.DATE,retentionPeriod_<%=cid %>);
-    		} else if("YEARS".equals(retentionPeriodType_<%=cid %>)) {
-    			calendar_<%=cid %>.add(calendar_<%=cid %>.YEAR,retentionPeriod_<%=cid %>);
-    		}
-    		date_<%=cid %> = calendar_<%=cid %>.getTime();
-		}
 		if(!useStream_<%=cid%>) {
 				java.io.File inputFile_<%=cid%> = new java.io.File((String)fileOrStream_<%=cid%>);
 				
@@ -180,10 +177,8 @@ accessCtrlList.grantPermission(grantee_<%=cid%>_<%=grantee_id%>, com.amazonaws.s
 				}
 			<%}%>
 			
-  			<%@ include file="./set_kms.javajet"%>
+  			<%@ include file="./set_kms_objectlock.javajet"%>
   			
-  			<%@ include file="./enable_object_lock.javajet"%>
-  		
   			com.amazonaws.services.s3.transfer.Upload upload_<%=cid%> = tm_<%=cid%>.upload(putRequest_<%=cid%>);
   		
   			upload_<%=cid%>.waitForCompletion();
@@ -224,9 +219,7 @@ accessCtrlList.grantPermission(grantee_<%=cid%>_<%=grantee_id%>, com.amazonaws.s
 				             }
 				         }
 			        <%}%>
-    				<%@ include file="./set_kms.javajet"%>
-    				
-    				<%@ include file="./enable_object_lock.javajet"%>
+    				<%@ include file="./set_kms_objectlock.javajet"%>
     				
     				conn_<%=cid%>.putObject(putRequest_<%=cid%>);
     		} else {
@@ -244,9 +237,7 @@ accessCtrlList.grantPermission(grantee_<%=cid%>_<%=grantee_id%>, com.amazonaws.s
 				    }
 				}
 			    <%}%>
-      			<%@ include file="./set_kms.javajet"%>
-      			
-      			<%@ include file="./enable_object_lock.javajet"%>
+      			<%@ include file="./set_kms_objectlock.javajet"%>
       			
       			com.amazonaws.services.s3.model.InitiateMultipartUploadResult initResponse_<%=cid%> = conn_<%=cid%>.initiateMultipartUpload(putRequest_<%=cid%>);
       			String uploadId_<%=cid%> = initResponse_<%=cid%>.getUploadId();
