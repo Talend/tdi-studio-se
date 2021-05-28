@@ -33,8 +33,6 @@ imports="
 
 	boolean createSpatialIndex = ("true").equals(ElementParameterParser.getValue(node,"__SPATIAL_INDEX__"));
 
-	boolean createGeometryColumns = ("true").equals(ElementParameterParser.getValue(node,"__GEOMETRY_COLUMNS__"));
-
 	boolean useBatchSize = ("true").equals(ElementParameterParser.getValue(node,"__USE_BATCH_SIZE__"));
 
 	String dieOnError = ElementParameterParser.getValue(node, "__DIE_ON_ERROR__");
@@ -65,24 +63,6 @@ imports="
     boolean isParallelize ="true".equalsIgnoreCase(ElementParameterParser.getValue(node, "__PARALLELIZE__"));
     String tableAction = ElementParameterParser.getValue(node,"__TABLE_ACTION__");
 	boolean createTable = "CREATE".equals(tableAction) || "DROP_CREATE".equals(tableAction) || "CREATE_IF_NOT_EXISTS".equals(tableAction) || "DROP_IF_EXISTS_AND_CREATE".equals(tableAction);
-    if(createGeometryColumns && useSpatialOptions && !isParallelize && createTable){
-		%>
-		java.sql.Statement stmtCreateGeoColumns_<%=cid%> = conn_<%=cid%>.createStatement();
-
-		// Delete geometry columns entry if already exists.
-		String deleteGeometryColumns_<%=cid %> = "DELETE FROM geometry_columns WHERE f_table_name='" +
-												<%=tableName %> + "' AND f_table_schema='" + <%=dbschema %> +"'";
-		stmtCreateGeoColumns_<%=cid%>.execute(deleteGeometryColumns_<%=cid %>);
-
-		// Create new entry in geometry columns table
-        String insertGeometryColumns_<%=cid %> = "INSERT INTO geometry_columns VALUES ('', '"+ <%=dbschema %> +"', '"+
-        										<%=tableName %> +"','"+ geometryColumnName_<%=cid %> +
-        										"', "+dimension_<%=cid %>+", "+ SRID_<%=cid %> +", 'GEOMETRY')";
-        stmtCreateGeoColumns_<%=cid%>.execute(insertGeometryColumns_<%=cid %>);
-
-        stmtCreateGeoColumns_<%=cid%>.close();
-		<%
-	}
 	if(createSpatialIndex && useSpatialOptions && !isParallelize && createTable){
 		%>
     	java.sql.Statement stmtCreateIndex_<%=cid%> = conn_<%=cid%>.createStatement();

@@ -61,8 +61,6 @@ skeleton="../templates/db_output_bulk.skeleton"
 
 	boolean createSpatialIndex = ("true").equals(ElementParameterParser.getValue(node,"__SPATIAL_INDEX__"));
 
-	boolean createGeometryColumns = ("true").equals(ElementParameterParser.getValue(node,"__GEOMETRY_COLUMNS__"));
-
 	boolean useBatchSize = ("true").equals(ElementParameterParser.getValue(node,"__USE_BATCH_SIZE__"));
 	String batchSize=ElementParameterParser.getValue(node,"__BATCH_SIZE__");
 

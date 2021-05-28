@@ -158,7 +158,7 @@ public class CLASS {
                     if ("MDSYS.SDO_GEOMETRY".equalsIgnoreCase(this.getColumn().getType())) {
                         return "?";
                     } else {
-                        return "GeomFromText(?, ?)";    // For PostGIS
+                        return "ST_GeomFromText(?, ?)";    // For PostGIS
                     }
                 } else {
                     return this.sqlStmt;
