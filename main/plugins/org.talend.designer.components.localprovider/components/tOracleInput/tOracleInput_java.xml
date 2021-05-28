@@ -174,6 +174,47 @@
 			<DEFAULT>*Note: Example for Additional JDBC Parameters: "parameterName1=value1&amp;&amp;parameterName2=value2"</DEFAULT>
 		</PARAMETER>
 
+    <PARAMETER
+      NAME="USE_PREPAREDSTATEMENT"
+      FIELD="CHECK"
+      NUM_ROW="12"
+    >
+      <DEFAULT>false</DEFAULT>
+    </PARAMETER>
+    <PARAMETER
+      NAME="SET_PREPAREDSTATEMENT_PARAMETERS"
+      FIELD="TABLE"
+      REQUIRED="false"
+      NUM_ROW="13"
+      NB_LINES="3"
+      SHOW_IF="(USE_PREPAREDSTATEMENT == 'true')"
+    >
+      <ITEMS>
+        <ITEM NAME="PARAMETER_INDEX" VALUE="1" />
+        <ITEM NAME="PARAMETER_TYPE" VALUE="String" FIELD="CLOSED_LIST">
+        <ITEMS DEFAULT="String">
+          <ITEM NAME="BigDecimal" VALUE="BigDecimal"/>
+          <ITEM NAME="Blob"       VALUE="Blob"/>
+          <ITEM NAME="Boolean"    VALUE="Boolean"/>
+          <ITEM NAME="Byte"       VALUE="Byte"/>
+          <ITEM NAME="Bytes"      VALUE="Bytes"/>
+          <ITEM NAME="Clob"       VALUE="Clob"/>
+          <ITEM NAME="Date"       VALUE="Date"/>
+          <ITEM NAME="Double"     VALUE="Double"/>
+          <ITEM NAME="Float"      VALUE="Float"/>
+          <ITEM NAME="Int"        VALUE="Int"/>
+          <ITEM NAME="Long"       VALUE="Long"/>
+          <ITEM NAME="Object"     VALUE="Object"/>
+          <ITEM NAME="Short"      VALUE="Short"/>
+          <ITEM NAME="String"     VALUE="String"/>
+          <ITEM NAME="Time"       VALUE="Time"/>
+          <ITEM NAME="Null"       VALUE="Null"/>
+          </ITEMS>
+        </ITEM>
+        <ITEM NAME="PARAMETER_VALUE" VALUE="&quot;&quot;" />
+      </ITEMS>
+    </PARAMETER>
+
 		<PARAMETER NAME="IS_CONVERT_XMLTYPE" FIELD="CHECK" NUM_ROW="20">
 			<DEFAULT>false</DEFAULT>
 		</PARAMETER>

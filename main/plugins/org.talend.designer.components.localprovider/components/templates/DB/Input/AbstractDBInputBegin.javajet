@@ -24,6 +24,8 @@ imports="
 	String dbname = ElementParameterParser.getValue(node, "__DBNAME__");
 	String dbproperties = ElementParameterParser.getValue(node, "__PROPERTIES__");
 	String dbuser = ElementParameterParser.getValue(node, "__USER__");
+	boolean usePreparedStatement = "true".equals(ElementParameterParser.getValue(node,"__USE_PREPAREDSTATEMENT__"));
+	List<Map<String, String>> prepareStatementParameters = (List<Map<String,String>>)ElementParameterParser.getObjectValue(node, "__SET_PREPAREDSTATEMENT_PARAMETERS__");
 
 	String dbencoding = ElementParameterParser.getValue(node, "__ENCODING__");
 	String enableStream = ElementParameterParser.getValue(node, "__ENABLE_STREAM__");
@@ -74,7 +76,6 @@ imports="
 				}
 		    }
 %>
-		    <%dbInputBeginUtil.createStatement(node);%>
 
 		    String dbquery_<%=cid%> = <%=dbInputBeginUtil.getQueryString(node)%>;
 		    <% log4jCodeGenerateUtil.query(node, "dbquery_" + cid); %>
@@ -91,10 +92,46 @@ imports="
             <%
             }
             %>
+
+        java.sql.Statement stmt_<%=cid%> = null;
 		    java.sql.ResultSet rs_<%=cid %> = null;
 
 		    try {
-		    	rs_<%=cid %> = stmt_<%=cid %>.executeQuery(dbquery_<%=cid%>);
+          <% 
+          if(usePreparedStatement) {
+          %>
+            java.sql.PreparedStatement pstmt_<%=cid%>;
+            stmt_<%=cid%> = pstmt_<%=cid%> = conn_<%=cid%>.prepareStatement(dbquery_<%=cid%>);
+            <%
+            // allow the statement to have numbered params
+            for (Map<String, String> param : prepareStatementParameters) {
+              if ("Date".equals(param.get("PARAMETER_TYPE"))) {
+                // for dates, we need to do extra logic because the sql type doesn't match the java type
+                // but we want to ensure that the parameter value expression only gets executed once to prevent unexpected side effects
+            %>
+              java.util.Date pstmt_<%=cid%>_<%=param.get("PARAMETER_INDEX")%> = <%=param.get("PARAMETER_VALUE")%>;
+              if((pstmt_<%=cid%>_<%=param.get("PARAMETER_INDEX")%>)%>==null) {
+                pstmt_<%=cid %>.setNull(<%=param.get("PARAMETER_INDEX")%>, java.sql.Types.TIMESTAMP);
+              } else {
+                pstmt_<%=cid %>.setTimestamp(<%=param.get("PARAMETER_INDEX")%>,new java.sql.Timestamp(pstmt_<%=cid%>_<%=param.get("PARAMETER_INDEX")%>.getTime()));
+              }
+            <%
+              } else { // else parameter type is not a date/timestamp
+            %>
+                pstmt_<%=cid %>.set<%=param.get("PARAMETER_TYPE")%>(<%=param.get("PARAMETER_INDEX")%>,<%=param.get("PARAMETER_VALUE")%>);
+            <%
+              } // end if/else parameter type
+            } // end of for-each param loop
+            %>
+            rs_<%=cid %> = pstmt_<%=cid %>.executeQuery();
+          <% 
+          } else { // else !usePrepareStatement
+          %>
+            stmt_<%=cid%> = conn_<%=cid%>.createStatement();
+            rs_<%=cid %> = stmt_<%=cid %>.executeQuery(dbquery_<%=cid%>);
+          <% 
+          } // end if/else usePreparedStatement 
+          %>
 		    	java.sql.ResultSetMetaData rsmd_<%=cid %> = rs_<%=cid %>.getMetaData();
 		    	int colQtyInRs_<%=cid%> = rsmd_<%=cid %>.getColumnCount();
 
