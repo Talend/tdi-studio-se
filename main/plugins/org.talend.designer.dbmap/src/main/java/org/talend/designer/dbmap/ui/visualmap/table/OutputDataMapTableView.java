@@ -227,6 +227,7 @@ public class OutputDataMapTableView extends DataMapTableView {
     @Override
     protected boolean addToolItems() {
         // createFiltersToolItems();
+        createColumnNameFilterCheck();
         createFiltersDropDown();
         // addToolItemSeparator();
         // createToolItems();
