@@ -365,28 +365,27 @@ public class JobJavaScriptOSGIForESBManager extends JobJavaScriptsManager {
                 ICamelDesignerCoreService camelService = (ICamelDesignerCoreService) GlobalServiceRegister.getDefault().getService(
                         ICamelDesignerCoreService.class);
 
-                Map<String, Boolean> unselectList = camelService.getUnselectDependenciesBundle(processItem);
-                List<URL> unselectListURLs = new ArrayList<>();
-
-                for(Set<URL> set:libResource.getAllResources()) {
-
-                    for (URL url : set) {
-
-                        boolean exist = false;
-                        for(String name: unselectList.keySet()) {
-                            if (name.equals(new File(new File(url.getFile()).toURI()).getName())) {
-                               exist = true;
-                            }
-                        }
-
-                        if (!exist) {
-                            unselectListURLs.add(url);
-                        }
-
-                    }
+				Collection<String> unselectList = camelService.getUnselectDependenciesBundle(processItem);
+				if (unselectList.size() > 0) {
+	                List<URL> unselectListURLs = new ArrayList<>();
+	
+	                for(Set<URL> set:libResource.getAllResources()) {
+	                    for (URL url : set) {
+	                        boolean exist = false;
+	                        for(String name: unselectList) {
+	                            if (name.equals(new File(new File(url.getFile()).toURI()).getName())) {
+	                               exist = true;
+	                            }
+	                        }
+	
+	                        if (!exist) {
+	                            unselectListURLs.add(url);
+	                        }
+	                    }
+	                }
+	
+	                libResourceSelected.addResources(unselectListURLs);
                 }
-
-                libResourceSelected.addResources(unselectListURLs);
             }
 
             // generate the META-INFO folder
