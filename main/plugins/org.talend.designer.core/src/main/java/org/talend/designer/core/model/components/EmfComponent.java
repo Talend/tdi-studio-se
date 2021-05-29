@@ -19,6 +19,7 @@ import java.lang.ref.SoftReference;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -131,6 +132,7 @@ import org.talend.designer.core.model.utils.emf.component.impl.PLUGINDEPENDENCYT
 import org.talend.designer.core.model.utils.emf.component.util.ComponentResourceFactoryImpl;
 import org.talend.designer.core.ui.editor.nodes.Node;
 import org.talend.designer.core.ui.preferences.TalendDesignerPrefConstants;
+import org.talend.designer.core.utils.JavaProcessUtil;
 import org.talend.designer.runprocess.ItemCacheManager;
 import org.talend.hadoop.distribution.ComponentType;
 import org.talend.hadoop.distribution.DistributionFactory;
@@ -143,11 +145,14 @@ import org.talend.hadoop.distribution.condition.ComponentCondition;
 import org.talend.hadoop.distribution.condition.EqualityOperator;
 import org.talend.hadoop.distribution.condition.NestedComponentCondition;
 import org.talend.hadoop.distribution.condition.SimpleComponentCondition;
+import org.talend.hadoop.distribution.dynamic.template.AbstractDynamicDistributionTemplate;
+import org.talend.hadoop.distribution.dynamic.template.IDynamicDistributionTemplate;
 import org.talend.hadoop.distribution.helper.DistributionsManager;
 import org.talend.hadoop.distribution.helper.HadoopDistributionsHelper;
 import org.talend.hadoop.distribution.model.DistributionBean;
 import org.talend.hadoop.distribution.model.DistributionVersion;
 import org.talend.hadoop.distribution.model.DistributionVersionModule;
+import org.talend.hadoop.distribution.model.DynamicDistributionVersion;
 import org.talend.hadoop.distribution.utils.ComponentConditionUtil;
 import org.talend.librariesmanager.model.ModulesNeededProvider;
 import org.talend.librariesmanager.prefs.LibrariesManagerUtils;
@@ -169,8 +174,7 @@ public class EmfComponent extends AbstractBasicComponent {
 
     private final String name;
 
-    private boolean isLoaded, areHadoopLibsLoaded, areHadoopLibsImported, areHadoopDistribsLoaded,
-            areHadoopDistribsImported = false;
+    private boolean isLoaded, areHadoopLibsLoaded, areHadoopDistribsLoaded = false;
 
     private String hadoopDistribsCacheVersion = ""; //$NON-NLS-1$
 
@@ -1626,13 +1630,13 @@ public class EmfComponent extends AbstractBasicComponent {
                 areHadoopLibsLoaded = false;
                 // We get the component type defined by the NAME of the HADOOP_LIBRARIES parameter.
                 ComponentType componentType = ComponentType.getComponentType(parentParam.getName());
+                hadoopLibParamName = componentType;
 
-                if (areHadoopLibsImported) {
-                    componentImportNeedsList.removeAll(componentHadoopDistributionImportNeedsList);
+                for (List<ModuleNeeded> cachedList : hadoopLibModuleNeededMap.values()) {
+                    if (cachedList != null) {
+                        componentImportNeedsList.removeAll(cachedList);
+                    }
                 }
-
-                componentHadoopDistributionImportNeedsList = new ArrayList<>();
-                areHadoopLibsImported = false;
 
                 // We retrieve all the implementations of the HadoopComponent service.
                 BundleContext bc = FrameworkUtil.getBundle(DistributionFactory.class).getBundleContext();
@@ -1646,24 +1650,7 @@ public class EmfComponent extends AbstractBasicComponent {
                 }
                 for (ServiceReference<? extends HadoopComponent> sr : distributions) {
                     HadoopComponent hc = bc.getService(sr);
-                    Set<DistributionModuleGroup> nodeModuleGroups = hc.getModuleGroups(componentType, node.getComponent()
-                            .getName());
-                    if (nodeModuleGroups != null) {
-                        Iterator<DistributionModuleGroup> moduleGroups = nodeModuleGroups.iterator();
-                        while (moduleGroups.hasNext()) {
-                            DistributionModuleGroup group = moduleGroups.next();
-                            IMPORTType importType = ComponentFactory.eINSTANCE.createIMPORTType();
-                            importType.setMODULEGROUP(group.getModuleName());
-
-                            ComponentCondition condition = group.getRequiredIf();
-                            if (condition != null) {
-                                importType.setREQUIREDIF(new NestedComponentCondition(condition).getConditionString());
-                            }
-                            importType.setMRREQUIRED(group.isMrRequired());
-                            ModulesNeededProvider.collectModuleNeeded(node.getComponent().getName(), importType,
-                                    componentHadoopDistributionImportNeedsList);
-                        }
-                    }
+                    hadoopLibModuleNeededMap.put(hc, null);
                 }
                 hadoopLibCacheVersion = cacheVersion;
                 areHadoopLibsLoaded = true;
@@ -1674,6 +1661,7 @@ public class EmfComponent extends AbstractBasicComponent {
             final DistributionBean[] hadoopDistributions = distributionsHelper.getDistributions();
             ElementParameter newParam = new ElementParameter(node);
             newParam.setCategory(EComponentCategory.BASIC);
+            hadoopDistributionParamName = componentType;
             newParam.setName(componentType.getDistributionParameter());
             newParam.setDisplayName("Distribution"); //$NON-NLS-1$
 
@@ -1742,11 +1730,12 @@ public class EmfComponent extends AbstractBasicComponent {
             cacheVersionChanged = !StringUtils.equals(cacheVersion, hadoopDistribsCacheVersion);
 
             if (cacheVersionChanged) {
-                if (areHadoopDistribsImported) {
-                    componentImportNeedsList.removeAll(hadoopDistributionImportNeedsList);
+                for (List<ModuleNeeded> cachedList : distributionModuleNeededMap.values()) {
+                    if (cachedList != null) {
+                        componentImportNeedsList.removeAll(cachedList);
+                    }
                 }
-                hadoopDistributionImportNeedsList = new ArrayList<>();
-                areHadoopDistribsImported = false;
+                distributionModuleNeededMap.clear();
                 areHadoopDistribsLoaded = false;
             }
 
@@ -1767,18 +1756,7 @@ public class EmfComponent extends AbstractBasicComponent {
                 notShowIfVersion[index] = null;
 
                 if (cacheVersionChanged) {
-                    // Create the EMF IMPORTType to import the modules group required by a Hadoop distribution for a
-                    // given
-                    // ComponentType.
-
-                    for (DistributionVersionModule versionModule : that.getVersionModules()) {
-                        IMPORTType importType = ComponentFactory.eINSTANCE.createIMPORTType();
-                        importType.setMODULEGROUP(versionModule.moduleGroup.getModuleName());
-                        importType.setMRREQUIRED(versionModule.moduleGroup.isMrRequired());
-                        importType.setREQUIREDIF(versionModule.getModuleRequiredIf().getConditionString());
-                        ModulesNeededProvider.collectModuleNeeded(node.getComponent() != null ? node.getComponent().getName()
-                                : "", importType, hadoopDistributionImportNeedsList); //$NON-NLS-1$
-                    }
+                    distributionModuleNeededMap.put(that, null);
                 }
 
                 index++;
@@ -1874,6 +1852,14 @@ public class EmfComponent extends AbstractBasicComponent {
             }
         }
     }
+
+    private ComponentType hadoopDistributionParamName = null;
+
+    private Map<DistributionVersion, List<ModuleNeeded>> distributionModuleNeededMap = new HashMap<>();
+
+    private ComponentType hadoopLibParamName = null;
+
+    private Map<HadoopComponent, List<ModuleNeeded>> hadoopLibModuleNeededMap = new HashMap<>();
 
     @SuppressWarnings("unchecked")
     private void addPropertyParameters(final List<ElementParameter> listParam, final INode node, boolean advanced) {
@@ -3140,10 +3126,6 @@ public class EmfComponent extends AbstractBasicComponent {
 
     private List<ModuleNeeded> componentImportNeedsList = new ArrayList<ModuleNeeded>();
 
-    private List<ModuleNeeded> hadoopDistributionImportNeedsList = new ArrayList<ModuleNeeded>();
-
-    private List<ModuleNeeded> componentHadoopDistributionImportNeedsList = new ArrayList<ModuleNeeded>();
-
     /*
      * (non-Javadoc)
      *
@@ -3163,16 +3145,161 @@ public class EmfComponent extends AbstractBasicComponent {
         }
     }
 
+    private String getDistributionVersion(INode node, ComponentType compType) {
+        IElementParameter hdElemParam = node.getElementParameter(compType.getVersionParameter());
+        Object value = null;
+        if (hdElemParam != null && hdElemParam.isShow(node.getElementParameters())) {
+            value = hdElemParam.getValue();
+        } else {
+            if (JavaProcessUtil.isUseExistingConnection(node)) {
+                IElementParameter connection = node.getElementParameter(EParameterName.CONNECTION.getName());
+                if (connection != null) {
+                    String connNodeName = (String) connection.getValue();
+                    List<? extends INode> graphicalNodes = node.getProcess().getGraphicalNodes();
+                    INode connNode = null;
+                    for (INode gNode : graphicalNodes) {
+                        if (StringUtils.equals(connNodeName, gNode.getUniqueName())) {
+                            connNode = gNode;
+                            break;
+                        }
+                    }
+                    if (connNode != null) {
+                        hdElemParam = connNode.getElementParameter(compType.getVersionParameter());
+                        if (hdElemParam != null) {
+                            value = hdElemParam.getValue();
+                        }
+                    }
+                }
+            }
+        }
+        return (String) value;
+    }
+
+    private void addHadoopDistributionModuleNeededList(INode node, List<ModuleNeeded> moduleNeededList) {
+        if (node == null) {
+            return;
+        }
+        String value = getDistributionVersion(node, hadoopDistributionParamName);
+        if (value != null) {
+            List<ModuleNeeded> cachedModuleNeededList = Collections.EMPTY_LIST;
+            DistributionVersion dv = null;
+            for (Map.Entry<DistributionVersion, List<ModuleNeeded>> entry : distributionModuleNeededMap.entrySet()) {
+                DistributionVersion key = entry.getKey();
+                if (value.equals(key.getVersion())) {
+                    dv = key;
+                    cachedModuleNeededList = entry.getValue();
+                    break;
+                }
+            }
+            if (cachedModuleNeededList == null) {
+                /**
+                 * Means not added yet, retrieve and add it
+                 */
+                cachedModuleNeededList = new LinkedList<>();
+                if (dv instanceof DynamicDistributionVersion) {
+                    try {
+                        IDynamicDistributionTemplate distributionTemplate = ((DynamicDistributionVersion) dv)
+                                .getDistributionTemplate();
+                        if (!distributionTemplate.isPluginExtensionsRegisted()) {
+                            distributionTemplate.registPluginExtensions();
+                        }
+                    } catch (Exception e) {
+                        ExceptionHandler.process(e);
+                    }
+                }
+                for (DistributionVersionModule versionModule : dv.getVersionModules()) {
+                    IMPORTType importType = ComponentFactory.eINSTANCE.createIMPORTType();
+                    importType.setMODULEGROUP(versionModule.moduleGroup.getModuleName());
+                    importType.setMRREQUIRED(versionModule.moduleGroup.isMrRequired());
+                    importType.setREQUIREDIF(versionModule.getModuleRequiredIf().getConditionString());
+                    ModulesNeededProvider.collectModuleNeeded(node.getComponent() != null ? node.getComponent().getName() : "", //$NON-NLS-1$
+                            importType, cachedModuleNeededList);
+                }
+                distributionModuleNeededMap.put(dv, cachedModuleNeededList);
+                moduleNeededList.addAll(cachedModuleNeededList);
+            } else {
+                /**
+                 * Means already added
+                 */
+            }
+        }
+    }
+
+    private void addHadoopLibModuleNeededList(INode node, List<ModuleNeeded> moduleNeededList) {
+        if (node == null) {
+            return;
+        }
+        String value = getDistributionVersion(node, hadoopLibParamName);
+        if (value != null) {
+            List<ModuleNeeded> cachedModuleNeededList = Collections.EMPTY_LIST;
+            HadoopComponent hc = null;
+            for (Map.Entry<HadoopComponent, List<ModuleNeeded>> entry : hadoopLibModuleNeededMap.entrySet()) {
+                HadoopComponent key = entry.getKey();
+                if (value.equals(key.getVersion())) {
+                    hc = key;
+                    cachedModuleNeededList = entry.getValue();
+                    break;
+                }
+            }
+            if (cachedModuleNeededList == null) {
+                /**
+                 * means not added yet, retrieve and add it
+                 */
+                cachedModuleNeededList = new LinkedList<>();
+                try {
+                    if (hc instanceof AbstractDynamicDistributionTemplate) {
+                        AbstractDynamicDistributionTemplate ddt = (AbstractDynamicDistributionTemplate) hc;
+                        if (!ddt.isPluginExtensionsRegisted()) {
+                            ddt.registPluginExtensions();
+                        }
+                    }
+                } catch (Exception e) {
+                    ExceptionHandler.process(e);
+                }
+                Set<DistributionModuleGroup> nodeModuleGroups = hc.getModuleGroups(hadoopLibParamName,
+                        node.getComponent().getName());
+                if (nodeModuleGroups != null) {
+                    Iterator<DistributionModuleGroup> moduleGroups = nodeModuleGroups.iterator();
+                    while (moduleGroups.hasNext()) {
+                        DistributionModuleGroup group = moduleGroups.next();
+                        IMPORTType importType = ComponentFactory.eINSTANCE.createIMPORTType();
+                        importType.setMODULEGROUP(group.getModuleName());
+
+                        ComponentCondition condition = group.getRequiredIf();
+                        if (condition != null) {
+                            importType.setREQUIREDIF(new NestedComponentCondition(condition).getConditionString());
+                        }
+                        importType.setMRREQUIRED(group.isMrRequired());
+                        ModulesNeededProvider.collectModuleNeeded(node.getComponent().getName(), importType,
+                                cachedModuleNeededList);
+                    }
+                }
+                hadoopLibModuleNeededMap.put(hc, cachedModuleNeededList);
+                moduleNeededList.addAll(cachedModuleNeededList);
+            } else {
+                /**
+                 * means already added
+                 */
+            }
+        }
+    }
+
     @Override
     public List<ModuleNeeded> getModulesNeeded(INode node) {
         if (componentImportNeedsList != null && componentImportNeedsList.size() > 0) {
-            if (areHadoopDistribsLoaded && !areHadoopDistribsImported) {
-                areHadoopDistribsImported = true;
-                componentImportNeedsList.addAll(hadoopDistributionImportNeedsList);
+            if (areHadoopDistribsLoaded) {
+                try {
+                    addHadoopDistributionModuleNeededList(node, componentImportNeedsList);
+                } catch (Exception e) {
+                    ExceptionHandler.process(e);
+                }
             }
-            if (areHadoopLibsLoaded && !areHadoopLibsImported) {
-                areHadoopLibsImported = true;
-                componentImportNeedsList.addAll(componentHadoopDistributionImportNeedsList);
+            if (areHadoopLibsLoaded) {
+                try {
+                    addHadoopLibModuleNeededList(node, componentImportNeedsList);
+                } catch (Exception e) {
+                    ExceptionHandler.process(e);
+                }
             }
             return componentImportNeedsList;
         }
@@ -3254,13 +3381,11 @@ public class EmfComponent extends AbstractBasicComponent {
             componentImportNeedsList.add(componentImportNeeds);
         }
 
-        if (areHadoopDistribsLoaded && !areHadoopDistribsImported) {
-            areHadoopDistribsImported = true;
-            componentImportNeedsList.addAll(hadoopDistributionImportNeedsList);
+        if (areHadoopDistribsLoaded) {
+            addHadoopDistributionModuleNeededList(node, componentImportNeedsList);
         }
-        if (areHadoopLibsLoaded && !areHadoopLibsImported) {
-            areHadoopLibsImported = true;
-            componentImportNeedsList.addAll(componentHadoopDistributionImportNeedsList);
+        if (areHadoopLibsLoaded) {
+            addHadoopLibModuleNeededList(node, componentImportNeedsList);
         }
         
         return componentImportNeedsList;
