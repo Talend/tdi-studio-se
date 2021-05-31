@@ -362,32 +362,35 @@ public class JobJavaScriptOSGIForESBManager extends JobJavaScriptsManager {
             ExportFileResource libResourceSelected = new ExportFileResource(null, LIBRARY_FOLDER_NAME);
 
             if (GlobalServiceRegister.getDefault().isServiceRegistered(ICamelDesignerCoreService.class)) {
-    			ICamelDesignerCoreService camelService = (ICamelDesignerCoreService) GlobalServiceRegister.getDefault()
-    					.getService(ICamelDesignerCoreService.class);
+                ICamelDesignerCoreService camelService = (ICamelDesignerCoreService) GlobalServiceRegister.getDefault().getService(
+                        ICamelDesignerCoreService.class);
+                Map<String, String> nameMavenUriMap = getNameMavenUriMap();
+                Collection<String> unselectList = camelService.getUnselectDependenciesBundle(processItem);
+                if (unselectList.size() > 0) {
+                    List<URL> unselectListURLs = new ArrayList<>();
 
-    			Collection<String> unselectList = camelService.getUnselectDependenciesBundle(processItem);
-    			if (unselectList.size() > 0) {
-    				List<URL> unselectListURLs = new ArrayList<>();
-    				Map<String, String> nameMavenUriMap = getNameMavenUriMap();
-    				for (Set<URL> set : libResource.getAllResources()) {
-    					for (URL url : set) {
-    						boolean exist = false;
-    						for (String name : unselectList) {
-    							String libName = new File(new File(url.getFile()).toURI()).getName();
-    							if (name.equals(nameMavenUriMap.get(libName))) {
-    								exist = true;
-    							}
-    						}
+                    for(Set<URL> set:libResource.getAllResources()) {
 
-    						if (!exist) {
-    							unselectListURLs.add(url);
-    						}
-    					}
-    				}
+                        for (URL url : set) {
 
-    				libResourceSelected.addResources(unselectListURLs);
-    			}
-    		}
+                            boolean exist = false;
+                            for(String name: unselectList) {
+                                String libName = new File(new File(url.getFile()).toURI()).getName();
+                                if (name.equals(nameMavenUriMap.get(libName))) {
+                                   exist = true;
+                                }
+                            }
+
+                            if (!exist) {
+                                unselectListURLs.add(url);
+                            }
+
+                        }
+                    }
+                
+                    libResourceSelected.addResources(unselectListURLs);
+                }
+            }
 
             // generate the META-INFO folder
             ExportFileResource metaInfoFolder = genMetaInfoFolder(libResourceSelected, processItem);
@@ -1462,12 +1465,12 @@ public class JobJavaScriptOSGIForESBManager extends JobJavaScriptsManager {
         return imports;
     }
     
-	public Map<String, String> getNameMavenUriMap() {
-		Map<String, String> map = new HashMap<String, String>();
+    public Map<String, String> getNameMavenUriMap() {
+        Map<String, String> map = new HashMap<String, String>();
 
-		for (ModuleNeeded module : getCompiledModuleNeededs()) {
-			map.put(module.getModuleName(), module.getMavenUri());
-		}
-		return map;
-	}
+        for (ModuleNeeded module : getCompiledModuleNeededs()) {
+            map.put(module.getModuleName(), module.getMavenUri());
+        }
+        return map;
+    }
 }
