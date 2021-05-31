@@ -102,4 +102,6 @@ public class TaCoKitConst {
     public static final String AFTER_VARIABLE_VALUE_DELIMITER = "\\\\:";
 
     public static final String AFTER_VARIABLE_LINE_DELIMITER = "\\\\;";
+
+    public static final String DATASTORE_PATH = "DATASTORE_PATH";
 }
