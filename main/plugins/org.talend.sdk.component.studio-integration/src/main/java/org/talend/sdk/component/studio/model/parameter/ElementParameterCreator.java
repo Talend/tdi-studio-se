@@ -119,6 +119,21 @@ public class ElementParameterCreator {
         return parameters;
     }
 
+    private void addDatastoreParameter() {
+        final String datastorePath = TaCoKitUtil.getDatastorePath(component);
+        if(datastorePath != null) {
+            final ElementParameter datastoreParameter = new ElementParameter(node);
+            datastoreParameter.setName(TaCoKitConst.DATASTORE_PATH);
+            datastoreParameter.setValue(datastorePath);
+            datastoreParameter.setFieldType(EParameterFieldType.TEXT);
+            datastoreParameter.setCategory(EComponentCategory.TECHNICAL);
+            datastoreParameter.setReadOnly(true);
+            datastoreParameter.setRequired(false);
+            datastoreParameter.setShow(false);
+            parameters.add(datastoreParameter);
+        }
+    }
+
     /**
      * Adds Basic and Advanced settings
      */
@@ -140,6 +155,9 @@ public class ElementParameterCreator {
         }
 
         checkSchemaProperties(new SettingVisitor(node, updateComponentsParameter, detail).withCategory(BASIC));
+        if(TaCoKitUtil.isSupportUseExistConnection(component) && isShowPropertyParameter()) {
+            addDatastoreParameter();
+        }
     }
 
     private void addLayoutParameter(final PropertyNode root, final String form) {
