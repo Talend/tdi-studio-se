@@ -961,5 +961,4 @@ public class MapperManager extends AbstractMapperManager {
     public boolean isDataChanged() {
         return false;
     }
-
 }

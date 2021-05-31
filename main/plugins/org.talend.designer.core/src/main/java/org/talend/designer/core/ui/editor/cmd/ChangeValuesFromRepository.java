@@ -24,6 +24,7 @@ import org.talend.commons.ui.gmf.util.DisplayUtils;
 import org.talend.components.api.properties.ComponentProperties;
 import org.talend.core.GlobalServiceRegister;
 import org.talend.core.ITDQPatternService;
+import org.talend.core.database.conn.version.EDatabaseVersion4Drivers;
 import org.talend.core.hadoop.HadoopConstants;
 import org.talend.core.model.components.ComponentCategory;
 import org.talend.core.model.components.IODataComponent;
@@ -631,6 +632,17 @@ public class ChangeValuesFromRepository extends ChangeMetadataCommand {
                             if (EParameterName.DB_VERSION.getName().equals(param.getRepositoryValue())
                                     && !param.isShow(elem.getElementParameters())) {
                                 continue;
+                            }
+
+                            if (EParameterName.PROPERTIES.getName().equals(param.getName())
+                                    && StringUtils.isNotBlank(objectValue.toString())
+                                    && objectValue.toString().contains("authentication=ActiveDirectoryPassword")) {//$NON-NLS-1$
+                                if (connection instanceof DatabaseConnection) {
+                                    String dbVersion = ((DatabaseConnection) connection).getDbVersionString();
+                                    if (EDatabaseVersion4Drivers.MSSQL_PROP.name().equals(dbVersion)) {
+                                        elem.setPropertyValue("ACTIVE_DIR_AUTH", true);//$NON-NLS-1$
+                                    }
+                                }
                             }
 
                             elem.setPropertyValue(param.getName(), objectValue);
