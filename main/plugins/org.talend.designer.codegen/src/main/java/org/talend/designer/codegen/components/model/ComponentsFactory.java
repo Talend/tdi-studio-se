@@ -528,14 +528,14 @@ public class ComponentsFactory implements IComponentsFactory {
 
     @Override
     public int size() {
-        init(false);
+        waitForInit();
         return componentList.size();
     }
 
     @Override
     public IComponent get(String name) {
-        init(false);
-
+        waitForInit();
+        
         for (IComponent comp : componentList) {
             if (comp != null && comp.getName().equals(name)
                     && !ComponentCategory.CATEGORY_4_MAPREDUCE.getName().equals(comp.getPaletteType())) {
@@ -553,7 +553,7 @@ public class ComponentsFactory implements IComponentsFactory {
      */
     @Override
     public IComponent get(String name, String paletteType) {
-        init(false);
+        waitForInit();
 
         for (IComponent comp : componentList) {
             if (comp != null && comp.getName().equals(name) && paletteType.equals(comp.getPaletteType())) {
@@ -566,7 +566,7 @@ public class ComponentsFactory implements IComponentsFactory {
 
     @Override
     public IComponent getJobletComponent(String name, String paletteType) {
-        init(false);
+        waitForInit();
 
         // check if reference joblet component presents
         JobletUtil jobletUtils = new JobletUtil();
@@ -589,7 +589,7 @@ public class ComponentsFactory implements IComponentsFactory {
     @Override
     public void initializeComponents(IProgressMonitor monitor) {
         this.monitor = monitor;
-        init(false);
+        waitForInit();
         this.monitor = null;
         this.subMonitor = null;
     }
@@ -597,7 +597,7 @@ public class ComponentsFactory implements IComponentsFactory {
     @Override
     public void initializeComponents(IProgressMonitor monitor, boolean duringLogon) {
         this.monitor = monitor;
-        init(duringLogon);
+        waitForInit();
         this.monitor = null;
         this.subMonitor = null;
     }
@@ -609,7 +609,7 @@ public class ComponentsFactory implements IComponentsFactory {
      */
     @Override
     public Set<IComponent> getComponents() {
-        init(false);
+        waitForInit();
         return componentList;
     }
 
@@ -630,13 +630,13 @@ public class ComponentsFactory implements IComponentsFactory {
 
     @Override
     public Map<String, Map<String, Set<IComponent>>> getComponentNameMap() {
-        init(false);
+        waitForInit();
         return componentNameMap;
     }
 
     @Override
     public List<IComponent> getCustomComponents() {
-        init(false);
+        waitForInit();
         return new ArrayList<>(customComponentList);
     }
 
@@ -647,43 +647,65 @@ public class ComponentsFactory implements IComponentsFactory {
      */
     @Override
     public List<String> getSkeletons() {
-        init(false);
+        waitForInit();
         return skeletonList;
     }
 
     @Override
     public void reset() {
-        componentList.clear();
-        skeletonList.clear();
-        customComponentList.clear();
-        Collection<IComponentFactoryFilter> filters = ComponentsFactoryProviderManager.getInstance().getProviders();
-        for (IComponentFactoryFilter filter : filters) {
-            filter.cleanCache();
-        }
-        if (GlobalServiceRegister.getDefault().isServiceRegistered(IJobletProviderService.class)) {
-            IJobletProviderService jobletService = GlobalServiceRegister.getDefault().getService(IJobletProviderService.class);
-            if (jobletService != null) {
-                jobletService.clearJobletComponent();
+        if (isInitialized.compareAndSet(true, false)) {
+            componentList.clear();
+            skeletonList.clear();
+            customComponentList.clear();
+            Collection<IComponentFactoryFilter> filters = ComponentsFactoryProviderManager.getInstance().getProviders();
+            for (IComponentFactoryFilter filter : filters) {
+                filter.cleanCache();
             }
-        }
+            if (GlobalServiceRegister.getDefault().isServiceRegistered(IJobletProviderService.class)) {
+                IJobletProviderService jobletService = GlobalServiceRegister.getDefault()
+                        .getService(IJobletProviderService.class);
+                if (jobletService != null) {
+                    jobletService.clearJobletComponent();
+                }
+            }
 
-        if (GlobalServiceRegister.getDefault().isServiceRegistered(ISparkJobletProviderService.class)) {
-            ISparkJobletProviderService jobletService = GlobalServiceRegister.getDefault()
-                    .getService(ISparkJobletProviderService.class);
-            if (jobletService != null) {
-                jobletService.clearSparkJobletComponent();
+            if (GlobalServiceRegister.getDefault().isServiceRegistered(ISparkJobletProviderService.class)) {
+                ISparkJobletProviderService jobletService = GlobalServiceRegister.getDefault()
+                        .getService(ISparkJobletProviderService.class);
+                if (jobletService != null) {
+                    jobletService.clearSparkJobletComponent();
+                }
             }
-        }
 
-        if (GlobalServiceRegister.getDefault().isServiceRegistered(ISparkStreamingJobletProviderService.class)) {
-            ISparkStreamingJobletProviderService jobletService = GlobalServiceRegister.getDefault()
-                    .getService(ISparkStreamingJobletProviderService.class);
-            if (jobletService != null) {
-                jobletService.clearSparkStreamingJobletComponent();
+            if (GlobalServiceRegister.getDefault().isServiceRegistered(ISparkStreamingJobletProviderService.class)) {
+                ISparkStreamingJobletProviderService jobletService = GlobalServiceRegister.getDefault()
+                        .getService(ISparkStreamingJobletProviderService.class);
+                if (jobletService != null) {
+                    jobletService.clearSparkStreamingJobletComponent();
+                }
+            }
+            isInitializing.set(true);
+        }
+    }
+
+    private void waitForInit() {
+        init(false);
+        int spent = 0;
+        int time = 1000;
+        int timeout = 1000 * 60 * 10;
+        Thread thread = Thread.currentThread();
+        while (isInitializing.get()) {
+            try {
+                thread.sleep(time);
+                spent += time;
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+            if (spent >= timeout) {
+                // may be track in dead lock, throw exception to try to break dead lock
+                throw new RuntimeException("Waiting for component initialization timeout!"); //$NON-NLS-1$
             }
         }
-        isInitializing.set(true);
-        isInitialized.set(false);
     }
 
     @Override
