@@ -203,6 +203,8 @@ public class JobJavaScriptOSGIForESBManager extends JobJavaScriptsManager {
 
     private static final String COMPILER_LOG_ERROR_2 = "cannot be resolved";
     
+    private static final String COMPILER_LOG_ERROR_3 = "cannot be resolved to a variable";
+    
     private static String complianceLevel = "1.8";
     
     private static String complianceParameter;
@@ -1406,7 +1408,7 @@ public class JobJavaScriptOSGIForESBManager extends JobJavaScriptsManager {
             for (String errBlock : errBlocks) {
                 String[] lines = errBlock.trim().replaceAll("\r", "").split("\n");
                 if (lines.length == 4) {
-                    if (lines[3].endsWith(COMPILER_LOG_ERROR_1) || lines[3].endsWith(COMPILER_LOG_ERROR_2)) {
+                    if (lines[3].endsWith(COMPILER_LOG_ERROR_1) || lines[3].endsWith(COMPILER_LOG_ERROR_2) || lines[3].endsWith(COMPILER_LOG_ERROR_3)) {
                         int markerPos = lines[2].indexOf('^');
                         Matcher m = pattern.matcher(lines[1].substring(markerPos));
                         if (m.find()) {
