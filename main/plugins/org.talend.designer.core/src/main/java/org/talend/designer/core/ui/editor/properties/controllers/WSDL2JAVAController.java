@@ -22,7 +22,10 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
-import org.apache.axis2.wsdl.WSDL2Java;
+import org.apache.axis.utils.CLArgsParser;
+import org.apache.axis.utils.CLOption;
+import org.apache.axis.utils.Messages;
+import org.apache.axis.wsdl.WSDL2Java;
 import org.apache.commons.io.FileUtils;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
@@ -265,15 +268,10 @@ public class WSDL2JAVAController extends AbstractElementPropertySectionControlle
                     return;
                 }
                 File dir = new File(getTmpFolder());
-                String filePath = dir.getAbsolutePath();
-                try {
-                    filePath = dir.getCanonicalPath();
-                } catch (IOException e1) {
-                }
 
                 final TalendWSDL2Java java2WSDL = new TalendWSDL2Java();
 
-                boolean hasError = java2WSDL.generateWSDL(new String[] { "-o", filePath, "-uri", wsdlfile, "-p", PACK }); //$NON-NLS-1$ //$NON-NLS-2$
+                boolean hasError = java2WSDL.generateWSDL(new String[] { "-o" + dir, "-p" + PACK, wsdlfile }); //$NON-NLS-1$ //$NON-NLS-2$
 
                 // give some info about the generate stub.jar result to GUI.
                 final String tempWsdlfile = wsdlfile;
@@ -570,10 +568,36 @@ public class WSDL2JAVAController extends AbstractElementPropertySectionControlle
             return hasError;
         }
 
+        @Override
         protected void run(String[] args) {
 
+            // Parse the arguments
+            CLArgsParser argsParser = new CLArgsParser(args, options);
+
+            // Print parser errors, if any
+            if (null != argsParser.getErrorString()) {
+                System.err.println(Messages.getMessage("error01", argsParser.getErrorString())); //$NON-NLS-1$
+                printUsage();
+            }
+
+            // Get a list of parsed options
+            List clOptions = argsParser.getArguments();
+            int size = clOptions.size();
+
             try {
-                WSDL2Java.main(args);
+
+                // Parse the options and configure the emitter as appropriate.
+                for (int i = 0; i < size; i++) {
+                    parseOption((CLOption) clOptions.get(i));
+                }
+
+                // validate argument combinations
+                //
+                validateOptions();
+                parser.run(wsdlURI);
+
+                // everything is good
+                // System.exit(0);
             } catch (Throwable t) {
                 hasError = true;
                 exception = t;
