@@ -52,7 +52,7 @@ Require-Bundle: javax.xml.rpc,
  org.eclipse.ui.net,
  org.eclipse.swt,
  org.eclipse.core.net,
- org.eclipse.jface
+ org.eclipse.jface,
  org.talend.libraries.apache.axis2
 Export-Package: org.talend.repository,
  org.talend.repository.constants,
