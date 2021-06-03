@@ -636,6 +636,24 @@ public class TaCoKitUtil {
     }
 
     /**
+     * Get the path for the datastore object in configuration.
+     * @param model
+     * @return
+     */
+    public static String getDatastorePath(ComponentModel model) {
+        SimplePropertyDefinition datastoreProp = model.getDetail().getProperties().stream()
+                .filter(prop ->
+                        Optional.of(prop.getMetadata()).orElse(Collections.emptyMap())
+                                .getOrDefault("configurationtype::type", "")
+                                .equalsIgnoreCase(TaCoKitConst.CONFIG_NODE_ID_DATASTORE)
+                ).findFirst().orElse(null);
+        if(datastoreProp != null) {
+            return datastoreProp.getPath();
+        }
+        return null;
+    }
+
+    /**
      *  Get current path in datastore
      * @param model
      * @param path
