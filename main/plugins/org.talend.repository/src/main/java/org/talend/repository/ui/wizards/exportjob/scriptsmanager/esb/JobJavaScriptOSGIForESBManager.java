@@ -370,25 +370,17 @@ public class JobJavaScriptOSGIForESBManager extends JobJavaScriptsManager {
                     List<URL> libListURLs = new ArrayList<>();
 
                     for(Set<URL> set:libResource.getAllResources()) {
-
                         for (URL url : set) {
                             String libName = new File(new File(url.getFile()).toURI()).getName();
                             String libMavenUri = nameMavenUriMap.get(libName);
-                            boolean unselect = false;
+                            boolean isUnselectLib = false;
                             if(unselectList.contains(libMavenUri)) {
-                                unselect = true;
+                                isUnselectLib = true;
                             }
-//                            for(String name: unselectList) {
-//                                
-//                                if (name.equals(libMavenUri)) {
-//                                   exist = true;
-//                                }
-//                            }
 
-                            if (!unselect) {
+                            if (!isUnselectLib) {
                                 libListURLs.add(url);
                             }
-
                         }
                     }
                 
