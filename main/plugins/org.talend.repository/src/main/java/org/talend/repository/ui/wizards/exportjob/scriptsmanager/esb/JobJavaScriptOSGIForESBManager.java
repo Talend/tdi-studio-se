@@ -367,28 +367,32 @@ public class JobJavaScriptOSGIForESBManager extends JobJavaScriptsManager {
                 Map<String, String> nameMavenUriMap = getNameMavenUriMap();
                 Collection<String> unselectList = camelService.getUnselectDependenciesBundle(processItem);
                 if (unselectList.size() > 0) {
-                    List<URL> unselectListURLs = new ArrayList<>();
+                    List<URL> libListURLs = new ArrayList<>();
 
                     for(Set<URL> set:libResource.getAllResources()) {
 
                         for (URL url : set) {
-
-                            boolean exist = false;
-                            for(String name: unselectList) {
-                                String libName = new File(new File(url.getFile()).toURI()).getName();
-                                if (name.equals(nameMavenUriMap.get(libName))) {
-                                   exist = true;
-                                }
+                            String libName = new File(new File(url.getFile()).toURI()).getName();
+                            String libMavenUri = nameMavenUriMap.get(libName);
+                            boolean unselect = false;
+                            if(unselectList.contains(libMavenUri)) {
+                                unselect = true;
                             }
+//                            for(String name: unselectList) {
+//                                
+//                                if (name.equals(libMavenUri)) {
+//                                   exist = true;
+//                                }
+//                            }
 
-                            if (!exist) {
-                                unselectListURLs.add(url);
+                            if (!unselect) {
+                                libListURLs.add(url);
                             }
 
                         }
                     }
                 
-                    libResourceSelected.addResources(unselectListURLs);
+                    libResourceSelected.addResources(libListURLs);
                 }
             }
 
