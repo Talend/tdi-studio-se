@@ -1369,7 +1369,7 @@
         boolean atLeastOneInputTableWithInnerJoin = !inputTablesWithInnerJoin.isEmpty();
 
             if (!dieonerror) {
-			    if(gm.getBlocksCodeToClose().size()>0){
+			    if(gm.getBlocksCodeToClose()!=null && gm.getBlocksCodeToClose().size()>0){
             %>
                 try {
             <%
