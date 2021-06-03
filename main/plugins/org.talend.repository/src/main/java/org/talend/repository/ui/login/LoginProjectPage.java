@@ -2627,6 +2627,8 @@ public class LoginProjectPage extends AbstractLoginActionPage {
                 connectionName = connectionName + " (" + Messages.getString("LoginProjectPage.cloud.aws_apac"); //$NON-NLS-1$//$NON-NLS-2$
             } else if (LoginHelper.isCloudUSWestConnection(prj)) {
                 connectionName = connectionName + " (" + Messages.getString("LoginProjectPage.cloud.usa_west"); //$NON-NLS-1$//$NON-NLS-2$
+            }else if (LoginHelper.isCloudAUSConnection(prj)) {
+                connectionName = connectionName + " (" + Messages.getString("LoginProjectPage.cloud.aws_aus"); //$NON-NLS-1$//$NON-NLS-2$
             } else if (LoginHelper.isCloudCustomConnection(prj)) {
                 connectionName = connectionName + " (" + Messages.getString("LoginProjectPage.cloud.cloud_custom"); //$NON-NLS-1$//$NON-NLS-2$
             } else {
