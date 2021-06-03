@@ -25,7 +25,6 @@ Require-Bundle: org.eclipse.core.runtime,
  org.talend.repository,
  org.talend.core.repository,
  org.talend.updates.runtime,
- org.apache.axis,
  org.eclipse.ui.intro,
  org.eclipse.ui.forms,
  org.eclipse.jface.text
