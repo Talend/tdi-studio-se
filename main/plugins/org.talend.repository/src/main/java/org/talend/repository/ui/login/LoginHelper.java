@@ -587,24 +587,28 @@ public class LoginHelper {
             loginFetchLicenseHelper.cancelAndClearFetchJobs();
         } catch (final InvocationTargetException e) {
             // if (PluginChecker.isSVNProviderPluginLoaded()) {
-            if (e.getTargetException() instanceof OperationCancelException) {
+            Throwable te = e.getTargetException();
+            if (te instanceof OperationCancelException) {
                 Display.getDefault().syncExec(new Runnable() {
 
                     @Override
                     public void run() {
                         MessageDialog.openError(Display.getDefault().getActiveShell(),
-                                Messages.getString("LoginDialog.logonCanceled"), e.getTargetException().getLocalizedMessage());
+                                Messages.getString("LoginDialog.logonCanceled"), te.getLocalizedMessage());
                     }
 
                 });
-            } else if (e.getTargetException() instanceof InformException) {
+            } else if (te instanceof InformException) {
                 Display.getDefault().syncExec(() -> MessageDialog.openInformation(Display.getDefault().getActiveShell(),
-                        Messages.getString("LoginDialog.logonDenyTitle"), e.getTargetException().getLocalizedMessage()));
-            } else if (isAuthorizationException(e.getTargetException()) && errorManager != null) {
+                        Messages.getString("LoginDialog.logonDenyTitle"), te.getLocalizedMessage()));
+            } else if (isAuthorizationException(te) && errorManager != null) {
                 errorManager.setHasAuthException(true);
-                errorManager.setAuthException(e.getTargetException());
+                errorManager.setAuthException(te);
                 errorManager.setErrMessage(
-                        Messages.getString("LoginComposite.errorMessages1") + ":\n" + e.getTargetException().getMessage());//$NON-NLS-1$ //$NON-NLS-2$
+                        Messages.getString("LoginComposite.errorMessages1") + ":\n" + te.getMessage());//$NON-NLS-1$ //$NON-NLS-2$
+            } else if (te instanceof LoginException && LoginException.RESTART.equals(((LoginException) te).getKey())) {
+                LoginHelper.isRestart = true;
+                return true;
             } else {
                 MessageBoxExceptionHandler.process(e.getTargetException(), getUsableShell());
             }

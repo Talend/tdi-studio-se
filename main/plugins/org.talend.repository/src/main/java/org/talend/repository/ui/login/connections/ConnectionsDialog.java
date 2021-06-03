@@ -44,10 +44,12 @@ import org.talend.commons.utils.network.NetworkUtil;
 import org.talend.core.GlobalServiceRegister;
 import org.talend.core.PluginChecker;
 import org.talend.core.model.general.ConnectionBean;
+import org.talend.core.service.IStudioLiteP2Service;
 import org.talend.core.ui.branding.IBrandingService;
 import org.talend.repository.i18n.Messages;
 import org.talend.repository.ui.login.connections.network.LoginNetworkPreferencePage;
 import org.talend.repository.ui.login.connections.network.proxy.LoginProxyPreferencePage;
+import org.talend.repository.ui.login.connections.settings.UpdatesitePreferencePage;
 
 /**
  * DOC smallet class global comment. Detailled comment <br/>
@@ -179,23 +181,23 @@ public class ConnectionsDialog extends TitleAreaDialog {
         bottomPartLayout.marginBottom = VSPACE;
         bottomPart.setLayout(bottomPartLayout);
 
-        Link networkSettings = new Link(bottomPart, SWT.NONE);
-        networkSettings.setBackground(ColorConstants.white);
-        networkSettings.setText("<a>" //$NON-NLS-1$
-                + Messages.getString("ConnectionsDialog.ui.networkSettings") //$NON-NLS-1$
+        Link settings = new Link(bottomPart, SWT.NONE);
+        settings.setBackground(ColorConstants.white);
+        settings.setText("<a>" //$NON-NLS-1$
+                + Messages.getString("ConnectionsDialog.ui.pref") //$NON-NLS-1$
                 + "</a>");//$NON-NLS-1$
 
-        networkSettings.addSelectionListener(new SelectionAdapter() {
+        settings.addSelectionListener(new SelectionAdapter() {
 
             @Override
             public void widgetSelected(SelectionEvent e) {
-                onNetworkSettingsClicked();
+                onSettingsClicked();
             }
 
         });
     }
 
-    private void onNetworkSettingsClicked() {
+    private void onSettingsClicked() {
         PreferenceDialog pd = new PreferenceDialog(getShell(), new PreferenceManager());
 
         LoginProxyPreferencePage prefPage = new LoginProxyPreferencePage();
@@ -205,6 +207,13 @@ public class ConnectionsDialog extends TitleAreaDialog {
         LoginNetworkPreferencePage networkPage = new LoginNetworkPreferencePage();
         networkPage.setTitle(Messages.getString("ConnectionsDialog.ui.networkSettings.timeout.title"));
         pd.getPreferenceManager().addToRoot(new PreferenceNode("timeoutPage", networkPage));
+
+        IStudioLiteP2Service p2Service = IStudioLiteP2Service.get();
+        if (p2Service != null) {
+            UpdatesitePreferencePage updateSitePage = new UpdatesitePreferencePage();
+            updateSitePage.setTitle("Update site");
+            pd.getPreferenceManager().addToRoot(new PreferenceNode("updateSitePage", updateSitePage));
+        }
 
         int open = pd.open();
         if (Window.OK == open) {
