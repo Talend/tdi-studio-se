@@ -248,7 +248,7 @@
     public long startTime = 0;
     public boolean isChildJob = false;
     public String log4jLevel = "";
-    
+
     private boolean enableLogStash;
 
     private boolean execStat = true;
@@ -288,7 +288,7 @@
     public java.util.Map<String, Object> parentContextMap = new java.util.HashMap<String, Object>();
 
     public String status= "";
-    
+
     <%
     boolean containGenericComponents = false;
     nodeloop:
@@ -314,9 +314,9 @@
             return SharedDBConnection.getDBConnection(dbDriver, url, dbConnectionName);
         }
     };
-    
+
     private static final String GLOBAL_CONNECTION_POOL_KEY = "GLOBAL_CONNECTION_POOL";
-    
+
     {
     	globalMap.put(GLOBAL_CONNECTION_POOL_KEY, connectionPool);
     }
@@ -461,7 +461,7 @@
     public int runJobInTOS(String[] args) {
 	   	// reset status
 	   	status = "";
-	   	
+
         String lastStr = "";
         for (String arg : args) {
             if (arg.equalsIgnoreCase("--context_param")) {
@@ -495,7 +495,7 @@
 				}
 				org.apache.log4j.Logger.getRootLogger().setLevel(log.getLevel());
 				<%}%>
-				
+
 				<%if(isLog4j2Enabled){%>
 				if("trace".equalsIgnoreCase(log4jLevel)){
 					org.apache.logging.log4j.core.config.Configurator.setLevel(log.getName(), org.apache.logging.log4j.Level.TRACE);
@@ -517,7 +517,7 @@
     	    }
         	log.info("TalendJob: '<%=codeGenArgument.getJobName()%>' - Start.");
     	<%}%>
-    	
+
     	<%
     	INode jobCatcherNode = null;
 		for (INode nodeInProcess : process.getGeneratingNodes()) {
@@ -527,7 +527,7 @@
 				break;
 			}
 		}
-		
+
 		boolean enableLogStash = !Boolean.getBoolean("deactivate_extended_component_log") && (jobCatcherNode!=null);
 		boolean enable_runtime_lineage_log = NodeUtil.isJobUsingRuntimeLineage(process) && (jobCatcherNode!=null);
 		if(enable_runtime_lineage_log) {
@@ -544,12 +544,12 @@
 			p_<%=jobCatcherNode.getUniqueName()%>.setProperty("appender.file.maxsize", "52428800");
 			p_<%=jobCatcherNode.getUniqueName()%>.setProperty("appender.file.maxbackup", "20");
 			p_<%=jobCatcherNode.getUniqueName()%>.setProperty("host", "false");
-			
+
 			final String runtime_dir_<%=jobCatcherNode.getUniqueName()%> = System.getProperty("runtime.lineage.outputpath");
 			final String runtime_path_<%=jobCatcherNode.getUniqueName()%> = System.getProperty("runtime.lineage.appender.file.path");
 			if(runtime_path_<%=jobCatcherNode.getUniqueName()%>==null || runtime_path_<%=jobCatcherNode.getUniqueName()%>.isEmpty()) {
 				if(runtime_dir_<%=jobCatcherNode.getUniqueName()%>!=null && !runtime_dir_<%=jobCatcherNode.getUniqueName()%>.isEmpty()) {
-					System.setProperty("runtime.lineage.appender.file.path", 
+					System.setProperty("runtime.lineage.appender.file.path",
 						new StringBuilder().append(runtime_dir_<%=jobCatcherNode.getUniqueName()%>)
 						.append((runtime_dir_<%=jobCatcherNode.getUniqueName()%>.endsWith("/") || runtime_dir_<%=jobCatcherNode.getUniqueName()%>.endsWith("\\")) ? "" : java.io.File.separator)
 						.append(projectName)
@@ -565,23 +565,23 @@
 					);
 				}
 			}
-			
+
 			System.getProperties().stringPropertyNames().stream()
 					.filter(it -> it.startsWith("runtime.lineage.") && !"runtime.lineage.outputpath".equals(it))
 					.forEach(key -> p_<%=jobCatcherNode.getUniqueName()%>.setProperty(key.substring("runtime.lineage.".length()), System.getProperty(key)));
-			
+
 			<%if(isLog4j1Enabled) {%>
 			org.apache.log4j.Logger.getLogger(p_<%=jobCatcherNode.getUniqueName()%>.getProperty("root.logger")).setLevel(org.apache.log4j.Level.DEBUG);
 			<%}%>
-			
+
 			<%if(isLog4j2Enabled) {%>
 			org.apache.logging.log4j.core.config.Configurator.setLevel(p_<%=jobCatcherNode.getUniqueName()%>.getProperty("root.logger"), org.apache.logging.log4j.Level.DEBUG);
 			<%}%>
-			
+
 			runtime_lineage_logger_<%=jobCatcherNode.getUniqueName()%> = org.talend.job.audit.JobEventAuditLoggerFactory.createJobAuditLogger(p_<%=jobCatcherNode.getUniqueName()%>);
 		<%
 		}
-		
+
 		if(enableLogStash) {
 			String location = ElementParameterParser.getValue(jobCatcherNode, "__LOCATION__");
 		%>
@@ -606,7 +606,7 @@
 				<%if(isLog4j1Enabled) {%>
 				org.apache.log4j.Logger.getLogger(properties_<%=jobCatcherNode.getUniqueName()%>.getProperty("root.logger")).setLevel(org.apache.log4j.Level.DEBUG);
 				<%}%>
-				
+
 				<%if(isLog4j2Enabled) {%>
 				org.apache.logging.log4j.core.config.Configurator.setLevel(properties_<%=jobCatcherNode.getUniqueName()%>.getProperty("root.logger"), org.apache.logging.log4j.Level.DEBUG);
 				<%}%>
@@ -721,7 +721,7 @@
                         if( !(ctxParam.getType().equals("id_File") || ctxParam.getType().equals("id_Directory") ||ctxParam.getType().equals("id_List Of Value"))) {
                            typeToGenerate=JavaTypesManager.getTypeToGenerate(ctxParam.getType(),true);
                         }
-                        
+
                         if (ctxParam.getType().equals("id_Password")) {
 %>
                             String pwd_<%=ctxParam.getName()%>_value = context.getProperty("<%=ctxParam.getName()%>");
@@ -920,7 +920,7 @@ if(execStat) {
             break;
         }
     }
-    
+
     if (isCustomProxySettingsUsed) {
 %>
         java.net.ProxySelector proxySelectorOnStartJob = java.net.ProxySelector.getDefault();
@@ -934,7 +934,7 @@ if(execStat) {
         <%=statCatcherNode.getUniqueName() %>.addMessage("begin");
 <%
         }
-        
+
         List<INode> prejobNodes = new ArrayList<INode>();
 
         List<INode> postjobNodes = new ArrayList<INode>();
@@ -1026,7 +1026,7 @@ this.globalResumeTicket = true;//to run tPreJob
         }
 <%
         }
-        
+
         if(enableLogStash) {
 %>
 		if(enableLogStash) {
@@ -1151,7 +1151,7 @@ this.globalResumeTicket = true;//to run tPostJob
 <%= ElementParameterParser.getValue(process, "__FOOTER_CODE__")%>
 
 <%
-    if (isCustomProxySettingsUsed) { 
+    if (isCustomProxySettingsUsed) {
 %>
         java.net.ProxySelector.setDefault(proxySelectorOnStartJob);
 <%
@@ -1179,7 +1179,7 @@ this.globalResumeTicket = true;//to run tPostJob
         }
 <%
     }
-    
+
     if(enableLogStash) {
 %>
 		if(enableLogStash) {
@@ -1198,11 +1198,11 @@ this.globalResumeTicket = true;//to run tPostJob
     closeJmsConnections();
 <% } %>
 
-<% if (exist_tSCP) { 
+<% if (exist_tSCP) {
 %>
     closeCloseableConnections(<%=parameterNames%>);
-<% 
-} 
+<%
+}
 %>
 
 <%
@@ -1342,15 +1342,34 @@ if (execStat) {
 
 <%  if(exist_tSQLDB) { %>
     private void closeSqlDbConnections() {
+        boolean shutdownAbandonedConnections = false;
         try {
             Object obj_conn;
 <%    for (INode sqlDbComponent : sqlDbComponentsList) { %>
             obj_conn = globalMap.remove("conn_<%=sqlDbComponent.getUniqueName() %>");
-            if (null != obj_conn) {
-                ((java.sql.Connection) obj_conn).close();
+            if (obj_conn != null) {
+                java.sql.Connection conn = (java.sql.Connection)obj_conn;
+
+                String originalURL = conn.getMetaData().getURL();
+                java.sql.Driver drv = java.sql.DriverManager.getDriver(originalURL);
+                String driverClass = drv.getClass().getName();
+
+                conn.close();
+
+                if("com.mysql.cj.jdbc.Driver".equals(driverClass) && routines.system.BundleUtils.inOSGi()) {
+                    shutdownAbandonedConnections = true;
+                }
             }
+
 <%    } %>
         } catch (java.lang.Exception e) {
+        }
+        if (shutdownAbandonedConnections) {
+            try {
+                Class.forName("com.mysql.cj.jdbc.AbandonedConnectionCleanupThread").
+                    getMethod("uncheckedShutdown").invoke(null, (Object[]) null);
+            } catch(java.lang.Exception e) {
+            }
         }
     }
 <%  } %>
