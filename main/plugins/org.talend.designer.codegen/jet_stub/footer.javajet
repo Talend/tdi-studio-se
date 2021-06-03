@@ -1344,15 +1344,34 @@ if (execStat) {
 
 <%  if(exist_tSQLDB) { %>
     private void closeSqlDbConnections() {
+        boolean shutdownAbandonedConnections = false;
         try {
             Object obj_conn;
 <%    for (INode sqlDbComponent : sqlDbComponentsList) { %>
             obj_conn = globalMap.remove("conn_<%=sqlDbComponent.getUniqueName() %>");
-            if (null != obj_conn) {
-                ((java.sql.Connection) obj_conn).close();
+            if (obj_conn != null) {
+                java.sql.Connection conn = (java.sql.Connection)obj_conn;
+
+                String originalURL = conn.getMetaData().getURL();
+                java.sql.Driver drv = java.sql.DriverManager.getDriver(originalURL);
+                String driverClass = drv.getClass().getName();
+
+                conn.close();
+
+                if("com.mysql.cj.jdbc.Driver".equals(driverClass) && routines.system.BundleUtils.inOSGi()) {
+                    shutdownAbandonedConnections = true;
+                }
             }
+
 <%    } %>
         } catch (java.lang.Exception e) {
+        }
+        if (shutdownAbandonedConnections) {
+            try {
+                Class.forName("com.mysql.cj.jdbc.AbandonedConnectionCleanupThread").
+                    getMethod("uncheckedShutdown").invoke(null, (Object[]) null);
+            } catch(java.lang.Exception e) {
+            }
         }
     }
 <%  } %>
