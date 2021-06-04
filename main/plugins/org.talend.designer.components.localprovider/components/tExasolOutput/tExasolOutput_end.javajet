@@ -113,6 +113,7 @@ imports="
                 <%
                 }%>
         }catch (java.lang.Exception e_<%=cid%>){
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e_<%=cid%>.getMessage());
             java.sql.BatchUpdateException bue_<%=cid%> = null;
             java.sql.SQLException ne_<%=cid%> = null,sqle_<%=cid%> = null;
             if (e_<%=cid%> instanceof java.sql.BatchUpdateException) {

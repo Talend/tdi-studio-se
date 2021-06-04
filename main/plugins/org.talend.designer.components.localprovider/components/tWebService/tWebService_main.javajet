@@ -90,6 +90,7 @@ if (incomingConnections != null && !incomingConnections.isEmpty()) {
 	 	results_<%=cid%> = serviceInvokerHelper_<%=cid%>.invoke(serviceName_<%=cid%>, portName_<%=cid%>, "<%=method%>", inMap_<%=cid%>);
 	 	<%log.debug(log.str("Invoke the method " + method + " on "), log.var("serviceName"), log.str(" has succeeded."));%>
 	 }catch(java.lang.Exception e){
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
 <%
 	 if (("true").equals(dieOnError)) {
 %>

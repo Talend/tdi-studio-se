@@ -711,6 +711,7 @@ class <%=rowName %>StructILightSerializable extends <%=rowName %>Struct implemen
 %>
 
 		} catch (java.lang.Exception e) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
 			e.printStackTrace();
 		} finally {
 			if (dis != null) {
@@ -802,6 +803,7 @@ class <%=rowName %>StructILightSerializable extends <%=rowName %>Struct implemen
     	}
     	%>
     	} catch (java.lang.Exception e) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
      		throw new RuntimeException(e);
 		} finally {
      		if (dos != null) {

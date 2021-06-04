@@ -201,6 +201,7 @@
 				sqlBuffer_<%=cid %>.append(",\n ERROR_COUNT=" + <%=errorInt%>);
 			<%
 			} catch (NumberFormatException nfe) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",nfe.getMessage());
 				System.err.println(nfe.getStackTrace());
 			}
 		}
@@ -330,6 +331,7 @@
 				log.debug("<%=cid%> - Generate command into file:"+executableFilePath_<%=cid %>+".");
 			<%}%>
 		} catch (java.lang.Exception e) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
 			<%log4jCodeGenerateUtil.logError(node,"error");%>
 			e.printStackTrace();
 		}
@@ -366,6 +368,7 @@
 							reader.close();
 						}
 					} catch(java.io.IOException ioe) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",ioe.getMessage());
 						<%log4jCodeGenerateUtil.logError(node,"error","ioe");%>
 						ioe.printStackTrace();
 					}
@@ -397,6 +400,7 @@
 							reader.close();
 						}
 					} catch(java.io.IOException ioe) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",ioe.getMessage());
 						<%log4jCodeGenerateUtil.logError(node,"error","ioe");%>
 						ioe.printStackTrace();
 					}
@@ -443,6 +447,7 @@
 					reader.close();
 				}
 			} catch(java.io.IOException ioe) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",ioe.getMessage());
 				<%log4jCodeGenerateUtil.logError(node,"error","ioe");%>
 				ioe.printStackTrace();
 			}
@@ -474,6 +479,7 @@
 					reader.close();
 				}
 			} catch(java.io.IOException ioe) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",ioe.getMessage());
 				<%log4jCodeGenerateUtil.logError(node,"error","ioe");%>
 				ioe.printStackTrace();
 			}
@@ -527,6 +533,7 @@
 			}
 			%>
 		} catch (java.lang.Exception e) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
 			<%log4jCodeGenerateUtil.logError(node,"error");%>
 			e.printStackTrace();
 		}

@@ -123,6 +123,7 @@ if(!"true".equals(useExistingConn)){
 		try {
 			<%=cid%>_boxItem = getBoxItemRecursively(<%=cid%>_pathItems, <%=cid%>_rootFolder, <%=cid%>_client);
 		} catch (Exception e) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
 			throw new Exception("<%=cid%> - " + "The path to file or directory was not found in " + <%=cid%>_path, e);
 		}
 	} else {

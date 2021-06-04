@@ -255,6 +255,7 @@ accessCtrlList.grantPermission(grantee_<%=cid%>_<%=grantee_id%>, com.amazonaws.s
                         uploadId_<%=cid%>, partTags_<%=cid%>);
             		conn_<%=cid%>.completeMultipartUpload(compRequest_<%=cid%>);
             } catch (java.lang.Exception uploadException_<%=cid%>) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",uploadException_<%=cid%>.getMessage());
   							conn_<%=cid%>.abortMultipartUpload(new com.amazonaws.services.s3.model.AbortMultipartUploadRequest(<%=bucket%>, key_<%=cid%>, uploadId_<%=cid%>));
     						throw uploadException_<%=cid%>;
             }
@@ -269,6 +270,7 @@ accessCtrlList.grantPermission(grantee_<%=cid%>_<%=grantee_id%>, com.amazonaws.s
 		}
 		%>
 	}catch(java.lang.Exception e_<%=cid%>){
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e_<%=cid%>.getMessage());
 		<%
 		if (("true").equals(dieOnError)) {
 		%>
@@ -281,7 +283,6 @@ accessCtrlList.grantPermission(grantee_<%=cid%>_<%=grantee_id%>, com.amazonaws.s
 			<%
 			}
 			%>
-			globalMap.put("<%=cid %>_ERROR_MESSAGE", e_<%=cid%>.getMessage());
 			System.err.println(e_<%=cid%>.getMessage());
 		<%
 		}

@@ -94,6 +94,7 @@
 			properties_<%=cid%>.load(inputStream_<%=cid%>);
 			inputStream_<%=cid%>.close();
 		} catch (java.io.FileNotFoundException e_<%=cid%>) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e_<%=cid%>.getMessage());
 			<%
 			if(isLog4jEnabled){
 			%>
@@ -102,6 +103,7 @@
 			}
 			%>
 		} catch (java.io.IOException ee_<%=cid%>) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",ee_<%=cid%>.getMessage());
 			<%
 			if(isLog4jEnabled){
 			%>
@@ -213,7 +215,7 @@
 		/* ----END-CREATING-CLIENT (Cloud API)---- */
 
 		long nb_line_<%=cid%> = 0;
-  <%
+	<%
   } else if (authMode.equals("TOKEN")) {
     if (ElementParameterParser.canEncrypt(node, "__ACCESS_TOKEN__")) {%>
        final String decryptedAccessToken_<%=cid%> = routines.system.PasswordEncryptUtil.decryptPassword(<%=ElementParameterParser.getEncryptedValue(node, "__ACCESS_TOKEN__")%>);
@@ -292,7 +294,7 @@
       boolean useExistingConn = false;
       String gsProjectID = projectId;
       String connection = cid;
-      %>
+			%>
       <%@ include file="@{org.talend.designer.components.localprovider}/components/templates/googleStorageConnection.javajet"%>
 
 			java.io.File file_<%=cid%> = new java.io.File(<%=localFilename%>);
@@ -340,6 +342,7 @@
 				<% } %>
 				bigqueryclient_<%=cid%>.tables().delete(PROJECT_ID_<%=cid%>, <%=dataset%>, <%=table%>).execute();
 			} catch (com.google.api.client.googleapis.json.GoogleJsonResponseException e_<%=cid%>) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e_<%=cid%>.getMessage());
 				if (e_<%=cid%>.getDetails().getCode() != 404) {
 					<%
 					if(dieOnError) {
@@ -370,6 +373,7 @@
 				com.google.api.services.bigquery.model.Table getTable = bigqueryclient_<%=cid%>.tables().get(PROJECT_ID_<%=cid%>, <%=dataset%>, <%=table%>).execute();
 				queryLoad_<%=cid%>.setCreateDisposition("CREATE_NEVER");
 			} catch (com.google.api.client.googleapis.json.GoogleJsonResponseException e_<%=cid%>){
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e_<%=cid%>.getMessage());
 				if (e_<%=cid%>.getDetails().getCode() == 404) {
 					com.google.api.services.bigquery.model.TableSchema schema_<%=cid%> = new com.google.api.services.bigquery.model.TableSchema();
 					<%
@@ -541,6 +545,7 @@
       <% } %>
 			jobExec_<%=cid%> = insertReq_<%=cid%>.execute();
 		} catch (Exception ee_<%=cid%>) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",ee_<%=cid%>.getMessage());
 			<%
 			if(dieOnError) {
 			%>
@@ -563,7 +568,7 @@
 					<% if(authMode.equals("TOKEN") && !ElementParameterParser.canEncrypt(node, "__ACCESS_TOKEN__")) { %>
 			cred_<%=cid%>.setAccessToken(<%= ElementParameterParser.getValue(node, "__ACCESS_TOKEN__")%>);
 					<% } %>
-			com.google.api.services.bigquery.model.Job pollJob_<%=cid%> = bigqueryclient_<%=cid%>.jobs().get(PROJECT_ID_<%=cid%>,jobExec_<%=cid%>.getJobReference().getJobId()).setLocation(jobExec_<%=cid%>.getJobReference().getLocation()).execute();
+            		com.google.api.services.bigquery.model.Job pollJob_<%=cid%> = bigqueryclient_<%=cid%>.jobs().get(PROJECT_ID_<%=cid%>,jobExec_<%=cid%>.getJobReference().getJobId()).setLocation(jobExec_<%=cid%>.getJobReference().getLocation()).execute();
 			while (pollJob_<%=cid%>.getStatus().getState().equals("RUNNING") || pollJob_<%=cid%>.getStatus().getState().equals("PENDING")) {
 				Thread.sleep(1000);
 				<% if(authMode.equals("TOKEN") && !ElementParameterParser.canEncrypt(node, "__ACCESS_TOKEN__")) { %>

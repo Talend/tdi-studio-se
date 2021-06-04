@@ -124,6 +124,7 @@ class="MomInput"
 			%>
 			session_<%=cid %> = (javax.jms.Session) globalMap.get("session_<%=connectionComponentName%>");
 		} catch (NullPointerException npe) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",npe.getMessage());
 			<%
 			if(isLog4jEnabled){
 			%>	

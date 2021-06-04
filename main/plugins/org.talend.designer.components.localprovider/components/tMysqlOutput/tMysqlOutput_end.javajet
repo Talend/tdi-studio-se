@@ -366,6 +366,7 @@ skeleton="../templates/db_output_bulk.skeleton"
 	        	insertedCount_<%=cid%> += processedCount_<%=cid%>;
 	        	rowsToCommitCount_<%=cid%> += processedCount_<%=cid%>;
 	        }catch(java.lang.Exception e){
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
 	        	<% if(onErrDie){%>
 	       		throw e;
 	        	<% }else{
@@ -400,6 +401,7 @@ skeleton="../templates/db_output_bulk.skeleton"
             	    	}
 
                 }catch (java.sql.BatchUpdateException e){
+                    globalMap.put(currentComponent+"_ERROR_MESSAGE",e.getMessage());
                 	<%if(("true").equals(dieOnError)) {
                 	%>
                 		throw(e);
@@ -418,7 +420,6 @@ skeleton="../templates/db_output_bulk.skeleton"
 	    	    	}
 					dbLog.logPrintedException("e.getMessage()");
 					%>
-					globalMap.put(currentComponent+"_ERROR_MESSAGE",e.getMessage());
                 	System.err.println(e.getMessage());
                 	<%
                 	}%>
@@ -482,6 +483,7 @@ skeleton="../templates/db_output_bulk.skeleton"
 	    	}%>
 	    }
     }catch (java.sql.BatchUpdateException e){
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
     	<%if(("true").equals(dieOnError)) {
     	%>
     		throw(e);

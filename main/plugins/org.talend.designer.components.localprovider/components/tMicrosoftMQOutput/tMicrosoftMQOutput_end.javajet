@@ -29,6 +29,7 @@
 				}
 				resourceMap.put("finish_<%=cid%>", true);
 			}catch(ionic.Msmq.MessageQueueException e_<%=cid%>){
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e_<%=cid%>.getMessage());
 				<%
 				if(dieOnError){
 				%>

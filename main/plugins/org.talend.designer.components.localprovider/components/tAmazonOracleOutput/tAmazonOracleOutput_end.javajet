@@ -78,6 +78,7 @@ imports="
 	      	targetSRID = Integer.parseInt(ElementParameterParser.getValue(node,"__SRID__"));
 	    }
 	    catch (NumberFormatException e) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
 			%>
 	     	// TODO unable to parse integer: <%=ElementParameterParser.getValue(node,"__SRID__")%>
 	     	// TODO error: <%=e.getMessage()%>
@@ -128,6 +129,7 @@ imports="
 					stmtCreateIndex_<%=cid%>.execute(dropIndex_<%=cid %>);
 					<%dbLog.data().sqlExecuteDone(dbLog.var("dropIndex"));%>
 				} catch (java.sql.SQLException e) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
 					<%dbLog.logIgnoredException("e.getMessage()");%>
 				}
 
@@ -182,6 +184,7 @@ imports="
 						<%dbLog.batch().executeDone(dbLog.str(dataAction));%>
             	    }
                 }catch (java.sql.BatchUpdateException e){
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
                 	<%if(("true").equals(dieOnError)) {
                 	%>
                 		throw(e);
