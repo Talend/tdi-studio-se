@@ -29,6 +29,7 @@ import org.talend.core.model.properties.Item;
 import org.talend.core.model.properties.ProcessItem;
 import org.talend.core.model.repository.IRepositoryViewObject;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
+import org.talend.core.runtime.maven.MavenConstants;
 import org.talend.core.ui.IJobletProviderService;
 import org.talend.designer.core.i18n.Messages;
 import org.talend.designer.core.model.components.EParameterName;
@@ -37,6 +38,7 @@ import org.talend.designer.core.model.utils.emf.talendfile.NodeType;
 import org.talend.designer.core.model.utils.emf.talendfile.ProcessType;
 import org.talend.designer.core.ui.editor.nodes.Node;
 import org.talend.designer.core.ui.views.problems.Problems;
+import org.talend.designer.runprocess.IRunProcessService;
 
 /**
  * @author hwang
@@ -45,6 +47,10 @@ import org.talend.designer.core.ui.views.problems.Problems;
 public class TRunjobUtil {
 	
 	public void checkTRunjobRecursiveLoop(Node node) {
+        if (IRunProcessService.get().getMavenPrefOptionStatus(MavenConstants.SKIP_LOOP_DEPENDENCY_CHECK)) {
+            return;
+        }
+
     	List<String> idList = new ArrayList<>();
     	try {
     		if (node.getComponent() != null && "tRunJob".equals(node.getComponent().getName())) {  //$NON-NLS-1$

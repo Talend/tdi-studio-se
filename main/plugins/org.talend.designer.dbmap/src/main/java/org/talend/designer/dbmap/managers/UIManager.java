@@ -42,12 +42,14 @@ import org.eclipse.swt.widgets.ScrollBar;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableItem;
+import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.ToolItem;
 import org.talend.commons.ui.runtime.exception.ExceptionHandler;
 import org.talend.commons.ui.runtime.image.ImageUtils;
 import org.talend.commons.ui.runtime.swt.tableviewer.selection.ILineSelectionListener;
 import org.talend.commons.ui.runtime.swt.tableviewer.selection.LineSelectionEvent;
 import org.talend.commons.ui.runtime.ws.WindowSystem;
+import org.talend.commons.ui.swt.colorstyledtext.UnnotifiableColorStyledText;
 import org.talend.commons.ui.swt.tableviewer.IModifiedBeanListener;
 import org.talend.commons.ui.swt.tableviewer.ModifiedBeanEvent;
 import org.talend.commons.ui.swt.tableviewer.TableViewerCreator;
@@ -147,6 +149,8 @@ public class UIManager extends AbstractUIManager {
     private IModifiedBeanListener<IMetadataColumn> inputModifiedBeanListener;
 
     private IModifiedBeanListener<IMetadataColumn> outputModifiedBeanListener;
+
+    private UnnotifiableColorStyledText columnNameTextFilter;
 
     /**
      * DOC amaumont UIManager constructor comment.
@@ -749,10 +753,16 @@ public class UIManager extends AbstractUIManager {
                     link.setState(LinkState.UNSELECTED);
                     ITableEntry sourceITableEntry = link.getPointLinkDescriptor1().getTableEntry();
                     TableItem tableItem = mapperManager.retrieveTableItem(sourceITableEntry);
-                    tableItem.setBackground(unselectedColor);
+                    if (tableItem != null) {
+                        tableItem.setBackground(unselectedColor);
+                    }
                     ITableEntry targetITableEntry = link.getPointLinkDescriptor2().getTableEntry();
-                    tableItem = mapperManager.retrieveTableItem(targetITableEntry);
-                    tableItem.setBackground(unselectedColor);
+                    if (tableItem != null) {
+                        tableItem = mapperManager.retrieveTableItem(targetITableEntry);
+                    }
+                    if (tableItem != null) {
+                        tableItem.setBackground(unselectedColor);
+                    }
                 }
             }
 
@@ -843,7 +853,9 @@ public class UIManager extends AbstractUIManager {
 
     public void setEntryState(MapperManager pMapperManager, EntryState entryState, ITableEntry entry) {
         TableItem tableItem = pMapperManager.retrieveTableItem(entry);
-        tableItem.setBackground(entryState.getColor());
+        if (tableItem != null) {
+            tableItem.setBackground(entryState.getColor());
+        }
     }
 
     /**
@@ -867,34 +879,104 @@ public class UIManager extends AbstractUIManager {
      * @return
      */
     public Point getTableEntryPosition(ITableEntry tableEntry, boolean forceRecalculate) {
-        TableEntryProperties tableEntryProperties = mapperManager.getTableEntryProperties(tableEntry);
-        Point returnedPoint = tableEntryProperties.position;
-        if (forceRecalculate || returnedPoint == null) {
-            TableItem tableItem = mapperManager.retrieveTableItem(tableEntry);
-            DataMapTableView dataMapTableView = mapperManager.retrieveDataMapTableView(tableEntry);
-            Rectangle tableViewBounds = dataMapTableView.getBounds();
-            Table table = tableItem.getParent();
-            Rectangle boundsTableItem = tableItem.getBounds(1);// FIX for issue 1225 ("1" parameter added)
+        DataMapTableView dataMapTableView = mapperManager.retrieveDataMapTableView(tableEntry);
 
-            int x = 0;
-            int y = boundsTableItem.y + table.getItemHeight() / 2 + dataMapTableView.getBorderWidth();
-            if (y < 0) {
-                y = 0;
+        int entriesSize = 0;
+        int minHeight = dataMapTableView.getTableViewerCreatorForColumns().getTable().getHeaderHeight()
+                + dataMapTableView.getTableViewerCreatorForColumns().getTable().getItemHeight();
+        TableItem[] tableItems = new TableItem[0];
+        if (tableEntry instanceof InputColumnTableEntry || tableEntry instanceof OutputColumnTableEntry) {
+            tableItems = dataMapTableView.getTableViewerCreatorForColumns().getTable().getItems();
+
+            AbstractInOutTable abstractInOutTable = (AbstractInOutTable) dataMapTableView.getDataMapTable();
+            if (dataMapTableView.getZone() == Zone.OUTPUTS) {
+                OutputTable outputTable = (OutputTable) abstractInOutTable;
+                List<IColumnEntry> oldOuputEntries = outputTable.getDataMapTableEntries();
+                entriesSize = oldOuputEntries.size();
             }
-
-            Point point = new Point(x, y);
-
-            Display display = dataMapTableView.getDisplay();
-            Point pointFromTableViewOrigin = display.map(tableItem.getParent(), dataMapTableView, point);
-
-            if (pointFromTableViewOrigin.y > tableViewBounds.height - TableEntriesManager.HEIGHT_REACTION) {
-                pointFromTableViewOrigin.y = tableViewBounds.height - TableEntriesManager.HEIGHT_REACTION;
+            if (dataMapTableView.getZone() == Zone.INPUTS) {
+                InputTable inputTable = (InputTable) abstractInOutTable;
+                List<IColumnEntry> oldOuputEntries = inputTable.getDataMapTableEntries();
+                entriesSize = oldOuputEntries.size();
             }
+        }
+        Rectangle tableViewBounds = dataMapTableView.getBounds();
+        Point pointFromTableViewOrigin = null;
+        Display display = dataMapTableView.getDisplay();
+        Point returnedPoint = new Point(0, 0);
+        TableEntryProperties tableEntryProperties = null;
 
-            returnedPoint = convertPointToReferenceOrigin(getReferenceComposite(), pointFromTableViewOrigin, dataMapTableView);
+        int itemIndex = 0;
+        if (tableEntry instanceof IColumnEntry || tableEntry instanceof FilterTableEntry) {
+            tableEntryProperties = mapperManager.getTableEntryProperties(tableEntry);
+            returnedPoint = tableEntryProperties.position;
+            if (forceRecalculate || returnedPoint == null) {
+                int y;
+                TableItem tableItem = mapperManager.retrieveTableItem(tableEntry);
+                boolean isOutputEntry = tableEntry instanceof OutputColumnTableEntry;
+                boolean isIntputEntry = tableEntry instanceof InputColumnTableEntry;
+                boolean checked = false;
+                for (int i = 0; i < tableItems.length; i++) {
+                    if (tableItems[i].getData() == tableEntry) {
+                        itemIndex = i;
+                        break;
+                    }
+                }
+                boolean allIsNull = false;
+                if (tableItem == null && (isIntputEntry || isOutputEntry)) {
+                    if (tableItems.length > 0) {
+                        tableItem = tableItems[0];
+                        checked = true;
+                    } else {
+                        allIsNull = true;
+                    }
+                }
+
+                if (!allIsNull) {
+                    Table table = tableItem.getParent();
+                    Rectangle boundsTableItem = tableItem.getBounds(1);// FIX for issue 1225 ("1" parameter added)
+                    y = boundsTableItem.y + table.getItemHeight() / 2 + dataMapTableView.getBorderWidth();
+
+                    if (isOutputEntry || isIntputEntry) {
+                        if (entriesSize != tableItems.length) {
+                            y = boundsTableItem.y + table.getItemHeight() / 2 + dataMapTableView.getBorderWidth();
+                        }
+                    }
+                    if (checked) {
+                        y = boundsTableItem.y + dataMapTableView.getBorderWidth();
+                        checked = false;
+                    }
+                    int x = 0;
+                    if (y < 0) {
+                        y = 0;
+                    }
+
+                    Point point = new Point(x, y);
+
+                    pointFromTableViewOrigin = display.map(tableItem.getParent(), dataMapTableView, point);
+                } else {
+                    Text columnFilterText = dataMapTableView.getColumnNameFilterText();
+                    Point point = new Point(-dataMapTableView.getBorderWidth(), minHeight);
+                    pointFromTableViewOrigin = display.map(columnFilterText, dataMapTableView, point);
+                }
+            }
+        } else {
+            throw new IllegalStateException("Case not found"); //$NON-NLS-1$
+        }
+
+        if (pointFromTableViewOrigin.y > tableViewBounds.height - TableEntriesManager.HEIGHT_REACTION) {
+            pointFromTableViewOrigin.y = tableViewBounds.height - TableEntriesManager.HEIGHT_REACTION;
+        }
+
+        returnedPoint = convertPointToReferenceOrigin(getReferenceComposite(), pointFromTableViewOrigin, dataMapTableView);
+        if (tableEntryProperties != null) {
             tableEntryProperties.position = returnedPoint;
         }
         return returnedPoint;
+    }
+
+    public UnnotifiableColorStyledText getColumnNameFilterText() {
+        return this.columnNameTextFilter;
     }
 
     public Point convertPointToReferenceOrigin(final Composite referenceComposite, Point point, Composite child) {

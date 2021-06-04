@@ -3,11 +3,11 @@ imports="
     org.talend.core.model.process.INode 
     org.talend.core.model.process.ElementParameterParser 
     org.talend.designer.codegen.config.CodeGeneratorArgument
-	java.util.List
-	java.util.Map
+    java.util.List
+    java.util.Map
 " 
 %>
-	<%
+    <%
     CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
     INode node = (INode)codeGenArgument.getArgument();	
     String cid = node.getUniqueName();
@@ -15,16 +15,16 @@ imports="
     String from_key = ElementParameterParser.getValue(node,"__FROM_KEY__");
     String to_bucket = ElementParameterParser.getValue(node,"__TO_BUCKET__");
     String to_key = ElementParameterParser.getValue(node,"__TO_KEY__");
-	String dieOnError = ElementParameterParser.getValue(node, "__DIE_ON_ERROR__");
-	boolean enableServerSideEncryption = "true".equals(ElementParameterParser.getValue(node, "__ENABLE_SERVER_SIDE_ENCRYPTION__"));
-	String kmsid = ElementParameterParser.getValue(node, "__KMSID__");
-	boolean enableKMS = "true".equals(ElementParameterParser.getValue(node, "__ENABLE_KMS__"));
-	
-	String partSizeMb = ElementParameterParser.getValue(node, "__PART_SIZE__");
-	
-	if((partSizeMb == null) || "".equals(partSizeMb) || "\"\"".equals(partSizeMb)) {
-	    partSizeMb = "100";
-	}
+    String dieOnError = ElementParameterParser.getValue(node, "__DIE_ON_ERROR__");
+    boolean enableServerSideEncryption = "true".equals(ElementParameterParser.getValue(node, "__ENABLE_SERVER_SIDE_ENCRYPTION__"));
+    String kmsid = ElementParameterParser.getValue(node, "__KMSID__");
+    boolean enableKMS = "true".equals(ElementParameterParser.getValue(node, "__ENABLE_KMS__"));
+    
+    String partSizeMb = ElementParameterParser.getValue(node, "__PART_SIZE__");
+    
+    if((partSizeMb == null) || "".equals(partSizeMb) || "\"\"".equals(partSizeMb)) {
+            partSizeMb = "100";
+    }
 
 	String multipart_threshold_mb = ElementParameterParser.getValue(node, "__MULTIPART_THRESHOLD__");
 
@@ -34,92 +34,92 @@ imports="
 
 	final String cannedACL = ElementParameterParser.getValue(node, "__CANNED_ACCESS_CONTROL_LIST__");
 	final boolean enableCannedACL = (cannedACL != null) && (!cannedACL.isEmpty()) && !("\"NONE\"".equals(cannedACL));
-	%>
-	<%@ include file="../tS3Connection/S3Client.javajet" %>
-	try{
-		<%
-		if(isLog4jEnabled){
-		%>	
-			log.info("<%=cid%> - Copying an object with key:" + <%=from_key%>);
-		<%
-		}
-		%>
-		
-		long partSizeInBytes_<%=cid%> = <%=partSizeMb%> * 1024 * 1024;
-		long maxBytes4SingleCopyCall_<%=cid%> = <%=multipart_threshold_mb%>  * 1024 * 1024;
-		com.amazonaws.services.s3.model.ObjectMetadata objectMetadata_<%=cid%> = null;
-		<%
-		if(!enableKMS && enableServerSideEncryption){
-		%>
+    %>
+    <%@ include file="../tS3Connection/S3Client.javajet" %>
+    try{
         <%
-				if(isLog4jEnabled){
-				%>	
-					log.info("<%=cid%> - No KMS - Normal SSE");
-				<%
-				}
-				%>
-			objectMetadata_<%=cid%> = new com.amazonaws.services.s3.model.ObjectMetadata();
-			objectMetadata_<%=cid%>.setSSEAlgorithm(com.amazonaws.services.s3.model.ObjectMetadata.AES_256_SERVER_SIDE_ENCRYPTION);
-		<%
-		}
-		%>
-		
-		final String from_bucket_<%=cid%> = <%=from_bucket%>;
-		final String from_key_<%=cid%> = <%=from_key%>;
-		final String to_bucket_<%=cid%> = <%=to_bucket%>; 
-		final String to_key_<%=cid%> = <%=to_key%>;
-		
-		//get the source metadata information
-		com.amazonaws.services.s3.model.GetObjectMetadataRequest metadataRequest_<%=cid%> = new com.amazonaws.services.s3.model.GetObjectMetadataRequest(from_bucket_<%=cid%>, from_key_<%=cid%>);
+        if(isLog4jEnabled){
+        %>	
+            log.info("<%=cid%> - Copying an object with key:" + <%=from_key%>);
+        <%
+        }
+        %>
+        
+        long partSizeInBytes_<%=cid%> = <%=partSizeMb%> * 1024 * 1024;
+        long maxBytes4SingleCopyCall_<%=cid%> = <%=multipart_threshold_mb%>  * 1024 * 1024;
+        com.amazonaws.services.s3.model.ObjectMetadata objectMetadata_<%=cid%> = null;
+        <%
+        if(!enableKMS && enableServerSideEncryption){
+        %>
+        <%
+                if(isLog4jEnabled){
+                %>	
+                    log.info("<%=cid%> - No KMS - Normal SSE");
+                <%
+                }
+                %>
+            objectMetadata_<%=cid%> = new com.amazonaws.services.s3.model.ObjectMetadata();
+            objectMetadata_<%=cid%>.setSSEAlgorithm(com.amazonaws.services.s3.model.ObjectMetadata.AES_256_SERVER_SIDE_ENCRYPTION);
+        <%
+        }
+        %>
+        
+        final String from_bucket_<%=cid%> = <%=from_bucket%>;
+        final String from_key_<%=cid%> = <%=from_key%>;
+        final String to_bucket_<%=cid%> = <%=to_bucket%>; 
+        final String to_key_<%=cid%> = <%=to_key%>;
+        
+        //get the source metadata information
+        com.amazonaws.services.s3.model.GetObjectMetadataRequest metadataRequest_<%=cid%> = new com.amazonaws.services.s3.model.GetObjectMetadataRequest(from_bucket_<%=cid%>, from_key_<%=cid%>);
     com.amazonaws.services.s3.model.ObjectMetadata metadataResult_<%=cid%> = conn_<%=cid%>.getObjectMetadata(metadataRequest_<%=cid%>);
     long objectSize_<%=cid%> = metadataResult_<%=cid%>.getContentLength();
     
     boolean multiUpload_<%=cid%> = objectSize_<%=cid%> > maxBytes4SingleCopyCall_<%=cid%>;
     
     if(!multiUpload_<%=cid%>) {
-    		com.amazonaws.services.s3.model.CopyObjectRequest putRequest_<%=cid%> = new com.amazonaws.services.s3.model.CopyObjectRequest(from_bucket_<%=cid%>, from_key_<%=cid%>, to_bucket_<%=cid%>, to_key_<%=cid%>);
-    		if(objectMetadata_<%=cid%> != null) {
-    				putRequest_<%=cid%>.setNewObjectMetadata(objectMetadata_<%=cid%>);
-    		}
-    		<%if (enableCannedACL) {%>
-				    {
-				      final String cannedACLChoice = <%= cannedACL %>;
-				      if (cannedACLChoice != null && (!cannedACLChoice.isEmpty()) && !("NONE".equals(cannedACLChoice))) {
-				          putRequest_<%=cid%>.setCannedAccessControlList(com.amazonaws.services.s3.model.CannedAccessControlList.valueOf(cannedACLChoice));
-				      }
-				    }
-			<%}%>
-    		<%@ include file="../tS3Put/set_kms.javajet"%>
-    		
-    		conn_<%=cid%>.copyObject(putRequest_<%=cid%>);
-		} else {
-						<%
-						//as the s3 service limit, the multi upload copy may lose s3 object metadata information or changed, but some object metadata information is important like the "x-amz-iv" key for client encrypt with kms
-						//which will make the decrypt not work with different key like expected, so fail asap here and there is very rare risk which use a large file than 5GB and also with client encrypt, so ignore it now.
-						%>
-						java.util.Map<String,String> userMetadata_<%=cid%> = metadataResult_<%=cid%>.getUserMetadata();
-						if((userMetadata_<%=cid%>!=null) && userMetadata_<%=cid%>.get("x-amz-iv")!=null) {
-								throw new RuntimeException("the metadata key : \"x-amz-iv\" exists in the current object metadata, its value is important for client encrypt with KMS, which can't be copied as s3 service limit it");
-						}
-						
-    				com.amazonaws.services.s3.model.InitiateMultipartUploadRequest putRequest_<%=cid%> = null;
-    				if(objectMetadata_<%=cid%> != null) {
-    						putRequest_<%=cid%> = new com.amazonaws.services.s3.model.InitiateMultipartUploadRequest(to_bucket_<%=cid%>, to_key_<%=cid%>, objectMetadata_<%=cid%>);
-    				} else {
-    						//even pass the source object metadata, some metadata will change too like "x-amz-iv"
-    						putRequest_<%=cid%> = new com.amazonaws.services.s3.model.InitiateMultipartUploadRequest(to_bucket_<%=cid%>, to_key_<%=cid%>, metadataResult_<%=cid%>);
-    				}
-    				
-    				<%@ include file="../tS3Put/set_kms.javajet"%>
-    		
-    		<%if (enableCannedACL) {%>
-			    {
-				   final String cannedACLChoice = <%= cannedACL %>;
-				   if (cannedACLChoice != null && (!cannedACLChoice.isEmpty()) && !("NONE".equals(cannedACLChoice))) {
-				       putRequest_<%=cid%>.withCannedACL(com.amazonaws.services.s3.model.CannedAccessControlList.valueOf(cannedACLChoice));
-				   }
-			    }
-			<%}%>
+            com.amazonaws.services.s3.model.CopyObjectRequest putRequest_<%=cid%> = new com.amazonaws.services.s3.model.CopyObjectRequest(from_bucket_<%=cid%>, from_key_<%=cid%>, to_bucket_<%=cid%>, to_key_<%=cid%>);
+            if(objectMetadata_<%=cid%> != null) {
+                    putRequest_<%=cid%>.setNewObjectMetadata(objectMetadata_<%=cid%>);
+            }
+            <%if (enableCannedACL) {%>
+                    {
+                      final String cannedACLChoice = <%= cannedACL %>;
+                      if (cannedACLChoice != null && (!cannedACLChoice.isEmpty()) && !("NONE".equals(cannedACLChoice))) {
+                          putRequest_<%=cid%>.setCannedAccessControlList(com.amazonaws.services.s3.model.CannedAccessControlList.valueOf(cannedACLChoice));
+                      }
+                    }
+            <%}%>
+            <%@ include file="../tS3Put/set_kms.javajet"%>
+            
+            conn_<%=cid%>.copyObject(putRequest_<%=cid%>);
+        } else {
+                        <%
+                        //as the s3 service limit, the multi upload copy may lose s3 object metadata information or changed, but some object metadata information is important like the "x-amz-iv" key for client encrypt with kms
+                        //which will make the decrypt not work with different key like expected, so fail asap here and there is very rare risk which use a large file than 5GB and also with client encrypt, so ignore it now.
+                        %>
+                        java.util.Map<String,String> userMetadata_<%=cid%> = metadataResult_<%=cid%>.getUserMetadata();
+                        if((userMetadata_<%=cid%>!=null) && userMetadata_<%=cid%>.get("x-amz-iv")!=null) {
+                                throw new RuntimeException("the metadata key : \"x-amz-iv\" exists in the current object metadata, its value is important for client encrypt with KMS, which can't be copied as s3 service limit it");
+                        }
+                        
+                    com.amazonaws.services.s3.model.InitiateMultipartUploadRequest putRequest_<%=cid%> = null;
+                    if(objectMetadata_<%=cid%> != null) {
+                            putRequest_<%=cid%> = new com.amazonaws.services.s3.model.InitiateMultipartUploadRequest(to_bucket_<%=cid%>, to_key_<%=cid%>, objectMetadata_<%=cid%>);
+                    } else {
+                            //even pass the source object metadata, some metadata will change too like "x-amz-iv"
+                            putRequest_<%=cid%> = new com.amazonaws.services.s3.model.InitiateMultipartUploadRequest(to_bucket_<%=cid%>, to_key_<%=cid%>, metadataResult_<%=cid%>);
+                    }
+                    
+                    <%@ include file="../tS3Put/set_kms.javajet"%>
+                    
+            <%if (enableCannedACL) {%>
+                {
+                   final String cannedACLChoice = <%= cannedACL %>;
+                   if (cannedACLChoice != null && (!cannedACLChoice.isEmpty()) && !("NONE".equals(cannedACLChoice))) {
+                       putRequest_<%=cid%>.withCannedACL(com.amazonaws.services.s3.model.CannedAccessControlList.valueOf(cannedACLChoice));
+                   }
+                }
+            <%}%>
             com.amazonaws.services.s3.model.InitiateMultipartUploadResult initResult_<%=cid%> = conn_<%=cid%>.initiateMultipartUpload(putRequest_<%=cid%>);
             
             long bytePosition_<%=cid%> = 0;
@@ -127,7 +127,7 @@ imports="
             
             java.util.List<com.amazonaws.services.s3.model.PartETag> partTags_<%=cid%> = new java.util.ArrayList<com.amazonaws.services.s3.model.PartETag>();
             
-      	try {
+        try {
             while (bytePosition_<%=cid%> < objectSize_<%=cid%>) {
                 long lastByte_<%=cid%> = java.lang.Math.min(bytePosition_<%=cid%> + partSizeInBytes_<%=cid%> - 1, objectSize_<%=cid%> - 1);
                 
@@ -145,48 +145,50 @@ imports="
             }
     
             com.amazonaws.services.s3.model.CompleteMultipartUploadRequest completeRequest_<%=cid%> = new com.amazonaws.services.s3.model.CompleteMultipartUploadRequest(
-                                                                       	to_bucket_<%=cid%>,
+                                                                        to_bucket_<%=cid%>,
                                                                         to_key_<%=cid%>, 
                                                                         initResult_<%=cid%>.getUploadId(),
                                                                         partTags_<%=cid%>);
             conn_<%=cid%>.completeMultipartUpload(completeRequest_<%=cid%>);
-    		} catch (java.lang.Exception uploadException_<%=cid%>) {
-    				conn_<%=cid%>.abortMultipartUpload(new com.amazonaws.services.s3.model.AbortMultipartUploadRequest(to_bucket_<%=cid%>, to_key_<%=cid%>, initResult_<%=cid%>.getUploadId()));
-    				throw uploadException_<%=cid%>;
-    		}
+            } catch (java.lang.Exception uploadException_<%=cid%>) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",uploadException_<%=cid%>.getMessage());
+                    conn_<%=cid%>.abortMultipartUpload(new com.amazonaws.services.s3.model.AbortMultipartUploadRequest(to_bucket_<%=cid%>, to_key_<%=cid%>, initResult_<%=cid%>.getUploadId()));
+                    throw uploadException_<%=cid%>;
+            }
     }
     
-		<%
-		if(isLog4jEnabled){
-		%>	
-			log.info("<%=cid%> - Copied the object successfully.");
-		<%
-		}
-		%>
-	}catch(java.lang.Exception e_<%=cid%>){
-		<%
-		if (("true").equals(dieOnError)) {
-		%>
-			throw(e_<%=cid%>);
-		<%
-		} else {
-			if(isLog4jEnabled){
-			%>
-				log.error("<%=cid%> - " + e_<%=cid%>.getMessage());
-			<%
-			}
-			%>
-			System.err.println(e_<%=cid%>.getMessage());
-		<%
-		}
-		if(!("true").equals(useExistingConn)) {
-		%>
-	}finally{
-		if(conn_<%=cid%> !=null){
-			conn_<%=cid%>.shutdown();
-		}
-		<%
-		}
-		%>
-	}
-	        
+        <%
+        if(isLog4jEnabled){
+        %>	
+            log.info("<%=cid%> - Copied the object successfully.");
+        <%
+        }
+        %>
+    }catch(java.lang.Exception e_<%=cid%>){
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e_<%=cid%>.getMessage());
+        <%
+        if (("true").equals(dieOnError)) {
+        %>
+            throw(e_<%=cid%>);
+        <%
+        } else {
+            if(isLog4jEnabled){
+            %>
+                log.error("<%=cid%> - " + e_<%=cid%>.getMessage());
+            <%
+            }
+            %>
+            System.err.println(e_<%=cid%>.getMessage());
+        <%
+        }
+        if(!("true").equals(useExistingConn)) {
+        %>
+    }finally{
+        if(conn_<%=cid%> !=null){
+            conn_<%=cid%>.shutdown();
+        }
+        <%
+        }
+        %>
+    }
+            

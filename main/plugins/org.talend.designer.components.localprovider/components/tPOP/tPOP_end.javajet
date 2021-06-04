@@ -31,6 +31,7 @@
 		if ("pop3".equals(protocol)) {
   %>
 			} catch (javax.mail.MessageRemovedException mre) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",mre.getMessage());
 			<%if(isLog4jEnabled){%>
 				log.warn("<%=cid%> - One mail fails to retrieve since it was removed");
 			<%}%>
@@ -38,6 +39,7 @@
 	<%
 		} else {%>
 			} catch (javax.mail.MessagingException me) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",me.getMessage());
 				if (!"Cannot load header".equals(me.getMessage())) {
       				throw me;
 				}else{ 

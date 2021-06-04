@@ -88,6 +88,7 @@
 								try	{				
 									org.talend.FileCopy.copyFile(srcFilePath, desFilePath, false, <%=preserveModifiedTime%>);
 								} catch (java.lang.Exception e){ 
+                                   globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
 <%
 									if (failOn) {
 %>
@@ -96,12 +97,10 @@
 									} else if(isLog4jEnabled) {
 %>
 										log.error("<%=cid%> - " + e.getMessage());
-										globalMap.put("<%=cid %>_ERROR_MESSAGE", e.getMessage());
 <%
 									} else {
 %>
 										System.err.println("<%=cid%> - " + e.getMessage());
-										globalMap.put("<%=cid %>_ERROR_MESSAGE", e.getMessage());
 <%
 									}
 %>
@@ -214,6 +213,7 @@
 			if (!failOn) {
 %>
 				} catch (Exception e) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
 <%
 					if (isLog4jEnabled) {
 %>

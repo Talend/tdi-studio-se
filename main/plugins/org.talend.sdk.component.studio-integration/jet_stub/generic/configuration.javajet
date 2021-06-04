@@ -236,7 +236,11 @@ final java.util.Map<String, String> registry_metadata_<%=cid%> = new java.util.H
                 } // else do not put value in configuration
             }
         }
-        
+        String datastorePath = ElementParameterParser.getValue(node,"__DATASTORE_PATH__");
+        if (reuseConnection && datastorePath != null && !datastorePath.isEmpty()) {
+            conn_param_prefix = datastorePath;
+        }
+
         if (reuseConnection && conn_param_prefix!=null) {
             final String connectionKey = ElementParameterParser.getValue(node,"__CONNECTION__");
 %>

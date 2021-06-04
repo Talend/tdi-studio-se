@@ -309,6 +309,7 @@ while (fid_<%=cid %>.nextRecord()) {
 	}//FIN_002
 %>
 	} catch (java.lang.Exception e) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
 <%
         if (dieOnError) {
  %>
@@ -708,6 +709,7 @@ if(useMulSeprators==false){
 	}//FIN_002
 %>
 	} catch (java.lang.Exception e) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
 <%
         if (dieOnError) {
  %>

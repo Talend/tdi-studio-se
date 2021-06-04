@@ -143,6 +143,7 @@
               <%=rejectConnName %>.<%=outLabel %> = <%=outconnName %>.<%=outLabel %>;
             <%}%>            
           } catch(java.lang.Exception e){
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
             bHasError_<%=cid%> = true;            
             <%if (bOutputReject){%>
               if (("").equals(errorMessage_<%=cid %>)){
@@ -225,6 +226,7 @@
         }
         %>
       } catch (java.lang.Exception e){
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
         bHasError_<%=cid%> = true;        
         <%if (bOutputReject){%>
           if ("".equals(errorMessage_<%=cid %>)){

@@ -21,7 +21,9 @@ imports="
 	try {
 		pipe_<%=cid%>.disconnect();
 	} 
-	catch (java.lang.Exception e) {}
+	catch (java.lang.Exception e) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
+	}
 	finally {
 		pipe_<%=cid%> = null;
 	}

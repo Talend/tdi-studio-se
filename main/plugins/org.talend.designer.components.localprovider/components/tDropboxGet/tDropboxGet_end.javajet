@@ -39,6 +39,7 @@ imports="
 				try{
 					((java.io.InputStream)<%=dataOutputConnection%>.content).close();
 				}catch(Exception e){
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
 				}
 			}
 		<%}%>

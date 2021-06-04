@@ -267,6 +267,7 @@ Object filename_<%=cid %> = null;
 try {
 	filename_<%=cid %> = <%=filename %>;
 } catch(java.lang.Exception e) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
 	<%if (dieOnError) {%>
 	throw(e);
 	<%}else{%>
@@ -297,6 +298,7 @@ try{
     	parser_<%=cid%>.parse(xmlInputSource_<%=cid%>);
     }
 }catch(java.lang.Exception e){
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
 <%if (dieOnError) {%>
 	throw(e);
 <%}else{%>
@@ -449,6 +451,7 @@ Object filename_<%=cid %> = null;
 try {
 	filename_<%=cid %> = <%=filename %>;
 } catch(java.lang.Exception e) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
 	<%if (dieOnError) {%>
 	throw(e);
 	<%}else{%>
@@ -486,6 +489,7 @@ try {
 	output_<%=cid %>.write(doc_tmp_<%=cid %>);
 	output_<%=cid %>.close();
 } catch(java.lang.Exception e) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
 	<%if (dieOnError) {%>
 	throw(e);
 	<%}else{%>
@@ -518,6 +522,7 @@ try{
 		doc_<%=cid%> = reader_<%=cid %>.read(in_<%=cid %>);
 	}
 }catch(java.lang.Exception e){
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
 <%if (dieOnError) {%>
 	throw(e);
 <%}else{%>
@@ -691,6 +696,7 @@ Object filename_<%=cid %> = null;
 try {
 	filename_<%=cid %> = <%=filename %>;
 } catch(java.lang.Exception e) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
 	<%if (dieOnError) {%>
 	throw(e);
 	<%}else{
@@ -1048,6 +1054,7 @@ if ((metadatas!=null)&&(metadatas.size()>0)) {
 <%if(rejectConnName.equals(firstConnName)) {%> <%=firstConnName %> = null; <%}%>
 			
     } catch (java.lang.Exception e) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
         whetherReject_<%=cid%> = true;
 <%
         if (dieOnError) {

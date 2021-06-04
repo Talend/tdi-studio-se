@@ -608,6 +608,7 @@ try{
 					 reader.close();
 				}
 			}catch(java.io.IOException ioe) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",ioe.getMessage());
 				<%log4jCodeGenerateUtil.logError(node,"error","ioe");%>
 				ioe.printStackTrace();
 			}
@@ -628,6 +629,7 @@ try{
 					reader.close();
 				}
 			} catch(java.io.IOException ioe) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",ioe.getMessage());
 				<%log4jCodeGenerateUtil.logError(node,"error","ioe");%>
 			   ioe.printStackTrace();
 			}
@@ -659,6 +661,7 @@ try{
 	try{
 		file_<%=cid %>.delete();
 	}catch(Exception e_<%=cid%>){
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e_<%=cid%>.getMessage());
         <%log4jCodeGenerateUtil.logError(node,"warn","e_"+cid);%>
 	}
 }

@@ -375,6 +375,7 @@ IMetadataColumn talendDynCol = null;
 						  	targetSRID = Integer.parseInt(ElementParameterParser.getValue(node,"__SRID__"));
 						}
 					    catch (NumberFormatException e) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
 						%>
 					     	// TODO unable to parse integer: <%=ElementParameterParser.getValue(node,"__SRID__")%>
 					     	// TODO error: <%=e.getMessage()%>
@@ -457,6 +458,7 @@ IMetadataColumn talendDynCol = null;
                 insertedCount_<%=cid%> = insertedCount_<%=cid%> + pstmt_<%=cid %>.executeUpdate();
                 <%dbLog.data().inserting(dbLog.var("nb_line"));%>
             } catch(java.lang.Exception e) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
                 whetherReject_<%=cid%> = true;
                 <%
                 if (("true").equals(dieOnError)) {
@@ -599,6 +601,7 @@ IMetadataColumn talendDynCol = null;
                 updatedCount_<%=cid%> = updatedCount_<%=cid%> + pstmt_<%=cid %>.executeUpdate();
                 <%dbLog.data().updating(dbLog.var("nb_line"));%>
             } catch(java.lang.Exception e) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
                 whetherReject_<%=cid%> = true;
                 <%
                 if (("true").equals(dieOnError)) {
@@ -765,6 +768,7 @@ IMetadataColumn talendDynCol = null;
         			nb_line_<%=cid%>++;
         			<%dbLog.data().updating(dbLog.var("nb_line"));%>
                 } catch(java.lang.Exception e) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
                     whetherReject_<%=cid%> = true;
                     <%
                     if (("true").equals(dieOnError)) {
@@ -846,6 +850,7 @@ IMetadataColumn talendDynCol = null;
                     nb_line_<%=cid%>++;
                     <%dbLog.data().inserting(dbLog.var("nb_line"));%>
                 } catch(java.lang.Exception e) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
                     whetherReject_<%=cid%> = true;
                     <%
                     if (("true").equals(dieOnError)) {
@@ -1037,6 +1042,7 @@ IMetadataColumn talendDynCol = null;
     				<%dbLog.data().updating(dbLog.var("nb_line"));%>
     			}
                 } catch(java.lang.Exception e) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
                     whetherReject_<%=cid%> = true;
                     <%
                     if (("true").equals(dieOnError)) {
@@ -1127,6 +1133,7 @@ IMetadataColumn talendDynCol = null;
                 nb_line_<%=cid%>++;
                 <%dbLog.data().deleting(dbLog.var("nb_line"));%>
             } catch(java.lang.Exception e) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
                 whetherReject_<%=cid%> = true;
                 <%
                 if (("true").equals(dieOnError)) {
@@ -1196,6 +1203,7 @@ IMetadataColumn talendDynCol = null;
 						pstmt_<%=cid %>.executeBatch();
 						<%dbLog.batch().executeDone(dbLog.str(dataAction));%>
                 	}catch (java.sql.BatchUpdateException e){
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
                 	<%if(("true").equals(dieOnError)) {
                 	%>
                 		throw(e);
@@ -1244,6 +1252,7 @@ IMetadataColumn talendDynCol = null;
 	                		pstmt_<%=cid %>.executeBatch();
 		                	<%dbLog.batch().executeDone(dbLog.str(dataAction));%>
 		                }catch (java.sql.BatchUpdateException e){
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
 		                	<%if(("true").equals(dieOnError)) {
 		                	%>
 								throw(e);

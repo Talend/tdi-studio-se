@@ -25,6 +25,7 @@ if(resourceMap.get("finish_<%=cid%>") == null) {
 		}
 		catch(org.apache.http.conn.HttpHostConnectException httpEx_<%=cid %>)
 		{
+globalMap.put("<%=cid%>_ERROR_MESSAGE",httpEx_<%=cid%>.getMessage());
 			String errorMessage_<%=cid%> = "Failed to close the connection in <%=cid %> :" + httpEx_<%=cid %>.getMessage();
 			<%
 			if(isLog4jEnabled) {

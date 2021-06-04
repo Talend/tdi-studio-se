@@ -663,6 +663,7 @@ String inputConnName = null;
 										reader.close();
 									}
 								} catch (java.io.IOException ioe) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",ioe.getMessage());
 						            <%if(isLog4jEnabled){%>
 										log.error("<%=cid %> - " + ioe.getMessage());
 						            <%}%>
@@ -689,6 +690,7 @@ String inputConnName = null;
 										reader.close();
 									}
 								} catch (java.io.IOException ioe) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",ioe.getMessage());
 						            <%if(isLog4jEnabled){%>
 										log.error("<%=cid %> - " + ioe.getMessage());
 						            <%}%>
@@ -725,6 +727,7 @@ String inputConnName = null;
             normal_<%=cid %>.join(10000);
             error_<%=cid %>.join(10000);
         } catch (ThreadDeath tde) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",tde.getMessage());
             <%if(isLog4jEnabled){%>
             	log.error("<%=cid %> - thread was terminated.");
             <%}%>

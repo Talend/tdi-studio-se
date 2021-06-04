@@ -42,7 +42,6 @@ import org.talend.commons.ui.runtime.ws.WindowSystem;
 import org.talend.commons.ui.swt.tableviewer.TableViewerCreator;
 import org.talend.commons.ui.swt.tableviewer.TableViewerCreatorColumn;
 import org.talend.commons.ui.swt.tableviewer.behavior.DefaultCellModifier;
-import org.talend.commons.ui.swt.tableviewer.tableeditor.CheckboxTableEditorContent;
 import org.talend.commons.utils.data.bean.IBeanPropertyAccessors;
 import org.talend.designer.abstractmap.model.tableentry.ITableEntry;
 import org.talend.designer.core.model.components.EParameterName;
@@ -81,13 +80,11 @@ public class InputDataMapTableView extends DataMapTableView {
 
     @Override
     public void initColumnsOfTableColumns(final TableViewerCreator tableViewerCreatorForColumns) {
-        TableViewerCreatorColumn column = null;
-
+        final TableViewerCreatorColumn columnJoin = new TableViewerCreatorColumn(tableViewerCreatorForColumns);
         String useInJoinTitle = Messages.getString("InputDataMapTableView.columnTitle.ExplicitJoin"); //$NON-NLS-1$
-        column = new TableViewerCreatorColumn(tableViewerCreatorForColumns);
-        column.setTitle(useInJoinTitle);
-        column.setId(ID_EXPLICIT_JOIN);
-        column.setBeanPropertyAccessors(new IBeanPropertyAccessors<InputColumnTableEntry, Boolean>() {
+        columnJoin.setTitle(useInJoinTitle);
+        columnJoin.setId(ID_EXPLICIT_JOIN);
+        columnJoin.setBeanPropertyAccessors(new IBeanPropertyAccessors<InputColumnTableEntry, Boolean>() {
 
             public Boolean get(InputColumnTableEntry bean) {
                 return bean.isJoin();
@@ -121,17 +118,17 @@ public class InputDataMapTableView extends DataMapTableView {
             }
 
         });
-        column.setModifiable(!mapperManager.componentIsReadOnly());
+        columnJoin.setModifiable(!mapperManager.componentIsReadOnly());
         // column.setWidth(12);
-        column.setWidth(65);
-        column.setDisplayedValue(""); //$NON-NLS-1$
+        columnJoin.setWidth(65);
+        columnJoin.setDisplayedValue(""); //$NON-NLS-1$
         // column.setResizable(false);
-        CheckboxTableEditorContent checkboxTableEditorContent = new CheckboxTableEditorContent();
+        CheckboxTableEditorContentElt checkboxTableEditorContent = new CheckboxTableEditorContentElt();
         checkboxTableEditorContent.setToolTipText(useInJoinTitle);
-        column.setTableEditorContent(checkboxTableEditorContent);
-        column.setToolTipHeader(useInJoinTitle);
+        columnJoin.setTableEditorContent(checkboxTableEditorContent);
+        columnJoin.setToolTipHeader(useInJoinTitle);
 
-        column = new TableViewerCreatorColumn(tableViewerCreatorForColumns);
+        TableViewerCreatorColumn column = new TableViewerCreatorColumn(tableViewerCreatorForColumns);
         column.setTitle(DataMapTableView.COLUMN_NAME);
         column.setId(DataMapTableView.ID_NAME_COLUMN);
         column.setBeanPropertyAccessors(new IBeanPropertyAccessors<InputColumnTableEntry, String>() {
@@ -282,6 +279,9 @@ public class InputDataMapTableView extends DataMapTableView {
         }
         dropDownItem.addSelectionListener(new DropDownSelectionListener());
         dropDownItem.setEnabled(!mapperManager.componentIsReadOnly());
+
+        // createActivateFilterCheck();
+        createColumnNameFilterCheck();
         return true;
     }
 

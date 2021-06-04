@@ -32,6 +32,7 @@
 			        	msgu_<%=cid%>.send();
 			      	}
 		    	}catch(ionic.Msmq.MessageQueueException e_<%=cid%>){
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e_<%=cid%>.getMessage());
 					<%
 					if(dieOnError){
 					%>
@@ -44,6 +45,7 @@
 					}
 					%>
 				}catch(java.io.UnsupportedEncodingException ex_<%=cid%>){
+globalMap.put("<%=cid%>_ERROR_MESSAGE",ex_<%=cid%>.getMessage());
 					<%
 					if(dieOnError){
 					%>

@@ -109,6 +109,7 @@ imports="
 	    	<%
 	    	}%>
     }catch (java.sql.BatchUpdateException e_<%=cid%>){
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e_<%=cid%>.getMessage());
     
     	java.sql.SQLException ne_<%=cid%> = e_<%=cid%>.getNextException(),sqle_<%=cid%>=null;
     	String errormessage_<%=cid%>;

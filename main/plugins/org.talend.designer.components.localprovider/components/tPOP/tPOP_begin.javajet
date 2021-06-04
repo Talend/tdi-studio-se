@@ -50,6 +50,7 @@ boolean isNewerEmailFirst = ("true").equals(ElementParameterParser.getValue(node
 	try {
   		props_<%=cid %> = System.getProperties();
 	} catch (SecurityException sex) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",sex.getMessage());
 		<%if(isLog4jEnabled){%>
 			log.warn("<%=cid%> - " + sex.getMessage());
 		<%}%>
@@ -120,6 +121,7 @@ boolean isNewerEmailFirst = ("true").equals(ElementParameterParser.getValue(node
 	try {
 		folder_<%=cid %>.open(javax.mail.Folder.READ_WRITE);
 	} catch (java.lang.Exception e){
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
 		<%if(isLog4jEnabled){%>
 			log.warn("<%=cid%> - " + e.getMessage());
 		<%}%>
@@ -185,6 +187,7 @@ boolean isNewerEmailFirst = ("true").equals(ElementParameterParser.getValue(node
 			        try {
 			          date_<%=i%>_<%=cid%> = ParserUtils.parseTo_Date(<%=filterptn%>, "dd-MM-yyyy HH:mm:ss");
 			        } catch (java.lang.Exception e){
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
 			          date_<%=i%>_<%=cid%> = ParserUtils.parseTo_Date(<%=filterptn%>, "dd-MM-yyyy");
 			        }
 			  

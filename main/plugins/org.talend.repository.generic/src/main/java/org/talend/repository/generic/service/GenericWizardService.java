@@ -363,6 +363,20 @@ public class GenericWizardService implements IGenericWizardService {
     }
 
     @Override
+    public ITreeContextualAction getGenericAction(String typeName, String location) {
+        if (typeName == null || typeName.trim().isEmpty()) {
+            return null;
+        }
+
+        ITreeContextualAction defaultAction = null;
+        ComponentWizard editWizard = internalService.getComponentWizard(typeName, null);
+        if (editWizard != null) {
+            defaultAction = new GenericAction(editWizard);
+        }
+        return defaultAction;
+    }
+
+    @Override
     public void loadAdditionalJDBC() {
         // restrict additional JDBC for EE
         if (!PluginChecker.isTIS()) {

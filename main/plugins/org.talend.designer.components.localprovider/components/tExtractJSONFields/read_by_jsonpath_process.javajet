@@ -21,6 +21,7 @@ try {
 	
 	isStructError_<%=cid %> = false;
 } catch (java.lang.Exception ex_<%=cid%>) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",ex_<%=cid%>.getMessage());
 <%
 if(dieOnError){
 %>
@@ -170,6 +171,7 @@ for (int i=0;i<mapping.size();i++) {
         	}
 %>
 		} catch (com.jayway.jsonpath.PathNotFoundException e_<%=cid%>) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e_<%=cid%>.getMessage());
 			<%=firstConnName %>.<%=column.getLabel() %> = <%@ include file="./set_default_value.javajet"%>;
 		}
 <%
@@ -183,6 +185,7 @@ if(!("").equals(rejectConnName) && rejectConnName.equals(firstConnName)){
 }
 %>	
 	} catch (java.lang.Exception ex_<%=cid %>) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",ex_<%=cid%>.getMessage());
 <%
     if(dieOnError){
 %>

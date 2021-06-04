@@ -222,6 +222,7 @@ if (outConn!=null) {
     	isStructError_<%=cid %> = false;
     	
     }catch(java.lang.Exception ex_<%=cid %>){
+globalMap.put("<%=cid%>_ERROR_MESSAGE",ex_<%=cid%>.getMessage());
 <%
 	if(dieOnError){
 %>
@@ -487,6 +488,7 @@ if(outConns!=null){
 		}
 %>
 }catch(java.lang.Exception ex_<%=cid %>){
+globalMap.put("<%=cid%>_ERROR_MESSAGE",ex_<%=cid%>.getMessage());
 <%
 	if(dieOnError){
 %>

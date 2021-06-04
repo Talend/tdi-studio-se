@@ -67,4 +67,10 @@ public class ExportItemWizard extends Wizard implements IImportWizard {
     public boolean performFinish() {
         return mainPage.performFinish();
     }
+    
+    public boolean isCanceled() {
+        return mainPage.isCanceled();
+    }
+    
+    
 }
