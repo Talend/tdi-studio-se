@@ -34,7 +34,7 @@
     <IMPORTS>
       <IMPORT NAME="commons-codec-1.14" MODULE="commons-codec-1.14.jar" MVN="mvn:commons-codec/commons-codec/1.14" REQUIRED="true"/>
       <IMPORT NAME="commons-logging-1.2" MODULE="commons-logging-1.2.jar" MVN="mvn:commons-logging/commons-logging/1.2" REQUIRED="true"/>
-      <IMPORT NAME="httpclient-4.5.12" MODULE="httpclient-4.5.12.jar" MVN="mvn:org.apache.httpcomponents/httpclient/4.5.12" REQUIRED="true"/>
+      <IMPORT NAME="httpclient-4.5.13" MODULE="httpclient-4.5.13.jar" MVN="mvn:org.apache.httpcomponents/httpclient/4.5.13" REQUIRED="true"/>
       <IMPORT MODULE="httpclient-cache-4.3.1.jar" NAME="httpclient-cache" MVN="mvn:org.talend.libraries/httpclient-cache-4.3.1/6.0.0" UrlPath="platform:/plugin/org.talend.libraries.apache.http/lib/httpclient-cache-4.3.1.jar" REQUIRED="true"/>
       <IMPORT NAME="httpcore-4.4.13" MODULE="httpcore-4.4.13.jar" MVN="mvn:org.apache.httpcomponents/httpcore/4.4.13" REQUIRED="true"/>
       <IMPORT MODULE="httpmime-4.3.1.jar" NAME="httpmime" MVN="mvn:org.talend.libraries/httpmime-4.3.1/6.0.0" UrlPath="platform:/plugin/org.talend.libraries.apache.http/lib/httpmime-4.3.1.jar" REQUIRED="true"/>

@@ -55,11 +55,13 @@ try {//B
 		globalMap.put("username_conn_<%=cid%>", <%=username%>);
 		globalMap.put("password_conn_<%=cid%>", decryptedPassword_<%=cid%>);
 	} catch (Exception e1_<%=cid%>) { //Connection errors
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e1_<%=cid%>.getMessage());
 		e1_<%=cid%>.printStackTrace();
 	} finally {
 		try {
 			<%=cid%>_response.close();
 		} catch (Exception e2_<%=cid%>) { //Response close errors
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e2_<%=cid%>.getMessage());
 			throw new RuntimeException("Could not close response " + e2_<%=cid%>);
 		}
 	}
@@ -67,6 +69,7 @@ try {//B
 	try {
 		<%=cid%>_httpclient.close();
 	} catch (Exception e3_<%=cid%>) { //Client close errors
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e3_<%=cid%>.getMessage());
 		throw new RuntimeException("Could not close httpclient " + e3_<%=cid%>);
 	}
 }

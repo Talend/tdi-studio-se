@@ -150,39 +150,8 @@ skeleton="../templates/db_output_bulk.skeleton"
     }
     %>
 
-    <%
-    if(("UPDATE").equals(dataAction) || ("INSERT_OR_UPDATE").equals(dataAction) || ("UPDATE_OR_INSERT").equals(dataAction)) {
-        int updateKeyCount = 0;
-        if(stmtStructure != null) {
-            for(Column column : stmtStructure) {
-                if(column.isUpdateKey() && !column.isDynamic()) {
-                    updateKeyCount++;
-                }
-            }
-            %>
-            int updateKeyCount_<%=cid%> = <%=updateKeyCount%>;
-            if(updateKeyCount_<%=cid%> < 1) {
-                throw new RuntimeException("For update, the schema must have a key");
-            }
-        <%
-        }
-    } else if(("DELETE").equals(dataAction)) {
-        int deleteKeyCount = 0;
-        if(stmtStructure != null) {
-            for(Column column : stmtStructure) {
-                if(column.isDeleteKey() && !column.isDynamic()) {
-                    deleteKeyCount++;
-                }
-            }
-            %>
-            int deleteKeyCount_<%=cid%> = <%=deleteKeyCount%>;
-            if(deleteKeyCount_<%=cid%> < 1) {
-                throw new RuntimeException("For delete, the schema must have a key");
-            }
-        <%
-        }
-    }
-    %>
+    <%@ include file="@{org.talend.designer.components.localprovider}/components/templates/DB/Output/CheckKeysForUpdateAndDelete.javajet"%>
+    
     int nb_line_<%=cid%> = 0;
     int nb_line_update_<%=cid%> = 0;
     int nb_line_inserted_<%=cid%> = 0;
@@ -525,10 +494,12 @@ skeleton="../templates/db_output_bulk.skeleton"
                     // Close the temporary CLOB
                     tempClob.close();
                 } catch( java.sql.SQLException sqlexp){
+globalMap.put("<%=cid%>_ERROR_MESSAGE",sqlexp.getMessage());
                 <%dbLog.logPrintedException("sqlexp.getMessage()");%>
                     tempClob.freeTemporary();
                     sqlexp.printStackTrace();
                 } catch(java.lang.Exception exp){
+globalMap.put("<%=cid%>_ERROR_MESSAGE",exp.getMessage());
                 <%dbLog.logPrintedException("exp.getMessage()");%>
                     tempClob.freeTemporary();
                     exp.printStackTrace();
@@ -571,6 +542,7 @@ skeleton="../templates/db_output_bulk.skeleton"
 
                     return blob;
                 } catch(java.sql.SQLException sqlexp){
+globalMap.put("<%=cid%>_ERROR_MESSAGE",sqlexp.getMessage());
                 <%dbLog.logPrintedException("sqlexp.getMessage()");%>
                 	if(blob!=null) {
                 		try {
@@ -581,6 +553,7 @@ skeleton="../templates/db_output_bulk.skeleton"
                     }
                     sqlexp.printStackTrace();
                 } catch(java.lang.Exception exp){
+globalMap.put("<%=cid%>_ERROR_MESSAGE",exp.getMessage());
                 <%dbLog.logPrintedException("exp.getMessage()");%>
                    	if(blob!=null) {
                 		try {

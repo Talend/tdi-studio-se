@@ -14,19 +14,6 @@ imports="
 %>
 
 		}
-	    brout_<%=cid%>.close();
-		stdout_<%=cid%>.close();
-		java.io.InputStream stderr_<%=cid%> = sess_<%=cid%>.getStderr();
-        java.io.BufferedReader breer_<%=cid%>= new java.io.BufferedReader(new java.io.InputStreamReader(stderr_<%=cid%>));
-        String line_err_<%=cid%> = "";
-        StringBuilder stringStderr_<%=cid%> =new StringBuilder();
-		while((line_err_<%=cid%> = breer_<%=cid%>.readLine()) != null) {
-			stringStderr_<%=cid%>.append(line_err_<%=cid%> + "\n");
-		}
-		breer_<%=cid%>.close();
-		stderr_<%=cid%>.close();
-		 /* Close this session */			
-		sess_<%=cid%>.close();		
 <%
 		if(!("true").equals(useExistingConn)){
 %>  
@@ -34,7 +21,7 @@ imports="
 			<%if(isLog4jEnabled){%>
 				log.info("<%=cid%> - Closing the connection to the server.");
 			<%}%>
-            conn_<%=cid%>.close();
+            client_<%=cid%>.close();
 			<%if(isLog4jEnabled){%>
 				log.info("<%=cid%> - Connection to the server closed.");
 			<%}%>

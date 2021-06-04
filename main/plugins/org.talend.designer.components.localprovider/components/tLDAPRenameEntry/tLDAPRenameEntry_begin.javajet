@@ -119,6 +119,7 @@ class LDAPRenameEntryUtil_<%=cid%> {
 		try {
 			ldapCtx.rename(oldName, newName);
 		} catch (java.lang.Exception e) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
 			this.createSubcontext(paths, paths, childs, ldapCtx);
 			
 			throw e;

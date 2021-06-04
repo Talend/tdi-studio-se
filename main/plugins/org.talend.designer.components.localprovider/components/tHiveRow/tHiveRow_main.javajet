@@ -64,6 +64,7 @@ org.talend.hadoop.distribution.component.HiveComponent hiveDistrib = null;
 try {
     hiveDistrib = (org.talend.hadoop.distribution.component.HiveComponent) org.talend.hadoop.distribution.DistributionFactory.buildDistribution(theDistribution, theVersion);
 } catch (java.lang.Exception e) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
     e.printStackTrace();
     return "";
 }
@@ -270,6 +271,7 @@ if(hiveDistrib.isExecutedThroughWebHCat()) {
 			log.info("Query sent to HiveServer2 to be executed with [Application Name(MapReduce)/DAG Name(Tez): " + queryIdentifier_<%=cid%> + "]");
 		<%}%>
 	    } catch (java.lang.Exception e) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
 	        whetherReject_<%=cid%> = true;
 	        <%
 	        if (("true").equals(dieOnError)) {

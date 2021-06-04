@@ -40,38 +40,21 @@
         </libraryNeeded>
         <libraryNeeded
             context="plugin:org.talend.libraries.apache.cxf"
-            id="cxf-api-2.7.7.jar"
-            name="cxf-api-2.7.7.jar"
-            mvn_uri="mvn:org.talend.libraries/cxf-api-2.7.7/6.0.0"
-            uripath="platform:/plugin/org.talend.libraries.apache.cxf/lib/cxf-api-2.7.7.jar">
+            id="cxf-rt-bindings-xml-3.3.10.jar"
+            name="cxf-rt-bindings-xml-3.3.10.jar"
+            mvn_uri="mvn:org.apache.cxf/cxf-rt-bindings-xml/3.3.10">
         </libraryNeeded>
         <libraryNeeded
             context="plugin:org.talend.libraries.apache.cxf"
-            id="cxf-rt-bindings-xml-2.7.7.jar"
-            name="cxf-rt-bindings-xml-2.7.7.jar"
-            mvn_uri="mvn:org.talend.libraries/cxf-rt-bindings-xml-2.7.7/6.0.0"
-            uripath="platform:/plugin/org.talend.libraries.apache.cxf/lib/cxf-rt-bindings-xml-2.7.7.jar">
+            id="cxf-rt-frontend-jaxrs-3.3.10.jar"
+            name="cxf-rt-frontend-jaxrs-3.3.10.jar"
+            mvn_uri="mvn:org.apache.cxf/cxf-rt-frontend-jaxrs/3.3.10">
         </libraryNeeded>
         <libraryNeeded
             context="plugin:org.talend.libraries.apache.cxf"
-            id="cxf-rt-core-2.7.7.jar"
-            name="cxf-rt-core-2.7.7.jar"
-            mvn_uri="mvn:org.talend.libraries/cxf-rt-core-2.7.7/6.0.0"
-            uripath="platform:/plugin/org.talend.libraries.apache.cxf/lib/cxf-rt-core-2.7.7.jar">
-        </libraryNeeded>
-        <libraryNeeded
-            context="plugin:org.talend.libraries.apache.cxf"
-            id="cxf-rt-frontend-jaxrs-2.7.7.jar"
-            name="cxf-rt-frontend-jaxrs-2.7.7.jar"
-            mvn_uri="mvn:org.talend.libraries/cxf-rt-frontend-jaxrs-2.7.7/6.0.0"
-            uripath="platform:/plugin/org.talend.libraries.apache.cxf/lib/cxf-rt-frontend-jaxrs-2.7.7.jar">
-        </libraryNeeded>
-        <libraryNeeded
-            context="plugin:org.talend.libraries.apache.cxf"
-            id="cxf-rt-transports-http-2.7.7.jar"
-            name="cxf-rt-transports-http-2.7.7.jar"
-            mvn_uri="mvn:org.talend.libraries/cxf-rt-transports-http-2.7.7/6.0.0"
-            uripath="platform:/plugin/org.talend.libraries.apache.cxf/lib/cxf-rt-transports-http-2.7.7.jar">
+            id="cxf-rt-transports-http-3.3.10.jar"
+            name="cxf-rt-transports-http-3.3.10.jar"
+            mvn_uri="mvn:org.apache.cxf/cxf-rt-transports-http/3.3.10">
         </libraryNeeded>
         <libraryNeeded
             context="plugin:org.talend.libraries.jackson"
@@ -210,8 +193,7 @@
     	<libraryNeeded
 	   		context="plugin:org.talend.libraries.zookeeper"
         	id="zookeeper-cdh5.4-lastest"
-         	name="zookeeper-3.4.5-cdh5.4.0.jar" mvn_uri="mvn:org.talend.libraries/zookeeper-3.4.5-cdh5.4.0/6.0.0"
-         	uripath="platform:/plugin/org.talend.libraries.zookeeper/lib/zookeeper-3.4.5-cdh5.4.0.jar">
+         	name="zookeeper-3.4.5-cdh5.4.0.jar" mvn_uri="mvn:org.talend.libraries/zookeeper-3.4.5-cdh5.4.0/6.0.0">
     	</libraryNeeded>
     	
     	<libraryNeeded
@@ -293,8 +275,7 @@
     	<libraryNeeded
 	   		context="plugin:org.talend.libraries.sqoop"
         	id="sqoop-cdh5.4-lastest"
-         	name="sqoop-1.4.5-cdh5.4.0.jar" mvn_uri="mvn:org.talend.libraries/sqoop-1.4.5-cdh5.4.0/6.0.0"
-         	uripath="platform:/plugin/org.talend.libraries.sqoop/lib/sqoop-1.4.5-cdh5.4.0.jar">
+         	name="sqoop-1.4.5-cdh5.4.0.jar" mvn_uri="mvn:org.talend.libraries/sqoop-1.4.5-cdh5.4.0/6.0.0">
     	</libraryNeeded>
 
 	   	<libraryNeeded
@@ -432,8 +413,7 @@
     	<libraryNeeded
 	   		context="plugin:org.talend.libraries.zookeeper"
         	id="zookeeper-cdh5.1-lastest"
-         	name="zookeeper-3.4.5-cdh5.1.2.jar" mvn_uri="mvn:org.talend.libraries/zookeeper-3.4.5-cdh5.1.2/6.0.0"
-         	uripath="platform:/plugin/org.talend.libraries.zookeeper/lib/zookeeper-3.4.5-cdh5.1.2.jar">
+         	name="zookeeper-3.4.5-cdh5.1.2.jar" mvn_uri="mvn:org.talend.libraries/zookeeper-3.4.5-cdh5.1.2/6.0.0">
     	</libraryNeeded>
 
     	<libraryNeeded
@@ -515,8 +495,7 @@
     	<libraryNeeded
 	   		context="plugin:org.talend.libraries.sqoop"
         	id="sqoop-cdh5.1-lastest"
-         	name="sqoop-1.4.4-cdh5.1.2.jar" mvn_uri="mvn:org.talend.libraries/sqoop-1.4.4-cdh5.1.2/6.0.0"
-         	uripath="platform:/plugin/org.talend.libraries.sqoop/lib/sqoop-1.4.4-cdh5.1.2.jar">
+         	name="sqoop-1.4.4-cdh5.1.2.jar" mvn_uri="mvn:org.talend.libraries/sqoop-1.4.4-cdh5.1.2/6.0.0">
     	</libraryNeeded>
 
     	<!-- HDP_2_3 libraries -->
@@ -554,13 +533,6 @@
             id="curator-recipes-2.7.1.jar"
             name="curator-recipes-2.7.1.jar" mvn_uri="mvn:org.talend.libraries/curator-recipes-2.7.1/6.0.0"
             uripath="platform:/plugin/org.talend.libraries.hadoop.hdp.2.3/lib/curator-recipes-2.7.1.jar">
-        </libraryNeeded>
-
-        <libraryNeeded
-            context="plugin:org.talend.libraries.hadoop.hdp.2.3"
-            id="derby-10.10.2.0.jar"
-            name="derby-10.10.2.0.jar" mvn_uri="mvn:org.talend.libraries/derby-10.10.2.0/6.1.0"
-            uripath="platform:/plugin/org.talend.libraries.hadoop.hdp.2.3/lib/derby-10.10.2.0.jar">
         </libraryNeeded>
 
         <libraryNeeded
@@ -816,8 +788,7 @@
         <libraryNeeded
             context="plugin:org.talend.libraries.sqoop"
             id="sqoop-HDP_2_3"
-            name="sqoop-1.4.6.2.3.2.0-2950.jar" mvn_uri="mvn:org.talend.libraries/sqoop-1.4.6.2.3.2.0-2950/6.1.0"
-            uripath="platform:/plugin/org.talend.libraries.sqoop/lib/sqoop-1.4.6.2.3.2.0-2950.jar">
+            name="sqoop-1.4.6.2.3.2.0-2950.jar" mvn_uri="mvn:org.talend.libraries/sqoop-1.4.6.2.3.2.0-2950/6.1.0">
         </libraryNeeded>
 
         <libraryNeeded
@@ -902,8 +873,7 @@
         <libraryNeeded
             context="plugin:org.talend.libraries.zookeeper"
             id="zookeeper-HDP_2_3"
-            name="zookeeper-3.4.6.2.3.2.0-2950.jar" mvn_uri="mvn:org.talend.libraries/zookeeper-3.4.6.2.3.2.0-2950/6.1.0"
-            uripath="platform:/plugin/org.talend.libraries.zookeeper/lib/zookeeper-3.4.6.2.3.2.0-2950.jar">
+            name="zookeeper-3.4.6.2.3.2.0-2950.jar" mvn_uri="mvn:org.talend.libraries/zookeeper-3.4.6.2.3.2.0-2950/6.1.0">
         </libraryNeeded>
 
        <libraryNeeded
@@ -1039,8 +1009,7 @@
     	<libraryNeeded
 	   		context="plugin:org.talend.libraries.zookeeper"
         	id="zookeeper-hdp2.2-lastest"
-         	name="zookeeper-3.4.6.2.2.0.0-2041.jar" mvn_uri="mvn:org.talend.libraries/zookeeper-3.4.6.2.2.0.0-2041/6.0.0"
-         	uripath="platform:/plugin/org.talend.libraries.zookeeper/lib/zookeeper-3.4.6.2.2.0.0-2041.jar">
+         	name="zookeeper-3.4.6.2.2.0.0-2041.jar" mvn_uri="mvn:org.talend.libraries/zookeeper-3.4.6.2.2.0.0-2041/6.0.0">
     	</libraryNeeded>
 
     	<libraryNeeded
@@ -1143,8 +1112,7 @@
     	<libraryNeeded
 	   		context="plugin:org.talend.libraries.sqoop"
         	id="sqoop-hdp2.2-lastest"
-         	name="sqoop-1.4.5.2.2.0.0-2041.jar" mvn_uri="mvn:org.talend.libraries/sqoop-1.4.5.2.2.0.0-2041/6.0.0"
-         	uripath="platform:/plugin/org.talend.libraries.sqoop/lib/sqoop-1.4.5.2.2.0.0-2041.jar">
+         	name="sqoop-1.4.5.2.2.0.0-2041.jar" mvn_uri="mvn:org.talend.libraries/sqoop-1.4.5.2.2.0.0-2041/6.0.0">
     	</libraryNeeded>
 
     	<libraryNeeded
@@ -1316,8 +1284,7 @@
         <libraryNeeded
             context="plugin:org.talend.libraries.zookeeper"
             id="zookeeper-emr400-latest"
-            name="zookeeper-3.4.5.jar" mvn_uri="mvn:org.talend.libraries/zookeeper-3.4.5/6.0.0"
-            uripath="platform:/plugin/org.talend.libraries.zookeeper/lib/zookeeper-3.4.5.jar">
+            name="zookeeper-3.4.5.jar" mvn_uri="mvn:org.talend.libraries/zookeeper-3.4.5/6.0.0">
         </libraryNeeded>
 
         <libraryNeeded
@@ -1447,8 +1414,7 @@
     	<libraryNeeded
 	   		context="plugin:org.talend.libraries.zookeeper"
         	id="zookeeper-mapr-4.0.X-lastest"
-         	name="zookeeper-3.4.5-mapr-1406.jar" mvn_uri="mvn:org.talend.libraries/zookeeper-3.4.5-mapr-1406/6.0.0"
-         	uripath="platform:/plugin/org.talend.libraries.zookeeper/lib/zookeeper-3.4.5-mapr-1406.jar">
+         	name="zookeeper-3.4.5-mapr-1406.jar" mvn_uri="mvn:org.talend.libraries/zookeeper-3.4.5-mapr-1406/6.0.0">
     	</libraryNeeded>
 
     	<libraryNeeded
@@ -1543,8 +1509,7 @@
     	<libraryNeeded
 	   		context="plugin:org.talend.libraries.sqoop"
         	id="sqoop-mapr-4.0.X-lastest"
-         	name="sqoop-1.4.4-mapr-1408.jar" mvn_uri="mvn:org.talend.libraries/sqoop-1.4.4-mapr-1408/6.0.0"
-         	uripath="platform:/plugin/org.talend.libraries.sqoop/lib/sqoop-1.4.4-mapr-1408.jar">
+         	name="sqoop-1.4.4-mapr-1408.jar" mvn_uri="mvn:org.talend.libraries/sqoop-1.4.4-mapr-1408/6.0.0">
     	</libraryNeeded>
 
         <!-- MAPR 41X libraries-->
@@ -1577,8 +1542,7 @@
         <libraryNeeded
             context="plugin:org.talend.libraries.zookeeper"
             id="zookeeper-mapr-4.1.X-lastest"
-            name="zookeeper-3.4.5-mapr-1503.jar" mvn_uri="mvn:org.talend.libraries/zookeeper-3.4.5-mapr-1503/6.0.0"
-            uripath="platform:/plugin/org.talend.libraries.zookeeper/lib/zookeeper-3.4.5-mapr-1503.jar">
+            name="zookeeper-3.4.5-mapr-1503.jar" mvn_uri="mvn:org.talend.libraries/zookeeper-3.4.5-mapr-1503/6.0.0">
         </libraryNeeded>
 
         <libraryNeeded
@@ -1771,8 +1735,7 @@
         <libraryNeeded
             context="plugin:org.talend.libraries.sqoop"
             id="sqoop-mapr-4.1.X-lastest"
-            name="sqoop-1.4.4-mapr-1502.jar" mvn_uri="mvn:org.talend.libraries/sqoop-1.4.4-mapr-1502/6.0.0"
-            uripath="platform:/plugin/org.talend.libraries.sqoop/lib/sqoop-1.4.4-mapr-1502.jar">
+            name="sqoop-1.4.4-mapr-1502.jar" mvn_uri="mvn:org.talend.libraries/sqoop-1.4.4-mapr-1502/6.0.0">
         </libraryNeeded>
 
     	<!-- common libraries -->
@@ -1834,9 +1797,8 @@
 
         <libraryNeeded
             context="plugin:org.talend.libraries.apache.common"
-            id="commons-collections-3.2.1.jar"
-            name="commons-collections-3.2.1.jar" mvn_uri="mvn:org.talend.libraries/commons-collections-3.2.1/6.0.0"
-            uripath="platform:/plugin/org.talend.libraries.apache.common/lib/commons-collections-3.2.1.jar"
+            id="commons-collections-3.2.2.jar"
+            name="commons-collections-3.2.2.jar" mvn_uri="mvn:commons-collections/commons-collections/3.2.2"
             bundleID="" />
 
         <libraryNeeded
@@ -1880,14 +1842,6 @@
             name="slf4j-log4j12-1.7.5.jar" mvn_uri="mvn:org.talend.libraries/slf4j-log4j12-1.7.5/6.0.0"
             uripath="platform:/plugin/org.talend.libraries.slf4j/lib/slf4j-log4j12-1.7.5.jar"
             bundleID="" />
-
-	   	<libraryNeeded
-           context="plugin:org.talend.libraries.hadoop.cloudera.cdh5.1"
-           id="jersey-core-1.9.jar"
-           mvn_uri="mvn:com.sun.jersey/jersey-core/1.9"
-           name="jersey-core-1.9.jar"
-           required="true">
-    	</libraryNeeded>
 
     	<libraryNeeded
 	   		context="plugin:org.talend.libraries.jetty"
@@ -2080,13 +2034,6 @@
     	</libraryNeeded>
 
     	<libraryNeeded
-	   		context="plugin:org.talend.libraries.jdbc.derby"
-        	id="derby-10.4.2.0.jar"
-         	name="derby-10.4.2.0.jar" mvn_uri="mvn:org.talend.libraries/derby-10.4.2.0/6.0.0"
-         	uripath="platform:/plugin/org.talend.libraries.jdbc.derby/lib/derby-10.4.2.0.jar">
-    	</libraryNeeded>
-
-    	<libraryNeeded
 	   		context="plugin:org.talend.libraries.hadoop.hdp.2.1"
         	id="datanucleus-api-jdo-3.2.6.jar"
          	name="datanucleus-api-jdo-3.2.6.jar" mvn_uri="mvn:org.datanucleus/datanucleus-api-jdo/3.2.6"
@@ -2105,13 +2052,6 @@
         	id="datanucleus-rdbms-3.2.9.jar"
          	name="datanucleus-rdbms-3.2.9.jar" mvn_uri="mvn:org.datanucleus/datanucleus-rdbms/3.2.9"
          	uripath="platform:/plugin/org.talend.libraries.hadoop.hdp.2.1/lib/datanucleus-rdbms-3.2.9.jar">
-    	</libraryNeeded>
-
-    	<libraryNeeded
-	   		context="plugin:org.talend.libraries.jdbc.derby"
-        	id="derby-10.11.1.1.jar"
-         	name="derby-10.11.1.1.jar" mvn_uri="mvn:org.talend.libraries/derby-10.11.1.1/6.0.0"
-         	uripath="platform:/plugin/org.talend.libraries.jdbc.derby/lib/derby-10.11.1.1.jar">
     	</libraryNeeded>
 
     	<libraryNeeded
@@ -2483,10 +2423,9 @@
             uripath="platform:/plugin/org.talend.libraries.apache.common/lib/commons-collections4-4.0.jar">
         </libraryNeeded>
         <libraryNeeded
-            id="commons-collections-3.2.1.jar"
-            name="commons-collections-3.2.1.jar" mvn_uri="mvn:org.talend.libraries/commons-collections-3.2.1/6.0.0"
-            context="plugin:org.talend.libraries.apache.common"
-            uripath="platform:/plugin/org.talend.libraries.apache.common/lib/commons-collections-3.2.1.jar">
+            id="commons-collections-3.2.2.jar"
+            name="commons-collections-3.2.2.jar" mvn_uri="mvn:commons-collections/commons-collections/3.2.2"
+            context="plugin:org.talend.libraries.apache.common">
         </libraryNeeded>
         <libraryNeeded
             id="commons-io-2.4.jar"
@@ -2598,12 +2537,6 @@
             name="commons-beanutils-1.7.0.jar" mvn_uri="mvn:commons-beanutils/commons-beanutils/1.7.0"
             context="plugin:org.talend.libraries.hadoop.hdp.2.2"
             uripath="platform:/plugin/org.talend.libraries.hadoop.hdp.2.2/lib/tezServer/commons-beanutils-1.7.0.jar">
-        </libraryNeeded>
-        <libraryNeeded
-            id="commons-beanutils-core-1.8.0.jar"
-            name="commons-beanutils-core-1.8.0.jar" mvn_uri="mvn:commons-beanutils/commons-beanutils-core/1.8.0"
-            context="plugin:org.talend.libraries.hadoop.hdp.2.2"
-            uripath="platform:/plugin/org.talend.libraries.hadoop.hdp.2.2/lib/tezServer/commons-beanutils-core-1.8.0.jar">
         </libraryNeeded>
         <libraryNeeded
             id="commons-compress-1.4.1.jar"
@@ -2762,40 +2695,6 @@
               name="jaxb-impl-2.2.3-1.jar"
               required="true"
               uripath="platform:/plugin/org.talend.libraries.hadoop.hdp.2.2/lib/tezServer/jaxb-impl-2.2.3-1.jar">
-        </libraryNeeded>
-        <libraryNeeded
-              context="plugin:org.talend.libraries.hadoop.hdp.2.2"
-              id="jersey-client-1.9.jar"
-              mvn_uri="mvn:com.sun.jersey/jersey-client/1.9"
-              name="jersey-client-1.9.jar"
-              required="true"
-              uripath="platform:/plugin/org.talend.libraries.hadoop.hdp.2.2/lib/tezServer/jersey-client-1.9.jar">
-        </libraryNeeded>
-        <libraryNeeded
-              context="plugin:org.talend.libraries.hadoop.hdp.2.2"
-              id="jersey-core-1.9.jar"
-              mvn_uri="mvn:com.sun.jersey/jersey-core/1.9"
-              name="jersey-core-1.9.jar"
-              required="true"
-              uripath="platform:/plugin/org.talend.libraries.hadoop.hdp.2.2/lib/tezServer/jersey-core-1.9.jar">
-        </libraryNeeded>
-        <libraryNeeded
-            id="jersey-guice-1.9.jar"
-            name="jersey-guice-1.9.jar" mvn_uri="mvn:org.talend.libraries/jersey-guice-1.9/6.0.0"
-            context="plugin:org.talend.libraries.hadoop.hdp.2.2"
-            uripath="platform:/plugin/org.talend.libraries.hadoop.hdp.2.2/lib/tezServer/jersey-guice-1.9.jar">
-        </libraryNeeded>
-        <libraryNeeded
-            id="jersey-json-1.9.jar"
-            name="jersey-json-1.9.jar" mvn_uri="mvn:org.talend.libraries/jersey-json-1.9/6.0.0"
-            context="plugin:org.talend.libraries.hadoop.hdp.2.2"
-            uripath="platform:/plugin/org.talend.libraries.hadoop.hdp.2.2/lib/tezServer/jersey-json-1.9.jar">
-        </libraryNeeded>
-        <libraryNeeded
-            id="jersey-server-1.9.jar"
-            name="jersey-server-1.9.jar" mvn_uri="mvn:org.talend.libraries/jersey-server-1.9/6.0.0"
-            context="plugin:org.talend.libraries.hadoop.hdp.2.2"
-            uripath="platform:/plugin/org.talend.libraries.hadoop.hdp.2.2/lib/tezServer/jersey-server-1.9.jar">
         </libraryNeeded>
         <libraryNeeded
             id="jetty-util-6.1.26.hwx.jar"
@@ -3036,7 +2935,7 @@
 	             id="commons-cli-1.2.jar">
 	         </library>
 	         <library
-	             id="commons-collections-3.2.1.jar">
+	             id="commons-collections-3.2.2.jar">
 	         </library>
 	         <library
 	             id="guava-11.0.2.jar">
@@ -3053,9 +2952,6 @@
 	         <library
 	             id="log4j-1.2.17.jar">
 	         </library>
-	         <library
-	             id="jersey-core-1.9.jar">
-	         </library>
 	    </libraryNeededGroup>
 
 	    <!-- HDFS libraries for HDP_2_3 -->
@@ -3065,7 +2961,6 @@
                 name="HDFS-LIB-HDP_2_3">
             <library id="avro-1.7.5.jar"/>
             <library id="commons-cli-1.2.jar"/>
-            <library id="commons-collections-3.2.1.jar"/>
             <library id="commons-configuration-1.6.jar"/>
             <library id="commons-codec-1.4.jar"/>
             <library id="commons-io-2.4.jar"/>
@@ -3076,7 +2971,6 @@
             <library id="hadoop-common-HDP_2_3"/>
             <library id="hadoop-hdfs-HDP_2_3"/>
             <library id="htrace-core-3.1.0-incubating.jar"/>
-            <library id="jersey-core-1.9.jar"/>
             <library id="log4j-1.2.17.jar"/>
             <library id="protobuf-java-2.5.0.jar"/>
             <library id="servlet-api-2.5.jar"/>
@@ -3114,7 +3008,7 @@
 	             id="commons-cli-1.2.jar">
 	         </library>
 	         <library
-	             id="commons-collections-3.2.1.jar">
+	             id="commons-collections-3.2.2.jar">
 	         </library>
 	         <library
 	             id="guava-11.0.2.jar">
@@ -3130,9 +3024,6 @@
 	         </library>
 	         <library
 	             id="log4j-1.2.17.jar">
-	         </library>
-	         <library
-	             id="jersey-core-1.9.jar">
 	         </library>
 	         <library
 	             id="jetty-util-6.1.26.hwx.jar">
@@ -3198,7 +3089,7 @@
                  id="commons-cli-1.2.jar">
              </library>
              <library
-                 id="commons-collections-3.2.1.jar">
+                 id="commons-collections-3.2.2.jar">
              </library>
              <library
                  id="commons-io-2.4.jar">
@@ -3223,9 +3114,6 @@
              </library>
              <library
                  id="log4j-1.2.17.jar">
-             </library>
-             <library
-                 id="jersey-core-1.9.jar">
              </library>
              <library
                  id="jetty-util-emr400-latest">
@@ -3276,7 +3164,7 @@
 	             id="commons-logging-1.1.3.jar">
 	         </library>
 	         <library
-	             id="commons-collections-3.2.1.jar">
+	             id="commons-collections-3.2.2.jar">
 	         </library>
 	         <library
 	             id="commons-configuration-1.6.jar">
@@ -3324,7 +3212,7 @@
                  id="commons-logging-1.1.3.jar">
              </library>
              <library
-                 id="commons-collections-3.2.1.jar">
+                 id="commons-collections-3.2.2.jar">
              </library>
              <library
                  id="commons-configuration-1.6.jar">
@@ -3385,7 +3273,7 @@
 	             id="commons-codec-1.4.jar">
 	         </library>
 	         <library
-	             id="commons-collections-3.2.1.jar">
+	             id="commons-collections-3.2.2.jar">
 	         </library>
 	         <library
 	             id="guava-11.0.2.jar">
@@ -3463,7 +3351,7 @@
 	             id="commons-codec-1.4.jar">
 	         </library>
 	         <library
-	             id="commons-collections-3.2.1.jar">
+	             id="commons-collections-3.2.2.jar">
 	         </library>
 	         <library
 	             id="guava-11.0.2.jar">
@@ -3520,7 +3408,7 @@
 	             id="guava-11.0.2.jar">
 	         </library>
 	         <library
-	             id="commons-collections-3.2.1.jar">
+	             id="commons-collections-3.2.2.jar">
 	         </library>
 	         <library
 	             id="commons-cli-1.2.jar">
@@ -3556,7 +3444,7 @@
             <library id="avro-1.7.5.jar"/>
             <library id="commons-cli-1.2.jar"/>
             <library id="commons-codec-1.4.jar"/>
-            <library id="commons-collections-3.2.1.jar"/>
+            <library id="commons-collections-3.2.2.jar"/>
             <library id="commons-configuration-1.6.jar"/>
             <library id="commons-io-2.4.jar"/>
             <library id="commons-lang-2.6.jar"/>
@@ -3576,8 +3464,6 @@
             <library id="jackson-jaxrs-1.9.13.jar"/>
             <library id="jackson-mapper-asl-1.9.13.jar"/>
             <library id="jackson-xc-1.9.13.jar"/>
-            <library id="jersey-client-1.9.jar"/>
-            <library id="jersey-core-1.9.jar"/>
             <library id="log4j-1.2.17.jar"/>
             <library id="protobuf-java-2.5.0.jar"/>
             <library id="servlet-api-2.5.jar"/>
@@ -3658,7 +3544,7 @@
                  id="commons-codec-1.4.jar">
              </library>
              <library
-                 id="commons-collections-3.2.1.jar">
+                 id="commons-collections-3.2.2.jar">
              </library>
              <library
                  id="guava-11.0.2.jar">
@@ -3683,12 +3569,6 @@
              </library>
              <library
                  id="jackson-xc-1.9.13.jar">
-             </library>
-             <library
-                 id="jersey-client-1.9.jar">
-             </library>
-             <library
-                 id="jersey-core-1.9.jar">
              </library>
              <library
                  id="log4j-1.2.17.jar">
@@ -3748,7 +3628,7 @@
                  id="commons-codec-1.4.jar">
              </library>
              <library
-                 id="commons-collections-3.2.1.jar">
+                 id="commons-collections-3.2.2.jar">
              </library>
              <library
                  id="httpcore-4.3.2.jar">
@@ -3779,12 +3659,6 @@
              </library>
              <library
                  id="jackson-xc-1.9.13.jar">
-             </library>
-             <library
-                 id="jersey-client-1.9.jar">
-             </library>
-             <library
-                 id="jersey-core-1.9.jar">
              </library>
              <library
                  id="log4j-1.2.17.jar">
@@ -3859,7 +3733,7 @@
 	             id="commons-codec-1.4.jar">
 	         </library>
 	         <library
-	             id="commons-collections-3.2.1.jar">
+	             id="commons-collections-3.2.2.jar">
 	         </library>
 	         <library
 	             id="guava-13.0.1.jar">
@@ -3943,7 +3817,7 @@
                  id="commons-codec-1.4.jar">
              </library>
              <library
-                 id="commons-collections-3.2.1.jar">
+                 id="commons-collections-3.2.2.jar">
              </library>
              <library
                  id="guava-13.0.1.jar">
@@ -4142,7 +4016,7 @@
 	             id="commons-lang-2.6.jar">
 	         </library>
 	         <library
-	             id="commons-collections-3.2.1.jar">
+	             id="commons-collections-3.2.2.jar">
 	         </library>
 	         <library
 	             id="protobuf-java-2.5.0.jar">
@@ -4208,7 +4082,7 @@
 	             id="commons-lang-2.6.jar">
 	         </library>
 	         <library
-	             id="commons-collections-3.2.1.jar">
+	             id="commons-collections-3.2.2.jar">
 	         </library>
 	         <library
 	             id="protobuf-java-2.5.0.jar">
@@ -4230,7 +4104,7 @@
                 id="HBASE-LIB-HDP_2_3"
                 name="HBASE-LIB-HDP_2_3">
             <library id="commons-codec-1.9.jar"/>
-            <library id="commons-collections-3.2.1.jar"/>
+            <library id="commons-collections-3.2.2.jar"/>
             <library id="commons-configuration-1.6.jar"/>
             <library id="commons-lang-2.6.jar"/>
             <library id="commons-logging-1.2.jar"/>
@@ -4306,7 +4180,7 @@
 	             id="commons-lang-2.6.jar">
 	         </library>
 	         <library
-	             id="commons-collections-3.2.1.jar">
+	             id="commons-collections-3.2.2.jar">
 	         </library>
 	         <library
 	             id="protobuf-java-2.5.0.jar">
@@ -4348,7 +4222,7 @@
 	             id="commons-logging-1.1.3.jar">
 	         </library>
 	         <library
-	             id="commons-collections-3.2.1.jar">
+	             id="commons-collections-3.2.2.jar">
 	         </library>
 	         <library
 	             id="commons-configuration-1.6.jar">
@@ -4402,7 +4276,7 @@
                  id="commons-logging-1.1.3.jar">
              </library>
              <library
-                 id="commons-collections-3.2.1.jar">
+                 id="commons-collections-3.2.2.jar">
              </library>
              <library
                  id="commons-configuration-1.6.jar">
@@ -4490,7 +4364,7 @@
 	             id="commons-cli-1.2.jar">
 	         </library>
 	         <library
-	             id="commons-collections-3.2.1.jar">
+	             id="commons-collections-3.2.2.jar">
 	         </library>
 	         <library
 	             id="protobuf-java-2.5.0.jar">
@@ -4571,7 +4445,7 @@
 	             id="commons-cli-1.2.jar">
 	         </library>
 	         <library
-	             id="commons-collections-3.2.1.jar">
+	             id="commons-collections-3.2.2.jar">
 	         </library>
 	         <library
 	             id="protobuf-java-2.5.0.jar">
@@ -4634,7 +4508,7 @@
 	             id="commons-cli-1.2.jar">
 	         </library>
 	         <library
-	             id="commons-collections-3.2.1.jar">
+	             id="commons-collections-3.2.2.jar">
 	         </library>
 	         <library
 	             id="protobuf-java-2.5.0.jar">
@@ -4667,7 +4541,7 @@
             <library id="avro-1.7.5.jar"/>
             <library id="commons-cli-1.2.jar"/>
             <library id="commons-codec-1.4.jar"/>
-            <library id="commons-collections-3.2.1.jar"/>
+            <library id="commons-collections-3.2.2.jar"/>
             <library id="commons-configuration-1.6.jar"/>
             <library id="commons-io-2.4.jar"/>
             <library id="commons-lang-2.6.jar"/>
@@ -4687,8 +4561,6 @@
             <library id="jackson-jaxrs-1.9.13.jar"/>
             <library id="jackson-mapper-asl-1.9.13.jar"/>
             <library id="jackson-xc-1.9.13.jar"/>
-            <library id="jersey-core-1.9.jar"/>
-            <library id="jersey-client-1.9.jar"/>
             <library id="log4j-1.2.17.jar"/>
             <library id="protobuf-java-2.5.0.jar"/>
             <library id="servlet-api-2.5.jar"/>
@@ -4751,7 +4623,7 @@
 	             id="commons-cli-1.2.jar">
 	         </library>
 	         <library
-	             id="commons-collections-3.2.1.jar">
+	             id="commons-collections-3.2.2.jar">
 	         </library>
 	         <library
 	             id="protobuf-java-2.5.0.jar">
@@ -4776,12 +4648,6 @@
              </library>
              <library
                  id="jackson-xc-1.9.13.jar">
-             </library>
-             <library
-                 id="jersey-client-1.9.jar">
-             </library>
-             <library
-                 id="jersey-core-1.9.jar">
              </library>
 	         <library
 	             id="log4j-1.2.17.jar">
@@ -4862,7 +4728,7 @@
 	             id="commons-codec-1.4.jar">
 	         </library>
 	         <library
-	             id="commons-collections-3.2.1.jar">
+	             id="commons-collections-3.2.2.jar">
 	         </library>
 	         <library
 	             id="protobuf-java-2.5.0.jar">
@@ -4955,7 +4821,7 @@
                  id="commons-codec-1.4.jar">
              </library>
              <library
-                 id="commons-collections-3.2.1.jar">
+                 id="commons-collections-3.2.2.jar">
              </library>
              <library
                  id="protobuf-java-2.5.0.jar">
@@ -5031,7 +4897,7 @@
 	             id="commons-codec-1.4.jar">
 	         </library>
 	         <library
-	             id="commons-collections-3.2.1.jar">
+	             id="commons-collections-3.2.2.jar">
 	         </library>
 	         <library
 	             id="protobuf-java-2.5.0.jar">
@@ -5112,7 +4978,7 @@
 	             id="commons-codec-1.4.jar">
 	         </library>
 	         <library
-	             id="commons-collections-3.2.1.jar">
+	             id="commons-collections-3.2.2.jar">
 	         </library>
 	         <library
 	             id="protobuf-java-2.5.0.jar">
@@ -5175,7 +5041,7 @@
 	             id="commons-codec-1.4.jar">
 	         </library>
 	         <library
-	             id="commons-collections-3.2.1.jar">
+	             id="commons-collections-3.2.2.jar">
 	         </library>
 	         <library
 	             id="protobuf-java-2.5.0.jar">
@@ -5210,7 +5076,7 @@
             <library id="avro-1.7.5.jar"/>
             <library id="commons-cli-1.2.jar"/>
             <library id="commons-codec-1.4.jar"/>
-            <library id="commons-collections-3.2.1.jar"/>
+            <library id="commons-collections-3.2.2.jar"/>
             <library id="commons-configuration-1.6.jar"/>
             <library id="commons-io-2.4.jar"/>
             <library id="commons-lang-2.6.jar"/>
@@ -5230,8 +5096,6 @@
             <library id="jackson-jaxrs-1.9.13.jar"/>
             <library id="jackson-mapper-asl-1.9.13.jar"/>
             <library id="jackson-xc-1.9.13.jar"/>
-            <library id="jersey-core-1.9.jar"/>
-            <library id="jersey-client-1.9.jar"/>
             <library id="jline-1.0.jar"/>
             <library id="joda-time-2.8.1.jar"/>
             <library id="log4j-1.2.17.jar"/>
@@ -5297,7 +5161,7 @@
                  id="commons-codec-1.4.jar">
              </library>
              <library
-                 id="commons-collections-3.2.1.jar">
+                 id="commons-collections-3.2.2.jar">
              </library>
              <library
                  id="commons-io-2.4.jar">
@@ -5322,12 +5186,6 @@
              </library>
              <library
                  id="jackson-xc-1.9.13.jar">
-             </library>
-             <library
-                 id="jersey-client-1.9.jar">
-             </library>
-             <library
-                 id="jersey-core-1.9.jar">
              </library>
              <library
                  id="log4j-1.2.17.jar">
@@ -5411,7 +5269,7 @@
                  id="commons-codec-1.4.jar">
              </library>
              <library
-                 id="commons-collections-3.2.1.jar">
+                 id="commons-collections-3.2.2.jar">
              </library>
              <library
                  id="commons-io-2.4.jar">
@@ -5436,12 +5294,6 @@
              </library>
              <library
                  id="jackson-xc-1.9.13.jar">
-             </library>
-             <library
-                 id="jersey-client-1.9.jar">
-             </library>
-             <library
-                 id="jersey-core-1.9.jar">
              </library>
              <library
                  id="log4j-1.2.17.jar">
@@ -5546,7 +5398,7 @@
 	             id="commons-codec-1.4.jar">
 	         </library>
 	         <library
-	             id="commons-collections-3.2.1.jar">
+	             id="commons-collections-3.2.2.jar">
 	         </library>
 	         <library
 	             id="protobuf-java-2.5.0.jar">
@@ -5660,7 +5512,7 @@
                  id="commons-codec-1.4.jar">
              </library>
              <library
-                 id="commons-collections-3.2.1.jar">
+                 id="commons-collections-3.2.2.jar">
              </library>
              <library
                  id="protobuf-java-2.5.0.jar">
@@ -6276,7 +6128,7 @@
 	             id="commons-codec-1.4.jar">
 	         </library>
 	         <library
-	             id="commons-collections-3.2.1.jar">
+	             id="commons-collections-3.2.2.jar">
 	         </library>
 	         <library
 	             id="protobuf-java-2.5.0.jar">
@@ -6310,9 +6162,6 @@
 	         </library>
 	         <library
 	             id="datanucleus-rdbms-3.2.9.jar">
-	         </library>
-	         <library
-	             id="derby-10.11.1.1.jar">
 	         </library>
 	         <library
 	             id="curator-framework-2.6.0.jar">
@@ -6423,7 +6272,7 @@
 	             id="commons-codec-1.4.jar">
 	         </library>
 	         <library
-	             id="commons-collections-3.2.1.jar">
+	             id="commons-collections-3.2.2.jar">
 	         </library>
 	         <library
 	             id="protobuf-java-2.5.0.jar">
@@ -6457,9 +6306,6 @@
 	         </library>
 	         <library
 	             id="datanucleus-rdbms-3.2.1.jar">
-	         </library>
-	         <library
-	             id="derby-10.4.2.0.jar">
 	         </library>
 	    </libraryNeededGroup>
 
@@ -6531,7 +6377,7 @@
 	             id="commons-codec-1.4.jar">
 	         </library>
 	         <library
-	             id="commons-collections-3.2.1.jar">
+	             id="commons-collections-3.2.2.jar">
 	         </library>
 	         <library
 	             id="protobuf-java-2.5.0.jar">
@@ -6566,9 +6412,6 @@
 	         <library
 	             id="datanucleus-rdbms-3.2.1.jar">
 	         </library>
-	         <library
-	             id="derby-10.4.2.0.jar">
-	         </library>
 	    </libraryNeededGroup>
 
 	    <!-- Hive libraries for HDP_2_3 -->
@@ -6580,7 +6423,7 @@
             <library id="avro-1.7.5.jar"/>
             <library id="commons-cli-1.2.jar"/>
             <library id="commons-codec-1.4.jar"/>
-            <library id="commons-collections-3.2.1.jar"/>
+            <library id="commons-collections-3.2.2.jar"/>
             <library id="commons-configuration-1.6.jar"/>
             <library id="commons-httpclient-3.0.1.jar"/>
             <library id="commons-io-2.4.jar"/>
@@ -6591,7 +6434,6 @@
             <library id="datanucleus-api-jdo-3.2.6.jar"/>
             <library id="datanucleus-core-3.2.10.jar"/>
             <library id="datanucleus-rdbms-3.2.9.jar"/>
-            <library id="derby-10.10.2.0.jar"/>
             <library id="guava-11.0.2.jar"/>
             <library id="hadoop-auth-HDP_2_3"/>
             <library id="hadoop-common-HDP_2_3"/>
@@ -6614,8 +6456,6 @@
             <library id="jackson-mapper-asl-1.9.13.jar"/>
             <library id="jackson-xc-1.9.13.jar"/>
             <library id="jdo-api-3.0.1.jar"/>
-            <library id="jersey-core-1.9.jar"/>
-            <library id="jersey-client-1.9.jar"/>
             <library id="libfb303-0.9.2.jar"/>
             <library id="libthrift-0.9.2.jar"/>
             <library id="log4j-1.2.17.jar"/>
@@ -6710,7 +6550,7 @@
 	             id="commons-codec-1.4.jar">
 	         </library>
 	         <library
-	             id="commons-collections-3.2.1.jar">
+	             id="commons-collections-3.2.2.jar">
 	         </library>
 	         <library
 	             id="protobuf-java-2.5.0.jar">
@@ -6734,12 +6574,6 @@
                  id="jackson-xc-1.9.13.jar">
              </library>
              <library
-                 id="jersey-client-1.9.jar">
-             </library>
-             <library
-                 id="jersey-core-1.9.jar">
-             </library>
-             <library
                  id="log4j-1.2.17.jar">
              </library>
              <library
@@ -6756,9 +6590,6 @@
              </library>
              <library
                  id="datanucleus-rdbms-3.2.1.jar">
-             </library>
-             <library
-                 id="derby-10.4.2.0.jar">
              </library>
              <library
                  id="zookeeper-hdp2.2-lastest">
@@ -6857,7 +6688,7 @@
                  id="commons-codec-1.4.jar">
              </library>
              <library
-                 id="commons-collections-3.2.1.jar">
+                 id="commons-collections-3.2.2.jar">
              </library>
              <library
                  id="slf4j-api-1.7.5.jar">
@@ -6882,9 +6713,6 @@
              </library>
              <library
                  id="datanucleus-rdbms-3.2.9.jar">
-             </library>
-             <library
-                 id="derby-10.11.1.1.jar">
              </library>
              <library
                  id="zookeeper-emr400-latest">
@@ -6992,7 +6820,7 @@
 	             id="commons-codec-1.4.jar">
 	         </library>
 	         <library
-	             id="commons-collections-3.2.1.jar">
+	             id="commons-collections-3.2.2.jar">
 	         </library>
 	         <library
 	             id="protobuf-java-2.5.0.jar">
@@ -7026,9 +6854,6 @@
 	         </library>
 	         <library
 	             id="datanucleus-rdbms-3.2.1.jar">
-	         </library>
-	         <library
-	             id="derby-10.4.2.0.jar">
 	         </library>
 	    </libraryNeededGroup>
 
@@ -7122,7 +6947,7 @@
                  id="commons-codec-1.4.jar">
              </library>
              <library
-                 id="commons-collections-3.2.1.jar">
+                 id="commons-collections-3.2.2.jar">
              </library>
              <library
                  id="protobuf-java-2.5.0.jar">
@@ -7156,9 +6981,6 @@
              </library>
              <library
                  id="datanucleus-rdbms-3.2.1.jar">
-             </library>
-             <library
-                 id="derby-10.4.2.0.jar">
              </library>
         </libraryNeededGroup>
 
@@ -7258,7 +7080,7 @@
                  id="commons-codec-1.4.jar">
              </library>
              <library
-                 id="commons-collections-3.2.1.jar">
+                 id="commons-collections-3.2.2.jar">
              </library>
              <library
                  id="protobuf-java-2.5.0.jar">
@@ -7292,9 +7114,6 @@
              </library>
              <library
                  id="datanucleus-rdbms-3.2.1.jar">
-             </library>
-             <library
-                 id="derby-10.4.2.0.jar">
              </library>
         </libraryNeededGroup>
 
@@ -7693,7 +7512,7 @@
                 name="TEZ-LIB-HDP_2_3">
             <library id="commons-cli-1.2.jar"/>
             <library id="commons-codec-1.4.jar"/>
-            <library id="commons-collections-3.2.1.jar"/>
+            <library id="commons-collections-3.2.2.jar"/>
             <library id="commons-collections4-4.0.jar"/>
             <library id="commons-io-2.4.jar"/>
             <library id="commons-lang-2.6.jar"/>
@@ -7758,7 +7577,7 @@
                 id="commons-collections4-4.0.jar">
             </library>
             <library
-                id="commons-collections-3.2.1.jar">
+                id="commons-collections-3.2.2.jar">
             </library>
             <library
                 id="commons-io-2.4.jar">
@@ -7795,235 +7614,6 @@
             </library>
             <library
                 id="protobuf-java-2.5.0.jar">
-            </library>
-        </libraryNeededGroup>
-        <!-- Tez Server libraries for HDP_2_3 -->
-        <libraryNeededGroup
-                description="Tez Server libraries for HDP 2.3"
-                id="TEZ-SERVER-LIB-HDP_2_3"
-                name="TEZ-SERVER-LIB-HDP_2_3">
-            <library id="aopalliance-1.0.jar"/>
-            <library id="apacheds-i18n-2.0.0-M15.jar"/>
-            <library id="apacheds-kerberos-codec-2.0.0-M15.jar"/>
-            <library id="api-asn1-api-1.0.0-M20.jar"/>
-            <library id="api-util-1.0.0-M20.jar"/>
-            <library id="asm-3.2.jar"/>
-            <library id="avro-1.7.5.jar"/>
-            <library id="commons-beanutils-1.7.0.jar"/>
-            <library id="commons-beanutils-core-1.8.0.jar"/>
-            <library id="commons-compress-1.4.1.jar"/>
-            <library id="commons-configuration-1.6.jar"/>
-            <library id="commons-digester-1.8.jar"/>
-            <library id="commons-net-3.1.jar"/>
-            <library id="curator-client-2.7.1.jar"/>
-            <library id="curator-framework-2.7.1.jar"/>
-            <library id="curator-recipes-2.7.1.jar"/>
-            <library id="gson-2.2.4.jar"/>
-            <library id="guice-3.0.jar"/>
-            <library id="guice-servlet-3.0.jar"/>
-            <library id="hadoop-auth-HDP_2_3"/>
-            <library id="hadoop-common-HDP_2_3"/>
-            <library id="hadoop-hdfs-HDP_2_3"/>
-            <library id="hadoop-yarn-api-HDP_2_3"/>
-            <library id="hadoop-yarn-client-HDP_2_3"/>
-            <library id="hadoop-yarn-common-HDP_2_3"/>
-            <library id="htrace-core-3.1.0-incubating.jar"/>
-            <library id="httpclient-4.2.5.jar"/>
-            <library id="httpcore-4.2.5.jar"/>
-            <library id="jackson-core-2.2.3.jar"/>
-            <library id="jackson-core-asl-1.9.13.jar"/>
-            <library id="jackson-jaxrs-1.9.13.jar"/>
-            <library id="jackson-mapper-asl-1.9.13.jar"/>
-            <library id="jackson-xc-1.9.13.jar"/>
-            <library id="javax.inject-1.jar"/>
-            <library id="jaxb-impl-2.2.3-1.jar"/>
-            <library id="jersey-client-1.9.jar"/>
-            <library id="jersey-core-1.9.jar"/>
-            <library id="jersey-guice-1.9.jar"/>
-            <library id="jersey-json-1.9.jar"/>
-            <library id="jersey-server-1.9.jar"/>
-            <library id="jetty-util-6.1.26.hwx.jar"/>
-            <library id="microsoft-windowsazure-storage-sdk-0.6.0.jar"/>
-            <library id="netty-3.6.2.Final.jar"/>
-            <library id="paranamer-2.3.jar"/>
-            <library id="servlet-api-2.5.jar"/>
-            <library id="slf4j-api-1.7.10.jar"/>
-            <library id="slf4j-log4j12-1.7.10.jar"/>
-            <library id="snappy-java-1.0.4.1.jar"/>
-            <library id="stax-api-1.0-2.jar"/>
-            <library id="xercesImpl-2.9.1.jar"/>
-            <library id="xml-apis-1.3.04.jar"/>
-            <library id="xmlenc-0.52.jar"/>
-            <library id="xz-1.0.jar"/>
-            <library id="zookeeper-HDP_2_3"/>
-        </libraryNeededGroup>
-
-        <!-- Tez Server libraries for HDP 2.2 -->
-        <libraryNeededGroup
-                description="The libraries of Tez Server on HDP220"
-                id="TEZ-SERVER-LIB-HDP220"
-                name="TEZ-SERVER-LIB-HDP220" >
-            <library
-                id="aopalliance-1.0.jar">
-            </library>
-            <library
-                id="apacheds-i18n-2.0.0-M15.jar">
-            </library>
-            <library
-                id="apacheds-kerberos-codec-2.0.0-M15.jar">
-            </library>
-            <library
-                id="api-asn1-api-1.0.0-M20.jar">
-            </library>
-            <library
-                id="api-util-1.0.0-M20.jar">
-            </library>
-            <library
-                id="asm-3.1.jar">
-            </library>
-            <library
-                id="avro-1.7.4.jar">
-            </library>
-            <library
-                id="commons-beanutils-1.7.0.jar">
-            </library>
-            <library
-                id="commons-beanutils-core-1.8.0.jar">
-            </library>
-            <library
-                id="commons-compress-1.4.1.jar">
-            </library>
-            <library
-                id="commons-configuration-1.6.jar">
-            </library>
-            <library
-                id="commons-digester-1.8.jar">
-            </library>
-            <library
-                id="commons-net-3.1.jar">
-            </library>
-            <library
-                id="curator-client-2.6.0.jar">
-            </library>
-            <library
-                id="curator-framework-2.6.0.jar">
-            </library>
-            <library
-                id="curator-recipes-2.6.0.jar">
-            </library>
-            <library
-                id="gson-2.2.4.jar">
-            </library>
-            <library
-                id="guice-3.0.jar">
-            </library>
-            <library
-                id="guice-servlet-3.0.jar">
-            </library>
-            <library
-                id="hadoop-auth-2.6.0.2.2.0.0-2041.jar">
-            </library>
-            <library
-                id="hadoop-common-2.6.0.2.2.0.0-2041.jar">
-            </library>
-            <library
-                id="hadoop-hdfs-2.6.0.2.2.0.0-2041.jar">
-            </library>
-            <library
-                id="hadoop-yarn-api-2.6.0.2.2.0.0-2041.jar">
-            </library>
-            <library
-                id="hadoop-yarn-client-2.6.0.2.2.0.0-2041.jar">
-            </library>
-            <library
-                id="hadoop-yarn-common-2.6.0.2.2.0.0-2041.jar">
-            </library>
-            <library
-                id="htrace-core-3.0.4.jar">
-            </library>
-            <library
-                id="httpclient-4.2.5.jar">
-            </library>
-            <library
-                id="httpcore-4.2.4.jar">
-            </library>
-            <library
-                id="jackson-core-2.2.3.jar">
-            </library>
-            <library
-                id="jackson-core-asl-1.9.13.jar">
-            </library>
-            <library
-                id="jackson-jaxrs-1.9.13.jar">
-            </library>
-            <library
-                id="jackson-mapper-asl-1.9.13.jar">
-            </library>
-            <library
-                id="jackson-xc-1.9.13.jar">
-            </library>
-            <library
-                id="javax.inject-1.jar">
-            </library>
-            <library
-                id="jaxb-impl-2.2.3-1.jar">
-            </library>
-            <library
-                id="jersey-client-1.9.jar">
-            </library>
-            <library
-                id="jersey-core-1.9.jar">
-            </library>
-            <library
-                id="jersey-guice-1.9.jar">
-            </library>
-            <library
-                id="jersey-json-1.9.jar">
-            </library>
-            <library
-                id="jersey-server-1.9.jar">
-            </library>
-            <library
-                id="jetty-util-6.1.26.hwx.jar">
-            </library>
-            <library
-                id="microsoft-windowsazure-storage-sdk-0.6.0.jar">
-            </library>
-            <library
-                id="netty-3.6.2.Final.jar">
-            </library>
-            <library
-                id="paranamer-2.3.jar">
-            </library>
-            <library
-                id="servlet-api-2.5.jar">
-            </library>
-            <library
-                id="slf4j-api-1.7.5.jar">
-            </library>
-            <library
-                id="slf4j-log4j12-1.7.5.jar">
-            </library>
-            <library
-                id="snappy-java-1.0.4.1.jar">
-            </library>
-            <library
-                id="stax-api-1.0.1.jar">
-            </library>
-            <library
-                id="xercesImpl-2.9.1.jar">
-            </library>
-            <library
-                id="xml-apis-1.3.04.jar">
-            </library>
-            <library
-                id="xmlenc-0.52.jar">
-            </library>
-            <library
-                id="xz-1.0.jar">
-            </library>
-            <library
-                id="zookeeper-3.4.6.jar">
             </library>
         </libraryNeededGroup>
 
@@ -8069,7 +7659,7 @@
 	             id="commons-logging-1.1.3.jar">
 	         </library>
 	         <library
-	             id="commons-collections-3.2.1.jar">
+	             id="commons-collections-3.2.2.jar">
 	         </library>
 	         <library
 	             id="commons-configuration-1.6.jar">
@@ -8118,11 +7708,9 @@
                 id="HD_INSIGHT_COMMON_LIBRARIES_LATEST"
                 name="HD_INSIGHT_COMMON_LIBRARIES_LATEST">
             <library id="talend-bigdata-launcher-1.1.0-20160405.jar" />
-            <library id="cxf-api-2.7.7.jar" />
-            <library id="cxf-rt-bindings-xml-2.7.7.jar" />
-            <library id="cxf-rt-core-2.7.7.jar" />
-            <library id="cxf-rt-frontend-jaxrs-2.7.7.jar" />
-            <library id="cxf-rt-transports-http-2.7.7.jar" />
+            <library id="cxf-rt-bindings-xml-3.3.10.jar" />
+            <library id="cxf-rt-frontend-jaxrs-3.3.10.jar" />
+            <library id="cxf-rt-transports-http-3.3.10.jar" />
             <library id="json_simple-1.1.jar" />
             <library id="javax.ws.rs-api-2.0-m10.jar" />
             <library id="wsdl4j-1.6.3.jar" />
@@ -8257,11 +7845,10 @@
         </libraryNeeded>
         <libraryNeeded
               context="plugin:org.talend.libraries.jersey"
-              id="jersey-client-1.4.jar"
-              mvn_uri="mvn:org.talend.libraries/jersey-client-1.4/6.0.0"
-              name="jersey-client-1.4.jar"
-              required="true"
-              uripath="platform:/plugin/org.talend.libraries.jersey/lib/jersey-client-1.4.jar">
+              id="jersey-client-1.17.jar"
+              mvn_uri="mvn:org.talend.libraries/jersey-client-1.17/6.1.0"
+              name="jersey-client-1.17.jar"
+              required="true">
         </libraryNeeded>
         <libraryNeeded
               context="plugin:"
@@ -8269,14 +7856,6 @@
               mvn_uri="mvn:org.talend.libraries/jersey-client-1.17/6.1.0"
               name="jersey-client-1.17.jar"
               required="true">
-        </libraryNeeded>
-        <libraryNeeded
-              context="plugin:org.talend.libraries.jersey"
-              id="jersey-core-1.4.jar"
-              mvn_uri="mvn:org.talend.libraries/jersey-core-1.4/6.0.0"
-              name="jersey-core-1.4.jar"
-              required="true"
-              uripath="platform:/plugin/org.talend.libraries.jersey/lib/jersey-core-1.4.jar">
         </libraryNeeded>
         <libraryNeeded
               context="plugin:org.talend.libraries.saaj"

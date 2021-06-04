@@ -23,6 +23,7 @@ imports="
 		try{
 			conn_<%=cid%>.getBucketLoggingConfiguration("Check-Connection-Only");
 	}catch(com.amazonaws.AmazonServiceException ase_<%=cid%>){
+globalMap.put("<%=cid%>_ERROR_MESSAGE",ase_<%=cid%>.getMessage());
 			if(ase_<%=cid%>.getErrorCode().equals("NoSuchBucket")){
 			//ignore
 			}else{

@@ -187,6 +187,7 @@ if(!"true".equals(useExistingConn)){
 				try {
 					<%=cid%>_fos.close();
 				} catch (java.io.IOException e) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
 					// Ignore
 				}
 			}

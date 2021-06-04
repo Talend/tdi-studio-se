@@ -130,9 +130,6 @@ public abstract class AbstractAssignCodesToJarAction extends AContextualAction {
                     sourceItem.getImports().addAll(backupImports);
                     RoutinesUtil.setInnerCodes(sourceItem.getProperty(), null);
 
-                    // delete source item
-                    ProxyRepositoryFactory.getInstance().deleteObjectPhysical(node.getObject());
-
                     // sync code
                     ICodeGeneratorService service = (ICodeGeneratorService) GlobalServiceRegister.getDefault()
                             .getService(ICodeGeneratorService.class);

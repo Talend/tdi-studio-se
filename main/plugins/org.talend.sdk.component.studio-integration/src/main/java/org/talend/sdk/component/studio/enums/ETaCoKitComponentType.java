@@ -19,6 +19,7 @@ package org.talend.sdk.component.studio.enums;
 public enum ETaCoKitComponentType {
 
     input,
-    processor
+    processor,
+    standalone
 
 }

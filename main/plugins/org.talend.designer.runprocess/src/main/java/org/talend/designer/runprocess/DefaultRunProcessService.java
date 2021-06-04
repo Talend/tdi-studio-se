@@ -62,7 +62,6 @@ import org.talend.core.model.process.IContext;
 import org.talend.core.model.process.IProcess;
 import org.talend.core.model.process.IProcess2;
 import org.talend.core.model.process.JobInfo;
-import org.talend.core.model.process.ProcessUtils;
 import org.talend.core.model.properties.Item;
 import org.talend.core.model.properties.ProjectReference;
 import org.talend.core.model.properties.Property;
@@ -839,16 +838,8 @@ public class DefaultRunProcessService implements IRunProcessService {
     }
 
     @Override
-    public void buildCodesJavaProject(IProgressMonitor monitor) {
-        try {
-            AggregatorPomsHelper.buildAndInstallCodesProject(monitor, ERepositoryObjectType.ROUTINES);
-            if (ProcessUtils.isRequiredBeans(null)) {
-                AggregatorPomsHelper.buildAndInstallCodesProject(monitor, ERepositoryObjectType.BEANS);
-            }
-            CodesJarM2CacheManager.updateCodesJarProject(monitor);
-        } catch (Exception e) {
-            ExceptionHandler.process(e);
-        }
+    public void buildCodesJavaProject(IProgressMonitor monitor, Set<CodesJarInfo> toUpdate) {
+        AggregatorPomsHelper.buildCodesProject(monitor, toUpdate);
     }
 
     @Override
@@ -868,9 +859,13 @@ public class DefaultRunProcessService implements IRunProcessService {
      */
     @Override
     public void initializeRootPoms(IProgressMonitor monitor) {
-        if (isCIMode()) {
-            return;
-        }
+
+//        skipping of root pom generation and updating code projects
+//        leads to compilation errors and incorrect manifest generation 
+//        for routes and OSGi jobs (APPINT-32995)
+//        if (isCIMode()) {
+//            return;
+//        }
         try {
             AggregatorPomsHelper helper = new AggregatorPomsHelper();
             helper.installRootPom(false);
@@ -883,7 +878,7 @@ public class DefaultRunProcessService implements IRunProcessService {
             helper.updateRefProjectModules(references, monitor);
             helper.updateCodeProjects(monitor, true, false, true);
 
-            CodesJarM2CacheManager.updateCodesJarProject(monitor);
+            CodesJarM2CacheManager.updateCodesJarProjectForLogon(monitor);
             CodesJarResourceCache.getAllCodesJars().stream().filter(info -> getExistingTalendCodesJarProject(info) != null)
                     .forEach(info -> TalendJavaProjectManager.deleteTalendCodesJarProject(info, false));
         } catch (Exception e) {
@@ -1049,6 +1044,11 @@ public class DefaultRunProcessService implements IRunProcessService {
     @Override
     public boolean isExcludeDeletedItems(Property property) {
         return PomIdsHelper.getIfExcludeDeletedItems(property);
+    }
+
+    @Override
+    public boolean getMavenPrefOptionStatus(String prefName) {
+        return PomIdsHelper.getMavenPrefOptionStatus(prefName);
     }
 
 }

@@ -634,6 +634,7 @@ if(columnList != null && columnList.size() > 0) {
 	                    insertedCount_<%=cid%> = insertedCount_<%=cid%> + pstmt_<%=cid %>.executeUpdate();
 	                    <%dbLog.data().inserting(dbLog.var("nb_line"));%>
 	                } catch(java.lang.Exception e) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
 	                    whetherReject_<%=cid%> = true;
 	                    <%
 	                    if (("true").equals(dieOnError)) {
@@ -712,6 +713,7 @@ if(columnList != null && columnList.size() > 0) {
                     insertedCount_<%=cid%> = insertedCount_<%=cid%> + pstmt_<%=cid %>.executeUpdate();
                     <%dbLog.data().inserting(dbLog.var("nb_line"));%>
                 } catch(java.lang.Exception e) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
                     whetherReject_<%=cid%> = true;
                     <%
                     if (("true").equals(dieOnError)) {
@@ -847,6 +849,7 @@ if(columnList != null && columnList.size() > 0) {
                 updatedCount_<%=cid%> = updatedCount_<%=cid%> + pstmt_<%=cid %>.executeUpdate();
                 <%dbLog.data().updating(dbLog.var("nb_line"));%>
             } catch(java.lang.Exception e) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
                 whetherReject_<%=cid%> = true;
                 <%
                 if (("true").equals(dieOnError)) {
@@ -1000,6 +1003,7 @@ if(columnList != null && columnList.size() > 0) {
                     nb_line_<%=cid%>++;
         			<%dbLog.data().updating(dbLog.var("nb_line"));%>
                 } catch(java.lang.Exception e) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
                     whetherReject_<%=cid%> = true;
                     <%
                     if (("true").equals(dieOnError)) {
@@ -1076,6 +1080,7 @@ if(columnList != null && columnList.size() > 0) {
                     nb_line_<%=cid%>++;
                     <%dbLog.data().inserting(dbLog.var("nb_line"));%>
                 } catch(java.lang.Exception e) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
                     whetherReject_<%=cid%> = true;
                     <%
                     if (("true").equals(dieOnError)) {
@@ -1259,6 +1264,7 @@ if(columnList != null && columnList.size() > 0) {
     				<%dbLog.data().updating(dbLog.var("nb_line"));%>
     			}
                 } catch(java.lang.Exception e) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
                     whetherReject_<%=cid%> = true;
                     <%
                     if (("true").equals(dieOnError)) {
@@ -1346,6 +1352,7 @@ if(columnList != null && columnList.size() > 0) {
             	nb_line_<%=cid%>++;
             	<%dbLog.data().deleting(dbLog.var("nb_line"));%>
             } catch(java.lang.Exception e) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
                 whetherReject_<%=cid%> = true;
                 <%
                 if (("true").equals(dieOnError)) {
@@ -1413,6 +1420,7 @@ if(columnList != null && columnList.size() > 0) {
                 replaceCount_<%=cid%> = pstmt_<%=cid %>.executeUpdate();
                 <%dbLog.data().replacing(null);%>
             } catch(java.lang.Exception e) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
                 whetherReject_<%=cid%> = true;
                 <%
                 if (("true").equals(dieOnError)) {
@@ -1493,6 +1501,7 @@ if(columnList != null && columnList.size() > 0) {
                 count_on_duplicate_key_<%=cid%> = pstmt_<%=cid %>.executeUpdate();
                 <%dbLog.data().insertingOnDuplicateKeyUpdating(null);%>
             } catch(java.lang.Exception e) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
                 whetherReject_<%=cid%> = true;
                 <%
                 if (("true").equals(dieOnError)) {
@@ -1559,6 +1568,7 @@ if(columnList != null && columnList.size() > 0) {
                     insertedCount_<%=cid%> = insertedCount_<%=cid%> + pstmt_<%=cid %>.executeUpdate();
                     <%dbLog.data().insertingOnDuplicateKeyUpdating(dbLog.var("nb_line"));%>
                 } catch(java.lang.Exception e) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
                     whetherReject_<%=cid%> = true;
                     <%
                     if (("true").equals(dieOnError)) {
@@ -1635,6 +1645,7 @@ if(columnList != null && columnList.size() > 0) {
             	    	}
             	    	%>
                 }catch (java.sql.BatchUpdateException e){
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
                 	<%if(("true").equals(dieOnError)) {
                 	%>
                 		throw(e);
@@ -1687,6 +1698,7 @@ if(columnList != null && columnList.size() > 0) {
             	    	}%>
             	    	batchSizeCounter_<%=cid%> = 0;
                 }catch (java.sql.BatchUpdateException e){
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
                 	<%if(("true").equals(dieOnError)) {
                 	%>
                 		throw(e);
@@ -1743,6 +1755,7 @@ if(columnList != null && columnList.size() > 0) {
             	    	}%>
                         batchSizeCounter_<%=cid%> = 0;
                 }catch (java.sql.BatchUpdateException e){
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
                 	<%if(("true").equals(dieOnError)) {
                 	%>
 						throw(e);

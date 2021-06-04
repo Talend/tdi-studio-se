@@ -479,8 +479,8 @@ public class RunProcessService implements IRunProcessService {
     }
 
     @Override
-    public void buildCodesJavaProject(IProgressMonitor monitor) {
-        delegateService.buildCodesJavaProject(monitor);
+    public void buildCodesJavaProject(IProgressMonitor monitor, Set<CodesJarInfo> toUpdate) {
+        delegateService.buildCodesJavaProject(monitor, toUpdate);
     }
 
     @Override
@@ -533,6 +533,11 @@ public class RunProcessService implements IRunProcessService {
     @Override
     public boolean isExcludeDeletedItems(Property property) {
         return delegateService.isExcludeDeletedItems(property);
+    }
+
+    @Override
+    public boolean getMavenPrefOptionStatus(String prefName) {
+        return delegateService.getMavenPrefOptionStatus(prefName);
     }
 
     @Override

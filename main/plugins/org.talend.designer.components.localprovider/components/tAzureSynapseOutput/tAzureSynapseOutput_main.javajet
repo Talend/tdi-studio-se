@@ -584,6 +584,7 @@ if((cid.equals("talendLogs_DB") || cid.equals("talendStats_DB") || cid.equals("t
                 insertedCount_<%=cid%> = insertedCount_<%=cid%> + pstmt_<%=cid %>.executeUpdate();
                 <%dbLog.data().inserting(dbLog.var("nb_line"));%>
             } catch(java.lang.Exception e) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
                 whetherReject_<%=cid%> = true;
                 <%
                 if (("true").equals(dieOnError)) {
@@ -831,6 +832,7 @@ if((cid.equals("talendLogs_DB") || cid.equals("talendStats_DB") || cid.equals("t
                 updatedCount_<%=cid%> = updatedCount_<%=cid%> + pstmt_<%=cid %>.executeUpdate();
         	    <%dbLog.data().updating(dbLog.var("nb_line"));%>
             } catch(java.lang.Exception e) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
                 whetherReject_<%=cid%> = true;
                 <%
                 if (("true").equals(dieOnError)) {
@@ -1002,6 +1004,7 @@ if((cid.equals("talendLogs_DB") || cid.equals("talendStats_DB") || cid.equals("t
                     nb_line_<%=cid%>++;
         			<%dbLog.data().updating(dbLog.var("nb_line"));%>
                 } catch(java.lang.Exception e) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
                     whetherReject_<%=cid%> = true;
                     <%
                     if (("true").equals(dieOnError)) {
@@ -1094,6 +1097,7 @@ if((cid.equals("talendLogs_DB") || cid.equals("talendStats_DB") || cid.equals("t
                     nb_line_<%=cid%>++;
                     <%dbLog.data().inserting(dbLog.var("nb_line"));%>
                 } catch(java.lang.Exception e) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
                     whetherReject_<%=cid%> = true;
                     <%
                     if (("true").equals(dieOnError)) {
@@ -1292,6 +1296,7 @@ if((cid.equals("talendLogs_DB") || cid.equals("talendStats_DB") || cid.equals("t
     				<%dbLog.data().updating(dbLog.var("nb_line"));%>
     			}
                 } catch(java.lang.Exception e) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
                     whetherReject_<%=cid%> = true;
                     <%
                     if (("true").equals(dieOnError)) {
@@ -1397,6 +1402,7 @@ if((cid.equals("talendLogs_DB") || cid.equals("talendStats_DB") || cid.equals("t
                 nb_line_<%=cid%>++;
                 <%dbLog.data().deleting(dbLog.var("nb_line"));%>
             } catch(java.lang.Exception e) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
                 whetherReject_<%=cid%> = true;
                 <%
                 if (("true").equals(dieOnError)) {
@@ -1516,6 +1522,7 @@ if((cid.equals("talendLogs_DB") || cid.equals("talendStats_DB") || cid.equals("t
                 nb_line_<%=cid%>++;
                 <%dbLog.data().inserting(dbLog.var("nb_line"));%>
             } catch(java.lang.Exception e) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
 				whetherReject_<%=cid%> = true;
                 <%
             if (("true").equals(dieOnError)) {
@@ -1590,6 +1597,7 @@ if((cid.equals("talendLogs_DB") || cid.equals("talendStats_DB") || cid.equals("t
 						}
 						<%dbLog.batch().executeDone(dbLog.str(dataAction));%>
                 }catch (java.sql.BatchUpdateException e){
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
                 	<%if(("true").equals(dieOnError)) {
                 	%>
                 		throw(e);
@@ -1624,6 +1632,7 @@ if((cid.equals("talendLogs_DB") || cid.equals("talendStats_DB") || cid.equals("t
 						}
 						<%dbLog.batch().executeDone(dbLog.str(dataAction));%>
                 }catch (java.sql.BatchUpdateException e){
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
                 	<%if(("true").equals(dieOnError)) {
                 	%>
 						throw(e);

@@ -55,6 +55,7 @@
 							return decode(res);
 						}
 					} catch (java.lang.Exception e) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
 						<%if(isLog4jEnabled){%>
 							log.warn("<%=cid%> - " + str);
 						<%}%>
@@ -131,6 +132,7 @@
 										}
 									}    
 								}catch (java.io.UnsupportedEncodingException e){
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
 									java.io.ByteArrayOutputStream bao_<%=cid%> = new java.io.ByteArrayOutputStream();
 									mpart<%=cid %>.writeTo(bao_<%=cid%>);
 									if(multiValueBody_<%=cid%>) {
@@ -326,6 +328,7 @@
 		
 		<% if(!dieOnError){ %>
 			catch (java.lang.Exception e){
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
 				<%if(isLog4jEnabled){%>
 					log.error("<%=cid%> - " + e.getMessage());
 				<%}%>

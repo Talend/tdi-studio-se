@@ -81,7 +81,7 @@ public class TaCoKitService implements ITaCoKitService {
     @Override
     public boolean isNeedMigration(String componentName, Map<String, String> persistedProperties) {
         TaCoKitCache currentCach = Lookups.taCoKitCache();
-        Optional<ComponentDetail> detail = Lookups.service().getDetail(componentName);
+        Optional<ComponentDetail> detail = Lookups.service().getDetail(componentName);         
         final Collection<PropertyDefinitionDecorator> properties = PropertyDefinitionDecorator
                 .wrap(detail.get().getProperties());
         for (String key : persistedProperties.keySet()) {

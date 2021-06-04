@@ -118,6 +118,7 @@
 %>
         }
     } catch(java.lang.Exception e) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
         ifPassedThrough = false;
         errorCodeThrough += 2;
         errorMessageThrough += "|wrong type";
@@ -312,6 +313,7 @@
 %>
         }
     } catch(java.lang.Exception e){
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
         ifPassedThrough = false;
         errorCodeThrough += 2;
         errorMessageThrough += "|wrong DATE pattern or wrong DATE data";

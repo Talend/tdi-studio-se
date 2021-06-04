@@ -480,7 +480,11 @@ String inputConnName = null;
 		%>
 		obj_<%=cid%> = <%=value %>;
 		if(obj_<%=cid%>!=null) {
-			paraList_<%=cid %>.add("--context_param <%=name %>=" + RuntimeUtils.tRunJobConvertContext(obj_<%=cid%>));
+			if (obj_<%=cid %>.getClass().getName().equals("java.util.Date")) {
+				paraList_<%=cid %>.add("--context_param <%=name %>=" + ((java.util.Date) obj_<%=cid %>).getTime());
+			} else {
+				paraList_<%=cid %>.add("--context_param <%=name %>=" + RuntimeUtils.tRunJobConvertContext(obj_<%=cid%>));
+			}
 		} else {
 			paraList_<%=cid %>.add("--context_param <%=name %>=" + NULL_VALUE_EXPRESSION_IN_COMMAND_STRING_FOR_CHILD_JOB_ONLY);
 		}
@@ -659,6 +663,7 @@ String inputConnName = null;
 										reader.close();
 									}
 								} catch (java.io.IOException ioe) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",ioe.getMessage());
 						            <%if(isLog4jEnabled){%>
 										log.error("<%=cid %> - " + ioe.getMessage());
 						            <%}%>
@@ -685,6 +690,7 @@ String inputConnName = null;
 										reader.close();
 									}
 								} catch (java.io.IOException ioe) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",ioe.getMessage());
 						            <%if(isLog4jEnabled){%>
 										log.error("<%=cid %> - " + ioe.getMessage());
 						            <%}%>
@@ -721,6 +727,7 @@ String inputConnName = null;
             normal_<%=cid %>.join(10000);
             error_<%=cid %>.join(10000);
         } catch (ThreadDeath tde) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",tde.getMessage());
             <%if(isLog4jEnabled){%>
             	log.error("<%=cid %> - thread was terminated.");
             <%}%>

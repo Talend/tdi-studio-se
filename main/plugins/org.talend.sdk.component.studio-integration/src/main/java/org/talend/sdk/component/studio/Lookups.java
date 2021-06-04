@@ -184,8 +184,7 @@ public final class Lookups {
                                                             // decide whether it is v0 or v1
                                                             IComponent component = node.getComponent();
                                                             if (component != null
-                                                                    && "org.talend.sdk.component.studio.ComponentModel"
-                                                                            .equals(component.getClass().getName())) {
+                                                                    && ComponentModel.class.isAssignableFrom(component.getClass())) {
                                                                 return creatComposite((Composite) args[0], (Element) args[1],
                                                                         (EComponentCategory) args[2], (boolean) args[3]);
                                                             } else {

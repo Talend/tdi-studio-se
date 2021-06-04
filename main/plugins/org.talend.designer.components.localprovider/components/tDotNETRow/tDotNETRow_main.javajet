@@ -94,6 +94,7 @@
        			f.setAccessible(true);
        			f.set(targetStruct,val);
        		} catch (java.lang.Exception ex) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",ex.getMessage());
        			throw new RuntimeException("Can not convert value of type: "+val.getClass().getName()+" to target column");
        		}
        }

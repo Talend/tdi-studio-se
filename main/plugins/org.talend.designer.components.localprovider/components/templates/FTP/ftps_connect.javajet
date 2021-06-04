@@ -10,11 +10,17 @@
     javax.net.ssl.SSLSocketFactory sslSocketFactory_<%=cid %> = null;
     MyTrust_<%=cid%> myTrust_<%=cid%> = null;
 
+    <%@ include file="@{org.talend.designer.components.localprovider}/components/templates/FTP/ftpsPrivateKeyManager.javajet"%>
+
     try {
         sslContext_<%=cid %> = javax.net.ssl.SSLContext.getInstance("SSL");
         myTrust_<%=cid%> = new MyTrust_<%=cid%>();
         trustManager_<%=cid %> = myTrust_<%=cid%>.getTrustManagers();
-        sslContext_<%=cid %>.init(null, trustManager_<%=cid %>, new java.security.SecureRandom());
+
+        PrivateKeyManager_<%=cid %> privateKeyManager_<%=cid %> = new PrivateKeyManager_<%=cid %>();
+        javax.net.ssl.KeyManager[] keyManager_<%=cid %> = privateKeyManager_<%=cid %>.getKeyManagers();
+
+        sslContext_<%=cid %>.init(keyManager_<%=cid %>, trustManager_<%=cid %>, new java.security.SecureRandom());
         sslSocketFactory_<%=cid %> = sslContext_<%=cid %>.getSocketFactory();
 
         if(("true").equals(System.getProperty("http.proxySet")) ){
@@ -24,7 +30,6 @@
             String httpProxyPass = System.getProperty("http.proxyPassword");
 
             ftp_<%=cid %> = new org.talend.ftp.HTTPProxyFTPSClient(<%="IMPLICIT".equals(securityMode)%>, sslContext_<%=cid %>, httpProxyHost, httpProxyPort, httpProxyUser, httpProxyPass);
-
         } else if ("local".equals(System.getProperty("http.proxySet"))) {
             String uriString = <%=host %> + ":" + <%=ftpsPort%>;
             java.net.Proxy proxyToUse = org.talend.proxy.TalendProxySelector.getInstance().getProxyForUriString(uriString);

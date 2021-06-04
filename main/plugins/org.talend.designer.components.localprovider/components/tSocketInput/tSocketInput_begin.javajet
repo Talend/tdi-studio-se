@@ -214,6 +214,7 @@ if (conns!=null) {
         }
         nb_line_<%=cid %>++;
 } catch (java.lang.Exception e) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
     whetherReject_<%=cid%> = true;
     <%
     if (dieOnError) {

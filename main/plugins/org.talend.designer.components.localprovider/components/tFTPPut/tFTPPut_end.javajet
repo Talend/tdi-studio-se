@@ -86,6 +86,7 @@ if(sftp){ // *** sftp *** //
 						log.info("<%=cid%> - Connection to the server closed.");
 					<%}%>
 				}catch(java.io.IOException ioe_<%=cid%>){
+globalMap.put("<%=cid%>_ERROR_MESSAGE",ioe_<%=cid%>.getMessage());
 					<%if(isLog4jEnabled){%>
 						log.warn("<%=cid%> - " + ioe_<%=cid%>.getMessage());
 					<%}%>

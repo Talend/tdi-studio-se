@@ -29,7 +29,7 @@
 	String authType = ElementParameterParser.getValue(node, "__AUTH_TYPE__");
 	String partSizeMb = ElementParameterParser.getValue(node, "__PART_SIZE__");
 
-  if(("true").equals(useExistingConn)) {
+	if(("true").equals(useExistingConn)) {
 		List< ? extends INode> nodes =  node.getProcess().getNodesOfType("tGSConnection");
 		for (INode ne : nodes) {
 			if (connection.equals(ne.getUniqueName())) {
@@ -104,6 +104,7 @@ if ("USER_ACCOUNT_HMAC".equals(authType)){
 		}
 
 	}catch(java.lang.Exception e_<%=cid%>) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e_<%=cid%>.getMessage());
 		<%
 		if (("true").equals(dieOnError)) {
 		%>
@@ -220,6 +221,7 @@ if ("USER_ACCOUNT_HMAC".equals(authType)){
 					writer_<%=cid%>.write(java.nio.ByteBuffer.wrap(buffer, 0, curFileLimit_<%=cid%>));
 				}
 			} catch (IOException e_<%=cid%>) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e_<%=cid%>.getMessage());
 				<%
 				if(isLog4jEnabled){
 				%>
@@ -238,6 +240,7 @@ if ("USER_ACCOUNT_HMAC".equals(authType)){
 				storage_<%=cid%>.create(blobInfo_<%=cid%>, java.nio.file.Files.readAllBytes(currentFile_<%=cid%>.getValue().toPath()));
 				nb_line_<%=cid%> ++;
 			} catch (IOException e_<%=cid%>) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e_<%=cid%>.getMessage());
 				<%
 				if(isLog4jEnabled){
 				%>

@@ -126,8 +126,16 @@
 
     boolean exist_tSCP = false;
     List<INode> scpComponentsList = (List<INode>)process.getNodesOfType("tSCPConnection");
-    if (scpComponentsList.size() > 0) {
+	String parameterNames = "";
+	int scpsize = scpComponentsList.size();
+    if (scpsize > 0) {
         exist_tSCP = true;
+        for (int i = 0; i < scpsize; i++) {
+            parameterNames += "\"conn_" + scpComponentsList.get(i).getUniqueName() + "\"";
+			if(i < scpsize-1){
+			    parameterNames += ",";
+			}
+        }
     }
 
     boolean exist_tCassandra = false;
@@ -733,34 +741,39 @@
 <%
                         } else if(typeToGenerate.equals("java.util.Date")) {
 %>
-                        try{
                             String context_<%=ctxParam.getName()%>_value = context.getProperty("<%=ctxParam.getName()%>");
-                            if (context_<%=ctxParam.getName()%>_value == null){
-                                context_<%=ctxParam.getName()%>_value = "";
-                            }
-                            int context_<%=ctxParam.getName()%>_pos = context_<%=ctxParam.getName()%>_value.indexOf(";");
-                            String context_<%=ctxParam.getName()%>_pattern =  "yyyy-MM-dd HH:mm:ss";
-                            if(context_<%=ctxParam.getName()%>_pos > -1){
-                                context_<%=ctxParam.getName()%>_pattern = context_<%=ctxParam.getName()%>_value.substring(0, context_<%=ctxParam.getName()%>_pos);
-                                context_<%=ctxParam.getName()%>_value = context_<%=ctxParam.getName()%>_value.substring(context_<%=ctxParam.getName()%>_pos + 1);
-                            }
+                            try{
+                                if (context_<%=ctxParam.getName()%>_value == null){
+                                    context_<%=ctxParam.getName()%>_value = "";
+                                }
+                                int context_<%=ctxParam.getName()%>_pos = context_<%=ctxParam.getName()%>_value.indexOf(";");
+                                String context_<%=ctxParam.getName()%>_pattern =  "yyyy-MM-dd HH:mm:ss";
+                                if(context_<%=ctxParam.getName()%>_pos > -1){
+                                    context_<%=ctxParam.getName()%>_pattern = context_<%=ctxParam.getName()%>_value.substring(0, context_<%=ctxParam.getName()%>_pos);
+                                    context_<%=ctxParam.getName()%>_value = context_<%=ctxParam.getName()%>_value.substring(context_<%=ctxParam.getName()%>_pos + 1);
+                                }
 
-                            context.<%=ctxParam.getName()%>=(java.util.Date)(new java.text.SimpleDateFormat(context_<%=ctxParam.getName()%>_pattern).parse(context_<%=ctxParam.getName()%>_value));
+                                context.<%=ctxParam.getName()%>=(java.util.Date)(new java.text.SimpleDateFormat(context_<%=ctxParam.getName()%>_pattern).parse(context_<%=ctxParam.getName()%>_value));
 
-                        } catch(ParseException e) {
+                            } catch(ParseException e) {
+                                try { <% /*try to check if date passed as long also*/ %>
+                                    long context_<%=ctxParam.getName()%>_longValue = Long.valueOf(context_<%=ctxParam.getName()%>_value);
+                                    context.<%=ctxParam.getName()%> = new java.util.Date(context_<%=ctxParam.getName()%>_longValue);
+                                } catch (NumberFormatException cantParseToLongException) {
 <%
-                            if (isLog4jEnabled) {
+                                    if (isLog4jEnabled) {
 %>
-                                log.warn(String.format("<%=warningMessageFormat %>", "<%=ctxParam.getName() %>", e.getMessage()));
+                                        log.warn(String.format("<%=warningMessageFormat %>", "<%=ctxParam.getName() %>", "Can't parse date string: " + e.getMessage() + " and long: " + cantParseToLongException.getMessage()));
 <%
-                            } else {
+                                    } else {
 %>
-                                System.err.println(String.format("<%=warningMessageFormat %>", "<%=ctxParam.getName() %>", e.getMessage()));
+                                        System.err.println(String.format("<%=warningMessageFormat %>", "<%=ctxParam.getName() %>", "Can't parse date string: " + e.getMessage() + " and long: " + cantParseToLongException.getMessage()));
 <%
+                                    }
+%>
+                                    context.<%=ctxParam.getName()%>=null;
+                                }
                             }
-%>
-                            context.<%=ctxParam.getName()%>=null;
-                        }
 <%
                         } else if(typeToGenerate.equals("Object")||typeToGenerate.equals("String")||typeToGenerate.equals("java.lang.String")) {
 %>
@@ -1185,9 +1198,12 @@ this.globalResumeTicket = true;//to run tPostJob
     closeJmsConnections();
 <% } %>
 
-<% if (exist_tSCP) { %>
-    closeScpConnections();
-<% } %>
+<% if (exist_tSCP) { 
+%>
+    closeCloseableConnections(<%=parameterNames%>);
+<% 
+} 
+%>
 
 <%
     if (stats) {
@@ -1241,7 +1257,7 @@ if (execStat) {
     closeJmsConnections();
 <% } %>
 <% if(exist_tSCP) { %>
-    closeScpConnections();
+    closeCloseableConnections(<%=parameterNames%>);
 <% } %>
 <% if (exist_tSQLDB) { %>
     closeSqlDbConnections();
@@ -1309,22 +1325,17 @@ if (execStat) {
 <%
     if(exist_tSCP) {
 %>
-    private void closeScpConnections() {
-        try {
-            Object obj_conn;
-<%
-            for (INode scpNode : scpComponentsList) {
-%>
-            obj_conn = globalMap.remove("conn_<%=scpNode.getUniqueName() %>");
-            if (null != obj_conn) {
-                ((ch.ethz.ssh2.Connection) obj_conn).close();
+    private void closeCloseableConnections(String... names) {
+	        java.util.Arrays.stream(names).forEach(name-> {
+            try {
+			    Object obj_conn = globalMap.remove(name);
+				if(obj_conn != null){
+				    ((java.io.Closeable)obj_conn).close();
+				}
+            } catch (IOException ioException) {
             }
-<%
-            }
-%>
-        } catch (java.lang.Exception e) {
-        }
-    }
+        });
+	}
 <%
     }
 %>

@@ -3,6 +3,7 @@ imports="
     org.talend.core.model.process.INode 
     org.talend.core.model.process.ElementParameterParser
     org.talend.designer.codegen.config.CodeGeneratorArgument
+    org.talend.core.model.utils.NodeUtil
 "
 %>
 
@@ -12,32 +13,69 @@ imports="
     String cid = node.getUniqueName();
    	String fromName = ElementParameterParser.getValue(node, "__FROMNAME__");
    	String toName = ElementParameterParser.getValue(node,"__TONAME__");
-    boolean isLog4jEnabled = ("true").equals(ElementParameterParser.getValue(node.getProcess(), "__LOG4J_ACTIVATE__"));
+        String fileExists = ElementParameterParser.getValue(node,"__EXISTFILE__");
+        String authMethod = ElementParameterParser.getValue(node,"__AUTH_METHOD__");
+        boolean isLog4jEnabled = ("true").equals(ElementParameterParser.getValue(node.getProcess(), "__LOG4J_ACTIVATE__"));
+        String useExistingConn = ElementParameterParser.getValue(node, "__USE_EXISTING_CONNECTION__");
+             	if(("true").equals(useExistingConn)){
+             	    String connection = ElementParameterParser.getValue(node, "__CONNECTION__");
+             	    INode connectionNode = NodeUtil.getNodeByUniqueName(node.getProcess(), connection);
+             		authMethod = ElementParameterParser.getValue(connectionNode,"__AUTH_METHOD__");
+             		}
 %>
 		
 	//initial the command
 	StringBuilder command_<%=cid %> = new StringBuilder();
     command_<%=cid %>.append("mv \"").append(<%=fromName%>).append("\" \"").append(<%=toName%>).append("\"");
 	/* Create a session */
-	ch.ethz.ssh2.Session sess_<%=cid%> = conn_<%=cid%>.openSession();
-	
 	//execute the command
-	sess_<%=cid%>.execCommand((command_<%=cid %>).toString());		
-	
-	//get the return info
-	
-	java.io.InputStream stderr_<%=cid%> = sess_<%=cid%>.getStderr();
-    java.io.BufferedReader breer_<%=cid%>= new java.io.BufferedReader(new java.io.InputStreamReader(stderr_<%=cid%>));
-    String line_err_<%=cid%> = "";
-    StringBuilder stringStderr_<%=cid%> =new StringBuilder();
-	while((line_err_<%=cid%> = breer_<%=cid%>.readLine()) != null) {
-		stringStderr_<%=cid%>.append(line_err_<%=cid%> + "\n");
-	}
-	breer_<%=cid%>.close();
-	stderr_<%=cid%>.close();
-	
-	 /* Close this session */			
-	sess_<%=cid%>.close();
+                <%if(isLog4jEnabled){%>
+                    log.info("<%=cid%> - Open up a session.");
+                    log.debug("<%=cid%> - execute the command: " + command_<%=cid %>.toString());
+                <%}%>
+
+                session_<%=cid%> = client_<%=cid%>.connect(username_<%=cid%>, hostname_<%=cid%>, port_<%=cid%>).verify().getClientSession();
+            try {
+                session_<%=cid%>.auth().verify();
+            }catch (org.apache.sshd.common.SshException se_<%=cid%>){
+                globalMap.put("<%=cid %>_EXIT_CODE",se_<%=cid%>.getDisconnectCode());
+            <%
+            if (("PUBLICKEY").equals(authMethod)) {
+            %>
+                java.nio.file.Files.write(privateKey_<%=cid%>,lines_<%=cid%>);
+            <%}%>
+                if(14 == se_<%=cid%>.getDisconnectCode()){
+                    throw new IllegalArgumentException("Authentication failed.");
+                }else{
+                    throw se_<%=cid%>;
+                }
+            }
+            org.apache.sshd.client.channel.ClientChannel channel_<%=cid %> = session_<%=cid %>.createExecChannel((command_<%=cid %>).toString());
+            java.io.ByteArrayOutputStream stdout_<%=cid %> = new java.io.ByteArrayOutputStream();
+            java.io.ByteArrayOutputStream stderr_<%=cid %> = new java.io.ByteArrayOutputStream();
+            channel_<%=cid%>.setOut(stdout_<%=cid %>);
+            channel_<%=cid%>.setErr(stderr_<%=cid %>);
+            channel_<%=cid%>.open();
+            java.util.Set<org.apache.sshd.client.channel.ClientChannelEvent> clientChannelEvents_<%=cid %> =
+            channel_<%=cid%>.waitFor(java.util.EnumSet.of(
+            org.apache.sshd.client.channel.ClientChannelEvent.CLOSED,org.apache.sshd.client.channel.ClientChannelEvent.EXIT_STATUS), 0L);
+            exit_code_<%=cid%> = channel_<%=cid%>.getExitStatus();
+            channel_<%=cid%>.close();
+            session_<%=cid%>.close();
+            <%if(isLog4jEnabled){%>
+                log.debug("Channel Events: "+ java.util.Arrays.toString(clientChannelEvents_<%=cid %>.toArray()));
+            <%}%>
+            stringStdout_<%=cid%>.append(stdout_<%=cid%>.toString());
+            stringStderr_<%=cid%>.append(stderr_<%=cid%>.toString());
+
+            if(stringStdout_<%=cid%>.length() >0 && stringStdout_<%=cid%>.charAt(stringStdout_<%=cid%>.length()-1) == '\n'){
+                stringStdout_<%=cid%>.deleteCharAt(stringStdout_<%=cid%>.length()-1);
+            }
+
+            <%if(isLog4jEnabled){%>
+                log.debug("<%=cid%> - Command line standard result: " + stringStdout_<%=cid%>.toString());
+                log.debug("<%=cid%> - Command line error result: " + stringStderr_<%=cid%>.toString());
+            <%}%>
 	
 	if(("").equals(stringStderr_<%=cid %>.toString()) || (stringStderr_<%=cid %>.toString() == null)){
 		<%if(isLog4jEnabled){%>

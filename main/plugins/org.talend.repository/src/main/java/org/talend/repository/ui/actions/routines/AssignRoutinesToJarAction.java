@@ -22,7 +22,7 @@ public class AssignRoutinesToJarAction extends AbstractAssignCodesToJarAction {
 
     @Override
     protected String getActionText() {
-        return "Assign Routine to..."; //$NON-NLS-1$
+        return "Copy Routine to..."; //$NON-NLS-1$
     }
 
     @Override

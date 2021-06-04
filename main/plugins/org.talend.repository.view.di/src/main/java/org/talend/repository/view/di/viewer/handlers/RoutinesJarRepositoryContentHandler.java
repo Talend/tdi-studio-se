@@ -24,7 +24,6 @@ import org.talend.commons.ui.runtime.image.IImage;
 import org.talend.core.model.properties.Item;
 import org.talend.core.model.properties.PropertiesPackage;
 import org.talend.core.model.properties.Property;
-import org.talend.core.model.properties.RoutinesJarItem;
 import org.talend.core.model.repository.AbstractRepositoryContentHandler;
 import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.core.model.repository.IRepositoryViewObject;
@@ -76,9 +75,12 @@ public class RoutinesJarRepositoryContentHandler extends AbstractRepositoryConte
     @Override
     public void addNode(ERepositoryObjectType type, RepositoryNode recBinNode, IRepositoryViewObject repositoryObject,
             RepositoryNode node) {
-        Property property = repositoryObject.getProperty();
         if (type != ERepositoryObjectType.ROUTINESJAR
-                || (property.getItem() != null && !(property.getItem() instanceof RoutinesJarItem))) {
+                || repositoryObject.getRepositoryObjectType() != ERepositoryObjectType.ROUTINESJAR) {
+            return;
+        }
+        Property property = repositoryObject.getProperty();
+        if (property == null) {
             return;
         }
         try {

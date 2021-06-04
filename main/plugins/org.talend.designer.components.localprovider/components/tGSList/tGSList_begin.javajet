@@ -27,7 +27,7 @@ imports="
 	boolean listInBucketList = "true".equals(ElementParameterParser.getValue(node,"__LIST_IN_BUCKET_LIST__"));
 	String objects_prefix=ElementParameterParser.getValue(node,"__OBJECTS_PREFIX__");
 
-  if(("true").equals(useExistingConn)) {
+	if(("true").equals(useExistingConn)) {
 		List< ? extends INode> nodes =  node.getProcess().getNodesOfType("tGSConnection");
 		for (INode ne : nodes) {
 			if (connection.equals(ne.getUniqueName())) {
@@ -122,6 +122,7 @@ if ("USER_ACCOUNT_HMAC".equals(authType)){
 			try {
 				objects_<%=cid%> = service_<%=cid%>.listObjects(currentBucketName_<%=cid%>,map_<%=cid %>.get("OBJECT_PREFIX"),map_<%=cid %>.get("OBJECT_DELIMITER"));
 			}catch(org.jets3t.service.ServiceException e_<%=cid%>){
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e_<%=cid%>.getMessage());
 				<%
 				if (("true").equals(dieOnError)) {
 				%>

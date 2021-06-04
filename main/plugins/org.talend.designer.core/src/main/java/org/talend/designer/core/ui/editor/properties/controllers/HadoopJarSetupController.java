@@ -86,19 +86,7 @@ public class HadoopJarSetupController extends AbstractElementPropertySectionCont
             Node node = (Node) elem;
             String compName = node.getComponent().getName();
 
-            if (compName.startsWith("tPig")) { //$NON-NLS-1$
-                versionType = ECustomVersionType.PIG;
-                IElementParameter elementParameter = node.getElementParameter("LOAD"); //$NON-NLS-1$
-                if (elementParameter != null) {
-                    String value = elementParameter.getListItemsDisplayCodeName()[elementParameter.getIndexOfItemFromList(String
-                            .valueOf(elementParameter.getValue()))];
-                    if ("HCATLOADER".equals(value)) { //$NON-NLS-1$
-                        versionType = ECustomVersionType.PIG_HCATALOG;
-                    } else if ("HBASESTORAGE".equals(value)) { //$NON-NLS-1$
-                        versionType = ECustomVersionType.PIG_HBASE;
-                    }
-                }
-            } else if (compName.startsWith("tImpala")) {
+            if (compName.startsWith("tImpala")) {
                 versionType = ECustomVersionType.HIVE;
             } else {
                 compName = compName.substring(1).toUpperCase();

@@ -112,5 +112,6 @@ Require-Bundle: org.eclipse.core.runtime,
  org.apache.log4j,
  org.talend.updates.runtime,
  org.eclipse.equinox.p2.metadata
-Import-Package: org.talend.components.api.properties
+Import-Package: org.talend.components.api.properties,
+ org.talend.designer.core.ui.event
 Bundle-Localization: plugin

@@ -77,6 +77,7 @@ if ("USER_ACCOUNT_HMAC".equals(authType)){
 		}
 		%>
 	}catch(org.jets3t.service.ServiceException e_<%=cid%>) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e_<%=cid%>.getMessage());
 		<%
 		if (("true").equals(dieOnError)) {
 		%>
@@ -130,7 +131,7 @@ if ("USER_ACCOUNT_HMAC".equals(authType)){
 <%@ include file="@{org.talend.designer.components.localprovider}/components/templates/googleStorageConnection.javajet"%>
     com.google.cloud.storage.BucketInfo bucketInfo_<%=cid%> = com.google.cloud.storage.BucketInfo.newBuilder(<%=bucketName%>)
 <% if(isSpecialConfig && locationForServiceAccount != null && !"DEFAULT".equals(locationForServiceAccount)){ %> .setLocation("<%=locationForServiceAccount%>")<% } %>
-        .build();
+		.build();
 
     com.google.cloud.storage.Storage.PredefinedAcl acl_<%=cid%> =
   <% if ("REST_CANNED_PUBLIC_READ_WRITE".equals(acl)) { %>

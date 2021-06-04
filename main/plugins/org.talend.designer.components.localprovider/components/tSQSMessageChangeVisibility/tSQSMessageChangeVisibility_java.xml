@@ -376,9 +376,9 @@
 				MVN="mvn:org.apache.httpcomponents/httpcore/4.4.13"
 				REQUIRED_IF="USE_EXISTING_CONNECTION == 'false'" />
 			<IMPORT
-				NAME="httpclient-4.5.12.jar"
-				MODULE="httpclient-4.5.12.jar"
-				MVN="mvn:org.apache.httpcomponents/httpclient/4.5.12"
+				NAME="httpclient-4.5.13.jar"
+				MODULE="httpclient-4.5.13.jar"
+				MVN="mvn:org.apache.httpcomponents/httpclient/4.5.13"
 				REQUIRED_IF="USE_EXISTING_CONNECTION == 'false'" />
 			<IMPORT
 				NAME="joda-time-2.8.1.jar"

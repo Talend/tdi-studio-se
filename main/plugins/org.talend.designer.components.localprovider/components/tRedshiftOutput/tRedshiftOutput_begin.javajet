@@ -153,39 +153,8 @@ if(tableNameWithSchema){
 }
 %>
 
-<%
-if(("UPDATE").equals(dataAction) || ("INSERT_OR_UPDATE").equals(dataAction) || ("UPDATE_OR_INSERT").equals(dataAction)) {
-    int updateKeyCount = 0;
-    if(stmtStructure != null) {
-        for(Column column : stmtStructure) {
-            if(column.isUpdateKey() && !column.isDynamic()) {
-                updateKeyCount++;
-            }
-        }
-        %>
-        int updateKeyCount_<%=cid%> = <%=updateKeyCount%>;
-        if(updateKeyCount_<%=cid%> < 1) {
-            throw new RuntimeException("For update, Schema must have a key");
-        }
-        <%
-    }
-} else if(("DELETE").equals(dataAction)) {
-    int deleteKeyCount = 0;
-    if(stmtStructure != null) {
-        for(Column column : stmtStructure) {
-            if(column.isDeleteKey() && !column.isDynamic()) {
-                deleteKeyCount++;
-            }
-        }
-        %>
-        int deleteKeyCount_<%=cid%> = <%=deleteKeyCount%>;
-        if(deleteKeyCount_<%=cid%> < 1) {
-            throw new RuntimeException("For delete, Schema must have a key");
-        }
-        <%
-    }
-}
-%>
+<%@ include file="@{org.talend.designer.components.localprovider}/components/templates/DB/Output/CheckKeysForUpdateAndDelete.javajet"%>
+
 int nb_line_<%=cid%> = 0;
 int nb_line_update_<%=cid%> = 0;
 int nb_line_inserted_<%=cid%> = 0;

@@ -31,6 +31,8 @@ import org.talend.designer.core.IDesignerCoreService;
 import org.talend.designer.core.model.utils.emf.talendfile.ElementParameterType;
 import org.talend.designer.core.model.utils.emf.talendfile.NodeType;
 import org.talend.designer.runprocess.ItemCacheManager;
+import org.talend.utils.json.JSONException;
+import org.talend.utils.json.JSONObject;
 
 /**
  * OSGi DataSource
@@ -99,6 +101,26 @@ public class DataSourceConfig {
 
                 for (Iterator<?> iterator = node.getElementParameter().iterator(); iterator.hasNext();) {
                     ElementParameterType elementParameter = (ElementParameterType) iterator.next();
+
+                    if (StringUtils.equals(elementParameter.getName(), "PROPERTIES")) {
+                        JSONObject val = null;
+                        try {
+                            val = new JSONObject(elementParameter.getValue());
+                            if (val != null && val.get("dataSource") instanceof JSONObject) {
+                                JSONObject dataSource = (JSONObject) val.get("dataSource");
+                                if (dataSource != null) {
+                                    String storeValue = (String) dataSource.get("storedValue");
+                                    if (StringUtils.isNoneBlank(storeValue)) {
+                                        useDS = true;
+                                        value = storeValue;
+                                    }
+                                }
+                            }
+                        } catch (JSONException ee) {
+                            ee.printStackTrace();
+                        }
+                    }
+
                     if ((StringUtils.equals(elementParameter.getName(), "SPECIFY_DATASOURCE_ALIAS")
                             || StringUtils.equals(elementParameter.getName(), "useDataSource"))
                             && BooleanUtils.toBoolean(elementParameter.getValue()) && elementParameter.isShow()) {

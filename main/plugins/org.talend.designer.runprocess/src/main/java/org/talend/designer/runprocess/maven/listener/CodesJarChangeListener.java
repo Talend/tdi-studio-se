@@ -37,6 +37,7 @@ import org.talend.core.repository.utils.XmiResourceManager;
 import org.talend.core.runtime.process.ITalendProcessJavaProject;
 import org.talend.core.utils.CodesJarResourceCache;
 import org.talend.designer.maven.tools.AggregatorPomsHelper;
+import org.talend.designer.maven.tools.BuildCacheManager;
 import org.talend.designer.maven.tools.CodesJarM2CacheManager;
 import org.talend.designer.maven.utils.CodesJarMavenUtil;
 import org.talend.designer.runprocess.IRunProcessService;
@@ -159,12 +160,14 @@ public class CodesJarChangeListener implements PropertyChangeListener {
     }
 
     private void caseCopy(Object newValue) throws Exception {
-        if (newValue instanceof Item) {
-            Item item = (Item) newValue;
+        if (newValue instanceof RoutineItem) {
+            RoutineItem item = (RoutineItem) newValue;
             if (RoutinesUtil.isInnerCodes(item.getProperty())) {
                 updateModifiedDateForCodesJar(item);
             }
-            buildCodeProject(item);
+            // FIXME after optimized global routines/beans m2 cache, should update cache status here.
+            BuildCacheManager.getInstance().clearCodesCache(ERepositoryObjectType.getItemType(item));
+            // buildCodeProject(item);
         }
     }
 

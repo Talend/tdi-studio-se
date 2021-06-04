@@ -84,14 +84,12 @@ if (!sftp && !ftps) { // *** ftp *** //
         %> 
       		String decryptedPassphrase_<%=cid%> = routines.system.PasswordEncryptUtil.decryptPassword(<%=ElementParameterParser.getEncryptedValue(node, passwordFieldName)%>);
         <%} else {%>
-      		String decryptedPassphrase_<%=cid%> = <%= ElementParameterParser.getValue(node, passwordFieldName)%>; 
+      		String decryptedPassphrase_<%=cid%> = <%= ElementParameterParser.getValue(node, passwordFieldName)%>;
         <%}%>
 
 		String passphrase_<%=cid %> = decryptedPassphrase_<%=cid%>;
 
 		public String getPassphrase() { return passphrase_<%=cid %>; }
-
-		public String getPassword() { return null; } 
 
 		public boolean promptPassword(String arg0) { return true; } 
 
@@ -103,15 +101,19 @@ if (!sftp && !ftps) { // *** ftp *** //
 
 		public String[] promptKeyboardInteractive(String destination, String name, String instruction, String[] prompt,
 		boolean[] echo) {
-		
-    	<%
-    	passwordFieldName = "__PASS__";
-    	%> 
-    	
-    	<%@ include file="@{org.talend.designer.components.localprovider}/components/templates/password.javajet"%>
-    	
-			String[] password_<%=cid%> = {decryptedPassword_<%=cid%>};
-			return password_<%=cid%>;
+			return new String[] {getPassword()};
+		}
+
+		public String getPassword() {
+			<% if ("PASSWORD".equals(authMethod) || "PUBLIC_KEY_AND_PASSWORD".equals(authMethod)) { %>
+				<% passwordFieldName = "__PASS__"; %>
+
+				<%@ include file="@{org.talend.designer.components.localprovider}/components/templates/password.javajet"%>
+
+				return decryptedPassword_<%=cid%>;
+			<% } else { %>
+				return null;
+			<% } %>
 		}
 	};
 	final com.jcraft.jsch.UserInfo defaultUserInfo_<%=cid%> = new MyUserInfo();

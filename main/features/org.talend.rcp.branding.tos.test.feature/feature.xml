@@ -6,7 +6,7 @@
   <license url="http://www.example.com/license">[Enter License Description here.]</license>  
   <requires>
     <import feature="org.eclipse.test" version="0.0.0" match="greaterOrEqual"/>
-    <import plugin="org.junit" version="0.0.0" match="greaterOrEqual"/>
+    <import plugin="org.junit" version="4.13.2" match="greaterOrEqual"/>
     <import plugin="org.talend.commons.runtime" version="0.0.0" match="greaterOrEqual"/>
     <import plugin="org.talend.commons.ui" version="0.0.0" match="greaterOrEqual"/>
     <import plugin="org.talend.core" version="0.0.0" match="greaterOrEqual"/>

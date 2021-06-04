@@ -63,8 +63,8 @@
 
 	<CODEGENERATION>
 		<IMPORTS>
-			<IMPORT NAME="jersey_client" MODULE="jersey-client-1.4.jar" MVN="mvn:org.talend.libraries/jersey-client-1.4/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.jersey/lib/jersey-client-1.4.jar" REQUIRED="true" />
-			<IMPORT NAME="jersey_core" MODULE="jersey-core-1.4.jar" MVN="mvn:org.talend.libraries/jersey-core-1.4/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.jersey/lib/jersey-core-1.4.jar" REQUIRED="true" />
+			<IMPORT NAME="jersey_client" MODULE="jersey-client-1.13.jar" MVN="mvn:com.sun.jersey/jersey-client/1.13" REQUIRED="true" />
+			<IMPORT NAME="jersey_core" MODULE="jersey-core-1.13.jar" MVN="mvn:com.sun.jersey/jersey-core/1.13" REQUIRED="true" />
 		</IMPORTS>
 	</CODEGENERATION>
 

@@ -185,7 +185,9 @@ public final class ExportItemAction extends AContextualAction implements IWorkbe
 
         Shell activeShell = Display.getCurrent().getActiveShell();
         WizardDialog dialog = new WizardDialog(activeShell, wizard);
+        dialog.setBlockOnOpen(false);
         dialog.open();
+        if (wizard.isCanceled()) dialog.close();
     }
 
     @Override

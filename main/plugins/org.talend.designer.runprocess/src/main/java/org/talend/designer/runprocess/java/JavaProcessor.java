@@ -1352,11 +1352,13 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
 
         // may have blank in classpath since use absolute path.
         libsStr = StringUtils.replace(libsStr, " ", "%20"); //$NON-NLS-1$ //$NON-NLS-2$
-
+        libsStr = StringUtils.replace(libsStr, "#", "%23"); //$NON-NLS-1$ //$NON-NLS-2$
+        
         // create classpath.jar
         if (!isExportConfig() && !isSkipClasspathJar() && isCorrespondingOS()) {
             try {
-                libsStr = ClasspathsJarGenerator.createJar(getProperty(), libsStr, classPathSeparator, useRelativeClasspath);
+                libsStr = ClasspathsJarGenerator.createJar(getProperty(), libsStr, classPathSeparator, useRelativeClasspath,
+                        ProcessorUtilities.isDynamicJobAndCITest());
             } catch (Exception e) {
                 throw new ProcessorException(e);
             }

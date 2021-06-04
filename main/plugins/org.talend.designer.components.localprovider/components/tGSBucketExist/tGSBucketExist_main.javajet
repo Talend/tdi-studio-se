@@ -22,7 +22,7 @@
 	String authType = ElementParameterParser.getValue(node, "__AUTH_TYPE__");
 	String connection = ElementParameterParser.getValue(node,"__CONNECTION__");
 
-  if(("true").equals(useExistingConn)) {
+	if(("true").equals(useExistingConn)) {
 		List< ? extends INode> nodes =  node.getProcess().getNodesOfType("tGSConnection");
 		for (INode ne : nodes) {
 			if (connection.equals(ne.getUniqueName())) {
@@ -67,6 +67,7 @@
 			bucketExist_<%=cid%>=true;
 		}
 	}catch(org.jets3t.service.ServiceException e_<%=cid%>) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e_<%=cid%>.getMessage());
 		<%
 		if (("true").equals(dieOnError)) {
 		%>

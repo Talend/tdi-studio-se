@@ -290,8 +290,8 @@
 			<IMPORT NAME="httpcore-4.4.13.jar" MODULE="httpcore-4.4.13.jar"
 				MVN="mvn:org.apache.httpcomponents/httpcore/4.4.13"
 				REQUIRED_IF="USE_EXISTING_CONNECTION == 'false'" />
-			<IMPORT NAME="httpclient-4.5.12.jar" MODULE="httpclient-4.5.12.jar"
-				MVN="mvn:org.apache.httpcomponents/httpclient/4.5.12"
+			<IMPORT NAME="httpclient-4.5.13.jar" MODULE="httpclient-4.5.13.jar"
+				MVN="mvn:org.apache.httpcomponents/httpclient/4.5.13"
 				REQUIRED_IF="USE_EXISTING_CONNECTION == 'false'" />
 			<IMPORT NAME="commons-codec-1.14.jar" MODULE="commons-codec-1.14.jar"
 				MVN="mvn:commons-codec/commons-codec/1.14"

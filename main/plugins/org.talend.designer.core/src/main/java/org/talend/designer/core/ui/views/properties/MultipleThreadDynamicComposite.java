@@ -76,7 +76,6 @@ import org.talend.designer.core.ui.editor.process.Process;
 import org.talend.designer.core.ui.editor.properties.controllers.AbstractElementPropertySectionController;
 import org.talend.designer.core.ui.editor.properties.controllers.GroupController;
 import org.talend.designer.core.ui.editor.subjobcontainer.SubjobContainer;
-import org.talend.designer.core.ui.views.properties.composites.MissingSettingsMultiThreadDynamicComposite;
 import org.talend.designer.runprocess.IRunProcessService;
 import org.talend.repository.ProjectManager;
 import org.talend.repository.model.IProxyRepositoryFactory;
@@ -319,16 +318,16 @@ public class MultipleThreadDynamicComposite extends ScrolledComposite implements
         if (composite != null && !composite.isDisposed()) {
             // Empty the composite before use (kinda refresh) :
             Control[] ct = composite.getChildren();
-            for (int i = 0; i < ct.length; i++) {
-                if (ct[i] != null) {
-                    if (ct[i].getForeground() != null && !ct[i].getForeground().isDisposed()) {
-                        ct[i].getForeground().dispose();
+            for (Control element : ct) {
+                if (element != null) {
+                    if (element.getForeground() != null && !element.getForeground().isDisposed()) {
+                        element.getForeground().dispose();
                     }
-                    if (ct[i].getBackground() != null && !ct[i].getBackground().isDisposed()) {
-                        ct[i].getBackground().dispose();
+                    if (element.getBackground() != null && !element.getBackground().isDisposed()) {
+                        element.getBackground().dispose();
                     }
                 }
-                ct[i].dispose();
+                element.dispose();
             }
         }
     }
@@ -420,8 +419,7 @@ public class MultipleThreadDynamicComposite extends ScrolledComposite implements
 
         int additionalHeightSize = 0;
         boolean hasDynamicRow = false;
-        for (int i = 0; i < currentValidParameters.size(); i++) {
-            IElementParameter curParam = currentValidParameters.get(i);
+        for (IElementParameter curParam : currentValidParameters) {
             AbstractElementPropertySectionController controller = generator.getController(curParam.getFieldType(), this);
 
             if (controller == null) {
@@ -439,8 +437,7 @@ public class MultipleThreadDynamicComposite extends ScrolledComposite implements
         for (int curRow = 1; curRow <= maxRow; curRow++) {
             maxRowSize = 0;
             nbInRow = 0;
-            for (int i = 0; i < currentValidParameters.size(); i++) {
-                IElementParameter curParam = currentValidParameters.get(i);
+            for (IElementParameter curParam : currentValidParameters) {
                 if (curParam.getNumRow() == curRow) {
                     nbInRow++;
                 }
@@ -448,8 +445,7 @@ public class MultipleThreadDynamicComposite extends ScrolledComposite implements
             numInRow = 0;
             lastControl = null;
             curRowSize = 0;
-            for (int i = 0; i < currentValidParameters.size(); i++) {
-                IElementParameter curParam = currentValidParameters.get(i);
+            for (IElementParameter curParam : currentValidParameters) {
                 updateParameter(curParam);
                 if (curParam.getNumRow() == curRow && isShouldDisParameter(curParam)) {
                     numInRow++;
@@ -1098,4 +1094,11 @@ public class MultipleThreadDynamicComposite extends ScrolledComposite implements
         return composite;
     }
 
+    public boolean isPropertyResized() {
+        return this.propertyResized;
+    }
+
+    public void setPropertyResized(boolean propertyResized) {
+        this.propertyResized = propertyResized;
+    }
 }

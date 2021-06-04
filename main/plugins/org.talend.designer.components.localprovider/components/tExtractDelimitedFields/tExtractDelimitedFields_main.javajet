@@ -262,6 +262,7 @@ int sizeColumns=outputMetadataTable.getListColumns().size();
 	log4jFileUtil.logCurrentRowNumberInfo();
 %>
 }catch(java.lang.Exception ex_<%=cid %>){
+globalMap.put("<%=cid%>_ERROR_MESSAGE",ex_<%=cid%>.getMessage());
 <%
 	if(dieOnError){
 %>

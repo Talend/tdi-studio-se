@@ -36,4 +36,7 @@ public class ValueSelectionParameter extends TaCoKitElementParameter {
         return action.callback();
     }
 
+    public SuggestionsAction getAction() {
+        return this.action;
+    }
 }

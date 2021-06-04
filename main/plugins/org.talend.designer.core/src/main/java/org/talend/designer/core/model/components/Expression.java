@@ -39,6 +39,7 @@ import org.talend.core.model.process.IElement;
 import org.talend.core.model.process.IElementParameter;
 import org.talend.core.model.process.INode;
 import org.talend.designer.core.ui.editor.process.Process;
+import org.talend.designer.joblet.model.JobletProcess;
 import org.talend.hadoop.distribution.DistributionFactory;
 import org.talend.hadoop.distribution.ESparkVersion;
 import org.talend.hadoop.distribution.spark.SparkVersionUtil;
@@ -300,6 +301,10 @@ public final class Expression {
         if ((simpleExpression.contains(" IN [") || //$NON-NLS-1$
                 simpleExpression.contains(" IN[")) && simpleExpression.endsWith("]")) { //$NON-NLS-1$ //$NON-NLS-2$
             return evaluateInExpression(simpleExpression, listParam);
+        }
+        
+        if (simpleExpression.contains("IS_JOBLET")) { //$NON-NLS-1$
+            return evaluateIsJoblet(currentParam, listParam);
         }
 
         if (simpleExpression.contains("DISTRIB[")) { //$NON-NLS-1$
@@ -785,7 +790,7 @@ public final class Expression {
         String args = simpleExpression.split("\\[")[1].split("\\]")[0]; //$NON-NLS-1$ //$NON-NLS-2$
         String distributionParam = args.split(",")[0].trim(); //$NON-NLS-1$
         String versionParam = args.split(",")[1].trim(); //$NON-NLS-1$
-
+        
         // both distributionParam and versionParam are simple or both are link. Everything else is an error.
         if (distributionParam.startsWith("#LINK@NODE") != versionParam.startsWith("#LINK@NODE")) { //$NON-NLS-1$ //$NON-NLS-2$
             return false;
@@ -1097,6 +1102,16 @@ public final class Expression {
         java.util.regex.Pattern pluginNamePattern = java.util.regex.Pattern.compile(IS_PLUGIN_LOADED + "\\[(.*)\\]"); //$NON-NLS-1$
         Matcher m = pluginNamePattern.matcher(simpleExpression);
         return m.find() ? PluginChecker.isPluginLoaded(m.group(1)) : false;
+    }
+    
+    private static boolean evaluateIsJoblet(ElementParameter currentParam, List<? extends IElementParameter> listParam) {
+    	INode node = retrieveNodeElementFromParameter(currentParam, listParam);
+    	boolean result = false;
+    	if (node != null) {
+    		result = "org.talend.designer.sparkjoblet.gefModels.SparkJobletGEFProcess".equals(node.getProcess().getClass().getName())
+    				|| "org.talend.designer.sparkstreamingjoblet.gefModels.SparkStreamingJobletGEFProcess".equals(node.getProcess().getClass().getName());
+    	}
+    	return result;
     }
 
 }

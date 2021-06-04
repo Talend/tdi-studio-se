@@ -190,7 +190,7 @@
             <IMPORT NAME="json-path-2.1.0.jar" MODULE="json-path-2.1.0.jar" MVN="mvn:org.talend.libraries/json-path-2.1.0/6.0.0" UrlPath="platform:/plugin/org.talend.libraries.json/lib/json-path-2.1.0.jar" REQUIRED_IF="(READ_BY == 'JSONPATH') AND (JSON_PATH_VERSION == '2_1_0')" />
             <IMPORT NAME="json-path-1.2.0.jar" MODULE="json-path-1.2.0.jar" MVN="mvn:org.talend.libraries/json-path-1.2.0/6.0.0" UrlPath="platform:/plugin/org.talend.libraries.json/lib/json-path-1.2.0.jar" REQUIRED_IF="(READ_BY == 'JSONPATH') AND (JSON_PATH_VERSION == '1_2_0')" />
             
-            <IMPORT NAME="json-smart-2.2.1.jar" MODULE="json-smart-2.2.1.jar" MVN="mvn:net.minidev/json-smart/2.2.1"  REQUIRED_IF="READ_BY == 'JSONPATH'" />
+            <IMPORT NAME="json-smart-2.4.2.jar" MODULE="json-smart-2.4.2.jar" MVN="mvn:net.minidev/json-smart/2.4.2"  REQUIRED_IF="READ_BY == 'JSONPATH'" />
             <IMPORT NAME="accessors-smart-1.1.jar" MODULE="accessors-smart-1.1.jar" MVN="mvn:net.minidev/accessors-smart/1.1"  REQUIRED_IF="READ_BY == 'JSONPATH'" />
             <IMPORT NAME="slf4j-api-1.7.5.jar" MODULE="slf4j-api-1.7.5.jar" MVN="mvn:org.talend.libraries/slf4j-api-1.7.5/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.slf4j/lib/slf4j-api-1.7.5.jar" REQUIRED_IF="READ_BY == 'JSONPATH'" />
             <IMPORT NAME="slf4j-log4j12-1.7.5.jar" MODULE="slf4j-log4j12-1.7.5.jar" MVN="mvn:org.talend.libraries/slf4j-log4j12-1.7.5/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.slf4j/lib/slf4j-log4j12-1.7.5.jar" REQUIRED_IF="READ_BY == 'JSONPATH'" />
