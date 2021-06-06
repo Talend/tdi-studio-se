@@ -242,7 +242,7 @@ if ((metadatas != null) && (metadatas.size() > 0)) {
 	                  if(clientInlineEntity_<%=in_col%>_<%=cid%> != null){
 	                      final java.io.InputStream exp_entity_<%=in_col%>_inputStream_<%=cid%> = client_<%=cid%>.getClient().getWriter().writeEntity(clientInlineEntity_<%=in_col%>_<%=cid%>.getEntity(), org.apache.olingo.commons.api.format.ContentType.APPLICATION_JSON);
 
-	                      try(java.io.InputStreamReader isr = new java.io.InputStreamReader(exp_entity__createdby_value_inputStream_<%=cid%>);
+	                      try(java.io.InputStreamReader isr = new java.io.InputStreamReader(exp_entity_<%=in_col%>_inputStream_<%=cid%>);
 								java.io.BufferedReader br = new java.io.BufferedReader(isr)){
 
 								<%=outgoingConn.getName()%>.<%=expandRow.get("OUTPUT_COLUMN")%> = br.lines()
@@ -255,7 +255,7 @@ if ((metadatas != null) && (metadatas.size() > 0)) {
 	                      if(clientInlineEntitySet_<%=in_col%>_<%=cid%> != null){
 	                          final java.io.InputStream exp_entity_<%=in_col%>_inputStream_<%=cid%> = client_<%=cid%>.getClient().getWriter().writeEntities(clientInlineEntitySet_<%=in_col%>_<%=cid%>.getEntitySet().getEntities(), org.apache.olingo.commons.api.format.ContentType.APPLICATION_JSON);
 
-	                          try(final java.io.InputStreamReader isr = new java.io.InputStreamReader(exp_entity__createdby_value_inputStream_<%=cid%>);
+	                          try(final java.io.InputStreamReader isr = new java.io.InputStreamReader(exp_entity_<%=in_col%>_inputStream_<%=cid%>);
 						final java.io.BufferedReader br = new java.io.BufferedReader(isr)){
 					<%=outgoingConn.getName()%>.<%=expandRow.get("OUTPUT_COLUMN")%> = br.lines().collect(java.util.stream.Collectors.joining("\n"));
 			          }
