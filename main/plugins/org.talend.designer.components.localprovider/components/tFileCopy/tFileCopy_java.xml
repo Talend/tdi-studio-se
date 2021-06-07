@@ -158,7 +158,7 @@
               REQUIRED="true"
               NUM_ROW="20"
               REPOSITORY_VALUE="FORCE_COPY_DELETE"
-              SHOW_IF="true"
+              SHOW_IF="ENABLE_COPY_DIRECTORY=='false'"
       >
           <DEFAULT>false</DEFAULT>
       </PARAMETER>
