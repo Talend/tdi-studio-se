@@ -117,9 +117,9 @@ public class UpdatesitePreferencePage extends PreferencePage {
             try {
                 UpdateSiteConfig config = p2Service.getUpdateSiteConfig();
                 String release = releaseUriText.getText();
-                config.setRelease(StringUtils.isBlank(release) ? null : new URI(release));
+                config.setRelease(StringUtils.isBlank(release) ? null : new URI(release.trim()));
                 String update = updateUriText.getText();
-                config.setUpdate(StringUtils.isBlank(update) ? null : new URI(update));
+                config.setUpdate(StringUtils.isBlank(update) ? null : new URI(update.trim()));
             } catch (Exception e) {
                 ExceptionHandler.process(e);
             }
@@ -142,7 +142,8 @@ public class UpdatesitePreferencePage extends PreferencePage {
 
     private boolean validate() {
         this.setErrorMessage(null);
-        if (StringUtils.equals(releaseUriText.getText(), updateUriText.getText())) {
+        if (StringUtils.equals(releaseUriText.getText().trim(), updateUriText.getText().trim())
+                && StringUtils.isNotBlank(releaseUriText.getText())) {
             this.setErrorMessage("Release and Update should be different");
             return false;
         } else {

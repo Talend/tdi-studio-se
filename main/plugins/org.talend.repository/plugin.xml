@@ -4066,5 +4066,14 @@
             class="org.talend.repository.ui.login.ExchangeLoginTask">
       </loginTask>
    </extension>
+   <extension
+         point="org.eclipse.ui.preferencePages">
+      <page
+            category="org.talend.core.prefs"
+            class="org.talend.repository.ui.login.connections.settings.UpdatesiteWorkbenchPreferencePage"
+            id="org.talend.repository.ui.login.connections.settings.UpdatesiteWorkbenchPreferencePage"
+            name="Update site">
+      </page>
+   </extension>
 
 </plugin>

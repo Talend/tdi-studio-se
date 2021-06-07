@@ -2080,13 +2080,7 @@ public class LoginProjectPage extends AbstractLoginActionPage {
     }
 
     protected void fillUIProjectListWithBusyCursor() {
-        BusyIndicator.showWhile(getDisplay(), new Runnable() {
-
-            @Override
-            public void run() {
-                fillUIProjectList(new NullProgressMonitor());
-            }
-        });
+        scheduleRetrieveProjectsJob();
     }
 
     protected void refreshUIFinishButtonEnable() {
