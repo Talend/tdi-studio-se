@@ -54,6 +54,7 @@ while (ifContinue<%=cid%>) {
         out<%=cid%>.close();
         socket<%=cid%>.close();
     }catch (java.io.IOException e) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
        e.printStackTrace();
     }   
     

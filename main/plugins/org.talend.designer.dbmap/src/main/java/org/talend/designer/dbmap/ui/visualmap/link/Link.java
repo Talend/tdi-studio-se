@@ -69,10 +69,8 @@ public class Link implements IMapperLink {
     public void calculate() {
         point1 = this.uiManager.getTableEntryPosition(pointLinkDescriptor1.getTableEntry(), true);
         point2 = this.uiManager.getTableEntryPosition(pointLinkDescriptor2.getTableEntry(), true);
-        DataMapTableView viewTable1 = this.mapperManager.retrieveDataMapTableView(this.mapperManager
-                .retrieveTable(pointLinkDescriptor1.getTableEntry()));
-        DataMapTableView viewTable2 = this.mapperManager.retrieveDataMapTableView(this.mapperManager
-                .retrieveTable(pointLinkDescriptor2.getTableEntry()));
+        DataMapTableView viewTable1 = this.mapperManager.retrieveDataMapTableView(pointLinkDescriptor1.getTableEntry());
+        DataMapTableView viewTable2 = this.mapperManager.retrieveDataMapTableView(pointLinkDescriptor2.getTableEntry());
         widthTable1 = viewTable1.getBounds().width + 2 * viewTable1.getBorderWidth();
         widthTable2 = viewTable2.getBounds().width + 2 * viewTable2.getBorderWidth();
     }

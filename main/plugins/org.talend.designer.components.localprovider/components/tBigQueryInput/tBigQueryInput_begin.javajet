@@ -111,6 +111,7 @@
 			properties_<%=cid%>.load(inputStream_<%=cid%>);
 			inputStream_<%=cid%>.close();
 		} catch (java.io.FileNotFoundException e_<%=cid%>) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e_<%=cid%>.getMessage());
 			<%
 	    	if(isLog4jEnabled){
 			%>
@@ -119,6 +120,7 @@
 			}
 	    	%>
 		} catch (java.io.IOException ee_<%=cid%>) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",ee_<%=cid%>.getMessage());
 			<%
 	    	if(isLog4jEnabled){
 			%>

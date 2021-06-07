@@ -36,6 +36,7 @@ Object filenameOrStream_<%=cid %> = null;
         try {
             filenameOrStream_<%=cid %> = <%=filenameOrStream %>;
         } catch(java.lang.Exception e_<%=cid%>) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e_<%=cid%>.getMessage());
 <%
 			if (dieOnError) {
 %>
@@ -77,6 +78,7 @@ try {
 		resultset_<%=cid%>.add(result_<%=cid%>);
 	}
 } catch (java.lang.Exception e_<%=cid%>) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e_<%=cid%>.getMessage());
 <%
 if(dieOnError){
 %>
@@ -232,6 +234,7 @@ for(Object row_<%=cid%> : resultset_<%=cid%>) {
         			}
 %>
 				} catch (com.jayway.jsonpath.PathNotFoundException e_<%=cid%>) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e_<%=cid%>.getMessage());
 					<%=firstConnName %>.<%=column.getLabel() %> = <%@ include file="./set_default_value.javajet"%>;
 				}				
 <%
@@ -245,6 +248,7 @@ for(Object row_<%=cid%> : resultset_<%=cid%>) {
     	}
 %>
     } catch (java.lang.Exception e_<%=cid%>) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e_<%=cid%>.getMessage());
         whetherReject_<%=cid%> = true;
 <%
     	if (dieOnError) {

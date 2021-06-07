@@ -320,6 +320,7 @@
 			try {
 				configs_<%=cid%> = java.util.Arrays.asList(mapper_<%=cid%>.readValue(<%=property_json%>, com.amazonaws.services.elasticmapreduce.model.Configuration[].class));
 			} catch (com.fasterxml.jackson.core.JsonProcessingException e) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
 				e.printStackTrace();
 			}
 		}

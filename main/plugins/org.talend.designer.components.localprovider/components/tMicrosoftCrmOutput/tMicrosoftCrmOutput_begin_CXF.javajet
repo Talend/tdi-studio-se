@@ -49,6 +49,7 @@ class CrmEntityHelper{
              try{
                  this.iorgService.create(entity);
              }catch(Exception e){
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
                  e.printStackTrace();
              }
       }
@@ -60,6 +61,7 @@ class CrmEntityHelper{
              try{
                  this.iorgService.delete(entityName, guidObj);
              }catch(Exception e){
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
                  e.printStackTrace();
              }
       }
@@ -70,6 +72,7 @@ class CrmEntityHelper{
              try{
                  this.iorgService.update(entity);
              }catch(Exception e){
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
                  e.printStackTrace();
              }
       }

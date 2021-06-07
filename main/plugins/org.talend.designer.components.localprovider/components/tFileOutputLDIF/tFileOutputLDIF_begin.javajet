@@ -81,6 +81,7 @@ if(("true").equals(ElementParameterParser.getValue(node,"__CREATE__"))){
                           returnValue = ": " + srcData;
                       }
                   }catch(java.lang.Exception e){
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
                     e.printStackTrace();
                   }
                   return returnValue;
@@ -156,6 +157,7 @@ if(("true").equals(ElementParameterParser.getValue(node,"__CREATE__"))){
                            try{
                                bytArr = distinguishedName.getBytes(<%= encoding %>);
                            }catch(java.io.UnsupportedEncodingException e){
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
                                 throw new RuntimeException(e);
                            }
                     return !isSafeUTF8String(distinguishedName) || !consistOfSafeCharacters(bytArr);

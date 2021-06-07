@@ -111,6 +111,7 @@ for(int i=0; i<iNbOfCubeRules; i++){
 				log.info("<%=cid%> - Create rule '" + <%=strRuleDefinition%> + "' has succeeded.");
 			<%}%>
 		}catch(Exception e){
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
 			<%if(isLog4jEnabled){%>
 				log.error("<%=cid%> - Data manipulation failed: " + e.getLocalizedMessage());
 			<%}%>

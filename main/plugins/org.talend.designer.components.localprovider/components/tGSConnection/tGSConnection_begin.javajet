@@ -35,5 +35,5 @@ if (authType.equals("USER_ACCOUNT_HMAC")){
   String connection = cid;
 %>
   <%@ include file="@{org.talend.designer.components.localprovider}/components/templates/googleStorageConnection.javajet"%>
-  globalMap.put("service_" + "<%=cid%>",storage_<%=cid%>);
+	globalMap.put("service_" + "<%=cid%>",storage_<%=cid%>);
 <% } %>

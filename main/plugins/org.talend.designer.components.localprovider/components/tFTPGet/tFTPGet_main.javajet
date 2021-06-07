@@ -50,6 +50,7 @@ boolean isLog4jEnabled = ("true").equals(ElementParameterParser.getValue(node.ge
 		}
 		getter_<%=cid %>.chdir(root_<%=cid %>);
 	} catch(java.lang.Exception e) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
 		<%if ("true".equals(dieOnError)){%>
     		throw(e);
   		<%}else{%>

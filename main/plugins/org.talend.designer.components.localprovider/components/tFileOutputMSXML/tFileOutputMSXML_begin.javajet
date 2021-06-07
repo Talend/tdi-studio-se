@@ -73,6 +73,7 @@ class NestXMLTool_<%=cid%>{
             org.dom4j.Document doc4Str = org.dom4j.DocumentHelper.parseText("<root>"+ value + "</root>");
     		nestRoot.setContent(doc4Str.getRootElement().content());
     	} catch (java.lang.Exception e) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
     		e.printStackTrace();
   			<%if(isLog4jEnabled) {%>
   			log.error("<%=cid%> - " + e.getMessage());

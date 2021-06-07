@@ -73,6 +73,7 @@ if ("http".equals(protocol) || "https".equals(protocol)) {
 %>
 	} 
 	catch (Exception e) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
 <%
 		String unsupportedEncodingErrorMessage = "URI is not correct or not encoded, please input a valid one or use 'Encode URI' option";
 		if (isLog4jEnabled) {
@@ -110,6 +111,7 @@ if ("http".equals(protocol) || "https".equals(protocol)) {
                             kmf.init(keyStore, keyStorePassword.toCharArray());
                             keyManagers = kmf.getKeyManagers();
                         } catch (java.security.UnrecoverableKeyException|java.security.KeyStoreException|java.security.cert.CertificateException e) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
                             <%if(isLog4jEnabled) {%>
                             log.error(e.getLocalizedMessage());
                             <%}%>
@@ -129,6 +131,7 @@ if ("http".equals(protocol) || "https".equals(protocol)) {
                             trustManagers = tmf.getTrustManagers();
 
                         } catch (java.security.KeyStoreException|java.security.cert.CertificateException e) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
                             <%if(isLog4jEnabled) {%>
                             log.error(e.getLocalizedMessage());
                             <%}%>
@@ -139,11 +142,13 @@ if ("http".equals(protocol) || "https".equals(protocol)) {
                     }
                     sslcontext.init(keyManagers, trustManagers, new java.security.SecureRandom());
                 } catch (java.security.NoSuchAlgorithmException e) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
 					<%if(isLog4jEnabled){%>
 						log.error("<%=cid%> - " + e.getMessage());
 					<%}%>
 					e.printStackTrace();
 				} catch (java.security.KeyManagementException e) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
 					<%if(isLog4jEnabled){%>
 						log.error("<%=cid%> - " + e.getMessage());
 					<%}%>
@@ -242,6 +247,7 @@ if ("http".equals(protocol) || "https".equals(protocol)) {
 				try {
 					obj_<%=cid%> = is_<%=cid%>.readObject();
 				} catch (java.io.IOException e) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
 					<%if(isLog4jEnabled){%>
 						log.warn("<%=cid%> - " + e.getMessage());
 					<%}%>
@@ -249,16 +255,19 @@ if ("http".equals(protocol) || "https".equals(protocol)) {
 				}
 			}
 		} catch (java.io.FileNotFoundException e1) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e1.getMessage());
 			<%if(isLog4jEnabled){%>
 				log.error("<%=cid%> - " + e1.getMessage());
 			<%}%>
 			e1.printStackTrace();
 		} catch (java.io.IOException e) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
 			<%if(isLog4jEnabled){%>
 				log.error("<%=cid%> - " + e.getMessage());
 			<%}%>
 			e.printStackTrace();
 		} catch (java.lang.ClassNotFoundException e) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
 			<%if(isLog4jEnabled){%>
 				log.error("<%=cid%> - " + e.getMessage());
 			<%}%>
@@ -424,6 +433,7 @@ if ("http".equals(protocol) || "https".equals(protocol)) {
 		}
 		%>
 	} catch(java.lang.Exception e) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
 		<%if (bDieOnError) {%>
 			throw(e);
 		<%} else {%>   
@@ -503,6 +513,7 @@ if ("http".equals(protocol) || "https".equals(protocol)) {
 					test_file_<%=cid%>.delete();
 				}
 			} catch(java.lang.Exception e) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
 				<%if(isLog4jEnabled){%>
 					log.warn("<%=cid%> - " + e.getMessage());
 				<%}%>
@@ -604,6 +615,7 @@ if ("http".equals(protocol) || "https".equals(protocol)) {
 				testfile_<%=cid%>.delete();
 			}
 		} catch(java.lang.Exception e) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
 			<%if(isLog4jEnabled){%>
 				log.warn("<%=cid%> - " + e.getMessage());
 			<%}%>
@@ -614,6 +626,7 @@ if ("http".equals(protocol) || "https".equals(protocol)) {
 		try {
 			in_<%=cid%> = new java.io.DataInputStream(conn_<%=cid %>.getInputStream());
 		} catch(java.lang.Exception e) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
 			<% if (bDieOnError) {%>    
 				throw(e);
 			<%} else {%>
@@ -689,12 +702,14 @@ if ("http".equals(protocol) || "https".equals(protocol)) {
 			in_<%=cid%>.close();
 			out_<%=cid%>.close();
 			} catch (java.io.FileNotFoundException ex) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",ex.getMessage());
 				<%if(isLog4jEnabled){%>
 					log.error("<%=cid%> - " + ex.getMessage());
 				<%}%>
 				System.err.println(ex.getMessage());
 		<%}%> 
 	} catch (java.lang.Exception e) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
 		<%if(isLog4jEnabled){%>
 			log.error("<%=cid%> - " + e.getMessage());
 		<%}%>
