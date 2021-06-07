@@ -366,26 +366,24 @@ public class JobJavaScriptOSGIForESBManager extends JobJavaScriptsManager {
                         ICamelDesignerCoreService.class);
                 Map<String, String> nameMavenUriMap = getNameMavenUriMap();
                 Collection<String> unselectList = camelService.getUnselectDependenciesBundle(processItem);
-                if (unselectList.size() > 0) {
-                    List<URL> libListURLs = new ArrayList<>();
+                List<URL> libListURLs = new ArrayList<>();
 
-                    for(Set<URL> set:libResource.getAllResources()) {
-                        for (URL url : set) {
-                            String libName = new File(new File(url.getFile()).toURI()).getName();
-                            String libMavenUri = nameMavenUriMap.get(libName);
-                            boolean isUnselectLib = false;
-                            if(unselectList.contains(libMavenUri)) {
-                                isUnselectLib = true;
-                            }
+                for(Set<URL> set:libResource.getAllResources()) {
+                    for (URL url : set) {
+                        String libName = new File(new File(url.getFile()).toURI()).getName();
+                        String libMavenUri = nameMavenUriMap.get(libName);
+                        boolean isUnselectLib = false;
+                        if(unselectList.contains(libMavenUri)) {
+                            isUnselectLib = true;
+                        }
 
-                            if (!isUnselectLib) {
-                                libListURLs.add(url);
-                            }
+                        if (!isUnselectLib) {
+                            libListURLs.add(url);
                         }
                     }
-                
-                    libResourceSelected.addResources(libListURLs);
                 }
+            
+                libResourceSelected.addResources(libListURLs);
             }
 
             // generate the META-INFO folder
