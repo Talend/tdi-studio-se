@@ -523,6 +523,7 @@ skeleton="../templates/db_output_bulk.skeleton"
                             isExistStmt_<%=cid%>.execute("SELECT TOP 1 1 FROM [" +  tableName_<%=cid%> + "]" );
                             whetherExist_<%=cid%> = true;
                         } catch (java.lang.Exception e){
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
                             whetherExist_<%=cid%> = false;
                         }
                         isExistStmt_<%=cid%>.close();
@@ -679,6 +680,7 @@ skeleton="../templates/db_output_bulk.skeleton"
                 }
 %>
             } catch (java.sql.SQLException e_<%=cid%>) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e_<%=cid%>.getMessage());
 <%
                 if(isLog4jEnabled) {
 %>
@@ -935,6 +937,7 @@ skeleton="../templates/db_output_bulk.skeleton"
                                         isExistStmt_<%=cid%>.execute("SELECT TOP 1 1 FROM [" +  tableName_<%=cid%> + "]" );
                                         whetherExist_<%=cid%> = true;
                                     } catch (java.lang.Exception e){
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
                                         whetherExist_<%=cid%> = false;
                                     }
                                     isExistStmt_<%=cid%>.close();
@@ -1165,6 +1168,7 @@ skeleton="../templates/db_output_bulk.skeleton"
                             }
             %>
                         } catch (java.sql.SQLException e_<%=cid%>) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e_<%=cid%>.getMessage());
             <%
                             if(isLog4jEnabled) {
             %>

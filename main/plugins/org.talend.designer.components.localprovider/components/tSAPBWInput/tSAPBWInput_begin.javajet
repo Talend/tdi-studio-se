@@ -37,6 +37,7 @@ imports="
             try{
             	date_<%=cid%> = rs_<%=cid %>.getTimestamp(<%if(isDynamic){%>column_index_<%=cid%><%}else{%><%=currentColNo%><%}%>);
             }catch(java.lang.Exception e){
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
             	date_<%=cid%> = rs_<%=cid %>.getDate(<%if(isDynamic){%>column_index_<%=cid%><%}else{%><%=currentColNo%><%}%>);
             }
             <%=firstConnName%>.<%=column.getLabel()%> = date_<%=cid%>;

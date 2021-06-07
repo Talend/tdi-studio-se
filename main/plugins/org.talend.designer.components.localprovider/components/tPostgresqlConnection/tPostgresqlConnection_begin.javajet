@@ -37,6 +37,7 @@ imports="
                 java.sql.DriverManager.deregisterDriver(d_<%=cid%>);
                 java.sql.DriverManager.registerDriver(d_<%=cid%>);
             } catch (java.lang.Exception e_<%=cid%>) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e_<%=cid%>.getMessage());
                     //do nothing
             }
         }

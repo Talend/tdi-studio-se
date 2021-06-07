@@ -55,6 +55,7 @@ try {
 	globalMap.put("<%=cid %>_WARN_CODE", <%=ElementParameterParser.getValue(node, "__CODE__") %>);
 	
 } catch (Exception e_<%=cid%>) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e_<%=cid%>.getMessage());
 	logIgnoredError(String.format("<%=cid%> - tWarn failed to log message due to internal error: %s", e_<%=cid%>), e_<%=cid%>);
 }
 

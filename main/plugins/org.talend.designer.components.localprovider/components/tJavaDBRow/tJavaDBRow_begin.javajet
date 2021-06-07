@@ -43,6 +43,7 @@ imports="
             				serverControl_<%=cid%>.ping();
             				isServerUp_<%=cid%> = true;
         				} catch(java.lang.Exception e) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
     						//Unable to obtain a connection to network server, trying again after 3000 ms.
     						Thread.currentThread().sleep(3000);
     					}    				

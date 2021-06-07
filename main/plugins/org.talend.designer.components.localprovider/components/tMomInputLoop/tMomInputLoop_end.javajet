@@ -112,6 +112,7 @@
 					%>
 				}
 			}catch(java.lang.Exception ex){
+globalMap.put("<%=cid%>_ERROR_MESSAGE",ex.getMessage());
 				<%
 				if (isLog4jEnabled) {
 				%>
@@ -188,6 +189,7 @@
 			}
 			
 		}catch(com.ibm.mq.MQException ex){
+globalMap.put("<%=cid%>_ERROR_MESSAGE",ex.getMessage());
 			System.out.println("A WebSphere MQ error occurred : Completion code " + ex.completionCode + " Reason code " + ex.reasonCode);
 		}
 	<%

@@ -160,6 +160,7 @@
 <%if(rejectConnName.equals(firstConnName)) {%> <%=firstConnName %> = null; <%}%>					
 					
     } catch (java.lang.Exception e) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
         whetherReject_<%=cid%> = true;
         <%
         if (dieOnError) {

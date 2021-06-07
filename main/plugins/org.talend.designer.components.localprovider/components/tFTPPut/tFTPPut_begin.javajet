@@ -221,6 +221,7 @@ int nb_file_<%=cid%> = 0;
 					try {
 							return client.stat(path).getAtimeString() != null;
 					} catch (Exception e) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
 							<%if(isLog4jEnabled){%>
 							log.warn("<%=cid%> - Directory or file permission denied for checking the status of the path : " + path);
 							<%}%>

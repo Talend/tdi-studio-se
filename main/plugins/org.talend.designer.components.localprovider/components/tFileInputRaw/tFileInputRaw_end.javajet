@@ -39,6 +39,7 @@
 						if(fis_<%=cid%>!=null)
 							fis_<%=cid%>.close();
 					} catch (java.io.IOException e_<%=cid%>) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e_<%=cid%>.getMessage());
 <%
 				if(dieOnError) {
 %>

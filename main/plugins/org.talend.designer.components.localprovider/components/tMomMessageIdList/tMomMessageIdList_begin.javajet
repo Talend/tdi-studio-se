@@ -104,6 +104,7 @@ class="MomInput"
 	    		remoteQ_<%=cid%>.close();
 			}
 		}catch(com.ibm.mq.MQException me_<%=cid%>){
+globalMap.put("<%=cid%>_ERROR_MESSAGE",me_<%=cid%>.getMessage());
 			if (me_<%=cid%>.reasonCode == com.ibm.mq.MQException.MQRC_NO_MSG_AVAILABLE) {
 				<%
 				if (isLog4jEnabled) {

@@ -78,6 +78,7 @@ com.dropbox.core.DbxDownloader<com.dropbox.core.v2.files.FileMetadata> downloade
 try {
 	downloader_<%=cid%> = filesClient_<%=cid%>.download(<%=dropboxPath%>);
 } catch (com.dropbox.core.v2.files.DownloadErrorException e_<%=cid%>) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e_<%=cid%>.getMessage());
 	throw new Exception(<%=dropboxPath%> + " is not a valid file path on Dropbox");
 }
 <%

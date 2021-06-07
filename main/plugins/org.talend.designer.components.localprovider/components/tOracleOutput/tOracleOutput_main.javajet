@@ -485,6 +485,7 @@ skeleton="../templates/db_output_bulk.skeleton"
                     insertedCount_<%=cid%> = insertedCount_<%=cid%> + pstmt_<%=cid %>.executeUpdate();
                     <%dbLog.data().inserting(dbLog.var("nb_line"));%>
                 } catch(java.lang.Exception e_<%=cid%>) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e_<%=cid%>.getMessage());
                     whetherReject_<%=cid%> = true;
                     <%
                     if (("true").equals(dieOnError)) {
@@ -627,6 +628,7 @@ skeleton="../templates/db_output_bulk.skeleton"
                     updatedCount_<%=cid%> = updatedCount_<%=cid%> + pstmt_<%=cid %>.executeUpdate();
                     <%dbLog.data().updating(dbLog.var("nb_line"));%>
                 } catch(java.lang.Exception e_<%=cid%>) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e_<%=cid%>.getMessage());
                     whetherReject_<%=cid%> = true;
                     <%
                     if (("true").equals(dieOnError)) {
@@ -785,6 +787,7 @@ skeleton="../templates/db_output_bulk.skeleton"
                     nb_line_<%=cid%>++;
                     <%dbLog.data().updating(dbLog.var("nb_line"));%>
                 } catch(java.lang.Exception e_<%=cid%>) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e_<%=cid%>.getMessage());
                     whetherReject_<%=cid%> = true;
                     <%
                     if (("true").equals(dieOnError)) {
@@ -865,6 +868,7 @@ skeleton="../templates/db_output_bulk.skeleton"
                     nb_line_<%=cid%>++;
                     <%dbLog.data().inserting(dbLog.var("nb_line"));%>
                 } catch(java.lang.Exception e_<%=cid%>) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e_<%=cid%>.getMessage());
                     whetherReject_<%=cid%> = true;
                     <%
                     if (("true").equals(dieOnError)) {
@@ -1055,6 +1059,7 @@ skeleton="../templates/db_output_bulk.skeleton"
                     <%dbLog.data().updating(dbLog.var("nb_line"));%>
                 }
             } catch(java.lang.Exception e_<%=cid%>) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e_<%=cid%>.getMessage());
                 whetherReject_<%=cid%> = true;
                 <%
                 if (("true").equals(dieOnError)) {
@@ -1144,6 +1149,7 @@ skeleton="../templates/db_output_bulk.skeleton"
                     nb_line_<%=cid%>++;
                     <%dbLog.data().deleting(dbLog.var("nb_line"));%>
                 } catch(java.lang.Exception e_<%=cid%>) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e_<%=cid%>.getMessage());
                     whetherReject_<%=cid%> = true;
                     <%
                     if (("true").equals(dieOnError)) {
@@ -1214,6 +1220,7 @@ skeleton="../templates/db_output_bulk.skeleton"
                     pstmt_<%=cid %>.executeBatch();
                     <%dbLog.batch().executeDone(dbLog.str(dataAction));%>
                 }catch (java.sql.BatchUpdateException e_<%=cid%>){
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e_<%=cid%>.getMessage());
 			        java.sql.SQLException ne_<%=cid%> = e_<%=cid%>.getNextException(),sqle_<%=cid%>=null;
 			    	String errormessage_<%=cid%>;
 					if (ne_<%=cid%> != null) {
@@ -1278,6 +1285,7 @@ skeleton="../templates/db_output_bulk.skeleton"
                             pstmt_<%=cid %>.executeBatch();
                             <%dbLog.batch().executeDone(dbLog.str(dataAction));%>
                         }catch (java.sql.BatchUpdateException e_<%=cid%>){
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e_<%=cid%>.getMessage());
 					        java.sql.SQLException ne_<%=cid%> = e_<%=cid%>.getNextException(),sqle_<%=cid%>=null;
 					    	String errormessage_<%=cid%>;
 							if (ne_<%=cid%> != null) {

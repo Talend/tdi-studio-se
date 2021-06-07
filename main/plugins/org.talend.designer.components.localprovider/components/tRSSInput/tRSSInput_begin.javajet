@@ -69,6 +69,7 @@ if(useProxy){
         feed<%=cid%>= it.sauronsoftware.feed4j.FeedParser.parse(url<%=cid%> );
 <%if(!dieOnError){%>
         }catch(it.sauronsoftware.feed4j.FeedXMLParseException e<%=cid%>){
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e<%=cid%>.getMessage());
                 System.err.print(e<%=cid%>.getMessage());
                 ifInvalid<%=cid%> = true;
         }
