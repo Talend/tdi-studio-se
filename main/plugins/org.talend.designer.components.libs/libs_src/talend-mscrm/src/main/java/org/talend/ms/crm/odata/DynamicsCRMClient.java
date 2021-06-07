@@ -184,6 +184,11 @@ public class DynamicsCRMClient implements IHttpClientFactoryObserver {
 
         this.authStrategy.configureRequest(request);
 
+        if(expands.size() > 0){
+            // odata-metadata=full set by olingo generates issue when expand entities
+            request.addCustomHeader("Accept", "application/json;odata-metadata=minimal");
+        }
+
         return request;
     }
 

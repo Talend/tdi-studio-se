@@ -27518,7 +27518,7 @@
         <PARAMETER NAME="EXPANDS" FIELD="TABLE" REQUIRED="false" NUM_ROW="60" NB_LINES="3" SHOW_IF="(((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA' OR API_VERSION=='API_2018_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016' OR MS_CRM_VERSION == 'CRM_2018')))">
             <ITEMS>
                 <ITEM NAME="INPUT_COLUMN" FIELD="COLUMN_LIST" />
-                <ITEM NAME="EXPAND_PARAMS" FIELD="String"/>
+                <ITEM NAME="EXPAND_PARAMS" FIELD="String" VALUE="$select=*" />
                 <ITEM NAME="OUTPUT_COLUMN" FIELD="COLUMN_LIST" /> <!-- Must be type 'document' or 'Dynamic' -->
             </ITEMS>
         </PARAMETER>
