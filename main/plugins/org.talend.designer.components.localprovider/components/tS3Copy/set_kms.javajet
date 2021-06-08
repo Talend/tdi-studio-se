@@ -1,0 +1,40 @@
+<%@ jet 
+%>
+
+<%if(enableKMS){ /* KMS is enabled, so test for default or presence of key */
+%>
+	<%
+	if(isLog4jEnabled){
+	%>	
+		log.info("<%=cid%> - KMS-Enabled - kmsid="+<%=kmsid%>);
+	<%
+	}
+	%>
+	<%
+	if("\"\"".equals(kmsid)){
+	%>
+		<%
+		if(isLog4jEnabled){
+		%>	
+			log.info("<%=cid%> - No KMS key - use default");
+		<%
+		}
+		%>
+		putRequest_<%=cid%>.setSSEAwsKeyManagementParams(new com.amazonaws.services.s3.model.SSEAwsKeyManagementParams ());
+	<%
+	} else {
+	%>
+		<%
+		if(isLog4jEnabled){
+		%>	
+			log.info("<%=cid%> - Key found - use key");
+		<%
+		}
+		%>
+		putRequest_<%=cid%>.setSSEAwsKeyManagementParams(new com.amazonaws.services.s3.model.SSEAwsKeyManagementParams (<%=kmsid%>));
+	<%
+	}
+	%>
+<%
+}
+%>
