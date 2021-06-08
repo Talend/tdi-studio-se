@@ -42,7 +42,6 @@ imports="
 	String retentionPeriod = ElementParameterParser.getValue(node, "__RETENTION_PERIOD__");
 	String retentionPeriodType = ElementParameterParser.getValue(node, "__RETENTION_PERIOD_TYPE__");
 	%>
-	String retentionPeriod_<%=cid %> = <%=retentionPeriod %>;
 	String millisecTime_<%=cid %> = null;
 	<%
 	if(enableObjectLock) {
@@ -53,11 +52,11 @@ imports="
 	<%
 		if("DAYS".equals(retentionPeriodType)) {
 	%>
-			calendar_<%=cid %>.add(calendar_<%=cid %>.DATE,Integer.valueOf(retentionPeriod_<%=cid %>));
+			calendar_<%=cid %>.add(calendar_<%=cid %>.DATE, <%=retentionPeriod %>);
 	<%
 		} else if("YEARS".equals(retentionPeriodType)) {
 	%>
-			calendar_<%=cid %>.add(calendar_<%=cid %>.YEAR,Integer.valueOf(retentionPeriod_<%=cid %>));
+			calendar_<%=cid %>.add(calendar_<%=cid %>.YEAR, <%=retentionPeriod %>);
 	<%
 		}
 	%>
