@@ -262,7 +262,7 @@ public class LoginHelper {
         }
         return isCloudUSConnection(connectionBean) || isCloudUSWestConnection(connectionBean)
                 || isCloudEUConnection(connectionBean) || isCloudAPACConnection(connectionBean)
-                || isCloudCustomConnection(connectionBean);
+                || isCloudCustomConnection(connectionBean)|| isCloudAUSConnection(connectionBean);
     }
 
     public static boolean isCloudUSConnection(ConnectionBean connectionBean) {
@@ -487,7 +487,7 @@ public class LoginHelper {
                  * Auto login, means there should be local repository
                  */
                 branches = getProjectBranches(lastUsedProject, true);
-            } catch (JSONException e) {
+            } catch (JSONException e) {                         
                 // TODO Auto-generated catch block
                 e.printStackTrace();
             }
