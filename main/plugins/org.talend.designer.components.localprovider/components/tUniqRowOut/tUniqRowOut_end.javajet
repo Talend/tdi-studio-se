@@ -110,6 +110,7 @@ if ((metadatas!=null)&&(metadatas.size()>0) && !("").equals(connName)) {//HSS___
 							tempRow.readData(ois);
 						}
                     } catch (java.lang.Exception e) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
 						if(e.getCause() instanceof java.io.EOFException){
 							this.isEndOfFile = true; // the EOFException
 							tempRow = null;

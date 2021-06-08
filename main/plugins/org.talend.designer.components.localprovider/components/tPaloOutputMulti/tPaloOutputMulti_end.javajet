@@ -35,6 +35,7 @@
 		try{
 			plDT_<%=cid %>.setData(pCB_<%=cid %>, org.talend.jpalo.palodata.<%=sSplashMode%>, <%=bAddValues%>,  <%=bUseEventprocessor%> );
 		}catch(java.lang.Exception plE_<%=cid %>){
+globalMap.put("<%=cid%>_ERROR_MESSAGE",plE_<%=cid%>.getMessage());
 		<%
 			if(bDieOnError){
 		%>

@@ -55,6 +55,7 @@ if (outputConns!=null && outputConns.size()>0) {
 	try{
 		hasNextRecord_<%=cid%>=re_<%=cid%>.next();
 	}catch(java.lang.Exception e_<%=cid%>){
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e_<%=cid%>.getMessage());
 		hasNextRecord_<%=cid%>=false;
 	}
 	if (!hasNextRecord_<%=cid%>) {

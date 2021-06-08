@@ -85,6 +85,7 @@ imports="
 			<%
 			}%>
 	}catch (java.sql.BatchUpdateException e){
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
 		<%
 			if(("true").equals(dieOnError)) {
 		%>
@@ -202,6 +203,7 @@ imports="
 			}
 			stmtBuilder_<%=cid%> = null;
 		}catch (java.sql.SQLException e){
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
 			<%if(("true").equals(dieOnError)) {
 			%>
 				throw(e);

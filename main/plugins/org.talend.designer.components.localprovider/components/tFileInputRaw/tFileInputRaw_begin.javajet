@@ -68,6 +68,7 @@
 %>					
 					globalMap.put("<%=cid %>_FILENAME_PATH", <%=filename%>);
 				} catch (java.io.IOException e_<%=cid%>) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e_<%=cid%>.getMessage());
 <%
 			if(dieOnError) {
 %>

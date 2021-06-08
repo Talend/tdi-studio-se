@@ -154,6 +154,7 @@ if ((metadatas != null) && (metadatas.size() > 0)) {
 						org.dom4j.Document doc4Str = org.dom4j.DocumentHelper.parseText("<root>"+ value + "</root>");
 						nestRoot.setContent(doc4Str.getRootElement().content());
 					} catch (java.lang.Exception e) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
 						nestRoot.setText(value);
 					}
 				}
@@ -252,6 +253,7 @@ if ((metadatas != null) && (metadatas.size() > 0)) {
 						doc_<%=cid %> = saxReader_<%=cid %>.read(createFile<%=cid %>);
 						nestXMLTool_<%=cid%>.removeWhiteSpaceTextNode(doc_<%=cid %>.getRootElement());
 					} catch (java.lang.Exception ex) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",ex.getMessage());
 						ex.printStackTrace();
 						throw new java.lang.Exception("can not find the file:" + fileName_<%=cid %>);
 					}

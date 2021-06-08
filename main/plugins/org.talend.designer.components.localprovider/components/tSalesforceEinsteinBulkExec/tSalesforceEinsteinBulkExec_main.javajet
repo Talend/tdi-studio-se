@@ -82,6 +82,7 @@ imports="
         try{
             partnerConnection_<%= cid %> = new com.sforce.soap.partner.PartnerConnection(connectorConfig_<%= cid %>);
         }catch(com.sforce.ws.ConnectionException e){
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
             throw e;
         }
 
@@ -113,6 +114,7 @@ imports="
                     try{
                         metadataJsonInBytes_<%= cid %> = org.apache.commons.io.FileUtils.readFileToByteArray(new java.io.File(<%= jsonMetadataPath %>));
                     }catch(IOException e){
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
                             throw e;
                     }
                      <%
@@ -121,6 +123,7 @@ imports="
                     try{
                         metadataJsonInBytes_<%= cid %> = org.apache.commons.io.FileUtils.readFileToByteArray(new java.io.File(generateJsonMetadataPath_<%= cid %>));
                     }catch(IOException e){
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
                             throw e;
                     }
                      <%
@@ -178,6 +181,7 @@ imports="
                 }
             }
         }catch(com.sforce.ws.ConnectionException e){
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
             throw e;
         }
 
@@ -199,6 +203,7 @@ imports="
             try{
                 sobject_for_<%= cid %>.setField("DataFile", org.apache.commons.io.FileUtils.readFileToByteArray(splitFileList_<%= cid %>.get(i)));
             }catch(java.io.IOException e){
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
                 throw e;
             }
             sobject_for_<%= cid %>.setField("InsightsExternalDataId", parentId_<%= cid %>);
@@ -230,6 +235,7 @@ imports="
                    }
                }
             }catch(com.sforce.ws.ConnectionException e){
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
                 throw e;
             }
         }
@@ -245,6 +251,7 @@ imports="
                         try{
                             sobject_for_<%= cid %>.setField("DataFile",com.talend.io.FileUtils.readFilePer8Mb(csvFile_<%= cid %>,index_<%= cid %>));
                         }catch(java.io.IOException e){
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
                             hasNextChunk_<%= cid %> = false;
                         }
                         if(!hasNextChunk_<%= cid %>){
@@ -279,6 +286,7 @@ imports="
                                     }
                            }
                         }catch(com.sforce.ws.ConnectionException e){
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
                             throw e;
                         }
                         index_<%= cid %> ++;
@@ -317,6 +325,7 @@ imports="
             }
           }
         }catch(com.sforce.ws.ConnectionException e){
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
             throw e;
         }
 
@@ -353,6 +362,7 @@ imports="
                  try{
                       Thread.sleep(10000);
                   }catch(Exception e){
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
                       e.printStackTrace();
                   }
                statusObjArr_<%= cid %> = partnerConnection_<%= cid %>.retrieve("Status",
@@ -366,6 +376,7 @@ imports="
                 }
             }
         } catch (com.sforce.ws.ConnectionException e) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
             throw e;
         }
 

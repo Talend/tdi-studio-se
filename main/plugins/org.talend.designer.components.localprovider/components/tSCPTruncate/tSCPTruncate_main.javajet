@@ -10,7 +10,7 @@ imports="
 %>
 
 <%
-    CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
+	CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
     INode node = (INode)codeGenArgument.getArgument();
     String cid = node.getUniqueName();
     String remotedir = ElementParameterParser.getValue(node, "__REMOTEDIR__");
@@ -32,7 +32,7 @@ imports="
         <%}%>
 
         session_<%=cid%> = client_<%=cid%>.connect(username_<%=cid%>, hostname_<%=cid%>, port_<%=cid%>).verify().getClientSession();
-    try {
+			try {
         session_<%=cid%>.auth().verify();
     }catch (org.apache.sshd.common.SshException se_<%=cid%>){
         globalMap.put("<%=cid %>_EXIT_CODE",se_<%=cid%>.getDisconnectCode());
@@ -45,8 +45,8 @@ imports="
             throw new IllegalArgumentException("Authentication failed.");
         }else{
             throw se_<%=cid%>;
-        }
-    }
+            	}
+			}
             org.apache.sshd.client.scp.ScpClientCreator instance_<%=cid%> = org.talend.components.talendscp.TalendScpClientCreator.INSTANCE;
             org.apache.sshd.client.scp.ScpClient scp_<%=cid%> = instance_<%=cid%>.createScpClient(session_<%=cid%>);
 
@@ -59,9 +59,9 @@ imports="
         }
      %>
    };
-    <%if(isLog4jEnabled){%>
+			<%if(isLog4jEnabled){%>
         log.info("<%=cid%> - Truncating file from the server.");
-    <%}%>
+			<%}%>
    for(String destFile_<%=cid %> : destFileNames_<%=cid%>){
     try{
            if(destFile_<%=cid %>!=null && destFile_<%=cid %>.length()!=0){
@@ -71,10 +71,14 @@ imports="
                java.nio.file.attribute.PosixFilePermission.OTHERS_READ);
                scp_<%=cid%>.upload(new byte[0],<%=remotedir%>+"/"+destFile_<%=cid %>,posixFilePermissions,new org.apache.sshd.common.scp.ScpTimestamp(System.nanoTime(),System.nanoTime()));
                nb_file_<%=cid%> ++;
-               globalMap.put("<%=cid %>_STATUS", "File truncate OK.");
-           }
-       }catch(java.lang.Exception e){
-            globalMap.put("<%=cid %>_STATUS", "File truncate fail.");
-       }
+            globalMap.put("<%=cid %>_STATUS", "File truncate OK.");
+        }
+    }catch(java.lang.Exception e_<%=cid%>){
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e_<%=cid%>.getMessage());
+		<%if(isLog4jEnabled){%>
+			log.error("<%=cid%> - " + e_<%=cid%>.getMessage());
+		<%}%>
+		globalMap.put("<%=cid %>_STATUS", "File truncate fail.");
+    }
    }
    session_<%=cid%>.close();

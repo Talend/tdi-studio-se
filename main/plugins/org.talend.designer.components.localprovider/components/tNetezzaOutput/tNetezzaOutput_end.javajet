@@ -112,6 +112,7 @@ skeleton="../templates/db_output_bulk.skeleton"
 		    	}%>
 		    }
 	    }catch (java.sql.BatchUpdateException e){
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
 	    	<%if(("true").equals(dieOnError)) {
 	    	%>
 	    		throw(e);
@@ -123,6 +124,7 @@ skeleton="../templates/db_output_bulk.skeleton"
 	    	<%
 	    	}%>
 		}catch (java.sql.SQLException e){
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
 			<%if(("true").equals(dieOnError)) {
 			%>
 				throw(e);

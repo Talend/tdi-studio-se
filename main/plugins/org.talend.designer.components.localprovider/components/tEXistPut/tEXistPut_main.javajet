@@ -60,6 +60,7 @@
 				        col_<%=cid%>.storeResource(document_<%=cid%>);
 				        <% dbLog.debug(dbLog.str("Put file into xmldb successed.")); %>
      				}catch(org.xmldb.api.base.XMLDBException e_<%=cid%>){
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e_<%=cid%>.getMessage());
      					org.exist.xmldb.RemoteBinaryResource document_<%=cid%> = (org.exist.xmldb.RemoteBinaryResource) col_<%=cid%>.createResource(localFile_<%=cid%>.getName(), "BinaryResource");
 				        document_<%=cid%>.setContent(localFile_<%=cid%>);
 				        col_<%=cid%>.storeResource(document_<%=cid%>);

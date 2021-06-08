@@ -441,6 +441,7 @@ if ((metadatas != null) && (metadatas.size() > 0)) {
 	        		try{
 	        			retrieveMultipleResp_<%=cid%> = serviceStub_<%=cid%>.retrieveMultiple(rmrdoc_<%=cid%>).getRetrieveMultipleResponse();
 	        		}catch(com.microsoft.schemas.xrm._2011.contracts.IOrganizationService_RetrieveMultiple_OrganizationServiceFaultFault_FaultMessage ex_<%=cid%>){
+globalMap.put("<%=cid%>_ERROR_MESSAGE",ex_<%=cid%>.getMessage());
 	        			throw new Exception(ex_<%=cid%>.getFaultMessage().getOrganizationServiceFault().getMessage());
 	        		}
 	        		com.microsoft.schemas.xrm._2011.contracts.EntityCollection retrieveMultipleResult_<%=cid%> = retrieveMultipleResp_<%=cid%>.getRetrieveMultipleResult();

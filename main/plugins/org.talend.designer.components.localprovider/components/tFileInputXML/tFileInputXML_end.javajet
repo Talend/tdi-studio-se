@@ -28,6 +28,7 @@ if(("Xerces").equals(mode) || ("Dom4j").equals(mode)){
 	try {
 		looper_<%=cid%>.handleTaskResponse();
 	} catch(java.lang.Exception e) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
 		if(!(e.getCause() instanceof org.talend.xml.sax.exception.EnoughDataException))
 	<% if(dieOnError) { %>
 		throw(e);

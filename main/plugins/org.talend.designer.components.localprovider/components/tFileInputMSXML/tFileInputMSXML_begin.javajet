@@ -636,6 +636,7 @@ looper_<%=cid%>.parse(<%=filename %>);
 	}	//for(IConnection)
 %>
 	} catch (java.lang.Exception e) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
 <%
     if (dieOnError) {
 %>
