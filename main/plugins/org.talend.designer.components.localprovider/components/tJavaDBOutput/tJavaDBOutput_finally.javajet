@@ -58,6 +58,7 @@ try {
             }
             %>
             } catch(java.sql.SQLException sqlEx_<%=cid %>) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",sqlEx_<%=cid%>.getMessage());
                 String errorMessage_<%=cid%> = "failed to close the connection in <%=cid %> :" + sqlEx_<%=cid %>.getMessage();
                 <%dbLog.logPrintedException(dbLog.var("errorMessage"));%>
             }

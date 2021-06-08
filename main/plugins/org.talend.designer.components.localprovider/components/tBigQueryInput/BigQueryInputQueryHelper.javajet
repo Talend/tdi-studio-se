@@ -124,6 +124,7 @@ class BigQueryUtil_<%=cid%> {
 			insert = bigqueryclient.jobs().insert(projectId, job).execute();
 			jobId = insert.getJobReference();
 		} catch (<%=basePackage%>com.google.api.client.googleapis.json.GoogleJsonResponseException e) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
 			if(tokenFile != null){
 				try {
 					java.io.File f = new java.io.File(tokenFile);
@@ -144,6 +145,7 @@ class BigQueryUtil_<%=cid%> {
 						throw new java.lang.Exception();
 					}
 				} catch (java.lang.Exception ee) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",ee.getMessage());
 					<%
 			    	if(isLog4jEnabled){
 					%>

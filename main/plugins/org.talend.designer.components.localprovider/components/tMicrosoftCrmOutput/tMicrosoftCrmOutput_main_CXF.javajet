@@ -100,6 +100,7 @@ imports="
                                                                            try{
                                                                                doc_<%= index %> = org.dom4j.DocumentHelper.parseText((String)<%=connName%>.<%=columnName%>);
                                                                            }catch(org.dom4j.DocumentException e){
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
                                                                                throw new RuntimeException(e.getMessage(), e);
                                                                            }
                                                                       }
@@ -124,6 +125,7 @@ imports="
                                                                     try{
                                                                         doc_<%= index %> = org.dom4j.DocumentHelper.parseText(<%=connName%>.<%=columnName%>);
                                                                     }catch(org.dom4j.DocumentException e){
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
                                                                         throw new RuntimeException(e.getMessage(), e);
                                                                     }
                                                                     com.microsoft.schemas.xrm._2011.contracts.EntityReference

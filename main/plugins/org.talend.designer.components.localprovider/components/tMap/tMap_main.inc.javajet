@@ -51,6 +51,7 @@
 	boolean isVirtualOut = componentName.endsWith(tMapOutName);
 	
 	boolean trace = codeGenArgument.isTrace();
+	int tryOffset = 0;
 	
 	String componentNameForKeyProblem = componentName.replaceAll("_" + tMapOutName, "").replaceAll("_" + tMapInName, "");
 	
@@ -431,9 +432,8 @@
 
             <%
             if (!dieonerror) {
-            %>
-                try {
-            <%
+			    tryOffset = stringBuffer.length();
+
             } // close dieonerror if check
 		%>
         // ###############################
@@ -1367,6 +1367,17 @@
             
         } // for (ExternalMapperTable externalTable : inputTables) {  // T_TM_M_261
         boolean atLeastOneInputTableWithInnerJoin = !inputTablesWithInnerJoin.isEmpty();
+
+            if (!dieonerror) {
+			    if(gm.getBlocksCodeToClose()!=null && gm.getBlocksCodeToClose().size()>0){
+            %>
+                try {
+            <%
+			    }else{
+				    stringBuffer.insert(tryOffset,"try {");
+				}
+            } // close dieonerror if check
+
 
         %>// ###############################
         <%

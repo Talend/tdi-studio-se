@@ -41,6 +41,7 @@ if ((metadatas!=null)&&(metadatas.size()>0)&&(metadatas.get(0) != null)) {
 } while ((cookie_<%=cid%> != null) && (cookie_<%=cid%>.length != 0));
 <%}%>
 	}catch (java.lang.Exception e){
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
 <%
         if (dieOnError) {
 %>

@@ -166,6 +166,7 @@ skeleton="../templates/db_output_bulk.skeleton"
                            nb_line_<%=cid%>++;
                            <%dbLog.data().inserting(dbLog.var("nb_line"));%>
                        } catch(java.lang.Exception e) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
                            whetherReject_<%=cid%> = true;
                            <%
                            if (("true").equals(dieOnError)) {
@@ -274,6 +275,7 @@ skeleton="../templates/db_output_bulk.skeleton"
                            nb_line_<%=cid%>++;
                            <%dbLog.data().updating(dbLog.var("nb_line"));%>
                        } catch(java.lang.Exception e) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
                            whetherReject_<%=cid%> = true;
                            <%
                            if (("true").equals(dieOnError)) {
@@ -396,6 +398,7 @@ skeleton="../templates/db_output_bulk.skeleton"
                     nb_line_<%=cid%>++;
                     <%dbLog.data().updating(dbLog.var("nb_line"));%>
                 } catch(java.lang.Exception e) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
                     whetherReject_<%=cid%> = true;
                     <%
                     if (("true").equals(dieOnError)) {
@@ -460,6 +463,7 @@ skeleton="../templates/db_output_bulk.skeleton"
                     nb_line_<%=cid%>++;
 					<%dbLog.data().inserting(dbLog.var("nb_line"));%>
                 } catch(java.lang.Exception e) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
                     whetherReject_<%=cid%> = true;
                     <%
                     if (("true").equals(dieOnError)) {
@@ -595,6 +599,7 @@ skeleton="../templates/db_output_bulk.skeleton"
              	   <%dbLog.data().updating(dbLog.var("nb_line"));%>
              }
                 } catch(java.lang.Exception e) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
                     whetherReject_<%=cid%> = true;
                     <%
                     if (("true").equals(dieOnError)) {
@@ -685,6 +690,7 @@ skeleton="../templates/db_output_bulk.skeleton"
                            nb_line_<%=cid%>++;
                            <%dbLog.data().deleting(dbLog.var("nb_line"));%>
                        } catch(java.lang.Exception e) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
                            whetherReject_<%=cid%> = true;
                            <%
                            if (("true").equals(dieOnError)) {
@@ -763,6 +769,7 @@ skeleton="../templates/db_output_bulk.skeleton"
                             countSum_<%=cid%> += (countEach_<%=cid%> < 0 ? 0 : countEach_<%=cid%>);
                         }
                     }catch (java.sql.BatchUpdateException e){
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
                         <%if(("true").equals(dieOnError)) {
                         %>
                             throw(e);
@@ -780,6 +787,7 @@ skeleton="../templates/db_output_bulk.skeleton"
                     try {
                         tmp_batchUpdateCount_<%=cid%> = pstmt_<%=cid %>.getUpdateCount();
                     }catch (java.sql.SQLException e){
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
                         <%dbLog.logPrintedException("e.getMessage()");%>
                         System.err.println(e.getMessage());
                     }
@@ -836,6 +844,7 @@ skeleton="../templates/db_output_bulk.skeleton"
 	                    batchSizeCounter_<%=cid%> = 0;
                     }
                 }catch (java.sql.BatchUpdateException e){
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
                     <%if(("true").equals(dieOnError)) {
                     %>
                         throw(e);

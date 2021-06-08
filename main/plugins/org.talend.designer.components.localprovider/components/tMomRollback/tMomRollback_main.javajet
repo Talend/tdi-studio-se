@@ -158,6 +158,7 @@ imports="
 						}
 						%>
 					}catch (java.lang.Exception e) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
 						<%
 						if(isLog4jEnabled){
 						%>	
@@ -198,6 +199,7 @@ imports="
 						try{
 							inQueue.get(inMessage,gmo);
 						}catch (com.ibm.mq.MQException me) {   
+globalMap.put("<%=cid%>_ERROR_MESSAGE",me.getMessage());
 							if(inQueue!=null){
 								inQueue.close();
 							}
@@ -229,6 +231,7 @@ imports="
 							try{
 								inQueue.get(inMessage,gmo);
 							}catch (com.ibm.mq.MQException me) {   
+globalMap.put("<%=cid%>_ERROR_MESSAGE",me.getMessage());
 					            if (me.reasonCode == com.ibm.mq.MQException.MQRC_NO_MSG_AVAILABLE) {
 					            	continue;   
 					            }else{

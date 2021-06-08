@@ -676,6 +676,7 @@
                 		zis_<%=cid %> = new java.util.zip.ZipInputStream(new java.io.BufferedInputStream(new java.io.FileInputStream(String.valueOf(filename_<%=cid %>))));
                 	}
                 } catch(java.lang.Exception e) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
                 	<% if(dieOnError) {%>
                 		throw e;
                 	<% } else { %>
@@ -690,6 +691,7 @@
                 	try {
                 		entry_<%=cid %> = zis_<%=cid %>.getNextEntry();
                 	} catch(java.lang.Exception e) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
                 		<% if(dieOnError) {%>
                 			throw e;
                 		<% } else { %>
@@ -876,6 +878,7 @@
 			}
 
 		} catch(java.lang.Exception e) {//TD110 end
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
         	<% if(dieOnError) {%>
         		throw e;
         	<% } else { %>
@@ -1022,6 +1025,7 @@
     						<%if(rejectConnName.equals(firstConnName)) {%> <%=firstConnName %> = null; <%}%>        			
             			
     					} catch (java.lang.Exception e) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
         					whetherReject_<%=cid%> = true;
                             <%
                             if (dieOnError) {

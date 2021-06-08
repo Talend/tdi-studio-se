@@ -5,15 +5,25 @@ imports="
     org.talend.designer.codegen.config.CodeGeneratorArgument
     java.util.List
     java.util.Map
+    org.talend.core.model.utils.NodeUtil
 "
 %>
 
 <%
     CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
     INode node = (INode)codeGenArgument.getArgument();
+    boolean isLog4jEnabled = ("true").equals(ElementParameterParser.getValue(node.getProcess(), "__LOG4J_ACTIVATE__"));
+    String authMethod = ElementParameterParser.getValue(node,"__AUTH_METHOD__");
     String cid = node.getUniqueName();
     List<Map<String, String>> filelist = (List<Map<String,String>>)ElementParameterParser.getObjectValue(node, "__FILELIST__");
     boolean dieOnError = "true".equals(ElementParameterParser.getValue(node, "__DIE_ON_ERROR__"));
+    String useExistingConn = ElementParameterParser.getValue(node, "__USE_EXISTING_CONNECTION__");
+    if(("true").equals(useExistingConn)){
+     	    String connection = ElementParameterParser.getValue(node, "__CONNECTION__");
+     	    INode connectionNode = NodeUtil.getNodeByUniqueName(node.getProcess(), connection);
+     		authMethod = ElementParameterParser.getValue(connectionNode,"__AUTH_METHOD__");
+    }
+
     if(dieOnError){
     	%>
 	       boolean isCmdFailed_<%= cid %> = false;
@@ -21,7 +31,32 @@ imports="
 	}
 %>
     StringBuilder command_<%=cid %> = new StringBuilder("rm -f");
-    ch.ethz.ssh2.Session sessNew_<%=cid%> = conn_<%=cid%>.openSession();
+    		/* open a session */
+
+    			<%if(isLog4jEnabled){%>
+    			    log.info("<%=cid%> - Open up a session.");
+    			    log.debug("<%=cid%> - execute the command: " + command_<%=cid %>.toString());
+    		    <%}%>
+
+    			session_<%=cid%> = client_<%=cid%>.connect(username_<%=cid%>, hostname_<%=cid%>, port_<%=cid%>).verify().getClientSession();
+    	    try {
+                session_<%=cid%>.auth().verify();
+            }catch (org.apache.sshd.common.SshException se_<%=cid%>){
+    		    globalMap.put("<%=cid %>_EXIT_CODE",se_<%=cid%>.getDisconnectCode());
+    		<%
+            if (("PUBLICKEY").equals(authMethod)) {
+            %>
+    			java.nio.file.Files.write(privateKey_<%=cid%>,lines_<%=cid%>);
+    		<%}%>
+                if(14 == se_<%=cid%>.getDisconnectCode()){
+                    throw new IllegalArgumentException("Authentication failed.");
+                }else{
+                    throw se_<%=cid%>;
+                }
+            }
+
+
+
 <%
 		   for(Map<String,String> map : filelist){
 		   	%>
@@ -36,21 +71,48 @@ imports="
 
         String rmCmd_<%= cid %> = command_<%=cid %>.toString();
         if(!"rm -f".equals(rmCmd_<%= cid %>)){
-				sessNew_<%=cid%>.execCommand(rmCmd_<%= cid %>);
+                                    		<%if(isLog4jEnabled){%>
+                                    			log.debug("Execute command: "+ rmCmd_<%= cid %>);
+                                    		<%}%>
+				    		org.apache.sshd.client.channel.ClientChannel channel_<%=cid %> = session_<%=cid %>.createExecChannel((command_<%=cid %>).toString());
+				    		        java.io.ByteArrayOutputStream stdout_<%=cid %> = new java.io.ByteArrayOutputStream();
+                            		java.io.ByteArrayOutputStream stderr_<%=cid %> = new java.io.ByteArrayOutputStream();
+                                    channel_<%=cid%>.setOut(stdout_<%=cid %>);
+                                    channel_<%=cid%>.setErr(stderr_<%=cid %>);
+                            		channel_<%=cid%>.open();
+                            		java.util.Set<org.apache.sshd.client.channel.ClientChannelEvent> clientChannelEvents_<%=cid %> =
+                            		channel_<%=cid%>.waitFor(java.util.EnumSet.of(
+                            		org.apache.sshd.client.channel.ClientChannelEvent.CLOSED,org.apache.sshd.client.channel.ClientChannelEvent.EXIT_STATUS), 0L);
+                            		exit_code_<%=cid%> = channel_<%=cid%>.getExitStatus();
+                            		channel_<%=cid%>.close();
+                            		session_<%=cid%>.close();
+                            		<%if(isLog4jEnabled){%>
+                            			log.debug("Channel Events: "+ java.util.Arrays.toString(clientChannelEvents_<%=cid %>.toArray()));
+                            		<%}%>
+                            		stringStdout_<%=cid%>.append(stdout_<%=cid%>.toString());
+                            		stringStderr_<%=cid%>.append(stderr_<%=cid%>.toString());
+
+                            		if(stringStdout_<%=cid%>.length() >0 && stringStdout_<%=cid%>.charAt(stringStdout_<%=cid%>.length()-1) == '\n'){
+                            		    stringStdout_<%=cid%>.deleteCharAt(stringStdout_<%=cid%>.length()-1);
+                            		}
+
+                            		<%if(isLog4jEnabled){%>
+                            			log.debug("<%=cid%> - Command line standard result: " + stringStdout_<%=cid%>.toString());
+                            			log.debug("<%=cid%> - Command line error result: " + stringStderr_<%=cid%>.toString());
+                            		<%}%>
+
 				<% if(dieOnError){ %>
 					StringBuilder errMsg_<%= cid %> = new StringBuilder("File(s) deleting failed.");
-					int returnCondition_<%= cid %> = sessNew_<%=cid%>.waitForCondition(ch.ethz.ssh2.ChannelCondition.EXIT_STATUS,300L);
-					Integer exitCode_<%= cid %> = sessNew_<%=cid%>.getExitStatus();
-				    if((returnCondition_<%= cid %> & ch.ethz.ssh2.ChannelCondition.EXIT_STATUS) == ch.ethz.ssh2.ChannelCondition.EXIT_STATUS){
-						  if (exitCode_<%= cid %> != 0) {
+				    if(clientChannelEvents_<%=cid %>.contains(org.apache.sshd.client.channel.ClientChannelEvent.EXIT_STATUS)){
+						  if (exit_code_<%= cid %> != 0) {
 							  isCmdFailed_<%= cid %> = true;
 							  errMsg_<%= cid %>.append("Exit code: ");
-							  errMsg_<%= cid %>.append(exitCode_<%= cid %>);
+							  errMsg_<%= cid %>.append(exit_code_<%= cid %>);
   						  }
-					}else if((returnCondition_<%= cid %> & ch.ethz.ssh2.ChannelCondition.TIMEOUT) == ch.ethz.ssh2.ChannelCondition.TIMEOUT){
+					}else if(clientChannelEvents_<%=cid %>.contains(org.apache.sshd.client.channel.ClientChannelEvent.TIMEOUT)){
 						  isCmdFailed_<%= cid %> = true;
 						  errMsg_<%= cid %>.append("The request timeout.");
-					}else if((returnCondition_<%= cid %> & ch.ethz.ssh2.ChannelCondition.CLOSED) == ch.ethz.ssh2.ChannelCondition.CLOSED){
+					}else if(clientChannelEvents_<%=cid %>.contains(org.apache.sshd.client.channel.ClientChannelEvent.CLOSED)){
 						  isCmdFailed_<%= cid %> = true;
 						  errMsg_<%= cid %>.append("Unexpected closed session.");
 					}else{
@@ -59,16 +121,8 @@ imports="
 					}
 				<% } %>
 
-				java.io.InputStream stderr_<%=cid%> = sessNew_<%=cid%>.getStderr();
-		        java.io.BufferedReader breer_<%=cid%>= new java.io.BufferedReader(new java.io.InputStreamReader(stderr_<%=cid%>));
-		        String line_err_<%=cid%> = "";
-		        StringBuilder stringStderr_<%=cid%> =new StringBuilder();
-				while((line_err_<%=cid%> = breer_<%=cid%>.readLine()) != null) {
-						String errInfo_<%= cid %> = new String(line_err_<%=cid%>.getBytes(),"UTF-8");
-						System.err.println(errInfo_<%= cid %>);
-						stringStderr_<%=cid%>.append(line_err_<%=cid%> + "\n");
-				}
-				String stderrString_<%=cid %> = stringStderr_<%=cid %>.toString();
+               String stderrString_<%=cid %> = stringStderr_<%=cid%>.toString();
+               System.err.println(stderrString_<%=cid %>);
 
 				<% if(dieOnError){
 					%>
@@ -88,9 +142,6 @@ imports="
 				    }
 				<%}%>
 
-				breer_<%=cid%>.close();
-				stderr_<%=cid%>.close();
-
 			if("".equals(stderrString_<%=cid %>) || (stderrString_<%=cid %> == null)){
 				globalMap.put("<%=cid %>_STATUS","File(s) deleted OK");
 			}else{
@@ -100,4 +151,3 @@ imports="
         }else{
         	globalMap.put("<%=cid %>_STATUS","No file to be deleted.");
         }
-		sessNew_<%=cid%>.close();

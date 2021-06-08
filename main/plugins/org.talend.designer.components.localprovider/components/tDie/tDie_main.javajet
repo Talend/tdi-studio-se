@@ -43,6 +43,7 @@
 	globalMap.put("<%=cid %>_DIE_MESSAGES", <%=ElementParameterParser.getValue(node, "__MESSAGE__") %>);
 	
 	} catch (Exception | Error e_<%=cid%>) {
+	    globalMap.put("<%=cid%>_ERROR_MESSAGE",e_<%=cid%>.getMessage());
 		logIgnoredError(String.format("<%=cid%> - tDie failed to log message due to internal error: %s", e_<%=cid%>), e_<%=cid%>);
 	}
 	

@@ -36,13 +36,13 @@ imports="
 <%
 
 if(("true").equals(useExistingConn)) {
-  List< ? extends INode> nodes =  node.getProcess().getNodesOfType("tGSConnection");
-  for (INode ne : nodes) {
-    if (connection.equals(ne.getUniqueName())) {
+		List< ? extends INode> nodes =  node.getProcess().getNodesOfType("tGSConnection");
+		for (INode ne : nodes) {
+			if (connection.equals(ne.getUniqueName())) {
       authType = ElementParameterParser.getValue(ne, "__AUTH_TYPE__");
       break;
-    }
-  }
+			}
+		}
 }
 
 if ("USER_ACCOUNT_HMAC".equals(authType)){
@@ -157,6 +157,7 @@ if ("USER_ACCOUNT_HMAC".equals(authType)){
 			try {
 				objects_<%=cid%> = service_<%=cid%>.listObjects(currentBucketName_<%=cid%>,map_<%=cid %>.get("OBJECT_PREFIX"),map_<%=cid %>.get("OBJECT_DELIMITER"));
 			}catch(org.jets3t.service.ServiceException e_<%=cid%>){
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e_<%=cid%>.getMessage());
 				<%
 				if (("true").equals(dieOnError)) {
 				%>
@@ -214,6 +215,7 @@ if ("USER_ACCOUNT_HMAC".equals(authType)){
 				try {
 					obj_<%=cid%> = service_<%=cid%>.getObject(currentBucketName_<%=cid%>, map_<%=cid %>.get("OBJECT_KEY"));
 				}catch(org.jets3t.service.ServiceException e_<%=cid%>){
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e_<%=cid%>.getMessage());
 					<%
 					if (("true").equals(dieOnError)) {
 					%>

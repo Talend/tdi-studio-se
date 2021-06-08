@@ -154,6 +154,7 @@ if ((metadatas!=null)&&(metadatas.size()>0)) {
 							try {
 								<%=virtualTargetCid%>Process(globalMap);
 							} catch (TalendException te) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",te.getMessage());
 								this.lastException = te.getException();
 								this.currentComponent = te.getCurrentComponent();
 							} catch (java.lang.Error error) {
@@ -227,6 +228,7 @@ class NestXMLTool_<%=cid%>{
             org.dom4j.Document doc4Str = org.dom4j.DocumentHelper.parseText("<root>"+ value + "</root>");
     		nestRoot.setContent(doc4Str.getRootElement().content());
     	} catch (java.lang.Exception e) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
     		e.printStackTrace();
     		nestRoot.setText(value);
         }

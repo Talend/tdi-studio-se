@@ -258,6 +258,7 @@ if(incomingConnName != null && columnList != null){
 		try{
 				pstmt_<%=cid %>.addBatch();
 		   }catch(java.lang.Exception e){
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
 		            <% if (("true").equals(dieOnError)) { %>
 		                throw(e);
 					<% } else {

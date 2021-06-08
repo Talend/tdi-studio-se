@@ -82,6 +82,7 @@ if(createFile<%=cid%>.exists()){
             buf_Read_<%=cid%> = new java.io.BufferedReader(new java.io.FileReader(fileNewName_<%=cid%>));
    		    m_Data<%=cid%> = new weka.core.Instances(buf_Read_<%=cid%>);
          }catch(java.lang.Exception e){
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
                // Create vector of attributes.
                int numAtts<%=cid%>=<%=colDef.size()%>;
                weka.core.FastVector attributes<%=cid%> = new weka.core.FastVector(numAtts<%=cid%>);
