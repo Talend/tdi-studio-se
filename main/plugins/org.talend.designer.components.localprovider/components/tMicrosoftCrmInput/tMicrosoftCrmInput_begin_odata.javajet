@@ -239,7 +239,7 @@ if ((metadatas != null) && (metadatas.size() > 0)) {
 	
 	                  final String sanitizedName_<%=in_col%>_<%=cid%> = org.talend.ms.crm.odata.QueryExpandUtil.getSanitizedName("<%=in_col%>");
 
-	                  try (java.io.InputStreamReader isr = new java.io.InputStreamReader(client_<%=cid%>.getClient().getWriter().writeProperty(entity_<%=cid%>.getProperty("primarycontactid"), org.apache.olingo.commons.api.format.ContentType.APPLICATION_JSON));
+	                  try (java.io.InputStreamReader isr = new java.io.InputStreamReader(client_<%=cid%>.getClient().getWriter().writeProperty(entity_<%=cid%>.getProperty(sanitizedName_<%=in_col%>_<%=cid%>), org.apache.olingo.commons.api.format.ContentType.APPLICATION_JSON));
 	                       java.io.BufferedReader br = new java.io.BufferedReader(isr)) {
 	                          <%=outgoingConn.getName()%>.<%=expandRow.get("OUTPUT_COLUMN")%> = br.lines().collect(java.util.stream.Collectors.joining("\n"));
 	                  }
