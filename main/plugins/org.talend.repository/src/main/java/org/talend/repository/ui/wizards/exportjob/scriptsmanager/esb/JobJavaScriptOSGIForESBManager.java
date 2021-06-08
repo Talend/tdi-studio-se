@@ -364,29 +364,26 @@ public class JobJavaScriptOSGIForESBManager extends JobJavaScriptsManager {
             if (GlobalServiceRegister.getDefault().isServiceRegistered(ICamelDesignerCoreService.class)) {
                 ICamelDesignerCoreService camelService = (ICamelDesignerCoreService) GlobalServiceRegister.getDefault().getService(
                         ICamelDesignerCoreService.class);
-
+                Map<String, String> nameMavenUriMap = getNameMavenUriMap();
                 Collection<String> unselectList = camelService.getUnselectDependenciesBundle(processItem);
-                List<URL> unselectListURLs = new ArrayList<>();
+                List<URL> libListURLs = new ArrayList<>();
 
                 for(Set<URL> set:libResource.getAllResources()) {
-
                     for (URL url : set) {
-
-                        boolean exist = false;
-                        for(String name: unselectList) {
-                            if (name.equals(new File(new File(url.getFile()).toURI()).getName())) {
-                               exist = true;
-                            }
+                        String libName = new File(new File(url.getFile()).toURI()).getName();
+                        String libMavenUri = nameMavenUriMap.get(libName);
+                        boolean isUnselectLib = false;
+                        if(unselectList.contains(libMavenUri)) {
+                            isUnselectLib = true;
                         }
 
-                        if (!exist) {
-                            unselectListURLs.add(url);
+                        if (!isUnselectLib) {
+                            libListURLs.add(url);
                         }
-
                     }
                 }
-
-                libResourceSelected.addResources(unselectListURLs);
+            
+                libResourceSelected.addResources(libListURLs);
             }
 
             // generate the META-INFO folder
@@ -1443,7 +1440,7 @@ public class JobJavaScriptOSGIForESBManager extends JobJavaScriptsManager {
             for (String errBlock : errBlocks) {
                 String[] lines = errBlock.trim().replaceAll("\r", "").split("\n");
                 if (lines.length == 4) {
-                    if (lines[3].endsWith("cannot be resolved to a type") || lines[3].endsWith("cannot be resolved")) {
+                    if (lines[3].endsWith("cannot be resolved to a type") || lines[3].endsWith("cannot be resolved to a variable") || lines[3].endsWith("cannot be resolved")) {
                         int markerPos = lines[2].indexOf('^');
                         Matcher m = pattern.matcher(lines[1].substring(markerPos));
                         if (m.find()) {
@@ -1460,5 +1457,14 @@ public class JobJavaScriptOSGIForESBManager extends JobJavaScriptsManager {
             e.printStackTrace();
         }
         return imports;
+    }
+    
+    public Map<String, String> getNameMavenUriMap() {
+        Map<String, String> map = new HashMap<String, String>();
+
+        for (ModuleNeeded module : getCompiledModuleNeededs()) {
+            map.put(module.getModuleName(), module.getMavenUri());
+        }
+        return map;
     }
 }
