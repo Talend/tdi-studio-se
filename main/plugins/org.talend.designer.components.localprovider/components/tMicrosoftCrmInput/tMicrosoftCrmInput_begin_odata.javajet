@@ -196,11 +196,11 @@ if ((metadatas != null) && (metadatas.size() > 0)) {
 	     		}
 	        	StringBuilder sb = new StringBuilder("");
 	        	for(IMetadataColumn column: columnList){
-					if(!expandOutColNames.contains(column.getLabel())){
+			    if(!expandOutColNames.contains(column.getLabel())){
 	  				sb.append("\"");
 	  				sb.append(column.getLabel());
 	  				sb.append("\",");
-	        	}
+	        	    }
 	        	}
 	        	sb.deleteCharAt(sb.lastIndexOf(","));
 	        	IConnection outgoingConn = outgoingConns.get(0);
