@@ -879,8 +879,8 @@ public class MapperComponent extends AbstractMapComponent implements IHashableIn
             return false;
         }
 
-        // max two input connections
-        if (this.externalData.getInputTables().size() > 2) {
+        // exactly two input connections
+        if (this.externalData.getInputTables().size() != 2) {
             return false;
         } // not ALL ROWS matching mode
         else if (matchingModeIsAllRows(this.externalData)) {
