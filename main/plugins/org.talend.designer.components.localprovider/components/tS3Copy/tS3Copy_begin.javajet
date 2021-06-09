@@ -89,7 +89,7 @@ imports="
                       }
                     }
             <%}%>
-            <%@ include file="../tS3Put/set_kms.javajet"%>
+            <%@ include file="./set_kms.javajet"%>
             
             conn_<%=cid%>.copyObject(putRequest_<%=cid%>);
         } else {
@@ -110,7 +110,7 @@ imports="
                             putRequest_<%=cid%> = new com.amazonaws.services.s3.model.InitiateMultipartUploadRequest(to_bucket_<%=cid%>, to_key_<%=cid%>, metadataResult_<%=cid%>);
                     }
                     
-                    <%@ include file="../tS3Put/set_kms.javajet"%>
+                    <%@ include file="./set_kms.javajet"%>
                     
             <%if (enableCannedACL) {%>
                 {

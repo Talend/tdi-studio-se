@@ -1,0 +1,18 @@
+<%@ jet 
+%>
+
+<%@ include file="../tS3Copy/set_kms.javajet"%>
+
+<%
+if(enableObjectLock) {
+	if("GOVERNANCE".equals(retentionMode)) {
+%>
+		putRequest_<%=cid%>.withObjectLockMode(com.amazonaws.services.s3.model.ObjectLockMode.GOVERNANCE).withObjectLockRetainUntilDate(new java.util.Date(Long.parseLong(millisecTime_<%=cid %>)));
+<%		
+	} else if("COMPLIANCE".equals(retentionMode)) {
+%>
+		putRequest_<%=cid%>.withObjectLockMode(com.amazonaws.services.s3.model.ObjectLockMode.COMPLIANCE).withObjectLockRetainUntilDate(new java.util.Date(Long.parseLong(millisecTime_<%=cid %>)));
+<%
+	}
+}
+%>
