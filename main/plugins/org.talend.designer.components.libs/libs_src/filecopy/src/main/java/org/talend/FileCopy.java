@@ -20,10 +20,15 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.nio.file.attribute.FileTime;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * DOC Administrator class global comment. Detailled comment
  */
 public class FileCopy {
+
+    static Logger  logger = LoggerFactory.getLogger(Object.class);
 
     /** Private constructor, only static methods */
     private FileCopy() {
@@ -37,19 +42,33 @@ public class FileCopy {
      * @param delSrc : true if delete source.
      * @throws IOException : if IO pb.
      */
-    public static void copyFile(String srcFileName, String desFileName, boolean delSrc) throws IOException {
+    public static void copyFile(String srcFileName, String desFileName, boolean delSrc, boolean keepModified)
+            throws IOException {
         final Path source = Paths.get(srcFileName);
         final Path destination =  Paths.get(desFileName);
-
+        FileTime lastModifiedTime = null;
+        try {
+            lastModifiedTime = Files.getLastModifiedTime(source);
+        } catch (IOException e) {
+            logger.warn(e.getLocalizedMessage());
+        }
         if (delSrc) {
             // move : more efficient if in same FS and mustr delete existing file.
-            FileTime lastModifiedTime = Files.getLastModifiedTime(source);
             Files.move(source, destination, StandardCopyOption.REPLACE_EXISTING);
-            Files.setLastModifiedTime(destination,lastModifiedTime);
         } else {
             Files.copy(source, destination, StandardCopyOption.REPLACE_EXISTING);
-            Files.setLastModifiedTime(destination,Files.getLastModifiedTime(source));
         }
+        if(keepModified){
+            try {
+                Files.setLastModifiedTime(destination,lastModifiedTime);
+            } catch (IOException e) {
+                logger.warn(e.getLocalizedMessage());
+            }
+        }
+    }
+
+    public static void copyFile(String srcFileName, String desFileName, boolean delSrc ) throws IOException {
+        copyFile(srcFileName,desFileName,delSrc,true);
     }
 
     /**
@@ -59,14 +78,21 @@ public class FileCopy {
      * @param desFileName : file name for destination file.
      * @throws IOException : if IO pb.
      */
-    public static void forceCopyAndDelete(String srcFileName, String desFileName) throws IOException {
+    public static void forceCopyAndDelete(String srcFileName, String desFileName, boolean keepModified) throws IOException {
         final Path source = Paths.get(srcFileName);
         final Path destination =  Paths.get(desFileName);
         final long lastModifiedTime = new File(srcFileName).lastModified();
 
         Files.copy(source, destination, StandardCopyOption.REPLACE_EXISTING);
         Files.delete(source);
-        destination.toFile().setLastModified(lastModifiedTime);
+        if(keepModified){
+            destination.toFile().setLastModified(lastModifiedTime);
+        }
+
+    }
+
+    public static void forceCopyAndDelete(String srcFileName, String desFileName) throws IOException {
+        forceCopyAndDelete(srcFileName,desFileName,true);
     }
 
 }
