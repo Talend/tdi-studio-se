@@ -14,6 +14,7 @@ package org.talend.ms.crm.odata;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
@@ -59,26 +60,31 @@ import org.talend.ms.crm.odata.httpclientfactory.IHttpclientFactoryObservable;
 
 import javax.naming.AuthenticationException;
 import javax.naming.ServiceUnavailableException;
+
+import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.InetSocketAddress;
 import java.net.Proxy;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 /**
  * Client for accessing Dynamics CRM Online using the Web API
- *
  */
 public class DynamicsCRMClient implements IHttpClientFactoryObserver {
 
     private static final String NAMESPAVE = "Microsoft.Dynamics.CRM";
-    private  static final String LOOKUP_NAME_PREFIX = "_";
-    private  static final String LOOKUP_NAME_SUFFIX = "_value";
-    private static final int LOOKUP_NAME_MINSIZE = LOOKUP_NAME_PREFIX.length()+LOOKUP_NAME_SUFFIX.length();
+    private static final String LOOKUP_NAME_PREFIX = "_";
+    private static final String LOOKUP_NAME_SUFFIX = "_value";
+    private static final int LOOKUP_NAME_MINSIZE = LOOKUP_NAME_PREFIX.length() + LOOKUP_NAME_SUFFIX.length();
 
     private ClientConfiguration clientConfiguration;
 
@@ -101,7 +107,7 @@ public class DynamicsCRMClient implements IHttpClientFactoryObserver {
 
     /**
      * A list which contains all navigation links to set to null.
-     *
+     * <p>
      * A distinct delete command must be sent to set a navigation property to null. It can't be done in the same
      * time that the entity update.
      */
@@ -152,6 +158,23 @@ public class DynamicsCRMClient implements IHttpClientFactoryObserver {
         return odataClient;
     }
 
+    private void addCustomHeaders(ODataEntitySetRequest<ClientEntitySet> request) {
+        if (this.clientConfiguration.getCustomHeaders() == null) {
+            return;
+        }
+        this.clientConfiguration.getCustomHeaders().entrySet().stream().forEach(e -> request.addCustomHeader(e.getKey(), e.getValue()));
+    }
+
+    private void addCustomHeader(HttpRequestBase request) {
+        if (this.clientConfiguration.getCustomHeaders() != null) {
+            this.clientConfiguration.getCustomHeaders().entrySet().stream().forEach(e -> request.addHeader(e.getKey(), e.getValue()));
+        }
+
+        if (this.clientConfiguration.isReturnRepresentation()) {
+            request.addHeader("Prefer", "return=representation");
+        }
+    }
+
     /**
      * Create EntitySet Iterator request
      *
@@ -174,27 +197,29 @@ public class DynamicsCRMClient implements IHttpClientFactoryObserver {
             uriBuilder.filter(queryOption.getFilter());
         }
         final List<String> expands = queryOption.getExpands();
-        if(expands.size() > 0){
+        if (expands.size() > 0) {
             String[] expandArray = new String[expands.size()];
             uriBuilder.expand(expands.toArray(expandArray));
         }
 
         ODataEntitySetRequest<ClientEntitySet> request = odataClient.getRetrieveRequestFactory()
-                                                                    .getEntitySetRequest(uriBuilder.build());
+                .getEntitySetRequest(uriBuilder.build());
 
         this.authStrategy.configureRequest(request);
 
-        if(expands.size() > 0){
+        if (expands.size() > 0) {
             // odata-metadata=full set by olingo generates issue when expand entities
             request.addCustomHeader("Accept", "application/json;odata-metadata=minimal");
         }
+
+        addCustomHeaders(request);
 
         return request;
     }
 
     public EdmMetadataRequest createMetadataRetrieveRequest() {
         EdmMetadataRequest request = odataClient.getRetrieveRequestFactory()
-                                                .getMetadataRequest(serviceRootURL);
+                .getMetadataRequest(serviceRootURL);
         this.authStrategy.configureRequest(request);
         return request;
     }
@@ -203,19 +228,28 @@ public class DynamicsCRMClient implements IHttpClientFactoryObserver {
         URIBuilder uriBuilder = odataClient.newURIBuilder(serviceRootURL).appendEntitySetSegment("EntityDefinitions").select("EntitySetName,LogicalName");
         ODataEntitySetRequest<ClientEntitySet> entitySetRequest = odataClient.getRetrieveRequestFactory().getEntitySetRequest(uriBuilder.build());
         this.authStrategy.configureRequest(entitySetRequest);
+
+        addCustomHeaders(entitySetRequest);
+
         return entitySetRequest;
     }
 
-    public ODataEntitySetRequest<ClientEntitySet> createEndpointsNamesRequest(){
+    public ODataEntitySetRequest<ClientEntitySet> createEndpointsNamesRequest() {
         URIBuilder uriBuilder = odataClient.newURIBuilder(serviceRootURL);
         ODataEntitySetRequest<ClientEntitySet> entitySetRequest = odataClient.getRetrieveRequestFactory().getEntitySetRequest(uriBuilder.build());
         this.authStrategy.configureRequest(entitySetRequest);
+
+        addCustomHeaders(entitySetRequest);
+
         return entitySetRequest;
     }
 
     public ODataEntitySetRequest<ClientEntitySet> createRequest(URIBuilder uriBuilder) {
         ODataEntitySetRequest<ClientEntitySet> entitySetRequest = odataClient.getRetrieveRequestFactory().getEntitySetRequest(uriBuilder.build());
         this.authStrategy.configureRequest(entitySetRequest);
+
+        addCustomHeaders(entitySetRequest);
+
         return entitySetRequest;
     }
 
@@ -224,7 +258,6 @@ public class DynamicsCRMClient implements IHttpClientFactoryObserver {
      *
      * @param queryOption
      * @return the entity set iterator object
-     *
      * @throws ServiceUnavailableException
      */
     public ClientEntitySet retrieveEntities(QueryOptionConfig queryOption) throws AuthenticationException {
@@ -256,10 +289,9 @@ public class DynamicsCRMClient implements IHttpClientFactoryObserver {
      * Create entity
      *
      * @param entity provided content for create
-     *
      * @throws ServiceUnavailableException
      */
-    public HttpResponse insertEntity(ClientEntity entity) throws ServiceUnavailableException {
+    public CreateUpdateResult insertEntity(ClientEntity entity) throws ServiceUnavailableException {
         URIBuilder insertURIBuilder = odataClient.newURIBuilder(serviceRootURL).appendEntitySetSegment(entitySet);
         HttpEntity httpEntity = convertToHttpEntity(entity);
         return createAndExecuteRequest(insertURIBuilder.build(), httpEntity, HttpMethod.POST);
@@ -272,18 +304,16 @@ public class DynamicsCRMClient implements IHttpClientFactoryObserver {
      * Navigation link properties are saved during {@link #addEntityNavigationLink(ClientEntity, String, String, String, boolean, boolean)}
      * method call
      *
-     * @param entity The payload containing properties to update
+     * @param entity     The payload containing properties to update
      * @param keySegment The id of the entity to update
-     *
      * @throws ServiceUnavailableException
-     *
      * @deprecated use {@link #updateEntity(ClientEntity, String, List)} instead with a list of navigation links list instead;
      */
     @Deprecated
-    public HttpResponse updateEntity(ClientEntity entity, String keySegment) throws ServiceUnavailableException {
-        HttpResponse response = updateEntity(entity, keySegment, this.navigationLinksToNull);
+    public CreateUpdateResult updateEntity(ClientEntity entity, String keySegment) throws ServiceUnavailableException {
+        CreateUpdateResult result = updateEntity(entity, keySegment, this.navigationLinksToNull);
         this.navigationLinksToNull.clear();
-        return response;
+        return result;
     }
 
     /**
@@ -291,30 +321,29 @@ public class DynamicsCRMClient implements IHttpClientFactoryObserver {
      * The PATCH method is used, so only given properties are updated.
      * Navigation link properties that must be set to null are updated by another DELETE calls.
      *
-     * @param entity The payload containing properties to update
-     * @param keySegment The id of the entity to update
+     * @param entity                  The payload containing properties to update
+     * @param keySegment              The id of the entity to update
      * @param navigationLinksToDelete list of navigation link names to delete
-     *
      * @throws ServiceUnavailableException
      */
-    public HttpResponse updateEntity(ClientEntity entity, String keySegment, List<String> navigationLinksToDelete) throws ServiceUnavailableException {
+    public CreateUpdateResult updateEntity(ClientEntity entity, String keySegment, List<String> navigationLinksToDelete) throws ServiceUnavailableException {
         URIBuilder updateURIBuilder = odataClient.newURIBuilder(serviceRootURL).appendEntitySetSegment(entitySet)
-                                                 .appendKeySegment(UUID.fromString(keySegment));
+                .appendKeySegment(UUID.fromString(keySegment));
         HttpEntity httpEntity = convertToHttpEntity(entity);
-        HttpResponse updateHttpResponse =  createAndExecuteRequest(updateURIBuilder.build(), httpEntity, HttpMethod.PATCH);
+        CreateUpdateResult result = createAndExecuteRequest(updateURIBuilder.build(), httpEntity, HttpMethod.PATCH);
 
         // No need to test the updateHttpResponse code since it is returned only if it's a success.
         // The deletion of navigation links will be done only if the previous update doesn't throw an exception.
         this.deleteNavigationLinksToNull(keySegment, navigationLinksToDelete);
 
-        return updateHttpResponse;
+        return result;
     }
 
     protected void deleteNavigationLinksToNull(String keySegment, List<String> navigationLinksToNull) throws ServiceUnavailableException {
-        if(navigationLinksToNull == null || navigationLinksToNull.isEmpty()) {
+        if (navigationLinksToNull == null || navigationLinksToNull.isEmpty()) {
             return;
         }
-        for(String navigationLinkName : navigationLinksToNull){
+        for (String navigationLinkName : navigationLinksToNull) {
             this.deleteNavigationLink(navigationLinkName, keySegment);
         }
     }
@@ -323,14 +352,13 @@ public class DynamicsCRMClient implements IHttpClientFactoryObserver {
      * Deleted entity by key
      *
      * @param keySegment Entity key segment
-     *
      * @throws ServiceUnavailableException
      */
     public HttpResponse deleteEntity(String keySegment) throws ServiceUnavailableException {
         URIBuilder deleteURIBuilder = odataClient.newURIBuilder(serviceRootURL).appendEntitySetSegment(entitySet)
-                                                 .appendKeySegment(UUID.fromString(keySegment));
+                .appendKeySegment(UUID.fromString(keySegment));
 
-        return createAndExecuteRequest(deleteURIBuilder.build(), null, HttpMethod.DELETE);
+        return createAndExecuteRequest(deleteURIBuilder.build(), null, HttpMethod.DELETE).getResponse();
     }
 
 
@@ -339,17 +367,17 @@ public class DynamicsCRMClient implements IHttpClientFactoryObserver {
      * Jira : TDI-39571
      *
      * @param navigationLinkName The navigation link name (not the _name_value generated lookup property)
-     * @param keySegment The keysegment(id) of the main property
+     * @param keySegment         The keysegment(id) of the main property
      * @return The Http response.
      * @throws ServiceUnavailableException
      */
     public HttpResponse deleteNavigationLink(String navigationLinkName, String keySegment) throws ServiceUnavailableException {
         URIBuilder deleteNavLinkURIBuilder = odataClient.newURIBuilder(serviceRootURL)
-                                                        .appendEntitySetSegment(entitySet)
-                                                        .appendKeySegment(UUID.fromString(keySegment))
-                                                        .appendNavigationSegment(navigationLinkName).appendRefSegment();
+                .appendEntitySetSegment(entitySet)
+                .appendKeySegment(UUID.fromString(keySegment))
+                .appendNavigationSegment(navigationLinkName).appendRefSegment();
 
-        return createAndExecuteRequest(deleteNavLinkURIBuilder.build(), null, HttpMethod.DELETE);
+        return createAndExecuteRequest(deleteNavLinkURIBuilder.build(), null, HttpMethod.DELETE).getResponse();
     }
 
     /**
@@ -364,7 +392,7 @@ public class DynamicsCRMClient implements IHttpClientFactoryObserver {
         uriBuilder.addQueryOption(QueryOption.SELECT, "EntitySetName,LogicalName");
         uriBuilder.filter("EntitySetName eq '" + entitySetName + "'");
         ODataEntitySetIteratorRequest<ClientEntitySet, ClientEntity> request = odataClient.getRetrieveRequestFactory()
-                                                                                          .getEntitySetIteratorRequest(uriBuilder.build());
+                .getEntitySetIteratorRequest(uriBuilder.build());
         this.authStrategy.configureRequest(request);
 
         ODataRetrieveResponse<ClientEntitySetIterator<ClientEntitySet, ClientEntity>> response = request.execute();
@@ -409,24 +437,24 @@ public class DynamicsCRMClient implements IHttpClientFactoryObserver {
      *
      * @param entityType
      */
-    public void setEntityType(String entityType){
+    public void setEntityType(String entityType) {
         this.entityType = entityType;
     }
 
     public void addEntityNavigationLink(ClientEntity entity, String lookupEntitySet, String lookupName,
-            String linkedEntityId, boolean emptyLookupIntoNull, boolean ignoreNull) {
+                                        String linkedEntityId, boolean emptyLookupIntoNull, boolean ignoreNull) {
 
         // To help the final user since lookup names '_name_value' are available in the schema
         // But it's the navigation link that can be updated.
         String navigationLinkName = this.extractNavigationLinkName(lookupName);
 
         // If value is empty and emptyLookupIntoNull, then set the value to null to unlink the navigation (set to null)
-        if(emptyLookupIntoNull && linkedEntityId != null && linkedEntityId.isEmpty()){
+        if (emptyLookupIntoNull && linkedEntityId != null && linkedEntityId.isEmpty()) {
             linkedEntityId = null;
         }
 
         // If ignore null is set and the value is null, then don't update/delete this navigation link
-        if(ignoreNull && linkedEntityId == null){
+        if (ignoreNull && linkedEntityId == null) {
             return;
         }
 
@@ -437,8 +465,7 @@ public class DynamicsCRMClient implements IHttpClientFactoryObserver {
             } catch (URISyntaxException e) {
                 throw new HttpClientException(e);
             }
-        }
-        else{
+        } else {
             // Retains all navigation links to delete (set to null)
             navigationLinksToNull.add(navigationLinkName);
         }
@@ -446,23 +473,24 @@ public class DynamicsCRMClient implements IHttpClientFactoryObserver {
 
     /**
      * Try to add navigation link to entity.
-     * @param navigationLinkName extracted navigation link(see {@link #extractNavigationLinkName(String)})
-     * @param entity to be updated
-     * @param lookupEntitySet entity set referred by navigation link
-     * @param linkedEntityId id of the referred entity
+     *
+     * @param navigationLinkName  extracted navigation link(see {@link #extractNavigationLinkName(String)})
+     * @param entity              to be updated
+     * @param lookupEntitySet     entity set referred by navigation link
+     * @param linkedEntityId      id of the referred entity
      * @param emptyLookupIntoNull if empty lookup values should be converted to null values
-     * @param ignoreNull if null values should be skipped
+     * @param ignoreNull          if null values should be skipped
      * @return true if the link was added or skipped, false if it should be deleted with a separate call.
      */
     public boolean addOrSkipEntityNavigationLink(ClientEntity entity, String lookupEntitySet, String navigationLinkName,
-            String linkedEntityId, boolean emptyLookupIntoNull, boolean ignoreNull){
+                                                 String linkedEntityId, boolean emptyLookupIntoNull, boolean ignoreNull) {
         // If value is empty and emptyLookupIntoNull, then set the value to null to unlink the navigation (set to null)
-        if(emptyLookupIntoNull && linkedEntityId != null && linkedEntityId.isEmpty()){
+        if (emptyLookupIntoNull && linkedEntityId != null && linkedEntityId.isEmpty()) {
             linkedEntityId = null;
         }
 
         // If ignore null is set and the value is null, then don't update/delete this navigation link
-        if(ignoreNull && linkedEntityId == null){
+        if (ignoreNull && linkedEntityId == null) {
             return true;
         }
 
@@ -473,15 +501,14 @@ public class DynamicsCRMClient implements IHttpClientFactoryObserver {
             } catch (URISyntaxException e) {
                 throw new HttpClientException(e);
             }
-        }
-        else{
+        } else {
             // Retains all navigation links to delete (set to null)
             return false;
         }
         return true;
     }
 
-    public int getNbNavigationLinkToRemove(){
+    public int getNbNavigationLinkToRemove() {
         return navigationLinksToNull.size();
     }
 
@@ -494,20 +521,20 @@ public class DynamicsCRMClient implements IHttpClientFactoryObserver {
      * @param lookupName The auto-generated lookup name
      * @return The extracted navigation link name or the lookup name if it can't be extracted.
      */
-    public String extractNavigationLinkName(String lookupName){
+    public String extractNavigationLinkName(String lookupName) {
         final int nameSize = lookupName.length();
-        if(nameSize <= LOOKUP_NAME_MINSIZE){
+        if (nameSize <= LOOKUP_NAME_MINSIZE) {
             return lookupName;
         }
 
         String pref = lookupName.substring(0, LOOKUP_NAME_PREFIX.length());
-        if(!pref.equals(LOOKUP_NAME_PREFIX)){
+        if (!pref.equals(LOOKUP_NAME_PREFIX)) {
             return lookupName;
         }
 
         final int endName = nameSize - LOOKUP_NAME_SUFFIX.length();
         String suff = lookupName.substring(endName, nameSize);
-        if(!suff.equals(LOOKUP_NAME_SUFFIX)){
+        if (!suff.equals(LOOKUP_NAME_SUFFIX)) {
             return lookupName;
         }
 
@@ -518,7 +545,6 @@ public class DynamicsCRMClient implements IHttpClientFactoryObserver {
      * Convert OData entity to HttpEntity type
      *
      * @param entity OData entity.
-     *
      * @return An entity that can be sent or received with an HTTP message.
      * @throws
      */
@@ -543,15 +569,14 @@ public class DynamicsCRMClient implements IHttpClientFactoryObserver {
     /**
      * Created and executes a request
      *
-     * @param uri the request URI
+     * @param uri        the request URI
      * @param httpEntity the entity to send.
-     * @param method HTTP method
-     *
+     * @param method     HTTP method
      * @return the response to the request.
      * @throws ServiceUnavailableException
      */
 
-    protected HttpResponse createAndExecuteRequest(URI uri, HttpEntity httpEntity, HttpMethod method)
+    protected CreateUpdateResult createAndExecuteRequest(URI uri, HttpEntity httpEntity, HttpMethod method)
             throws ServiceUnavailableException {
 
         boolean hasRetried = false;
@@ -573,11 +598,31 @@ public class DynamicsCRMClient implements IHttpClientFactoryObserver {
                 if (request instanceof HttpEntityEnclosingRequestBase) {
                     ((HttpEntityEnclosingRequestBase) request).setEntity(httpEntity);
                 }
+
+                addCustomHeader(request);
+
+                CreateUpdateResult result = new CreateUpdateResult();
                 HttpResponse response = httpClientState.getHttpClient().execute(request);
+                result.setResponse(response);
+
                 if (isResponseSuccess(response.getStatusLine().getStatusCode())) {
+                    if (this.clientConfiguration.isReturnRepresentation()) {
+                        final HttpEntity entity = response.getEntity();
+                        if (entity != null && entity.isStreaming()) {
+                            try(InputStream instream = entity.getContent()) {
+                                String e = new BufferedReader(new InputStreamReader(instream))
+                                        .lines().collect(Collectors.joining("\n"));
+                                result.setEntity(e);
+                                if (instream != null) {
+                                    instream.close();
+                                }
+                            }
+                        }
+                    } else {
+                        EntityUtils.consume(response.getEntity());
+                    }
                     request.releaseConnection();
-                    EntityUtils.consume(response.getEntity());
-                    return response;
+                    return result;
                 } else {
                     if (response.getStatusLine().getStatusCode() == HttpStatus.SC_UNAUTHORIZED && !hasRetried) {
                         this.authStrategy.refreshAuth();
@@ -606,7 +651,6 @@ public class DynamicsCRMClient implements IHttpClientFactoryObserver {
      * 201 create/update/delete entity success with return (not used in our component at present)
      *
      * @param statusCode HTTP status code
-     *
      * @return success or not(true or false)
      */
     public boolean isResponseSuccess(int statusCode) {
@@ -637,6 +681,32 @@ public class DynamicsCRMClient implements IHttpClientFactoryObserver {
 
         }
 
+    }
+
+    public final static class CreateUpdateResult {
+
+        private HttpResponse response;
+        private String entity;
+
+        public HttpResponse getResponse() {
+            return response;
+        }
+
+        public void setResponse(HttpResponse response) {
+            this.response = response;
+        }
+
+        public String getEntity() {
+            return entity;
+        }
+
+        public void setEntity(String entity) {
+            this.entity = entity;
+        }
+
+        public boolean hasEntity() {
+            return this.entity != null;
+        }
     }
 
 }

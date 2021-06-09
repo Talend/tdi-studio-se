@@ -70,7 +70,7 @@ if ((metadatas != null) && (metadatas.size() > 0)) {
 			boolean debug = ("true").equals(ElementParameterParser.getValue(node,"__DEBUG__"));
 			if(debug){
 			%>
-				System.setProperty("org.apache.commons.logging.Log", "org.apache.commons.logging.impl.SimpleLog");
+			System.setProperty("org.apache.commons.logging.Log", "org.apache.commons.logging.impl.SimpleLog");
 		    	System.setProperty("org.apache.commons.logging.simplelog.showdatetime", "true");
 		    	System.setProperty("org.apache.commons.logging.simplelog.log.httpclient.wire", "debug");
 		    	System.setProperty("org.apache.commons.logging.simplelog.log.org.apache.commons.httpclient", "debug");
@@ -114,12 +114,28 @@ if ((metadatas != null) && (metadatas.size() > 0)) {
 					<%
 					}
                 }
+
+                List<Map<String, String>> headersArray = (List<Map<String,String>>)ElementParameterParser.getObjectValue(node, "__HEADERS__");
+                if(headersArray.size() > 0){
+         	    %>
+		    java.util.Map<String, String> custom_headers_<%=cid%> = new java.util.HashMap();
+		    <%
+		    for(java.util.Map<String, String> e: headersArray) {
+		    %>
+		    custom_headers_<%=cid%>.put(<%=e.get("KEY")%>, <%=e.get("VALUE")%>);
+		    <%
+		    }
+		    %>
+		    clientConfig_<%=cid%>.setCustomHeaders(custom_headers_<%=cid%>);
+		    <%
+		}
             %>
 				
 				
 				clientConfig_<%=cid%>.setTimeout(<%=timeout%>);
 				clientConfig_<%=cid%>.setMaxRetry(reConnMaxNum_<%=cid%>,<%=attemptsInterval%>);
 				clientConfig_<%=cid%>.setReuseHttpClient(<%=reuseHttpClient%>);
+
 				org.talend.ms.crm.odata.DynamicsCRMClient client_<%=cid%> = new org.talend.ms.crm.odata.DynamicsCRMClient(clientConfig_<%=cid%>,<%=serviceURL%>,entitySetName_<%=cid%>);
 				String queryFilter_<%=cid%>=null;
                                 List<String> expands_<%=cid%> = new java.util.ArrayList<>();
@@ -173,7 +189,7 @@ if ((metadatas != null) && (metadatas.size() > 0)) {
 			java.util.List<String> expandOutColNames = new java.util.ArrayList();
 			for(java.util.Map<String, String> expandArrayRow : expandArray){
 				expandOutColNames.add(expandArrayRow.get("OUTPUT_COLUMN"));
-			}
+	                }
 
 
 	     		boolean isOrderBy="true".equals(ElementParameterParser.getValue(node, "__ORDER_BY__"));

@@ -12,6 +12,8 @@
 // ============================================================================
 package org.talend.ms.crm.odata;
 
+import java.util.Map;
+
 public final class ClientConfiguration {
 
     /*
@@ -101,6 +103,9 @@ public final class ClientConfiguration {
      * The oauth resource is deduced from the "Service root URL" if this value is null.
      */
     private String forceResource;
+
+    private Map<String, String> headers;
+    private boolean returnRepresentation = false;
 
 
     ClientConfiguration(AuthStrategyEnum authStrategy) {
@@ -255,4 +260,21 @@ public final class ClientConfiguration {
     public void setForceResource(String forceResource) {
         this.forceResource = forceResource;
     }
+
+    public void setCustomHeaders(Map<String, String> headers){
+        this.headers = headers;
+    }
+
+    public Map<String, String> getCustomHeaders(){
+        return this.headers;
+    }
+
+    public boolean isReturnRepresentation() {
+        return returnRepresentation;
+    }
+
+    public void setReturnRepresentation(boolean returnRepresentation) {
+        this.returnRepresentation = returnRepresentation;
+    }
+
 }
