@@ -562,6 +562,7 @@ String mergeClause = ElementParameterParser.getValue(node, "__MERGE_CLAUSE__");
                                     reader.close();
                                }
                            }catch(java.io.IOException ioe) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",ioe.getMessage());
                                ioe.printStackTrace();
                            }
                        }
@@ -581,6 +582,7 @@ String mergeClause = ElementParameterParser.getValue(node, "__MERGE_CLAUSE__");
                                    reader.close();
                                }
                            } catch(java.io.IOException ioe) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",ioe.getMessage());
                               ioe.printStackTrace();
                            }
                        }

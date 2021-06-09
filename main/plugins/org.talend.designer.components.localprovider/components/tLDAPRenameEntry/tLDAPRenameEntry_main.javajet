@@ -60,6 +60,7 @@ imports="
 							log.trace("<%=cid%> - Content of the record : old entry is '" + <%=conn.getName() %>.<%=ElementParameterParser.getObjectValue(node, "__REMANE_DN_OLD__")%>.trim() + " and new entry is '" + <%=conn.getName() %>.<%=ElementParameterParser.getObjectValue(node, "__REMANE_DN_NEW__")%>.trim() + "'.");
 						<%}%>
 					}catch(java.lang.Exception e){
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
        					whetherReject_<%=cid%> = true;
 <%
         				if (("true").equals(dieOnError)) {

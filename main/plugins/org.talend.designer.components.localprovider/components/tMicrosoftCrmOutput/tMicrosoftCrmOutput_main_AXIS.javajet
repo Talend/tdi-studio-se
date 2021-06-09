@@ -392,6 +392,7 @@
                                 try{
                                     createResp_<%=cid%> = serviceStub_<%=cid%>.create(createDoc_<%=cid%>).getCreateResponse();
                                 }catch(com.microsoft.schemas.xrm._2011.contracts.IOrganizationService_Create_OrganizationServiceFaultFault_FaultMessage ex_<%=cid%>){
+globalMap.put("<%=cid%>_ERROR_MESSAGE",ex_<%=cid%>.getMessage());
                                     throw new Exception(ex_<%=cid%>.getFaultMessage().getOrganizationServiceFault().getMessage());
                                 }
                                 //String returnId_<%=cid%> = createResp_<%=cid%>.getCreateResult();
@@ -408,6 +409,7 @@
                                     try{
                                         serviceStub_<%=cid%>.update(updateDoc_<%=cid%>);
                                     }catch(com.microsoft.schemas.xrm._2011.contracts.IOrganizationService_Update_OrganizationServiceFaultFault_FaultMessage ex_<%=cid%>){
+globalMap.put("<%=cid%>_ERROR_MESSAGE",ex_<%=cid%>.getMessage());
                                         throw new Exception(ex_<%=cid%>.getFaultMessage().getOrganizationServiceFault().getMessage());
                                     }
                                 <%
@@ -442,6 +444,7 @@
                                     try{
                                         serviceStub_<%=cid%>.execute(executeDoc_<%=cid%>);
                                     }catch(com.microsoft.schemas.xrm._2011.contracts.IOrganizationService_Execute_OrganizationServiceFaultFault_FaultMessage ex_<%=cid%>){
+globalMap.put("<%=cid%>_ERROR_MESSAGE",ex_<%=cid%>.getMessage());
                                         throw new Exception(ex_<%=cid%>.getFaultMessage().getOrganizationServiceFault().getMessage());
                                     }
                                 <%
@@ -458,6 +461,7 @@
                             try{
                                 serviceStub_<%=cid%>.delete(deleteDoc_<%=cid%>);
                             }catch(com.microsoft.schemas.xrm._2011.contracts.IOrganizationService_Delete_OrganizationServiceFaultFault_FaultMessage ex_<%=cid%>){
+globalMap.put("<%=cid%>_ERROR_MESSAGE",ex_<%=cid%>.getMessage());
                                 throw new Exception(ex_<%=cid%>.getFaultMessage().getOrganizationServiceFault().getMessage());
                             }
                         <%

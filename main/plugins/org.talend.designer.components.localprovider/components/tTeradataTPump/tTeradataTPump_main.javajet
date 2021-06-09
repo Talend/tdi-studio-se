@@ -202,6 +202,7 @@ Thread normal_<%=cid %> = new Thread() {
     	         reader.close();
     	    }
         }catch(java.io.IOException ioe) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",ioe.getMessage());
             <%log4jCodeGenerateUtil.logError(node,"error","ioe");%>
     		ioe.printStackTrace();
     	}
@@ -222,6 +223,7 @@ Thread error_<%=cid %> = new Thread() {
 				reader.close();
 			}
 		} catch(java.io.IOException ioe) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",ioe.getMessage());
             <%log4jCodeGenerateUtil.logError(node,"error","ioe");%>
 		   ioe.printStackTrace();
 		}
@@ -250,6 +252,7 @@ if(returnCodeDie) {
 	try{
 		file_<%=cid %>.delete();
 	}catch(Exception e_<%=cid%>){
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e_<%=cid%>.getMessage());
         <%log4jCodeGenerateUtil.logError(node,"warn","e_"+cid);%>
 	}
 }

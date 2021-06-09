@@ -160,6 +160,7 @@ imports="
 				%>
 				session_<%=cid %> = (javax.jms.Session) globalMap.get("session_<%=connectionComponentName%>");
 		    } catch (NullPointerException npe) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",npe.getMessage());
 		    	<%
 				if(isLog4jEnabled){
 				%>	
@@ -691,6 +692,7 @@ imports="
 						}
 						%>
 					}catch (java.lang.Exception e_<%=cid%>) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e_<%=cid%>.getMessage());
 						<%
 						if(isLog4jEnabled){
 						%>	
@@ -800,6 +802,7 @@ imports="
 					}
 					%>
 				}catch (com.ibm.mq.MQException me_<%=cid%>) {   
+globalMap.put("<%=cid%>_ERROR_MESSAGE",me_<%=cid%>.getMessage());
 		            if (me_<%=cid%>.reasonCode == com.ibm.mq.MQException.MQRC_NO_MSG_AVAILABLE) {
 		                <%
 				         if (useMax && useMaxTimeout) {

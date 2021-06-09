@@ -52,6 +52,7 @@ String filePath = ElementParameterParser.getValue(node,"__GENERATED_IMAGE_PATH__
         try {
             org.jfree.chart.ChartUtilities.saveChartAsPNG(new java.io.File(<%=filePath%>), chart<%=cid%>, <%=ElementParameterParser.getValue(node,"__IMAGE_WIDTH__")%>, <%=ElementParameterParser.getValue(node,"__IMAGE_HEIGHT__")%>);
         } catch (java.io.IOException e) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
             // TODO Auto-generated catch block
             e.printStackTrace();
         }

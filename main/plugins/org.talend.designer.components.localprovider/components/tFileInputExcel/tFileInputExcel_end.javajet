@@ -25,6 +25,7 @@
 					excelReader_<%=cid%>.handleException();
 				}
 			} catch(java.lang.Exception e_<%=cid%>) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e_<%=cid%>.getMessage());
 				if(!(e_<%=cid%>.getCause() instanceof com.talend.excel.xssf.event.EnoughDataException)) {
 				<% if(dieOnError) { %>
 				throw(e_<%=cid%>);

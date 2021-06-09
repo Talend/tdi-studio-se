@@ -37,12 +37,14 @@ imports="
                              try{
                                  conn_<%=cid%>.createStatement().execute("END QUERY LOGGING ON " + <%= usrName %>);
                              }catch(Exception e){
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
                                    System.err.println(e.getMessage());
                              }
                           <%
                      }
                   %>
              }catch(Exception e){
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
                 <%dbLog.logPrintedException("e.getMessage()");%>
                  System.err.println(e.getMessage());
              }

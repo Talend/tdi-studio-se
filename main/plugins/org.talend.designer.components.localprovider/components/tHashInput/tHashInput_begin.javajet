@@ -91,6 +91,7 @@
 			tHashOutputNode = util.getOriginaltHashOutputNode(node);	
 			//System.out.println(tHashOutputNode.getUniqueName());
 		}catch(java.lang.Exception e){%>
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
 			<%=e.getMessage() %>
 		<%}
 	}

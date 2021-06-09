@@ -68,6 +68,7 @@ imports="
 	try {
 		listResult_<%=cid%> = listBuilder_<%=cid%>.start();
 	} catch (com.dropbox.core.v2.files.ListFolderErrorException e_<%=cid%>) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e_<%=cid%>.getMessage());
 		throw new Exception("No File or Directory found at " + <%=path%>);
 	}
 	
