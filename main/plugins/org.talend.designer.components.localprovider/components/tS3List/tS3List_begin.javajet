@@ -37,6 +37,7 @@ imports="
 				try{
 					objects_<%=cid%> = conn_<%=cid%>.listObjects(currentBucketName_<%=cid%>,<%=objects_prefix!=null && objects_prefix.trim().length()>0 ?objects_prefix:null%>);
 				}catch(com.amazonaws.AmazonClientException e_<%=cid%>){
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e_<%=cid%>.getMessage());
 					<%
 			    	if(isLog4jEnabled){
 					%>
@@ -93,6 +94,7 @@ imports="
 					%>
 					objects_<%=cid%> = conn_<%=cid%>.listObjects(currentBucketName_<%=cid%>,currentPrefix_<%=cid%>);
 				}catch(com.amazonaws.AmazonClientException e_<%=cid%>){
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e_<%=cid%>.getMessage());
 					<%
 			    	if(isLog4jEnabled){
 					%>

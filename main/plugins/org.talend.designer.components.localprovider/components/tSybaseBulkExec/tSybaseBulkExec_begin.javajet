@@ -258,6 +258,7 @@ Thread normal_<%=cid %> = new Thread() {
 				reader.close();
 			}
 		} catch(java.io.IOException ioe) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",ioe.getMessage());
 			<%log4jCodeGenerateUtil.logError(node,"error","ioe");%>
 			ioe.printStackTrace();
 		}
@@ -288,6 +289,7 @@ Thread error_<%=cid%> = new Thread() {
 				reader.close();
 			}
 		} catch(java.io.IOException ioe) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",ioe.getMessage());
 			<%log4jCodeGenerateUtil.logError(node,"error","ioe");%>
 			ioe.printStackTrace();
 		}

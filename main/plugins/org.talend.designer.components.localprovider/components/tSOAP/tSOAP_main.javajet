@@ -71,6 +71,7 @@ if(useMessageFromSchema && (connName==null || schemaEmpty)){
 					try{
 						this.document = soapUtil_<%=cid%>.extractContentAsDocument(org.talend.soap.SOAPUtil.<%=soapVersion.toUpperCase()%>,<%=endpoint%>,<%=action%>,<%=useMessageFromSchema?connName+"."+soapMessageColumn+".toString()":soapMessageStr%>);
 					}catch(java.lang.Exception ex){
+globalMap.put("<%=cid%>_ERROR_MESSAGE",ex.getMessage());
 						ex.printStackTrace();
 					}
 					return null;
@@ -82,6 +83,7 @@ if(useMessageFromSchema && (connName==null || schemaEmpty)){
 					try{
 						soapUtil_<%=cid%>.invokeSOAP(org.talend.soap.SOAPUtil.<%=soapVersion.toUpperCase()%>,<%=endpoint%>,<%=action%>,<%=useMessageFromSchema?connName+"."+soapMessageColumn+".toString()":soapMessageStr%>);
 					}catch(java.lang.Exception ex){
+globalMap.put("<%=cid%>_ERROR_MESSAGE",ex.getMessage());
 						ex.printStackTrace();
 					}
 					return null;

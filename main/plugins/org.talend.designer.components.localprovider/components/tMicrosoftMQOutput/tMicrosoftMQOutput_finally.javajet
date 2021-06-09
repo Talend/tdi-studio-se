@@ -30,6 +30,7 @@
 				    	msgu_<%=cid%>.close();
 				  	}
 			    }catch(ionic.Msmq.MessageQueueException e_<%=cid%>){
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e_<%=cid%>.getMessage());
 					System.out.println("Close failure: " + e_<%=cid%>.getMessage());
 				}
 		    }

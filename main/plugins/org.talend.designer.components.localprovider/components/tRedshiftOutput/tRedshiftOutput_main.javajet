@@ -346,6 +346,7 @@ skeleton="../templates/db_output_bulk.skeleton"
                                         nb_line_<%=cid%>++;
                                            <%dbLog.data().inserting(dbLog.var("nb_line"));%>
                                     } catch(java.lang.Exception e) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
                                         whetherReject_<%=cid%> = true;
                        <%
                                         if (("true").equals(dieOnError)) {
@@ -676,6 +677,7 @@ skeleton="../templates/db_output_bulk.skeleton"
                                nb_line_<%=cid%>++;
                             <%dbLog.data().updating(dbLog.var("nb_line"));%>
                            } catch(java.lang.Exception e) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
                                whetherReject_<%=cid%> = true;
                                <%
                                if (("true").equals(dieOnError)) {
@@ -796,6 +798,7 @@ skeleton="../templates/db_output_bulk.skeleton"
                     nb_line_<%=cid%>++;
         			<%dbLog.data().updating(dbLog.var("nb_line"));%>
                 } catch(java.lang.Exception e) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
                     whetherReject_<%=cid%> = true;
                     <%
                     if (("true").equals(dieOnError)) {
@@ -857,6 +860,7 @@ skeleton="../templates/db_output_bulk.skeleton"
                     nb_line_<%=cid%>++;
                     <%dbLog.data().inserting(dbLog.var("nb_line"));%>
                 } catch(java.lang.Exception e) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
                     whetherReject_<%=cid%> = true;
                     <%
                     if (("true").equals(dieOnError)) {
@@ -979,6 +983,7 @@ skeleton="../templates/db_output_bulk.skeleton"
     				<%dbLog.data().updating(dbLog.var("nb_line"));%>
              }
                 } catch(java.lang.Exception e) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
                     whetherReject_<%=cid%> = true;
                     <%
                     if (("true").equals(dieOnError)) {
@@ -1055,6 +1060,7 @@ skeleton="../templates/db_output_bulk.skeleton"
                            nb_line_<%=cid%>++;
                            <%dbLog.data().deleting(dbLog.var("nb_line"));%>
                        } catch(java.lang.Exception e) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
                            whetherReject_<%=cid%> = true;
                            <%
                            if (("true").equals(dieOnError)) {

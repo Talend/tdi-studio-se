@@ -197,6 +197,7 @@ if ((metadatas!=null)&&(metadatas.size()>0)) {//1
 					// <%=cid%>_response.close();
 				} //7
 				catch(java.lang.Exception e_<%=cid%>) {//9
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e_<%=cid%>.getMessage());
 					whetherReject_<%=cid%> = true;
 					<%
 					if(rejectConnName != null && rejectColumnList != null && rejectColumnList.size() > 0) {

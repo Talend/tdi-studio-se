@@ -101,6 +101,7 @@ skeleton="../templates/db_output_bulk.skeleton"
                             }
                         }
                     }catch (java.sql.BatchUpdateException e){
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
                         <%
                         if(("true").equals(dieOnError)) {
                         %>
@@ -121,6 +122,7 @@ skeleton="../templates/db_output_bulk.skeleton"
                         try {
                             tmp_batchUpdateCount_<%=cid%> = pstmt_<%=cid %>.getUpdateCount();
                         }catch (java.sql.SQLException e){
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
 
                         }
                         tmp_batchUpdateCount_<%=cid%> = tmp_batchUpdateCount_<%=cid%> > countSum_<%=cid%> ? tmp_batchUpdateCount_<%=cid%> : countSum_<%=cid%>;

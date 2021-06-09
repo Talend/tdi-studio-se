@@ -29,7 +29,7 @@
 	String connection = ElementParameterParser.getValue(node,"__CONNECTION__");
 	String authType = ElementParameterParser.getValue(node, "__AUTH_TYPE__");
 
-  if(("true").equals(useExistingConn)) {
+	if(("true").equals(useExistingConn)) {
 		List< ? extends INode> nodes =  node.getProcess().getNodesOfType("tGSConnection");
 		for (INode ne : nodes) {
 			if (connection.equals(ne.getUniqueName())) {
@@ -136,6 +136,7 @@ if ("USER_ACCOUNT_HMAC".equals(authType)){
 		globalMap.put("<%=cid %>_DESTINATION_BUCKETNAME", <%=targetBucket%>);
 		globalMap.put("<%=cid %>_DESTINATION_FOLDER", <%=targetFolder%>);
 	}catch(java.lang.Exception e_<%=cid%>) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e_<%=cid%>.getMessage());
 		<%
 		if (("true").equals(dieOnError)) {
 		%>

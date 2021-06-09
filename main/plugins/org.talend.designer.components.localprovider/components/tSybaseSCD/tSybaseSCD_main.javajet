@@ -454,6 +454,7 @@ if(inputSchema != null && inputSchema.size() > 0 && outputSchema != null && outp
     }
     
     } catch (java.lang.Exception e) {//catch
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
   		<%
         if (dieOnError) {
             %>

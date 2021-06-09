@@ -30,6 +30,7 @@ if((columnList != null && columnList.size() > 0) || "CLEAR".equals(tableAction) 
         try {
             callStmtLoadPending_<%=cid%>.execute();
         } catch (java.sql.SQLException e) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
             //when table not in load pending mode will throw exception.
             //and do nothing.
             <%log4jCodeGenerateUtil.logError(node,"warn");%>

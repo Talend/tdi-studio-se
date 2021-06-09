@@ -93,6 +93,7 @@ imports="
 							scp_<%=cid%>.download("\""+sourceFile_<%=cid %>+"\"",out_<%=cid %>);
 
 						} catch(java.lang.Exception e_<%=cid%>) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e_<%=cid%>.getMessage());
 		                	if(out_<%=cid %> != null){
 		                		out_<%=cid %>.close();
 		                	}
@@ -165,6 +166,7 @@ imports="
 		    					scp_<%=cid%>.download("\""+sourceFile_<%=cid %>+"\"",out_<%=cid %>);
 
 		    				} catch(java.lang.Exception e_<%=cid%>) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e_<%=cid%>.getMessage());
 		                    	if(out_<%=cid %> != null){
 		                    		out_<%=cid %>.close();
 		                    	}

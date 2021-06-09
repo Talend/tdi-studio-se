@@ -72,6 +72,7 @@
 		try(java.io.FileInputStream inputStream_<%=cid%> = new java.io.FileInputStream(tokenFile_<%=cid %>)) {
 			properties_<%=cid%>.load(inputStream_<%=cid%>);
 		} catch (java.io.IOException ee) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",ee.getMessage());
 			<%
 	    	if(isLog4jEnabled){
 			%>

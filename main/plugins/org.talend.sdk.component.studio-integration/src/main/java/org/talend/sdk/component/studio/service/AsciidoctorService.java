@@ -63,7 +63,7 @@ public class AsciidoctorService {
             final RubyInstanceConfig config = new RubyInstanceConfig();
             config.setLoader(Thread.currentThread().getContextClassLoader());
             try {
-                instance = JRubyAsciidoctor.create(singletonList("uri:classloader:/gems/asciidoctor-2.0.10/lib"));
+                instance = JRubyAsciidoctor.create(singletonList("uri:classloader:/gems/asciidoctor-2.0.12/lib"));
             } catch (final Throwable e) {
                 LOGGER.error("Can't load asciidoctor. Components documentation will not be available", e);
             } finally {

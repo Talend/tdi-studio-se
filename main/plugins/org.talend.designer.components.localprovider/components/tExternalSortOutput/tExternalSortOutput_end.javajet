@@ -101,6 +101,7 @@ final Process ps_<%=cid %> = runtime_<%=cid %>.exec(sb_<%=cid %>);
 						reader.close();
 					}
 				} catch (java.io.IOException ioe) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",ioe.getMessage());
 					ioe.printStackTrace();
 				}
 			}
@@ -120,6 +121,7 @@ final Process ps_<%=cid %> = runtime_<%=cid %>.exec(sb_<%=cid %>);
 						reader.close();
 					}
 				} catch (java.io.IOException ioe) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",ioe.getMessage());
 					ioe.printStackTrace();
 				}
 			}

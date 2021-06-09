@@ -334,6 +334,7 @@ if(("true").equals(use_existing_ctl_file)) {
 			ctlf_br_<%=cid %>.close();
 		}
 	}catch(java.io.IOException ioe) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",ioe.getMessage());
         <%log4jCodeGenerateUtil.logError(node,"error","ioe");%>
 		throw ioe;
     }
@@ -695,6 +696,7 @@ Thread normal_<%=cid %> = new Thread() {
                  reader.close();
             }
         }catch(java.io.IOException ioe) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",ioe.getMessage());
             <%log4jCodeGenerateUtil.logError(node,"error","ioe");%>
             ioe.printStackTrace();
         }
@@ -727,6 +729,7 @@ Thread error_<%=cid %> = new Thread() {
                 reader.close();
             }
         } catch(java.io.IOException ioe) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",ioe.getMessage());
             <%log4jCodeGenerateUtil.logError(node,"error","ioe");%>
            ioe.printStackTrace();
         }
