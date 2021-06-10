@@ -85,7 +85,7 @@ public class GeneralProjectSettingPage extends ProjectSettingPage {
         utf8Button.setLayoutData(utf8ButtonData);
 
         if (LoginHelper.isRemotesConnection()) {
-            disableScreenshotBtn = new Button(parent, SWT.CHECK);
+            disableScreenshotBtn = new Button(container, SWT.CHECK);
             disableScreenshotBtn.setText(Messages.getString("GeneralProjectSettingPage.disableScreenshot"));
             GridData disableScreenshotBtnData = new GridData(GridData.FILL_HORIZONTAL);
             disableScreenshotBtnData.horizontalSpan = 2;
