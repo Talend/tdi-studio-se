@@ -15,6 +15,8 @@ package org.talend.repository.ui.login.connections.settings;
 import java.net.URI;
 
 import org.apache.commons.lang3.StringUtils;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.jface.preference.PreferencePage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
@@ -84,10 +86,11 @@ public class UpdatesitePreferencePage extends PreferencePage {
 
     private void init() {
         try {
+            IProgressMonitor monitor = new NullProgressMonitor();
             UpdateSiteConfig config = p2Service.getUpdateSiteConfig();
-            URI release = config.getRelease();
+            URI release = config.getRelease(monitor);
             releaseUriText.setText(release == null ? "" : release.toString());
-            URI update = config.getUpdate();
+            URI update = config.getUpdate(monitor);
             updateUriText.setText(update == null ? "" : update.toString());
         } catch (Exception e) {
             ExceptionHandler.process(e);
@@ -115,11 +118,12 @@ public class UpdatesitePreferencePage extends PreferencePage {
     public boolean performOk() {
         if (this.isControlCreated()) {
             try {
+                IProgressMonitor monitor = new NullProgressMonitor();
                 UpdateSiteConfig config = p2Service.getUpdateSiteConfig();
                 String release = releaseUriText.getText();
-                config.setRelease(StringUtils.isBlank(release) ? null : new URI(release.trim()));
+                config.setRelease(monitor, StringUtils.isBlank(release) ? null : new URI(release.trim()));
                 String update = updateUriText.getText();
-                config.setUpdate(StringUtils.isBlank(update) ? null : new URI(update.trim()));
+                config.setUpdate(monitor, StringUtils.isBlank(update) ? null : new URI(update.trim()));
             } catch (Exception e) {
                 ExceptionHandler.process(e);
             }
