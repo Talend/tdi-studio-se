@@ -123,7 +123,8 @@ class BigQueryUtil_<%=cid%> {
     <% } %>
 			insert = bigqueryclient.jobs().insert(projectId, job).execute();
 			jobId = insert.getJobReference();
-		} catch (<%=basePackage%>com.google.api.client.googleapis.json.GoogleJsonResponseException e) {
+		} catch (<%=basePackage%>com.google.api.client.auth.oauth2.TokenResponseException e) {
+			//Auth errors throw TokenResponseExceptions.
 globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
 			if(tokenFile != null){
 				try {
@@ -159,6 +160,9 @@ globalMap.put("<%=cid%>_ERROR_MESSAGE",ee.getMessage());
 					%>
 				}
 			}
+			throw e;
+		} catch (<%=basePackage%>com.google.api.client.googleapis.json.GoogleJsonResponseException e) {
+			globalMap.put("<%=cid%>_ERROR_MESSAGE", e.getMessage());
 			throw e;
 		}
 
