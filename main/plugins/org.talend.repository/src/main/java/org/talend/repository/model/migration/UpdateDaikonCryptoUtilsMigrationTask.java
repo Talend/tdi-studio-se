@@ -16,7 +16,9 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.logging.Logger;
 
 import org.apache.commons.lang3.StringUtils;
@@ -37,6 +39,13 @@ import org.talend.designer.maven.tools.BuildCacheManager;
 public class UpdateDaikonCryptoUtilsMigrationTask extends AbstractProjectMigrationTask {
 
     private static final Logger LOGGER = Logger.getLogger(UpdateDaikonCryptoUtilsMigrationTask.class.getCanonicalName());
+
+    private static final Set<String> IMPACT_VERSIONS = new HashSet<String>();
+
+    static {
+        IMPACT_VERSIONS.add("0.31.10");
+        IMPACT_VERSIONS.add("0.31.11");
+    }
 
     @Override
     public Date getOrder() {
@@ -82,7 +91,7 @@ public class UpdateDaikonCryptoUtilsMigrationTask extends AbstractProjectMigrati
             return false;
         }
         for (Dependency dep : deps) {
-            if (StringUtils.equals("org.talend.daikon", dep.getGroupId()) && StringUtils.equals("0.31.10", dep.getVersion())) {
+            if (StringUtils.equals("org.talend.daikon", dep.getGroupId()) && IMPACT_VERSIONS.contains(dep.getVersion())) {
                 if (StringUtils.equals("crypto-utils", dep.getArtifactId())
                         || StringUtils.equals("daikon", dep.getArtifactId())) {
                     return true;
