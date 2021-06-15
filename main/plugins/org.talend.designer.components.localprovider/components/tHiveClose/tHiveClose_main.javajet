@@ -22,7 +22,6 @@ imports="
 			try {
 				hiveDistrib = (org.talend.hadoop.distribution.component.HiveComponent) org.talend.hadoop.distribution.DistributionFactory.buildDistribution(distribution, hiveVersion);
 			} catch (java.lang.Exception e) {
-globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
 				e.printStackTrace();
 				return "";
 			}

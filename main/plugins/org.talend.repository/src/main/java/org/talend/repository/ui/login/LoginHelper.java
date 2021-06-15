@@ -253,7 +253,7 @@ public class LoginHelper {
         }
         return isCloudUSConnection(connectionBean) || isCloudUSWestConnection(connectionBean)
                 || isCloudEUConnection(connectionBean) || isCloudAPACConnection(connectionBean)
-                || isCloudCustomConnection(connectionBean);
+                || isCloudCustomConnection(connectionBean)|| isCloudAUSConnection(connectionBean);
     }
 
     public static boolean isCloudUSConnection(ConnectionBean connectionBean) {
@@ -283,6 +283,13 @@ public class LoginHelper {
         }
         return RepositoryConstants.REPOSITORY_CLOUD_US_WEST_ID.equals(connectionBean.getRepositoryId());
     }
+    
+    public static boolean isCloudAUSConnection(ConnectionBean connectionBean) {
+        if (connectionBean == null) {
+            return false;
+        }
+        return RepositoryConstants.REPOSITORY_CLOUD_AUS_ID.equals(connectionBean.getRepositoryId());
+    }
 
     public static boolean isCloudCustomConnection(ConnectionBean connectionBean) {
         if (connectionBean == null) {
@@ -293,7 +300,7 @@ public class LoginHelper {
 
     public static boolean isCloudRepository(String repositoryId) {
         return isCloudUSRepository(repositoryId) || isCloudEURepository(repositoryId) || isCloudAPACRepository(repositoryId)
-                || isCloudCustomRepository(repositoryId) || isCloudUSWestRepository(repositoryId);
+                || isCloudCustomRepository(repositoryId) || isCloudUSWestRepository(repositoryId)||isCloudAUSRepository(repositoryId);
     }
 
     public static boolean isCloudUSRepository(String repositoryId) {
@@ -312,6 +319,10 @@ public class LoginHelper {
         return RepositoryConstants.REPOSITORY_CLOUD_US_WEST_ID.equals(repositoryId);
     }
 
+    public static boolean isCloudAUSRepository(String repositoryId) {
+        return RepositoryConstants.REPOSITORY_CLOUD_AUS_ID.equals(repositoryId);
+    }
+    
     public static boolean isCloudCustomRepository(String repositoryId) {
         return RepositoryConstants.REPOSITORY_CLOUD_CUSTOM_ID.equals(repositoryId);
     }
@@ -467,7 +478,7 @@ public class LoginHelper {
                  * Auto login, means there should be local repository
                  */
                 branches = getProjectBranches(lastUsedProject, true);
-            } catch (JSONException e) {
+            } catch (JSONException e) {                         
                 // TODO Auto-generated catch block
                 e.printStackTrace();
             }

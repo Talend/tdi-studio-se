@@ -24,11 +24,11 @@ try {
       .fromStream(new java.io.FileInputStream(<%=pathToServerAccoutKeyFile%>));
 } catch (IOException e_<%=cid%>) {
 globalMap.put("<%=cid%>_ERROR_MESSAGE",e_<%=cid%>.getMessage());
+  <% if(isLog4jEnabled) { %>
+     log.error("<%=cid%> - Exception in component <%=cid%>.", e_<%=cid%>);
+  <% } %>
   <% if (("true").equals(dieOnError)) { %>
-    throw(e_<%=cid%>);
-  <% }
-    if(isLog4jEnabled){ %>
-        log.error("<%=cid%> - Exception in component <%=cid%>.", e_<%=cid%>);
+     throw(e_<%=cid%>);
   <% } %>
 }
   com.google.cloud.storage.Storage storage_<%=cid%> = com.google.cloud.storage.StorageOptions.newBuilder().setCredentials(credential_<%=cid%>).build().getService();
