@@ -25,6 +25,7 @@ import java.util.stream.Stream;
 
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.talend.commons.exception.ExceptionHandler;
+import org.talend.commons.runtime.service.ITaCoKitService;
 import org.talend.core.CorePlugin;
 import org.talend.core.model.components.ComponentCategory;
 import org.talend.core.model.components.IComponent;
@@ -54,6 +55,13 @@ public class TaCoKitGenericProvider implements IGenericProvider {
     @Override
     public void loadComponentsFromExtensionPoint() {
         if (ProjectManager.getInstance().getCurrentProject() == null || !Lookups.configuration().isActive()) {
+            return;
+        }
+        try {
+            ITaCoKitService.getInstance().waitForStart();
+        } catch (Throwable t) {
+            // don't block if fail
+            ExceptionHandler.process(t);
             return;
         }
 
