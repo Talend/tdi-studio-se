@@ -165,6 +165,7 @@ String originalFileContent_<%=cid %> = "";
 try {
     originalFileContent_<%=cid %> = new String(java.util.Base64.getMimeDecoder().decode(result_<%=cid %>.toString()), utf8Charset);
 } catch (java.lang.Exception e) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
     e.printStackTrace();
 }
 

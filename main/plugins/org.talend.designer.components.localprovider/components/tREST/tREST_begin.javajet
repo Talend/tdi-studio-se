@@ -147,6 +147,7 @@ imports="
 		}
 		%>
 	}catch (com.sun.jersey.api.client.UniformInterfaceException ue) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",ue.getMessage());
         errorResponse_<%=cid%> = ue.getResponse();
     }
 	<%log.info(log.str("Has sent request to rest server."));%>

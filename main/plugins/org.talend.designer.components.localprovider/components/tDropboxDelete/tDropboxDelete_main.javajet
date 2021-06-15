@@ -58,5 +58,6 @@ imports="
 	try {
 		filesClient_<%=cid%>.delete(<%=path%>);
 	} catch (com.dropbox.core.v2.files.DeleteErrorException e_<%=cid%>) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e_<%=cid%>.getMessage());
 		throw new Exception(<%=path%> + " is not a valid file path on Dropbox");
 	}

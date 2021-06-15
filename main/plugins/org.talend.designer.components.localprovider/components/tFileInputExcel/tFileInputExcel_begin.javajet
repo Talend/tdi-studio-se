@@ -263,6 +263,7 @@ if ((metadatas!=null)&&(metadatas.size()>0)) {
 			   	  buffIStream<%= cid %>.close();
 			   }
 			}catch(Exception e){
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
 			}
         }
         try {
@@ -509,6 +510,7 @@ if ((metadatas!=null)&&(metadatas.size()>0)) {
 					java.util.Date dateGMT_<%=cid %> = ((jxl.DateCell)row_<%= cid %>[columnIndex_<%=cid%> + start_column_<%= cid %>]).getDate();
 					<%=firstConnName %>.<%=column.getLabel() %> = new java.util.Date(dateGMT_<%=cid %>.getTime() - java.util.TimeZone.getDefault().getOffset(dateGMT_<%=cid %>.getTime()));
 				}catch(java.lang.Exception e){
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
 					<% // for bug TDI-19404 %>
 					throw new RuntimeException("The cell format is not Date in ( Row. "+(nb_line_<%= cid %>+1)+ " and ColumnNum. " + curColNum_<%=cid %> + " )");
 				}
@@ -598,6 +600,7 @@ if ((metadatas!=null)&&(metadatas.size()>0)) {
 			nb_line_<%=cid%>++;
 			<%log4jFileUtil.debugRetriveData(node);%>
     } catch (java.lang.Exception e) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
         whetherReject_<%=cid%> = true;
         <%
         if (dieOnError) {
@@ -1066,6 +1069,7 @@ if ((metadatas!=null)&&(metadatas.size()>0)) {
                             }
 						}
 					}catch(java.lang.Exception e){
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
 						<% // for bug TDI-19404 %>
 						throw new RuntimeException("The cell format is not Date in ( Row. "+(nb_line_<%= cid %>+1)+ " and ColumnNum. " + curColNum_<%=cid %> + " )");
 					}
@@ -1148,6 +1152,7 @@ if ((metadatas!=null)&&(metadatas.size()>0)) {
 				nb_line_<%=cid%>++;
 				<%log4jFileUtil.debugRetriveData(node);%>
 			}catch(java.lang.Exception e){
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
 			whetherReject_<%=cid%> = true;
 <%
 		        if (dieOnError) {
@@ -1427,6 +1432,7 @@ if ((metadatas!=null)&&(metadatas.size()>0)) {
 				try{
 					<%=firstConnName %>.<%=column.getLabel() %> = ParserUtils.parseTo_Date(temp_row_<%=cid %>[columnIndex_<%=cid%>]<%=(isTrimAll || (!trimSelects.isEmpty() && ("true").equals(trimSelects.get(i).get("TRIM"))))?".trim()":"" %>, <%= patternValue %>);
 				}catch(java.lang.Exception e){
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
 					<% // for bug TDI-19404 %>
 					throw new RuntimeException("The cell format is not Date in ( Row. "+(nb_line_<%= cid %>+1)+ " and ColumnNum. " + curColNum_<%=cid %> + " )");
 				}
@@ -1496,6 +1502,7 @@ if ((metadatas!=null)&&(metadatas.size()>0)) {
 			nb_line_<%=cid%>++;
 			<%log4jFileUtil.debugRetriveData(node);%>
 		} catch(java.lang.Exception e) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
 			whetherReject_<%=cid%> = true;
 <%
 		        if (dieOnError) {

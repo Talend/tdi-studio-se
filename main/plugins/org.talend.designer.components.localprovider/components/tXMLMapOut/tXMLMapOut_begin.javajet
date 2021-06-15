@@ -1548,6 +1548,7 @@ generateToolByDom4j.generateGroupCode(index);
 					if(hasAtLeastOneRead) {
 						%>
 					} catch (IOException e) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
 			        throw new RuntimeException(e);
 				<%
 				}
@@ -1556,6 +1557,7 @@ generateToolByDom4j.generateGroupCode(index);
 					if(hasAtLeastOneObjectType) {
 				%>
 					} catch(ClassNotFoundException eCNFE) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",eCNFE.getMessage());
 							 throw new RuntimeException(eCNFE);
 				<%
 				}
@@ -1691,6 +1693,7 @@ generateToolByDom4j.generateGroupCode(index);
 					if(hasAtLeastOneWrite) {
 					%>
 						} catch (IOException e) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
 					        throw new RuntimeException(e);
 					<%
 					}

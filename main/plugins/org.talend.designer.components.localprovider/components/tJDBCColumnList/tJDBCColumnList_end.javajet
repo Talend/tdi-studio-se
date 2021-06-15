@@ -14,6 +14,7 @@ boolean dieOnError = "true".equals(ElementParameterParser.getValue(node, "__DIE_
 %>
 }
 }catch(Exception e_<%=cid%>){
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e_<%=cid%>.getMessage());
     <%if(dieOnError){%>
         throw(e_<%=cid%>);
     <%}else{%>
@@ -26,6 +27,7 @@ boolean dieOnError = "true".equals(ElementParameterParser.getValue(node, "__DIE_
             stmt2_<%=cid%>.close();
         }
     }catch(Exception e2_<%=cid%>){
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e2_<%=cid%>.getMessage());
         <%if(dieOnError){%>
             throw(e2_<%=cid%>);
         <%}else{%>

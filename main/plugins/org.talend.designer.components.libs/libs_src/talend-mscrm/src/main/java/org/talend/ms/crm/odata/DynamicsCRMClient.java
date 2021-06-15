@@ -163,6 +163,7 @@ public class DynamicsCRMClient implements IHttpClientFactoryObserver {
         if (queryOption.getReturnEntityProperties() != null) {
             uriBuilder.select(queryOption.getReturnEntityProperties());
         }
+
         if (queryOption.getTop() > 0) {
             uriBuilder.top(queryOption.getTop());
         }
@@ -172,10 +173,21 @@ public class DynamicsCRMClient implements IHttpClientFactoryObserver {
         if (!StringUtils.isEmpty(queryOption.getFilter())) {
             uriBuilder.filter(queryOption.getFilter());
         }
+        final List<String> expands = queryOption.getExpands();
+        if(expands.size() > 0){
+            String[] expandArray = new String[expands.size()];
+            uriBuilder.expand(expands.toArray(expandArray));
+        }
+
         ODataEntitySetRequest<ClientEntitySet> request = odataClient.getRetrieveRequestFactory()
                                                                     .getEntitySetRequest(uriBuilder.build());
 
         this.authStrategy.configureRequest(request);
+
+        if(expands.size() > 0){
+            // odata-metadata=full set by olingo generates issue when expand entities
+            request.addCustomHeader("Accept", "application/json;odata-metadata=minimal");
+        }
 
         return request;
     }

@@ -169,6 +169,7 @@ skeleton="../templates/db_output_bulk.skeleton"
 				<%}%>
 				stmtCreate_<%=cid%>.close();
 			}catch(java.sql.SQLException e){
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
 				if(<%=dieOnError%>){
 					 throw new RuntimeException ("Failure on DROP_CREATE action, process terminated.");
 				}
@@ -188,6 +189,7 @@ skeleton="../templates/db_output_bulk.skeleton"
 				<%}%>
 				stmtCreate_<%=cid%>.close();
 			}catch(java.sql.SQLException e){
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
 				if(<%=dieOnError%>){
 					 throw new RuntimeException ("Table '" + tableName_<%=cid%>  + "' already exists. process terminated.");
 				}else{
@@ -226,6 +228,7 @@ skeleton="../templates/db_output_bulk.skeleton"
 						<%}%> 
 						stmtCreate_<%=cid%>.close();
 					}catch(java.sql.SQLException e){
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
 						if(<%=dieOnError%>){
 							 throw new RuntimeException ("Failure to create table '" + tableName_<%=cid%>  + "'. process terminated.");
 						}
@@ -253,6 +256,7 @@ skeleton="../templates/db_output_bulk.skeleton"
 						<%}%>
 						stmtDrop_<%=cid%>.close();
                     }catch(java.sql.SQLException e){
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
                     	if(<%=dieOnError%>){
 							 throw new RuntimeException ("Failure to drop table '" + tableName_<%=cid%>  + "'. process terminated.");
                     	
@@ -276,6 +280,7 @@ skeleton="../templates/db_output_bulk.skeleton"
 				<%}%>
 				stmtCreate_<%=cid%>.close();
                 }catch(java.sql.SQLException e){
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
                 	if(<%=dieOnError%>){
 						 throw new RuntimeException ("Failure to create table '" + tableName_<%=cid%>  + "'. process terminated.");
                 	}else{
@@ -319,6 +324,7 @@ skeleton="../templates/db_output_bulk.skeleton"
 				<%}%>
             	stmtClear_<%=cid%>.close();
             }catch(java.sql.SQLException e){
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
             	if(<%=dieOnError%>){
 					 throw new RuntimeException ("Failure to clear table '" + tableName_<%=cid%>  + "'. process terminated.");
             	}else{
@@ -490,6 +496,7 @@ skeleton="../templates/db_output_bulk.skeleton"
 				}
 			}
 			catch(IOException e) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
 <%
 				String warningMessage = "Can't get NB_LINE value from log file";
 				if (isLog4jEnabled) {

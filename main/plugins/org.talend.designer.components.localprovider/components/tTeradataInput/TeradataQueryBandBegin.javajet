@@ -13,6 +13,7 @@
                            try{
                                conn_<%=cid%>.createStatement().execute("BEGIN QUERY LOGGING WITH SQL,OBJECTS ON " + <%= usrName %>);
                            }catch(Exception e){
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
                                  System.err.println(e.getMessage());
                            }
                         <%
@@ -29,6 +30,7 @@
 %> "' FOR SESSION"
            );
               }catch(Exception e){
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
                System.err.println(e.getMessage());
       }
       conn_<%= cid %>.setAutoCommit(currentAutoCommitMode<%= cid %>);

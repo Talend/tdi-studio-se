@@ -146,6 +146,7 @@ imports="
 				<%dbLog.data().sqlExecuteDone(dbLog.var("dropIndex"));%>
 			}
 			catch (java.sql.SQLException e_<%=cid%>) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e_<%=cid%>.getMessage());
 				<%dbLog.logIgnoredException("e_"+cid+".getMessage()");%>
 			}
 
@@ -200,6 +201,7 @@ imports="
 					<%dbLog.batch().executeDone(dbLog.str(dataAction));%>
         	    }
             }catch (java.sql.BatchUpdateException e_<%=cid%>){
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e_<%=cid%>.getMessage());
 		        java.sql.SQLException ne_<%=cid%> = e_<%=cid%>.getNextException(),sqle_<%=cid%>=null;
 		    	String errormessage_<%=cid%>;
 				if (ne_<%=cid%> != null) {

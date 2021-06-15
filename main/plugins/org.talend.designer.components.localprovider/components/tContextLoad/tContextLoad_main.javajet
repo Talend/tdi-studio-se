@@ -176,6 +176,7 @@ if ((metadatas!=null)&&(metadatas.size()>0)) {
             context.setProperty(key_<%=cid %>,value_<%=cid %>);
         }
     }catch(java.lang.Exception e){
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
         <%if(isLog4jEnabled){%>
             log.error("<%=cid%> - Setting a value for the key \"" + key_<%=cid %> + "\" has failed. Error message: " + e.getMessage());
         <%}%>

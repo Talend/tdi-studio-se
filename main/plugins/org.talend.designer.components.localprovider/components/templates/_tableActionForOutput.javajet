@@ -166,6 +166,7 @@ if (!isParallelize) {
                                         isExistStmt_<%=cid%>.execute("SELECT TOP 1 1 FROM [" + tableName_<%=cid%> + "]" );
                                         whetherExist_<%=cid%> = true;
                                     } catch (java.lang.Exception e){
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
                                         whetherExist_<%=cid%> = false;
                                     }
                                 }

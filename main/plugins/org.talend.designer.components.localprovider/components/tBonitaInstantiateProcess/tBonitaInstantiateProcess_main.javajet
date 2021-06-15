@@ -176,6 +176,7 @@ imports="
 		}
 		%>
 	} catch (java.lang.Exception lee_<%=cid%>) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",lee_<%=cid%>.getMessage());
 		<%
 		if (dieOnError) {
 		%>

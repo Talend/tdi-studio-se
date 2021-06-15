@@ -387,6 +387,7 @@ skeleton="../templates/db_output_bulk.skeleton"
                                                 SRID_<%=cid %> = Integer.parseInt(code_<%=cid %>);
                                             }
                                         } catch (java.lang.Exception e) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
                                             String SRIDError_<%= cid %> = "SRID_<%=cid %> could not be determined";
                                             <%dbLog.logIgnoredException(dbLog.var("SRIDError"));%>
                                             System.out.println(SRIDError_<%= cid %>);
@@ -450,6 +451,7 @@ skeleton="../templates/db_output_bulk.skeleton"
 	                conn_<%=cid%>.releaseSavepoint(sp_<%=cid %>);
 				<%}%>
             } catch(java.lang.Exception e) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
 				<%if(showSavePoint){%>
 	                conn_<%=cid%>.rollback(sp_<%=cid %>);
 	            <%}%>
@@ -600,6 +602,7 @@ skeleton="../templates/db_output_bulk.skeleton"
                 	conn_<%=cid%>.releaseSavepoint(sp_<%=cid %>);
                 <%}%>
             } catch(java.lang.Exception e) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
 				<%if(showSavePoint){%>
 	                conn_<%=cid%>.rollback(sp_<%=cid %>);
 	            <%}%>
@@ -761,6 +764,7 @@ skeleton="../templates/db_output_bulk.skeleton"
     	                conn_<%=cid%>.releaseSavepoint(sp_<%=cid %>);
     	            <%}%>
                 } catch(java.lang.Exception e) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
 					<%if(showSavePoint){%>
     	                conn_<%=cid%>.rollback(sp_<%=cid %>);
     	            <%}%>
@@ -850,6 +854,7 @@ skeleton="../templates/db_output_bulk.skeleton"
     	                conn_<%=cid%>.releaseSavepoint(sp_<%=cid %>);
     	            <%}%>
                 } catch(java.lang.Exception e) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
 					<%if(showSavePoint){%>
     	                conn_<%=cid%>.rollback(sp_<%=cid %>);
     	            <%}%>
@@ -1054,6 +1059,7 @@ skeleton="../templates/db_output_bulk.skeleton"
      					<%dbLog.data().updating(dbLog.var("nb_line"));%>
     				}
                 } catch(java.lang.Exception e) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
 					<%if(showSavePoint){%>
     	                conn_<%=cid%>.rollback(sp_<%=cid %>);
     	            <%}%>
@@ -1159,6 +1165,7 @@ skeleton="../templates/db_output_bulk.skeleton"
 	                conn_<%=cid%>.releaseSavepoint(sp_<%=cid %>);
 	            <%}%>
             } catch(java.lang.Exception e) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
 				<%if(showSavePoint){%>
 	                conn_<%=cid%>.rollback(sp_<%=cid %>);
 	            <%}%>
@@ -1253,6 +1260,7 @@ skeleton="../templates/db_output_bulk.skeleton"
 				    	}%>
             	    	batchSizeCounter_<%=cid%> = 0;
                 }catch (java.sql.BatchUpdateException e_<%=cid%>){
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e_<%=cid%>.getMessage());
 				    	java.sql.SQLException ne_<%=cid%> = e_<%=cid%>.getNextException(),sqle_<%=cid%>=null;
 				    	String errormessage_<%=cid%>;
 						if (ne_<%=cid%> != null) {
@@ -1331,6 +1339,7 @@ skeleton="../templates/db_output_bulk.skeleton"
             	    	}%>
                 batchSizeCounter_<%=cid%> = 0;
                }catch (java.sql.BatchUpdateException e_<%=cid%>){
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e_<%=cid%>.getMessage());
 			    	java.sql.SQLException ne_<%=cid%> = e_<%=cid%>.getNextException(),sqle_<%=cid%>=null;
 			    	String errormessage_<%=cid%>;
 					if (ne_<%=cid%> != null) {

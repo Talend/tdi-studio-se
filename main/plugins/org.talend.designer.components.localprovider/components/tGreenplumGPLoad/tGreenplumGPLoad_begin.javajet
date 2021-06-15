@@ -205,6 +205,7 @@ skeleton="@{org.talend.designer.components.localprovider}/components/templates/d
 					log.info("<%=cid%> - Create table '" + tableName_<%=cid%> + "' has succeeded." );
 				<%}%>
 			}catch(java.sql.SQLException e){
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
 				if(<%=dieOnError%>){
 					throw new RuntimeException ("Table '" + tableName4Load_<%=cid%>  + "' already exists. process terminated.");
 				}else{
@@ -228,6 +229,7 @@ skeleton="@{org.talend.designer.components.localprovider}/components/templates/d
 					log.info("<%=cid%> - Create table '" + tableName_<%=cid%> + "' has succeeded." );
 				<%}%>
 			}catch(java.sql.SQLException e){
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
 				if(<%=dieOnError%>){
 					 throw new RuntimeException ("Table '" + tableName4Load_<%=cid%>  + "' already exists. process terminated.");
 				}else{
@@ -276,6 +278,7 @@ skeleton="@{org.talend.designer.components.localprovider}/components/templates/d
 							log.info("<%=cid%> - Create table '" + tableName_<%=cid%> + "' has succeeded." );
 						<%}%> 
 					}catch(java.sql.SQLException e){
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
 						if(<%=dieOnError%>){
 							 throw new RuntimeException ("Failure to create table '" + tableName4Load_<%=cid%>  + "'. process terminated.");
 						}else{
@@ -302,6 +305,7 @@ skeleton="@{org.talend.designer.components.localprovider}/components/templates/d
 							log.info("<%=cid%> - Drop table '" + tableName_<%=cid%> + "' has succeeded.");
 						<%}%>
                     }catch(java.sql.SQLException e){
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
                     	if(<%=dieOnError%>){
 							 throw new RuntimeException ("Failure to drop table '" + tableName4Load_<%=cid%>  + "'. process terminated.");
                     	}else{
@@ -323,6 +327,7 @@ skeleton="@{org.talend.designer.components.localprovider}/components/templates/d
 					log.info("<%=cid%> - Create table '" + tableName_<%=cid%> + "' has succeeded." );
 				<%}%>           
                 }catch(java.sql.SQLException e){
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
                 	if(<%=dieOnError%>){
 						 throw new RuntimeException ("Failure to create table '" + tableName4Load_<%=cid%>  + "'. process terminated.");
                 	}else{
@@ -364,6 +369,7 @@ skeleton="@{org.talend.designer.components.localprovider}/components/templates/d
 				<%}%>
             	stmtClear_<%=cid%>.close();
             }catch(java.sql.SQLException e){
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
             	if(<%=dieOnError%>){
 					 throw new RuntimeException ("Failure to clear table '" + tableName4Load_<%=cid%>  + "'. process terminated.");
             	}else{
@@ -763,6 +769,7 @@ skeleton="@{org.talend.designer.components.localprovider}/components/templates/d
 						      	  Long runtime = ((Double)(Double.parseDouble(timeStr)*1000)).longValue();
 						      	  globalMap.put("<%=cid%>_RUNTIME", runtime);
 						      }catch(NumberFormatException e){
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
 						      	<%if(isLog4jEnabled){%>
 						      		log.error("<%=cid%> - parse runtime value failed:"+ line);
 						      	<%}%>
@@ -840,6 +847,7 @@ skeleton="@{org.talend.designer.components.localprovider}/components/templates/d
 			try {
 				return Integer.parseInt(logLine.substring(logLine.lastIndexOf("=") + 1).trim());
 			} catch (Exception parseException) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",parseException.getMessage());
 <%
 				if (isLog4jEnabled) {
 %>

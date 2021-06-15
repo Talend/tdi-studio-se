@@ -16,7 +16,7 @@ imports="
     String remotedir = ElementParameterParser.getValue(node, "__REMOTEDIR__");
     List<Map<String, String>> filelist =(List<Map<String,String>>)ElementParameterParser.getObjectValue(node,"__FILELIST__");
         String authMethod = ElementParameterParser.getValue(node,"__AUTH_METHOD__");
-        boolean isLog4jEnabled = ("true").equals(ElementParameterParser.getValue(node.getProcess(), "__LOG4J_ACTIVATE__"));
+    boolean isLog4jEnabled = ("true").equals(ElementParameterParser.getValue(node.getProcess(), "__LOG4J_ACTIVATE__"));
         String useExistingConn = ElementParameterParser.getValue(node, "__USE_EXISTING_CONNECTION__");
              	if(("true").equals(useExistingConn)){
              	    String connection = ElementParameterParser.getValue(node, "__CONNECTION__");
@@ -33,7 +33,7 @@ imports="
 %>
          new java.io.File(<%=file.get("SOURCE") %>),
 <%
-        }
+    				}
 %>
         };
         for (java.io.File file_<%=cid%>:files_<%=cid%>) {
@@ -44,8 +44,8 @@ imports="
                           <%if(isLog4jEnabled){%>
                                 log.warn("<%=cid%> - "+file_<%=cid%>.getPath()+" doesn't exist or it isn't a file.");
                           <%}%>
-                    }
-        }
+                	}
+                	}
 
 		java.nio.file.Path[] sourceFileNames_<%=cid%> = sourceList_<%=cid %>.toArray(new java.nio.file.Path[0]);
 
@@ -70,8 +70,8 @@ imports="
                             throw new IllegalArgumentException("Authentication failed.");
                         }else{
                             throw se_<%=cid%>;
-                        }
-                    }
+				}
+           	}
                                         org.apache.sshd.client.scp.ScpClientCreator instance_<%=cid%> = org.talend.components.talendscp.TalendScpClientCreator.INSTANCE;
                                         org.apache.sshd.client.scp.ScpClient scp_<%=cid%> = instance_<%=cid%>.createScpClient(session_<%=cid%>);
                             try{
@@ -80,15 +80,16 @@ imports="
                                 remotedir_<%=cid%> = remotedir_<%=cid%>.endsWith("/")?("\""+remotedir_<%=cid%>+"\""):("\""+remotedir_<%=cid%>+"/\"");
                                     scp_<%=cid%>.upload(sourceFileNames_<%=cid%>,remotedir_<%=cid%>);
                                     uploadedSet_<%=cid %>.addAll(java.util.Arrays.asList(sourceFileNames_<%=cid%>));
-                                    globalMap.put("<%=cid %>_STATUS", "File put OK.");
-                                }else{
-                                    globalMap.put("<%=cid %>_STATUS", "No file transfered.");
-                                }
-                            }catch(java.lang.Exception e){
-                                 		e.printStackTrace();
-                                 		<%if(isLog4jEnabled){%>
-                                             log.error(e.getMessage());
-                                 		<%}%>
-                                 		globalMap.put("<%=cid %>_STATUS", "File put fail.");
-                            }
+            globalMap.put("<%=cid %>_STATUS", "File put OK.");
+        }else{
+        	globalMap.put("<%=cid %>_STATUS", "No file transfered.");
+        }
+    }catch(java.lang.Exception e){
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
+    		e.printStackTrace();
+    		<%if(isLog4jEnabled){%>
+                log.error(e.getMessage());
+    		<%}%>
+    		globalMap.put("<%=cid %>_STATUS", "File put fail.");
+    }
                             session_<%=cid%>.close();
