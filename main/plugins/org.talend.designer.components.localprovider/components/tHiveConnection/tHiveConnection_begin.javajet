@@ -10,6 +10,7 @@ imports="
 <%
 	CodeGeneratorArgument theCodeGenArgument = (CodeGeneratorArgument) argument;
 	INode theNode = (INode)theCodeGenArgument.getArgument();
+	String theCid = theNode.getUniqueName();
 	String theDistribution = ElementParameterParser.getValue(theNode, "__DISTRIBUTION__");
 	String theVersion = ElementParameterParser.getValue(theNode, "__HIVE_VERSION__");
     boolean isLog4jEnabled = ("true").equals(ElementParameterParser.getValue(theNode.getProcess(), "__LOG4J_ACTIVATE__"));
@@ -18,7 +19,9 @@ imports="
 	try {
 		hiveDistrib = (org.talend.hadoop.distribution.component.HiveComponent) org.talend.hadoop.distribution.DistributionFactory.buildDistribution(theDistribution, theVersion);
 	} catch (java.lang.Exception e) {
-globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
+%>
+		globalMap.put("<%=theCid%>_ERROR_MESSAGE",e.getMessage());
+<%
 		e.printStackTrace();
 		return "";
 	}
