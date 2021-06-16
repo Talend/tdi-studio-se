@@ -57,6 +57,7 @@ import org.talend.commons.runtime.model.components.IComponentConstants;
 import org.talend.commons.ui.gmf.util.DisplayUtils;
 import org.talend.commons.ui.runtime.exception.MessageBoxExceptionHandler;
 import org.talend.commons.utils.PasswordHelper;
+import org.talend.commons.utils.network.NetworkUtil;
 import org.talend.commons.utils.system.EclipseCommandLine;
 import org.talend.core.CorePlugin;
 import org.talend.core.GlobalServiceRegister;
@@ -347,6 +348,9 @@ public class RepositoryService implements IRepositoryService, IRepositoryContext
                     }
                 }
             }
+
+            new Thread(() -> NetworkUtil.isNetworkValidByStatus(), "check network status in background").start(); //$NON-NLS-1$
+
             LoginDialogV2 loginDialog = new LoginDialogV2(shell);
             logged = (loginDialog.open() == LoginDialogV2.OK);
         }
