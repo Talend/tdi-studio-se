@@ -50,7 +50,7 @@ public class PaletteComponentFactory implements CreationFactory {
         if (component != null) {
             componentName = component.getName();
         }
-        if (componentName != null && componentName.toLowerCase().equals("note")) { //$NON-NLS-1$
+        if ("note".equalsIgnoreCase(componentName)) { //$NON-NLS-1$
             return new Note();
         } else {
             IComponent emfComponent = UnifiedComponentUtil.getUnifiedComponentByFilter(component, filter);

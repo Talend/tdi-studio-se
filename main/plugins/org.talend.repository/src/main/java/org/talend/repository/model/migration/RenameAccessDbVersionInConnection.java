@@ -52,11 +52,11 @@ public class RenameAccessDbVersionInConnection extends AbstractItemMigrationTask
                 DatabaseConnection dbConnection = (DatabaseConnection) connection;
                 if (EDatabaseTypeName.ACCESS.equals(EDatabaseTypeName.getTypeFromDbType(dbConnection.getDatabaseType()))) {
                     boolean modified = false;
-                    if (EDatabaseVersion4Drivers.ACCESS_2003.getVersionValue().toUpperCase().equals(
+                    if (EDatabaseVersion4Drivers.ACCESS_2003.getVersionValue().equalsIgnoreCase(
                             dbConnection.getDbVersionString())) {
                         dbConnection.setDbVersionString(EDatabaseVersion4Drivers.ACCESS_2003.getVersionValue());
                         modified = true;
-                    } else if (EDatabaseVersion4Drivers.ACCESS_2007.getVersionValue().toUpperCase().equals(
+                    } else if (EDatabaseVersion4Drivers.ACCESS_2007.getVersionValue().equalsIgnoreCase(
                             dbConnection.getDbVersionString())) {
                         dbConnection.setDbVersionString(EDatabaseVersion4Drivers.ACCESS_2007.getVersionValue());
                         modified = true;

@@ -519,7 +519,7 @@ public class ChangeValuesFromRepository extends ChangeMetadataCommand {
                                 && "EDI_VERSION".equals(param.getRepositoryValue())) {
                             String[] list = param.getListItemsDisplayName();
                             for (String element : list) {
-                                if (objectValue.toString().toUpperCase().equals(element)) {
+                                if (objectValue.toString().equalsIgnoreCase(element)) {
                                     elem.setPropertyValue(param.getName(), objectValue);
                                 }
                             }
@@ -527,7 +527,7 @@ public class ChangeValuesFromRepository extends ChangeMetadataCommand {
                                 && "DRIVER".equals(param.getRepositoryValue())) {
                             String[] list = param.getListItemsDisplayCodeName();
                             for (String element : list) {
-                                if (objectValue.toString().toUpperCase().equals(element)) {
+                                if (objectValue.toString().equalsIgnoreCase(element)) {
                                     elem.setPropertyValue(param.getName(), objectValue);
                                 }
                             }

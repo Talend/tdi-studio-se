@@ -32,7 +32,7 @@
         com.talend.compress.zip.Util util_<%=cid %> = new com.talend.compress.zip.Util(<%=extractPath%>);
 
         String zipFileURL_<%=cid %> = <%=zipFile %>;
-        String tmpFileURL_<%=cid %> = zipFileURL_<%=cid %>.toLowerCase();
+        String tmpFileURL_<%=cid %> = zipFileURL_<%=cid %>.toLowerCase(java.util.Locale.ENGLISH);
         String outputPath_<%=cid %> = <%=directory %>;
 <%
     if (rootName) {

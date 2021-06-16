@@ -121,7 +121,7 @@ public class SelectDeleteProjectDialog extends SelectionDialog {
             try {
                 if (projects[i] != null && !projects[i].getResourceAttributes().isReadOnly() && projects[i].isOpen()
                         && !notExportProjects.contains(projects[i].getName())) {
-                    if (!login && pro.getLabel().toLowerCase().equals(projects[i].getName().toLowerCase())) {
+                    if (!login && pro.getLabel().equalsIgnoreCase(projects[i].getName())) {
                         // nothing need to do
                     } else {
                         projectItemList.add(projects[i]);

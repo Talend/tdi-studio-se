@@ -313,7 +313,7 @@ public class ChangeMetadataCommand extends Command {
         if (schemaParam != null
                 && (schemaParam.getFieldType().equals(EParameterFieldType.SCHEMA_TYPE) || schemaParam.getFieldType().equals(
                         EParameterFieldType.SCHEMA_REFERENCE))
-                && EConnectionType.FLOW_MAIN.getDefaultMenuName().toUpperCase().equals(schemaParam.getContext())) {
+                && EConnectionType.FLOW_MAIN.getDefaultMenuName().equalsIgnoreCase(schemaParam.getContext())) {
             currentConnector = EConnectionType.FLOW_MAIN.getName();
         }
         String baseConnectorForCurrentNode = node.getConnectorFromName(currentConnector).getBaseSchema();

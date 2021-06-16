@@ -75,11 +75,11 @@
 	/***********************************************************************/
 	String recordDelimiter = "nl";
 
-	if (rowSeperatorParam.toLowerCase().equals("\":\"") ) { 
+	if (rowSeperatorParam.equalsIgnoreCase("\":\"") ) { 
 		recordDelimiter = "colon";
-	} else if (rowSeperatorParam.toLowerCase().equals("\",\"") ) { 
+	} else if (rowSeperatorParam.equalsIgnoreCase("\",\"") ) { 
 		recordDelimiter = "comma";
-	} else if (rowSeperatorParam.toLowerCase().equals("\"\\t\"") ) { 
+	} else if (rowSeperatorParam.equalsIgnoreCase("\"\\t\"") ) { 
 		recordDelimiter = "tab";
 	} else {
 		System.err.println("Illegal Row Separator pattern");
@@ -130,13 +130,13 @@
 	StringBuilder command_<%=cid %> =  new StringBuilder();
 	String delimAction_<%=cid%> = <%=delimAction%>;
 	String field_delimiter_<%=cid %> = "";
-	if ("\nl".equals(delimAction_<%=cid%>.toLowerCase()) || "nl".equals(delimAction_<%=cid%>.toLowerCase())) { 
+	if ("\nl".equalsIgnoreCase(delimAction_<%=cid%>) || "nl".equalsIgnoreCase(delimAction_<%=cid%>)) { 
 		field_delimiter_<%=cid %> = "nl";
 	}
-	else if ("\t".equals(delimAction_<%=cid%>.toLowerCase()) || "tab".equals(delimAction_<%=cid%>.toLowerCase())){
+	else if ("\t".equalsIgnoreCase(delimAction_<%=cid%>) || "tab".equalsIgnoreCase(delimAction_<%=cid%>)){
 		field_delimiter_<%=cid %> = "tab";
 	}
-	else if (":".equals(delimAction_<%=cid%>.toLowerCase()) || "colon".equals(delimAction_<%=cid%>.toLowerCase())){
+	else if (":".equalsIgnoreCase(delimAction_<%=cid%>) || "colon".equalsIgnoreCase(delimAction_<%=cid%>)){
 		field_delimiter_<%=cid %> = "colon";
 	}else{
 		field_delimiter_<%=cid %> = "'"+<%=delimAction%>.charAt(0)+"'";

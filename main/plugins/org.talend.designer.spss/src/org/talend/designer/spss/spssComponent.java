@@ -126,7 +126,7 @@ public class spssComponent extends AbstractExternalNode {
                 column.setLabel(lableName);
                 column.setOriginalDbColumnName(spssVar.getName());
 
-                if (spssVar.hasLabels() && strTranslateLabels.toLowerCase().equals("true")) {
+                if (spssVar.hasLabels() && "true".equalsIgnoreCase(strTranslateLabels)) {
                     column.setLength(spssVar.getMaxLengthByLableTranslation());
                     column.setPrecision(0);
                     column.setTalendType("id_String");
@@ -153,7 +153,7 @@ public class spssComponent extends AbstractExternalNode {
                 else
                     column.setComment("");
 
-                if (null == strComponentName || strComponentName.toLowerCase().equals("tspssinput"))
+                if (null == strComponentName || "tspssinput".equalsIgnoreCase(strComponentName))
                     column.setReadOnly(true);
                 else
                     column.setReadOnly(false);

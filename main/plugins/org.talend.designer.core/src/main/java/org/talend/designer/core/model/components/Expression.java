@@ -732,7 +732,7 @@ public final class Expression {
                         for (IConnection connection : connectionsInputs) {
                             if (connection.isActivate()
                                     && connection.getLineStyle().hasConnectionCategory(IConnectionCategory.MAIN)
-                                    && variableValue.toUpperCase().equals(connection.getConnectorName())) {
+                                    && variableValue.equalsIgnoreCase(connection.getConnectorName())) {
                                 showParameter = true;
                             }
                         }

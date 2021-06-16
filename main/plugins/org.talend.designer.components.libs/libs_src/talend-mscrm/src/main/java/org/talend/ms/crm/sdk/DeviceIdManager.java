@@ -264,12 +264,12 @@ public final class DeviceIdManager {
                 }
 
                 // Get the puid and return it.
-                if (node.getNodeName().toUpperCase().equals("PUID")) {
+                if ("PUID".equalsIgnoreCase(node.getNodeName())) {
                     return node.getTextContent();
                 }
                 // In case of device registration failure, parse error code and errorsubcode nodes.
                 if (isFailure) {
-                    if (node.getNodeName().toUpperCase().equals("ERROR")) {
+                    if ("ERROR".equalsIgnoreCase(node.getNodeName())) {
                         errorCode = DeviceRegistrationErrorCode.Unknown;
                         // Parse attributes of the error node.
                         NamedNodeMap attributes = node.getAttributes();
@@ -282,7 +282,7 @@ public final class DeviceIdManager {
                         }
                     }
                     // Retrieve the errorsubcode.
-                    if (node.getNodeName().toUpperCase().equals("ERRORSUBCODE")) {
+                    if ("ERRORSUBCODE".equalsIgnoreCase(node.getNodeName())) {
                         errorSubCode = node.getTextContent();
                     }
                 }

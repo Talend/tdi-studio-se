@@ -232,11 +232,11 @@ public final class EMFRepositoryNodeManager {
                             while (resultSet.next()) {
                                 for (int relevantIndece : relevantIndeces) {
                                     String key = metadata.getColumnName(relevantIndece);
-                                    if (key.toUpperCase().equals("FKCOLUMN_NAME")) { //$NON-NLS-1$
+                                    if ("FKCOLUMN_NAME".equalsIgnoreCase(key)) { //$NON-NLS-1$
                                         fk += resultSet.getString(relevantIndece);
-                                    } else if (key.toUpperCase().equals("FKTABLE_NAME")) { //$NON-NLS-1$
+                                    } else if ("FKTABLE_NAME".equalsIgnoreCase(key)) { //$NON-NLS-1$
                                         fk = resultSet.getString(relevantIndece) + "."; //$NON-NLS-1$
-                                    } else if (key.toUpperCase().equals("PKCOLUMN_NAME")) { //$NON-NLS-1$
+                                    } else if ("PKCOLUMN_NAME".equalsIgnoreCase(key)) { //$NON-NLS-1$
                                         pk = table.getSourceName() + "." + resultSet.getString(relevantIndece); //$NON-NLS-1$
                                     }
                                 }

@@ -615,7 +615,7 @@ public class TOSLoginComposite extends Composite {
                     if (!projectsMap.containsKey(newProject.toUpperCase())) {
 
                         for (Project project : projects) {
-                            if (project.getLabel().toUpperCase().equals(newProject.toUpperCase())) {
+                            if (project.getLabel().equalsIgnoreCase(newProject)) {
                                 projectsMap.put(newProject.toUpperCase(), project);
                                 convertorMapper.put(newProject.toUpperCase(), newProject);
 
