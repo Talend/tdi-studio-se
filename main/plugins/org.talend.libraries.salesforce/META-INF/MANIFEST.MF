@@ -6,19 +6,6 @@ Bundle-Version: 7.4.1.qualifier
 Require-Bundle: org.eclipse.core.runtime,
  javax.xml.rpc,
  org.talend.libraries.apache.axis2;visibility:=reexport
-Bundle-ClassPath: .,
- lib/salesforce_enterprise.jar,
- lib/salesforceCRMManagement.jar,
- lib/salesforceOAuth.jar,
- lib/servlet-api-3.0.jar,
- lib/json_simple-1.1.jar
-Export-Package: com.salesforce.soap.partner,
- com.salesforce.soap.partner.fault,
- com.salesforce.soap.partner.sobject,
- com.sforce.soap.enterprise,
- com.sforce.soap.enterprise.fault,
- com.sforce.soap.enterprise.sobject,
- org.talend.salesforce,
- org.talend.salesforce.oauth
+Bundle-ClassPath: .
 Bundle-ActivationPolicy: lazy
 Eclipse-BundleShape: dir
