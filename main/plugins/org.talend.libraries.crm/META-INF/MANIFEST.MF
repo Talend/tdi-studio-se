@@ -1,7 +1,0 @@
-Manifest-Version: 1.0
-Bundle-ManifestVersion: 2
-Bundle-Name: Crm
-Bundle-SymbolicName: org.talend.libraries.crm
-Bundle-Version: 7.4.1.qualifier
-Bundle-ActivationPolicy: lazy
-Eclipse-BundleShape: dir
