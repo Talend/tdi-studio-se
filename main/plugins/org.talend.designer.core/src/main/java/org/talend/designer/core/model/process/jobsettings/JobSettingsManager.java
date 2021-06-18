@@ -41,6 +41,7 @@ import org.talend.core.model.param.ERepositoryCategoryType;
 import org.talend.core.model.process.EComponentCategory;
 import org.talend.core.model.process.EParameterFieldType;
 import org.talend.core.model.process.ElementParameterParser;
+import org.talend.core.model.process.IContextParameter;
 import org.talend.core.model.process.IElementParameter;
 import org.talend.core.model.process.IProcess;
 import org.talend.core.model.utils.ContextParameterUtils;
@@ -1027,15 +1028,59 @@ public class JobSettingsManager {
             }
         } else {
             // is db
+            boolean isSnowFlakeDB = false;
             paramName = JobSettingsConstants.getExtraParameterName(EParameterName.URL.getName());
             param = process.getElementParameter(paramName);
             if (param != null) {
                 tContextLoadNode.getElementParameter(paramName).setValue(param.getValue());
+
+                /*******************************************
+                 * This is a temp fix for snowflake database https://jira.talendforge.org/browse/TUP-31883
+                 *******************************************/
+                String jdbcUrl = param.getValue().toString();
+                if (ContextParameterUtils.isContainContextParam(jdbcUrl)) {
+                    String ctxName = ContextParameterUtils.getContextString(jdbcUrl);
+                    IContextParameter ctx = process.getContextManager().getDefaultContext().getContextParameter(ctxName);
+                    if (ctx != null && ctx.getValue() != null) {
+                        jdbcUrl = ctx.getValue();
+                    }
+                }
+                if (jdbcUrl != null && jdbcUrl.toLowerCase().contains("jdbc:snowflake:")) {
+                    isSnowFlakeDB = true;
+                }
             }
             paramName = JobSettingsConstants.getExtraParameterName(EParameterName.DRIVER_JAR.getName());
             param = process.getElementParameter(paramName);
             if (param != null) {
                 tContextLoadNode.getElementParameter(paramName).setValue(param.getValue());
+
+                /*******************************************
+                 * https://jira.talendforge.org/browse/TUP-31858 Need to add dependencies to virtual component.
+                 *******************************************/
+                if (param.getValue() instanceof List) {
+                    List<Object> vals = (List<Object>) param.getValue();
+                    for (Object val : vals) {
+                        if (val instanceof Map) {
+                            Map<String, String> drivers = (Map) val;
+                            for (String driver : drivers.values()) {
+                                String driverJar = driver;
+                                if (ContextParameterUtils.isContainContextParam(driverJar)) {
+                                    String ctxName = ContextParameterUtils.getContextString(driverJar);
+                                    IContextParameter ctx = process.getContextManager().getDefaultContext()
+                                            .getContextParameter(ctxName);
+                                    if (ctx != null) {
+                                        driverJar = ctx.getValue();
+                                    }
+                                }
+
+                                if (driverJar != null) {
+                                    ModuleNeeded mod = ModuleNeeded.newInstance("", driverJar, "", true);
+                                    tContextLoadNode.getModulesNeeded().add(mod);
+                                }
+                            }
+                        }
+                    }
+                }
             }
 
             paramName = JobSettingsConstants.getExtraParameterName(EParameterName.DRIVER_CLASS.getName());
@@ -1112,6 +1157,14 @@ public class JobSettingsManager {
                         && realTableName.endsWith(TalendTextUtils.QUOTATION_MARK) && realTableName.length() > 2) {
                     realTableName = realTableName.substring(1, realTableName.length() - 1);
                 }
+
+                /*******************************************
+                 * This is a temp fix for snowflake database https://jira.talendforge.org/browse/TUP-31883
+                 *******************************************/
+                if (isSnowFlakeDB) {
+                    dbType = EDatabaseTypeName.GENERAL_JDBC.name();
+                }
+
                 String query = TalendTextUtils.addSQLQuotes(QueryUtil
                         .generateNewQuery(null, table, dbType, schema, realTableName));
                 paramName = JobSettingsConstants.getExtraParameterName(EParameterName.QUERY_CONDITION.getName());
