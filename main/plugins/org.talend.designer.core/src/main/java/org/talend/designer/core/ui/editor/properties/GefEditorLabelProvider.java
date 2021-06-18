@@ -14,7 +14,7 @@ package org.talend.designer.core.ui.editor.properties;
 
 import java.util.Iterator;
 
-import org.eclipse.jface.util.Assert;
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.StructuredSelection;

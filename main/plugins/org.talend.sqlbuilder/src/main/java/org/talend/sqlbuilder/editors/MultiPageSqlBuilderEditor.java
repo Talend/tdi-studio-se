@@ -173,7 +173,7 @@ public class MultiPageSqlBuilderEditor extends MultiPageEditorPart {
 		}
 	}
 
-    private CTabFolder createContainer(Composite parent) {
+    protected CTabFolder createContainer(Composite parent) {
 		// use SWT.FLAT style so that an extra 1 pixel border is not reserved
 		// inside the folder
 		parent.setLayout(new FillLayout());
@@ -519,7 +519,7 @@ public class MultiPageSqlBuilderEditor extends MultiPageEditorPart {
 		createItem(index, control);
 	}
 
-    private CTabItem createItem(int index, Control control) {
+    protected CTabItem createItem(int index, Control control) {
 		CTabItem item = new CTabItem(getTabFolder(), SWT.NONE, index);
 		item.setControl(control);
 		return item;

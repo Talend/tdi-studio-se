@@ -12,10 +12,10 @@
 // ============================================================================
 package org.talend.sqlbuilder.sqleditor;
 
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.rules.ICharacterScanner;
-import org.eclipse.jface.util.Assert;
 import org.talend.sqlbuilder.Messages;
 import org.talend.sqlbuilder.SqlBuilderPlugin;
 

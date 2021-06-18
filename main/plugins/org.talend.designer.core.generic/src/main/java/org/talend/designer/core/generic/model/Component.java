@@ -79,6 +79,7 @@ import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.core.model.temp.ECodePart;
 import org.talend.core.model.utils.ContextParameterUtils;
 import org.talend.core.model.utils.NodeUtil;
+import org.talend.core.nexus.TalendMavenResolver;
 import org.talend.core.prefs.ITalendCorePrefConstants;
 import org.talend.core.runtime.maven.MavenArtifact;
 import org.talend.core.runtime.maven.MavenConstants;
@@ -1238,8 +1239,10 @@ public class Component extends AbstractBasicComponent {
             if (runtimeInfo instanceof JarRuntimeInfo) {
                 JarRuntimeInfo currentRuntimeInfo = (JarRuntimeInfo) runtimeInfo;
                 runtimeInfo = currentRuntimeInfo.cloneWithNewJarUrlString(currentRuntimeInfo.getJarUrl().toString()
-                        .replace("mvn:", "mvn:" + MavenConstants.LOCAL_RESOLUTION_URL + "!"));
+                        .replace("mvn:", "mvn:" + MavenConstants.LOCAL_RESOLUTION_URL + "!"),
+                        new org.ops4j.pax.url.mvn.Handler(TalendMavenResolver.getMavenResolver()));
             }
+            ;
             final Bundle bundle = FrameworkUtil.getBundle(componentDefinition.getClass());
             for (URL mvnUri : runtimeInfo.getMavenUrlDependencies()) {
                 ModuleNeeded moduleNeeded = new ModuleNeeded(getName(), "", true, mvnUri.toString()); //$NON-NLS-1$
