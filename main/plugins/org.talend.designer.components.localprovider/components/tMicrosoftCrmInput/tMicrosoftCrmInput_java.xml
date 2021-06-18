@@ -27564,7 +27564,6 @@
                 <IMPORT NAME="commons-cli-1.2" MODULE="commons-cli-1.2.jar" MVN="mvn:commons-cli/commons-cli/1.2"  UrlPath="platform:/plugin/org.talend.libraries.apache.common/lib/commons-cli-1.2.jar" REQUIRED_IF="(AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2011')" />
                 <IMPORT NAME="geronimo-stax-api_1.0_spec-1.0.1" MODULE="geronimo-stax-api_1.0_spec-1.0.1.jar" MVN="mvn:org.talend.libraries/geronimo-stax-api_1.0_spec-1.0.1/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.apache.axis2/lib/geronimo-stax-api_1.0_spec-1.0.1.jar" REQUIRED_IF="(AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2011')" />
                 <IMPORT NAME="jaxen-1.1.6" MODULE="jaxen-1.1.6.jar" MVN="mvn:jaxen/jaxen/1.1.6"  REQUIRED_IF="(AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2011')" BundleID="" />
-                <IMPORT NAME="mail-1.4.7" MODULE="mail-1.4.7.jar" MVN="mvn:javax.mail/mail/1.4.7" REQUIRED_IF="(AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2011')" />
                 <IMPORT NAME="neethi-3.0.3" MODULE="neethi-3.0.3.jar" MVN="mvn:org.apache.neethi/neethi/3.0.3" REQUIRED_IF="(AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2011')" />
                 <IMPORT NAME="WSDL4J-1_6_3" MODULE="wsdl4j-1.6.3.jar" MVN="mvn:wsdl4j/wsdl4j/1.6.3"  REQUIRED_IF="(AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2011')" />
                 <IMPORT NAME="wstx-asl-3.2.9" MODULE="wstx-asl-3.2.9.jar" MVN="mvn:org.talend.libraries/wstx-asl-3.2.9/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.apache.axis2/lib/wstx-asl-3.2.9.jar" REQUIRED_IF="(AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2011')" />
@@ -27576,11 +27575,6 @@
                 <IMPORT NAME="woden-api-1.0M9" MODULE="woden-api-1.0M9.jar" MVN="mvn:org.talend.libraries/woden-api-1.0M9/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.apache.axis2/lib/woden-api-1.0M9.jar" REQUIRED_IF="(AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2011')" />
                 <IMPORT NAME="woden-impl-commons-1.0M9" MODULE="woden-impl-commons-1.0M9.jar" MVN="mvn:org.talend.libraries/woden-impl-commons-1.0M9/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.apache.axis2/lib/woden-impl-commons-1.0M9.jar" REQUIRED_IF="(AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2011')" />
                 <IMPORT NAME="woden-impl-dom-1.0M9" MODULE="woden-impl-dom-1.0M9.jar" MVN="mvn:org.talend.libraries/woden-impl-dom-1.0M9/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.apache.axis2/lib/woden-impl-dom-1.0M9.jar" REQUIRED_IF="(AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2011')" />
-                <!-- httpclient 4.2.1 -->
-                <IMPORT NAME="commons-codec-1.14" MODULE="commons-codec-1.14.jar" MVN="mvn:commons-codec/commons-codec/1.14" REQUIRED_IF="(AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2011')" />
-                <IMPORT NAME="commons-logging" MODULE="commons-logging-1.2.jar" MVN="mvn:commons-logging/commons-logging/1.2"  UrlPath="platform:/base/plugins/org.apache.commons.logging_1.2.0.jar" REQUIRED_IF="(AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2011')"/>
-                <IMPORT NAME="httpcore-4.4.13" MODULE="httpcore-4.4.13.jar" MVN="mvn:org.apache.httpcomponents/httpcore/4.4.13" REQUIRED_IF="(AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2011')" />
-                <IMPORT NAME="httpclient-4.5.13" MODULE="httpclient-4.5.13.jar" MVN="mvn:org.apache.httpcomponents/httpclient/4.5.13" REQUIRED_IF="(AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2011')" />
                 <!-- log4j -->
                 <IMPORT NAME="Driver-Commons-log4j-1.2.17" MODULE="log4j-1.2.17.jar" MVN="mvn:log4j/log4j/1.2.17"  UrlPath="platform:/plugin/org.talend.libraries.apache/lib/log4j-1.2.17.jar" REQUIRED="true" BundleID="" />
                 <!-- Jars for CRM 2015 CXF begin -->
