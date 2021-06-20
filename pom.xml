@@ -60,6 +60,7 @@
 		<module>i18n/plugins/org.talend.spagic.engines.client.nl</module>
 		<module>i18n/plugins/org.talend.sqlbuilder.nl</module>
 		<module>main/features/org.talend.designer.feature</module>
+		<module>main/features/org.talend.gmf.feature</module>
 		<module>main/features/org.talend.designer.business.feature</module>
         <module>main/features/org.talend.fragment.jars.di.feature</module>
 		<module>main/features/org.talend.rcp.branding.tos.feature</module>
