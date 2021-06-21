@@ -1162,7 +1162,7 @@ public class JobSettingsManager {
                  * This is a temp fix for snowflake database https://jira.talendforge.org/browse/TUP-31883
                  *******************************************/
                 if (isSnowFlakeDB) {
-                    dbType = EDatabaseTypeName.GENERAL_JDBC.name();
+                    dbType = EDatabaseTypeName.GENERAL_JDBC.getDbType();
                 }
 
                 String query = TalendTextUtils.addSQLQuotes(QueryUtil
