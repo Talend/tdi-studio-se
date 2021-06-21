@@ -65,7 +65,6 @@ imports="
     try {
         hiveDistrib = (org.talend.hadoop.distribution.component.HiveComponent) org.talend.hadoop.distribution.DistributionFactory.buildDistribution(theDistribution, theVersion);
     } catch (java.lang.Exception e) {
-globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
         e.printStackTrace();
         return "";
     }
@@ -130,7 +129,6 @@ bw_<%=cid%>.write("!set showHeader false\n");
 	try {
 		commandLine = ProcessorUtilities.getCommandLine("win32", true, processId, "",org.talend.designer.runprocess.IProcessor.NO_STATISTICS,org.talend.designer.runprocess.IProcessor.NO_TRACES, new String[]{});
 	} catch (ProcessorException e) {
-globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
 		e.printStackTrace();
 	}
 
