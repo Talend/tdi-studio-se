@@ -38,5 +38,7 @@ Require-Bundle: org.eclipse.ui.ide,
  org.talend.repository.items.importexport,
  org.talend.repository.view.di,
  org.talend.commons.runtime,
- org.talend.core.runtime
+ org.talend.core.runtime,
+ org.eclipse.gmf.runtime.diagram.ui,
+ org.eclipse.emf.edit.ui
 Eclipse-LazyStart: true

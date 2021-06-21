@@ -26,7 +26,8 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.swt,
  org.talend.daikon,
  org.talend.daikon.crypto.utils,
- org.talend.daikon.exception
+ org.talend.daikon.exception,
+ org.ops4j.pax.url.mvn
 Bundle-ActivationPolicy: lazy
 Bundle-Vendor: .Talend SA.
 Export-Package: org.talend.designer.core.generic.constants,

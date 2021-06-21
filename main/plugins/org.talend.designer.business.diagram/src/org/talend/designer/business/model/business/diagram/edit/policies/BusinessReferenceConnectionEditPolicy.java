@@ -1,5 +1,6 @@
 package org.talend.designer.business.model.business.diagram.edit.policies;
 
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
 import org.eclipse.gef.EditPart;
 import org.eclipse.gef.Request;
@@ -22,7 +23,6 @@ import org.eclipse.gmf.runtime.notation.View;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.MessageDialogWithToggle;
 import org.eclipse.jface.preference.IPreferenceStore;
-import org.eclipse.jface.util.Assert;
 import org.eclipse.swt.widgets.Display;
 
 /**

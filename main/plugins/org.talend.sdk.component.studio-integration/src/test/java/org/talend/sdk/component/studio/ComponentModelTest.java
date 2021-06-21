@@ -69,7 +69,7 @@ class ComponentModelTest {
 
     @BeforeAll
     static void mockOSGI() throws Exception {
-        final EquinoxContainer equinoxContainer = new EquinoxContainer(new HashMap<>());
+        final EquinoxContainer equinoxContainer = new EquinoxContainer(new HashMap<>(), null);
         final EquinoxContainerAdaptor adaptor =
                 new EquinoxContainerAdaptor(equinoxContainer, Storage.createStorage(equinoxContainer), new HashMap<>());
         final ModuleContainer moduleContainer = new ModuleContainer(adaptor, new ModuleDatabase(adaptor));

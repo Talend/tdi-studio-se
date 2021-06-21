@@ -189,7 +189,7 @@
 
 			<IMPORT NAME="poi-ooxml" MODULE="poi-ooxml-4.1.2-20200903124306_modified_talend.jar" MVN="mvn:org.apache.poi/poi-ooxml/4.1.2-20200903124306_modified_talend" UrlPath="platform:/plugin/org.talend.libraries.excel/lib/poi-ooxml-4.1.2-20200903124306_modified_talend.jar" REQUIRED_IF="(VERSION_2007 == 'true')" />
 			<IMPORT NAME="curvesapi" MODULE="curvesapi-1.06.jar" MVN="mvn:com.github.virtuald/curvesapi/1.06" REQUIRED_IF="(VERSION_2007 == 'true')" />
-			<IMPORT NAME="commons-compress" MODULE="commons-compress-1.19.jar" MVN="mvn:org.apache.commons/commons-compress/1.19" REQUIRED_IF="(VERSION_2007 == 'true')" />
+			<IMPORT NAME="commons-compress" MODULE="commons-compress-1.20.jar" MVN="mvn:org.apache.commons/commons-compress/1.20" REQUIRED_IF="(VERSION_2007 == 'true')" />
 
 			<IMPORT NAME="poi-ooxml-schemas" MODULE="poi-ooxml-schemas-4.1.2-20200903124306_modified_talend.jar" MVN="mvn:org.apache.poi/poi-ooxml-schemas/4.1.2-20200903124306_modified_talend" UrlPath="platform:/plugin/org.talend.libraries.excel/lib/poi-ooxml-schemas-4.1.2-20200903124306_modified_talend.jar" REQUIRED_IF="(VERSION_2007 == 'true')" />
 			<IMPORT NAME="xmlbeans" MODULE="xmlbeans-3.1.0.jar" MVN="mvn:org.apache.xmlbeans/xmlbeans/3.1.0" REQUIRED_IF="(VERSION_2007 == 'true')" />
