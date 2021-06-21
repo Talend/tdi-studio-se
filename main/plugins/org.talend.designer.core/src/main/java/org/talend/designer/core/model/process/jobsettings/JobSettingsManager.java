@@ -1141,8 +1141,11 @@ public class JobSettingsManager {
             String dbType = getDatabaseTypeFromParameter(process);
             if (dbType != null) {
                 // TDI-18161:the SQL script's syntax is not right because of the implicit context of General JDBC.
-                if (dbType.equals(EDatabaseTypeName.GENERAL_JDBC.getDisplayName())
-                        || dbType.equals(EDatabaseTypeName.GENERAL_JDBC.getProduct())) {
+                /*******************************************
+                 * This is a temp fix for snowflake database https://jira.talendforge.org/browse/TUP-31883
+                 *******************************************/
+                if (!isSnowFlakeDB && (dbType.equals(EDatabaseTypeName.GENERAL_JDBC.getDisplayName())
+                        || dbType.equals(EDatabaseTypeName.GENERAL_JDBC.getProduct()))) {
                     dbType = findRealDbTypeForJDBC(process, dbType);
                 }
 
@@ -1156,13 +1159,6 @@ public class JobSettingsManager {
                 if (realTableName.startsWith(TalendTextUtils.QUOTATION_MARK)
                         && realTableName.endsWith(TalendTextUtils.QUOTATION_MARK) && realTableName.length() > 2) {
                     realTableName = realTableName.substring(1, realTableName.length() - 1);
-                }
-
-                /*******************************************
-                 * This is a temp fix for snowflake database https://jira.talendforge.org/browse/TUP-31883
-                 *******************************************/
-                if (isSnowFlakeDB) {
-                    dbType = EDatabaseTypeName.GENERAL_JDBC.getDbType();
                 }
 
                 String query = TalendTextUtils.addSQLQuotes(QueryUtil
