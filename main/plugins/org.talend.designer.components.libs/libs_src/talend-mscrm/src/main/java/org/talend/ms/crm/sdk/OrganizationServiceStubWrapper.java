@@ -100,7 +100,7 @@ public class OrganizationServiceStubWrapper extends OrganizationServiceStub {
     }
 
     private void renewToken() throws Exception {
-        orgStub = client.doGetOnlineConnection(discoveryServiceUrl);
+        orgStub = client.doGetOnlineConnection();
     }
 
     private void sleep() {
