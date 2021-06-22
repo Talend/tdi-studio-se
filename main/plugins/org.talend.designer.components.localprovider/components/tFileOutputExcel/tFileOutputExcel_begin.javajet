@@ -742,6 +742,7 @@ if(!hasDynamic && isIncludeHeader){
 <%
 	}
 %>
+		nb_line_<%=cid%> ++;
 	}
 <%
 }
@@ -966,6 +967,9 @@ if(!hasDynamic && isIncludeHeader){
 		xlsxTool_<%=cid%>.addCellValue("<%=column.getLabel()%>");
 		<%
 			}
+		%>
+		nb_line_<%=cid %>++;
+		<%
 			if(!firstCellYAbsolute) {
 		%>
 	}
