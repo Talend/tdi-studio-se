@@ -3,13 +3,13 @@
  */
 package org.talend.webservice.mapper;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import org.talend.webservice.exception.LocalizedException;
 
 import javax.xml.namespace.QName;
-
-import org.talend.webservice.exception.LocalizedException;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * 
@@ -198,7 +198,7 @@ public class ComplexTypeMapper implements TypeMapper {
         if (params == null) {
             return null;
         }
-        Map<String, Object> values = new HashMap<String, Object>(mappers.size());
+        Map<String, Object> values = new LinkedHashMap<String, Object>(mappers.size());
 
         int i = 0;
         for (Object param : params) {
