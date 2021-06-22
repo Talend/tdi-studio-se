@@ -19,8 +19,9 @@ import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Shell;
 import org.talend.commons.exception.ExceptionHandler;
-import org.talend.components.api.properties.ComponentProperties;
 import org.talend.components.api.service.ComponentService;
+import org.talend.core.model.metadata.builder.database.ExtractMetaDataUtils;
+import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.daikon.properties.presentation.Form;
 
 /**
@@ -30,6 +31,8 @@ import org.talend.daikon.properties.presentation.Form;
 public class GenericWizardDialog extends WizardDialog {
 
     private ComponentService compService;
+
+    private ERepositoryObjectType objectType;
 
     public GenericWizardDialog(Shell parentShell, IWizard newWizard, ComponentService compService) {
         super(parentShell, newWizard);
@@ -41,7 +44,7 @@ public class GenericWizardDialog extends WizardDialog {
         Form form = getForm();
         if (form != null && form.isCallAfterFormNext()) {
             try {
-                compService.afterFormNext(form.getName(), (ComponentProperties) form.getProperties());
+                compService.afterFormNext(form.getName(), form.getProperties());
             } catch (Throwable e) {
                 ExceptionHandler.process(e);
             }
@@ -54,7 +57,7 @@ public class GenericWizardDialog extends WizardDialog {
         Form form = getForm();
         if (form != null && form.isCallAfterFormBack()) {
             try {
-                compService.afterFormBack(form.getName(), (ComponentProperties) form.getProperties());
+                compService.afterFormBack(form.getName(), form.getProperties());
             } catch (Throwable e) {
                 ExceptionHandler.process(e);
             }
@@ -68,7 +71,11 @@ public class GenericWizardDialog extends WizardDialog {
         Form form = getForm();
         Button nextButton = getButton(IDialogConstants.NEXT_ID);
         if (nextButton != null && nextButton.isEnabled()) {
-            nextButton.setEnabled(form.isAllowForward());
+            boolean isAllowForward = form.isAllowForward();
+            if (objectType != null && ExtractMetaDataUtils.SNOWFLAKE.equalsIgnoreCase(objectType.getType())) {
+                isAllowForward = true;
+            }
+            nextButton.setEnabled(isAllowForward);
         }
         Button backButton = getButton(IDialogConstants.BACK_ID);
         if (backButton != null && backButton.isEnabled()) {
@@ -86,6 +93,7 @@ public class GenericWizardDialog extends WizardDialog {
         if (currentPage instanceof GenericWizardPage) {
             GenericWizardPage genericWizardPage = (GenericWizardPage) currentPage;
             form = genericWizardPage.getForm();
+            objectType = genericWizardPage.getRepositoryObjectType();
         }
         return form;
     }
