@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.talend.components</groupId>
 	<artifactId>talend-mscrm</artifactId>
-	<version>3.5-20210518</version>
+	<version>3.6-20210618</version>
 	<packaging>jar</packaging>
 	
 	<name>talend-mscrm</name>
@@ -19,6 +19,7 @@
 		<httpcore.version>4.4.13</httpcore.version>
 		<junit.version>4.13.2</junit.version>
 		<adal4j.version>1.6.4-20200824</adal4j.version>
+		<jackson.version>2.11.4</jackson.version>
 
 		<!-- plugin's versions -->
 		<maven-jar-plugin.version>3.2.0</maven-jar-plugin.version>
@@ -127,6 +128,21 @@
             <artifactId>adal4j</artifactId>
             <version>${adal4j.version}</version>
         </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-core</artifactId>
+            <version>${jackson.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>${jackson.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-annotations</artifactId>
+            <version>${jackson.version}</version>
+        </dependency>
 	</dependencies>
 	<build>
 		<resources>
@@ -138,23 +154,6 @@
 			</resource>
 		</resources>
 		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-jar-plugin</artifactId>
-				<version>${maven-jar-plugin.version}</version>
-				<executions>
-					<execution>
-						<id>default-jar</id>
-						<phase>package</phase>
-						<goals>
-							<goal>jar</goal>
-						</goals>
-						<configuration>
-							<outputDirectory>../../../org.talend.libraries.crm/lib</outputDirectory>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>

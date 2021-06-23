@@ -1,8 +1,11 @@
 package org.talend.ms.crm;
 
 import java.rmi.RemoteException;
+import java.util.Iterator;
 import java.util.UUID;
 
+import javax.naming.AuthenticationException;
+import javax.naming.ServiceUnavailableException;
 import javax.xml.stream.XMLStreamException;
 
 import org.apache.axiom.om.OMAbstractFactory;
@@ -19,29 +22,33 @@ import org.apache.axis2.client.ServiceClient;
 import org.apache.axis2.context.ConfigurationContext;
 import org.apache.axis2.context.ConfigurationContextFactory;
 import org.apache.axis2.transport.http.HTTPConstants;
-import org.apache.axis2.transport.http.HTTPTransportConstants;
 import org.apache.axis2.transport.http.HttpTransportProperties;
 import org.apache.axis2.transport.http.HttpTransportProperties.ProxyProperties;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpStatus;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.util.EntityUtils;
+import org.apache.olingo.client.api.http.HttpClientException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.datacontract.schemas._2004._07.system_collections_generic.KeyValuePairOfEndpointTypestringztYlk6OT;
+import org.talend.ms.crm.odata.ClientConfiguration;
+import org.talend.ms.crm.odata.authentication.AuthStrategyFactory;
+import org.talend.ms.crm.odata.authentication.IAuthStrategy;
+import org.talend.ms.crm.sdk.Instance;
 import org.talend.ms.crm.sdk.OnlineAuthenticationPolicy;
 import org.talend.ms.crm.sdk.OrganizationServiceStubWrapper;
 import org.talend.ms.crm.sdk.RequestDateTimeData;
 import org.talend.ms.crm.sdk.SecurityData;
 import org.talend.ms.crm.sdk.WsdlTokenManager;
 
-import com.microsoft.schemas.xrm._2011.contracts.DiscoveryServiceStub;
-import com.microsoft.schemas.xrm._2011.contracts.IDiscoveryService_Execute_DiscoveryServiceFaultFault_FaultMessage;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.MapperFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.microsoft.schemas.xrm._2011.contracts.OrganizationServiceStub;
-import com.microsoft.schemas.xrm._2011.contracts.discovery.EndpointType;
-import com.microsoft.schemas.xrm._2011.contracts.discovery.ExecuteDocument;
-import com.microsoft.schemas.xrm._2011.contracts.discovery.ExecuteDocument.Execute;
-import com.microsoft.schemas.xrm._2011.contracts.discovery.ExecuteResponseDocument;
-import com.microsoft.schemas.xrm._2011.contracts.discovery.ExecuteResponseDocument.ExecuteResponse;
-import com.microsoft.schemas.xrm._2011.contracts.discovery.OrganizationDetail;
-import com.microsoft.schemas.xrm._2011.contracts.discovery.RetrieveOrganizationRequest;
-import com.microsoft.schemas.xrm._2011.contracts.discovery.RetrieveOrganizationResponse;
 
 // ============================================================================
 //
@@ -65,20 +72,14 @@ public class MSCRMClient {
     static Logger logger = LoggerFactory.getLogger(MSCRMClient.class.getName());
 
     /**
-     * Microsoft account (e.g. youremail@live.com) or Microsoft Office 365 (Org ID e.g.
-     * youremail@yourorg.onmicrosoft.com) User Name.
-     */
-    private String username;
-
-    /**
-     * Microsoft account or Microsoft Office 365 (Org ID) Password.
-     */
-    private String password;
-
-    /**
      * Unique Name of the organization
      */
     private String orgName;
+    
+    /**
+     * Unique Name of the organization
+     */
+    private ClientConfiguration clientConfiguration;
 
     /**
      * Suffix for the Flat WSDL
@@ -87,88 +88,84 @@ public class MSCRMClient {
 
     private OrganizationServiceStub serviceStub;
 
-    private Integer timeout;
+	private String discoveryServiceURL = "https://globaldisco.crm.dynamics.com/api/discovery/v2.0/Instances";
+	
+	/**
+     * This sample application registration values are available for all online instances
+     * This is suggested to use for development and prototyping purposes.For production use, you should create an AppId or ClientId that is specific 
+     * to your tenant in the Azure Management portal.
+     * 
+     */
+    private static final String DEFAULT_CLIENT_ID = "51f81489-12ee-4a9e-aaae-a2591f45987d";
+	
+	private IAuthStrategy authStrategy;
 
-    private Boolean reuseHttpClient;
+    public MSCRMClient(ClientConfiguration clientConfiguration, String orgName, String discoveryServiceURL) throws AuthenticationException {
+    	this.clientConfiguration = clientConfiguration;
+    	this.orgName = orgName;
+        this.discoveryServiceURL  = discoveryServiceURL;
+        init();
 
-    private int maxConnectionRetries = 5;
+    }
+    
+    private void init() throws AuthenticationException {
+        if (clientConfiguration != null && discoveryServiceURL != null && discoveryServiceURL.indexOf("/api/discovery/") > 0) {
+            clientConfiguration.setResource(discoveryServiceURL.substring(0, discoveryServiceURL.indexOf("/api/discovery/")));
+        }
+        
+        if(clientConfiguration != null) {
+        	if (discoveryServiceURL != null && discoveryServiceURL.indexOf("/api/discovery/") > 0) {
+                clientConfiguration.setResource(discoveryServiceURL.substring(0, discoveryServiceURL.indexOf("/api/discovery/")));
+            }
+        	if (clientConfiguration.getClientId()==null || clientConfiguration.getClientId().isEmpty()) {
+                clientConfiguration.setClientId(DEFAULT_CLIENT_ID);
+            }
+        }
 
-    private int attemptsInterval = 1000;
-
-    public MSCRMClient(String username, String password, String orgName) {
-        this.username = username;
-        this.password = password;
-        this.orgName = orgName;
+        authStrategy = AuthStrategyFactory.createAuthStrategy(this.clientConfiguration);
+        authStrategy.init();
 
     }
 
-    public void setTimeout(Integer timeout) {
-        this.timeout = timeout;
-    }
 
-    public void setReuseHttpClient(Boolean reuseHttpClient) {
-        this.reuseHttpClient = reuseHttpClient;
-    }
-
-    public void setMaxConnectionRetries(int maxConnectionRetries) {
-        this.maxConnectionRetries = maxConnectionRetries;
-    }
-
-    public void setAttemptsInterval(int attemptsInterval) {
-        this.attemptsInterval = attemptsInterval;
-    }
-
-    public OrganizationServiceStub getOnlineConnection(String discoveryServiceURL) throws Exception {
-        return new OrganizationServiceStubWrapper(doGetOnlineConnection(discoveryServiceURL), this, discoveryServiceURL,
-                maxConnectionRetries, attemptsInterval);
+    public OrganizationServiceStub getOnlineConnection() throws Exception {
+        return new OrganizationServiceStubWrapper(doGetOnlineConnection(), this, discoveryServiceURL,
+        		clientConfiguration.getMaxRetryTimes(), clientConfiguration.getIntervalTime());
     }
 
     /**
-     * URL for the Discovery Service For North America Microsoft account, discovery service url is
-     * https://dev.crm.dynamics.com/XRMServices/2011/Discovery.svc Microsoft office 365, discovery service url is
-     * https://disco.crm.dynamics.com/XRMServices/2011/Discovery.svc To use appropriate discovery service url for other
+     * Organization information is stored in the Instance table of the Discovery Service. To see the kind of information contained in that table, 
+     * send an HTTP GET request to the service for one of your instances.
      * environments refer http://technet.microsoft.com/en-us/library/gg309401.aspx
      *
      * @throws Exception
      */
-    public OrganizationServiceStub doGetOnlineConnection(String discoveryServiceURL) throws Exception {
+    public OrganizationServiceStub doGetOnlineConnection() throws Exception {
 
-        try {
-            // Retrieve the authentication policy for the discovery service.
-            OnlineAuthenticationPolicy discoveryPolicy = new OnlineAuthenticationPolicy(discoveryServiceURL + FlatWSDLSuffix);
-            WsdlTokenManager discoeryTokenManager = new WsdlTokenManager();
-            // Authenticate the user using the discovery authentication policy.
-            SecurityData discoverySecurityData = discoeryTokenManager.authenticate(discoveryServiceURL, username, password,
-                    discoveryPolicy.getAppliesTo(), discoveryPolicy.getPolicy(), discoveryPolicy.getIssuerUri());
-            // Retrieve discovery stub using organization URL with the security data.
-            DiscoveryServiceStub discoveryServiceStub = createDiscoveryServiceStub(discoveryServiceURL, discoverySecurityData);
-            // Retrieve organization service url using discovery stub.
-            String orgUrl = discoverOrganizationUrl(discoveryServiceStub, orgName);
-            // The discovery service stub cannot be reused against the organization service
-            // as the Issuer and AppliesTo may differ between the discovery and organization services.
-            // Retrieve the authentication policy for the organization service.
-            OnlineAuthenticationPolicy organizationPolicy = new OnlineAuthenticationPolicy(orgUrl + FlatWSDLSuffix);
-            WsdlTokenManager orgTokenManager = new WsdlTokenManager();
-            // Authenticate the user using the organization authentication policy.
-            SecurityData securityData = orgTokenManager.authenticate(orgUrl, username, password,
-                    organizationPolicy.getAppliesTo(), organizationPolicy.getPolicy(), organizationPolicy.getIssuerUri());
+    	String serviceURL = discoveryServiceURL;
+    	if(!discoveryServiceURL.contains("(")) {
+    		serviceURL =  discoveryServiceURL+"(UniqueName='"+orgName+"')";
+    	}
+		
+		String orgUrl = getOrgURL( serviceURL);
+		// The discovery service stub cannot be reused against the organization service
+		// as the Issuer and AppliesTo may differ between the discovery and organization services.
+		// Retrieve the authentication policy for the organization service.
+		OnlineAuthenticationPolicy organizationPolicy = new OnlineAuthenticationPolicy(orgUrl + FlatWSDLSuffix);
+		WsdlTokenManager orgTokenManager = new WsdlTokenManager();
+		// Authenticate the user using the organization authentication policy.
+		SecurityData securityData = orgTokenManager.authenticate(orgUrl, clientConfiguration.getUserName(), clientConfiguration.getPassword(),
+		        organizationPolicy.getAppliesTo(), organizationPolicy.getPolicy(), organizationPolicy.getIssuerUri());
 
-            // Retrieve organization stub using organization URL with the security data.
-            serviceStub = createOrganizationServiceStub(orgUrl, securityData);
+		// Retrieve organization stub using organization URL with the security data.
+		serviceStub = createOrganizationServiceStub(orgUrl, securityData);
 
-            Options options = serviceStub._getServiceClient().getOptions();
-            if (reuseHttpClient != null) {
-                options.setProperty(org.apache.axis2.transport.http.HTTPConstants.REUSE_HTTP_CLIENT, reuseHttpClient);
-            }
-            if (timeout != null) {
-                options.setTimeOutInMilliSeconds(Long.valueOf(timeout));
-                options.setProperty(org.apache.axis2.transport.http.HTTPConstants.SO_TIMEOUT, timeout);
-                options.setProperty(org.apache.axis2.transport.http.HTTPConstants.CONNECTION_TIMEOUT, timeout);
-            }
-
-        } catch (IDiscoveryService_Execute_DiscoveryServiceFaultFault_FaultMessage e) {
-            throw new Exception(e.getFaultMessage().getDiscoveryServiceFault().getMessage());
-        }
+		Options options = serviceStub._getServiceClient().getOptions();
+		
+	    options.setProperty(org.apache.axis2.transport.http.HTTPConstants.REUSE_HTTP_CLIENT, clientConfiguration.isReuseHttpClient());
+	    options.setTimeOutInMilliSeconds(Long.valueOf(clientConfiguration.getTimeout()));
+	    options.setProperty(org.apache.axis2.transport.http.HTTPConstants.SO_TIMEOUT, clientConfiguration.getTimeout());
+	    options.setProperty(org.apache.axis2.transport.http.HTTPConstants.CONNECTION_TIMEOUT, clientConfiguration.getTimeout());
         return serviceStub;
 
     }
@@ -177,18 +174,6 @@ public class MSCRMClient {
             throws RemoteException, XMLStreamException {
         try {
             OrganizationServiceStub stub = new OrganizationServiceStub(getConfigurationContext(), organizationServiceURL);
-            setServiceClientOptions(stub._getServiceClient(), securityData);
-            return stub;
-        } catch (RemoteException e) {
-            logger.error(e.getMessage());
-            throw e;
-        }
-    }
-
-    private static DiscoveryServiceStub createDiscoveryServiceStub(String discoveryServiceURL, SecurityData securityData)
-            throws RemoteException, XMLStreamException {
-        try {
-            DiscoveryServiceStub stub = new DiscoveryServiceStub(getConfigurationContext(), discoveryServiceURL);
             setServiceClientOptions(stub._getServiceClient(), securityData);
             return stub;
         } catch (RemoteException e) {
@@ -306,45 +291,6 @@ public class MSCRMClient {
         return ctx;
     }
 
-    private static String discoverOrganizationUrl(DiscoveryServiceStub serviceStub, String organizationUniqueName)
-            throws RemoteException, IDiscoveryService_Execute_DiscoveryServiceFaultFault_FaultMessage {
-        try {
-            RetrieveOrganizationRequest request = RetrieveOrganizationRequest.Factory.newInstance();
-
-            request.setUniqueName(organizationUniqueName);
-
-            Execute exe = Execute.Factory.newInstance();
-            exe.setRequest(request);
-
-            ExecuteDocument exeDoc = ExecuteDocument.Factory.newInstance();
-            exeDoc.setExecute(exe);
-
-            ExecuteResponseDocument executeRespDoc = serviceStub.execute(exeDoc);
-            ExecuteResponse executeResp = executeRespDoc.getExecuteResponse();
-
-            RetrieveOrganizationResponse result = (RetrieveOrganizationResponse) executeResp.getExecuteResult();
-
-            OrganizationDetail orgDetail = result.getDetail();
-
-            KeyValuePairOfEndpointTypestringztYlk6OT[] keyValuePairs = orgDetail.getEndpoints()
-                    .getKeyValuePairOfEndpointTypestringztYlk6OTArray();
-
-            for (KeyValuePairOfEndpointTypestringztYlk6OT keyValuePair : keyValuePairs) {
-
-                if (keyValuePair.getKey() == EndpointType.ORGANIZATION_SERVICE) {
-                    return keyValuePair.getValue();
-                }
-            }
-        } catch (RemoteException e) {
-            logger.error(e.getMessage());
-            throw e;
-        } catch (IDiscoveryService_Execute_DiscoveryServiceFaultFault_FaultMessage e) {
-            logger.error(e.getMessage());
-            throw e;
-        }
-        return null;
-    }
-
     private static HttpTransportProperties.ProxyProperties getProxyProperties() {
         String proxyHost = null;
         String proxyPort = null;
@@ -370,5 +316,55 @@ public class MSCRMClient {
         }
         return proxyProps;
     }
+    
+    private String getOrgURL(String discoveryServiceURL) throws ServiceUnavailableException {
+        try {
+            HttpGet request = new HttpGet(discoveryServiceURL);
+    		
+            // https://docs.microsoft.com/en-us/powerapps/developer/data-platform/webapi/discover-url-organization-web-api#authentication
+            authStrategy.configureRequest(request);
 
+            try (CloseableHttpClient httpClient = HttpClients.createDefault();
+                 CloseableHttpResponse response = httpClient.execute(request)) {
+            	
+            	int statusCode = response.getStatusLine().getStatusCode();
+            	if(statusCode != HttpStatus.SC_NO_CONTENT && statusCode != HttpStatus.SC_CREATED && statusCode != HttpStatus.SC_OK) {
+                    String message = null;
+                    if (statusCode == HttpStatus.SC_NOT_FOUND ) {
+                        message = "The organization '"+orgName+"' does not exist.";
+                    } else {
+                        message = response.getStatusLine().getReasonPhrase();
+                    }
+                    throw new HttpClientException(message);
+            	}
+
+                HttpEntity entity = response.getEntity();
+                String orgUrl = null;
+                if (entity != null) {
+                	String result = EntityUtils.toString(entity);
+                    ObjectMapper mapper = new ObjectMapper();
+                    mapper.configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES, true);
+                    mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+                    JsonNode tree = mapper.readTree(result);
+                    Iterator<JsonNode> iter = tree.path("value").elements();
+                    while (iter.hasNext()){
+                        JsonNode node = iter.next();
+                        Instance instance = mapper.readValue(node.toString(), Instance.class);
+                        // Should only return one instance.
+                        if(orgName.equals(instance.getUniqueName())) {
+                        	orgUrl = instance.getApiUrl() + "/XRMServices/2011/Organization.svc";
+                        	break;
+                        }
+                    }
+                }
+                if(orgUrl == null) {
+                	throw new HttpClientException("No organization available.");
+                }
+                return orgUrl;
+            }
+        } catch (Exception e) {
+            throw new ServiceUnavailableException(e.getMessage());
+        } 
+	}
+    
 }
