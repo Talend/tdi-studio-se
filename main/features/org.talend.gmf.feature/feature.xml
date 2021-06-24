@@ -348,7 +348,7 @@
          id="org.apache.xerces"
          download-size="0"
          install-size="0"
-         version="2.12.1.v20210115-0812"
+         version="2.9.0.v201101211617"
          unpack="false"/>
 
    <plugin
