@@ -27,7 +27,7 @@ import org.talend.core.runtime.CoreRuntimePlugin;
 import org.talend.core.runtime.projectsetting.ProjectPreferenceManager;
 import org.talend.repository.i18n.Messages;
 import org.talend.repository.model.IProxyRepositoryFactory;
-import org.talend.repository.ui.login.LoginHelper;
+import org.talend.repository.ui.utils.GitProviderUtil;
 
 /**
  * DOC aimingchen class global comment. Detailled comment
@@ -84,7 +84,7 @@ public class GeneralProjectSettingPage extends ProjectSettingPage {
         utf8ButtonData.horizontalSpan = 2;
         utf8Button.setLayoutData(utf8ButtonData);
 
-        if (LoginHelper.isRemotesConnection()) {
+        if (GitProviderUtil.isProjectInGitMode()) {
             disableScreenshotBtn = new Button(container, SWT.CHECK);
             disableScreenshotBtn.setText(Messages.getString("GeneralProjectSettingPage.disableScreenshot"));
             GridData disableScreenshotBtnData = new GridData(GridData.FILL_HORIZONTAL);
