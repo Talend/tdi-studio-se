@@ -19,6 +19,7 @@ import static java.util.Optional.ofNullable;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Modifier;
 import java.lang.reflect.Proxy;
 
 import org.eclipse.core.runtime.Platform;
@@ -160,7 +161,9 @@ public final class Lookups {
             Field[] fields = GlobalServiceRegister.class.getDeclaredFields();
             for (Field field : fields) {
                 field.setAccessible(true);
-                field.set(enrichedRegister, field.get(instance));
+                if (!Modifier.isFinal(field.getModifiers())) {
+                    field.set(enrichedRegister, field.get(instance));
+                }
             }
             return enrichedRegister;
         }
