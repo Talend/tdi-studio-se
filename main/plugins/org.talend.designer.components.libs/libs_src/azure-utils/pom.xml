@@ -6,7 +6,7 @@
 
     <groupId>org.talend.components.lib</groupId>
     <artifactId>azure-utils</artifactId>
-    <version>1.0.1</version>
+    <version>1.0.2</version>
     <build>
         <plugins>
             <plugin>
@@ -43,7 +43,7 @@
         <dependency>
             <groupId>com.microsoft.azure</groupId>
             <artifactId>msal4j</artifactId>
-            <version>1.4.0</version>
+            <version>1.10.1</version>
         </dependency>
         <dependency>
             <groupId>net.minidev</groupId>
