@@ -16,10 +16,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.swt.widgets.Composite;
 import org.talend.commons.exception.ExceptionHandler;
-import org.talend.components.api.properties.ComponentProperties;
 import org.talend.components.api.service.ComponentService;
 import org.talend.core.model.metadata.builder.connection.Connection;
 import org.talend.core.model.process.Element;
@@ -37,6 +37,7 @@ import org.talend.designer.core.model.components.ElementParameter;
 import org.talend.metadata.managment.ui.wizard.AbstractNamedWizardPage;
 import org.talend.metadata.managment.ui.wizard.context.MetadataContextPropertyValueEvaluator;
 import org.talend.repository.generic.handler.IContextHandler;
+import org.talend.repository.generic.i18n.Messages;
 import org.talend.repository.generic.ui.context.ContextComposite;
 import org.talend.repository.generic.ui.context.handler.GenericContextHandler;
 
@@ -97,7 +98,7 @@ public abstract class GenericWizardPage extends AbstractNamedWizardPage {
     private boolean callBefore() {
         if (form.isCallBeforeFormPresent()) {
             try {
-                compService.beforeFormPresent(form.getName(), (ComponentProperties) form.getProperties());
+                compService.beforeFormPresent(form.getName(), form.getProperties());
                 return true;
             } catch (Throwable e) {
                 ExceptionHandler.process(e);
@@ -156,6 +157,10 @@ public abstract class GenericWizardPage extends AbstractNamedWizardPage {
             public void checkPerformed(IChecker source) {
                 String status = source.getStatus();
                 if (source.isStatusOnError()) {
+                    if (StringUtils.isBlank(status)) {
+                        status = Messages.getString("GenericWizardPage.checkFailure") + " " //$NON-NLS-1$ //$NON-NLS-2$
+                                + Messages.getString("GenericWizardPage.checkFailureTip", connectionItem.getTypeName()); //$NON-NLS-1$
+                    }
                     genericStatus = createStatus(IStatus.ERROR, status);
                 } else {
                     genericStatus = createOkStatus();
