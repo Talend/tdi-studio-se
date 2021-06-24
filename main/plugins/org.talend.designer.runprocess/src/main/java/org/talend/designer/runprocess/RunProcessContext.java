@@ -567,6 +567,10 @@ public class RunProcessContext {
      * Launch the process.
      */
     public void exec(final Shell shell) {
+        if("ROUTE_MICROSERVICE".equals(process.getAdditionalProperties().get(TalendProcessArgumentConstant.ARG_BUILD_TYPE))) {
+            promptToOnline();
+        }
+        
         if (process instanceof org.talend.designer.core.ui.editor.process.Process) {
             org.talend.designer.core.ui.editor.process.Process prs =
                     (org.talend.designer.core.ui.editor.process.Process) process;
