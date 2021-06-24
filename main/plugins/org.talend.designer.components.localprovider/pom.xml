@@ -28,6 +28,13 @@
 		<tproxy.version>1.0.1</tproxy.version>
 	</properties>
 
+  <repositories>
+		<repository>
+			<id>talend-update</id>
+			<url>https://talend-update.talend.com/nexus/content/repositories/libraries/</url>
+		</repository>
+	</repositories>
+
 	<build>
 		<plugins>
 			<plugin>
