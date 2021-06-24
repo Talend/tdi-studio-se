@@ -524,7 +524,7 @@
       <TEMPLATE_PARAM SOURCE="self.PARALLELIZE_NUMBER" TARGET="out.PARALLELIZE_NUMBER"/>
     </TEMPLATES>
      <IMPORTS>
-       <IMPORT NAME="Driver-MysqlConnector" MODULE="mysql-connector-java-5.1.30-bin.jar" MVN="mvn:org.talend.libraries/mysql-connector-java-5.1.30-bin/6.0.0"  REQUIRED_IF="USE_EXISTING_CONNECTION == 'false'" />
+       <IMPORT NAME="Driver-MysqlConnector" MODULE="mysql-connector-java-5.1.49.jar" MVN="mvn:mysql/mysql-connector-java/5.1.49"  REQUIRED_IF="USE_EXISTING_CONNECTION == 'false'" />
      </IMPORTS>
     </CODEGENERATION>
 
