@@ -558,7 +558,7 @@ public class RunProcessContext {
             });
             return result.get().booleanValue();
         } catch (Throwable e) {
-            // ignore, we are in a non-graphical environment.
+            // ignore
         }
         return false;
     }
