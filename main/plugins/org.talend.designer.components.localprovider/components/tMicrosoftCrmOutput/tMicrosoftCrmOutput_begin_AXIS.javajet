@@ -21,6 +21,8 @@ imports="
 	boolean debug = ("true").equals(ElementParameterParser.getValue(node,"__DEBUG__"));
 	boolean isAPI2011 = ("API_2011").equals(ElementParameterParser.getValue(node,"__API_VERSION__"));
 	String discWSDL = ElementParameterParser.getValue(node, "__DISC_WSDL__");
+	String applicationId = ElementParameterParser.getValue(node, "__APPLICATION_ID__");
+	String authority = ElementParameterParser.getValue(node, "__AUTHORITY__");
 	%>
 	int nb_line_<%=cid%> = 0;
 	<%if(debug){%>
@@ -94,11 +96,13 @@ imports="
     	<%}
     }else{
     %>
-    	org.talend.ms.crm.MSCRMClient client_<%=cid%> = new org.talend.ms.crm.MSCRMClient(<%=username%>, decryptedPassword_<%=cid%>, <%=orgName%>);
-		client_<%=cid%>.setTimeout(<%=timeout%>);
-		client_<%=cid%>.setReuseHttpClient(<%=reuseHttpClient%>);
-		client_<%=cid%>.setMaxConnectionRetries(reConnMaxNum_<%=cid%>);
-		client_<%=cid%>.setAttemptsInterval(<%=attemptsInterval%>);
-		com.microsoft.schemas.xrm._2011.contracts.OrganizationServiceStub serviceStub_<%=cid%> = client_<%=cid%>.getOnlineConnection(<%=discWSDL%>);
+        org.talend.ms.crm.odata.ClientConfiguration clientConfig_<%=cid%> = org.talend.ms.crm.odata.ClientConfigurationFactory
+                                .buildOAuthNativeClientConfiguration(<%=applicationId%>, <%=username%>, decryptedPassword_<%=cid%>, <%=authority%>);
+        clientConfig_<%=cid%>.setTimeout(<%=timeout%>);
+        clientConfig_<%=cid%>.setReuseHttpClient(<%=reuseHttpClient%>);
+        clientConfig_<%=cid%>.setMaxRetry(reConnMaxNum_<%=cid%>,<%=attemptsInterval%>);
+        org.talend.ms.crm.MSCRMClient client_<%=cid%> = new org.talend.ms.crm.MSCRMClient(clientConfig_<%=cid%>, <%=orgName%>,<%=discWSDL%> );
+
+        com.microsoft.schemas.xrm._2011.contracts.OrganizationServiceStub serviceStub_<%=cid%> = client_<%=cid%>.getOnlineConnection();
     <%
     }%>
