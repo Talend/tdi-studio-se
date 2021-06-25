@@ -40,6 +40,7 @@ import org.talend.designer.maven.model.MavenSystemFolders;
 import org.talend.designer.maven.model.TalendMavenConstants;
 import org.talend.designer.maven.utils.PomIdsHelper;
 import org.talend.designer.runprocess.IProcessor;
+import org.talend.designer.runprocess.ProcessorUtilities;
 import org.talend.repository.documentation.ExportFileResource;
 import org.talend.repository.ui.wizards.exportjob.scriptsmanager.JobScriptsManager;
 import org.talend.repository.ui.wizards.exportjob.scriptsmanager.JobScriptsManager.ExportChoice;
@@ -87,7 +88,11 @@ public class BuildOSGiBundleHandler extends BuildJobHandler {
     @Override
     public IProcessor generateJobFiles(IProgressMonitor monitor) throws Exception {
         IProcessor processor = super.generateJobFiles(monitor);
-        cleanBundelResources(monitor);
+        // APPINT-33088 bundle resources are needed for final maven build in CI mode
+        // but can be removed in Studio build mode
+        if (!ProcessorUtilities.isCIMode()) {
+        	cleanBundelResources(monitor);
+        }
         // Generate class before the final build goal, JobJavaScriptOSGIForESBManager.createAnalyzer needs the classes
         // to compute import-package for the manifest.mf. TalendJavaProjectManager.getTalendJobJavaProject is always
         // disabled MavenNature when create project(false), it will stop jdt to compile, and imporve this part will help
