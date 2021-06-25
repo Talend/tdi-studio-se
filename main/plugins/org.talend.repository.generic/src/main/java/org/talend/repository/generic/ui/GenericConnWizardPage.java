@@ -169,9 +169,9 @@ public class GenericConnWizardPage extends GenericWizardPage implements Property
                 job.setUser(false);
                 job.setPriority(Job.BUILD);
                 job.schedule(); // start as soon as possible
+                genericStatus = createStatus(IStatus.ERROR, Messages.getString("GenericConnWizardPage.defaultMessage")); //$NON-NLS-1$
+                updatePageStatus();
             }
-            genericStatus = createStatus(IStatus.ERROR, Messages.getString("GenericConnWizardPage.defaultMessage")); //$NON-NLS-1$
-            updatePageStatus();
         }
     }
 
