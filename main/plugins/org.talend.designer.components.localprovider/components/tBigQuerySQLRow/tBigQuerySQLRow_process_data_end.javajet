@@ -13,6 +13,8 @@ imports="
     CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
     INode node = (INode)codeGenArgument.getArgument();
     String cid = node.getUniqueName();
+    boolean dieOnError = ElementParameterParser.getBooleanValue(node,"__DIE_ON_ERROR__");
+    boolean isLog4jEnabled = ("true").equals(ElementParameterParser.getValue(node.getProcess(), "__LOG4J_ACTIVATE__"));
     String authMode = ElementParameterParser.getValue(node,"__AUTH_MODE__");
     List< ? extends IConnection> conns = node.getOutgoingSortedConnections();
     if (conns != null){
@@ -23,22 +25,83 @@ imports="
                 if (authMode.equals("OAUTH") || authMode.equals("TOKEN")) {
                 %>
                     }
-                    pageToken_<%=cid%> = dataList_<%=cid %>.getPageToken();
+                    pageToken_<%=cid%> = queryResultsResponse_<%=cid %>.getPageToken();
                     if (null == pageToken_<%=cid%>) {
                         break;
                     }
                 }
-                bigQueryUtil_<%=cid%>.cleanup();
+            }
                 <%
                 } else if (authMode.equals("SERVICEACCOUNT")) {
                 %>
+                    }
+                    if (child_statistics_<%=cid%> != null) {
+                        globalMap.put("<%=cid%>_STATISTICS_CHILD", child_statistics_<%=cid%>.stream().collect(java.util.stream.Collectors.joining(",", "{statistics: [", "]}")));
+                    }
                 }
+            } catch (Exception e_<%=cid%>) {
+                <%
+                if (dieOnError) {
+                %>
+                    throw e_<%=cid%>;
+                <%
+                } else {
+                    if(isLog4jEnabled){
+                    %>
+                        log.error("<%=cid%> - " + e_<%=cid%>.getMessage());
+                <%
+                    } else {
+                %>
+                        System.err.println("<%=cid%> - " + e_<%=cid%>.getMessage());
+                <%
+                    }
+                }
+                %>
+            }
+
                 <%
                 } else {
                     throw new IllegalArgumentException("authentication mode should be either \"SERVICEACCOUNT\" or \"OAUTH\"or \"TOKEN\", but it is " + authMode);
                 }
                 log4jFileUtil.retrievedDataNumberInfo(node);
+// Else job has finished successfully with the results. Finish }.
+                if (!authMode.equals("SERVICEACCOUNT")) {
+                    %>
+                    }
+                    <%
+                }
             }
         }
+    }
+                if (authMode.equals("SERVICEACCOUNT")) {
+                    %>
+                    }
+                    <%
+                }
+
+    if (authMode.equals("OAUTH") || authMode.equals("TOKEN")) {
+        %>
+        } catch (Exception e_<%=cid%>) {
+            <%
+            if (dieOnError) {
+            %>
+                throw e_<%=cid%>;
+            <%
+            } else {
+                if(isLog4jEnabled){
+                %>
+                    log.error("<%=cid%> - " + e_<%=cid%>.getMessage());
+                <%
+                } else {
+                %>
+                    System.err.println("<%=cid%> - " + e_<%=cid%>.getMessage());
+                <%
+                }
+            }
+            %>
+        } finally {
+            bigQueryUtil_<%=cid%>.cleanup();
+        }
+    <%
     }
     %>
