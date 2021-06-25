@@ -14,20 +14,46 @@ imports="
     String projectId = ElementParameterParser.getValue(node,"__PROJECT_ID__");
     String resultSizeType = ElementParameterParser.getValue(node,"__RESULT_SIZE__");
     boolean isCustomTemporaryName = ElementParameterParser.getBooleanValue(node,"__USE_CUSTOM_TEMPORARY_DATASET__");
+    boolean isLog4jEnabled = ("true").equals(ElementParameterParser.getValue(node.getProcess(), "__LOG4J_ACTIVATE__"));
+    boolean dieOnError = ElementParameterParser.getBooleanValue(node,"__DIE_ON_ERROR__");
 
 	if (authMode.equals("OAUTH") || authMode.equals("TOKEN")) {
 	%>
-			}
-		pageToken_<%=cid%> = dataList_<%=cid %>.getPageToken();
-		if (null == pageToken_<%=cid%>) {
-			break;
-		}
-	}
-	bigQueryUtil_<%=cid%>.cleanup();
+            }
+            pageToken_<%=cid%> = dataList_<%=cid %>.getPageToken();
+            if (null == pageToken_<%=cid%>) {
+                break;
+            }
+        }
+    }
   	<%
   	} else if (authMode.equals("SERVICEACCOUNT")) {
   	%>
-  		}
+            }
+            if (child_statistics_<%=cid%> != null) {
+                globalMap.put("<%=cid%>_STATISTICS_CHILD", child_statistics_<%=cid%>.stream().collect(java.util.stream.Collectors.joining(",", "{statistics: [", "]}")));
+            }
+        }
+    } catch (Exception e_<%=cid%>) {
+    <%
+    if (dieOnError) {
+    %>
+        throw e_<%=cid%>;
+    <%
+    } else {
+        if(isLog4jEnabled){
+        %>
+            log.error("<%=cid%> - " + e_<%=cid%>.getMessage());
+        <%
+        } else {
+        %>
+            System.err.println("<%=cid%> - " + e_<%=cid%>.getMessage());
+    <%
+        }
+    }
+    %>
+    }
+
         <% if (resultSizeType.equals("LARGE") || resultSizeType.equals("AUTO")) {
               if (isCustomTemporaryName) {
 %>
@@ -44,4 +70,33 @@ imports="
           throw new IllegalArgumentException("authentication mode should be either \"SERVICEACCOUNT\" or \"OAUTH\" or \"TOKEN\", but it is " + authMode);
       }
       log4jFileUtil.retrievedDataNumberInfo(node);
-%>
+      // Else job has finished successfully with the results. Finish }.
+      %>
+}
+<%
+    if (authMode.equals("OAUTH") || authMode.equals("TOKEN")) {
+        %>
+        } catch (Exception e_<%=cid%>) {
+        <%
+        if (dieOnError) {
+        %>
+            throw e_<%=cid%>;
+        <%
+        } else {
+            if(isLog4jEnabled){
+            %>
+                log.error("<%=cid%> - " + e_<%=cid%>.getMessage());
+            <%
+            } else {
+            %>
+                System.err.println("<%=cid%> - " + e_<%=cid%>.getMessage());
+            <%
+            }
+        }
+        %>
+        } finally {
+            bigQueryUtil_<%=cid%>.cleanup();
+        }
+    <%
+    }
+    %>
