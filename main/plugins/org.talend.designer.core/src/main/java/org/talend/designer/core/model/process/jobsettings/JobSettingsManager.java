@@ -1057,30 +1057,8 @@ public class JobSettingsManager {
                 /*******************************************
                  * https://jira.talendforge.org/browse/TUP-31858 Need to add dependencies to virtual component.
                  *******************************************/
-                if (param.getValue() instanceof List) {
-                    List<Object> vals = (List<Object>) param.getValue();
-                    for (Object val : vals) {
-                        if (val instanceof Map) {
-                            Map<String, String> drivers = (Map) val;
-                            for (String driver : drivers.values()) {
-                                String driverJar = driver;
-                                if (ContextParameterUtils.isContainContextParam(driverJar)) {
-                                    String ctxName = ContextParameterUtils.getContextString(driverJar);
-                                    IContextParameter ctx = process.getContextManager().getDefaultContext()
-                                            .getContextParameter(ctxName);
-                                    if (ctx != null) {
-                                        driverJar = ctx.getValue();
-                                    }
-                                }
-
-                                if (driverJar != null) {
-                                    ModuleNeeded mod = ModuleNeeded.newInstance("", driverJar, "", true);
-                                    tContextLoadNode.getModulesNeeded().add(mod);
-                                }
-                            }
-                        }
-                    }
-                }
+                tContextLoadNode.getElementParameter(paramName).setListItemsDisplayCodeName(param.getListItemsDisplayCodeName());
+                tContextLoadNode.getElementParameter(paramName).setListItemsDisplayName(param.getListItemsDisplayName());
             }
 
             paramName = JobSettingsConstants.getExtraParameterName(EParameterName.DRIVER_CLASS.getName());
