@@ -132,6 +132,8 @@ public class RunProcessContext {
     public static final String NEXTBREAKPOINT = "RunProcessContext.NextBreakpoint"; //$NON-NLS-1$
 
     private boolean watchAllowed;
+    
+    boolean isMavenOnlineTempMode = false;
 
     private Boolean nextBreakpoint = false;
 
@@ -567,9 +569,13 @@ public class RunProcessContext {
      * Launch the process.
      */
     public void exec(final Shell shell) {
-        if("ROUTE_MICROSERVICE".equals(process.getAdditionalProperties().get(TalendProcessArgumentConstant.ARG_BUILD_TYPE))) {
-            promptToOnline();
+        boolean isMsBuildType = "ROUTE_MICROSERVICE"
+                .equals(process.getAdditionalProperties().get(TalendProcessArgumentConstant.ARG_BUILD_TYPE));
+            
+        if (isMsBuildType && !isMavenOnlineTempMode) {
+            isMavenOnlineTempMode = promptToOnline();
         }
+        boolean showMavenOnlineInfoMsg = isMsBuildType && !isMavenOnlineTempMode;
         
         if (process instanceof org.talend.designer.core.ui.editor.process.Process) {
             org.talend.designer.core.ui.editor.process.Process prs =
@@ -691,6 +697,12 @@ public class RunProcessContext {
 
                                     @Override
                                     public void run() {
+                                        if (showMavenOnlineInfoMsg) {
+                                            final String mavenOnlineError = Messages.getString("MavenOnlineRunner.info"); //$NON-NLS-1$
+                                            processMessageManager.addMessage(
+                                                    new ProcessMessage(MsgType.CORE_OUT, mavenOnlineError + "\r\n\r\n")); //$NON-NLS-1$
+                                        }
+                                        
                                         try {
                                             startingMessageWritten = false;
 
