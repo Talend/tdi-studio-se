@@ -375,7 +375,6 @@ IMetadataColumn talendDynCol = null;
 						  	targetSRID = Integer.parseInt(ElementParameterParser.getValue(node,"__SRID__"));
 						}
 					    catch (NumberFormatException e) {
-globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
 						%>
 					     	// TODO unable to parse integer: <%=ElementParameterParser.getValue(node,"__SRID__")%>
 					     	// TODO error: <%=e.getMessage()%>
@@ -460,7 +459,7 @@ globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
                 rowsToCommitCount_<%=cid%> += processedCount_<%=cid%>;
                 <%dbLog.data().inserting(dbLog.var("nb_line"));%>
             } catch(java.lang.Exception e) {
-globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
+                globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
                 whetherReject_<%=cid%> = true;
                 <%
                 if (("true").equals(dieOnError)) {
@@ -605,7 +604,7 @@ globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
                 rowsToCommitCount_<%=cid%> += processedCount_<%=cid%>;
                 <%dbLog.data().updating(dbLog.var("nb_line"));%>
             } catch(java.lang.Exception e) {
-globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
+                globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
                 whetherReject_<%=cid%> = true;
                 <%
                 if (("true").equals(dieOnError)) {
@@ -774,7 +773,7 @@ globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
         			nb_line_<%=cid%>++;
         			<%dbLog.data().updating(dbLog.var("nb_line"));%>
                 } catch(java.lang.Exception e) {
-globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
+                    globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
                     whetherReject_<%=cid%> = true;
                     <%
                     if (("true").equals(dieOnError)) {
@@ -858,7 +857,7 @@ globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
                     nb_line_<%=cid%>++;
                     <%dbLog.data().inserting(dbLog.var("nb_line"));%>
                 } catch(java.lang.Exception e) {
-globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
+                    globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
                     whetherReject_<%=cid%> = true;
                     <%
                     if (("true").equals(dieOnError)) {
@@ -1053,7 +1052,7 @@ globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
     				<%dbLog.data().updating(dbLog.var("nb_line"));%>
     			}
                 } catch(java.lang.Exception e) {
-globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
+                    globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
                     whetherReject_<%=cid%> = true;
                     <%
                     if (("true").equals(dieOnError)) {
@@ -1146,7 +1145,7 @@ globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
                 nb_line_<%=cid%>++;
                 <%dbLog.data().deleting(dbLog.var("nb_line"));%>
             } catch(java.lang.Exception e) {
-globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
+                globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
                 whetherReject_<%=cid%> = true;
                 <%
                 if (("true").equals(dieOnError)) {
@@ -1216,7 +1215,7 @@ globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
 						pstmt_<%=cid %>.executeBatch();
 						<%dbLog.batch().executeDone(dbLog.str(dataAction));%>
                 	}catch (java.sql.BatchUpdateException e){
-globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
+                    globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
                 	<%if(("true").equals(dieOnError)) {
                 	%>
                 		throw(e);
@@ -1266,7 +1265,7 @@ globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
 	                		pstmt_<%=cid %>.executeBatch();
 		                	<%dbLog.batch().executeDone(dbLog.str(dataAction));%>
 		                }catch (java.sql.BatchUpdateException e){
-globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
+                            globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
 		                	<%if(("true").equals(dieOnError)) {
 		                	%>
 								throw(e);

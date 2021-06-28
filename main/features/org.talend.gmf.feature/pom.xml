@@ -7,6 +7,6 @@
     <version>7.4.1-SNAPSHOT</version>
     <relativePath>../../../</relativePath>
   </parent>
-  <artifactId>org.talend.libraries.crm</artifactId>
-  <packaging>eclipse-plugin</packaging>
+  <artifactId>org.talend.gmf.feature</artifactId>
+  <packaging>eclipse-feature</packaging>
 </project>

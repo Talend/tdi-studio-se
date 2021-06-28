@@ -16,7 +16,7 @@
     <import feature="org.eclipse.emf.validation" version="0.0.0" match="greaterOrEqual"/>
     <import feature="org.eclipse.emf.workspace" version="0.0.0" match="greaterOrEqual"/>
     <import feature="org.eclipse.gef" version="0.0.0" match="greaterOrEqual"/>
-    <import feature="org.eclipse.gmf" version="0.0.0" match="greaterOrEqual"/>
+    <import feature="org.talend.gmf.feature" version="0.0.0" match="greaterOrEqual"/>
     <import feature="org.eclipse.gmf.runtime.notation" version="0.0.0" match="greaterOrEqual"/>
   </requires>
   <plugin id="org.talend.designer.business.diagram" download-size="0" install-size="0" version="0.0.0" unpack="false"/>
