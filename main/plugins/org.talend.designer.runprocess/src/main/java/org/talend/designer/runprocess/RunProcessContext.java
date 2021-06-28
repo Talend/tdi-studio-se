@@ -24,6 +24,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -569,9 +570,9 @@ public class RunProcessContext {
      * Launch the process.
      */
     public void exec(final Shell shell) {
-        boolean isMsBuildType = "ROUTE_MICROSERVICE"
-                .equals(process.getAdditionalProperties().get(TalendProcessArgumentConstant.ARG_BUILD_TYPE));
-            
+        boolean isMsBuildType = Arrays.asList("ROUTE_MICROSERVICE","REST_MS").contains
+                (process.getAdditionalProperties().get(TalendProcessArgumentConstant.ARG_BUILD_TYPE));
+        
         if (isMsBuildType && !isMavenOnlineTempMode) {
             isMavenOnlineTempMode = promptToOnline();
         }
