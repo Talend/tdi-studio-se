@@ -49,7 +49,6 @@ import org.talend.core.GlobalServiceRegister;
 import org.talend.core.download.DownloadHelper;
 import org.talend.core.download.DownloadListener;
 import org.talend.core.download.IDownloadHelper;
-import org.talend.core.model.components.ComponentManager;
 import org.talend.core.model.components.IComponent;
 import org.talend.core.model.components.IComponentsFactory;
 import org.talend.core.runtime.util.SharedStudioUtils;
@@ -195,7 +194,6 @@ public class DownloadComponenentsAction extends Action implements IIntroAction {
                 .openInformation(
                         null,
                         Messages.getString("DownloadComponenentsAction.installExchange"), Messages.getString("ExchangeWebService.downloadingExtensionSuccessful")); //$NON-NLS-1$ //$NON-NLS-2$
-        ComponentManager.saveResource();
 
     }
 

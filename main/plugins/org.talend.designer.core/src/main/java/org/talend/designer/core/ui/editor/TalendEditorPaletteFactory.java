@@ -203,14 +203,12 @@ public final class TalendEditorPaletteFactory {
             // }
             oraFamily = xmlComponent.getOriginalFamilyName();
             family = xmlComponent.getTranslatedFamilyName();
-            if (xmlComponent.isLoaded()) {
-                String[] strings = family.split(ComponentsFactoryProvider.FAMILY_SEPARATOR_REGEX);
-                String[] oraStrings = oraFamily.split(ComponentsFactoryProvider.FAMILY_SEPARATOR_REGEX);
-                for (int j = 0; j < strings.length; j++) {
-                    if (displayedFamilies.contains(oraStrings[j]) || xmlComponent.getComponentType() == EComponentType.JOBLET) {
-                        families.add(strings[j]);
-                        familyMap.put(strings[j], oraStrings[j]);
-                    }
+            String[] strings = family.split(ComponentsFactoryProvider.FAMILY_SEPARATOR_REGEX);
+            String[] oraStrings = oraFamily.split(ComponentsFactoryProvider.FAMILY_SEPARATOR_REGEX);
+            for (int j = 0; j < strings.length; j++) {
+                if (displayedFamilies.contains(oraStrings[j]) || xmlComponent.getComponentType() == EComponentType.JOBLET) {
+                    families.add(strings[j]);
+                    familyMap.put(strings[j], oraStrings[j]);
                 }
             }
         }
@@ -291,75 +289,73 @@ public final class TalendEditorPaletteFactory {
                 noteAeeded = true;
             }
 
-            if (xmlComponent.isLoaded()) {
-                name = UnifiedComponentUtil.getComponentDisplayNameForPalette(xmlComponent, filter);
-                longName = xmlComponent.getLongName();
+            name = UnifiedComponentUtil.getComponentDisplayNameForPalette(xmlComponent, filter);
+            longName = xmlComponent.getLongName();
 
-                ImageDescriptor imageSmall = xmlComponent.getIcon16();
-                ImageDescriptor imageLarge;
-                if (largeIconsSize.equals("24")) { //$NON-NLS-1$
-                    imageLarge = xmlComponent.getIcon24();
-                } else {
-                    imageLarge = xmlComponent.getIcon32();
-                }
+            ImageDescriptor imageSmall = xmlComponent.getIcon16();
+            ImageDescriptor imageLarge;
+            if (largeIconsSize.equals("24")) { //$NON-NLS-1$
+                imageLarge = xmlComponent.getIcon24();
+            } else {
+                imageLarge = xmlComponent.getIcon32();
+            }
 
-                if (favoriteComponentNames != null && favoriteComponentNames.contains(xmlComponent.getName())) {
-                    componentsDrawer = ht.get(FAVORITES);
-                    if (componentsDrawer != null) {
-                        component = new TalendCombinedTemplateCreationEntry(name, name, Node.class, xmlComponent, imageSmall,
-                                imageLarge, filter);
-
-                        component.setDescription(longName);
-                        component.setParent(componentsDrawer);
-                        componentsDrawer.add(component);
-                    }
-                }
-
-                if (recentlyUsedComponentNames != null && recentlyUsedComponentNames.contains(xmlComponent.getName())) {
-                    recentlyUsedMap.put(xmlComponent.getName(), xmlComponent);
-                }
-
-                String[] strings = family.split(ComponentsFactoryProvider.FAMILY_SEPARATOR_REGEX);
-                String[] oraStrings = oraFamily.split(ComponentsFactoryProvider.FAMILY_SEPARATOR_REGEX);
-                for (int j = 0; j < strings.length; j++) {
-                    if (!needHiddenComponent && !xmlComponent.isVisible(oraStrings[j])) {
-                        continue;
-                    }
-
+            if (favoriteComponentNames != null && favoriteComponentNames.contains(xmlComponent.getName())) {
+                componentsDrawer = ht.get(FAVORITES);
+                if (componentsDrawer != null) {
                     component = new TalendCombinedTemplateCreationEntry(name, name, Node.class, xmlComponent, imageSmall,
                             imageLarge, filter);
 
                     component.setDescription(longName);
+                    component.setParent(componentsDrawer);
+                    componentsDrawer.add(component);
+                }
+            }
 
-                    if (a == 0) {
-                        componentsDrawer = ht.get(strings[j]);
-                        if (componentsDrawer == null) {
-                            continue;
-                        }
-                        component.setParent(componentsDrawer);
-                        componentsDrawer.add(component);
-                    } else if (a == 1) {
-                        boolean canAdd = true;
-                        // listName = paGroup.getChildren();
-                        // for (int z = 0; z < listName.size(); z++) {
-                        // if ((((PaletteEntry) listName.get(z)).getLabel()).equals(component.getLabel())) {
-                        // canAdd = false;
-                        // }
-                        // }
-                        Iterator<CreationToolEntry> iter = nodeList.iterator();
-                        while (iter.hasNext()) {
-                            if ((iter.next().getLabel()).equals(component.getLabel())) {
-                                canAdd = false;
-                            }
-                        }
-                        if (canAdd == true) {
-                            nodeList.add(component);
-                            // component.setParent(paGroup);
-                            // paGroup.add(component);
+            if (recentlyUsedComponentNames != null && recentlyUsedComponentNames.contains(xmlComponent.getName())) {
+                recentlyUsedMap.put(xmlComponent.getName(), xmlComponent);
+            }
+
+            String[] strings = family.split(ComponentsFactoryProvider.FAMILY_SEPARATOR_REGEX);
+            String[] oraStrings = oraFamily.split(ComponentsFactoryProvider.FAMILY_SEPARATOR_REGEX);
+            for (int j = 0; j < strings.length; j++) {
+                if (!needHiddenComponent && !xmlComponent.isVisible(oraStrings[j])) {
+                    continue;
+                }
+
+                component = new TalendCombinedTemplateCreationEntry(name, name, Node.class, xmlComponent, imageSmall, imageLarge,
+                        filter);
+
+                component.setDescription(longName);
+
+                if (a == 0) {
+                    componentsDrawer = ht.get(strings[j]);
+                    if (componentsDrawer == null) {
+                        continue;
+                    }
+                    component.setParent(componentsDrawer);
+                    componentsDrawer.add(component);
+                } else if (a == 1) {
+                    boolean canAdd = true;
+                    // listName = paGroup.getChildren();
+                    // for (int z = 0; z < listName.size(); z++) {
+                    // if ((((PaletteEntry) listName.get(z)).getLabel()).equals(component.getLabel())) {
+                    // canAdd = false;
+                    // }
+                    // }
+                    Iterator<CreationToolEntry> iter = nodeList.iterator();
+                    while (iter.hasNext()) {
+                        if ((iter.next().getLabel()).equals(component.getLabel())) {
+                            canAdd = false;
                         }
                     }
-
+                    if (canAdd == true) {
+                        nodeList.add(component);
+                        // component.setParent(paGroup);
+                        // paGroup.add(component);
+                    }
                 }
+
             }
         }
 
@@ -835,40 +831,39 @@ public final class TalendEditorPaletteFactory {
             }
             oraFamily = xmlComponent.getOriginalFamilyName();
             family = xmlComponent.getTranslatedFamilyName();
-            if (xmlComponent.isLoaded()) {
-                if (StringUtils.isNotBlank(filter)) {
-                    if (xmlComponent.getName().toLowerCase().trim().equals(filter.toLowerCase().trim())) {
-                        matchComponent = xmlComponent;
-                    }
-                }
-                String[] strings = family.split(ComponentsFactoryProvider.FAMILY_SEPARATOR_REGEX);
-                String[] oraStrings = oraFamily.split(ComponentsFactoryProvider.FAMILY_SEPARATOR_REGEX);
-                for (int j = 0; j < strings.length; j++) {
-                    try {
-                        if (!needHiddenComponent && !xmlComponent.isVisible(oraStrings[j])) {
-                            continue;
-                        }
-                    } catch (Exception e) {
-                        System.out.println();
-                    }
-                    // String key = null;
-                    // key = xmlComponent.getName() + "#" + oraStrings[j];//$NON-NLS-1$
 
-                    if (a == 0) {
-                        if (!oraStrings[j].equals("Misc")) {//$NON-NLS-1$
-                            if (isFavorite
-                                    && !(favoriteComponentNames != null && favoriteComponentNames
-                                            .contains(xmlComponent.getName()))) {
-
-                                continue;
-                            }
-                        }
-                    }
-                    families.add(strings[j]);
-                    familyMap.put(strings[j], oraStrings[j]);
-
+            if (StringUtils.isNotBlank(filter)) {
+                if (xmlComponent.getName().toLowerCase().trim().equals(filter.toLowerCase().trim())) {
+                    matchComponent = xmlComponent;
                 }
             }
+            String[] strings = family.split(ComponentsFactoryProvider.FAMILY_SEPARATOR_REGEX);
+            String[] oraStrings = oraFamily.split(ComponentsFactoryProvider.FAMILY_SEPARATOR_REGEX);
+            for (int j = 0; j < strings.length; j++) {
+                try {
+                    if (!needHiddenComponent && !xmlComponent.isVisible(oraStrings[j])) {
+                        continue;
+                    }
+                } catch (Exception e) {
+                    System.out.println();
+                }
+                // String key = null;
+                // key = xmlComponent.getName() + "#" + oraStrings[j];//$NON-NLS-1$
+
+                if (a == 0) {
+                    if (!oraStrings[j].equals("Misc")) {//$NON-NLS-1$
+                        if (isFavorite
+                                && !(favoriteComponentNames != null && favoriteComponentNames.contains(xmlComponent.getName()))) {
+
+                            continue;
+                        }
+                    }
+                }
+                families.add(strings[j]);
+                familyMap.put(strings[j], oraStrings[j]);
+
+            }
+
         }
 
         Collections.sort(families);
@@ -973,82 +968,80 @@ public final class TalendEditorPaletteFactory {
 
             // }
 
-            if (xmlComponent.isLoaded()) {
-                name = UnifiedComponentUtil.getComponentDisplayNameForPalette(xmlComponent, filter);
-                longName = xmlComponent.getLongName();
+            name = UnifiedComponentUtil.getComponentDisplayNameForPalette(xmlComponent, filter);
+            longName = xmlComponent.getLongName();
 
-                if(!isDBCommonVisible(xmlComponent, name)){
-                    continue;
-                }
+            if (!isDBCommonVisible(xmlComponent, name)) {
+                continue;
+            }
 
-                ImageDescriptor imageSmall = xmlComponent.getIcon16();
-                ImageDescriptor imageLarge;
-                if (largeIconsSize.equals("24")) { //$NON-NLS-1$
-                    imageLarge = xmlComponent.getIcon24();
-                } else {
-                    imageLarge = xmlComponent.getIcon32();
-                }
+            ImageDescriptor imageSmall = xmlComponent.getIcon16();
+            ImageDescriptor imageLarge;
+            if (largeIconsSize.equals("24")) { //$NON-NLS-1$
+                imageLarge = xmlComponent.getIcon24();
+            } else {
+                imageLarge = xmlComponent.getIcon32();
+            }
 
-                if (favoriteComponentNames != null && favoriteComponentNames.contains(xmlComponent.getName())) {
-                    componentsDrawer = ht.get(FAVORITES);
-                    if (componentsDrawer != null) {
-                        component = new TalendCombinedTemplateCreationEntry(name, name, Node.class, xmlComponent, imageSmall,
-                                imageLarge, filter);
-
-                        component.setDescription(longName);
-                        component.setParent(componentsDrawer);
-                        componentsDrawer.add(component);
-                    }
-                }
-
-                if (recentlyUsedComponentNames != null && recentlyUsedComponentNames.contains(xmlComponent.getName())) {
-                    recentlyUsedMap.put(xmlComponent.getName(), xmlComponent);
-                }
-
-                if (isFavorite && !(favoriteComponentNames != null && favoriteComponentNames.contains(xmlComponent.getName()))) {
-                    continue;
-                }
-
-                String[] strings = family.split(ComponentsFactoryProvider.FAMILY_SEPARATOR_REGEX);
-                String[] oraStrings = oraFamily.split(ComponentsFactoryProvider.FAMILY_SEPARATOR_REGEX);
-                for (int j = 0; j < strings.length; j++) {
-                    if (!needHiddenComponent && !xmlComponent.isVisible(oraStrings[j])) {
-                        continue;
-                    }
-                    // String key = null;
-                    // key = xmlComponent.getName() + "#" + oraStrings[j];//$NON-NLS-1$
-
+            if (favoriteComponentNames != null && favoriteComponentNames.contains(xmlComponent.getName())) {
+                componentsDrawer = ht.get(FAVORITES);
+                if (componentsDrawer != null) {
                     component = new TalendCombinedTemplateCreationEntry(name, name, Node.class, xmlComponent, imageSmall,
                             imageLarge, filter);
 
                     component.setDescription(longName);
-                    if (a == 0) {
-                        componentsDrawer = ht.get(strings[j]);
-                        component.setParent(componentsDrawer);
-                        componentsDrawer.add(component);
-                    } else if (a == 1) {
-                        boolean canAdd = true;
-                        // listName = paGroup.getChildren();
-                        // for (int z = 0; z < listName.size(); z++) {
-                        // if ((((PaletteEntry) listName.get(z)).getLabel()).equals(component.getLabel())) {
-                        // canAdd = false;
-                        // }
-                        // }
-                        Iterator<CreationToolEntry> iter = nodeList.iterator();
-                        while (iter.hasNext()) {
+                    component.setParent(componentsDrawer);
+                    componentsDrawer.add(component);
+                }
+            }
 
-                            if ((iter.next().getLabel()).equals(component.getLabel())) {
-                                canAdd = false;
-                            }
-                        }
-                        if (canAdd == true) {
-                            nodeList.add(component);
-                            // component.setParent(paGroup);
-                            // paGroup.add(component);
+            if (recentlyUsedComponentNames != null && recentlyUsedComponentNames.contains(xmlComponent.getName())) {
+                recentlyUsedMap.put(xmlComponent.getName(), xmlComponent);
+            }
+
+            if (isFavorite && !(favoriteComponentNames != null && favoriteComponentNames.contains(xmlComponent.getName()))) {
+                continue;
+            }
+
+            String[] strings = family.split(ComponentsFactoryProvider.FAMILY_SEPARATOR_REGEX);
+            String[] oraStrings = oraFamily.split(ComponentsFactoryProvider.FAMILY_SEPARATOR_REGEX);
+            for (int j = 0; j < strings.length; j++) {
+                if (!needHiddenComponent && !xmlComponent.isVisible(oraStrings[j])) {
+                    continue;
+                }
+                // String key = null;
+                // key = xmlComponent.getName() + "#" + oraStrings[j];//$NON-NLS-1$
+
+                component = new TalendCombinedTemplateCreationEntry(name, name, Node.class, xmlComponent, imageSmall, imageLarge,
+                        filter);
+
+                component.setDescription(longName);
+                if (a == 0) {
+                    componentsDrawer = ht.get(strings[j]);
+                    component.setParent(componentsDrawer);
+                    componentsDrawer.add(component);
+                } else if (a == 1) {
+                    boolean canAdd = true;
+                    // listName = paGroup.getChildren();
+                    // for (int z = 0; z < listName.size(); z++) {
+                    // if ((((PaletteEntry) listName.get(z)).getLabel()).equals(component.getLabel())) {
+                    // canAdd = false;
+                    // }
+                    // }
+                    Iterator<CreationToolEntry> iter = nodeList.iterator();
+                    while (iter.hasNext()) {
+
+                        if ((iter.next().getLabel()).equals(component.getLabel())) {
+                            canAdd = false;
                         }
                     }
-
+                    if (canAdd == true) {
+                        nodeList.add(component);
+                        // component.setParent(paGroup);
+                        // paGroup.add(component);
+                    }
                 }
+
             }
         }
 

@@ -4,7 +4,7 @@
 
 	<groupId>org.talend.components</groupId>
 	<artifactId>talendExcel</artifactId>
-	<version>1.10-20210113</version>
+	<version>1.11-20210513</version>
 	<packaging>jar</packaging>
 
 	<name>talendExcel</name>
@@ -71,7 +71,7 @@
 		<dependency>
 		    <groupId>org.apache.commons</groupId>
 		    <artifactId>commons-lang3</artifactId>
-		    <version>3.8.1</version>
+		    <version>3.10</version>
 		</dependency>
 	</dependencies>
 	<build>

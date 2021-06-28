@@ -2039,13 +2039,16 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
             if (isRouteDebugging()) {
                 StringBuilder jmxArguments = new StringBuilder();
                 jmxArguments.append(wc.getAttribute(IJavaLaunchConfigurationConstants.ATTR_VM_ARGUMENTS, ""));
-                jmxArguments.append("\n-Dorg.apache.camel.jmx.createRmiConnector=True");
-                jmxArguments.append("\n-Dorg.apache.camel.jmx.rmiConnector.registryPort=1099");
-                jmxArguments.append("\n-Dorg.apache.camel.jmx.serviceUrlPath=/jmxrmi/camel/" + process.getName());
+
                 jmxArguments.append("\n-Dorg.apache.camel.jmx.mbeanObjectDomainName=org.apache.camel");
                 jmxArguments.append("\n-Dorg.apache.camel.jmx.usePlatformMBeanServer=True");
+
                 jmxArguments.append("\n-Dcom.sun.management.jmxremote.ssl=False");
                 jmxArguments.append("\n-Dcom.sun.management.jmxremote.authenticate=False");
+
+                jmxArguments.append("\n-Dcom.sun.management.jmxremote");
+                jmxArguments.append("\n-Dcom.sun.management.jmxremote.port=1099");
+
                 wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_VM_ARGUMENTS, jmxArguments.toString());
             }
             config = wc.doSave();

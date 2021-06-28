@@ -138,7 +138,7 @@ public class ConnectionCreateAction extends SelectionAction {
                     if (!node.isELTMapComponent()) {
                         boolean jobletOk = false;
                         if (PluginChecker.isJobLetPluginLoaded()) {
-                            IJobletProviderService service = (IJobletProviderService) GlobalServiceRegister.getDefault()
+                            IJobletProviderService service = GlobalServiceRegister.getDefault()
                                     .getService(IJobletProviderService.class);
                             if (service != null && service.isJobletComponent(node)) {
                                 jobletOk = true;
@@ -182,8 +182,8 @@ public class ConnectionCreateAction extends SelectionAction {
             }
 
             if (curNodeConnector.isMultiSchema()) {
-                for (int i = 0; i < node.getMetadataList().size(); i++) {
-                    IMetadataTable table = (node.getMetadataList().get(i));
+                for (IMetadataTable element : node.getMetadataList()) {
+                    IMetadataTable table = (element);
                     String value = table.getAdditionalProperties().get(ISINPUT);
                     if (value != null && value.equals(TRUE)) {
                         continue;
@@ -192,7 +192,10 @@ public class ConnectionCreateAction extends SelectionAction {
                     if (name.equals(node.getUniqueName())) {
                         continue;
                     }
-                    if (table.getAttachedConnector() == null || table.getAttachedConnector().equals(curNodeConnector.getName())) {
+                    boolean isELTMap = node.isELTMapComponent()
+                            && EConnectionType.TABLE_REF.getName().equals(table.getAttachedConnector());
+                    if (table.getAttachedConnector() == null || table.getAttachedConnector().equals(curNodeConnector.getName())
+                            || isELTMap) {
                         if (connecType == EConnectionType.TABLE) {
                             name = table.getLabel() + " (" + name + ")"; //$NON-NLS-1$ //$NON-NLS-2$
                         }
@@ -221,8 +224,8 @@ public class ConnectionCreateAction extends SelectionAction {
 
                 // get linked metadata to connector
                 IMetadataTable table = null;
-                for (int i = 0; i < node.getMetadataList().size(); i++) {
-                    table = (node.getMetadataList().get(i));
+                for (IMetadataTable element : node.getMetadataList()) {
+                    table = (element);
                     if (table.getTableName().equals(node.getUniqueName())) {
                         break;
                     }
@@ -425,7 +428,7 @@ public class ConnectionCreateAction extends SelectionAction {
                     toRemove.add(connector);
                 } else {
                     if (PluginChecker.isJobLetPluginLoaded()) {
-                        IJobletProviderService service = (IJobletProviderService) GlobalServiceRegister.getDefault().getService(
+                        IJobletProviderService service = GlobalServiceRegister.getDefault().getService(
                                 IJobletProviderService.class);
                         if (service != null) {
                             if (service.isJobletComponent(node) && !service.isBuiltTriggerConnector(node, connector)) {

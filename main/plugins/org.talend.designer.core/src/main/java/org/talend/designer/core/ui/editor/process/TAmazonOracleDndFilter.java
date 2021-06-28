@@ -12,18 +12,17 @@
 // ============================================================================
 package org.talend.designer.core.ui.editor.process;
 
+import java.util.Arrays;
+import java.util.List;
+
 import org.talend.core.database.EDatabaseTypeName;
 import org.talend.core.database.conn.version.EDatabaseVersion4Drivers;
 import org.talend.core.model.components.IComponent;
 import org.talend.core.model.metadata.builder.connection.DatabaseConnection;
-import org.talend.core.model.process.IElementParameter;
-import org.talend.core.model.process.IProcess;
 import org.talend.core.model.properties.DatabaseConnectionItem;
 import org.talend.core.model.properties.Item;
 import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.core.repository.DefaultRepositoryComponentDndFilter;
-import org.talend.designer.core.ui.editor.nodecontainer.NodeContainer;
-import org.talend.designer.core.ui.editor.nodes.Node;
 import org.talend.metadata.managment.utils.MetadataConnectionUtils;
 import org.talend.repository.model.RepositoryNode;
 
@@ -32,8 +31,11 @@ import org.talend.repository.model.RepositoryNode;
  */
 public class TAmazonOracleDndFilter extends DefaultRepositoryComponentDndFilter {
 
+    private List<String> componentList;
+
     public TAmazonOracleDndFilter() {
         super();
+        componentList = Arrays.asList("tAmazonOracleInput", "tAmazonOracleOutput", "tAmazonOracleConnection", "tAmazonOracleRow"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
     }
 
     @Override
@@ -41,36 +43,18 @@ public class TAmazonOracleDndFilter extends DefaultRepositoryComponentDndFilter 
             String repositoryType) {
         if (component != null) {
             // for tAmazonOracleInput/Output/Connection/Row
-            if (component.getName().startsWith("tAmazonOracle")) { //$NON-NLS-1$
-                IProcess process = null;
-                Node node = null;
-                try {
-                    String dbType = null;
-                    if (item != null && item instanceof DatabaseConnectionItem) {
-                        if (((DatabaseConnectionItem) item).getConnection() instanceof DatabaseConnection) {
-                            dbType = ((DatabaseConnection) ((DatabaseConnectionItem) item).getConnection()).getDatabaseType();
+            if (componentList.contains(component.getName())) {
+                String dbType = null;
+                if (item != null && item instanceof DatabaseConnectionItem) {
+                    if (((DatabaseConnectionItem) item).getConnection() instanceof DatabaseConnection) {
+                        dbType = ((DatabaseConnection) ((DatabaseConnectionItem) item).getConnection()).getDatabaseType();
+                        String conType = EDatabaseTypeName.getTypeFromDbType("ORACLE_SID").getDisplayName(); //$NON-NLS-1$
+                        if (conType != null && dbType != null && conType.equals(dbType)) {
+                            return false;
                         }
-                    }
-                    node = new Node(component);
-                    process = node.getProcess();
-                    if (node != null) {
-                        IElementParameter param = node.getElementParameter("CONNECTION_TYPE");//$NON-NLS-1$
-                        if (param != null) {
-                            Object[] valuesList = param.getListItemsValue();
-                            for (Object element : valuesList) {
-                                String conType = EDatabaseTypeName.getTypeFromDbType(element.toString()).getDisplayName();
-                                if (conType != null && dbType != null && conType.equals(dbType)) {
-                                    return false;
-                                }
-                            }
-                        }
-                    }
-                    return true;
-                } finally {
-                    if (node != null && process instanceof Process) {
-                        ((Process) process).removeNodeContainer(new NodeContainer(node));
                     }
                 }
+                return true;
             } else if (("tOracleCDCOutput").equals(component.getName())) { //$NON-NLS-1$
                 if (item != null && item instanceof DatabaseConnectionItem) {
                     if (((DatabaseConnectionItem) item).getConnection() instanceof DatabaseConnection) {

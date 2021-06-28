@@ -30,7 +30,7 @@ public class ComponentsProvider implements IGenericProvider {
     @Override
     public void loadComponentsFromExtensionPoint() {
         if (ProjectManager.getInstance().getCurrentProject() != null) {
-            ComponentsUtils.loadComponents(ComponentsUtils.getComponentService());
+            ComponentsUtils.initComponents();
         }
     }
 
