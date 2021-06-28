@@ -54,6 +54,7 @@ import org.talend.core.model.repository.RepositoryObject;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
 import org.talend.core.runtime.CoreRuntimePlugin;
 import org.talend.core.runtime.services.IGenericDBService;
+import org.talend.core.runtime.services.IGenericWizardInternalService;
 import org.talend.core.runtime.services.IGenericWizardService;
 import org.talend.daikon.properties.presentation.Form;
 import org.talend.designer.core.IDesignerCoreService;
@@ -61,8 +62,6 @@ import org.talend.designer.core.generic.constants.IGenericConstants;
 import org.talend.metadata.managment.ui.utils.ConnectionContextHelper;
 import org.talend.metadata.managment.ui.wizard.CheckLastVersionRepositoryWizard;
 import org.talend.repository.generic.i18n.Messages;
-import org.talend.repository.generic.internal.IGenericWizardInternalService;
-import org.talend.repository.generic.internal.service.GenericWizardInternalService;
 import org.talend.repository.generic.model.genericMetadata.GenericMetadataFactory;
 import org.talend.repository.generic.persistence.GenericRepository;
 import org.talend.repository.generic.ui.common.GenericWizardDialog;
@@ -179,7 +178,7 @@ public class GenericConnWizard extends CheckLastVersionRepositoryWizard {
             this.originalStatus = this.connectionItem.getProperty().getStatusCode();
         }
         oldMetadataTable = GenericUpdateManager.getConversionMetadataTables(connectionItem.getConnection());
-        compService = new GenericWizardInternalService().getComponentService();
+        compService = IGenericWizardInternalService.getService().getComponentService();
         compService.setRepository(new GenericRepository());
         IWizardContainer container = this.getContainer();
         if (container instanceof GenericWizardDialog) {
@@ -232,7 +231,7 @@ public class GenericConnWizard extends CheckLastVersionRepositoryWizard {
     }
 
     private ComponentWizard getDefaultWizard(String typeName) {
-        IGenericWizardInternalService internalService = new GenericWizardInternalService();
+        IGenericWizardInternalService internalService = IGenericWizardInternalService.getService();
         return internalService.getComponentWizard(typeName, connectionProperty.getId());
     }
 

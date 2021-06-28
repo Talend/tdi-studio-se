@@ -12,9 +12,8 @@
 // ============================================================================
 package org.talend.repository.generic.util;
 
+import org.talend.core.runtime.services.IGenericWizardInternalService;
 import org.talend.core.runtime.services.IGenericWizardService;
-import org.talend.repository.generic.internal.IGenericWizardInternalService;
-import org.talend.repository.generic.internal.service.GenericWizardInternalService;
 import org.talend.repository.generic.service.GenericWizardService;
 
 /**
@@ -36,7 +35,7 @@ public class GenericWizardServiceFactory {
 
     public static IGenericWizardInternalService getGenericWizardInternalService() {
         if (internalService == null) {
-            internalService = new GenericWizardInternalService();
+            internalService = IGenericWizardInternalService.getService();
         }
         return internalService;
     }
