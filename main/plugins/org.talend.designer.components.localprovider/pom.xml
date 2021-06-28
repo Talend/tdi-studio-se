@@ -96,7 +96,7 @@
 									<outputDirectory>${thashfile.dir}</outputDirectory>
 								</artifactItem>
 								<artifactItem>
-									<groupId>org.talend.libraries</groupId>
+									<groupId>org.talend.components.lib</groupId>
 									<artifactId>commons-net-ftps-proxy</artifactId>
 									<version>${ftpProxy.version}</version>
 									<type>jar</type>
