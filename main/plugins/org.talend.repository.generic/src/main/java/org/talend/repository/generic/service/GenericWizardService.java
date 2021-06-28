@@ -15,6 +15,7 @@ package org.talend.repository.generic.service;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -51,6 +52,7 @@ import org.talend.core.model.properties.ConnectionItem;
 import org.talend.core.model.properties.Item;
 import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.core.runtime.services.IGenericDBService;
+import org.talend.core.runtime.services.IGenericService;
 import org.talend.core.runtime.services.IGenericWizardService;
 import org.talend.core.utils.ReflectionUtils;
 import org.talend.core.utils.TalendQuoteUtils;
@@ -88,8 +90,6 @@ import orgomg.cwm.objectmodel.core.TaggedValue;
 public class GenericWizardService implements IGenericWizardService {
 
     private IGenericWizardInternalService internalService = null;
-
-    List<String> typeNames = new ArrayList<>();
 
     public GenericWizardService() {
         internalService = new GenericWizardInternalService();
@@ -142,16 +142,13 @@ public class GenericWizardService implements IGenericWizardService {
         return extraTypes.contains(type);
     }
 
-    @Override
-    public List<String> getGenericTypeNames() {
-        if (typeNames.isEmpty()) {
-            Set<ComponentWizardDefinition> wizardDefinitions = internalService.getComponentService()
-                    .getTopLevelComponentWizards();
-            for (ComponentWizardDefinition wizardDefinition : wizardDefinitions) {
-                typeNames.add(wizardDefinition.getName());
-            }
+    private List<String> getGenericTypeNames() {
+        IGenericService gs = IGenericService.getService();
+        if (gs != null) {
+            return gs.getGenericTypeNames();
+        } else {
+            return Collections.EMPTY_LIST;
         }
-        return typeNames;
     }
 
     @Override

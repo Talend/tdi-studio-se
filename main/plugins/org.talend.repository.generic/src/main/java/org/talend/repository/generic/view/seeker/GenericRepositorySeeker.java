@@ -15,9 +15,8 @@ package org.talend.repository.generic.view.seeker;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.talend.core.GlobalServiceRegister;
 import org.talend.core.model.repository.ERepositoryObjectType;
-import org.talend.core.runtime.services.IGenericWizardService;
+import org.talend.core.runtime.services.IGenericService;
 import org.talend.repository.metadata.seeker.AbstractMetadataRepoViewSeeker;
 
 /**
@@ -36,10 +35,7 @@ public class GenericRepositorySeeker extends AbstractMetadataRepoViewSeeker {
 
     private List<ERepositoryObjectType> getGenericTypes() {
         List<ERepositoryObjectType> repTypes = new ArrayList<>();
-        IGenericWizardService wizardService = null;
-        if (GlobalServiceRegister.getDefault().isServiceRegistered(IGenericWizardService.class)) {
-            wizardService = (IGenericWizardService) GlobalServiceRegister.getDefault().getService(IGenericWizardService.class);
-        }
+        IGenericService wizardService = IGenericService.getService();
         if (wizardService != null) {
             List<String> genericTypeNames = wizardService.getGenericTypeNames();
             for (String genericType : genericTypeNames) {

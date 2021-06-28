@@ -22,6 +22,7 @@ import org.talend.commons.runtime.model.components.IComponentConstants;
 import org.talend.components.api.component.ComponentDefinition;
 import org.talend.components.api.properties.ComponentProperties;
 import org.talend.components.api.properties.ComponentReferenceProperties;
+import org.talend.components.api.wizard.ComponentWizardDefinition;
 import org.talend.core.GlobalServiceRegister;
 import org.talend.core.model.components.IComponent;
 import org.talend.core.model.metadata.builder.connection.Connection;
@@ -43,6 +44,20 @@ import orgomg.cwm.objectmodel.core.TaggedValue;
  *
  */
 public class GenericService implements IGenericService {
+
+    private List<String> typeNames = new ArrayList<>();
+
+    @Override
+    public List<String> getGenericTypeNames() {
+        if (typeNames.isEmpty()) {
+            Set<ComponentWizardDefinition> wizardDefinitions = ComponentsUtils.getComponentService()
+                    .getTopLevelComponentWizards();
+            for (ComponentWizardDefinition wizardDefinition : wizardDefinitions) {
+                typeNames.add(wizardDefinition.getName());
+            }
+        }
+        return typeNames;
+    }
 
     @Override
     public boolean callBeforeActivate(IElementParameter parameter) {
