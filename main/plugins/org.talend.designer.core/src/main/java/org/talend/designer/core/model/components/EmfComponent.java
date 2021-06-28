@@ -1701,7 +1701,7 @@ public class EmfComponent extends AbstractBasicComponent {
                                     Set<DistributionVersion> versionsPerSparkVersion = supportedSparkVersions.getOrDefault(v,
                                             new HashSet<>());
                                     versionsPerSparkVersion.add(version);
-                                    supportedSparkVersions.put(v, versionsPerSparkVersion);
+                                	supportedSparkVersions.put(v, versionsPerSparkVersion);
                                 }
                             } catch (Exception e) {
                                 ExceptionHandler.process(e);
@@ -1858,9 +1858,9 @@ public class EmfComponent extends AbstractBasicComponent {
                 newParam.setGroupDisplayName(parentParam.getGroupDisplayName());
                 showIf = xmlParam.getSHOWIF();
                 if (showIf != null) {
-                    newParam.setShowIf(showIf + " AND (" + componentType.getDistributionParameter() + "!='CUSTOM')"); //$NON-NLS-1$ //$NON-NLS-2$
+                    newParam.setShowIf(showIf + " AND (" + componentType.getDistributionParameter() + "!='CUSTOM')" + " AND (" + componentType.getDistributionParameter() + "!='SPARK')"); //$NON-NLS-1$ //$NON-NLS-2$
                 } else {
-                    newParam.setShowIf("(" + componentType.getDistributionParameter() + "!='CUSTOM')"); //$NON-NLS-1$ //$NON-NLS-2$
+                    newParam.setShowIf("(" + componentType.getDistributionParameter() + "!='CUSTOM' AND " + componentType.getDistributionParameter() + "!='SPARK')"); //$NON-NLS-1$ //$NON-NLS-2$
                 }
                 newParam.setNotShowIf(xmlParam.getNOTSHOWIF());
 
