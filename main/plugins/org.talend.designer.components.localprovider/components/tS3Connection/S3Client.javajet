@@ -118,20 +118,12 @@
         <%
         } else if ("PROFILE_INHERIT_CREDENTIALS".equals(settingCredentialProvider)){%>
             com.amazonaws.auth.profile.ProfileCredentialsProvider profileCredentialsProvider_<%=cid%>;
-            String profileName_<%=cid%> = "default";
-            if(!"".equals(<%=profileName%>)){
-                profileName_<%=cid%> = <%=profileName%>;
-            }
-
+            String profileName_<%=cid%> = "".equals(<%=profileName%>)? "default" : <%=profileName%>;
         if(!"".equals(<%=profilePath%>)){
-            com.amazonaws.auth.profile.ProfilesConfigFile profilesConfigFile_<%=cid%> = new com.amazonaws.auth.profile.ProfilesConfigFile(<%=profilePath%>);
-            profileCredentialsProvider_<%=cid%> = new com.amazonaws.auth.profile.ProfileCredentialsProvider( profilesConfigFile_<%=cid%> , profileName_<%=cid%> );
+            profileCredentialsProvider_<%=cid%> = new com.amazonaws.auth.profile.ProfileCredentialsProvider( new com.amazonaws.auth.profile.ProfilesConfigFile(<%=profilePath%>) , profileName_<%=cid%> );
         }else{
             profileCredentialsProvider_<%=cid%> = new com.amazonaws.auth.profile.ProfileCredentialsProvider(profileName_<%=cid%>);
         }
-
-
-
             com.amazonaws.auth.AWSCredentialsProvider credentialsProvider_<%=cid%> =
         				new com.amazonaws.auth.AWSCredentialsProviderChain(
         					profileCredentialsProvider_<%=cid%>,
