@@ -13,7 +13,6 @@ imports="
     CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
     INode node = (INode)codeGenArgument.getArgument();
     String cid = node.getUniqueName();
-    boolean dieOnError = ElementParameterParser.getBooleanValue(node,"__DIE_ON_ERROR__");
     boolean isLog4jEnabled = ("true").equals(ElementParameterParser.getValue(node.getProcess(), "__LOG4J_ACTIVATE__"));
     String authMode = ElementParameterParser.getValue(node,"__AUTH_MODE__");
     List< ? extends IConnection> conns = node.getOutgoingSortedConnections();
@@ -36,28 +35,9 @@ imports="
                 %>
                     }
                     if (child_statistics_<%=cid%> != null) {
-                        globalMap.put("<%=cid%>_STATISTICS_CHILD", child_statistics_<%=cid%>.stream().collect(java.util.stream.Collectors.joining(",", "{statistics: [", "]}")));
+                        globalMap.put("<%=cid%>_STATISTICS_CHILD", child_statistics_<%=cid%>.stream().collect(java.util.stream.Collectors.joining(",", "{\"statistics\": [", "]}")));
                     }
                 }
-            } catch (Exception e_<%=cid%>) {
-                <%
-                if (dieOnError) {
-                %>
-                    throw e_<%=cid%>;
-                <%
-                } else {
-                    if(isLog4jEnabled){
-                    %>
-                        log.error("<%=cid%> - " + e_<%=cid%>.getMessage());
-                <%
-                    } else {
-                %>
-                        System.err.println("<%=cid%> - " + e_<%=cid%>.getMessage());
-                <%
-                    }
-                }
-                %>
-            }
 
                 <%
                 } else {
@@ -75,28 +55,25 @@ imports="
     }
                 if (authMode.equals("SERVICEACCOUNT")) {
                     %>
+                        }
+                    } catch (Exception e_<%=cid%>) {
+                        globalMap.put("<%=cid%>_ERROR_MESSAGE", e_<%=cid%>.getMessage());
+                        throw e_<%=cid%>;
                     }
                     <%
-                }
-
-    if (authMode.equals("OAUTH") || authMode.equals("TOKEN")) {
+                } else {
         %>
         } catch (Exception e_<%=cid%>) {
+            globalMap.put("<%=cid%>_ERROR_MESSAGE", e_<%=cid%>.getMessage());
             <%
-            if (dieOnError) {
+            if(isLog4jEnabled){
             %>
-                throw e_<%=cid%>;
+                log.error("<%=cid%> - " + e_<%=cid%>.getMessage());
             <%
             } else {
-                if(isLog4jEnabled){
-                %>
-                    log.error("<%=cid%> - " + e_<%=cid%>.getMessage());
-                <%
-                } else {
-                %>
-                    System.err.println("<%=cid%> - " + e_<%=cid%>.getMessage());
-                <%
-                }
+            %>
+                System.err.println("<%=cid%> - " + e_<%=cid%>.getMessage());
+            <%
             }
             %>
         } finally {
