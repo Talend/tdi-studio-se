@@ -37,8 +37,12 @@ if(("false").equals(ElementParameterParser.getValue(node,"__ADVANCED_USE__"))) {
 	        
 	        
 	        String timeoutStr = ElementParameterParser.getValue(node,"__TIMEOUT__");
-			String timeout = (timeoutStr!=null&&!("").equals(timeoutStr))?timeoutStr:"20";
-			
+	        if(timeoutStr == null || "".equals(timeoutStr) || "\"\"".equals(timeoutStr)){
+	            timeoutStr = "20";
+	        }
+			%>
+			long timeout_<%=cid %> = (long)(Double.valueOf(<%= timeoutStr %>) * 1000);
+			<%
 	        String endpoint = ElementParameterParser.getValue(node,"__ENDPOINT__");
 	        String method = ElementParameterParser.getValue(node,"__METHOD__");
 	        
@@ -59,8 +63,8 @@ if(("false").equals(ElementParameterParser.getValue(node,"__ADVANCED_USE__"))) {
 				
 				org.talend.webservice.helper.conf.ServiceHelperConfiguration config_<%=cid%> = new org.talend.webservice.helper.conf.ServiceHelperConfiguration();
 				
-				config_<%=cid%>.setConnectionTimeout(<%=timeout %>);
-				config_<%=cid%>.setReceiveTimeout(<%=timeout %>);
+				config_<%=cid%>.setConnectionTimeout(timeout_<%=cid %>);
+				config_<%=cid%>.setReceiveTimeout(timeout_<%=cid %>);
 				
 				config_<%=cid%>.setKeyStoreFile(System.getProperty("javax.net.ssl.keyStore"));
 				config_<%=cid%>.setKeyStoreType(System.getProperty("javax.net.ssl.keyStoreType"));
@@ -138,12 +142,13 @@ if(("false").equals(ElementParameterParser.getValue(node,"__ADVANCED_USE__"))) {
 				int nb_line_<%=cid %> = 0;
 			
 				{
-					if(result_<%=cid %>!=null && !result_<%=cid %>.isEmpty()) {
-						results_<%=cid %> = new Object[<%=listColumns.size()==0? 1 : listColumns.size()%>];
-					}
-					int k_<%=cid%> = 0;
-					for (String key_<%=cid %> : result_<%=cid %>.keySet()) {
-						results_<%=cid %>[k_<%=cid%>++] = result_<%=cid %>.get(key_<%=cid %>);
+					results_<%=cid %> = new Object[<%=listColumns.size()==0? 1 : listColumns.size()%>];
+					
+					if(result_<%=cid %>!=null) {
+						int k_<%=cid%> = 0;
+						for (String key_<%=cid %> : result_<%=cid %>.keySet()) {
+							results_<%=cid %>[k_<%=cid%>++] = result_<%=cid %>.get(key_<%=cid %>);
+						}
 					}
 			<%} else {%>
 			//TODO call the special Talend runJob webservice by cxf
