@@ -328,8 +328,6 @@ public class Node extends Element implements IGraphicalNode {
 
     private IReplaceNodeHandler replaceNodeHandler;
 
-    private static boolean isHeadless = CommonsPlugin.isHeadless();
-
     /**
      * Getter for index.
      *
@@ -4820,7 +4818,7 @@ public class Node extends Element implements IGraphicalNode {
     public Dimension getSize() {
         if (size == null) {
             size = new Dimension();
-            if (!isHeadless && getIcon32() != null) {
+            if (!CommonsPlugin.isHeadless() && getIcon32() != null) {
                 ImageData data = getIcon32().getImageData();
                 size.height = data.height;
                 size.width = data.width;
