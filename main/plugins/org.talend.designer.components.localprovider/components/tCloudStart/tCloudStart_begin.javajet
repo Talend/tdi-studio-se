@@ -50,7 +50,6 @@
 	try {
 		instanceCount = Integer.parseInt(ElementParameterParser.getValue(node, "__INSTANCE_COUNT__"));
 	} catch (Exception e) {
-globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
 		
 %>
 		if(true) {
@@ -107,7 +106,7 @@ globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
                 client_<%=cid%>.resumeNode(instanceId);
                 hasToCreateNode_<%=cid%> = false;
            	} catch(com.google.common.util.concurrent.UncheckedExecutionException e_<%=cid%>) {
-globalMap.put("<%=cid%>_ERROR_MESSAGE",e_<%=cid%>.getMessage());
+                globalMap.put("<%=cid%>_ERROR_MESSAGE",e_<%=cid%>.getMessage());
            		boolean ignoreException_<%=cid%> = false;
            		if(e_<%=cid%>.getCause()!=null && (e_<%=cid%>.getCause() instanceof java.lang.NullPointerException)) {
            			if("name".equals(e_<%=cid%>.getCause().getMessage())) {
@@ -184,7 +183,7 @@ globalMap.put("<%=cid%>_ERROR_MESSAGE",e_<%=cid%>.getMessage());
     	try {
 	    	nodes_<%=cid%> = context_<%=cid%>.getComputeService().createNodesInGroup(<%=instanceName%>.toLowerCase(), <%=instanceCount%>, template_<%=cid%>);
 	    } catch(com.google.common.util.concurrent.UncheckedExecutionException e_<%=cid%>) {
-globalMap.put("<%=cid%>_ERROR_MESSAGE",e_<%=cid%>.getMessage());
+            globalMap.put("<%=cid%>_ERROR_MESSAGE",e_<%=cid%>.getMessage());
 		    boolean ignoreException_<%=cid%> = false;
 		    if(e_<%=cid%>.getCause()!=null && (e_<%=cid%>.getCause() instanceof java.lang.NullPointerException)) {
 			    if("name".equals(e_<%=cid%>.getCause().getMessage())) {

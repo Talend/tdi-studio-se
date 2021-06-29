@@ -159,7 +159,6 @@ if(notNullCols != null && notNullCols.size() > 0) {
 		}
 	}
 	catch (java.lang.Exception e) {
-globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
 	}
 */
 	if (!(("").equals(maxErrors) || ("\"\"").equals(maxErrors) || ("\"0\"").equals(maxErrors))) {

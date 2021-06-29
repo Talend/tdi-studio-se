@@ -244,7 +244,7 @@ public class ComboController extends AbstractElementPropertySectionController {
                 data.left = new FormAttachment(100, -initialSize.x);
             } else {
                 data.left = new FormAttachment((((nbInRow - numInRow) * MAX_PERCENT) / nbInRow),
-                        currentLabelWidth + ITabbedPropertyConstants.HSPACE);
+                        currentLabelWidth + ITabbedPropertyConstants.HSPACE + 5);
             }
 
             data = (FormData) labelLabel.getLayoutData();
@@ -517,7 +517,7 @@ public class ComboController extends AbstractElementPropertySectionController {
         if (isPatternList) {
             ITDQPatternService service = null;
             try {
-                service = (ITDQPatternService) GlobalServiceRegister.getDefault().getService(ITDQPatternService.class);
+                service = GlobalServiceRegister.getDefault().getService(ITDQPatternService.class);
             } catch (RuntimeException e) {
                 // nothing to do
             }
@@ -533,7 +533,7 @@ public class ComboController extends AbstractElementPropertySectionController {
         if (isRule) {
             ITDQRuleService service = null;
             try {
-                service = (ITDQRuleService) GlobalServiceRegister.getDefault().getService(ITDQRuleService.class);
+                service = GlobalServiceRegister.getDefault().getService(ITDQRuleService.class);
             } catch (RuntimeException e) {
                 // nothing to do
             }
