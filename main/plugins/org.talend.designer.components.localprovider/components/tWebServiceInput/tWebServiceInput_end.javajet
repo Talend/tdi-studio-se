@@ -6,7 +6,7 @@
 	" 
 %>
 <%@ include file="@{org.talend.designer.components.localprovider}/components/templates/Log4j/LogUtil.javajet"%>
-
+<%
 CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
 INode node = (INode)codeGenArgument.getArgument();
 
@@ -20,3 +20,4 @@ if("CXF".equals(api)) {
 <%@ include file="axis_end.javajet"%>
 <%
 }
+%>

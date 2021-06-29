@@ -279,6 +279,8 @@ public class ServiceInvokerHelper implements ClassMapper {
         }
         Map<String, Object> result = invoke(info.service, info.port, info.operationName, paramsMap);
 
+        if(result==null || result.isEmpty()) return null;
+
         return MapConverter.deepMapToMap(result, true);
     }
 
