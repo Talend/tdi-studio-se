@@ -3146,10 +3146,13 @@ public class EmfComponent extends AbstractBasicComponent {
     }
 
     private String getDistributionVersion(INode node, ComponentType compType) {
-    	INode sparkNode = node.getProcess().getNodesOfType("tSparkConfiguration").get(0);
-    	if (sparkNode != null) {
-    		node = sparkNode;
-    	} 
+        IProcess process = node.getProcess();
+        if (process != null && !ComponentCategory.CATEGORY_4_DI.getName().equals(process.getComponentsType())) {
+            List<? extends INode> nodes = process.getNodesOfType("tSparkConfiguration");
+            if (nodes != null && !nodes.isEmpty()) {
+                node = nodes.get(0);
+            }
+        }
         IElementParameter hdElemParam = node.getElementParameter(compType.getVersionParameter());
         Object value = null;
         if (hdElemParam != null && hdElemParam.isShow(node.getElementParameters())) {
