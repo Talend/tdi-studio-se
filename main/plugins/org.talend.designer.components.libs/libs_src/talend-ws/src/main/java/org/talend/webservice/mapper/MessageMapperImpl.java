@@ -5,7 +5,6 @@
 package org.talend.webservice.mapper;
 
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import javax.wsdl.Message;
@@ -153,7 +152,7 @@ public class MessageMapperImpl implements MessageMapper {
             return wrappedValue;
         } else {
             List<Part> orderedParts = message.getOrderedParts(null);
-            Map<String, Object> values = new LinkedHashMap<String, Object>(params.length);
+            Map<String, Object> values = new HashMap<String, Object>(params.length);
             int i = 0;
             for (Object param : params) {
                 Part part = orderedParts.get(i);
