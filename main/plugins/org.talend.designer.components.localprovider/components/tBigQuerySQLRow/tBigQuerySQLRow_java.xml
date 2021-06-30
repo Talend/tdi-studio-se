@@ -232,7 +232,7 @@
             <IMPORT NAME="opencensus-api-0.24.0" MODULE="opencensus-api-0.24.0.jar" MVN="mvn:io.opencensus/opencensus-api/0.24.0" REQUIRED="true" />
             <IMPORT NAME="opencensus-contrib-http-util-0.24.0" MODULE="opencensus-contrib-http-util-0.24.0.jar" MVN="mvn:io.opencensus/opencensus-contrib-http-util/0.24.0" REQUIRED="true" />
             <IMPORT NAME="grpc-context-1.22.1" MODULE="grpc-context-1.22.1.jar" MVN="mvn:io.grpc/grpc-context/1.22.1" REQUIRED="true" />
-            <IMPORT NAME="gson-2.8.7" MODULE="gson-2.8.7.jar" MVN="mvn:com.google.code.gson/gson/2.8.7" REQUIRED_IF="AUTH_MODE == 'SERVICEACCOUNT'" />
+            <IMPORT NAME="gson-2.8.6" MODULE="gson-2.8.6.jar" MVN="mvn:com.google.code.gson/gson/2.8.6" REQUIRED_IF="AUTH_MODE == 'SERVICEACCOUNT'" />
         </IMPORTS>
     </CODEGENERATION>
     <RETURNS>
