@@ -3145,9 +3145,25 @@ public class EmfComponent extends AbstractBasicComponent {
         }
     }
 
+    private boolean isBigdataProcess(String componentsType) {
+        if (ComponentCategory.CATEGORY_4_MAPREDUCE.getName().equals(componentsType)) {
+            return true;
+        }
+        if (ComponentCategory.CATEGORY_4_SPARK.getName().equals(componentsType)) {
+            return true;
+        }
+        if (ComponentCategory.CATEGORY_4_SPARKSTREAMING.getName().equals(componentsType)) {
+            return true;
+        }
+        if (ComponentCategory.CATEGORY_4_STORM.getName().equals(componentsType)) {
+            return true;
+        }
+        return false;
+    }
+
     private String getDistributionVersion(INode node, ComponentType compType) {
         IProcess process = node.getProcess();
-        if (process != null && !ComponentCategory.CATEGORY_4_DI.getName().equals(process.getComponentsType())) {
+        if (process != null && isBigdataProcess(process.getComponentsType())) {
             List<? extends INode> nodes = process.getNodesOfType("tSparkConfiguration");
             if (nodes != null && !nodes.isEmpty()) {
                 node = nodes.get(0);
