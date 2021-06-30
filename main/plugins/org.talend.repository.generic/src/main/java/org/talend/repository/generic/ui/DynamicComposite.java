@@ -43,6 +43,7 @@ import org.talend.core.model.process.IElementParameter;
 import org.talend.core.model.process.INode;
 import org.talend.core.model.properties.ConnectionItem;
 import org.talend.core.model.repository.ERepositoryObjectType;
+import org.talend.core.runtime.services.IGenericWizardInternalService;
 import org.talend.core.ui.check.Checker;
 import org.talend.core.ui.check.IChecker;
 import org.talend.cwm.helper.ConnectionHelper;
@@ -68,8 +69,6 @@ import org.talend.designer.core.model.components.EmfComponent;
 import org.talend.designer.core.ui.views.properties.composites.MissingSettingsMultiThreadDynamicComposite;
 import org.talend.metadata.managment.ui.wizard.context.MetadataContextPropertyValueEvaluator;
 import org.talend.repository.generic.i18n.Messages;
-import org.talend.repository.generic.internal.IGenericWizardInternalService;
-import org.talend.repository.generic.internal.service.GenericWizardInternalService;
 import org.talend.repository.generic.model.genericMetadata.SubContainer;
 import org.talend.repository.generic.util.GenericConnectionUtil;
 
@@ -106,7 +105,7 @@ public class DynamicComposite extends MissingSettingsMultiThreadDynamicComposite
         this.form = form;
         this.drivedByForm = drivedByForm;
         checker = new Checker();
-        internalService = new GenericWizardInternalService();
+        internalService = IGenericWizardInternalService.getService();
         if (drivedByForm) {
             internalService.getComponentService().makeFormCancelable(form.getProperties(), form.getName());
         }
@@ -121,7 +120,7 @@ public class DynamicComposite extends MissingSettingsMultiThreadDynamicComposite
         this.drivedByForm = drivedByForm;
         this.connectionItem = connectionItem;
         checker = new Checker();
-        internalService = new GenericWizardInternalService();
+        internalService = IGenericWizardInternalService.getService();
         if (drivedByForm) {
             internalService.getComponentService().makeFormCancelable(form.getProperties(), form.getName());
         }

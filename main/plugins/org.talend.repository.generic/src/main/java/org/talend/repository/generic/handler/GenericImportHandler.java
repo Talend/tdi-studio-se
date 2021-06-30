@@ -15,9 +15,8 @@ package org.talend.repository.generic.handler;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
-import org.talend.core.GlobalServiceRegister;
 import org.talend.core.model.repository.ERepositoryObjectType;
-import org.talend.core.runtime.services.IGenericWizardService;
+import org.talend.core.runtime.services.IGenericService;
 import org.talend.repository.items.importexport.handlers.imports.MetadataConnectionImportHandler;
 
 /**
@@ -32,10 +31,7 @@ public class GenericImportHandler extends MetadataConnectionImportHandler {
     }
 
     private void appendGenericTypes() {
-        IGenericWizardService wizardService = null;
-        if (GlobalServiceRegister.getDefault().isServiceRegistered(IGenericWizardService.class)) {
-            wizardService = (IGenericWizardService) GlobalServiceRegister.getDefault().getService(IGenericWizardService.class);
-        }
+        IGenericService wizardService = IGenericService.getService();
         if (wizardService != null) {
             List<String> genericTypeNames = wizardService.getGenericTypeNames();
             for (String genericType : genericTypeNames) {

@@ -1,10 +1,8 @@
 package org.talend.repository.generic.model;
 
-import org.talend.commons.CommonsPlugin;
 import org.talend.commons.ui.runtime.image.IImage;
 import org.talend.commons.ui.runtime.repository.IExtendRepositoryNode;
-import org.talend.core.GlobalServiceRegister;
-import org.talend.core.runtime.services.IGenericWizardService;
+import org.talend.core.runtime.services.IGenericService;
 
 /**
  * 
@@ -18,13 +16,7 @@ public class FakeGenericExtendNode implements IExtendRepositoryNode {
     }
 
     private void initGenericTypes() {
-    	if (CommonsPlugin.isHeadless()) {
-    		return;
-    	}
-        IGenericWizardService wizardService = null;
-        if (GlobalServiceRegister.getDefault().isServiceRegistered(IGenericWizardService.class)) {
-            wizardService = (IGenericWizardService) GlobalServiceRegister.getDefault().getService(IGenericWizardService.class);
-        }
+        IGenericService wizardService = IGenericService.getService();
         if (wizardService != null) {
             wizardService.createNodesFromComponentService(null); // Just use to init generic types.
         }

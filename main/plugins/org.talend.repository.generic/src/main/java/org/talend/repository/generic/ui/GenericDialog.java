@@ -28,9 +28,9 @@ import org.talend.components.api.service.ComponentService;
 import org.talend.core.model.process.EComponentCategory;
 import org.talend.core.model.process.Element;
 import org.talend.core.model.properties.ConnectionItem;
+import org.talend.core.runtime.services.IGenericWizardInternalService;
 import org.talend.daikon.properties.presentation.Form;
 import org.talend.designer.core.model.FakeElement;
-import org.talend.repository.generic.internal.service.GenericWizardInternalService;
 
 /**
  * created by ycbai on 2015年10月12日 Detailled comment
@@ -49,7 +49,7 @@ public class GenericDialog extends TitleAreaDialog {
     public GenericDialog(Shell parentShell, Form form) {
         super(parentShell);
         this.form = form;
-        componentService = new GenericWizardInternalService().getComponentService();
+        componentService = IGenericWizardInternalService.getService().getComponentService();
         setShellStyle(getShellStyle() | SWT.RESIZE | SWT.MIN | SWT.APPLICATION_MODAL);
     }
 
