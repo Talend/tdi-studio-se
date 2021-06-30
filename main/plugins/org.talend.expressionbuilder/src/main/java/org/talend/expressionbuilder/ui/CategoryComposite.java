@@ -314,6 +314,8 @@ public class CategoryComposite extends Composite {
                             column.setTalendType(function.getTalendType().getName());
                             column.setFunction(function);
 
+                            BatchExpressionBuilderDialog.hideWarningLabel();
+
                             ExpressionComposite expressionComposite = ExpressionBuilderDialog.getExpressionComposite();
                             if (expressionComposite != null) {
                                 if (expressionComposite instanceof PigExpressionComposite) {
@@ -330,6 +332,11 @@ public class CategoryComposite extends Composite {
                                     }
                                 } else if (expressionComposite instanceof BatchExpressionComposite) {
                                     expressionComposite.setExpression(FunctionManagerExt.getOneColData(column, false, true), true);
+                                    if (column.getFunction().isRoutineJarDependencyMissing()) {
+                                        BatchExpressionBuilderDialog.showWarningLabel(Messages.getString(
+                                                "CategoryComposite.missingRoutineJar",
+                                                        column.getFunction().getRoutineJarName()));
+                                    }
                                 } else {
                                     expressionComposite.setExpression(FunctionManagerExt.getOneColData(column, false), true);
                                     expressionComposite.modificationRecord.pushRecored(expressionComposite.getExpression());

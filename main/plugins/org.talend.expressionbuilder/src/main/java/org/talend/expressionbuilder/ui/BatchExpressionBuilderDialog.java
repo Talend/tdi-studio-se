@@ -15,13 +15,19 @@ package org.talend.expressionbuilder.ui;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
+import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.talend.commons.ui.runtime.expressionbuilder.IExpressionDataBean;
+import org.talend.commons.ui.runtime.image.EImage;
+import org.talend.commons.ui.runtime.image.ImageProvider;
+import org.talend.commons.ui.utils.image.ColorUtils;
 import org.talend.core.model.process.INode;
 import org.talend.expressionbuilder.ExpressionPersistance;
 import org.talend.expressionbuilder.i18n.Messages;
@@ -33,6 +39,14 @@ import org.talend.expressionbuilder.i18n.Messages;
 public class BatchExpressionBuilderDialog extends ExpressionBuilderDialog {
 
     private Composite container;
+
+    private static Label warningLabel;
+
+    private GridData warningLayoutData;
+
+    private static Composite warningComposite;
+
+    private Color warningColor = ColorUtils.getCacheColor(new RGB(255, 175, 10));
 
     public BatchExpressionBuilderDialog(Shell parentShell, IExpressionDataBean dataBean, INode component) {
         super(parentShell, dataBean, component);
@@ -63,12 +77,35 @@ public class BatchExpressionBuilderDialog extends ExpressionBuilderDialog {
         expressionComposite = new BatchExpressionComposite(this, upperSashform, SWT.NONE, dataBean);
         expressionComposite.setExpression(defaultExpression, true);
 
+        createWarningLabel(container);
+
         final GridData gridData = new GridData(SWT.FILL, SWT.FILL, true, true);
         sashForm.setLayoutData(gridData);
         sashForm.setWeights(new int[] { 4, 1 });
         return container;
     }
 
+    private void createWarningLabel(Composite container) {
+        warningComposite = new Composite(container, SWT.NONE);
+        warningLayoutData = new GridData(GridData.FILL_HORIZONTAL | GridData.GRAB_HORIZONTAL);
+        warningLayoutData.horizontalSpan = ((GridLayout) container.getLayout()).numColumns;
+        warningComposite.setLayoutData(warningLayoutData);
+        GridLayout layout = new GridLayout();
+        layout.marginTop = 0;
+        layout.marginLeft = 0;
+        layout.marginRight = 0;
+        layout.numColumns = 2;
+        warningComposite.setLayout(layout);
+        Label imageLabel = new Label(warningComposite, SWT.NONE);
+        imageLabel.setImage(ImageProvider.getImage(EImage.WARNING_ICON));
+
+        warningLabel = new Label(warningComposite, SWT.WRAP);
+        warningLabel.setBackground(warningColor);
+        warningLabel.setLayoutData(new GridData(GridData.FILL_HORIZONTAL | GridData.GRAB_HORIZONTAL));
+        warningLayoutData.exclude = false;
+        warningComposite.setVisible(false);
+    }
+    
     /*
      * (non-Javadoc)
      *
@@ -99,5 +136,14 @@ public class BatchExpressionBuilderDialog extends ExpressionBuilderDialog {
         super.create();
         addUndoOperationListener(container);
         isESCClose = true;
+    }
+
+    public static void hideWarningLabel() {
+        warningComposite.setVisible(false);
+    }
+
+    public static void showWarningLabel(String message) {
+        warningComposite.setVisible(true);
+        warningLabel.setText(message);
     }
 }
