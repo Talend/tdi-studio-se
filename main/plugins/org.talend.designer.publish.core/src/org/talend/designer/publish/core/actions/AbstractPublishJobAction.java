@@ -94,6 +94,7 @@ public abstract class AbstractPublishJobAction implements IRunnableWithProgress 
             exportJobForOSGI(monitor);
             break;
         case IMAGE:
+        case MSESB_IMAGE:
             exportJobForImage(monitor);
             break;
         default:
