@@ -113,25 +113,15 @@
 		}
 
         public void logErrorMessage() {
-
             if(isLog4jEnabled){
-
             %>
-
                 log.error(message_<%=cid%>);
-
             <%
-
             } else {
-
             %>
-
                 System.err.println(message_<%=cid%>);
-
             <%
-
             }
-
         }
 	}
 	
