@@ -1279,28 +1279,26 @@ public class Component extends AbstractBasicComponent {
 
     @Override
     public ImageDescriptor getIcon16() {
-        InputStream imageStream = ComponentsUtils.getComponentService().getComponentPngImage(componentDefinition.getName(),
-                ComponentImageType.PALLETE_ICON_32X32);
-        if (imageStream != null) {
-            ImageData imageData = new ImageData(imageStream);
-            if (!CommonsPlugin.isHeadless()) {
-                imageData = imageData.scaledTo(16, 16);
+        if (!CommonsPlugin.isHeadless()) {
+            InputStream imageStream = ComponentsUtils.getComponentService().getComponentPngImage(componentDefinition.getName(),
+                    ComponentImageType.PALLETE_ICON_32X32);
+            if (imageStream != null) {
+                ImageData imageData = new ImageData(imageStream);
+                return ImageDescriptor.createFromImageData(imageData.scaledTo(16, 16));
             }
-            return ImageDescriptor.createFromImageData(imageData);
         }
         return new DummyComponent("dummy").getIcon16(); //$NON-NLS-1$
     }
 
     @Override
     public ImageDescriptor getIcon24() {
-        InputStream imageStream = ComponentsUtils.getComponentService().getComponentPngImage(componentDefinition.getName(),
-                ComponentImageType.PALLETE_ICON_32X32);
-        if (imageStream != null) {
-            ImageData imageData = new ImageData(imageStream);
-            if (!CommonsPlugin.isHeadless()) {
-                imageData = imageData.scaledTo(24, 24);
+        if (!CommonsPlugin.isHeadless()) {
+            InputStream imageStream = ComponentsUtils.getComponentService().getComponentPngImage(componentDefinition.getName(),
+                    ComponentImageType.PALLETE_ICON_32X32);
+            if (imageStream != null) {
+                ImageData imageData = new ImageData(imageStream);
+                return ImageDescriptor.createFromImageData(imageData.scaledTo(24, 24));
             }
-            return ImageDescriptor.createFromImageData(imageData);
         }
         return new DummyComponent("dummy").getIcon24();//$NON-NLS-1$
     }
