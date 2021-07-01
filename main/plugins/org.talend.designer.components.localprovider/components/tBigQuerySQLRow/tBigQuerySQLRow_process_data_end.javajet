@@ -34,9 +34,6 @@ imports="
                 } else if (authMode.equals("SERVICEACCOUNT")) {
                 %>
                     }
-                    if (child_statistics_<%=cid%> != null) {
-                        globalMap.put("<%=cid%>_STATISTICS_CHILD", child_statistics_<%=cid%>.stream().collect(java.util.stream.Collectors.joining(",", "{\"statistics\": [", "]}")));
-                    }
                 }
 
                 <%
@@ -44,17 +41,17 @@ imports="
                     throw new IllegalArgumentException("authentication mode should be either \"SERVICEACCOUNT\" or \"OAUTH\"or \"TOKEN\", but it is " + authMode);
                 }
                 log4jFileUtil.retrievedDataNumberInfo(node);
-// Else job has finished successfully with the results. Finish }.
-                if (!authMode.equals("SERVICEACCOUNT")) {
-                    %>
-                    }
-                    <%
-                }
             }
         }
     }
                 if (authMode.equals("SERVICEACCOUNT")) {
                     %>
+                            if (job_<%=cid%>.getStatistics().getNumChildJobs() != null) {
+                                globalMap.put("<%=cid%>_STATISTICS_CHILD", childJobs_<%=cid%>.stream()
+                                    .map(com.google.cloud.bigquery.Job::getStatistics)
+                                    .map(gsonObject::toJson)
+                                    .collect(java.util.stream.Collectors.joining(",", "{\"statistics\": [", "]}")));
+                            }
                         }
                     } catch (Exception e_<%=cid%>) {
                         globalMap.put("<%=cid%>_ERROR_MESSAGE", e_<%=cid%>.getMessage());
@@ -62,7 +59,9 @@ imports="
                     }
                     <%
                 } else {
+            // Else job has finished successfully with the results. Finish }.
         %>
+            }
         } catch (Exception e_<%=cid%>) {
             globalMap.put("<%=cid%>_ERROR_MESSAGE", e_<%=cid%>.getMessage());
             <%
@@ -76,6 +75,7 @@ imports="
             <%
             }
             %>
+            throw e_<%=cid%>;
         } finally {
             bigQueryUtil_<%=cid%>.cleanup();
         }
