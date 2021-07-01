@@ -24,7 +24,9 @@ import java.util.Set;
 import java.util.stream.Stream;
 
 import org.eclipse.jface.resource.ImageDescriptor;
+import org.talend.commons.CommonsPlugin;
 import org.talend.commons.exception.ExceptionHandler;
+import org.talend.commons.runtime.service.ITaCoKitService;
 import org.talend.core.CorePlugin;
 import org.talend.core.model.components.ComponentCategory;
 import org.talend.core.model.components.IComponent;
@@ -56,6 +58,13 @@ public class TaCoKitGenericProvider implements IGenericProvider {
         if (ProjectManager.getInstance().getCurrentProject() == null || !Lookups.configuration().isActive()) {
             return;
         }
+        try {
+            ITaCoKitService.getInstance().waitForStart();
+        } catch (Throwable t) {
+            // don't block if fail
+            ExceptionHandler.process(t);
+            return;
+        }
 
         final WebSocketClient client = Lookups.client();
         Stream<Pair<ComponentIndex, ComponentDetail>> details = client.v1().component().details(Locale.getDefault().getLanguage());
@@ -63,7 +72,7 @@ public class TaCoKitGenericProvider implements IGenericProvider {
 
         final ComponentService service = Lookups.service();
         final IComponentsFactory factory = ComponentsFactoryProvider.getInstance();
-        final Set<IComponent> components = factory.getComponents();
+        final Set<IComponent> components = factory.getComponentsForInit();
         final Set<String> createdConnectionFamiliySet = new HashSet<String>();
         final Set<String> createdCloseFamiliySet = new HashSet<String>();
         synchronized (components) {
@@ -77,15 +86,18 @@ public class TaCoKitGenericProvider implements IGenericProvider {
 
             final String reportPath =
                     CorePlugin.getDefault().getPluginPreferences().getString(ITalendCorePrefConstants.IREPORT_PATH);
-            final boolean isCatcherAvailable =
-                    ComponentsFactoryProvider.getInstance().get(EmfComponent.TSTATCATCHER_NAME,
-                            ComponentCategory.CATEGORY_4_DI.getName()) != null;
+            final boolean isCatcherAvailable = components.stream()
+                    .anyMatch(comp -> comp != null && comp.getName().equals(EmfComponent.TSTATCATCHER_NAME)
+                            && ComponentCategory.CATEGORY_4_DI.getName().equals(comp.getPaletteType()));
+            boolean isHeadless = CommonsPlugin.isHeadless();
             details.forEach(pair -> {
                 ComponentIndex index = pair.getFirst();
                 ComponentDetail detail = pair.getSecond();
                 ImageDescriptor imageDesc = null;
                 try {
-                    imageDesc = service.toEclipseIcon(index.getIcon());
+                    if (!isHeadless) {
+                        imageDesc = service.toEclipseIcon(index.getIcon());
+                    }
                 } catch (Exception e) {
                     ExceptionHandler.process(e);
                 }
@@ -94,7 +106,7 @@ public class TaCoKitGenericProvider implements IGenericProvider {
                 }
                 ComponentModel componentModel = new ComponentModel(index, detail, configTypes, imageDesc, reportPath, isCatcherAvailable);
                 components.add(componentModel);
-                
+
                 if (ETaCoKitComponentType.input.equals(componentModel.getTaCoKitComponentType())) {
                     ActionList actionList = Lookups.taCoKitCache().getActionList(index.getFamilyDisplayName());
                     IComponent connectionModel = createConnectionComponent(index, detail, configTypes, reportPath, isCatcherAvailable, createdConnectionFamiliySet, actionList);
@@ -104,12 +116,12 @@ public class TaCoKitGenericProvider implements IGenericProvider {
                     IComponent closeModel = createCloseConnectionComponent(index, detail, configTypes, reportPath, isCatcherAvailable, createdCloseFamiliySet, actionList);
                     if (closeModel != null) {
                         components.add(closeModel);
-                    }   
-                }            
+                    }
+                }
             });
         }
     }
-    
+
     private VirtualComponentModel createCloseConnectionComponent(final ComponentIndex index, final ComponentDetail detail,
             final ConfigTypeNodes configTypeNodes, String reportPath, boolean isCatcherAvailable, Set<String> createdFamiliySet, ActionList actionList) {
         boolean isSupport = false;
@@ -175,5 +187,5 @@ public class TaCoKitGenericProvider implements IGenericProvider {
     public List<?> addPaletteEntry() {
         return emptyList();
     }
- 
+
 }

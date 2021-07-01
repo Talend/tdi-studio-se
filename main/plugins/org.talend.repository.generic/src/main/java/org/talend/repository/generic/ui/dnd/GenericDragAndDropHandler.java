@@ -48,6 +48,7 @@ import org.talend.core.repository.RepositoryComponentSetting;
 import org.talend.core.repository.model.repositoryObject.MetadataColumnRepositoryObject;
 import org.talend.core.repository.model.repositoryObject.MetadataTableRepositoryObject;
 import org.talend.core.runtime.services.IGenericDBService;
+import org.talend.core.runtime.services.IGenericWizardInternalService;
 import org.talend.core.runtime.services.IGenericWizardService;
 import org.talend.core.runtime.util.GenericTypeUtils;
 import org.talend.core.utils.TalendQuoteUtils;
@@ -59,8 +60,6 @@ import org.talend.designer.core.generic.model.Component;
 import org.talend.designer.core.generic.model.GenericElementParameter;
 import org.talend.designer.core.generic.utils.ComponentsUtils;
 import org.talend.designer.core.generic.utils.SchemaUtils;
-import org.talend.repository.generic.internal.IGenericWizardInternalService;
-import org.talend.repository.generic.internal.service.GenericWizardInternalService;
 import org.talend.repository.model.RepositoryNode;
 
 import orgomg.cwm.objectmodel.core.ModelElement;
@@ -360,7 +359,7 @@ public class GenericDragAndDropHandler extends AbstractDragAndDropServiceHandler
     }
 
     private String getComponentMainName(Connection connection) {
-        IGenericWizardInternalService internalService = new GenericWizardInternalService();
+        IGenericWizardInternalService internalService = IGenericWizardInternalService.getService();
         ComponentWizard componentWizard = null;
         String compPropertiesStr = connection.getCompProperties();
         if (compPropertiesStr != null) {

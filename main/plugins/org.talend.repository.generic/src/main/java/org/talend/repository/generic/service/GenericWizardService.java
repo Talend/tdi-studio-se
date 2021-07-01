@@ -15,6 +15,7 @@ package org.talend.repository.generic.service;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -50,9 +51,9 @@ import org.talend.core.model.process.INode;
 import org.talend.core.model.properties.ConnectionItem;
 import org.talend.core.model.properties.Item;
 import org.talend.core.model.repository.ERepositoryObjectType;
-import org.talend.core.runtime.services.IGenericDBService;
+import org.talend.core.runtime.services.IGenericService;
+import org.talend.core.runtime.services.IGenericWizardInternalService;
 import org.talend.core.runtime.services.IGenericWizardService;
-import org.talend.core.utils.ReflectionUtils;
 import org.talend.core.utils.TalendQuoteUtils;
 import org.talend.daikon.NamedThing;
 import org.talend.daikon.properties.Properties;
@@ -69,14 +70,11 @@ import org.talend.designer.core.model.components.UnifiedJDBCBean;
 import org.talend.designer.core.ui.editor.nodes.Node;
 import org.talend.designer.core.utils.UnifiedComponentUtil;
 import org.talend.repository.generic.action.GenericAction;
-import org.talend.repository.generic.internal.IGenericWizardInternalService;
-import org.talend.repository.generic.internal.service.GenericWizardInternalService;
 import org.talend.repository.generic.model.genericMetadata.SubContainer;
 import org.talend.repository.generic.ui.DBDynamicComposite;
 import org.talend.repository.generic.ui.DynamicComposite;
 import org.talend.repository.generic.util.GenericConnectionUtil;
 import org.talend.repository.generic.util.RepTypeMappingManager;
-import org.talend.repository.model.IRepositoryNode.ENodeType;
 import org.talend.repository.model.RepositoryNode;
 
 import orgomg.cwm.objectmodel.core.TaggedValue;
@@ -89,69 +87,17 @@ public class GenericWizardService implements IGenericWizardService {
 
     private IGenericWizardInternalService internalService = null;
 
-    List<String> typeNames = new ArrayList<>();
-
     public GenericWizardService() {
-        internalService = new GenericWizardInternalService();
+        internalService = IGenericWizardInternalService.getService();
     }
 
-    @Override
-    public List<RepositoryNode> createNodesFromComponentService(RepositoryNode curParentNode) {
-        List<RepositoryNode> repNodes = new ArrayList<>();
-        Set<ComponentWizardDefinition> wizardDefinitions = internalService.getComponentService().getTopLevelComponentWizards();
-        for (ComponentWizardDefinition wizardDefinition : wizardDefinitions) {
-            String name = wizardDefinition.getName();
-            String displayName = wizardDefinition.getDisplayName();
-            String folder = "metadata/" + name; //$NON-NLS-1$
-            int ordinal = 100;
-            ERepositoryObjectType repositoryType = internalService.createRepositoryType(name, displayName, name, folder, ordinal);
-            if (curParentNode == null && "JDBC".equals(name)) { //$NON-NLS-1$
-                Class<ComponentProperties> jdbcClass = ReflectionUtils.getClass(
-                        "org.talend.components.jdbc.wizard.JDBCConnectionWizardProperties",
-                        wizardDefinition.getClass().getClassLoader());
-                if (jdbcClass != null && wizardDefinition.supportsProperties(jdbcClass)) {
-                    IGenericDBService dbService = null;
-                    if (GlobalServiceRegister.getDefault().isServiceRegistered(IGenericDBService.class)) {
-                        dbService = (IGenericDBService) GlobalServiceRegister.getDefault().getService(IGenericDBService.class);
-                    }
-                    if (dbService != null) {
-                        dbService.getExtraTypes().add(repositoryType);
-                    }
-                }
-            }
-            if (curParentNode != null && !needHide(repositoryType)) {
-                repNodes.add(internalService.createRepositoryNode(curParentNode, wizardDefinition.getDisplayName(),
-                        repositoryType, ENodeType.SYSTEM_FOLDER));
-            }
+    private List<String> getGenericTypeNames() {
+        IGenericService gs = IGenericService.getService();
+        if (gs != null) {
+            return gs.getGenericTypeNames();
+        } else {
+            return Collections.EMPTY_LIST;
         }
-        return repNodes;
-    }
-
-    private boolean needHide(ERepositoryObjectType type) {
-        if (type == null) {
-            return false;
-        }
-        List<ERepositoryObjectType> extraTypes = new ArrayList<ERepositoryObjectType>();
-        IGenericDBService dbService = null;
-        if (GlobalServiceRegister.getDefault().isServiceRegistered(IGenericDBService.class)) {
-            dbService = (IGenericDBService) GlobalServiceRegister.getDefault().getService(IGenericDBService.class);
-        }
-        if (dbService != null) {
-            extraTypes.addAll(dbService.getExtraTypes());
-        }
-        return extraTypes.contains(type);
-    }
-
-    @Override
-    public List<String> getGenericTypeNames() {
-        if (typeNames.isEmpty()) {
-            Set<ComponentWizardDefinition> wizardDefinitions = internalService.getComponentService()
-                    .getTopLevelComponentWizards();
-            for (ComponentWizardDefinition wizardDefinition : wizardDefinitions) {
-                typeNames.add(wizardDefinition.getName());
-            }
-        }
-        return typeNames;
     }
 
     @Override

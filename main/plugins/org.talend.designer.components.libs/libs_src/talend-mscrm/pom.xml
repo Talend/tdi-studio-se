@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.talend.components</groupId>
 	<artifactId>talend-mscrm</artifactId>
-	<version>3.6-20210618</version>
+	<version>3.7-20210621</version>
 	<packaging>jar</packaging>
 	
 	<name>talend-mscrm</name>
@@ -18,7 +18,7 @@
 		<httpclient.version>4.5.13</httpclient.version>
 		<httpcore.version>4.4.13</httpcore.version>
 		<junit.version>4.13.2</junit.version>
-		<adal4j.version>1.6.4-20200824</adal4j.version>
+		<adal4j.version>1.6.4-20210513</adal4j.version>
 		<jackson.version>2.11.4</jackson.version>
 
 		<!-- plugin's versions -->

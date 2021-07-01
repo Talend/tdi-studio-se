@@ -93,7 +93,7 @@ public class MapperComponent extends AbstractMapComponent implements IHashableIn
     private ExternalMapperData externalData;
 
     private GenerationManager generationManager;
-    
+
     private boolean shouldGenerateDatasetCode;
 
     /**
@@ -830,7 +830,7 @@ public class MapperComponent extends AbstractMapComponent implements IHashableIn
                 }
             }
             if (GlobalServiceRegister.getDefault().isServiceRegistered(IDesignerMapperService.class)) {
-                IDesignerMapperService service = (IDesignerMapperService) GlobalServiceRegister.getDefault().getService(
+                IDesignerMapperService service = GlobalServiceRegister.getDefault().getService(
                         IDesignerMapperService.class);
                 List<String> experssionFilters = service.getExpressionFilter(this.getExternalData());
                 if (!experssionFilters.isEmpty()) {
@@ -844,7 +844,6 @@ public class MapperComponent extends AbstractMapComponent implements IHashableIn
             }
         }
         return routinesToAdd;
-
     }
 
     /*
@@ -880,18 +879,20 @@ public class MapperComponent extends AbstractMapComponent implements IHashableIn
             return false;
         }
 
-        //only two input connections
+        // exactly two input connections
         if (this.externalData.getInputTables().size() != 2) {
             return false;
-        } // one connection must be all matches
-        else if (!isAtLeastOneInputTableAllMatch(this.externalData)) {
+        } // not ALL ROWS matching mode
+        else if (matchingModeIsAllRows(this.externalData)) {
             return false;
         }
 
         if (externalData != null) {
             // Output should not have filter until its implemented in spark dataset lib
             for (ExternalMapperTable outputTable : externalData.getOutputTables()) {
-                if (outputTable.getExpressionFilter() != null) return false;
+                if (outputTable.getExpressionFilter() != null) {
+                    return false;
+                }
             }
         }
 
@@ -906,9 +907,9 @@ public class MapperComponent extends AbstractMapComponent implements IHashableIn
         return true;
     }
 
-
-    private boolean isAtLeastOneInputTableAllMatch(ExternalMapperData data) {
-        return "ALL_MATCHES".equals(data.getInputTables().get(0).getMatchingMode()) || "ALL_MATCHES".equals(data.getInputTables().get(1).getMatchingMode());
+    private boolean matchingModeIsAllRows(ExternalMapperData data) {
+        return "ALL_ROWS".equals(data.getInputTables().get(0).getMatchingMode()) //$NON-NLS-1$
+                && "ALL_ROWS".equals(data.getInputTables().get(1).getMatchingMode()); //$NON-NLS-1$
     }
 
     @Override

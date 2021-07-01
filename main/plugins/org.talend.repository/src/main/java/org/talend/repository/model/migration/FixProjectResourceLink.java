@@ -17,8 +17,12 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.emf.common.util.EList;
+import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.talend.commons.exception.PersistenceException;
 import org.talend.commons.runtime.model.emf.EmfHelper;
@@ -29,6 +33,7 @@ import org.talend.core.model.properties.ReferenceFileItem;
 import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
 import org.talend.core.repository.utils.XmiResourceManager;
+import org.talend.repository.ProjectManager;
 import org.talend.repository.model.IProxyRepositoryFactory;
 import org.talend.repository.model.URIHelper;
 
@@ -47,8 +52,13 @@ public class FixProjectResourceLink extends AbstractItemMigrationTask {
         if (ERepositoryObjectType.getItemType(item).isDQItemType() && !ERepositoryObjectType.getItemType(item).isDIItemType()) {
             return ExecutionResult.NOTHING_TO_DO;
         }
-        if (item.getProperty().getAuthor().getLogin() != null) {
+        String propertyPath = getPropertyPath(item);
+        String path = item.getState().getPath();
+        if (item.getProperty().getAuthor().getLogin() != null && StringUtils.equals(path, propertyPath)) {
             return ExecutionResult.NOTHING_TO_DO;
+        }
+        if (StringUtils.isNotBlank(propertyPath) && !StringUtils.equals(path, propertyPath)) {
+            item.getState().setPath(propertyPath);
         }
         // if go here, it means property got wrong link to the project.
         // (like for example item look for: ../../../talend.project, but it should be: ../../talend.project)
@@ -85,6 +95,28 @@ public class FixProjectResourceLink extends AbstractItemMigrationTask {
         manager.resourceSet.getResources().removeAll(toDelete);
 
         return ExecutionResult.SUCCESS_NO_ALERT;
+    }
+
+    private String getPropertyPath(Item item) {
+        String propertyPath = null;
+        Resource eResource = item.getProperty().eResource();
+        if (eResource != null) {
+            URI uri = eResource.getURI();
+            if (uri != null) {
+                String url = uri.toString();
+                String sb = StringUtils.substringBefore(url, uri.lastSegment());
+                String projectName = ResourcesPlugin.getWorkspace().getRoot()
+                        .getProject(ProjectManager.getInstance().getCurrentProject().getTechnicalLabel()).getLocation()
+                        .lastSegment();
+                String folderName = ERepositoryObjectType.getFolderName(ERepositoryObjectType.getItemType(item));
+                String seprator = projectName + IPath.SEPARATOR + folderName + IPath.SEPARATOR;
+                String sa = StringUtils.substringAfter(sb, seprator);
+                if (StringUtils.isNoneBlank(sa)) {
+                    propertyPath = sa.substring(0, sa.length() - 1);
+                }
+            }
+        }
+        return propertyPath;
     }
 
     private void clearReferenceResourcesFileName(Item item) {

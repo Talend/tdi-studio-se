@@ -13,9 +13,6 @@
 package org.talend.designer.codegen.components.model;
 
 import java.io.File;
-import java.io.FileFilter;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -29,10 +26,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Level;
@@ -42,12 +37,6 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.SubMonitor;
-import org.eclipse.emf.common.util.EList;
-import org.eclipse.emf.common.util.URI;
-import org.eclipse.emf.ecore.resource.Resource;
-import org.eclipse.emf.ecore.util.EcoreUtil;
-import org.eclipse.emf.ecore.xmi.XMLResource;
-import org.eclipse.emf.ecore.xmi.impl.XMLParserPoolImpl;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
@@ -55,14 +44,10 @@ import org.osgi.service.packageadmin.PackageAdmin;
 import org.talend.commons.CommonsPlugin;
 import org.talend.commons.exception.BusinessException;
 import org.talend.commons.exception.ExceptionHandler;
-import org.talend.commons.runtime.utils.io.SHA1Util;
 import org.talend.commons.utils.io.FilesUtils;
 import org.talend.core.GlobalServiceRegister;
 import org.talend.core.language.LanguageManager;
-import org.talend.core.model.component_cache.ComponentCachePackage;
-import org.talend.core.model.component_cache.ComponentInfo;
 import org.talend.core.model.component_cache.ComponentsCache;
-import org.talend.core.model.component_cache.util.ComponentCacheResourceFactoryImpl;
 import org.talend.core.model.components.AbstractComponentsProvider;
 import org.talend.core.model.components.ComponentCategory;
 import org.talend.core.model.components.ComponentManager;
@@ -79,7 +64,6 @@ import org.talend.core.ui.ISparkJobletProviderService;
 import org.talend.core.ui.ISparkStreamingJobletProviderService;
 import org.talend.core.ui.branding.IBrandingService;
 import org.talend.core.ui.images.CoreImageProvider;
-import org.talend.core.utils.TalendCacheUtils;
 import org.talend.designer.codegen.CodeGeneratorActivator;
 import org.talend.designer.codegen.i18n.Messages;
 import org.talend.designer.core.model.components.ComponentBundleToPath;
@@ -96,173 +80,135 @@ import org.talend.designer.core.ui.editor.jobletcontainer.JobletUtil;
  */
 public class ComponentsFactory implements IComponentsFactory {
 
-    /**
-     *
-     */
-    private static final String TALEND_COMPONENT_CACHE = "ComponentsCache.";
-
-    private static final String TALEND_FILE_NAME = "cache";
-
-    private static final String OLD_COMPONENTS_USER_INNER_FOLDER = "user"; //$NON-NLS-1$
+    public static final String OLD_COMPONENTS_USER_INNER_FOLDER = "user"; //$NON-NLS-1$
 
     private static Logger log = Logger.getLogger(ComponentsFactory.class);
 
-    private static Set<IComponent> componentList = null;
+    private List<AbstractComponentsProvider> providers;
 
-    private static HashSet<IComponent> customComponentList = null;
+    private Set<IComponent> componentList = Collections.synchronizedSet(new HashSet<>());
 
-    private HashSet<IComponent> userComponentList = null;
+    private static Set<IComponent> customComponentList = new HashSet<>(); // user/exchange/tck components
 
     private IProgressMonitor monitor;
 
     private SubMonitor subMonitor;
 
-    private static Map<String, Map<String, IComponent>> componentsCache = new HashMap<String, Map<String, IComponent>>();
-
-    // keep a list of the current provider for the selected component, to have the family translation
-    // only for components that are loaded
-    private static Map<IComponent, AbstractComponentsProvider> componentToProviderMap;
-
-    private static Map<String, AbstractComponentsProvider> componentsAndProvider = new HashMap<String, AbstractComponentsProvider>();
-
     // 1. only the in the directory /components ,not including /resource
     // 2. include the skeleton files and external include files
-    private static ArrayList<String> skeletonList = null;
+    private static ArrayList<String> skeletonList = new ArrayList<>();
 
     private static final String SKELETON_SUFFIX = ".skeleton"; //$NON-NLS-1$
 
     private static final String INCLUDEFILEINJET_SUFFIX = ".inc.javajet"; //$NON-NLS-1$
 
-    private boolean isCreated = false;
-
     private IComponentsHandler componentsHandler;// Added by Marvin Wang on Jan. 11, 2012 for M/R.
-
-    private static boolean cleanDone = false;
 
     protected static Map<String, Map<String, Set<IComponent>>> componentNameMap;
 
-    private AtomicBoolean isInitialising;
+    private AtomicBoolean isInitializing = new AtomicBoolean(true);
 
-    private volatile Lock initialiseLock;
+    private AtomicBoolean isInitialized = new AtomicBoolean(false);
 
     public ComponentsFactory() {
-        isInitialising = new AtomicBoolean(false);
-        initialiseLock = new ReentrantLock();
+        providers = ComponentsProviderManager.getInstance().getProviders();
     }
 
     private void init(boolean duringLogon) {
-        if (wait4InitialiseFinish()) {
-            return;
-        }
-        try {
+        if (isInitialized.compareAndSet(false, true)) {
+            log.debug("init " + this.hashCode());
             try {
-                initialiseLock.lock();
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
-            isInitialising.set(true);
-            try {
-				removeOldComponentsUserFolder();
-			} catch (IOException ex) {
-				ExceptionHandler.process(ex);
-			} // not used anymore
+                removeOldComponentsUserFolder();
+            } catch (IOException ex) {
+                ExceptionHandler.process(ex);
+            } // not used anymore
+
             long startTime = System.currentTimeMillis();
 
             // TimeMeasure.display = true;
             // TimeMeasure.displaySteps = true;
             // TimeMeasure.measureActive = true;
             // TimeMeasure.begin("initComponents");
-            componentList = Collections.synchronizedSet(new HashSet<IComponent>());
-            customComponentList = new HashSet<IComponent>();
-            skeletonList = new ArrayList<String>();
-            userComponentList = new HashSet<IComponent>();
-            String installLocation = new Path(Platform.getConfigurationLocation().getURL().getPath()).toFile().getAbsolutePath();
-            componentToProviderMap = new HashMap<IComponent, AbstractComponentsProvider>();
-            boolean isNeedClean = !cleanDone && TalendCacheUtils.isSetCleanComponentCache();
-            cleanDone = true; // only check this parameter one time, or it will reinitialize things all the time...
-            isCreated = hasComponentFile(installLocation) && !isNeedClean;
-            ComponentsCache cache = ComponentManager.getComponentCache();
-            try {
-                if (isCreated) {
-                    // if cache is created and empty, means we never loaded it before.
-                    // if it was already loaded, then no need to go again, since it's a static variable, it's still in
-                    // memory.
-                    // it avoids to reload from disk again even more for commandline at each logon, since it's no use.
-                    if (cache.getComponentEntryMap().isEmpty()) {
-                        ComponentsCache loadCache = loadComponentResource(installLocation);
-                        cache.getComponentEntryMap().putAll(loadCache.getComponentEntryMap());
+            componentList.clear();
+            skeletonList.clear();
+            customComponentList.clear();
+
+            boolean needRegenerate = false;
+            if (CodeGeneratorActivator.getDefault().getBundle().getBundleContext().getProperty("osgi.dev") != null) {
+                needRegenerate = providers.stream().filter(p -> ComponentsLoader.isCachedProvider(p)).anyMatch(p -> {
+                    try {
+                        return !ComponentManager.hasComponentFile(p.getInstallationFolder().getAbsolutePath());
+                    } catch (IOException e) {
+                        return false;
                     }
-                } else {
-                    cache.getComponentEntryMap().clear();
-                }
-            } catch (IOException e) {
-                ExceptionHandler.process(e);
-                cache.getComponentEntryMap().clear();
-                isCreated = false;
+                });
+            }
+            if (Boolean.getBoolean("generate.component.cache") || needRegenerate) {
+                ComponentManager.clearAllCaches();
+                providers.stream().filter(p -> ComponentsLoader.isCachedProvider(p)).forEach(p -> loadComponents(p));
+                ComponentManager.saveResource();
             }
 
-            loadComponentsFromComponentsProviderExtension();
+            try {
+                for (AbstractComponentsProvider provider : providers) {
+                    provider.preComponentsLoad();
+                }
+                ComponentManager.loadComponentResource();
+                ComponentsLoader.getInstance().loadAllComponentsFromIndex(componentList);
+            } catch (Exception e) {
+                ExceptionHandler.process(e);
+            }
 
-            // TimeMeasure.step("initComponents", "loadComponentsFromProvider");
-            // 2.Load Component from extension point: component_definition
+            providers.stream().filter(p -> p.isCustom()).forEach(p -> loadCustomComponents(p));
+
             loadComponentsFromExtensions();
-            // TimeMeasure.step("initComponents", "loadComponentsFromExtension[joblets?]");
 
-            ComponentManager.saveResource(); // will save only if needed.
+            loadSkeletonFromProviders();
 
             // init component name map, used to pick specified component immediately
             initComponentNameMap();
 
+            isInitializing.set(false);
             // TimeMeasure.step("initComponents", "createCache");
-            log.debug(componentList.size() + " components loaded in " + (System.currentTimeMillis() - startTime) + " ms"); //$NON-NLS-1$ //$NON-NLS-2$
+            log.info(componentList.size() + " components loaded in " + (System.currentTimeMillis() - startTime) + " ms"); //$NON-NLS-1$ //$NON-NLS-2$
 
             // TimeMeasure.end("initComponents");
             // TimeMeasure.display = false;
             // TimeMeasure.displaySteps = false;
             // TimeMeasure.measureActive = false;
-        } finally {
-            isInitialising.set(false);
-            initialiseLock.unlock();
         }
     }
 
-    private boolean wait4InitialiseFinish() {
-        if (isInitialising.get()) {
+    private void loadSkeletonFromProviders() {
+        providers.forEach(p -> {
             try {
-                // wait for 10 min (10 * 60 seconds) by default
-                long timeout = 600L;
-                String timeoutStr = System.getProperty("studio.componentsFactory.init.timeout"); //$NON-NLS-1$
-                if (!StringUtils.isBlank(timeoutStr)) {
-                    try {
-                        timeout = Long.valueOf(timeoutStr);
-                    } catch (Exception e) {
-                        ExceptionHandler.process(e);
+                File componentFile = p.getInstallationFolder();
+                if (componentFile != null && componentFile.exists()) {
+                    File[] childDirectories = componentFile
+                            .listFiles(file -> file.getName().charAt(0) != '.'
+                                    && !file.getName().equals(IComponentsFactory.EXTERNAL_COMPONENTS_INNER_FOLDER)
+                                    && file.isDirectory());
+                    skeletonList.ensureCapacity(childDirectories.length);// to optimize the size of the array
+                    for (File currentFolder : childDirectories) {
+                        File[] skeletonFiles = currentFolder.listFiles(file -> file.getName().charAt(0) != '.'
+                                && (file.getName().endsWith(SKELETON_SUFFIX)
+                                        || file.getName().endsWith(INCLUDEFILEINJET_SUFFIX))
+                                && file.isFile());
+                        if (skeletonFiles != null) {
+                            for (File file : skeletonFiles) {
+                                skeletonList.add(file.getAbsolutePath()); // path
+                            }
+                        }
                     }
+                    skeletonList.trimToSize();
                 }
-                if (initialiseLock.tryLock(timeout, TimeUnit.SECONDS)) {
-                    initialiseLock.unlock();
-                } else {
-                    // may be track in dead lock, throw exception to try to break dead lock
-                    throw new RuntimeException(Messages.getString("ComponentsFactory.init.waitForFinish.timeout")); //$NON-NLS-1$
-                }
-                // initialise successfully or not
-                return !isInitialising.get();
-            } catch (RuntimeException e) {
-                throw e;
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            } catch (Exception e) {
+            } catch (IOException e) {
                 ExceptionHandler.process(e);
             }
-        }
-        // initialise failed, still need to initialise
-        return false;
+        });
     }
 
     protected void initComponentNameMap() {
-        if (componentList == null) {
-            return;
-        }
         /**
          * component names example: <br>
          * 1. xmlMapComponent <br>
@@ -271,7 +217,7 @@ public class ComponentsFactory implements IComponentsFactory {
          * 4. xmlMapComponent (for DI) <br>
          * 5. xmlMapComponent (for BD) <br>
          */
-        componentNameMap = new HashMap<String, Map<String, Set<IComponent>>>();
+        componentNameMap = new HashMap<>();
         Iterator<IComponent> componentIter = componentList.iterator();
         while (componentIter.hasNext()) {
             IComponent component = componentIter.next();
@@ -298,55 +244,27 @@ public class ComponentsFactory implements IComponentsFactory {
         }
     }
 
-    /**
-     * DOC guanglong.du Comment method "loadComponentResource".
-     *
-     * @param eclipseProject
-     * @return
-     * @throws IOException
-     */
-    private ComponentsCache loadComponentResource(String installLocation) throws IOException {
-        String filePath = ComponentsFactory.TALEND_COMPONENT_CACHE + LanguageManager.getCurrentLanguage().toString().toLowerCase()
-                + ComponentsFactory.TALEND_FILE_NAME;
-        URI uri = URI.createFileURI(installLocation).appendSegment(filePath);
-        ComponentCacheResourceFactoryImpl compFact = new ComponentCacheResourceFactoryImpl();
-        Resource resource = compFact.createResource(uri);
-        Map optionMap = new HashMap();
-        optionMap.put(XMLResource.OPTION_DEFER_ATTACHMENT, Boolean.TRUE);
-        optionMap.put(XMLResource.OPTION_DEFER_IDREF_RESOLUTION, Boolean.TRUE);
-        optionMap.put(XMLResource.OPTION_USE_PARSER_POOL, new XMLParserPoolImpl());
-        optionMap.put(XMLResource.OPTION_USE_XML_NAME_TO_FEATURE_MAP, new HashMap());
-        optionMap.put(XMLResource.OPTION_USE_DEPRECATED_METHODS, Boolean.FALSE);
-        resource.load(optionMap);
-        ComponentsCache cache = (ComponentsCache) EcoreUtil.getObjectByType(resource.getContents(),
-                ComponentCachePackage.eINSTANCE.getComponentsCache());
-        return cache;
-    }
-
-    /**
-     * DOC guanglong.du Comment method "hasComponentFile".
-     *
-     * @param eclipseProject
-     * @return
-     */
-    private boolean hasComponentFile(String installLocation) {
-        String filePath = ComponentsFactory.TALEND_COMPONENT_CACHE + LanguageManager.getCurrentLanguage().toString().toLowerCase()
-                + ComponentsFactory.TALEND_FILE_NAME;
-        File file = new File(new Path(installLocation).append(filePath).toString());
-        return file.exists();
-    }
-
-    private void loadComponentsFromComponentsProviderExtension() {
-        ComponentsProviderManager componentsProviderManager = ComponentsProviderManager.getInstance();
-        for (AbstractComponentsProvider componentsProvider : componentsProviderManager.getProviders()) {
-            loadComponents(componentsProvider);
+    private void loadCustomComponents(AbstractComponentsProvider componentsProvider) {
+        if (componentsProvider != null) {
+            try {
+                File componentFile = componentsProvider.getInstallationFolder();
+                if (componentFile == null) {
+                    log.warn(Messages.getString("ComponentsFactory.loadComponents.missingFolder", //$NON-NLS-1$
+                            componentsProvider.getFolderName(), componentsProvider.getContributer()));
+                    return;
+                }
+                if (componentFile != null && componentFile.exists()) {
+                    loadCustomComponentsFromFolder(componentsProvider.getComponentsLocation(), componentsProvider);
+                }
+            } catch (Exception e) {
+                ExceptionHandler.process(e);
+            }
         }
     }
 
     private void loadComponents(AbstractComponentsProvider componentsProvider) {
         if (componentsProvider != null) {
             try {
-                componentsProvider.preComponentsLoad();
                 File componentFile = componentsProvider.getInstallationFolder();
                 if (componentFile == null) {
                     log.warn(Messages.getString("ComponentsFactory.loadComponents.missingFolder", //$NON-NLS-1$
@@ -365,27 +283,14 @@ public class ComponentsFactory implements IComponentsFactory {
     @Override
     public void loadUserComponentsFromComponentsProviderExtension() {
         getComponents();
-        ComponentsProviderManager.getInstance().getProviders();
-        ComponentsProviderManager componentsProviderManager = ComponentsProviderManager.getInstance();
-        AbstractComponentsProvider componentsProvider = componentsProviderManager.loadUserComponentsProvidersFromExtension();
         // remove old user components
-        if (!this.userComponentList.isEmpty()) {
-            ComponentsCache cache = ComponentManager.getComponentCache();
-            for (IComponent component : userComponentList) {
-                if (componentList != null && componentList.contains(component)) {
-                    componentList.remove(component);
-                }
-                if (customComponentList.contains(component)) {
-                    customComponentList.remove(component);
-                }
-                if (cache.getComponentEntryMap().get(component.getName()) != null) {
-                    cache.getComponentEntryMap().remove(component.getName());
-                    ComponentManager.setModified(true);
-                }
-            }
-        }
-        loadComponents(componentsProvider);
-        ComponentManager.saveResource();
+        componentList.removeIf(comp -> isUserComponent(comp));
+        customComponentList.removeIf(comp -> isUserComponent(comp));
+        loadCustomComponents(ComponentsProviderManager.getInstance().loadUserComponentsProvidersFromExtension());
+    }
+
+    private boolean isUserComponent(IComponent component) {
+        return component instanceof EmfComponent && ((EmfComponent) component).getProvider() instanceof UserComponentsProvider;
     }
 
     private void removeOldComponentsUserFolder() throws IOException {
@@ -407,48 +312,82 @@ public class ComponentsFactory implements IComponentsFactory {
         GenericProcessProvider.getInstance().loadComponentsFromProviders();
     }
 
-    private void loadComponentsFromFolder(String pathSource, AbstractComponentsProvider provider) {
-        boolean isCustom = provider.isCustom();
-
+    private void loadCustomComponentsFromFolder(String pathSource, AbstractComponentsProvider provider) {
+        String bundleName = provider.getComponentsBundle() != null ? provider.getComponentsBundle() : COMPONENTS_LOCATION;
         File source;
         try {
             source = provider.getInstallationFolder();
-        } catch (IOException e1) {
-            ExceptionHandler.process(e1);
+        } catch (IOException e) {
+            ExceptionHandler.process(e);
             return;
         }
-        File[] childDirectories;
-
-        FileFilter fileFilter = new FileFilter() {
-
-            @Override
-            public boolean accept(final File file) {
-                return file.isDirectory() && file.getName().charAt(0) != '.'
-                        && !file.getName().equals(IComponentsFactory.EXTERNAL_COMPONENTS_INNER_FOLDER);
-            }
-
-        };
         if (source == null) {
             ExceptionHandler.process(new Exception(Messages.getString("ComponentsFactory.componentNotFound") + pathSource)); //$NON-NLS-1$
             return;
         }
 
-        childDirectories = source.listFiles(fileFilter);
+        File[] childDirectories = source.listFiles(file -> file.isDirectory() && file.getName().charAt(0) != '.' // $NON-NLS-1$
+                && !file.getName().equals(IComponentsFactory.EXTERNAL_COMPONENTS_INNER_FOLDER));
 
-        IBrandingService service = (IBrandingService) GlobalServiceRegister.getDefault().getService(IBrandingService.class);
-
-        // String[] availableComponents = service.getBrandingConfiguration().getAvailableComponents();
-
-        FileFilter skeletonFilter = new FileFilter() {
-
-            @Override
-            public boolean accept(final File file) {
-                String fileName = file.getName();
-                return file.isFile() && fileName.charAt(0) != '.'
-                        && (fileName.endsWith(SKELETON_SUFFIX) || fileName.endsWith(INCLUDEFILEINJET_SUFFIX));
+        if (childDirectories != null) {
+            if (monitor != null) {
+                this.subMonitor = SubMonitor.convert(monitor, Messages.getString("ComponentsFactory.load.components"), //$NON-NLS-1$
+                        childDirectories.length);
             }
+            for (File currentFolder : childDirectories) {
+                try {
+                    File xmlMainFile = new File(currentFolder, ComponentFilesNaming.getInstance()
+                            .getMainXMLFileName(currentFolder.getName(), getCodeLanguageSuffix()));
+                    if (!xmlMainFile.exists()) {
+                        // if not a component folder, ignore it.
+                        continue;
+                    }
+                    ComponentFileChecker.checkComponentFolder(currentFolder, getCodeLanguageSuffix());
 
-        };
+                    String pathName = xmlMainFile.getAbsolutePath();
+
+                    String applicationPath = ComponentBundleToPath.getPathFromBundle(bundleName);
+
+                    // pathName = C:\myapp\plugins\myplugin\components\mycomponent\mycomponent.xml
+                    pathName = (new Path(pathName)).toPortableString();
+                    // pathName = C:/myapp/plugins/myplugin/components/mycomponent/mycomponent.xml
+                    pathName = pathName.replace(applicationPath, ""); //$NON-NLS-1$
+                    // pathName = /components/mycomponent/mycomponent.xml
+
+                    EmfComponent currentComp = new EmfComponent(pathName, bundleName, xmlMainFile.getParentFile().getName(),
+                            pathSource, null, false, provider);
+
+                    if (ComponentsLoader.skipLoadComponent(currentComp)) {
+                        continue;
+                    }
+
+                    ComponentsLoader.setComponentPaletteType(currentComp);
+
+                    if (componentList.contains(currentComp)) {
+                        log.warn("Component " + currentComp.getName() + " already exists. Cannot load user version."); //$NON-NLS-1$ //$NON-NLS-2$
+                    } else {
+                        componentList.add(currentComp);
+                        customComponentList.add(currentComp);
+                    }
+                } catch (MissingMainXMLComponentFileException e) {
+                    log.trace(currentFolder.getName() + " is not a " + getCodeLanguageSuffix() + " component", e); //$NON-NLS-1$ //$NON-NLS-2$
+                } catch (BusinessException e) {
+                    BusinessException ex = new BusinessException("Cannot load component \"" + currentFolder.getName() + "\": " //$NON-NLS-1$ //$NON-NLS-2$
+                            + e.getMessage(), e);
+                    ExceptionHandler.process(ex, Level.ERROR);
+                }
+
+                if (this.subMonitor != null) {
+                    this.subMonitor.worked(1);
+                }
+                if (this.monitor != null && this.monitor.isCanceled()) {
+                    return;
+                }
+            }
+        }
+    }
+
+    private void loadComponentsFromFolder(String pathSource, AbstractComponentsProvider provider) {
         // Changed by Marvin Wang on Feb.22 for bug TDI-19166, caz the test ConnectionManagerTest maybe get the null
         // context.
         BundleContext context = null;
@@ -464,207 +403,82 @@ public class ComponentsFactory implements IComponentsFactory {
 
         ServiceReference sref = context.getServiceReference(PackageAdmin.class.getName());
         PackageAdmin admin = (PackageAdmin) context.getService(sref);
+        String bundleName = admin.getBundle(provider.getClass()).getSymbolicName();
 
-        String bundleName;
-        if (!isCustom) {
-            bundleName = admin.getBundle(provider.getClass()).getSymbolicName();
-        } else if (provider.getComponentsBundle() == null) {
-            bundleName = IComponentsFactory.COMPONENTS_LOCATION;
-        } else {
-            bundleName = provider.getComponentsBundle();
+        File source;
+        try {
+            source = provider.getInstallationFolder();
+        } catch (IOException e1) {
+            ExceptionHandler.process(e1);
+            return;
         }
+
+        if (source == null) {
+            ExceptionHandler.process(new Exception(Messages.getString("ComponentsFactory.componentNotFound") + pathSource)); //$NON-NLS-1$
+            return;
+        }
+
+        File[] childDirectories = source.listFiles(file -> file.isDirectory() && file.getName().charAt(0) != '.'
+                && !file.getName().equals(IComponentsFactory.EXTERNAL_COMPONENTS_INNER_FOLDER));
 
         if (childDirectories != null) {
             if (monitor != null) {
                 this.subMonitor = SubMonitor.convert(monitor, Messages.getString("ComponentsFactory.load.components"), //$NON-NLS-1$
                         childDirectories.length);
             }
-            if (skeletonList != null) {
-                skeletonList.ensureCapacity(childDirectories.length);// to optimize the size of the array
-                for (File currentFolder : childDirectories) {
-                    // get the skeleton files first, then XML config files later.
-                    File[] skeletonFiles = currentFolder.listFiles(skeletonFilter);
-                    if (skeletonFiles != null) {
-                        for (File file : skeletonFiles) {
-                            skeletonList.add(file.getAbsolutePath()); // path
-                        }
+
+            for (File currentFolder : childDirectories) {
+                try {
+                    File xmlMainFile = new File(currentFolder, ComponentFilesNaming.getInstance()
+                            .getMainXMLFileName(currentFolder.getName(), getCodeLanguageSuffix()));
+                    if (!xmlMainFile.exists()) {
+                        // if not a component folder, ignore it.
+                        continue;
                     }
 
-                    try {
-                        File xmlMainFile = new File(currentFolder, ComponentFilesNaming.getInstance()
-                                .getMainXMLFileName(currentFolder.getName(), getCodeLanguageSuffix()));
-                        if (!xmlMainFile.exists()) {
-                            // if not a component folder, ignore it.
-                            continue;
-                        }
-                        String currentXmlSha1 = null;
-                        try {
-                            currentXmlSha1 = SHA1Util.calculateFromTextStream(new FileInputStream(xmlMainFile));
-                        } catch (FileNotFoundException e) {
-                            // nothing since exceptions are directly in the check bellow
-                        }
-                        // Need to check if this component is already in the cache or not.
-                        // if yes, then we compare the sha1... and if different we reload the component
-                        // if component is not in the cache, of course just load it!
-                        ComponentsCache cache = ComponentManager.getComponentCache();
-                        boolean foundComponentIsSame = false;
-                        ComponentInfo existingComponentInfoInCache = null;
-                        if (cache.getComponentEntryMap().containsKey(currentFolder.getName())) {
-                            EList<ComponentInfo> infos = cache.getComponentEntryMap().get(currentFolder.getName());
-                            for (ComponentInfo info : infos) {
-                                if (StringUtils.equals(bundleName, info.getSourceBundleName())) {
-                                    existingComponentInfoInCache = info;
-                                    if (StringUtils.equals(info.getSha1(), currentXmlSha1)) {
-                                        foundComponentIsSame = true;
-                                    }
-                                    break; // found component, no matter changed or not
-                                }
-                            }
-                        }
-                        if (foundComponentIsSame) {
-                            // check if component is already loaded in memory, if yes it will only reload existing xml
-                            // it should go here mainly for commandline or if use like ctrl+shift+f3
-                            if (componentsCache.containsKey(xmlMainFile.getAbsolutePath())) {
-                                IComponent componentFromThisProvider = null;
-                                for (IComponent component : componentsCache.get(xmlMainFile.getAbsolutePath()).values()) {
-                                    if (component instanceof EmfComponent) {
-                                        if (bundleName.equals(((EmfComponent) component).getSourceBundleName())) {
-                                            componentFromThisProvider = component;
-                                            break;
-                                        }
-                                    }
-                                }
-                                if (componentFromThisProvider != null) {
-                                    // In headless mode, we assume the components won't change and we will use a cache
-                                    componentList.add(componentFromThisProvider);
-                                    if (isCustom) {
-                                        customComponentList.add(componentFromThisProvider);
-                                    }
-                                    continue;
-                                }
-                            }
-                        }
-                        if (!foundComponentIsSame) {
-                            ComponentFileChecker.checkComponentFolder(currentFolder, getCodeLanguageSuffix());
-                        }
+                    ComponentFileChecker.checkComponentFolder(currentFolder, getCodeLanguageSuffix());
 
-                        String pathName = xmlMainFile.getAbsolutePath();
+                    String pathName = xmlMainFile.getAbsolutePath();
 
-                        String applicationPath = ComponentBundleToPath.getPathFromBundle(bundleName);
+                    String applicationPath = ComponentBundleToPath.getPathFromBundle(bundleName);
 
-                        // pathName = C:\myapp\plugins\myplugin\components\mycomponent\mycomponent.xml
-                        pathName = (new Path(pathName)).toPortableString();
-                        // pathName = C:/myapp/plugins/myplugin/components/mycomponent/mycomponent.xml
-                        pathName = pathName.replace(applicationPath, ""); //$NON-NLS-1$
-                        // pathName = /components/mycomponent/mycomponent.xml
+                    // pathName = C:\myapp\plugins\myplugin\components\mycomponent\mycomponent.xml
+                    pathName = (new Path(pathName)).toPortableString();
+                    // pathName = C:/myapp/plugins/myplugin/components/mycomponent/mycomponent.xml
+                    pathName = pathName.replace(applicationPath, ""); //$NON-NLS-1$
+                    // pathName = /components/mycomponent/mycomponent.xml
 
-                        // if not already in memory, just load the component from cache.
-                        // if the component is already existing in cache and if it's the same, it won't reload all (cf
-                        // flag: foundComponentIsSame)
-                        EmfComponent currentComp = new EmfComponent(pathName, bundleName, xmlMainFile.getParentFile().getName(),
-                                pathSource, cache, foundComponentIsSame, provider);
-                        if (!foundComponentIsSame) {
-                            // force to call some functions to update the cache. (to improve)
-                            currentComp.isVisibleInComponentDefinition();
-                            currentComp.isTechnical();
-                            currentComp.getOriginalFamilyName();
-                            currentComp.getTranslatedFamilyName();
-                            currentComp.getPluginExtension();
-                            currentComp.getVersion();
-                            currentComp.getModulesNeeded(null);
-                            currentComp.getPluginDependencies();
-                            // end of force cache update.
+                    ComponentsCache cache = ComponentManager.getComponentCaches().get(source.getAbsolutePath());
+                    EmfComponent currentComp = new EmfComponent(pathName, bundleName, xmlMainFile.getParentFile().getName(),
+                            pathSource, cache, false, provider);
 
-                            EList<ComponentInfo> componentsInfo = cache.getComponentEntryMap().get(currentFolder.getName());
-                            for (ComponentInfo cInfo : componentsInfo) {
-                                if (cInfo.getSourceBundleName().equals(bundleName)) {
-                                    cInfo.setSha1(currentXmlSha1);
-                                    break;
-                                }
-                            }
-                            ComponentManager.setModified(true); // this will force to save the cache later.
-                        }
+                    ComponentManager.setModified(source.getAbsolutePath());
 
-                        boolean hiddenComponent = false;
-
-                        Collection<IComponentFactoryFilter> filters = ComponentsFactoryProviderManager.getInstance()
-                                .getProviders();
-                        for (IComponentFactoryFilter filter : filters) {
-                            if (!filter.isAvailable(currentComp.getName())) {
-                                hiddenComponent = true;
-                                break;
-                            }
-                        }
-
-                        // if the component is not needed in the current branding,
-                        // and that this one IS NOT a specific component for code generation
-                        // just don't load it
-                        if (hiddenComponent
-                                && !(currentComp.getOriginalFamilyName().contains("Technical") || currentComp.isTechnical())) {
-                            continue;
-                        }
-
-                        componentToProviderMap.put(currentComp, provider);
-
-                        // if the component is not needed in the current branding,
-                        // and that this one IS a specific component for code generation,
-                        // hide it
-                        if (hiddenComponent
-                                && (currentComp.getOriginalFamilyName().contains("Technical") || currentComp.isTechnical())) {
-                            currentComp.setVisible(false);
-                            currentComp.setTechnical(true);
-                        }
-                        if (provider.getId().contains("Camel")) {
-                            currentComp.setPaletteType(ComponentCategory.CATEGORY_4_CAMEL.getName());
-                        } else {
-                            currentComp.setPaletteType(currentComp.getType());
-                        }
-
-                        if (componentList.contains(currentComp)) {
-                            log.warn("Component " + currentComp.getName() + " already exists. Cannot load user version."); //$NON-NLS-1$ //$NON-NLS-2$
-                        } else {
-                            // currentComp.setResourceBundle(getComponentResourceBundle(currentComp, source.toString(),
-                            // null,
-                            // provider));
-                            currentComp.setProvider(provider);
-                            componentList.add(currentComp);
-                            if (isCustom) {
-                                customComponentList.add(currentComp);
-                            }
-                            if (pathSource != null) {
-                                Path userComponent = new Path(pathSource);
-                                Path templatePath = new Path(IComponentsFactory.COMPONENTS_INNER_FOLDER + File.separatorChar
-                                        + IComponentsFactory.EXTERNAL_COMPONENTS_INNER_FOLDER + File.separatorChar
-                                        + ComponentUtilities.getExtFolder(OLD_COMPONENTS_USER_INNER_FOLDER));
-                                if (userComponent.equals(templatePath)) {
-                                    userComponentList.add(currentComp);
-                                }
-                            }
-                        }
-
-                        // componentsCache only used bellow in case of headless (commandline) or if use like
-                        // ctrl+shift+f3
-                        String componentName = xmlMainFile.getAbsolutePath();
-                        if (!componentsCache.containsKey(componentName)) {
-                            componentsCache.put(componentName, new HashMap<String, IComponent>());
-                        }
-                        componentsCache.get(xmlMainFile.getAbsolutePath()).put(currentComp.getPaletteType(), currentComp);
-                    } catch (MissingMainXMLComponentFileException e) {
-                        log.trace(currentFolder.getName() + " is not a " + getCodeLanguageSuffix() + " component", e); //$NON-NLS-1$ //$NON-NLS-2$
-                    } catch (BusinessException e) {
-                        BusinessException ex = new BusinessException("Cannot load component \"" + currentFolder.getName() + "\": " //$NON-NLS-1$ //$NON-NLS-2$
-                                + e.getMessage(), e);
-                        ExceptionHandler.process(ex, Level.ERROR);
+                    if (ComponentsLoader.skipLoadComponent(currentComp)) {
+                        // continue;
                     }
 
-                    if (this.subMonitor != null) {
-                        this.subMonitor.worked(1);
+                    ComponentsLoader.setComponentPaletteType(currentComp);
+
+                    if (componentList.contains(currentComp)) {
+                        log.warn("Component " + currentComp.getName() + " already exists. Cannot load user version."); //$NON-NLS-1$ //$NON-NLS-2$
+                    } else {
+                        componentList.add(currentComp);
                     }
-                    if (this.monitor != null && this.monitor.isCanceled()) {
-                        return;
-                    }
+                } catch (MissingMainXMLComponentFileException e) {
+                    log.trace(currentFolder.getName() + " is not a " + getCodeLanguageSuffix() + " component", e); //$NON-NLS-1$ //$NON-NLS-2$
+                } catch (BusinessException e) {
+                    BusinessException ex = new BusinessException("Cannot load component \"" + currentFolder.getName() + "\": " //$NON-NLS-1$ //$NON-NLS-2$
+                            + e.getMessage(), e);
+                    ExceptionHandler.process(ex, Level.ERROR);
                 }
-                skeletonList.trimToSize();// to optimize the size of the array
+
+                if (this.subMonitor != null) {
+                    this.subMonitor.worked(1);
+                }
+                if (this.monitor != null && this.monitor.isCanceled()) {
+                    return;
+                }
             }
         }
     }
@@ -714,26 +528,21 @@ public class ComponentsFactory implements IComponentsFactory {
 
     @Override
     public int size() {
-        wait4InitialiseFinish();
-        if (componentList == null) {
-            init(false);
-        }
+        waitForInit();
         return componentList.size();
     }
 
     @Override
     public IComponent get(String name) {
-        wait4InitialiseFinish();
-        if (componentList == null) {
-            init(false);
-        }
-
+        waitForInit();
+        
         for (IComponent comp : componentList) {
             if (comp != null && comp.getName().equals(name)
                     && !ComponentCategory.CATEGORY_4_MAPREDUCE.getName().equals(comp.getPaletteType())) {
                 return comp;
             } // else keep looking
         }
+        log.debug("can not get componentList.size: " + componentList.size() + ",name: " + name);
         return null;
     }
 
@@ -744,25 +553,20 @@ public class ComponentsFactory implements IComponentsFactory {
      */
     @Override
     public IComponent get(String name, String paletteType) {
-        wait4InitialiseFinish();
-        if (componentList == null) {
-            init(false);
-        }
+        waitForInit();
 
         for (IComponent comp : componentList) {
             if (comp != null && comp.getName().equals(name) && paletteType.equals(comp.getPaletteType())) {
                 return comp;
-            } // else keep looking
+            }
         }
+        log.debug("can not get componentList.size: " + componentList.size() + ",name: " + name + ",paletteType: " + paletteType);
         return null;
     }
 
     @Override
     public IComponent getJobletComponent(String name, String paletteType) {
-        wait4InitialiseFinish();
-        if (componentList == null) {
-            init(false);
-        }
+        waitForInit();
 
         // check if reference joblet component presents
         JobletUtil jobletUtils = new JobletUtil();
@@ -785,10 +589,7 @@ public class ComponentsFactory implements IComponentsFactory {
     @Override
     public void initializeComponents(IProgressMonitor monitor) {
         this.monitor = monitor;
-        wait4InitialiseFinish();
-        if (componentList == null) {
-            init(false);
-        }
+        waitForInit();
         this.monitor = null;
         this.subMonitor = null;
     }
@@ -796,10 +597,7 @@ public class ComponentsFactory implements IComponentsFactory {
     @Override
     public void initializeComponents(IProgressMonitor monitor, boolean duringLogon) {
         this.monitor = monitor;
-        wait4InitialiseFinish();
-        if (componentList == null) {
-            init(duringLogon);
-        }
+        waitForInit();
         this.monitor = null;
         this.subMonitor = null;
     }
@@ -811,16 +609,13 @@ public class ComponentsFactory implements IComponentsFactory {
      */
     @Override
     public Set<IComponent> getComponents() {
-        wait4InitialiseFinish();
-        if (componentList == null) {
-            init(false);
-        }
+        waitForInit();
         return componentList;
     }
 
     @Override
-    public boolean isInitialising() {
-        return isInitialising.get();
+    public boolean isInitializing() {
+        return isInitializing.get();
     }
 
     @Override
@@ -835,20 +630,14 @@ public class ComponentsFactory implements IComponentsFactory {
 
     @Override
     public Map<String, Map<String, Set<IComponent>>> getComponentNameMap() {
-        wait4InitialiseFinish();
-        if (componentNameMap == null) {
-            init(false);
-        }
+        waitForInit();
         return componentNameMap;
     }
 
     @Override
     public List<IComponent> getCustomComponents() {
-        wait4InitialiseFinish();
-        if (customComponentList == null) {
-            init(false);
-        }
-        return new ArrayList<IComponent>(customComponentList);
+        waitForInit();
+        return new ArrayList<>(customComponentList);
     }
 
     /*
@@ -858,46 +647,65 @@ public class ComponentsFactory implements IComponentsFactory {
      */
     @Override
     public List<String> getSkeletons() {
-        wait4InitialiseFinish();
-        if (skeletonList == null) {
-            init(false);
-        }
+        waitForInit();
         return skeletonList;
     }
 
     @Override
     public void reset() {
-        componentList = null;
-        skeletonList = null;
-        customComponentList = null;
-        Collection<IComponentFactoryFilter> filters = ComponentsFactoryProviderManager.getInstance().getProviders();
-        for (IComponentFactoryFilter filter : filters) {
-            filter.cleanCache();
-        }
-        if (GlobalServiceRegister.getDefault().isServiceRegistered(IJobletProviderService.class)) {
-            IJobletProviderService jobletService = (IJobletProviderService) GlobalServiceRegister.getDefault()
-                    .getService(IJobletProviderService.class);
-            if (jobletService != null) {
-                jobletService.clearJobletComponent();
+        if (isInitialized.compareAndSet(true, false)) {
+            componentList.clear();
+            skeletonList.clear();
+            customComponentList.clear();
+            Collection<IComponentFactoryFilter> filters = ComponentsFactoryProviderManager.getInstance().getProviders();
+            for (IComponentFactoryFilter filter : filters) {
+                filter.cleanCache();
             }
-        }
+            if (GlobalServiceRegister.getDefault().isServiceRegistered(IJobletProviderService.class)) {
+                IJobletProviderService jobletService = GlobalServiceRegister.getDefault()
+                        .getService(IJobletProviderService.class);
+                if (jobletService != null) {
+                    jobletService.clearJobletComponent();
+                }
+            }
 
-        if (GlobalServiceRegister.getDefault().isServiceRegistered(ISparkJobletProviderService.class)) {
-            ISparkJobletProviderService jobletService = (ISparkJobletProviderService) GlobalServiceRegister.getDefault()
-                    .getService(ISparkJobletProviderService.class);
-            if (jobletService != null) {
-                jobletService.clearSparkJobletComponent();
+            if (GlobalServiceRegister.getDefault().isServiceRegistered(ISparkJobletProviderService.class)) {
+                ISparkJobletProviderService jobletService = GlobalServiceRegister.getDefault()
+                        .getService(ISparkJobletProviderService.class);
+                if (jobletService != null) {
+                    jobletService.clearSparkJobletComponent();
+                }
             }
-        }
 
-        if (GlobalServiceRegister.getDefault().isServiceRegistered(ISparkStreamingJobletProviderService.class)) {
-            ISparkStreamingJobletProviderService jobletService = (ISparkStreamingJobletProviderService) GlobalServiceRegister
-                    .getDefault().getService(ISparkStreamingJobletProviderService.class);
-            if (jobletService != null) {
-                jobletService.clearSparkStreamingJobletComponent();
+            if (GlobalServiceRegister.getDefault().isServiceRegistered(ISparkStreamingJobletProviderService.class)) {
+                ISparkStreamingJobletProviderService jobletService = GlobalServiceRegister.getDefault()
+                        .getService(ISparkStreamingJobletProviderService.class);
+                if (jobletService != null) {
+                    jobletService.clearSparkStreamingJobletComponent();
+                }
+            }
+            isInitializing.set(true);
+        }
+    }
+
+    private void waitForInit() {
+        init(false);
+        int spent = 0;
+        int time = 1000;
+        int timeout = 1000 * 60 * 10;
+        Thread thread = Thread.currentThread();
+        while (isInitializing.get()) {
+            try {
+                thread.sleep(time);
+                spent += time;
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+            if (spent >= timeout) {
+                // may be track in dead lock, throw exception to try to break dead lock
+                throw new RuntimeException("Waiting for component initialization timeout!"); //$NON-NLS-1$
             }
         }
-        isInitialising.set(false);
     }
 
     @Override
@@ -919,20 +727,12 @@ public class ComponentsFactory implements IComponentsFactory {
         String translated = Messages.getString(text);
 
         // if text translated is not in local provider, look into other providers.
-        if (translated.startsWith("!!")) { //$NON-NLS-1$
-            if (component instanceof IComponent) {
-                if (componentToProviderMap.containsKey(component)) {
-                    String translatedFromProvider = componentToProviderMap.get(component).getFamilyTranslation(text);
-                    if (translatedFromProvider != null) {
-                        translated = translatedFromProvider;
-                    }
-                }
-            } else if (component instanceof String) {
-                if (componentsAndProvider.containsKey(component)) {
-                    String translatedFromProvider = componentsAndProvider.get(component).getFamilyTranslation(text);
-                    if (translatedFromProvider != null) {
-                        translated = translatedFromProvider;
-                    }
+        if (translated.startsWith("!!") && component instanceof EmfComponent) { //$NON-NLS-1$
+            AbstractComponentsProvider provider = ((EmfComponent) component).getProvider();
+            if (provider != null) {
+                String translatedFromProvider = provider.getFamilyTranslation(text);
+                if (translatedFromProvider != null) {
+                    translated = translatedFromProvider;
                 }
             }
         }
@@ -1016,6 +816,21 @@ public class ComponentsFactory implements IComponentsFactory {
     	String bundle = componentsProvider.getComponentsBundle();
     	return ComponentBundleToPath.getPathFromBundle(bundle);
     	
+    }
+
+    public Set<IComponent> getComponentsForInit() {
+        return this.componentList;
+    }
+
+    public Set<File> getProviderInstallationFolders() {
+        return providers.stream().filter(p -> ComponentsLoader.isCachedProvider(p)).map(p -> {
+            try {
+                return p.getInstallationFolder();
+            } catch (IOException e) {
+                // never reach
+            }
+            return null;
+        }).filter(f -> f != null).collect(Collectors.toSet());
     }
 
 }

@@ -24,18 +24,23 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.debug.core.DebugException;
+import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.dialogs.MessageDialogWithToggle;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.swt.widgets.Display;
@@ -128,6 +133,8 @@ public class RunProcessContext {
     public static final String NEXTBREAKPOINT = "RunProcessContext.NextBreakpoint"; //$NON-NLS-1$
 
     private boolean watchAllowed;
+    
+    boolean isMavenOnlineTempMode = false;
 
     private Boolean nextBreakpoint = false;
 
@@ -202,6 +209,12 @@ public class RunProcessContext {
 
     /** trace mananger */
     private TraceConnectionsManager traceConnectionsManager;
+    
+    private static final String M2_OFFLINE = "eclipse.m2.offline";
+
+    private static final String M2E_CORE = "org.eclipse.m2e.core";
+
+    private static final String TOGGLE_MVN_ONLINE = "ALWAYS_MAVEN_ONLINE_FOR_MICROSERVICE";
 
     /**
      * Constrcuts a new RunProcessContext.
@@ -511,10 +524,60 @@ public class RunProcessContext {
         return ParallelExecutionUtils.isExistParallelConn(this.getProcess().getAllConnections(null));
     }
 
+    public boolean promptToOnline() {
+
+        // Change mvn to online ONLY if maven is offline needs run this part
+        IPreferenceStore store = RunProcessPlugin.getDefault().getPreferenceStore();
+        try {
+            Class.forName("org.eclipse.swt.widgets.Display");
+            final Display display = Display.getCurrent();
+            if (display == null){
+                InstanceScope.INSTANCE.getNode(M2E_CORE).putBoolean(M2_OFFLINE, false);
+                return true;
+            }
+            AtomicReference<Boolean> result = new AtomicReference<>();
+            display.syncExec(new Runnable() {
+
+                @Override
+                public void run() {
+                    if (display.getActiveShell() != null) {
+                        Shell wizard = display.getActiveShell();
+                        if (!MessageDialogWithToggle.ALWAYS.equals(store.getString(TOGGLE_MVN_ONLINE))) {
+                            MessageDialogWithToggle dlg = MessageDialogWithToggle
+                                    .openOkCancelConfirm(wizard, Messages.getString("MavenOnlineRunner.MavenConfirm"),
+                                            Messages.getString("MavenOnlineRunner.MavenMesssage"),
+                                            Messages.getString("MavenOnlineRunner.ShowItAgain"), false, store,
+                                            TOGGLE_MVN_ONLINE);
+
+                            if (dlg.getReturnCode() != IDialogConstants.OK_ID) {
+                                result.set(Boolean.FALSE);
+                                return;
+                            }
+                        }
+                        InstanceScope.INSTANCE.getNode(M2E_CORE).putBoolean(M2_OFFLINE, false);
+                        result.set(Boolean.TRUE);
+                    }
+                }
+            });
+            return result.get().booleanValue();
+        } catch (Throwable e) {
+            // ignore
+        }
+        return false;
+    }
+    
     /**
      * Launch the process.
      */
     public void exec(final Shell shell) {
+        boolean isMsBuildType = Arrays.asList("ROUTE_MICROSERVICE","REST_MS").contains
+                (process.getAdditionalProperties().get(TalendProcessArgumentConstant.ARG_BUILD_TYPE));
+        
+        if (isMsBuildType && !isMavenOnlineTempMode) {
+            isMavenOnlineTempMode = promptToOnline();
+        }
+        boolean showMavenOnlineInfoMsg = isMsBuildType && !isMavenOnlineTempMode;
+        
         if (process instanceof org.talend.designer.core.ui.editor.process.Process) {
             org.talend.designer.core.ui.editor.process.Process prs =
                     (org.talend.designer.core.ui.editor.process.Process) process;
@@ -635,6 +698,12 @@ public class RunProcessContext {
 
                                     @Override
                                     public void run() {
+                                        if (showMavenOnlineInfoMsg) {
+                                            final String mavenOnlineError = Messages.getString("MavenOnlineRunner.info"); //$NON-NLS-1$
+                                            processMessageManager.addMessage(
+                                                    new ProcessMessage(MsgType.CORE_OUT, mavenOnlineError + "\r\n\r\n")); //$NON-NLS-1$
+                                        }
+                                        
                                         try {
                                             startingMessageWritten = false;
 

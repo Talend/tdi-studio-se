@@ -18,8 +18,10 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.talend.commons.CommonsPlugin;
 import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.runtime.service.ITaCoKitService;
+import org.talend.core.PluginChecker;
 import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.sdk.component.server.front.model.ComponentDetail;
 import org.talend.sdk.component.studio.Lookups;
@@ -35,17 +37,16 @@ import org.talend.updates.runtime.service.ITaCoKitUpdateService;
 public class TaCoKitService implements ITaCoKitService {
 
     @Override
-    public void start() throws Exception {
-        ServerManager.getInstance().start();
-        try {
-            TaCoKitUtil.registAllTaCoKitRepositoryTypes();
-        } catch (Exception e) {
-            Exception ex = Lookups.manager().getLoadException();
-            if (ex == null) {
-                Lookups.manager().setLoadException(e);
-            }
-            ExceptionHandler.process(e);
+    public void start() {
+        if (CommonsPlugin.isHeadless() || CommonsPlugin.isJUnitTest() || PluginChecker.isSWTBotLoaded()) {
+            ServerManager.getInstance().start();
+        } else {
+            new Thread(() -> ServerManager.getInstance().start(), "Starting TaCoKit in background...").start();
         }
+    }
+
+    public void waitForStart() {
+        ServerManager.getInstance().waitForStart();
     }
 
     @Override

@@ -63,6 +63,7 @@ import org.talend.core.model.utils.ContextParameterUtils;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
 import org.talend.core.runtime.maven.MavenUrlHelper;
 import org.talend.core.runtime.services.IGenericDBService;
+import org.talend.core.runtime.services.IGenericWizardInternalService;
 import org.talend.core.runtime.util.GenericTypeUtils;
 import org.talend.core.ui.check.IChecker;
 import org.talend.core.utils.TalendQuoteUtils;
@@ -78,8 +79,6 @@ import org.talend.designer.core.model.FakeElement;
 import org.talend.designer.core.model.components.ElementParameter;
 import org.talend.designer.core.utils.UnifiedComponentUtil;
 import org.talend.metadata.managment.utils.MetadataConnectionUtils;
-import org.talend.repository.generic.internal.IGenericWizardInternalService;
-import org.talend.repository.generic.internal.service.GenericWizardInternalService;
 import org.talend.repository.generic.persistence.GenericRepository;
 import org.talend.repository.generic.ui.DBDynamicComposite;
 import org.talend.repository.generic.ui.DynamicComposite;
@@ -104,7 +103,7 @@ public class GenericDBService implements IGenericDBService{
     public Map<String, Composite> creatDBDynamicComposite(Composite composite, EComponentCategory sectionCategory, boolean isReadOnly, boolean isCreation,
             Property property, String typeName) {
         Map<String, Composite> map = new HashMap<String, Composite>();
-        IGenericWizardInternalService internalService = new GenericWizardInternalService();
+        IGenericWizardInternalService internalService = IGenericWizardInternalService.getService();
         Item item = property.getItem();
         if(!(item instanceof ConnectionItem)){
             return map;
@@ -249,7 +248,7 @@ public class GenericDBService implements IGenericDBService{
 
     @Override
     public void dbWizardPerformFinish(ConnectionItem item, Form form, boolean creation, IPath pathToSave, List<IMetadataTable> oldMetadataTable, final String contextName) throws CoreException {
-        ComponentService compService = new GenericWizardInternalService().getComponentService();
+        ComponentService compService = IGenericWizardInternalService.getService().getComponentService();
         compService.setRepository(new GenericRepository());
         IWorkspace workspace = ResourcesPlugin.getWorkspace();
         final IProxyRepositoryFactory factory = ProxyRepositoryFactory.getInstance();
@@ -475,7 +474,7 @@ public class GenericDBService implements IGenericDBService{
 
     @Override
     public Properties getComponentProperties(String typeName, String id) {
-        IGenericWizardInternalService internalService = new GenericWizardInternalService();
+        IGenericWizardInternalService internalService = IGenericWizardInternalService.getService();
         ComponentWizard componentWizard = internalService.getComponentWizard(typeName, id);
         List<Form> forms = componentWizard.getForms();
         return forms.get(0).getProperties();
@@ -497,7 +496,7 @@ public class GenericDBService implements IGenericDBService{
     @Override
     public List<ERepositoryObjectType> getAllGenericMetadataDBRepositoryType() {
         List<ERepositoryObjectType> repoTypes = new ArrayList<ERepositoryObjectType>();
-        IGenericWizardInternalService internalService = new GenericWizardInternalService();
+        IGenericWizardInternalService internalService = IGenericWizardInternalService.getService();
         // already init RepositoryObjectType in GenericWizardService#createNodesFromComponentService
         Set<ComponentWizardDefinition> wizardDefinitions = internalService.getComponentService().getTopLevelComponentWizards();
         for (ComponentWizardDefinition componentWizardDefinition : wizardDefinitions) {

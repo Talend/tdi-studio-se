@@ -9,9 +9,9 @@ import org.eclipse.ui.PlatformUI;
 import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
 import org.talend.core.repository.ui.actions.metadata.AbstractCreateAction;
+import org.talend.core.runtime.services.IGenericWizardInternalService;
 import org.talend.repository.ProjectManager;
 import org.talend.repository.generic.i18n.Messages;
-import org.talend.repository.generic.internal.service.GenericWizardInternalService;
 import org.talend.repository.generic.model.genericMetadata.GenericConnectionItem;
 import org.talend.repository.generic.ui.GenericConnWizard;
 import org.talend.repository.generic.ui.common.GenericWizardDialog;
@@ -43,7 +43,7 @@ public class CreateGenericConnectionAction extends AbstractCreateAction {
     protected void doRun() {
         IWizard wizard = new GenericConnWizard(PlatformUI.getWorkbench(), creation, repositoryNode, getExistingNames());
         WizardDialog wizardDialog = new GenericWizardDialog(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(),
-                wizard, new GenericWizardInternalService().getComponentService());
+                wizard, IGenericWizardInternalService.getService().getComponentService());
         if (Platform.getOS().equals(Platform.OS_LINUX)) {
             wizardDialog.setPageSize(getWizardWidth(), getWizardHeight() + 80);
         }
