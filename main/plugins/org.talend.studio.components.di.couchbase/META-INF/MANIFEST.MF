@@ -6,10 +6,11 @@ Bundle-SymbolicName: org.talend.studio.components.di.couchbase;singleton:=true
 Bundle-Version: 7.4.1.qualifier
 Bundle-Localization: plugin
 Eclipse-LazyStart: true
-Require-Bundle: org.talend.sdk.component.studio-integration;bundle-version="7.4.1",
- org.talend.core;bundle-version="7.4.1"
+Require-Bundle: org.talend.sdk.component.studio-integration,
+ org.talend.core
 Bundle-Vendor: .Talend SA.
 Import-Package: org.apache.commons.collections4.map,
- org.eclipse.core.runtime;version="3.5.0",
- org.osgi.framework;version="1.9.0"
+ org.eclipse.core.runtime,
+ org.osgi.framework,
+ org.slf4j
 Bundle-ClassPath: .
