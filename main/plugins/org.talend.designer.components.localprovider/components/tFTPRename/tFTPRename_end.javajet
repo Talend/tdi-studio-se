@@ -48,63 +48,40 @@
 			<%}%>  
 <%
 		}
-	} else if (ftps) { // *** ftps *** //
+	} else {// *** ftp and ftps *** //
 %>
-		 } <% /* close main loop */ %>
-<%
-		if (!moveToCurrentDir) {
-%>
-			ftp_<%=cid %>.changeWorkingDirectory(rootDir_<%=cid %>);
-<%
-		}
-		if(!("true").equals(useExistingConn)){
-%>
-			ftp_<%=cid %>.disconnect();
-<%
-			if(isLog4jEnabled) {
-%>
-				log.info("<%=cid%> - Connection to the server closed.");
-<%
-			}
-		}
-	} else {// *** ftp *** //
-%>
-		}
+		} <% /* close main loop */ %>
 <%
 		if(!("true").equals(useExistingConn)){
- 			if(("true").equals(ignoreFailureAtQuit)){
+ 			if(!ftps && ("true").equals(ignoreFailureAtQuit)){
 %>
 				try{
+<%
+			}
+%>
 					<%if(isLog4jEnabled){%>
 						log.info("<%=cid%> - Closing the connection to the server.");
 					<%}%>
+					ftp_<%=cid %>.logout();
 					ftp_<%=cid %>.disconnect();
 					<%if(isLog4jEnabled){%>
 						log.info("<%=cid%> - Connection to the server closed.");
-					<%}%>  
-				}catch(java.io.IOException ioe_<%=cid%>){
-globalMap.put("<%=cid%>_ERROR_MESSAGE",ioe_<%=cid%>.getMessage());
+					<%}%>
+<%
+			if(!ftps && ("true").equals(ignoreFailureAtQuit)){
+%>
+				} catch(java.io.IOException ioe_<%=cid%>) { //ignore failure
+					globalMap.put("<%=cid%>_ERROR_MESSAGE",ioe_<%=cid%>.getMessage());
 					<%if(isLog4jEnabled){%>
 						log.warn("<%=cid%> - " + ioe_<%=cid%>.getMessage());
 					<%}%> 
-					//ignore failure
 				}
 <%
-			}else{
-%>
-				<%if(isLog4jEnabled){%>
-					log.info("<%=cid%> - Closing the connection to the server.");
-				<%}%>
-				ftp_<%=cid %>.disconnect();
-				<%if(isLog4jEnabled){%>
-					log.info("<%=cid%> - Connection to the server closed.");
-				<%}%>  
-<%
 			}
-		}else{
-		    if(!moveToCurrentDir){
+		} else {
+			if(!moveToCurrentDir){
 %>
-		  		ftp_<%=cid %>.changeWorkingDirectory(rootDir_<%=cid %>);
+				ftp_<%=cid %>.changeWorkingDirectory(rootDir_<%=cid %>);
 <%	
 			}
 		}

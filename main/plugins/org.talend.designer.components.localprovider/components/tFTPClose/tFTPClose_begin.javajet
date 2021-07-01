@@ -24,6 +24,7 @@
               session.disconnect();
 <%        } else { %>
               org.apache.commons.net.ftp.FTPClient conn = (org.apache.commons.net.ftp.FTPClient) connObj;
+              conn.logout();
               conn.disconnect();
 <%        } 
 %>
