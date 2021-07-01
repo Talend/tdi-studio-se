@@ -254,7 +254,7 @@ public class FileController extends AbstractElementPropertySectionController {
                 data.right = new FormAttachment(100, -STANDARD_BUTTON_WIDTH - ITabbedPropertyConstants.HSPACE);
             }
             data.left = new FormAttachment((((nbInRow - numInRow) * MAX_PERCENT) / nbInRow),
-                    currentLabelWidth + ITabbedPropertyConstants.HSPACE);
+                    currentLabelWidth + ITabbedPropertyConstants.HSPACE + 5);
 
             data = (FormData) labelLabel.getLayoutData();
             data.right = new FormAttachment(cLayout, 0);
