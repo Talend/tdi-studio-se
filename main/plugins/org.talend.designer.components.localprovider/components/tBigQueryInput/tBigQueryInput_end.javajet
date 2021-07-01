@@ -57,18 +57,12 @@ imports="
     if (authMode.equals("OAUTH") || authMode.equals("TOKEN")) {
         %>
         } catch (Exception e_<%=cid%>) {
-            globalMap.put("<%=cid%>_ERROR_MESSAGE", e_<%=cid%>.getMessage());
-        <%
-        if (isLog4jEnabled) {
-        %>
-            log.error("<%=cid%> - " + e_<%=cid%>.getMessage());
-        <%
-        } else {
-        %>
-            System.err.println("<%=cid%> - " + e_<%=cid%>.getMessage());
-        <%
-        }
-        %>
+            String message_<%=cid%> = e_<%=cid%>.getMessage();
+            <%
+            log4jFileUtil.logErrorMessage();
+            %>
+            globalMap.put("<%=cid%>_ERROR_MESSAGE", message_<%=cid%>);
+            throw e_<%=cid%>;
         } finally {
             bigQueryUtil_<%=cid%>.cleanup();
         }
@@ -76,9 +70,12 @@ imports="
     } else {
     %>
         } catch (Exception e_<%=cid%>) {
-            globalMap.put("<%=cid%>_ERROR_MESSAGE", e_<%=cid%>.getMessage());
+            String message_<%=cid%> = e_<%=cid%>.getMessage();
+            <%
+            log4jFileUtil.logErrorMessage();
+            %>
+            globalMap.put("<%=cid%>_ERROR_MESSAGE", message_<%=cid%>);
             throw e_<%=cid%>;
-
         }
     <%
     }

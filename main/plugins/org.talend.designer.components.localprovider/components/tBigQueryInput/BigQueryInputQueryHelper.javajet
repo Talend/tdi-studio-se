@@ -240,11 +240,11 @@ class BigQueryUtil_<%=cid%> {
 			}
 		}
 
-    public java.util.ArrayList<com.google.api.services.bigquery.model.Job> listChildJobs(String parentJobId) throws Exception {
-        java.util.ArrayList<com.google.api.services.bigquery.model.Job> jobList = new java.util.ArrayList<>();
-        com.google.api.services.bigquery.model.JobList jobs = bigqueryclient.jobs().list(projectId).setParentJobId(parentJobId).execute();
+    public java.util.ArrayList<<%=basePackage%>com.google.api.services.bigquery.model.Job> listChildJobs(String parentJobId) throws Exception {
+        java.util.ArrayList<<%=basePackage%>com.google.api.services.bigquery.model.Job> jobList = new java.util.ArrayList<>();
+        <%=basePackage%>com.google.api.services.bigquery.model.JobList jobs = bigqueryclient.jobs().list(projectId).setParentJobId(parentJobId).execute();
         java.util.ArrayList<String> statistics_<%=cid %> = new java.util.ArrayList<>();
-        for(com.google.api.services.bigquery.model.JobList.Jobs childJob : jobs.getJobs()) {
+        for(<%=basePackage%>com.google.api.services.bigquery.model.JobList.Jobs childJob : jobs.getJobs()) {
             <%=basePackage%>com.google.api.services.bigquery.model.Job job =
             <%
                 if("".equals(basePackage)) {

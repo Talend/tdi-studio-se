@@ -62,16 +62,10 @@
         String pageToken_<%=cid%> = null;
         if(insert_<%=cid%>.getStatus().getErrorResult() != null ) {
             globalMap.put("<%=cid%>_ERROR_MESSAGE", insert_<%=cid%>.getStatus().getErrorResult().getMessage());
+            String message_<%=cid%> = "<%=cid%> - " + insert_<%=cid%>.getStatus().getErrorResult().getMessage();
             <%
-                if (isLog4jEnabled) {
-            %>
-                    log.error("<%=cid%> - " + insert_<%=cid%>.getStatus().getErrorResult().getMessage());
-            <%
-                } else {
-            %>
-                    System.err.println("<%=cid%> - " + insert_<%=cid%>.getStatus().getErrorResult().getMessage());
-            <%
-                }
+                log4jFileUtil.logErrorMessage();
+
             // Else job has finished successfully with the results. Start {.
             %>
         } else {
@@ -99,32 +93,19 @@
             job_<%=cid%> = job_<%=cid%>.waitFor();
 
             if (job_<%=cid%> == null) {
-                globalMap.put("<%=cid%>_ERROR_MESSAGE", "<%=cid%> - Job no longer exists");
-            <%
-                if (isLog4jEnabled) {
-            %>
-                    log.error("<%=cid%> - Job no longer exists");
-            <%
-                } else {
-            %>
-                System.err.println("<%=cid%> - Job no longer exists");
-            <%
-                }
-            %>
+                String message_<%=cid%> = "<%=cid%> - Job no longer exists";
+                globalMap.put("<%=cid%>_ERROR_MESSAGE", message_<%=cid%>);
+                <%
+                    log4jFileUtil.logErrorMessage();
+                %>
             } else if (job_<%=cid%>.getStatus().getError() != null) {
                 com.google.gson.Gson gsonObject = new com.google.gson.Gson();
                 globalMap.put("<%=cid%>_STATISTICS", gsonObject.toJson(job_<%=cid%>.getStatistics()));
+                String message_<%=cid%> = "<%=cid%> - " + job_<%=cid%>.getStatus().getError().toString();
                 globalMap.put("<%=cid%>_ERROR_MESSAGE", job_<%=cid%>.getStatus().getError().toString());
-            <%
-                if (isLog4jEnabled) {
-            %>
-                    log.error("<%=cid%> - " + job_<%=cid%>.getStatus().getError().toString());
-            <%
-                } else {
-            %>
-                    System.err.println("<%=cid%> - " + job_<%=cid%>.getStatus().getError().toString());
                 <%
-                }
+                    log4jFileUtil.logErrorMessage();
+
                 // Else job has finished successfully with the results. Start {.
                 %>
             } else {
@@ -168,11 +149,10 @@
                                 insert_<%=cid %> = insert_elem_<%=cid %>;
                                 if (insert_<%=cid %>.getStatus().getErrorResult() != null) {
                                     globalMap.put("<%=cid%>_ERROR_MESSAGE", insert_<%=cid %>.getStatus().getErrorResult());
-                                <%
-                                if (isLog4jEnabled) {
-                                %>
-                                    log.error("<%=cid%> - " + "Query has error Result, skipping its ResultSet." + insert_<%=cid %>.getStatus().getErrorResult());
-                                <% } %>
+                                    String message_<%=cid%> = "<%=cid%> - " + "Query has error Result, skipping its ResultSet." + insert_<%=cid %>.getStatus().getErrorResult();
+                                    <%
+                                        log4jFileUtil.logErrorMessage();
+                                    %>
                                     continue;
                                 }
 						while (true) {
@@ -200,16 +180,9 @@
                         for (com.google.cloud.bigquery.Job job_iterable_<%=cid%> : childJobs_<%=cid%>) {
                             if (job_iterable_<%=cid%>.getStatus().getError() != null) {
                                 globalMap.put("<%=cid%>_ERROR_MESSAGE", job_iterable_<%=cid%>.getStatus().getError().toString());
+                                String message_<%=cid%> = "<%=cid%> - " + job_iterable_<%=cid%>.getStatus().getError().toString();
                                 <%
-                                if (isLog4jEnabled) {
-                                %>
-                                    log.error("<%=cid%> - " + job_iterable_<%=cid%>.getStatus().getError().toString());
-                                <%
-                                } else {
-                                %>
-                                    System.err.println("<%=cid%> - " + job_iterable_<%=cid%>.getStatus().getError().toString());
-                                <%
-                                    }
+                                    log4jFileUtil.logErrorMessage();
                                 %>
                                 continue;
                             }
