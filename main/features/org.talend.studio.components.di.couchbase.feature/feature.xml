@@ -16,23 +16,12 @@
       [Enter License Description here.]
    </license>
 
-   <requires>
-      <import feature="org.eclipse.nebula.widgets.nattable.extension.glazedlists.feature" version="0.0.0" match="greaterOrEqual"/>
-      <import feature="org.talend.libraries.jdbc.feature" version="0.0.0" match="greaterOrEqual"/>
-      <import plugin="org.apache.commons.commons-beanutils" version="0.0.0" match="greaterOrEqual"/>
-      <import plugin="org.apache.commons.httpclient" version="0.0.0" match="greaterOrEqual"/>
-      <import plugin="org.apache.commons.logging" version="1.2.0" match="greaterOrEqual"/>
-      <import plugin="org.eclipse.nebula.widgets.nattable.core" version="0.0.0" match="greaterOrEqual"/>
-      <import plugin="org.eclipse.nebula.widgets.tablecombo" version="0.0.0" match="greaterOrEqual"/>
-      <import plugin="org.w3c.css.sac" version="0.0.0" match="greaterOrEqual"/>
-   </requires>
-
    <plugin
          id="org.talend.studio.components.di.couchbase"
          download-size="0"
          install-size="0"
          version="0.0.0"
-         unpack="false"/>
+         unpack="true"/>
 
    <plugin
          id="org.talend.components.couchbase"
