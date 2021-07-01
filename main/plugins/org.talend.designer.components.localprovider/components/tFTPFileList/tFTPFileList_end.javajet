@@ -42,52 +42,30 @@ if (sftp && !("true").equals(useExistingConn)) {// *** sftp *** //
 		log.info("<%=cid%> - Connection to the server closed.");
 	<%}%>  
 <%
-} else if (ftps && !("true").equals(useExistingConn)) {
-	if(isLog4jEnabled) {
+} else if (!("true").equals(useExistingConn)) { // *** ftp and ftps *** //
+	if (!ftps && ("true").equals(ignoreFailureAtQuit)) {
 %>
-		log.info("<%=cid%> - Closing the connection to the server.");
+		try {
 <%
 	}
 %>
-	ftp_<%=cid %>.disconnect();
-<%
-	if(isLog4jEnabled) {
-%>
-		log.info("<%=cid%> - Connection to the server closed.");
-<%
-	}
-} else {// *** ftp *** //
-
-	if (!("true").equals(useExistingConn)) {
-		if (("true").equals(ignoreFailureAtQuit)) {
-    %>
-			try {
-				<%if(isLog4jEnabled){%>
-					log.info("<%=cid%> - Closing the connection to the server.");
-				<%}%>      
-        		ftp_<%=cid %>.disconnect();
-				<%if(isLog4jEnabled){%>
-					log.info("<%=cid%> - Connection to the server closed.");
-				<%}%>
-			} catch (java.io.IOException ioe_<%=cid%>) {
-globalMap.put("<%=cid%>_ERROR_MESSAGE",ioe_<%=cid%>.getMessage());
-	        //ignore failure
-				<%if(isLog4jEnabled){%>
-					log.warn("<%=cid%> - " + ioe_<%=cid%>.getMessage());
-				<%}%>
-    		}
-    <%
-		} else {
-    %>
 			<%if(isLog4jEnabled){%>
 				log.info("<%=cid%> - Closing the connection to the server.");
-			<%}%>    
-			ftp_<%=cid %>.disconnect();
+			<%}%>
+			ftp_<%=cid%>.logout();
+			ftp_<%=cid%>.disconnect();
 			<%if(isLog4jEnabled){%>
 				log.info("<%=cid%> - Connection to the server closed.");
+			<%}
+	if (!ftps && ("true").equals(ignoreFailureAtQuit)) {
+%>
+		} catch (java.io.IOException ioe_<%=cid%>) { //ignore failure
+			globalMap.put("<%=cid%>_ERROR_MESSAGE",ioe_<%=cid%>.getMessage());
+			<%if(isLog4jEnabled){%>
+				log.warn("<%=cid%> - " + ioe_<%=cid%>.getMessage());
 			<%}%>
-    <%
-    	}
+		}
+<%
 	}
 }
 %>
