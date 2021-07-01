@@ -18,6 +18,7 @@ import java.net.URL;
 import java.util.Map;
 
 import org.eclipse.jface.resource.ImageDescriptor;
+import org.talend.commons.CommonsPlugin;
 import org.talend.commons.exception.SystemException;
 import org.talend.commons.ui.runtime.exception.ExceptionHandler;
 import org.talend.commons.ui.runtime.image.ImageProvider;
@@ -61,6 +62,9 @@ public class ComponentIconLoading {
     }
 
     public ImageDescriptor getImage24() {
+        if (CommonsPlugin.isHeadless()) {
+            return null;
+        }
         ImageDescriptor image24 = null;
         ImageDescriptor image32 = registry.get(folder.getName() + "_32");
         File file24 = new File(folder, ComponentFilesNaming.getInstance().getIcon24FileName(folder.getName()));
@@ -79,6 +83,9 @@ public class ComponentIconLoading {
     }
 
     public ImageDescriptor getImage16() {
+        if (CommonsPlugin.isHeadless()) {
+            return null;
+        }
         ImageDescriptor image16 = null;
         ImageDescriptor image32 = registry.get(folder.getName() + "_32");
         if (image16 == null) {

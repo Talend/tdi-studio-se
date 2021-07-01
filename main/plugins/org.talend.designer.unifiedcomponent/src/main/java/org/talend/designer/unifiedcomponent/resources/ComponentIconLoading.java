@@ -15,6 +15,8 @@ package org.talend.designer.unifiedcomponent.resources;
 import java.util.Map;
 
 import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.swt.graphics.ImageData;
+import org.talend.commons.CommonsPlugin;
 import org.talend.commons.ui.runtime.image.IImage;
 import org.talend.commons.ui.runtime.image.ImageProvider;
 
@@ -56,7 +58,11 @@ public class ComponentIconLoading {
         ImageDescriptor image24 = registry.get(iImage_32.getLocation() + iImage_32.getPath() + "_icon24");
         if (image24 == null || image24.getImageData() == null) {
             try {
-                image24 = ImageDescriptor.createFromImageData(getImage32().getImageData().scaledTo(24, 24));
+                ImageData image = getImage32().getImageData();
+                if (!CommonsPlugin.isHeadless()) {
+                    image = image.scaledTo(24, 24);
+                }
+                image24 = ImageDescriptor.createFromImageData(image);
             } catch (NullPointerException e) {
                 image24 = getImage32();
             }
@@ -70,7 +76,11 @@ public class ComponentIconLoading {
         ImageDescriptor image16 = registry.get(iImage_32.getLocation() + iImage_32.getPath() + "_icon16");
         if (image16 == null || image16.getImageData() == null) {
             try {
-                image16 = ImageDescriptor.createFromImageData(getImage32().getImageData().scaledTo(16, 16));
+                ImageData image = getImage32().getImageData();
+                if (!CommonsPlugin.isHeadless()) {
+                    image = image.scaledTo(16, 16);
+                }
+                image16 = ImageDescriptor.createFromImageData(image);
             } catch (NullPointerException e) {
                 image16 = getImage32();
             }

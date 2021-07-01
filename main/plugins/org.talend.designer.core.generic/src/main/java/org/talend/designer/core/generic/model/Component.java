@@ -38,6 +38,7 @@ import org.eclipse.swt.graphics.RGB;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.Version;
+import org.talend.commons.CommonsPlugin;
 import org.talend.commons.exception.BusinessException;
 import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.utils.resource.BundleFileUtil;
@@ -1282,7 +1283,10 @@ public class Component extends AbstractBasicComponent {
                 ComponentImageType.PALLETE_ICON_32X32);
         if (imageStream != null) {
             ImageData imageData = new ImageData(imageStream);
-            return ImageDescriptor.createFromImageData(imageData.scaledTo(16, 16));
+            if (!CommonsPlugin.isHeadless()) {
+                imageData = imageData.scaledTo(16, 16);
+            }
+            return ImageDescriptor.createFromImageData(imageData);
         }
         return new DummyComponent("dummy").getIcon16(); //$NON-NLS-1$
     }
@@ -1293,7 +1297,10 @@ public class Component extends AbstractBasicComponent {
                 ComponentImageType.PALLETE_ICON_32X32);
         if (imageStream != null) {
             ImageData imageData = new ImageData(imageStream);
-            return ImageDescriptor.createFromImageData(imageData.scaledTo(24, 24));
+            if (!CommonsPlugin.isHeadless()) {
+                imageData = imageData.scaledTo(24, 24);
+            }
+            return ImageDescriptor.createFromImageData(imageData);
         }
         return new DummyComponent("dummy").getIcon24();//$NON-NLS-1$
     }
