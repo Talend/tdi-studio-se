@@ -819,10 +819,10 @@ globalMap.put("<%=cid%>_ERROR_MESSAGE",ee_<%=cid%>.getMessage());
 			loadJobBuilder_<%=cid%>.setNullMarker(<%= nullMarker %>);
 			com.google.cloud.bigquery.Job job_<%=cid%> = bigquery_<%=cid%>.create(com.google.cloud.bigquery.JobInfo.of(loadJobBuilder_<%=cid%>.build()));
 			job_<%=cid%> = job_<%=cid%>.waitFor(com.google.cloud.RetryOption.initialRetryDelay(org.threeten.bp.Duration.ofSeconds(1)));
-                        com.google.gson.Gson gsonObject = new com.google.gson.Gson();
+                        com.google.gson.Gson gsonObject_<%=cid%> = new com.google.gson.Gson();
 			if (job_<%=cid%> != null && job_<%=cid%>.getStatus().getError() == null) {
                 globalMap.put("<%=cid%>_JOBID",job_<%=cid%>.getJobReference().getJobId());
-                globalMap.put("<%=cid%>_STATISTICS", gsonObject.toJson(job_<%=cid%>.getStatistics()));
+                globalMap.put("<%=cid%>_STATISTICS", gsonObject_<%=cid%>.toJson(job_<%=cid%>.getStatistics()));
 				<%
 				if(isLog4jEnabled){
 				%>
@@ -835,7 +835,7 @@ globalMap.put("<%=cid%>_ERROR_MESSAGE",ee_<%=cid%>.getMessage());
                     throw new RuntimeException("Job no longer exists");
                 }
                 globalMap.put("<%=cid%>_JOBID",job_<%=cid%>.getJobReference().getJobId());
-                globalMap.put("<%=cid%>_STATISTICS", gsonObject.toJson(job_<%=cid%>.getStatistics()));
+                globalMap.put("<%=cid%>_STATISTICS", gsonObject_<%=cid%>.toJson(job_<%=cid%>.getStatistics()));
 				List<com.google.cloud.bigquery.BigQueryError> errorList = job_<%=cid%>.getStatus().getExecutionErrors();
 				throw new RuntimeException("Job failed: " + errorList.get(errorList.size() - 1));
 			}
