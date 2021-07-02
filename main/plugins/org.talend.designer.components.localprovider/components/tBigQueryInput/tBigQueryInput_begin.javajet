@@ -387,8 +387,8 @@ globalMap.put("<%=cid%>_ERROR_MESSAGE",ee_<%=cid%>.getMessage());
                 log4jFileUtil.logErrorMessage();
             %>
             } else if (job_<%=cid%>.getStatus().getError() != null) {
-                com.google.gson.Gson gsonObject = new com.google.gson.Gson();
-                globalMap.put("<%=cid%>_STATISTICS", gsonObject.toJson(job_<%=cid%>.getStatistics()));
+                com.google.gson.Gson gsonObject_<%=cid%> = new com.google.gson.Gson();
+                globalMap.put("<%=cid%>_STATISTICS", gsonObject_<%=cid%>.toJson(job_<%=cid%>.getStatistics()));
                 globalMap.put("<%=cid%>_ERROR_MESSAGE", job_<%=cid%>.getStatus().getError().toString());
                 String message_<%=cid%> = "<%=cid%> - " + job_<%=cid%>.getStatus().getError().toString();
                 <%
@@ -397,8 +397,8 @@ globalMap.put("<%=cid%>_ERROR_MESSAGE",ee_<%=cid%>.getMessage());
                 // Else job has finished successfully with the results. Start {.
                 %>
             } else {
-                com.google.gson.Gson gsonObject = new com.google.gson.Gson();
-                globalMap.put("<%=cid%>_STATISTICS", gsonObject.toJson(job_<%=cid%>.getStatistics()));
+                com.google.gson.Gson gsonObject_<%=cid%> = new com.google.gson.Gson();
+                globalMap.put("<%=cid%>_STATISTICS", gsonObject_<%=cid%>.toJson(job_<%=cid%>.getStatistics()));
 
                 <% if(isLog4jEnabled) { %>
                     log.info("<%=cid%> - Job " + jobId_<%=cid%> + " finished successfully.");
@@ -421,7 +421,7 @@ globalMap.put("<%=cid%>_ERROR_MESSAGE",ee_<%=cid%>.getMessage());
                 }
                 for (com.google.cloud.bigquery.Job job_iterable_<%=cid%> : childJobs_<%=cid%>) {
                     if (child_statistics_<%=cid%> != null) {
-                        child_statistics_<%=cid%>.add(gsonObject.toJson(job_iterable_<%=cid%>.getStatistics()));
+                        child_statistics_<%=cid%>.add(gsonObject_<%=cid%>.toJson(job_iterable_<%=cid%>.getStatistics()));
                     }
                     if (job_iterable_<%=cid%>.getStatus().getError() != null) {
                         globalMap.put("<%=cid%>_ERROR_MESSAGE", job_iterable_<%=cid%>.getStatus().getError().toString());

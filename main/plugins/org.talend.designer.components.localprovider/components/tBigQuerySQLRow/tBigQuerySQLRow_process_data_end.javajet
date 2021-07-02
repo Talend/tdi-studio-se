@@ -49,7 +49,7 @@ imports="
                             if (job_<%=cid%>.getStatistics().getNumChildJobs() != null) {
                                 globalMap.put("<%=cid%>_STATISTICS_CHILD", childJobs_<%=cid%>.stream()
                                     .map(com.google.cloud.bigquery.Job::getStatistics)
-                                    .map(gsonObject::toJson)
+                                    .map(gsonObject_<%=cid%>::toJson)
                                     .collect(java.util.stream.Collectors.joining(",", "{\"statistics\": [", "]}")));
                             }
                         }
