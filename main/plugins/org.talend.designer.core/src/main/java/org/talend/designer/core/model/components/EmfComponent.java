@@ -424,7 +424,8 @@ public class EmfComponent extends AbstractBasicComponent {
     @SuppressWarnings("unchecked")
     private void load() throws BusinessException {
         if (!isLoaded) {
-            File file = new File(ComponentBundleToPath.getPathFromBundle(bundleName) + uriString);
+            String path = (ComponentBundleToPath.getPathFromBundle(bundleName) + uriString).replaceAll("\\\\", "/");
+            File file = new File(path);
             URI createURI = URI.createURI(file.toURI().toString());
             Resource res = getComponentResourceFactoryImpl().createResource(createURI);
             try {
