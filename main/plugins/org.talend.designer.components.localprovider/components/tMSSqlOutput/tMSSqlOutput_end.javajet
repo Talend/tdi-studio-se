@@ -301,7 +301,7 @@ skeleton="../templates/db_output_bulk.skeleton"
                     <%=prefix+cid%>.setNull(count<%=cid%>,<%=typeToSetNull%>);
 		        }
 		<%
-		    }else if(("BigDecimal").equals(typeToGenerate)){
+		    }else if(("BigDecimal").equals(typeToGenerate) && column.getColumn().getPrecision() != null){
 		        %>
 		        <%=prefix+cid%>.setObject(count<%=cid%>,bufferL<%=cid%>.<%=column.getName()%>,java.sql.Types.DECIMAL,<%=column.getColumn().getPrecision()%>);
 		        <%
