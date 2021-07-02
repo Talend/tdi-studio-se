@@ -289,7 +289,11 @@ skeleton="../templates/db_output_bulk.skeleton"
 
                 }
                 <%
-            }else{
+            }else if(("BigDecimal").equals(typeToGenerate)){
+				%>
+				<%=prefix+cid%>.setObject(counter<%=cid%>,<%=incomingConnName%>.<%=column.getName()%>,java.sql.Types.DECIMAL,<%=column.getColumn().getPrecision()%>);
+				<%
+			}else{
                 %>
                 <%=prefix+cid%>.set<%=typeToGenerate%>(counter<%=cid%>,<%=incomingConnName%>.<%=column.getName()%>);
                 <%
