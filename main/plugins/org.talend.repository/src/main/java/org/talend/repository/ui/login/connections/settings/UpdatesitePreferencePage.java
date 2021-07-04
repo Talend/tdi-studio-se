@@ -87,7 +87,7 @@ public class UpdatesitePreferencePage extends PreferencePage {
     private void init() {
         try {
             IProgressMonitor monitor = new NullProgressMonitor();
-            UpdateSiteConfig config = p2Service.getUpdateSiteConfig();
+            UpdateSiteConfig config = p2Service.getUpdateSiteConfig(new NullProgressMonitor());
             URI release = config.getRelease(monitor);
             releaseUriText.setText(release == null ? "" : release.toString());
             URI update = config.getUpdate(monitor);
@@ -119,7 +119,7 @@ public class UpdatesitePreferencePage extends PreferencePage {
         if (this.isControlCreated()) {
             try {
                 IProgressMonitor monitor = new NullProgressMonitor();
-                UpdateSiteConfig config = p2Service.getUpdateSiteConfig();
+                UpdateSiteConfig config = p2Service.getUpdateSiteConfig(new NullProgressMonitor());
                 String release = releaseUriText.getText();
                 config.setRelease(monitor, StringUtils.isBlank(release) ? null : new URI(release.trim()));
                 String update = updateUriText.getText();
