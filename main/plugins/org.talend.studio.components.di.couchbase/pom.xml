@@ -44,7 +44,7 @@
 									<classifier>component</classifier>
 								</artifactItem>
 							</artifactItems>
-							 <outputDirectory>${project.build.directory}/car</outputDirectory>
+							 <outputDirectory>${project.basedir}/car</outputDirectory>
 						</configuration>
 					</execution>
 				</executions>
