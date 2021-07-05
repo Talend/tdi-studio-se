@@ -282,6 +282,10 @@ public class CLASS {
                   return false;
               }
               
+              if (columnName.startsWith("\\\"") && columnName.endsWith("\\\"")) {
+              	  return false;
+              }
+              
               if (columnName.contains(" ")) {
                   return true;
               }
@@ -1279,6 +1283,20 @@ public class CLASS {
         protected String getRProtectedChar() {
             return "";
         }
+        protected String getLProtectedChar(String name) {
+        	if (contaionsSpaces(name)) {
+	            return "\\\"";
+        	} else {
+        		return getLProtectedChar();
+        	}
+        }
+        protected String getRProtectedChar(String name) {
+        	if (contaionsSpaces(name)) {
+	            return "\\\"";
+        	} else {
+        		return getRProtectedChar();
+        	}
+        }
         
         //feature:2880 @6980
         //need all db to implement, return the column whether is null(in java) prefix condition.
@@ -1497,6 +1515,20 @@ public class CLASS {
         protected String getRProtectedChar() {
             return " ";
         }
+        protected String getLProtectedChar(String name) {
+        	if (contaionsSpaces(name)) {
+	            return " \\\"";
+        	} else {
+        		return getLProtectedChar();
+        	}
+        }
+        protected String getRProtectedChar(String name) {
+        	if (contaionsSpaces(name)) {
+	            return "\\\" ";
+        	} else {
+        		return getRProtectedChar();
+        	}
+        }
         public String getDropTableSQL() {
             StringBuilder dropTableSQL = new StringBuilder();
             dropTableSQL.append("DROP TABLE " + getLProtectedChar() + "\" + tableName_" + cid + " + \"" + getRProtectedChar());
@@ -1656,17 +1688,17 @@ public class CLASS {
             return false;
         }
         protected String getLProtectedChar(String keyword) {
-            if (isHSQLDBKeyword(keyword)){
+            if (isHSQLDBKeyword(keyword) || contaionsSpaces(keyword)){
                 return "\\\"";
             }
             return getLProtectedChar();
         }
         protected String getRProtectedChar(String keyword) {
-            if (isHSQLDBKeyword(keyword)){
+            if (isHSQLDBKeyword(keyword) || contaionsSpaces(keyword)){
                 return "\\\"";
             }
             return getRProtectedChar();
-        }  
+        }
     }
     
     public class HiveManager extends Manager {
@@ -1692,13 +1724,13 @@ public class CLASS {
             return false;
         }
         protected String getLProtectedChar(String keyword) {
-            if (isHiveKeyword(keyword)){
+            if (isHiveKeyword(keyword) || contaionsSpaces(keyword)){
                 return "\\\"";
             }
             return getLProtectedChar();
         }
         protected String getRProtectedChar(String keyword) {
-            if (isHiveKeyword(keyword)){
+            if (isHiveKeyword(keyword) || contaionsSpaces(keyword)){
                 return "\\\"";
             }
             return getRProtectedChar();
@@ -1722,7 +1754,19 @@ public class CLASS {
         }
         protected String getRProtectedChar() {
             return "";
-        }        
+        }
+        protected String getLProtectedChar(String keyword) {
+            if (contaionsSpaces(keyword)){
+                return "\\\"";
+            }
+            return getLProtectedChar();
+        }
+        protected String getRProtectedChar(String keyword) {
+            if (contaionsSpaces(keyword)){
+                return "\\\"";
+            }
+            return getRProtectedChar();
+        }   
     }
     
     public class IngresManager extends Manager {
@@ -1842,6 +1886,18 @@ public class CLASS {
         }
         protected String getRProtectedChar() {
             return "";
+        }
+        protected String getLProtectedChar(String keyword) {
+            if (contaionsSpaces(keyword)){
+                return "\\\"";
+            }
+            return getLProtectedChar();
+        }
+        protected String getRProtectedChar(String keyword) {
+            if (contaionsSpaces(keyword)){
+                return "\\\"";
+            }
+            return getRProtectedChar();
         }
     }
     
@@ -2342,6 +2398,18 @@ public class CLASS {
         protected String getRProtectedChar() {
             return "";
         }
+        protected String getLProtectedChar(String keyword) {
+            if (contaionsSpaces(keyword)){
+                return "\\\"";
+            }
+            return getLProtectedChar();
+        }
+        protected String getRProtectedChar(String keyword) {
+            if (contaionsSpaces(keyword)){
+                return "\\\"";
+            }
+            return getRProtectedChar();
+        } 
         public String generateSetStmt(String typeToGenerate, Column column, int index, 
                 String incomingConnName, String cid, int actionType, String dynamic) {
             
@@ -3315,13 +3383,13 @@ public class CLASS {
             return false;
         }
         protected String getLProtectedChar(String keyword) {
-            if (isSybaseKeyword(keyword)){
+            if (isSybaseKeyword(keyword) || contaionsSpaces(keyword)){
                 return "\\\"";
             }
             return getLProtectedChar();
         }
         protected String getRProtectedChar(String keyword) {
-            if (isSybaseKeyword(keyword)){
+            if (isSybaseKeyword(keyword) || contaionsSpaces(keyword)){
                 return "\\\"";
             }
             return getRProtectedChar();
@@ -3772,6 +3840,18 @@ public class CLASS {
         protected String getRProtectedChar() {
             return "";
         }
+        protected String getLProtectedChar(String keyword) {
+            if (contaionsSpaces(keyword)){
+                return "\\\"";
+            }
+            return getLProtectedChar();
+        }
+        protected String getRProtectedChar(String keyword) {
+            if (contaionsSpaces(keyword)){
+                return "\\\"";
+            }
+            return getRProtectedChar();
+        }
         public String getUpdateBulkSQL(List<IMetadataColumn> columnList) {
             StringBuilder updateBulkSQL = new StringBuilder();
             StringBuilder updateSetStmt = new StringBuilder();
@@ -4134,7 +4214,19 @@ public class CLASS {
         }
         protected String getRProtectedChar() {
             return "";
-        }        
+        }
+        protected String getLProtectedChar(String keyword) {
+		    if (contaionsSpaces(keyword)){
+		        return "\\\"";
+		    }
+		    return getLProtectedChar();
+		}
+		protected String getRProtectedChar(String keyword) {
+		    if (contaionsSpaces(keyword)){
+		        return "\\\"";
+		    }
+		    return getRProtectedChar();
+		}
     }
     
     public class JDBCManager extends Manager {
@@ -4153,10 +4245,16 @@ public class CLASS {
             return rChar;
         }        
         public void setLProtectedChar(String lChar){
-            this.lChar = lChar;
+        	if (contaionsSpaces(lChar)){
+		        return "\\\"";
+		    }
+		    return getLProtectedChar();
         }
         public void setRProtectedChar(String rChar){
-            this.rChar = rChar;
+            if (contaionsSpaces(rChar)){
+		        return "\\\"";
+		    }
+		    return getRProtectedChar();
         }
     }    
     public class SAPHanaManager extends Manager {
@@ -4615,6 +4713,18 @@ public class CLASS {
        protected String getRProtectedChar() {
           return "";
        }
+       protected String getLProtectedChar(String keyword) {
+		    if (contaionsSpaces(keyword)){
+		        return "\\\"";
+		    }
+		    return getLProtectedChar();
+		}
+		protected String getRProtectedChar(String keyword) {
+		    if (contaionsSpaces(keyword)){
+		        return "\\\"";
+		    }
+		    return getRProtectedChar();
+		}
     }
 	
 	public class DELTALAKEManager extends Manager {
@@ -4630,7 +4740,18 @@ public class CLASS {
        protected String getRProtectedChar() {
           return "";
        }
-	   
+	   protected String getLProtectedChar(String keyword) {
+		   if (contaionsSpaces(keyword)){
+		       return "\\\"";
+		   }
+		   return getLProtectedChar();
+	   }
+	   protected String getRProtectedChar(String keyword) {
+		   if (contaionsSpaces(keyword)){
+		       return "\\\"";
+		   }
+		   return getRProtectedChar();
+	   }
 	   public String getCreateTableSQL(List<Column> columnList) {
 	       return super.getCreateTableSQL(columnList) + " USING DELTA";
 	   }
@@ -4655,6 +4776,18 @@ public class CLASS {
         protected String getRProtectedChar() {
             return "";
         }
+        protected String getLProtectedChar(String keyword) {
+		    if (contaionsSpaces(keyword)){
+		        return "\\\"";
+		    }
+		    return getLProtectedChar();
+	    }
+	    protected String getRProtectedChar(String keyword) {
+		    if (contaionsSpaces(keyword)){
+		        return "\\\"";
+		    }
+		    return getRProtectedChar();
+	    }
     }
     
     //////////////////////////////////////////////////////////////////////////////////
