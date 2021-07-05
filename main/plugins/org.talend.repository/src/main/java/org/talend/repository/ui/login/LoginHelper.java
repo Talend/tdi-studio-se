@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.core.runtime.Path;
@@ -124,7 +125,7 @@ public class LoginHelper {
 
     public static boolean isAutoLogonFailed;
 
-    private IBrandingService brandingService = (IBrandingService) GlobalServiceRegister.getDefault().getService(
+    private IBrandingService brandingService = GlobalServiceRegister.getDefault().getService(
             IBrandingService.class);
 
     private IGITProviderService gitProviderService;
@@ -153,9 +154,9 @@ public class LoginHelper {
     protected void init() {
         if (PluginChecker.isSVNProviderPluginLoaded()) {
             try {
-                svnProviderService = (ISVNProviderService) GlobalServiceRegister.getDefault().getService(
+                svnProviderService = GlobalServiceRegister.getDefault().getService(
                         ISVNProviderService.class);
-                gitProviderService = (IGITProviderService) GlobalServiceRegister.getDefault().getService(
+                gitProviderService = GlobalServiceRegister.getDefault().getService(
                         IGITProviderService.class);
             } catch (RuntimeException e) {
                 // nothing to do
@@ -355,7 +356,14 @@ public class LoginHelper {
     }
 
     public void setCurrentSelectedConnBean(ConnectionBean connBean) {
+        String oldCredentials = null;
+        if (this.currentSelectedConnBean != null) {
+            oldCredentials = this.currentSelectedConnBean.getCredentials();
+        }
         this.currentSelectedConnBean = connBean;
+        if (StringUtils.isNoneBlank(oldCredentials) && connBean.isStoreCredentials()) {
+            this.currentSelectedConnBean.setCredentials(oldCredentials);
+        }
     }
 
     protected static ConnectionBean getConnection() {
@@ -406,7 +414,7 @@ public class LoginHelper {
     }
 
     public static boolean isStudioNeedUpdate(ConnectionBean connBean) throws SystemException {
-        ICoreTisService tisService = (ICoreTisService) GlobalServiceRegister.getDefault().getService(ICoreTisService.class);
+        ICoreTisService tisService = GlobalServiceRegister.getDefault().getService(ICoreTisService.class);
         if (tisService != null) {
             return tisService.needUpdate(connBean.getUser(), connBean.getPassword(), getAdminURL(connBean));
         } else {
@@ -535,7 +543,7 @@ public class LoginHelper {
 
         try {
             if (GlobalServiceRegister.getDefault().isServiceRegistered(ICoreTisService.class)) {
-                final ICoreTisService service = (ICoreTisService) GlobalServiceRegister.getDefault()
+                final ICoreTisService service = GlobalServiceRegister.getDefault()
                         .getService(ICoreTisService.class);
                 if (service != null) {// if in TIS then update the bundle status according to the project type
                     if (!service.validProject(project, needRestartForLocal)) {
@@ -837,7 +845,7 @@ public class LoginHelper {
      * @throws JSONException
      */
     public List<String> getProjectBranches(Project p, boolean onlyLocalIfPossible) throws JSONException {
-        IRepositoryService repositoryService = (IRepositoryService) GlobalServiceRegister.getDefault()
+        IRepositoryService repositoryService = GlobalServiceRegister.getDefault()
                 .getService(IRepositoryService.class);
         if (repositoryService != null) {
             return repositoryService.getProjectBranch(p, onlyLocalIfPossible);
