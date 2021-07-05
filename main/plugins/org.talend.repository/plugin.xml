@@ -3665,6 +3665,15 @@
                name="CheckLastModifyTFileCopyTask"
                version="7.3.1">
        </projecttask>
+	   	   <projecttask
+               beforeLogon="false"
+               breaks="7.3.0"
+               class="org.talend.repository.model.migration.UncheckBson2JsonTask"
+               description="uncheck the convert Bson document to json string option in tMongoDBInput"
+               id="org.talend.repository.model.migration.UncheckBson2JsonTask"
+               name="UncheckBson2JsonTask"
+               version="7.3.1">
+       </projecttask>
    </extension>
 
    <extension
