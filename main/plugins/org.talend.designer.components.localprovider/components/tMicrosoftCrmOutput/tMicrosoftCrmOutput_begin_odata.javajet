@@ -104,4 +104,26 @@
 	clientConfig_<%=cid%>.setTimeout(<%=timeout%>);
 	clientConfig_<%=cid%>.setMaxRetry(reConnMaxNum_<%=cid%>,<%=attemptsInterval%>);
 	clientConfig_<%=cid%>.setReuseHttpClient(<%=reuseHttpClient%>);
+	<%
+        boolean returnRepresentation = ("true").equals(ElementParameterParser.getValue(node, "__RETURN_REPRESENTATION__")) && !"delete".equals(action);
+	%>
+	clientConfig_<%=cid%>.setReturnRepresentation(<%=returnRepresentation%>);
+	<%
+
+	List<Map<String, String>> headersArray = (List<Map<String,String>>)ElementParameterParser.getObjectValue(node, "__HEADERS__");
+	if(headersArray.size() > 0){
+		    %>
+			java.util.Map<String, String> custom_headers_<%=cid%> = new java.util.HashMap();
+		    <%
+		for(java.util.Map<String, String> e: headersArray) {
+		    %>
+			custom_headers_<%=cid%>.put(<%=e.get("KEY")%>, <%=e.get("VALUE")%>);
+		    <%
+		}
+		    %>
+			clientConfig_<%=cid%>.setCustomHeaders(custom_headers_<%=cid%>);
+		    <%
+	}
+	%>
+
 	org.talend.ms.crm.odata.DynamicsCRMClient client_<%=cid%> = new org.talend.ms.crm.odata.DynamicsCRMClient(clientConfig_<%=cid%>,<%=serviceURL%>,entitySetName_<%=cid%>);
