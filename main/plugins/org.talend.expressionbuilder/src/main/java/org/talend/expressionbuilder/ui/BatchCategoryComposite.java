@@ -125,8 +125,12 @@ public class BatchCategoryComposite extends CategoryComposite {
                     VirtualMetadataColumn column = new VirtualMetadataColumn();
                     column.setTalendType(function.getTalendType().getName());
                     column.setFunction(function);
-                    event.data = (FunctionManagerExt.getOneColData(column, false, true)) + ";" + function.isRoutineJarDependencyMissing()
-                            + ";" + function.getRoutineJarName();
+                    String dragData = FunctionManagerExt.getOneColData(column, false, true);
+                    if (column.getFunction().isRoutineJar()) {
+                        dragData = dragData + ";" + function.isRoutineJarDependencyMissing() + ";" + function.getRoutineJarName();
+                    }
+
+                    event.data = dragData;
                 }
             }
 

@@ -125,9 +125,9 @@ public class BatchExpressionComposite extends ExpressionComposite {
                     String[] data = str.split(";");
                     ExpressionComposite expressionComposite = ExpressionBuilderDialog.getExpressionComposite();
                     expressionComposite.setExpression(data[0], true);
-                    BatchExpressionBuilderDialog.hideWarningLabel();
+                    ExpressionBuilderDialog.hideWarningLabel();
                     if (data.length > 2 && Boolean.valueOf(data[1])) {
-                        BatchExpressionBuilderDialog
+                        ExpressionBuilderDialog
                                 .showWarningLabel(Messages.getString("CategoryComposite.missingRoutineJar", data[2]));
                     }
                 }

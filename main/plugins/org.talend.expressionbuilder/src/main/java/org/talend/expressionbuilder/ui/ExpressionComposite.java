@@ -284,9 +284,17 @@ public class ExpressionComposite extends Composite {
 
                 if (textTransfer.isSupportedType(event.currentDataType)) {
                     String str = (String) event.data;
-                    modificationRecord.pushRecored(textControl.getText() + str);
+                    String[] data = str.split(";");
+
+                    modificationRecord.pushRecored(textControl.getText() + data[0]);
                     ExpressionComposite expressionComposite = ExpressionBuilderDialog.getExpressionComposite();
-                    expressionComposite.setExpression(str, true);
+                    expressionComposite.setExpression(data[0], true);
+
+                    ExpressionBuilderDialog.hideWarningLabel();
+                    if (data.length > 2 && Boolean.valueOf(data[1])) {
+                        ExpressionBuilderDialog
+                                .showWarningLabel(Messages.getString("CategoryComposite.missingRoutineJar", data[2]));
+                    }
                 }
             }
         });

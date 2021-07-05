@@ -177,8 +177,12 @@ public class CategoryComposite extends Composite {
                     VirtualMetadataColumn column = new VirtualMetadataColumn();
                     column.setTalendType(function.getTalendType().getName());
                     column.setFunction(function);
+                    String dragData = FunctionManagerExt.getOneColData(column, false, false);
+                    if (column.getFunction().isRoutineJar()) {
+                        dragData = dragData + ";" + function.isRoutineJarDependencyMissing() + ";" + function.getRoutineJarName();
+                    }
 
-                    event.data = (FunctionManagerExt.getOneColData(column, false, false));
+                    event.data = dragData;
                 }
             }
 
@@ -314,7 +318,11 @@ public class CategoryComposite extends Composite {
                             column.setTalendType(function.getTalendType().getName());
                             column.setFunction(function);
 
-                            BatchExpressionBuilderDialog.hideWarningLabel();
+                            ExpressionBuilderDialog.hideWarningLabel();
+                            if (column.getFunction().isRoutineJar() && column.getFunction().isRoutineJarDependencyMissing()) {
+                                ExpressionBuilderDialog.showWarningLabel(Messages.getString(
+                                        "CategoryComposite.missingRoutineJar", column.getFunction().getRoutineJarName()));
+                            }
 
                             ExpressionComposite expressionComposite = ExpressionBuilderDialog.getExpressionComposite();
                             if (expressionComposite != null) {
@@ -332,11 +340,6 @@ public class CategoryComposite extends Composite {
                                     }
                                 } else if (expressionComposite instanceof BatchExpressionComposite) {
                                     expressionComposite.setExpression(FunctionManagerExt.getOneColData(column, false, true), true);
-                                    if (column.getFunction().isRoutineJarDependencyMissing()) {
-                                        BatchExpressionBuilderDialog.showWarningLabel(Messages.getString(
-                                                "CategoryComposite.missingRoutineJar",
-                                                        column.getFunction().getRoutineJarName()));
-                                    }
                                 } else {
                                     expressionComposite.setExpression(FunctionManagerExt.getOneColData(column, false), true);
                                     expressionComposite.modificationRecord.pushRecored(expressionComposite.getExpression());
