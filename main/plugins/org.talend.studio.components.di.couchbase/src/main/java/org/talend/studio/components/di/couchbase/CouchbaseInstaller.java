@@ -31,27 +31,31 @@ import org.talend.sdk.component.studio.util.TCKComponentInstallerTask;
  */
 public class CouchbaseInstaller extends TCKComponentInstallerTask {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(CouchbaseInstaller.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(CouchbaseInstaller.class);
 
-	@Override
-	protected File getCarFile() {
-		URL carFolder = FileLocator.find(FrameworkUtil.getBundle(CouchbaseInstaller.class), new Path("car"), null);
-		File carDir = null;
-		if (carFolder != null) {
-			try {
-				carDir = new File(FileLocator.toFileURL(carFolder).getPath());
-				if (carDir.isDirectory()) {
-					File[] cars = carDir.listFiles();
-					Optional<File> carFile = Stream.of(cars).filter(f -> f.getName().endsWith(".car")).findAny();
-					return carFile.isPresent() ? carFile.get() : null;
-				}
+    @Override
+    protected File getCarFile() {
+        URL carFolder = FileLocator.find(FrameworkUtil.getBundle(CouchbaseInstaller.class), new Path("car"), null);
+        File carDir = null;
+        if (carFolder != null) {
+            try {
+                carDir = new File(FileLocator.toFileURL(carFolder).getPath());
+                if (carDir.isDirectory()) {
+                    File[] cars = carDir.listFiles();
+                    Optional<File> carFile = Stream.of(cars).filter(f -> f.getName().endsWith(".car")).findAny();
+                    File carRet = carFile.isPresent() ? carFile.get() : null;
+                    if (carRet != null) {
+                        LOGGER.info("cat file: {0}", carRet);
+                        return carRet;
+                    }
+                }
 
-			} catch (IOException e) {
-				LOGGER.error("Can't find car file", e);
-			}
-		}
-		LOGGER.error("Can't find car file from folder: {0}",carDir);
-		return null;
-	}
+            } catch (IOException e) {
+                LOGGER.error("Can't find car file", e);
+            }
+        }
+        LOGGER.error("Can't find car file from folder: {0}", carDir);
+        return null;
+    }
 
 }
