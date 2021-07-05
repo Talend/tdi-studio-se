@@ -35,10 +35,11 @@ public class CouchbaseInstaller extends TCKComponentInstallerTask {
 
 	@Override
 	protected File getCarFile() {
-		URL carFolder = FileLocator.find(FrameworkUtil.getBundle(CouchbaseInstaller.class), new Path("car/"), null);
+		URL carFolder = FileLocator.find(FrameworkUtil.getBundle(CouchbaseInstaller.class), new Path("car"), null);
+		File carDir = null;
 		if (carFolder != null) {
 			try {
-				File carDir = new File(FileLocator.toFileURL(carFolder).toString());
+				carDir = new File(FileLocator.toFileURL(carFolder).getPath());
 				if (carDir.isDirectory()) {
 					File[] cars = carDir.listFiles();
 					Optional<File> carFile = Stream.of(cars).filter(f -> f.getName().endsWith(".car")).findAny();
@@ -49,7 +50,7 @@ public class CouchbaseInstaller extends TCKComponentInstallerTask {
 				LOGGER.error("Can't find car file", e);
 			}
 		}
-		LOGGER.error("Can't find car file");
+		LOGGER.error("Can't find car file from folder: {0}",carDir);
 		return null;
 	}
 
