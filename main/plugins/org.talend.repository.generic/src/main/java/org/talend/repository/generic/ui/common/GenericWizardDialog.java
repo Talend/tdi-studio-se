@@ -19,7 +19,6 @@ import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Shell;
 import org.talend.commons.exception.ExceptionHandler;
-import org.talend.components.api.properties.ComponentProperties;
 import org.talend.components.api.service.ComponentService;
 import org.talend.daikon.properties.presentation.Form;
 
@@ -41,7 +40,7 @@ public class GenericWizardDialog extends WizardDialog {
         Form form = getForm();
         if (form != null && form.isCallAfterFormNext()) {
             try {
-                compService.afterFormNext(form.getName(), (ComponentProperties) form.getProperties());
+                compService.afterFormNext(form.getName(), form.getProperties());
             } catch (Throwable e) {
                 ExceptionHandler.process(e);
             }
@@ -54,7 +53,7 @@ public class GenericWizardDialog extends WizardDialog {
         Form form = getForm();
         if (form != null && form.isCallAfterFormBack()) {
             try {
-                compService.afterFormBack(form.getName(), (ComponentProperties) form.getProperties());
+                compService.afterFormBack(form.getName(), form.getProperties());
             } catch (Throwable e) {
                 ExceptionHandler.process(e);
             }

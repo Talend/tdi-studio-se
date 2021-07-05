@@ -18,8 +18,10 @@ import java.net.URL;
 import java.util.Map;
 
 import org.eclipse.jface.resource.ImageDescriptor;
+import org.talend.commons.CommonsPlugin;
 import org.talend.commons.exception.SystemException;
 import org.talend.commons.ui.runtime.exception.ExceptionHandler;
+import org.talend.commons.ui.runtime.image.EImage;
 import org.talend.commons.ui.runtime.image.ImageProvider;
 
 /**
@@ -62,16 +64,20 @@ public class ComponentIconLoading {
 
     public ImageDescriptor getImage24() {
         ImageDescriptor image24 = null;
-        ImageDescriptor image32 = registry.get(folder.getName() + "_32");
-        File file24 = new File(folder, ComponentFilesNaming.getInstance().getIcon24FileName(folder.getName()));
-        if (file24.exists()) {
-            image24 = getImage(ComponentFilesNaming.getInstance().getIcon24FileName(folder.getName()));
-        } else if (image32 != null && image32.getImageData() != null) {
-            try {
-                image24 = ImageDescriptor.createFromImageData(image32.getImageData().scaledTo(24, 24));
-            } catch (NullPointerException e) {
-                image24 = image32;
+        if (!CommonsPlugin.isHeadless()) {
+            ImageDescriptor image32 = registry.get(folder.getName() + "_32");
+            File file24 = new File(folder, ComponentFilesNaming.getInstance().getIcon24FileName(folder.getName()));
+            if (file24.exists()) {
+                image24 = getImage(ComponentFilesNaming.getInstance().getIcon24FileName(folder.getName()));
+            } else if (image32 != null && image32.getImageData() != null) {
+                try {
+                    image24 = ImageDescriptor.createFromImageData(image32.getImageData().scaledTo(24, 24));
+                } catch (NullPointerException e) {
+                    image24 = image32;
+                }
             }
+        } else {
+            image24 = ImageProvider.getImageDesc(EImage.COMPONENT_MISSING);
         }
         registry.put(folder.getName() + "_24", image24);
 
@@ -80,14 +86,18 @@ public class ComponentIconLoading {
 
     public ImageDescriptor getImage16() {
         ImageDescriptor image16 = null;
-        ImageDescriptor image32 = registry.get(folder.getName() + "_32");
-        if (image16 == null) {
-            File file16 = new File(folder, ComponentFilesNaming.getInstance().getIcon16FileName(folder.getName()));
-            if (file16.exists()) {
-                image16 = getImage(ComponentFilesNaming.getInstance().getIcon16FileName(folder.getName()));
-            } else if (image32 != null && image32.getImageData() != null) {
-                image16 = ImageDescriptor.createFromImageData(image32.getImageData().scaledTo(16, 16));
+        if (!CommonsPlugin.isHeadless()) {
+            ImageDescriptor image32 = registry.get(folder.getName() + "_32");
+            if (image16 == null) {
+                File file16 = new File(folder, ComponentFilesNaming.getInstance().getIcon16FileName(folder.getName()));
+                if (file16.exists()) {
+                    image16 = getImage(ComponentFilesNaming.getInstance().getIcon16FileName(folder.getName()));
+                } else if (image32 != null && image32.getImageData() != null) {
+                    image16 = ImageDescriptor.createFromImageData(image32.getImageData().scaledTo(16, 16));
+                }
             }
+        } else {
+            image16 = ImageProvider.getImageDesc(EImage.COMPONENT_MISSING);
         }
         registry.put(folder.getName() + "_16", image16);
         return image16;
