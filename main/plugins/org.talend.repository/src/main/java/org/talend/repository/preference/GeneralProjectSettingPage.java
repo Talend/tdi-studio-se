@@ -24,8 +24,10 @@ import org.talend.commons.ui.runtime.exception.ExceptionHandler;
 import org.talend.core.CorePlugin;
 import org.talend.core.model.properties.Project;
 import org.talend.core.runtime.CoreRuntimePlugin;
+import org.talend.core.runtime.projectsetting.ProjectPreferenceManager;
 import org.talend.repository.i18n.Messages;
 import org.talend.repository.model.IProxyRepositoryFactory;
+import org.talend.repository.ui.utils.GitProviderUtil;
 
 /**
  * DOC aimingchen class global comment. Detailled comment
@@ -37,6 +39,10 @@ public class GeneralProjectSettingPage extends ProjectSettingPage {
     private Text descriptionText;
     
     private Button utf8Button;
+
+    private Button disableScreenshotBtn;
+
+    private static ProjectPreferenceManager prefManager = CoreRuntimePlugin.getInstance().getProjectPreferenceManager();
 
     public GeneralProjectSettingPage() {
         super();
@@ -78,6 +84,15 @@ public class GeneralProjectSettingPage extends ProjectSettingPage {
         utf8ButtonData.horizontalSpan = 2;
         utf8Button.setLayoutData(utf8ButtonData);
 
+        if (GitProviderUtil.isProjectInGitMode()) {
+            disableScreenshotBtn = new Button(container, SWT.CHECK);
+            disableScreenshotBtn.setText(Messages.getString("GeneralProjectSettingPage.disableScreenshot"));
+            GridData disableScreenshotBtnData = new GridData(GridData.FILL_HORIZONTAL);
+            disableScreenshotBtnData.horizontalSpan = 2;
+            disableScreenshotBtn.setLayoutData(disableScreenshotBtnData);
+            disableScreenshotBtn.setSelection(prefManager.isDisableScreenshot());
+        }
+
         updateContent();
         return container;
     }
@@ -90,7 +105,7 @@ public class GeneralProjectSettingPage extends ProjectSettingPage {
             description = emfProject.getDescription();
         }
         descriptionText.setText(description);       
-        utf8Button.setSelection(CoreRuntimePlugin.getInstance().getProjectPreferenceManager().isAllowSpecificCharacters());       
+        utf8Button.setSelection(prefManager.isAllowSpecificCharacters());
     }
 
     /*
@@ -116,11 +131,19 @@ public class GeneralProjectSettingPage extends ProjectSettingPage {
     }
 
     protected void apply() {
-        if (utf8Button != null && utf8Button.getSelection() != CoreRuntimePlugin.getInstance().getProjectPreferenceManager()
-                .isAllowSpecificCharacters()) {
-            CoreRuntimePlugin.getInstance().getProjectPreferenceManager().setAllowSpecificCharacters(utf8Button.getSelection());
-            CoreRuntimePlugin.getInstance().getProjectPreferenceManager().save();
+        boolean optionChanged = false;
+        if (utf8Button != null && utf8Button.getSelection() != prefManager.isAllowSpecificCharacters()) {
+            prefManager.setAllowSpecificCharacters(utf8Button.getSelection());
+            optionChanged = true;
         }
+        if (disableScreenshotBtn != null && disableScreenshotBtn.getSelection() != prefManager.isDisableScreenshot()) {
+            prefManager.setDisableScreenshot(disableScreenshotBtn.getSelection());
+            optionChanged = true;
+        }
+        if (optionChanged) {
+            prefManager.save();
+        }
+
         if (descriptionText != null) {
             if (descriptionText.getText().equals(pro.getEmfProject().getDescription())) {
                 return;
