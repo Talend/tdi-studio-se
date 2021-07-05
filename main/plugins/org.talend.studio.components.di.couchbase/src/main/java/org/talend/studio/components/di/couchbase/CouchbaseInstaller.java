@@ -15,6 +15,7 @@ package org.talend.studio.components.di.couchbase;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.util.Arrays;
 import java.util.Optional;
 import java.util.stream.Stream;
 
@@ -42,10 +43,12 @@ public class CouchbaseInstaller extends TCKComponentInstallerTask {
                 carDir = new File(FileLocator.toFileURL(carFolder).getPath());
                 if (carDir.isDirectory()) {
                     File[] cars = carDir.listFiles();
-                    Optional<File> carFile = Stream.of(cars).filter(f -> f.getName().endsWith(".car")).findAny();
+                    LOGGER.info("Files found: {}", Arrays.toString(cars));
+                    
+                    Optional<File> carFile = Stream.of(cars).filter(f -> f.getName().endsWith(".car")).findFirst();
                     File carRet = carFile.isPresent() ? carFile.get() : null;
                     if (carRet != null) {
-                        LOGGER.info("cat file: {0}", carRet);
+                        LOGGER.info("car file: {}", carRet.toString());
                         return carRet;
                     }
                 }
@@ -54,7 +57,7 @@ public class CouchbaseInstaller extends TCKComponentInstallerTask {
                 LOGGER.error("Can't find car file", e);
             }
         }
-        LOGGER.error("Can't find car file from folder: {0}", carDir);
+        LOGGER.error("Can't find car file from folder {}", carDir);
         return null;
     }
 

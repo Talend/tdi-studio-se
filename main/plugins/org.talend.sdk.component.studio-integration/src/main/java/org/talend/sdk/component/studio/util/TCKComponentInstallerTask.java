@@ -18,7 +18,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
@@ -35,66 +34,78 @@ import org.talend.updates.runtime.service.ITaCoKitUpdateService.ICarInstallation
  */
 public class TCKComponentInstallerTask extends BaseComponentInstallerTask {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(TCKComponentInstallerTask.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(TCKComponentInstallerTask.class);
 
-	/**
-	 * Get car file
-	 * 
-	 * @return car file
-	 */
-	protected File getCarFile() {
-		return null;
-	}
+    /**
+     * Get car file
+     * 
+     * @return car file
+     */
+    protected File getCarFile() {
+        return null;
+    }
 
-	protected boolean compareGAVCT(GAV gav) {
-		GAV tempGAV = new GAV();
-		tempGAV.setGroupId(getComponentGroupId());
-		tempGAV.setArtifactId(getComponenArtifactId());
-		tempGAV.setVersion(getComponenVersion());
-		tempGAV.setClassifier(getComponentClassifier());
-		tempGAV.setType(getComponentType());
+    protected boolean compareGAVCT(GAV componentGAV, GAV installedGAV) {
 
-		return tempGAV.equals(gav);
-	}
+        return componentGAV.equals(installedGAV);
+    }
 
-	@Override
-	public boolean needInstall() {
+    protected GAV getComponentGAV() {
+        GAV tempGAV = new GAV();
+        tempGAV.setGroupId(getComponentGroupId());
+        tempGAV.setArtifactId(getComponenArtifactId());
+        tempGAV.setVersion(getComponenVersion());
+        tempGAV.setClassifier(getComponentClassifier());
+        tempGAV.setType(getComponentType());
+        return tempGAV;
+    }
 
-		try {
-			List<GAV> gavs = TaCoKitUtil.getInstalledComponents(new NullProgressMonitor());
-			for (GAV gav : gavs) {
-				if (compareGAVCT(gav)) {
-					LOGGER.error("Component {0} was already installed", gav.toString());
-					return false;
-				}
-			}
-		} catch (Exception e) {
-			LOGGER.error("Get installed components error", e);
-		}
+    @Override
+    public boolean needInstall() {
+        GAV compGAV = getComponentGAV();
+        try {
+            List<GAV> gavs = TaCoKitUtil.getInstalledComponents(new NullProgressMonitor());
+            for (GAV gav : gavs) {
+                if (compareGAVCT(compGAV, gav)) {
+                    LOGGER.error("Component: {} was already installed", gav.toString());
+                    return false;
+                }
+            }
+        } catch (Exception e) {
+            LOGGER.error("Get installed components error", e);
+        }
+        LOGGER.info("Component: {} is going to be installed", compGAV.toString());
+        return true;
+    }
 
-		return true;
-	}
-
-	@Override
-	public boolean install(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
-		if (monitor == null) {
-			monitor = new NullProgressMonitor();
-		}
-		Set<File> files = new HashSet<File>();
-		files.add(getCarFile());
-		try {
-			ICarInstallationResult result = ITaCoKitUpdateService.getInstance().installCars(files, true, monitor);
-			IStatus stat = result.getInstalledStatus().get(getCarFile());
-			if (stat.getCode() == IStatus.OK) {
-				LOGGER.info("TCK Component installed: {0}", getCarFile());
-				return true;
-			} else {
-				LOGGER.error("install car failure: {0}", getCarFile());
-			}
-		} catch (Exception e) {
-			LOGGER.error("install car failure" + getCarFile(), e);
-		}
-		return false;
-	}
+    @Override
+    public boolean install(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
+        if (monitor == null) {
+            monitor = new NullProgressMonitor();
+        }
+        Set<File> files = new HashSet<File>();
+        File carFile = getCarFile();
+        if (carFile != null) {
+            LOGGER.info("Car file: {} was added", carFile);
+            files.add(carFile);
+        }
+        if (files.isEmpty()) {
+            LOGGER.info("No car files");
+            return false;
+        }
+        try {
+            ICarInstallationResult result = ITaCoKitUpdateService.getInstance().installCars(files, true, monitor);
+            IStatus stat = result.getInstalledStatus().get(carFile);
+            if (stat.getCode() == IStatus.OK) {
+                LOGGER.info("TCK Component installed: {}", carFile);
+                return true;
+            } else {
+                LOGGER.error("Failed to install car: {}", carFile);
+            }
+        } catch (Exception e) {
+            LOGGER.error("Failed to install car: {}", carFile, e);
+        }
+        return false;
+    }
 
 }
