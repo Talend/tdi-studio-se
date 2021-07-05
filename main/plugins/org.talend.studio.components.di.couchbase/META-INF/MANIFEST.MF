@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
 Automatic-Module-Name: org.talend.studio.components.di.couchbase
 Bundle-ManifestVersion: 2
-Bundle-Name: Core Plug-in
+Bundle-Name: Couchbase Plug-in
 Bundle-SymbolicName: org.talend.studio.components.di.couchbase;singleton:=true
 Bundle-Version: 7.4.1.qualifier
 Bundle-Localization: plugin
@@ -14,3 +14,4 @@ Import-Package: org.apache.commons.collections4.map,
  org.osgi.framework,
  org.slf4j
 Bundle-ClassPath: .
+Eclipse-BundleShape: dir
