@@ -83,7 +83,7 @@ if ((metadatas!=null)&&(metadatas.size()>0)) {
     				int inserted_<%=cid%> = excelDynamicUtil_<%=cid%>.writeHeaderToExcelFile(writableSheet_<%=cid%>,<%=firstCellYAbsolute?firstCellXStr:"0"%>,
 						<%if(firstCellYAbsolute){%>startRowNum_<%=cid %>+nb_line_<%=cid%><%}else{%>nb_line_<%=cid%><%}%>,<%=conn.getName()%>,fitWidth_<%=cid%>);
 						
-					headerIsInserted_<%=cid%> = inserted_<%=cid%>==1;
+					headerIsInserted_<%=cid%> |= inserted_<%=cid%>==1;
 						
 					nb_line_<%=cid%> += inserted_<%=cid%>;
     			<%
@@ -120,7 +120,7 @@ if ((metadatas!=null)&&(metadatas.size()>0)) {
     			%>
     				int inserted_<%=cid%> = excelDynamicUtil_<%=cid%>.writeHeaderToExcelFile(<%=conn.getName() %>, xlsxTool_<%=cid%>, nb_line_<%=cid%>);
     				
-    				headerIsInserted_<%=cid%> = inserted_<%=cid%>==1;
+    				headerIsInserted_<%=cid%> |= inserted_<%=cid%>==1;
     				
     				nb_line_<%=cid%> += inserted_<%=cid%>;
     			<%
