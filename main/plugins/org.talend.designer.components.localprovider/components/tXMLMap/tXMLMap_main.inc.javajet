@@ -95,8 +95,10 @@ skeleton="tXMLMap_java.skeleton"
     
 	List<IConnection> inputConnections = (List<IConnection>) node.getIncomingConnections();
 	HashMap<String, IConnection> hNameToConnection = new HashMap<String, IConnection>();
+	String connectionName = "";
 	for(IConnection connection : inputConnections){
 		 hNameToConnection.put(connection.getName(), connection);
+		 connectionName = connection.getName();
 	}
 	
 	List<InputXmlTree> inputTables = new ArrayList<InputXmlTree>();
@@ -464,21 +466,26 @@ skeleton="tXMLMap_java.skeleton"
 		                        metadataColumnFromConn = hashedMetadataTable.getColumn(outputColumnName);
 		                    }
 	                        
-	                        String outputExpression = outputTableEntry.getExpression();
+	                        String outputExpression = connectionName + "." + outputColumnName;
 							String resultExpression = "";
-							if(matchXmlTreeExpr != null)
+							if(matchXmlTreeExpr != null) {
 								resultExpression = matchXmlTreeExpr.generateExprCode(outputExpression);
+								sb.append(cr).append("// Build result expression with generateExprCode => " + resultExpression).append(cr);
+							}
 	                        if (resultExpression == null || resultExpression.trim().length() == 0) {
 	                        	if(metadataColumnFromConn == null) {
 		                            resultExpression = JavaTypesManager.getDefaultValueFromJavaIdType(outputTableEntry
 	    	                                .getType(), outputTableEntry.isNullable());
+	    	                        sb.append(cr).append("// Build result expression with outputTableEntry => " + resultExpression).append(cr);
 	    	                    } else {
 		                            resultExpression = JavaTypesManager.getDefaultValueFromJavaIdType(metadataColumnFromConn
 	    	                                .getTalendType(), metadataColumnFromConn.isNullable());
+	    	                        sb.append(cr).append("// Build result expression with metadataColumnFromConn => " + resultExpression).append(cr);
 	    	                    }
 	                        } else {
 	                        
 	                        	if(metadataColumnFromConn == null) {
+	                        	    sb.append(cr).append("// metadataColumnFromConn == null => continue").append(cr);
 									continue;
 								}	                        
 	                        
