@@ -5,7 +5,7 @@
    <extension
          point="org.talend.core.component_installer_task">
       <componentInstallerTask
-            class="org.talend.studio.components.di.couchbase.CouchbaseInstaller" order="1" g="org.talend.components" a="couchbase" v="1.22.0" c="component" t="car">
+            class="org.talend.studio.components.di.couchbase.CouchbaseInstaller" order="1" g="org.talend.components" a="couchbase" v="1.22.0" c="" t="">
       </componentInstallerTask>
    </extension>
 
