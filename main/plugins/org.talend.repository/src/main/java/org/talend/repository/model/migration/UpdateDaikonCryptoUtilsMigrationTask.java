@@ -84,7 +84,7 @@ public class UpdateDaikonCryptoUtilsMigrationTask extends AbstractProjectMigrati
             return false;
         }
         for (Dependency dep : deps) {
-            DefaultArtifactVersion version1 = new DefaultArtifactVersion("0.31.11");
+            DefaultArtifactVersion version1 = new DefaultArtifactVersion("0.31.12");
             DefaultArtifactVersion version2 = new DefaultArtifactVersion(dep.getVersion());
             int res = version1.compareTo(version2);
 
