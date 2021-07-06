@@ -108,7 +108,7 @@ public class DataSourceConfig {
                             val = new JSONObject(elementParameter.getValue());
                             if (val != null && val.get("dataSource") instanceof JSONObject) {
                                 JSONObject dataSource = (JSONObject) val.get("dataSource");
-                                if (dataSource != null) {
+                                if (dataSource != null && JSONObject.NULL != dataSource.get("storedValue")) {
                                     String storeValue = (String) dataSource.get("storedValue");
                                     if (StringUtils.isNoneBlank(storeValue)) {
                                         useDS = true;
