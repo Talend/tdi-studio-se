@@ -48,6 +48,7 @@ import org.talend.designer.core.generic.constants.IElementParameterEventProperti
 import org.talend.designer.core.generic.constants.IGenericConstants;
 import org.talend.designer.core.generic.model.GenericElementParameter;
 import org.talend.designer.core.model.FakeElement;
+import org.talend.repository.generic.i18n.Messages;
 import org.talend.repository.generic.ui.common.GenericWizardPage;
 import org.talend.repository.generic.ui.context.ContextComposite;
 import org.talend.repository.generic.ui.httpsProxy.HttpsProxyComposite;
@@ -168,6 +169,8 @@ public class GenericConnWizardPage extends GenericWizardPage implements Property
                 job.setUser(false);
                 job.setPriority(Job.BUILD);
                 job.schedule(); // start as soon as possible
+                genericStatus = createStatus(IStatus.ERROR, Messages.getString("GenericConnWizardPage.defaultMessage")); //$NON-NLS-1$
+                updatePageStatus();
             }
         }
     }
@@ -202,7 +205,7 @@ public class GenericConnWizardPage extends GenericWizardPage implements Property
         List<IRepositoryViewObject> list = new ArrayList<IRepositoryViewObject>();
         ERepositoryObjectType type = ERepositoryObjectType.getType(connectionItem.getTypeName());
         if (GlobalServiceRegister.getDefault().isServiceRegistered(IProxyRepositoryService.class)) {
-            IProxyRepositoryService service = (IProxyRepositoryService) GlobalServiceRegister.getDefault()
+            IProxyRepositoryService service = GlobalServiceRegister.getDefault()
                     .getService(IProxyRepositoryService.class);
 
             list = service.getProxyRepositoryFactory().getAll(type, true, false);
