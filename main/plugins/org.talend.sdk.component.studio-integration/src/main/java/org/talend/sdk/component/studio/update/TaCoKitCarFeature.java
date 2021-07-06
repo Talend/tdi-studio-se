@@ -67,6 +67,8 @@ public class TaCoKitCarFeature extends AbstractExtraFeature implements ITaCoKitC
     private Object carLock = new Object();
     
     private boolean isDeployCommand = false;
+    
+    private boolean deleteCar = true;
 
     public TaCoKitCarFeature(ComponentIndexBean indexBean) {
         super(indexBean.getBundleId(), indexBean.getName(), indexBean.getVersion(), indexBean.getDescription(),
@@ -484,5 +486,15 @@ public class TaCoKitCarFeature extends AbstractExtraFeature implements ITaCoKitC
     @Override
     public void setDeployCommand(boolean isDeployCommand){
         this.isDeployCommand = isDeployCommand;     
+    }
+
+    @Override
+    public void setDeleteCar(boolean deleteCar) {
+        this.deleteCar = deleteCar;
+    }
+
+    @Override
+    public boolean isDeleteCar() {
+        return deleteCar;
     }
 }
