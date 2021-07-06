@@ -4215,18 +4215,6 @@ public class CLASS {
         protected String getRProtectedChar() {
             return "";
         }
-        protected String getLProtectedChar(String keyword) {
-		    if (contaionsSpaces(keyword)){
-		        return "\\\"";
-		    }
-		    return getLProtectedChar();
-		}
-		protected String getRProtectedChar(String keyword) {
-		    if (contaionsSpaces(keyword)){
-		        return "\\\"";
-		    }
-		    return getRProtectedChar();
-		}
     }
     
     public class JDBCManager extends Manager {
@@ -4245,16 +4233,10 @@ public class CLASS {
             return rChar;
         }        
         public void setLProtectedChar(String lChar){
-        	if (contaionsSpaces(lChar)){
-		        return "\\\"";
-		    }
-		    return getLProtectedChar();
+            this.lChar = lChar;
         }
         public void setRProtectedChar(String rChar){
-            if (contaionsSpaces(rChar)){
-		        return "\\\"";
-		    }
-		    return getRProtectedChar();
+            this.rChar = rChar;
         }
     }    
     public class SAPHanaManager extends Manager {
