@@ -66,6 +66,9 @@ public class BatchExpressionBuilderDialog extends ExpressionBuilderDialog {
         final GridData gridData = new GridData(SWT.FILL, SWT.FILL, true, true);
         sashForm.setLayoutData(gridData);
         sashForm.setWeights(new int[] { 4, 1 });
+
+        createWarningLabel(container);
+
         return container;
     }
 
