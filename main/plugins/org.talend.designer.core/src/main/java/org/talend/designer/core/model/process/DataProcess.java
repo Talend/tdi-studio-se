@@ -99,6 +99,7 @@ import org.talend.designer.core.i18n.Messages;
 import org.talend.designer.core.model.components.AbstractBasicComponent;
 import org.talend.designer.core.model.components.EParameterName;
 import org.talend.designer.core.model.components.ElementParameter;
+import org.talend.designer.core.model.process.jobsettings.JobSettingsConstants;
 import org.talend.designer.core.model.process.jobsettings.JobSettingsManager;
 import org.talend.designer.core.model.process.statsandlogs.StatsAndLogsManager;
 import org.talend.designer.core.model.utils.emf.talendfile.AbstractExternalData;
@@ -936,6 +937,7 @@ public class DataProcess implements IGeneratingProcess {
             }
 
             updateVirtualComponentProperties(graphicalNode.getComponentProperties(), curItem, curNode);
+            updateElementParameters(curNode, graphicalNode);
 
             curNode.setActivate(graphicalNode.isActivate());
 
@@ -1027,6 +1029,18 @@ public class DataProcess implements IGeneratingProcess {
                 curNode.setComponentProperties(virtualComponentProperties.getInputComponentProperties());
             } else { // output
                 curNode.setComponentProperties(virtualComponentProperties.getOutputComponentProperties());
+            }
+        }
+    }
+
+    private void updateElementParameters(AbstractNode curNode, INode graphicalNode) {
+        // update to real selected db driver
+        IElementParameter elementParameter = curNode.getElementParameter("DRIVER");
+        if (elementParameter != null) {
+            IElementParameter ep2 = graphicalNode
+                    .getElementParameter(JobSettingsConstants.getExtraParameterName(EParameterName.DB_VERSION.getName()));
+            if (ep2 != null) {
+                elementParameter.setValue(ep2.getValue());
             }
         }
     }

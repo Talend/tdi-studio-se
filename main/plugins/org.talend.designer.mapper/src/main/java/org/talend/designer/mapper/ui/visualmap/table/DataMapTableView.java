@@ -657,6 +657,28 @@ public abstract class DataMapTableView extends Composite implements IDataMapTabl
                 return obj;
             };
         };
+
+        cellEditor.addListener(new ICellEditorListener() {
+
+            public void applyEditorValue() {
+                if (canBeResizedAtPreferedSize()) {
+                    changeSize(getPreferredSize(true, false, false), true, true);
+                }
+            }
+
+            public void cancelEditor() {
+                // TODO Auto-generated method stub
+
+            }
+
+            public void editorValueChanged(boolean oldValidState, boolean newValidState) {
+                // TODO Auto-generated method stub
+
+            }
+
+
+        });
+
         cellEditor.create(table);
         if (!mapperManager.componentIsReadOnly()) {
             valueColumn.setCellEditor(cellEditor);
@@ -3560,9 +3582,6 @@ public abstract class DataMapTableView extends Composite implements IDataMapTabl
                             oldMappingMap.clear();
                         } finally {
                             DataMapTableView.this.customSized = isCustom;
-                        }
-                        if (canBeResizedAtPreferedSize()) {
-                            changeSize(getPreferredSize(true, false, false), true, true);
                         }
                         return value;
                     }
