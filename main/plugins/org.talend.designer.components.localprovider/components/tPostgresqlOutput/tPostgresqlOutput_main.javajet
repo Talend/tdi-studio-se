@@ -169,9 +169,9 @@ skeleton="../templates/db_output_bulk.skeleton"
 %>
 			routines.system.Dynamic dynamic_<%=cid%> = <%=conn.getName()%>.<%=getDynamicColumn()%>;
             if (<%=convertToLowercase%>) {
-                for (int i = 0; i < dynamic_<%=cid%>.getColumnCount(); i++) {
-                	routines.system.DynamicMetadata column = dynamic_<%=cid%>.getColumnMetadata(i);
-                	column.setName(column.getName().toLowerCase());
+                for (int x_<%=cid%> = 0; x_<%=cid%> < dynamic_<%=cid%>.getColumnCount(); x_<%=cid%>++) {
+                	routines.system.DynamicMetadata column_<%=cid%> = dynamic_<%=cid%>.getColumnMetadata(x_<%=cid%>);
+                	column_<%=cid%>.setName(column_<%=cid%>.getName().toLowerCase());
                 }
             }
 <%
@@ -211,9 +211,9 @@ skeleton="../templates/db_output_bulk.skeleton"
 %>
 			routines.system.Dynamic dynamic_<%=cid%> = <%=conn.getName()%>.<%=getDynamicColumn()%>;
             if (<%=convertToLowercase%>) {
-                for (int i = 0; i < dynamic_<%=cid%>.getColumnCount(); i++) {
-                	routines.system.DynamicMetadata column = dynamic_<%=cid%>.getColumnMetadata(i);
-                	column.setName(column.getName().toLowerCase());
+                for (int x_<%=cid%> = 0; x_<%=cid%> < dynamic_<%=cid%>.getColumnCount(); x_<%=cid%>++) {
+                	routines.system.DynamicMetadata column_<%=cid%> = dynamic_<%=cid%>.getColumnMetadata(x_<%=cid%>);
+                	column_<%=cid%>.setName(column_<%=cid%>.getName().toLowerCase());
                 }
             }
 <%
@@ -237,9 +237,9 @@ skeleton="../templates/db_output_bulk.skeleton"
 %>
 			routines.system.Dynamic dynamic_<%=cid%> = <%=conn.getName()%>.<%=getDynamicColumn()%>;
             if (<%=convertToLowercase%>) {
-                for (int i = 0; i < dynamic_<%=cid%>.getColumnCount(); i++) {
-                	routines.system.DynamicMetadata column = dynamic_<%=cid%>.getColumnMetadata(i);
-                	column.setName(column.getName().toLowerCase());
+                for (int x_<%=cid%> = 0; x_<%=cid%> < dynamic_<%=cid%>.getColumnCount(); x_<%=cid%>++) {
+                	routines.system.DynamicMetadata column_<%=cid%> = dynamic_<%=cid%>.getColumnMetadata(x_<%=cid%>);
+                	column_<%=cid%>.setName(column_<%=cid%>.getName().toLowerCase());
                 }
             }
 <%
@@ -275,9 +275,9 @@ skeleton="../templates/db_output_bulk.skeleton"
 %>
 			routines.system.Dynamic dynamic_<%=cid%> = <%=conn.getName()%>.<%=getDynamicColumn()%>;
             if (<%=convertToLowercase%>) {
-                for (int i = 0; i < dynamic_<%=cid%>.getColumnCount(); i++) {
-                	routines.system.DynamicMetadata column = dynamic_<%=cid%>.getColumnMetadata(i);
-                	column.setName(column.getName().toLowerCase());
+                for (int x_<%=cid%> = 0; x_<%=cid%> < dynamic_<%=cid%>.getColumnCount(); x_<%=cid%>++) {
+                	routines.system.DynamicMetadata column_<%=cid%> = dynamic_<%=cid%>.getColumnMetadata(x_<%=cid%>);
+                	column_<%=cid%>.setName(column_<%=cid%>.getName().toLowerCase());
                 }
             }
 <%

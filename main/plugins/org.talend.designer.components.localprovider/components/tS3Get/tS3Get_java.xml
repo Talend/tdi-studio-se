@@ -54,8 +54,31 @@
         <ITEM NAME="STATIC_CREDENTIALS" VALUE="STATIC_CREDENTIALS" SHOW_IF="true" />
         <ITEM NAME="INHERIT_CREDENTIALS" VALUE="INHERIT_CREDENTIALS" SHOW_IF="true" />
         <ITEM NAME="WEB_TOKEN" VALUE="WEB_TOKEN" SHOW_IF="true" />
+        <ITEM NAME="PROFILE_INHERIT_CREDENTIALS" VALUE="PROFILE_INHERIT_CREDENTIALS" SHOW_IF="true" />
       </ITEMS>
     </PARAMETER>
+
+        <PARAMETER
+                NAME="PROFILE_PATH"
+                FIELD="FILE"
+                NUM_ROW="21"
+                REQUIRED="false"
+                GROUP="CONNECTION_CONFIG"
+				SHOW_IF="(USE_EXISTING_CONNECTION == 'false') AND (CREDENTIAL_PROVIDER == 'PROFILE_INHERIT_CREDENTIALS')"
+        >
+            <DEFAULT>""</DEFAULT>
+        </PARAMETER>
+
+        <PARAMETER
+                NAME="PROFILE_NAME"
+                FIELD="TEXT"
+                NUM_ROW="21"
+                REQUIRED="false"
+                GROUP="CONNECTION_CONFIG"
+				SHOW_IF="(USE_EXISTING_CONNECTION == 'false') AND (CREDENTIAL_PROVIDER == 'PROFILE_INHERIT_CREDENTIALS')"
+        >
+            <DEFAULT>""</DEFAULT>
+        </PARAMETER>
 
     <PARAMETER
       NAME="ACCESS_KEY"
