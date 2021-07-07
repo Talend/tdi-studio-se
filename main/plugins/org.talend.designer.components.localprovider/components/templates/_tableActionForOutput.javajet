@@ -67,9 +67,9 @@ if (!isParallelize) {
                     %>
                     	routines.system.Dynamic dynamic_<%=cid%> = <%=conns_dynamic.get(0).getName()%>.<%=getDynamicColumn()%>;
 	                    if (<%=convertToLowercase_tableAction%>) {
-	                        for (int i = 0; i < dynamic_<%=cid%>.getColumnCount(); i++) {
-	                        	routines.system.DynamicMetadata column = dynamic_<%=cid%>.getColumnMetadata(i);
-	                        	column.setName(column.getName().toLowerCase());
+	                        for (int x_<%=cid%> = 0; x_<%=cid%> < dynamic_<%=cid%>.getColumnCount(); x_<%=cid%>++) {
+	                        	routines.system.DynamicMetadata column_<%=cid%> = dynamic_<%=cid%>.getColumnMetadata(x_<%=cid%>);
+	                        	column_<%=cid%>.setName(column_<%=cid%>.getName().toLowerCase());
 	                        }
 	                    }
                         stmtCreate_<%=cid%>.execute((("<%=query%>").replace("{TALEND_DYNAMIC_COLUMN}",DynamicUtils.getCreateTableSQL(dynamic_<%=cid%>, "<%=dbms==null?"":dbms.toLowerCase()%>")<%if(convertToUppercase_tableAction){%>.toUpperCase()<%}%>)+")<%=ending%>"));
@@ -103,9 +103,9 @@ if (!isParallelize) {
                     %>
                     routines.system.Dynamic dynamic_<%=cid%> = <%=conns_dynamic.get(0).getName()%>.<%=getDynamicColumn()%>;
                     if (<%=convertToLowercase_tableAction%>) {
-                        for (int i = 0; i < dynamic_<%=cid%>.getColumnCount(); i++) {
-                        	routines.system.DynamicMetadata column = dynamic_<%=cid%>.getColumnMetadata(i);
-                        	column.setName(column.getName().toLowerCase());
+                        for (int x_<%=cid%> = 0; x_<%=cid%> < dynamic_<%=cid%>.getColumnCount(); x_<%=cid%>++) {
+                        	routines.system.DynamicMetadata column_<%=cid%> = dynamic_<%=cid%>.getColumnMetadata(x_<%=cid%>);
+                        	column_<%=cid%>.setName(column_<%=cid%>.getName().toLowerCase());
                         }
                     }
                     stmtCreate_<%=cid%>.execute((("<%=query%>").replace("{TALEND_DYNAMIC_COLUMN}",DynamicUtils.getCreateTableSQL(dynamic_<%=cid%>, "<%=dbms==null?"":dbms.toLowerCase()%>")<%if(convertToUppercase_tableAction){%>.toUpperCase()<%}%>)+")<%=ending%>"));
@@ -348,9 +348,9 @@ globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
                                             %>
                                             routines.system.Dynamic dynamic_<%=cid%> = <%=conns_dynamic.get(0).getName()%>.<%=getDynamicColumn()%>;
 						                    if (<%=convertToLowercase_tableAction%>) {
-						                        for (int i = 0; i < dynamic_<%=cid%>.getColumnCount(); i++) {
-						                        	routines.system.DynamicMetadata column = dynamic_<%=cid%>.getColumnMetadata(i);
-						                        	column.setName(column.getName().toLowerCase());
+						                        for (int x_<%=cid%> = 0; x_<%=cid%> < dynamic_<%=cid%>.getColumnCount(); x_<%=cid%>++) {
+						                        	routines.system.DynamicMetadata column_<%=cid%> = dynamic_<%=cid%>.getColumnMetadata(x_<%=cid%>);
+						                        	column_<%=cid%>.setName(column_<%=cid%>.getName().toLowerCase());
 						                        }
 						                    }
                                             stmtCreate_<%=cid%>.execute((("<%=query%>").replace("{TALEND_DYNAMIC_COLUMN}",DynamicUtils.getCreateTableSQL(dynamic_<%=cid%>, "<%=dbms==null?"":dbms.toLowerCase()%>")<%if(convertToUppercase_tableAction){%>.toUpperCase()<%}%>)+")<%=ending%>"));
@@ -406,9 +406,9 @@ globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
                                         %>
 		                                routines.system.Dynamic dynamic_<%=cid%> = <%=conns_dynamic.get(0).getName()%>.<%=getDynamicColumn()%>;
 					                    if (<%=convertToLowercase_tableAction%>) {
-					                        for (int i = 0; i < dynamic_<%=cid%>.getColumnCount(); i++) {
-					                        	routines.system.DynamicMetadata column = dynamic_<%=cid%>.getColumnMetadata(i);
-					                        	column.setName(column.getName().toLowerCase());
+					                        for (int x_<%=cid%> = 0; x_<%=cid%> < dynamic_<%=cid%>.getColumnCount(); x_<%=cid%>++) {
+					                        	routines.system.DynamicMetadata column_<%=cid%> = dynamic_<%=cid%>.getColumnMetadata(x_<%=cid%>);
+					                        	column_<%=cid%>.setName(column_<%=cid%>.getName().toLowerCase());
 					                        }
 					                    }
                                         stmtCreate_<%=cid%>.execute((("<%=query%>").replace("{TALEND_DYNAMIC_COLUMN}",DynamicUtils.getCreateTableSQL(dynamic_<%=cid%>, "<%=dbms==null?"":dbms.toLowerCase()%>")<%if(convertToUppercase_tableAction){%>.toUpperCase()<%}%>)+")<%=ending%>"));

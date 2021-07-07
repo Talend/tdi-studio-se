@@ -24,6 +24,7 @@ import java.util.Set;
 import java.util.stream.Stream;
 
 import org.eclipse.jface.resource.ImageDescriptor;
+import org.talend.commons.CommonsPlugin;
 import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.runtime.service.ITaCoKitService;
 import org.talend.core.CorePlugin;
@@ -88,12 +89,15 @@ public class TaCoKitGenericProvider implements IGenericProvider {
             final boolean isCatcherAvailable = components.stream()
                     .anyMatch(comp -> comp != null && comp.getName().equals(EmfComponent.TSTATCATCHER_NAME)
                             && ComponentCategory.CATEGORY_4_DI.getName().equals(comp.getPaletteType()));
+            boolean isHeadless = CommonsPlugin.isHeadless();
             details.forEach(pair -> {
                 ComponentIndex index = pair.getFirst();
                 ComponentDetail detail = pair.getSecond();
                 ImageDescriptor imageDesc = null;
                 try {
-                    imageDesc = service.toEclipseIcon(index.getIcon());
+                    if (!isHeadless) {
+                        imageDesc = service.toEclipseIcon(index.getIcon());
+                    }
                 } catch (Exception e) {
                     ExceptionHandler.process(e);
                 }
