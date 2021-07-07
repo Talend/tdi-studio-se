@@ -72,7 +72,17 @@ java.net.URL url_<%=cid%> = new java.net.URL(<%=sURI%>);
     <%if(isLog4jEnabled){%>
         log.info("<%=cid%> - Connection attempt to '" + <%=sURI%>);
     <%}%>
-java.net.HttpURLConnection urlConn_<%=cid%> = (java.net.HttpURLConnection) url_<%=cid%>.openConnection();
+java.net.HttpURLConnection urlConn_<%=cid%> = null;
+
+if ("local".equals(System.getProperty("http.proxySet"))) {
+    java.net.Proxy proxyToUse = org.talend.proxy.TalendProxySelector.getInstance().getProxyForUriString(<%=sURI%>);
+    <%if (isLog4jEnabled) {%>
+        log.info("<%=cid%> - Using proxy '" + proxyToUse);
+    <%}%>
+    urlConn_<%=cid%> = (java.net.HttpURLConnection) url_<%=cid%>.openConnection(proxyToUse); <%/*even when proxy is not configured for the host, it would be Proxy.NO_PROXY, so would be ignored*/%>
+} else {
+    urlConn_<%=cid%> = (java.net.HttpURLConnection) url_<%=cid%>.openConnection();
+}
     <%if(isLog4jEnabled){%>
         log.info("<%=cid%> - Connection to '" +  <%=sURI%> + "' has succeeded.");
     <%}%>
