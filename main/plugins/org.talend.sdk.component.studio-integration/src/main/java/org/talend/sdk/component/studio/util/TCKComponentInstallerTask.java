@@ -58,7 +58,7 @@ public class TCKComponentInstallerTask extends BaseComponentInstallerTask {
         tempGAV.setArtifactId(getComponenArtifactId());
         tempGAV.setVersion(getComponenVersion());
         tempGAV.setClassifier(getComponentClassifier());
-        tempGAV.setType(getComponentType());
+        tempGAV.setType(getComponentPackageType());
         return tempGAV;
     }
 
