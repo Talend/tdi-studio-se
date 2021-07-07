@@ -23,6 +23,7 @@ import org.eclipse.ui.actions.SelectionProviderAction;
 import org.talend.core.model.repository.IRepositoryViewObject;
 import org.talend.core.sqlbuilder.util.ConnectionParameters;
 import org.talend.core.sqlbuilder.util.TextUtil;
+import org.talend.repository.model.IRepositoryNode;
 import org.talend.repository.model.IRepositoryNode.EProperties;
 import org.talend.repository.model.RepositoryNode;
 import org.talend.sqlbuilder.Messages;
@@ -101,12 +102,21 @@ public class OpenNewEditorAction extends SelectionProviderAction {
     public void run() {
         IStructuredSelection selection = (IStructuredSelection) selectionProvider.getSelection();
         RepositoryNode firstNode = (RepositoryNode) selection.getFirstElement();
-        if(firstNode==null) {
-        	return;
-        }
-        if (firstNode.getProperties(EProperties.CONTENT_TYPE) == RepositoryNodeType.FOLDER) {
-            firstNode = repositoryNodeManager.getRepositoryNodebyName(connParam.getRepositoryName());
-        }
+        if (firstNode != null && firstNode.getProperties(EProperties.CONTENT_TYPE) == RepositoryNodeType.FOLDER) {
+			firstNode = repositoryNodeManager.getRepositoryNodebyName(connParam.getRepositoryName());
+		}
+		if (firstNode == null) {
+			Object input = selectionProvider.getInput();
+			if (input != null && input instanceof RepositoryNode) {
+				List<IRepositoryNode> children = ((RepositoryNode) input).getChildren();
+				if (children.size() > 0 && children.get(0) instanceof RepositoryNode) {
+					firstNode =(RepositoryNode)children.get(0);
+				}
+			}
+		}
+		if (firstNode == null) {
+			return;
+		}
         List<String> repositoryNames = repositoryNodeManager.getALLReposotoryNodeNames();
         IRepositoryViewObject object = SQLBuilderRepositoryNodeManager.getRoot(firstNode).getObject();
         connParam.setRepositoryName(object.getLabel());
