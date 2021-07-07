@@ -1,6 +1,8 @@
 <%
     String action = ElementParameterParser.getValue(node,"__ACTION__");
 	boolean emptyLookupIntoNull = "true".equals(ElementParameterParser.getValue(node,"__EMPTY_LOOKUP_TO_NULL__"));
+    boolean returnRepresentation = ("true").equals(ElementParameterParser.getValue(node, "__RETURN_REPRESENTATION__")) && !"delete".equals(action);
+    String returnRepresentationCol = ElementParameterParser.getValue(node, "__RETURN_REPRESENTATION_COLUMN__");
     List<IMetadataTable> metadatas = node.getMetadataList();
     if ((metadatas!=null)&&(metadatas.size()>0)) {//1
         IMetadataTable metadata = metadatas.get(0);
@@ -26,6 +28,11 @@
 	                    for(int i = 0; i < sizeColumns; i++){
 	                			IMetadataColumn column = columns.get(i);
 	                			JavaType javaType = JavaTypesManager.getJavaTypeFromId(column.getTalendType());
+
+				if(returnRepresentation && column.getLabel().equals(returnRepresentationCol)){
+					continue;
+				}
+
 	                       	boolean isPrimitive = JavaTypesManager.isJavaPrimitiveType(javaType, column.isNullable());
 	                       	if("update".equals(action)){
                                 if(column.isKey() && idColumnName == null){
@@ -70,13 +77,26 @@
                     	<%
                    	if("insert".equals(action)){
 							%>
-                    		client_<%=cid%>.insertEntity(entity_<%=cid%>);
+                            org.talend.ms.crm.odata.DynamicsCRMClient.CreateUpdateResult result_<%=cid%> = client_<%=cid%>.insertEntity(entity_<%=cid%>);
+
+                            <%
+                            if(returnRepresentation){
+                            %>
+                            <%=conn.getName()%>.<%=returnRepresentationCol%> = result_<%=cid%>.getEntity();
+                            <%
+                            }
+                            %>
                     	<%
                     	}else if("update".equals(action)){
                     		if(idColumnName!=null){
                     		%>
-                 				client_<%=cid%>.updateEntity( entity_<%=cid%>, <%=connName%>.<%=idColumnName%>);
+                                org.talend.ms.crm.odata.DynamicsCRMClient.CreateUpdateResult result_<%=cid%> = client_<%=cid%>.updateEntity( entity_<%=cid%>, <%=connName%>.<%=idColumnName%>);
                     		<%
+                                if(returnRepresentation){
+                                %>
+                                <%=conn.getName()%>.<%=returnRepresentationCol%> = result_<%=cid%>.getEntity();
+                    		<%
+				}
                     		}
                     	} else if ("delete".equals(action)){
                     	%>
