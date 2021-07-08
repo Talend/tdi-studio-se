@@ -122,8 +122,14 @@ public class BatchExpressionComposite extends ExpressionComposite {
             public void drop(DropTargetEvent event) {
                 if (textTransfer.isSupportedType(event.currentDataType)) {
                     String str = (String) event.data;
+                    String[] data = str.split(";");
                     ExpressionComposite expressionComposite = ExpressionBuilderDialog.getExpressionComposite();
-                    expressionComposite.setExpression(str, true);
+                    expressionComposite.setExpression(data[0], true);
+                    ExpressionBuilderDialog.hideWarningLabel();
+                    if (data.length > 2 && Boolean.valueOf(data[1])) {
+                        ExpressionBuilderDialog
+                                .showWarningLabel(Messages.getString("CategoryComposite.missingRoutineJar", data[2]));
+                    }
                 }
             }
         });

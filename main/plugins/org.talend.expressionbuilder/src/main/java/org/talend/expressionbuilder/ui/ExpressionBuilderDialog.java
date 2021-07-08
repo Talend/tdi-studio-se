@@ -31,7 +31,9 @@ import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -39,6 +41,7 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.FileDialog;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.talend.commons.runtime.model.expressionbuilder.Expression;
 import org.talend.commons.runtime.model.expressionbuilder.Variable;
@@ -48,6 +51,7 @@ import org.talend.commons.ui.runtime.expressionbuilder.IExpressionBuilderDialogC
 import org.talend.commons.ui.runtime.expressionbuilder.IExpressionDataBean;
 import org.talend.commons.ui.runtime.image.EImage;
 import org.talend.commons.ui.runtime.image.ImageProvider;
+import org.talend.commons.ui.utils.image.ColorUtils;
 import org.talend.core.CorePlugin;
 import org.talend.core.context.Context;
 import org.talend.core.context.RepositoryContext;
@@ -95,6 +99,14 @@ public class ExpressionBuilderDialog extends TrayDialog implements IExpressionBu
     private String expressionForTable = null;
 
     protected static boolean isESCClose = true;
+
+    private static Label warningLabel;
+
+    private GridData warningLayoutData;
+
+    private static Composite warningComposite;
+
+    private Color warningColor = ColorUtils.getCacheColor(new RGB(255, 175, 10));
 
     /**
      * Create the dialog
@@ -146,7 +158,39 @@ public class ExpressionBuilderDialog extends TrayDialog implements IExpressionBu
         sashForm.setLayoutData(gridData);
         sashForm.setWeights(new int[] { 3, 2 });
 
+        createWarningLabel(container);
+
         return container;
+    }
+
+    protected void createWarningLabel(Composite container) {
+        warningComposite = new Composite(container, SWT.NONE);
+        warningLayoutData = new GridData(GridData.FILL_HORIZONTAL | GridData.GRAB_HORIZONTAL);
+        warningLayoutData.horizontalSpan = ((GridLayout) container.getLayout()).numColumns;
+        warningComposite.setLayoutData(warningLayoutData);
+        GridLayout layout = new GridLayout();
+        layout.marginTop = 0;
+        layout.marginLeft = 0;
+        layout.marginRight = 0;
+        layout.numColumns = 2;
+        warningComposite.setLayout(layout);
+        Label imageLabel = new Label(warningComposite, SWT.NONE);
+        imageLabel.setImage(ImageProvider.getImage(EImage.WARNING_ICON));
+
+        warningLabel = new Label(warningComposite, SWT.WRAP);
+        warningLabel.setBackground(warningColor);
+        warningLabel.setLayoutData(new GridData(GridData.FILL_HORIZONTAL | GridData.GRAB_HORIZONTAL));
+        warningLayoutData.exclude = false;
+        warningComposite.setVisible(false);
+    }
+
+    public static void hideWarningLabel() {
+        warningComposite.setVisible(false);
+    }
+
+    public static void showWarningLabel(String message) {
+        warningComposite.setVisible(true);
+        warningLabel.setText(message);
     }
 
     /*
