@@ -45,7 +45,7 @@ public class TaCoKitService implements ITaCoKitService {
     public void start() {
         if (CommonsPlugin.isHeadless() || CommonsPlugin.isJUnitTest() || PluginChecker.isSWTBotLoaded()) {
             // install all of TCK components here
-            installTCKComponents(new NullProgressMonitor());
+//            installTCKComponents(new NullProgressMonitor());
             ServerManager.getInstance().start();
         } else {
             new Thread(new Runnable() {
@@ -54,7 +54,7 @@ public class TaCoKitService implements ITaCoKitService {
                 public void run() {
                     
                     // install all of TCK components here
-                    installTCKComponents(new NullProgressMonitor());
+//                    installTCKComponents(new NullProgressMonitor());
                     
                     // start server
                     ServerManager.getInstance().start();
