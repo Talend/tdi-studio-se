@@ -73,13 +73,13 @@ Bundle-ClassPath: .,
  lib/jzlib.jar,
  lib/nailgun-server.jar,
  lib/options.jar,
- lib/slf4j-api.jar,
  lib/tomcat-api.jar,
  lib/tomcat-juli.jar,
  lib/tomcat-servlet-api.jar,
  lib/tomcat-util.jar,
  lib/tomcat-websocket.jar,
- lib/tomcat-websocket-api.jar
+ lib/tomcat-websocket-api.jar,
+ lib/javax.websocket-api.jar
 Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.core.resources,
  org.eclipse.emf.common,
@@ -112,6 +112,8 @@ Require-Bundle: org.eclipse.core.runtime,
  org.apache.log4j,
  org.talend.updates.runtime,
  org.eclipse.equinox.p2.metadata
-Import-Package: org.talend.components.api.properties,
+Import-Package: org.slf4j,
+ org.slf4j.spi,
+ org.talend.components.api.properties,
  org.talend.designer.core.ui.event
 Bundle-Localization: plugin
