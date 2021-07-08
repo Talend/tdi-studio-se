@@ -18,7 +18,6 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -96,10 +95,8 @@ public class TCKComponentInstallerTask extends BaseComponentInstallerTask {
             return false;
         }
 
-        files = files.stream().map(f -> moveFile(f)).collect(Collectors.toSet());
-
         try {
-            ICarInstallationResult result = ITaCoKitUpdateService.getInstance().installCars(files, true, monitor);
+            ICarInstallationResult result = ITaCoKitUpdateService.getInstance().installCars(files, true, monitor, false);
             for (File carFile : carFiles) {
                 IStatus stat = result.getInstalledStatus().get(carFile);
                 if (stat.getCode() != IStatus.OK) {
