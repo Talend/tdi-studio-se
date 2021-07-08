@@ -145,6 +145,8 @@ public class TCKComponentInstallerTask extends BaseComponentInstallerTask {
             }
 
             sb.append(thisGAV.toCoordinateStr());
+            
+            configProps.put(TaCoKitConst.PROP_COMPONENT, sb.toString());
 
             try (BufferedOutputStream fos = new BufferedOutputStream(new FileOutputStream(studioConfigFile))) {
                 configProps.store(fos, "Updated by TCKComponentInstaller");
