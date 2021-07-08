@@ -143,7 +143,7 @@ public class TCKComponentInstallerTask extends BaseComponentInstallerTask {
             if (coordinates != null) {
                 sb.append(coordinates);
             }
-
+            sb.append(",");
             sb.append(thisGAV.toCoordinateStr());
             
             configProps.put(TaCoKitConst.PROP_COMPONENT, sb.toString());
