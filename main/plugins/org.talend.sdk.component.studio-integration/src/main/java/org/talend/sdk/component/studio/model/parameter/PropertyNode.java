@@ -220,7 +220,11 @@ public class PropertyNode {
         if (MAIN_FORM.equals(form)) {
             return getMainChildrenNames();
         }
-        return property.getChildrenNames(form);
+
+        if (property.hasGridLayout(form)) {
+            return property.getChildrenNames(form);
+        }
+        return getChildrenNames();
     }
 
     /**
