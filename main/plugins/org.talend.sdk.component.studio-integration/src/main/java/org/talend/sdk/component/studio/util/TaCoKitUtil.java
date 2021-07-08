@@ -892,12 +892,6 @@ public class TaCoKitUtil {
                 sb.append(this.classifier);
             }
 
-            sb.append(sep);
-            if (StringUtils.isEmpty(type)) {
-                sb.append("jar");
-            } else {
-                sb.append(type);
-            }
             return sb.toString();
         }
 
