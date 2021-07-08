@@ -12,18 +12,26 @@
 // ============================================================================
 package org.talend.repository.preference;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.lang.reflect.InvocationTargetException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.eclipse.core.resources.IWorkspace;
+import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.IWorkspaceRunnable;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.jobs.ISchedulingRule;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.operation.IRunnableWithProgress;
@@ -49,15 +57,18 @@ import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.internal.navigator.NavigatorDecoratingLabelProvider;
+import org.talend.commons.exception.CommonExceptionHandler;
 import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.exception.LoginException;
 import org.talend.commons.exception.PersistenceException;
 import org.talend.commons.runtime.model.repository.ERepositoryStatus;
+import org.talend.commons.ui.runtime.exception.MessageBoxExceptionHandler;
 import org.talend.commons.ui.runtime.image.EImage;
 import org.talend.commons.ui.runtime.image.ImageProvider;
 import org.talend.commons.utils.VersionUtils;
 import org.talend.core.CorePlugin;
 import org.talend.core.GlobalServiceRegister;
+import org.talend.core.model.general.Project;
 import org.talend.core.model.properties.Item;
 import org.talend.core.model.properties.ItemState;
 import org.talend.core.model.properties.ProcessItem;
@@ -68,6 +79,7 @@ import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.core.model.repository.IRepositoryViewObject;
 import org.talend.core.model.repository.RepositoryManager;
 import org.talend.core.model.routines.RoutinesUtil;
+import org.talend.core.repository.model.ProxyRepositoryFactory;
 import org.talend.core.ui.ITestContainerProviderService;
 import org.talend.core.ui.branding.IBrandingService;
 import org.talend.core.ui.images.CoreImageProvider;
@@ -75,6 +87,11 @@ import org.talend.repository.RepositoryWorkUnit;
 import org.talend.repository.i18n.Messages;
 import org.talend.repository.model.IProxyRepositoryFactory;
 import org.talend.repository.model.IRepositoryNode.ENodeType;
+import org.talend.repository.model.nodes.IProjectRepositoryNode;
+import org.talend.repository.viewer.ui.provider.RepoCommonViewerProvider;
+
+import com.sun.xml.internal.ws.util.VersionUtil;
+
 import org.talend.repository.model.ItemVersionObject;
 import org.talend.repository.model.RepositoryConstants;
 import org.talend.repository.model.RepositoryNode;
@@ -95,6 +112,8 @@ public class VersionManagementPage extends AbstractVersionManagementProjectSetti
     private Button versionLatest;
 
     private Text fixedVersionText;
+    
+    private String reportPath;
 
     public VersionManagementPage() {
         super();
@@ -236,15 +255,28 @@ public class VersionManagementPage extends AbstractVersionManagementProjectSetti
         eachVersionButton = new Button(option, SWT.RADIO);
         eachVersionButton.setText(Messages.getString("VersionManagementDialog.EachVersion")); //$NON-NLS-1$
         eachVersionButton.setEnabled(allowVerchange);
+        
+        removeOldVersionsButton = new Button(option, SWT.RADIO);
+        removeOldVersionsButton.setText(Messages.getString("VersionManagementDialog.removeOldVersions"));
 
         versionLatest = new Button(option, SWT.CHECK);
         versionLatest.setText(Messages.getString("VersionManagementDialog.FixVersion"));
         versionLatest.setToolTipText(Messages.getString("VersionManagementDialog.FixLastVersion"));
         // event
+        removeOldVersionsButton.addSelectionListener(new SelectionAdapter() {
+
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                checkRemoveButton();
+                displayNewVersionColumn(false);
+            }
+        });
+        
         fixedVersionButton.addSelectionListener(new SelectionAdapter() {
 
             @Override
             public void widgetSelected(SelectionEvent e) {
+                displayNewVersionColumn(true);
                 checkFixedButtons();
                 researchMaxVersion();
                 refreshTableItems();
@@ -305,6 +337,7 @@ public class VersionManagementPage extends AbstractVersionManagementProjectSetti
 
             @Override
             public void widgetSelected(SelectionEvent e) {
+                displayNewVersionColumn(true);
                 checkFixedButtons();
                 refreshTableItems();
             }
@@ -473,6 +506,7 @@ public class VersionManagementPage extends AbstractVersionManagementProjectSetti
         majorBtn.setEnabled(isFixedVersion() && allowVerchange);
         minorBtn.setEnabled(isFixedVersion() && allowVerchange);
         revertBtn.setEnabled(isFixedVersion());
+        versionLatest.setEnabled(true);
         // versionLatest.setEnabled(isFixedVersion());
     }
 
@@ -503,8 +537,11 @@ public class VersionManagementPage extends AbstractVersionManagementProjectSetti
             tableItem.setText(1, object.getOldVersion());
 
             TableEditor versionEditor = null;
-
-            if (isFixedVersion()) {
+            
+            if ( isRemoveVersions()) {
+                //hide the new version column
+                tableItem.setText(2, "");
+            } else if (isFixedVersion()) {
                 String version = fixedVersionText.getText();
                 tableItem.setText(2, version);
                 if (VersionUtils.compareTo(version, object.getOldVersion()) > 0) {
@@ -589,7 +626,7 @@ public class VersionManagementPage extends AbstractVersionManagementProjectSetti
             delEditor.minimumWidth = 25;
             delEditor.horizontalAlignment = SWT.CENTER;
             delEditor.setEditor(delLabel, tableItem, 3);
-            if (isFixedVersion()) {
+            if (isFixedVersion() || isRemoveVersions()) {
                 tableItem.setData(ITEM_EDITOR_KEY, new TableEditor[] { delEditor });
             } else if (versionEditor != null) {
                 tableItem.setData(ITEM_EDITOR_KEY, new TableEditor[] { versionEditor, delEditor });
@@ -710,5 +747,106 @@ public class VersionManagementPage extends AbstractVersionManagementProjectSetti
         ItemVersionObject object = new ItemVersionObject(property, node, property.getVersion());
         return object;
     }
-
+    @Override
+    protected void removeOldVersions() {
+        final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyyMMddHHmmssSSS"); //$NON-NLS-1$
+        IRunnableWithProgress runnable = new IRunnableWithProgress() {
+            @Override
+            public void run(final IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
+                monitor.beginTask("Remove old versions", checkedObjects.size());
+                List<IRepositoryViewObject> versionsToDelete = null;
+                PrintWriter pw = null;
+                try {
+                    IProxyRepositoryFactory factory = ProxyRepositoryFactory.getInstance();
+                    RepoCommonViewerProvider provider = RepoCommonViewerProvider.CHECKBOX;
+                    IProjectRepositoryNode projectRepositoryNode = provider.getProjectRepositoryNode();
+                    Project project = projectRepositoryNode.getProject();
+                    
+                    //report file
+                    String reportFileName = project.getLabel() + "_old_items_deletion_" + DATE_FORMAT.format(new Date()) +".csv";
+                    IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
+                    File workspace = root.getLocation().makeAbsolute().toFile();
+                    File locationDir = new File(workspace, "temp"); // here is workspace/temp dir
+                    File reportFile = detectReportFile(locationDir, reportFileName);
+                    reportPath = reportFile.getAbsolutePath();
+                    pw = new PrintWriter(reportFile);
+                    pw.write("\"Type\",\"Path\"");
+                    pw.write('\n');
+                    
+                    for (ItemVersionObject object : checkedObjects) {
+                        if ( object == null || object.getItem() == null || object.getItem().getProperty() == null ) continue;
+                        versionsToDelete = factory.getAllVersion(project, object.getItem().getProperty().getId(), false);
+                        if ( versionsToDelete != null) {
+                            for (IRepositoryViewObject versionToDelete : versionsToDelete) {
+                                if (monitor.isCanceled()) {
+                                    throw new InterruptedException();
+                                }
+                                if ( versionToDelete == null || versionToDelete.getProperty() == null ) continue;
+                                String type = object.getRepositoryNode().getObjectType().getFolder();
+                                //Keep the max version
+                                if ( VersionUtil.compare(versionToDelete.getProperty().getVersion(), object.getItem().getProperty().getVersion()) != 0 ) {
+                                    String versionedLabel = versionToDelete.getProperty().getLabel() + "_" + versionToDelete.getProperty().getVersion();
+                                    monitor.setTaskName("Deleting " + type + ":"+  versionedLabel);
+                                    //physical delete
+                                    factory.deleteObjectPhysical(project, versionToDelete, versionToDelete.getProperty().getVersion());
+                                    pw.write("\""+ type + "\"" + "," + "\"" + versionedLabel+ "\"");
+                                    pw.write('\n');
+                                }
+                            }
+                        }
+                        monitor.worked(1);
+                    }
+                } catch (PersistenceException e) {
+                   throw new  InvocationTargetException(e);
+                } catch (FileNotFoundException fnfe) {
+                    throw new  InvocationTargetException(fnfe);
+                } finally {
+                    if ( pw !=null ) pw.close();
+                }
+            }
+        };
+        final ProgressMonitorDialog dialog = new ProgressMonitorDialog(getShell());
+        try {
+            dialog.run(true, true, runnable);
+        } catch (InvocationTargetException e) {
+            MessageBoxExceptionHandler.process(e);
+        } catch (InterruptedException e) {
+        }
+        MessageDialog.openInformation(getShell(), Messages.getString("VersionManagementDialog.ConfirmTitle"), //$NON-NLS-1$
+                Messages.getString("VersionManagementDialog.reportMessage",reportPath)); //$NON-NLS-1$
+    }
+    
+    private static File detectReportFile(File location, String reportFileName) {
+        if (!location.exists()) {
+            location.mkdirs();
+        }
+        File reportFile = null;
+        try {
+            reportFile = new File(location.getAbsolutePath() + File.separator + reportFileName);
+            reportFile.createNewFile();
+        } catch (IOException e) {
+            CommonExceptionHandler.log(e.getMessage());
+        }
+        return reportFile;
+    }
+    
+    private boolean isRemoveVersions() {
+        return removeOldVersionsButton.getSelection();
+    }
+    
+    private void checkRemoveButton() {
+      versionLatest.setSelection(false);
+      versionLatest.setEnabled(false);
+    }
+    
+    private void displayNewVersionColumn(boolean display) {
+        TableColumn column = itemTable.getColumn(2);
+        if ( display ) {
+            column.setWidth(92);
+            column.setResizable(true);
+        } else {
+            column.setWidth(0);
+            column.setResizable(false);
+        }
+    }
 }

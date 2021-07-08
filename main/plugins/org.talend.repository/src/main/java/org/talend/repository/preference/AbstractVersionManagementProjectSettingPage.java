@@ -96,6 +96,8 @@ public abstract class AbstractVersionManagementProjectSettingPage extends Projec
     protected Table itemTable;
 
     protected Button globalSnapshotCheckbox;
+    
+    protected Button removeOldVersionsButton;
 
     protected Button fixedVersionButton;
 
@@ -622,6 +624,15 @@ public abstract class AbstractVersionManagementProjectSettingPage extends Projec
             }
         }
         boolean confirm = true;
+        
+        if ( removeOldVersionsButton !=null && removeOldVersionsButton.getSelection()) {
+                confirm = MessageDialog.openConfirm(getShell(), Messages.getString("VersionManagementDialog.ConfirmTitle"), //$NON-NLS-1$
+                        Messages.getString("VersionManagementDialog.confirmRemoveOldVersions")); //$NON-NLS-1$
+                if ( confirm ) removeOldVersions();
+            return confirm;
+        }
+        
+        
         if (modified) {
             if (fixedVersionButton.getSelection()) {
                 confirm = MessageDialog.openConfirm(getShell(), Messages.getString("VersionManagementDialog.ConfirmTitle"), //$NON-NLS-1$
@@ -692,6 +703,10 @@ public abstract class AbstractVersionManagementProjectSettingPage extends Projec
             checkButtonsState(true);
         }
 
+    }
+    
+    protected void removeOldVersions() {
+        // do nothing
     }
 
 }
