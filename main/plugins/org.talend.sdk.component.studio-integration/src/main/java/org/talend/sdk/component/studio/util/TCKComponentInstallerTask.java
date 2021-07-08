@@ -140,17 +140,19 @@ public class TCKComponentInstallerTask extends BaseComponentInstallerTask {
             Properties configProps = PathUtils.readProperties(studioConfigFile);
             StringBuffer sb = new StringBuffer();
             String coordinates = configProps.getProperty(TaCoKitConst.PROP_COMPONENT);
-            if (coordinates != null) {
+            if (!StringUtils.isEmpty(coordinates)) {
                 sb.append(coordinates);
             }
-            sb.append(",");
+            if (sb.length() > 0) {
+                sb.append(",");
+            }
             sb.append(thisGAV.toCoordinateStr());
-            
+
             configProps.put(TaCoKitConst.PROP_COMPONENT, sb.toString());
 
             try (BufferedOutputStream fos = new BufferedOutputStream(new FileOutputStream(studioConfigFile))) {
                 configProps.store(fos, "Updated by TCKComponentInstaller");
-                
+
                 LOGGER.info("updated config.ini");
             } catch (Exception e) {
                 LOGGER.error("Can not update config.ini", e);
