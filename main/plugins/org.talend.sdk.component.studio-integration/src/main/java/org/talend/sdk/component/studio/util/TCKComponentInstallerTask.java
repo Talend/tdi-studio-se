@@ -15,17 +15,24 @@ package org.talend.sdk.component.studio.util;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.net.URL;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Properties;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.codehaus.plexus.util.StringUtils;
+import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.core.runtime.Path;
+import org.osgi.framework.FrameworkUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.talend.commons.exception.ExceptionHandler;
@@ -33,6 +40,7 @@ import org.talend.core.GlobalServiceRegister;
 import org.talend.core.ILibraryManagerService;
 import org.talend.core.model.utils.BaseComponentInstallerTask;
 import org.talend.sdk.component.studio.util.TaCoKitUtil.GAV;
+import org.talend.studio.components.bd.couchbase.CouchbaseInstaller;
 import org.talend.updates.runtime.service.ITaCoKitUpdateService;
 import org.talend.updates.runtime.service.ITaCoKitUpdateService.ICarInstallationResult;
 import org.talend.updates.runtime.utils.PathUtils;
@@ -41,9 +49,16 @@ import org.talend.updates.runtime.utils.PathUtils;
  * @author bhe created on Jul 1, 2021
  *
  */
-public class TCKComponentInstallerTask extends BaseComponentInstallerTask {
+abstract public class TCKComponentInstallerTask extends BaseComponentInstallerTask {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(TCKComponentInstallerTask.class);
+
+    /**
+     * Get implementation class of installer
+     * 
+     * @return implementation class of installer
+     */
+    abstract protected Class<? extends TCKComponentInstallerTask> getInstallerClass();
 
     /**
      * Get car file
@@ -51,6 +66,24 @@ public class TCKComponentInstallerTask extends BaseComponentInstallerTask {
      * @return car file
      */
     protected List<File> getCarFiles() {
+        URL carFolder = FileLocator.find(FrameworkUtil.getBundle(getInstallerClass()), new Path("car"), null);
+        File carDir = null;
+        if (carFolder != null) {
+            try {
+                carDir = new File(FileLocator.toFileURL(carFolder).getPath());
+                if (carDir.isDirectory()) {
+                    File[] cars = carDir.listFiles();
+                    LOGGER.info("Files found: {}", Arrays.toString(cars));
+
+                    List<File> carFiles = Stream.of(cars).filter(f -> f.getName().endsWith(".car")).collect(Collectors.toList());
+                    return carFiles;
+                }
+
+            } catch (IOException e) {
+                LOGGER.error("Can't find car file", e);
+            }
+        }
+        LOGGER.error("Can't find car file from folder {}", carDir);
         return null;
     }
 
