@@ -171,6 +171,7 @@ public class UpdateCommandTest {
         Assertions.assertEquals(expectedValue, check.getValue());
     }
 
+    @Ignore
     @Test
     @Disabled
     public void testOnResultSchemaOption() {
