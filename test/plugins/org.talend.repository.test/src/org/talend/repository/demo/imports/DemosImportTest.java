@@ -83,7 +83,7 @@ public abstract class DemosImportTest {
 			sqlPatternPath, documentionPath, processMrPath, tdqProfilingAnaPath, tdqProfilingRepPath,
 			tdqLibrariesRuleSqlPath, tdqLibrariesPatternPath, routesItemPath, routeResourcePath, servicesItemPath,
 			mdmDatacontainerPath, mdmDataModelath, mdmResourcePath, mdmRolePath, mdmRoutingrulePath,
-			mdmTransformerV2Path, mdmViewPath, mdmWorkflowPath;;
+			mdmTransformerV2Path, mdmViewPath;
 
 	protected String demoName;
 
@@ -179,7 +179,6 @@ public abstract class DemosImportTest {
 		mdmRoutingrulePath = new Path("/MDM/routingrule/");
 		mdmTransformerV2Path = new Path("/MDM/transformerV2/");
 		mdmViewPath = new Path("/MDM/view/");
-		mdmWorkflowPath = new Path("/MDM/workflow/");
 	}
 
 	protected void initTempPro() throws PersistenceException, CoreException, LoginException {
