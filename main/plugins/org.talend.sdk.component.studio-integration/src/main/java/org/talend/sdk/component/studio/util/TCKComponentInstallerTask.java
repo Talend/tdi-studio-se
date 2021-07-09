@@ -131,22 +131,20 @@ abstract public class TCKComponentInstallerTask extends BaseComponentInstallerTa
 
         try {
             ICarInstallationResult result = ITaCoKitUpdateService.getInstance().installCars(files, true, monitor, false);
-            boolean requireUpdateConfig = false;
+            boolean installed = false;
             for (File carFile : carFiles) {
                 IStatus stat = result.getInstalledStatus().get(carFile);
                 if (stat == null) {
                     LOGGER.info("Skipped to install car: {}", carFile);
                 } else if (stat.getCode() == IStatus.OK) {
-                    requireUpdateConfig = true;
+                    installed = true;
                     LOGGER.info("TCK Component installed: {}", carFile);
                 } else {
                     LOGGER.error("Failed to install car: {}", carFile);
                 }
             }
 
-            if (requireUpdateConfig) {
-                // update config.ini
-                updateConfig();
+            if (installed) {
 
                 LOGGER.info("TCK Component installed: {}", Arrays.toString(carFiles.toArray()));
                 return true;
