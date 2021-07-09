@@ -40,7 +40,6 @@ import org.talend.core.GlobalServiceRegister;
 import org.talend.core.ILibraryManagerService;
 import org.talend.core.model.utils.BaseComponentInstallerTask;
 import org.talend.sdk.component.studio.util.TaCoKitUtil.GAV;
-import org.talend.studio.components.bd.couchbase.CouchbaseInstaller;
 import org.talend.updates.runtime.service.ITaCoKitUpdateService;
 import org.talend.updates.runtime.service.ITaCoKitUpdateService.ICarInstallationResult;
 import org.talend.updates.runtime.utils.PathUtils;
