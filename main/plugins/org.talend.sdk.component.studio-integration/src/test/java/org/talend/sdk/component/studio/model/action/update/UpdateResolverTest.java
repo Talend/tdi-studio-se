@@ -20,6 +20,7 @@ import java.util.Map;
 import javax.json.bind.Jsonb;
 import javax.json.bind.JsonbBuilder;
 
+import org.junit.Ignore;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -30,6 +31,7 @@ import org.talend.sdk.component.studio.model.parameter.ButtonParameter;
 import org.talend.sdk.component.studio.model.parameter.PropertyNode;
 import org.talend.sdk.component.studio.test.TestComponent;
 
+@Ignore
 public class UpdateResolverTest {
 
     private static TestComponent component;
