@@ -3825,8 +3825,10 @@ public class Node extends Element implements IGraphicalNode {
                     if ((getCurrentActiveLinksNbOutput(EConnectionType.FLOW_MAIN) > 0)
                             || (getCurrentActiveLinksNbOutput(EConnectionType.FLOW_REF) > 0)) {
                         if (!this.getComponent().getName().equals("tSAPBapi")) { //$NON-NLS-1$
-                            String errorMessage = Messages.getString("Node.outputNeedInputLink"); //$NON-NLS-1$
-                            Problems.add(ProblemStatus.ERROR, this, errorMessage);
+                        	if (!this.getComponent().getName().equals("tHiveInput")) {
+                        		String errorMessage = Messages.getString("Node.outputNeedInputLink"); //$NON-NLS-1$
+                                Problems.add(ProblemStatus.ERROR, this, errorMessage);
+                        	}
                         }
                     }
                 }
