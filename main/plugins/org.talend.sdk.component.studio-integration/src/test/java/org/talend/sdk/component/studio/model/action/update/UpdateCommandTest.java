@@ -19,10 +19,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.Ignore;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.Test;
 import org.talend.core.model.process.EParameterFieldType;
 import org.talend.core.model.process.IElement;
 import org.talend.core.model.process.IElementParameter;
@@ -32,11 +29,8 @@ import org.talend.sdk.component.studio.model.parameter.TaCoKitElementParameter;
 import org.talend.sdk.component.studio.model.parameter.TableElementParameter;
 import org.talend.sdk.component.studio.model.parameter.TextElementParameter;
 
-@Ignore
 public class UpdateCommandTest {
 
-    @Ignore
-    @Test
     public void testOnResultFireCalled() {
         final ButtonParameterMock buttonMock = new ButtonParameterMock(null);
         final UpdateCommand command = new UpdateCommand(null, "conf", Collections.emptyMap(), buttonMock);
@@ -44,8 +38,6 @@ public class UpdateCommandTest {
         Assertions.assertTrue(buttonMock.firePropertyChangeCalled());
     }
 
-    @Ignore
-    @Test
     public void testOnResultListOption() {
         final List<Map<String, Object>> expectedValue = new ArrayList<Map<String, Object>>();
         final Map<String, Object> row1 = new HashMap<>();
@@ -108,8 +100,6 @@ public class UpdateCommandTest {
         Assertions.assertEquals(expectedValue, table.getValue());
     }
 
-    @Ignore
-    @Test
     public void testOnResultIntegerOption() {
         final String expectedValue = "42";
 
@@ -129,8 +119,6 @@ public class UpdateCommandTest {
         Assertions.assertEquals(expectedValue, text.getValue());
     }
 
-    @Ignore
-    @Test
     public void testOnResultStringOption() {
         final String expectedValue = "value";
 
@@ -150,8 +138,7 @@ public class UpdateCommandTest {
         Assertions.assertEquals(expectedValue, text.getValue());
     }
 
-    @Ignore
-    @Test
+
     public void testOnResultBooleanOption() {
         final boolean expectedValue = false;
 
@@ -171,9 +158,7 @@ public class UpdateCommandTest {
         Assertions.assertEquals(expectedValue, check.getValue());
     }
 
-    @Ignore
-    @Test
-    @Disabled
+
     public void testOnResultSchemaOption() {
         final List<String> expectedValue = Arrays.asList("col1", "col2", "col3");
 

@@ -20,10 +20,7 @@ import java.util.Map;
 import javax.json.bind.Jsonb;
 import javax.json.bind.JsonbBuilder;
 
-import org.junit.Ignore;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
 import org.talend.core.model.process.EComponentCategory;
 import org.talend.core.model.process.IElementParameter;
 import org.talend.sdk.component.server.front.model.ActionReference;
@@ -31,13 +28,10 @@ import org.talend.sdk.component.studio.model.parameter.ButtonParameter;
 import org.talend.sdk.component.studio.model.parameter.PropertyNode;
 import org.talend.sdk.component.studio.test.TestComponent;
 
-@Ignore
 public class UpdateResolverTest {
 
     private static TestComponent component;
 
-    @Ignore
-    @BeforeAll
     public static void init() throws Exception {
         component = TestComponent.load("update.json");
     }
@@ -47,8 +41,6 @@ public class UpdateResolverTest {
      * Checks {@link UpdateResolver#resolveParameters(Map)} resolves parameters for update (parameters which are
      * updated according value from action result) correctly. This check is done via calling {@link UpdateCommand#onResult(Map)}
      */
-    @Ignore
-    @Test
     public void testResolveParametersWithNestedConfig() throws Exception {
         final Map<String, String> expectedPayload = new HashMap<>();
         expectedPayload.put("c", "LESS");
