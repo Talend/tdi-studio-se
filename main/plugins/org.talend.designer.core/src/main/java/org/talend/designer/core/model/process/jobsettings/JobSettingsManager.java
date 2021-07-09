@@ -41,6 +41,7 @@ import org.talend.core.model.param.ERepositoryCategoryType;
 import org.talend.core.model.process.EComponentCategory;
 import org.talend.core.model.process.EParameterFieldType;
 import org.talend.core.model.process.ElementParameterParser;
+import org.talend.core.model.process.IContextParameter;
 import org.talend.core.model.process.IElementParameter;
 import org.talend.core.model.process.IProcess;
 import org.talend.core.model.utils.ContextParameterUtils;
@@ -1027,15 +1028,37 @@ public class JobSettingsManager {
             }
         } else {
             // is db
+            boolean isSnowFlakeDB = false;
             paramName = JobSettingsConstants.getExtraParameterName(EParameterName.URL.getName());
             param = process.getElementParameter(paramName);
             if (param != null) {
                 tContextLoadNode.getElementParameter(paramName).setValue(param.getValue());
+
+                /*******************************************
+                 * This is a temp fix for snowflake database https://jira.talendforge.org/browse/TUP-31883
+                 *******************************************/
+                String jdbcUrl = param.getValue().toString();
+                if (ContextParameterUtils.isContainContextParam(jdbcUrl)) {
+                    String ctxName = ContextParameterUtils.getContextString(jdbcUrl);
+                    IContextParameter ctx = process.getContextManager().getDefaultContext().getContextParameter(ctxName);
+                    if (ctx != null && ctx.getValue() != null) {
+                        jdbcUrl = ctx.getValue();
+                    }
+                }
+                if (jdbcUrl != null && jdbcUrl.toLowerCase().contains("jdbc:snowflake:")) {
+                    isSnowFlakeDB = true;
+                }
             }
             paramName = JobSettingsConstants.getExtraParameterName(EParameterName.DRIVER_JAR.getName());
             param = process.getElementParameter(paramName);
             if (param != null) {
                 tContextLoadNode.getElementParameter(paramName).setValue(param.getValue());
+
+                /*******************************************
+                 * https://jira.talendforge.org/browse/TUP-31858 Need to add dependencies to virtual component.
+                 *******************************************/
+                tContextLoadNode.getElementParameter(paramName).setListItemsDisplayCodeName(param.getListItemsDisplayCodeName());
+                tContextLoadNode.getElementParameter(paramName).setListItemsDisplayName(param.getListItemsDisplayName());
             }
 
             paramName = JobSettingsConstants.getExtraParameterName(EParameterName.DRIVER_CLASS.getName());
@@ -1096,8 +1119,11 @@ public class JobSettingsManager {
             String dbType = getDatabaseTypeFromParameter(process);
             if (dbType != null) {
                 // TDI-18161:the SQL script's syntax is not right because of the implicit context of General JDBC.
-                if (dbType.equals(EDatabaseTypeName.GENERAL_JDBC.getDisplayName())
-                        || dbType.equals(EDatabaseTypeName.GENERAL_JDBC.getProduct())) {
+                /*******************************************
+                 * This is a temp fix for snowflake database https://jira.talendforge.org/browse/TUP-31883
+                 *******************************************/
+                if (!isSnowFlakeDB && (dbType.equals(EDatabaseTypeName.GENERAL_JDBC.getDisplayName())
+                        || dbType.equals(EDatabaseTypeName.GENERAL_JDBC.getProduct()))) {
                     dbType = findRealDbTypeForJDBC(process, dbType);
                 }
 
@@ -1112,6 +1138,7 @@ public class JobSettingsManager {
                         && realTableName.endsWith(TalendTextUtils.QUOTATION_MARK) && realTableName.length() > 2) {
                     realTableName = realTableName.substring(1, realTableName.length() - 1);
                 }
+
                 String query = TalendTextUtils.addSQLQuotes(QueryUtil
                         .generateNewQuery(null, table, dbType, schema, realTableName));
                 paramName = JobSettingsConstants.getExtraParameterName(EParameterName.QUERY_CONDITION.getName());
