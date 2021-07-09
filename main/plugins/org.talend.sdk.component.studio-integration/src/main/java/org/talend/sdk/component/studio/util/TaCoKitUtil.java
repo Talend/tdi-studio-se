@@ -853,13 +853,11 @@ public class TaCoKitUtil {
         
         public String toMavenUri() {
             StringBuffer sb = new StringBuffer();
-
+            sb.append("mvn:");
             sb.append(toStr("/"));
             
             sb.append("/");
-            if (StringUtils.isEmpty(type)) {
-                sb.append("jar");
-            } else {
+            if (!StringUtils.isEmpty(type)) {
                 sb.append(type);
             }
             return sb.toString();
