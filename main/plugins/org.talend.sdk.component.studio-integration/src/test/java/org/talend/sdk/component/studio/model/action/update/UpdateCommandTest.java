@@ -35,6 +35,7 @@ import org.talend.sdk.component.studio.model.parameter.TextElementParameter;
 @Ignore
 public class UpdateCommandTest {
 
+    @Ignore
     @Test
     public void testOnResultFireCalled() {
         final ButtonParameterMock buttonMock = new ButtonParameterMock(null);
@@ -43,6 +44,7 @@ public class UpdateCommandTest {
         Assertions.assertTrue(buttonMock.firePropertyChangeCalled());
     }
 
+    @Ignore
     @Test
     public void testOnResultListOption() {
         final List<Map<String, Object>> expectedValue = new ArrayList<Map<String, Object>>();
@@ -106,6 +108,7 @@ public class UpdateCommandTest {
         Assertions.assertEquals(expectedValue, table.getValue());
     }
 
+    @Ignore
     @Test
     public void testOnResultIntegerOption() {
         final String expectedValue = "42";
@@ -126,6 +129,7 @@ public class UpdateCommandTest {
         Assertions.assertEquals(expectedValue, text.getValue());
     }
 
+    @Ignore
     @Test
     public void testOnResultStringOption() {
         final String expectedValue = "value";
@@ -146,6 +150,7 @@ public class UpdateCommandTest {
         Assertions.assertEquals(expectedValue, text.getValue());
     }
 
+    @Ignore
     @Test
     public void testOnResultBooleanOption() {
         final boolean expectedValue = false;
