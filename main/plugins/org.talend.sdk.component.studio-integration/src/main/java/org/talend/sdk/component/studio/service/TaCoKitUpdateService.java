@@ -275,6 +275,6 @@ public class TaCoKitUpdateService implements ITaCoKitUpdateService {
 
     @Override
     public ICarInstallationResult installCars(Collection<File> files, boolean share, IProgressMonitor monitor, boolean deleteCar) throws Exception {
-        return installCars(files, share, true, monitor, deleteCar);
+        return installCars(files, share, false, monitor, deleteCar);
     }
 }
