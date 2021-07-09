@@ -102,7 +102,7 @@ public class TCKComponentInstallerTask extends BaseComponentInstallerTask {
             for (File carFile : carFiles) {
                 IStatus stat = result.getInstalledStatus().get(carFile);
                 if (stat == null) {
-                    LOGGER.error("Skipped to install car: {}", carFile);
+                    LOGGER.info("Skipped to install car: {}", carFile);
                 } else if (stat.getCode() == IStatus.OK) {
                     requireUpdateConfig = true;
                     LOGGER.info("TCK Component installed: {}", carFile);
