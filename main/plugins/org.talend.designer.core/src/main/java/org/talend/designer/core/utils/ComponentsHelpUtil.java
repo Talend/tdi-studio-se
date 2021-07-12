@@ -20,8 +20,6 @@ import org.talend.commons.utils.VersionUtils;
 import org.talend.core.CorePlugin;
 import org.talend.core.PluginChecker;
 import org.talend.core.prefs.ITalendCorePrefConstants;
-import org.talend.designer.core.DesignerPlugin;
-import org.talend.designer.core.ui.preferences.TalendDesignerPrefConstants;
 
 public class ComponentsHelpUtil {
 
@@ -32,8 +30,6 @@ public class ComponentsHelpUtil {
     private static Boolean IS_RELEASE_VERSION = null;
 
     private static String PRODUCT_BASE_VERSION = null;
-
-    private static Boolean IS_HELP_INSTALLED = null;
 
     static {
         initVersionData();
@@ -51,11 +47,6 @@ public class ComponentsHelpUtil {
     }
 
     public static boolean isUseOnLineHelp() {
-        boolean isOffLineHelpInPre = DesignerPlugin.getDefault().getPreferenceStore()
-                .getBoolean(TalendDesignerPrefConstants.HELP_OFFLINE);
-        if (isHelpInstalled() && isOffLineHelpInPre) {
-            return false;
-        }
         return true;
     }
 
@@ -80,24 +71,6 @@ public class ComponentsHelpUtil {
     public static void openLineHelp(String componentName) {
         String url = calOnLineHelpURL(componentName);
         Program.launch(url);
-    }
-
-    public static boolean isHelpInstalled() {
-        if (IS_HELP_INSTALLED == null) {
-            IS_HELP_INSTALLED = true;
-            if (PluginChecker.isCoreTISPluginLoaded() && !PluginChecker.isPluginLoaded(PluginChecker.HELP_DI_EE_PLUGIN_ID)) {
-                IS_HELP_INSTALLED = false;
-            }
-            if (IS_HELP_INSTALLED && PluginChecker.isPluginLoaded(PluginChecker.ESBEE_PLUGIN_ID)
-                    && !PluginChecker.isPluginLoaded(PluginChecker.HELP_ESB_PLUGIN_ID)) {
-                IS_HELP_INSTALLED = false;
-            }
-            if (IS_HELP_INSTALLED && PluginChecker.isPluginLoaded(PluginChecker.BDEE_PLUGIN_ID)
-                    && !PluginChecker.isPluginLoaded(PluginChecker.HELP_BD_PLUGIN_ID)) {
-                IS_HELP_INSTALLED = false;
-            }
-        }
-        return IS_HELP_INSTALLED;
     }
 
     public static String getLanguage() {

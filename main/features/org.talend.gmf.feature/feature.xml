@@ -2,7 +2,7 @@
 <feature
       id="org.talend.gmf.feature"
       label="Gmf"
-      version="7.4.1.qualifier">
+      version="8.0.1.qualifier">
 
    <description url="http://www.example.com/description">
       [Enter Feature Description here.]

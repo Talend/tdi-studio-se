@@ -13,6 +13,7 @@
 package org.talend.ms.crm.odata;
 
 import java.util.List;
+import java.util.ArrayList;
 
 public class QueryOptionConfig {
 
@@ -26,7 +27,7 @@ public class QueryOptionConfig {
 
     private String filter;
 
-    private List<String> expand;
+    private List<String> expand = new ArrayList<>();
 
 
     public int getTop() {
