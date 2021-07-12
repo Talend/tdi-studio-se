@@ -147,13 +147,9 @@
 	%>
 		writeableWorkbook_<%=cid %>.write();
 		writeableWorkbook_<%=cid %>.close();
-		<%if(!hasDynamic && isIncludeHeader){%>
+		if(headerIsInserted_<%=cid%> && nb_line_<%=cid %> > 0){
 			nb_line_<%=cid %> = nb_line_<%=cid %> -1;
-		<%}else if(hasDynamic && isIncludeHeader){%>
-			if(nb_line_<%=cid %> > 0){
-				nb_line_<%=cid %> = nb_line_<%=cid %> -1;
-			}
-		<%}%>
+		}
 		globalMap.put("<%=cid %>_NB_LINE",nb_line_<%=cid %>);
 		
 	<%if(!useStream && isDeleteEmptyFile){
@@ -280,13 +276,9 @@
 	<%
 		}
 	%>
-		<%if(!hasDynamic && isIncludeHeader){%>
+		if(headerIsInserted_<%=cid%> && nb_line_<%=cid %> > 0){
 			nb_line_<%=cid %> = nb_line_<%=cid %> -1;
-		<%}else if(hasDynamic && isIncludeHeader){%>
-			if(nb_line_<%=cid %> > 0){
-				nb_line_<%=cid %> = nb_line_<%=cid %> -1;
-			}
-		<%}%>
+		}
 		globalMap.put("<%=cid %>_NB_LINE",nb_line_<%=cid %>);
 		
 	<%if(!useStream && isDeleteEmptyFile){
