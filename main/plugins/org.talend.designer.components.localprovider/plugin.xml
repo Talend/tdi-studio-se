@@ -191,12 +191,6 @@
     	</libraryNeeded>
 
     	<libraryNeeded
-	   		context="plugin:org.talend.libraries.zookeeper"
-        	id="zookeeper-cdh5.4-lastest"
-         	name="zookeeper-3.4.5-cdh5.4.0.jar" mvn_uri="mvn:org.talend.libraries/zookeeper-3.4.5-cdh5.4.0/6.0.0">
-    	</libraryNeeded>
-    	
-    	<libraryNeeded
 	   		context="plugin:org.talend.libraries.pig"
         	id="pig-withouthadoop-cdh5.4-lastest"
          	name="pig-0.12.0-cdh5.4.0-withouthadoop.jar" mvn_uri="mvn:org.talend.libraries/pig-0.12.0-cdh5.4.0-withouthadoop/6.0.0">         	
@@ -408,12 +402,6 @@
         	id="hbase-hadoop-compat-cdh5.1-lastest"
          	name="hbase-hadoop-compat-0.98.1-cdh5.1.2.jar" mvn_uri="mvn:org.talend.libraries/hbase-hadoop-compat-0.98.1-cdh5.1.2/6.0.0"
          	uripath="platform:/plugin/org.talend.libraries.hadoop.cloudera.cdh5.1/lib/hbase-hadoop-compat-0.98.1-cdh5.1.2.jar">
-    	</libraryNeeded>
-
-    	<libraryNeeded
-	   		context="plugin:org.talend.libraries.zookeeper"
-        	id="zookeeper-cdh5.1-lastest"
-         	name="zookeeper-3.4.5-cdh5.1.2.jar" mvn_uri="mvn:org.talend.libraries/zookeeper-3.4.5-cdh5.1.2/6.0.0">
     	</libraryNeeded>
 
     	<libraryNeeded
@@ -870,12 +858,6 @@
             uripath="platform:/plugin/org.talend.libraries.hadoop.hdp.2.3/lib/tez-yarn-timeline-history-0.7.0.2.3.2.0-2950.jar">
         </libraryNeeded>
 
-        <libraryNeeded
-            context="plugin:org.talend.libraries.zookeeper"
-            id="zookeeper-HDP_2_3"
-            name="zookeeper-3.4.6.2.3.2.0-2950.jar" mvn_uri="mvn:org.talend.libraries/zookeeper-3.4.6.2.3.2.0-2950/6.1.0">
-        </libraryNeeded>
-
        <libraryNeeded
             context="plugin:org.talend.libraries.s3"
             id="aws-java-sdk-1.7.4"
@@ -1004,12 +986,6 @@
         	id="hbase-hadoop-compat-hdp2.2-lastest"
          	name="hbase-hadoop-compat-0.98.4.2.2.0.0-2041-hadoop2.jar" mvn_uri="mvn:org.talend.libraries/hbase-hadoop-compat-0.98.4.2.2.0.0-2041-hadoop2/6.0.0"
          	uripath="platform:/plugin/org.talend.libraries.hadoop.hdp.2.2/lib/hbase-hadoop-compat-0.98.4.2.2.0.0-2041-hadoop2.jar">
-    	</libraryNeeded>
-
-    	<libraryNeeded
-	   		context="plugin:org.talend.libraries.zookeeper"
-        	id="zookeeper-hdp2.2-lastest"
-         	name="zookeeper-3.4.6.2.2.0.0-2041.jar" mvn_uri="mvn:org.talend.libraries/zookeeper-3.4.6.2.2.0.0-2041/6.0.0">
     	</libraryNeeded>
 
     	<libraryNeeded
@@ -1282,12 +1258,6 @@
         </libraryNeeded>
 
         <libraryNeeded
-            context="plugin:org.talend.libraries.zookeeper"
-            id="zookeeper-emr400-latest"
-            name="zookeeper-3.4.5.jar" mvn_uri="mvn:org.talend.libraries/zookeeper-3.4.5/6.0.0">
-        </libraryNeeded>
-
-        <libraryNeeded
             context="plugin:org.talend.libraries.hadoop.emr.4.0.0"
             id="hadoop-aws-emr400-latest"
             name="hadoop-aws-2.6.0-amzn-0.jar"
@@ -1412,12 +1382,6 @@
     	</libraryNeeded>
 
     	<libraryNeeded
-	   		context="plugin:org.talend.libraries.zookeeper"
-        	id="zookeeper-mapr-4.0.X-lastest"
-         	name="zookeeper-3.4.5-mapr-1406.jar" mvn_uri="mvn:org.talend.libraries/zookeeper-3.4.5-mapr-1406/6.0.0">
-    	</libraryNeeded>
-
-    	<libraryNeeded
 	   		context="plugin:org.talend.libraries.hadoop.mapr.4.0.1"
         	id="hbase-mapr-4.0.X-lastest"
          	name="hbase-0.94.21-mapr-1407.jar" mvn_uri="mvn:org.talend.libraries/hbase-0.94.21-mapr-1407/6.0.0"
@@ -1537,12 +1501,6 @@
             id="hadoop-common-mapr-4.1.X-lastest"
             name="hadoop-common-2.5.1-mapr-1503.jar" mvn_uri="mvn:org.talend.libraries/hadoop-common-2.5.1-mapr-1503/6.0.0"
             uripath="platform:/plugin/org.talend.libraries.hadoop.mapr.4.1.0/lib/hadoop-common-2.5.1-mapr-1503.jar">
-        </libraryNeeded>
-
-        <libraryNeeded
-            context="plugin:org.talend.libraries.zookeeper"
-            id="zookeeper-mapr-4.1.X-lastest"
-            name="zookeeper-3.4.5-mapr-1503.jar" mvn_uri="mvn:org.talend.libraries/zookeeper-3.4.5-mapr-1503/6.0.0">
         </libraryNeeded>
 
         <libraryNeeded
@@ -2780,7 +2738,7 @@
             context="plugin:org.talend.libraries.hadoop.hdp.2.2"
             uripath="platform:/plugin/org.talend.libraries.hadoop.hdp.2.2/lib/tezServer/zookeeper-3.4.6.jar">
         </libraryNeeded>
-
+       
         <!-- Kafka 2.10-0.8.2.0 -->
         <libraryNeeded
             id="kafka_2.10-0.8.2.0.jar"
@@ -3140,9 +3098,6 @@
 	             id="hadoop-common-mapr-4.0.X-lastest">
 	         </library>
 	         <library
-	             id="zookeeper-mapr-4.0.X-lastest">
-	         </library>
-	         <library
 	             id="json-20080701.jar">
 	         </library>
 	         <library
@@ -3186,9 +3141,6 @@
              </library>
              <library
                  id="hadoop-common-mapr-4.1.X-lastest">
-             </library>
-             <library
-                 id="zookeeper-mapr-4.1.X-lastest">
              </library>
              <library
                  id="json-20080701.jar">
@@ -3712,9 +3664,6 @@
 	             id="json-20080701.jar">
 	         </library>
 	         <library
-	             id="zookeeper-mapr-4.0.X-lastest">
-	         </library>
-	         <library
 	             id="avro-1.5.4.jar">
 	         </library>
 	         <library
@@ -3796,9 +3745,6 @@
                  id="json-20080701.jar">
              </library>
              <library
-                 id="zookeeper-mapr-4.1.X-lastest">
-             </library>
-             <library
                  id="avro-1.7.6.jar">
              </library>
              <library
@@ -3860,9 +3806,6 @@
 	             id="hbase-server-cdh5.4-lastest">
 	         </library>
 	         <library
-	             id="zookeeper-cdh5.4-lastest">
-	         </library>
-	         <library
 	             id="htrace-core-3.0.4.jar">
 	         </library>
 	         <library
@@ -3887,9 +3830,6 @@
 	             id="hbase-server-cdh5.1-lastest">
 	         </library>
 	         <library
-	             id="zookeeper-cdh5.1-lastest">
-	         </library>
-	         <library
 	             id="htrace-core-2.04.jar">
 	         </library>
 	    </libraryNeededGroup>
@@ -3904,7 +3844,6 @@
             <library id="hbase-protocol-HDP_2_3"/>
             <library id="hbase-server-HDP_2_3"/>
             <library id="htrace-core-3.1.0-incubating.jar"/>
-            <library id="zookeeper-HDP_2_3"/>
         </libraryNeededGroup>
 
 	    <!-- MapReduce HBase libraries for HDP 2.2 -->
@@ -3925,9 +3864,6 @@
 	             id="hbase-server-hdp2.2-lastest">
 	         </library>
 	         <library
-	             id="zookeeper-hdp2.2-lastest">
-	         </library>
-	         <library
 	             id="htrace-core-2.04.jar">
 	         </library>
 	    </libraryNeededGroup>
@@ -3938,10 +3874,7 @@
 	            name="MAPREDUCE-HBASE-LIB-MAPR40X_LASTEST" >
 	         <library
 	            id="hbase-mapr-4.0.X-lastest">
-	         </library>
-	         <library
-	             id="zookeeper-mapr-4.0.X-lastest">
-	         </library>
+	         </library>	        
 	    </libraryNeededGroup>
 
 	    <libraryNeededGroup
@@ -3950,9 +3883,6 @@
                 name="MAPREDUCE-HBASE-LIB-MAPR41X_LASTEST" >
              <library
                 id="hbase-mapr-4.1.X-lastest">
-             </library>
-             <library
-                 id="zookeeper-mapr-4.1.X-lastest">
              </library>
              <library
                  id="htrace-core-2.04.jar">
@@ -3975,9 +3905,6 @@
 	         </library>
 	         <library
 	            id="hbase-protocol-cdh5.4-lastest">
-	         </library>
-	         <library
-	            id="zookeeper-cdh5.4-lastest">
 	         </library>
 	         <library
 	            id="htrace-core-3.0.4.jar">
@@ -4044,9 +3971,6 @@
 	         </library>
 	         <library
 	            id="hbase-protocol-cdh5.1-lastest">
-	         </library>
-	         <library
-	            id="zookeeper-cdh5.1-lastest">
 	         </library>
 	         <library
 	            id="htrace-core-2.04.jar">
@@ -4122,7 +4046,6 @@
             <library id="protobuf-java-2.5.0.jar"/>
             <library id="slf4j-api-1.7.10.jar"/>
             <library id="slf4j-log4j12-1.7.10.jar"/>
-            <library id="zookeeper-HDP_2_3"/>
             <library id="hadoop-hdfs-HDP_2_3"/>
             <library id="servlet-api-2.5.jar"/>
             <library id="commons-io-2.4.jar"/>
@@ -4142,9 +4065,6 @@
 	         </library>
 	         <library
 	            id="hbase-protocol-hdp2.2-lastest">
-	         </library>
-	         <library
-	            id="zookeeper-hdp2.2-lastest">
 	         </library>
 	         <library
 	             id="htrace-core-2.04.jar">
@@ -4216,9 +4136,6 @@
 	             id="hadoop-common-mapr-4.0.X-lastest">
 	         </library>
 	         <library
-	             id="zookeeper-mapr-4.0.X-lastest">
-	         </library>
-	         <library
 	             id="commons-logging-1.1.3.jar">
 	         </library>
 	         <library
@@ -4268,9 +4185,6 @@
              </library>
              <library
                  id="hadoop-common-mapr-4.1.X-lastest">
-             </library>
-             <library
-                 id="zookeeper-mapr-4.1.X-lastest">
              </library>
              <library
                  id="commons-logging-1.1.3.jar">
@@ -4698,9 +4612,6 @@
 	             id="hadoop-yarn-common-mapr-4.0.X-lastest">
 	         </library>
 	         <library
-	             id="zookeeper-mapr-4.0.X-lastest">
-	         </library>
-	         <library
 	             id="json-20080701.jar">
 	         </library>
 	         <library
@@ -4789,9 +4700,6 @@
              </library>
              <library
                  id="hadoop-yarn-common-mapr-4.1.X-lastest">
-             </library>
-             <library
-                 id="zookeeper-mapr-4.1.X-lastest">
              </library>
              <library
                  id="json-20080701.jar">
@@ -5374,9 +5282,6 @@
 	             id="hadoop-yarn-common-mapr-4.0.X-lastest">
 	         </library>
 	         <library
-	             id="zookeeper-mapr-4.0.X-lastest">
-	         </library>
-	         <library
 	             id="json-20080701.jar">
 	         </library>
 	         <library
@@ -5462,9 +5367,6 @@
              </library>
              <library
                  id="hadoop-yarn-common-mapr-4.1.X-lastest">
-             </library>
-             <library
-                 id="zookeeper-mapr-4.1.X-lastest">
              </library>
              <library
                  id="antlr-runtime-3.4.jar">
@@ -5719,9 +5621,6 @@
 	             id="hbase-server-cdh5.4-lastest">
 	         </library>
 	         <library
-	             id="zookeeper-cdh5.4-lastest">
-	         </library>
-	         <library
 	             id="htrace-core-3.0.4.jar">
 	         </library>
 	         <library
@@ -5752,9 +5651,6 @@
 	             id="hbase-server-cdh5.1-lastest">
 	         </library>
 	         <library
-	             id="zookeeper-cdh5.1-lastest">
-	         </library>
-	         <library
 	             id="htrace-core-2.04.jar">
 	         </library>
 	         <library
@@ -5777,7 +5673,6 @@
             <library id="hbase-server-HDP_2_3"/>
             <library id="htrace-core-3.1.0-incubating.jar"/>
             <library id="netty-all-4.0.23.Final.jar"/>
-            <library id="zookeeper-HDP_2_3"/>
         </libraryNeededGroup>
 
 	    <!-- Pig HBase libraries for HDP 2.2 -->
@@ -5798,9 +5693,6 @@
 	             id="hbase-server-hdp2.2-lastest">
 	         </library>
 	         <library
-	             id="zookeeper-hdp2.2-lastest">
-	         </library>
-	         <library
 	             id="htrace-core-2.04.jar">
 	         </library>
 	         <library
@@ -5818,9 +5710,6 @@
 	         <library
 	            id="hbase-mapr-4.0.X-lastest">
 	         </library>
-	         <library
-	             id="zookeeper-mapr-4.0.X-lastest">
-	         </library>
 	    </libraryNeededGroup>
 
         <libraryNeededGroup
@@ -5828,9 +5717,6 @@
                 id="PIG-HBASE-LIB-MAPR41X_LASTEST"
                 name="PIG-HBASE-LIB-MAPR41X_LASTEST" >
                 <!-- We use the 4.0.X here because of  Missing class in 4.1.X hbase-->
-             <library
-                 id="zookeeper-mapr-4.0.X-lastest">
-             </library>
              <library
                 id="hbase-mapr-4.0.X-lastest">
              </library>
@@ -6170,9 +6056,6 @@
 	             id="curator-client-2.6.0.jar">
 	         </library>
 	         <library
-	             id="zookeeper-cdh5.4-lastest">
-	         </library>
-	         <library
 	             id="calcite-linq4j-1.0.0-incubating.jar">
 	         </library>
 	         <library
@@ -6463,7 +6346,6 @@
             <library id="servlet-api-2.5.jar"/>
             <library id="slf4j-api-1.7.10.jar"/>
             <library id="slf4j-log4j12-1.7.10.jar"/>
-            <library id="zookeeper-HDP_2_3"/>
         </libraryNeededGroup>
 
 	    <!-- Hive libraries for HDP 2.2 -->
@@ -6592,9 +6474,6 @@
                  id="datanucleus-rdbms-3.2.1.jar">
              </library>
              <library
-                 id="zookeeper-hdp2.2-lastest">
-             </library>
-             <library
                  id="curator-framework-2.6.0.jar">
              </library>
              <library
@@ -6715,9 +6594,6 @@
                  id="datanucleus-rdbms-3.2.9.jar">
              </library>
              <library
-                 id="zookeeper-emr400-latest">
-             </library>
-             <library
                  id="curator-framework-2.6.0.jar">
              </library>
              <library
@@ -6788,9 +6664,6 @@
 	         </library>
 	         <library
 	             id="hadoop-yarn-common-mapr-4.0.X-lastest">
-	         </library>
-	         <library
-	             id="zookeeper-mapr-4.0.X-lastest">
 	         </library>
 	         <library
 	             id="avro-1.7.4.jar">
@@ -6915,9 +6788,6 @@
              </library>
              <library
                  id="hadoop-yarn-common-mapr-4.1.X-lastest">
-             </library>
-             <library
-                 id="zookeeper-mapr-4.1.X-lastest">
              </library>
              <library
                  id="avro-1.7.5.jar">
@@ -7050,9 +6920,6 @@
                  id="hadoop-yarn-common-mapr-4.1.X-lastest">
              </library>
              <library
-                 id="zookeeper-mapr-4.1.X-lastest">
-             </library>
-             <library
                  id="avro-1.7.5.jar">
              </library>
              <library
@@ -7141,9 +7008,6 @@
 	             id="hbase-server-cdh5.4-lastest">
 	         </library>
 	         <library
-	             id="zookeeper-cdh5.4-lastest">
-	         </library>
-	         <library
 	             id="htrace-core-3.0.4.jar">
 	         </library>
 	         <library
@@ -7180,9 +7044,6 @@
 	             id="hbase-server-cdh5.1-lastest">
 	         </library>
 	         <library
-	             id="zookeeper-cdh5.1-lastest">
-	         </library>
-	         <library
 	             id="htrace-core-2.04.jar">
 	         </library>
 	         <library
@@ -7208,7 +7069,6 @@
             <library id="htrace-core-3.1.0-incubating.jar"/>
             <library id="netty-all-4.0.23.Final.jar"/>
             <library id="servlet-api-2.5.jar"/>
-            <library id="zookeeper-HDP_2_3"/>
         </libraryNeededGroup>
 
 	    <!-- Hive HBase libraries for HDP 2.2 -->
@@ -7233,9 +7093,6 @@
 	         </library>
 	         <library
 	             id="hbase-server-hdp2.2-lastest">
-	         </library>
-	         <library
-	             id="zookeeper-hdp2.2-lastest">
 	         </library>
 	         <library
 	             id="htrace-core-2.04.jar">
@@ -7264,9 +7121,6 @@
 	         <library
 	            id="hbase-mapr-4.0.X-lastest">
 	         </library>
-	         <library
-	             id="zookeeper-mapr-4.0.X-lastest">
-	         </library>
 	    </libraryNeededGroup>
 
         <libraryNeededGroup
@@ -7278,9 +7132,6 @@
              </library>
              <library
                 id="hbase-mapr-4.1.X-lastest">
-             </library>
-             <library
-                 id="zookeeper-mapr-4.1.X-lastest">
              </library>
              <library
                  id="htrace-core-2.04.jar">
@@ -7305,9 +7156,6 @@
              </library>
              <library
                 id="hbase-mapr-4.1.X-lastest">
-             </library>
-             <library
-                 id="zookeeper-mapr-4.1.X-lastest">
              </library>
              <library
                  id="htrace-core-2.04.jar">
