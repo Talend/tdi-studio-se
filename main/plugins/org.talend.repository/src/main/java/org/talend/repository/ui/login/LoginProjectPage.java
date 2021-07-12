@@ -456,7 +456,11 @@ public class LoginProjectPage extends AbstractLoginActionPage {
                         }
                         ConnectionBean selectedConnBean = loginHelper.getCurrentSelectedConnBean();
                         if (selectedConnBean != null && selectedConnBean.isStoreCredentials()) {
-                            Display.getDefault().syncExec(() -> handleOpenConnectionsDialog(false));
+                            if (LoginHelper.isRestart) {
+                                LoginHelper.getInstance().getCredentials(selectedConnBean);
+                            } else {
+                                Display.getDefault().syncExec(() -> handleOpenConnectionsDialog(false));
+                            }
                         } else {
                             Display.getDefault().syncExec(() -> handleOpenConnectionsDialog(true));
                         }

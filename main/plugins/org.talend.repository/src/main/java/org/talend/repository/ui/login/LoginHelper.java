@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
@@ -33,6 +34,7 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.preference.IPreferenceStore;
+import org.eclipse.jface.window.Window;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.PlatformUI;
@@ -131,6 +133,8 @@ public class LoginHelper {
     private IGITProviderService gitProviderService;
 
     private Map<String, String> licenseMap;
+
+    private List<ConnectionBean> currentConnections = null;
 
     public static LoginHelper getInstance() {
         if (instance == null) {
@@ -342,6 +346,8 @@ public class LoginHelper {
     }
 
     public void saveConnections(List<ConnectionBean> connectionsBeans) {
+        currentConnections = new ArrayList<ConnectionBean>();
+        currentConnections.addAll(connectionsBeans);
         perReader.saveConnections(connectionsBeans);
         if (connectionsBeans != storedConnections) {
             setStoredConnections(connectionsBeans);
@@ -360,6 +366,13 @@ public class LoginHelper {
     public ConnectionBean getCurrentSelectedConnBean() {
         if (currentSelectedConnBean == null) {
             currentSelectedConnBean = firstConnBean;
+        }
+        if (currentSelectedConnBean != null && currentSelectedConnBean.isStoreCredentials()) {
+            ConnectionBean currentConnection = getConnectionBeanByName(this.currentConnections,
+                    currentSelectedConnBean.getName());
+            if (currentConnection != null) {
+                currentSelectedConnBean.setCredentials(currentConnection.getCredentials());
+            }
         }
         return currentSelectedConnBean;
     }
@@ -1049,4 +1062,27 @@ public class LoginHelper {
         this.prefManipulator = prefManipulator;
     }
 
+    public List<ConnectionBean> getCurrentConnections() {
+        return this.currentConnections;
+    }
+
+    public void setCurrentConnections(List<ConnectionBean> currentConnections) {
+        this.currentConnections = currentConnections;
+    }
+    
+    public ConnectionBean getCredentials(ConnectionBean selectedConnBean) {
+        final AtomicReference<ConnectionBean> aRef = new AtomicReference<>(null);
+        Display.getDefault().syncExec(new Runnable() {
+
+            @Override
+            public void run() {
+                Shell shell = DisplayUtils.getDefaultShell();
+                StoreCredentialDialog dialog = new StoreCredentialDialog(shell, selectedConnBean);
+                if (dialog.open() == Window.OK) {
+                    aRef.set(dialog.getSelectedConnBean());
+                }
+            }
+        });
+        return aRef.get();
+    }
 }
