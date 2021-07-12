@@ -2733,10 +2733,9 @@
             uripath="platform:/plugin/org.talend.libraries.hadoop.hdp.2.2/lib/tezServer/xz-1.0.jar">
         </libraryNeeded>
         <libraryNeeded
-            id="zookeeper-3.4.6.jar"
-            name="zookeeper-3.4.6.jar" mvn_uri="mvn:org.apache.zookeeper/zookeeper/3.4.6"
-            context="plugin:org.talend.libraries.hadoop.hdp.2.2"
-            uripath="platform:/plugin/org.talend.libraries.hadoop.hdp.2.2/lib/tezServer/zookeeper-3.4.6.jar">
+            id="zookeeper-3.4.8.jar"
+            name="zookeeper-3.4.8.jar" mvn_uri="mvn:org.apache.zookeeper/zookeeper/3.4.8"
+            context="org.talend.designer.components.bigdata">
         </libraryNeeded>
        
         <!-- Kafka 2.10-0.8.2.0 -->
