@@ -555,7 +555,7 @@ public class JavaProcessUtil {
             return;
         }
         Object[] listItemsValue = curParam.getListItemsValue();
-        if (listItemsValue == null || listItemsValue.length == 0 && !(listItemsValue[0] instanceof IElementParameter)) {
+        if (listItemsValue == null || listItemsValue.length == 0 || !(listItemsValue[0] instanceof IElementParameter)) {
             return;
         }
         for (Object o : listItemsValue) {
