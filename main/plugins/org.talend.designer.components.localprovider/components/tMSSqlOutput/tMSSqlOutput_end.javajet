@@ -288,6 +288,10 @@ skeleton="../templates/db_output_bulk.skeleton"
                     <%=prefix+cid%>.setNull(count<%=cid%>,<%=typeToSetNull%>);
 		        }
 		<%
+		    }else if(("BigDecimal").equals(typeToGenerate) && column.getColumn().getPrecision() != null){
+		        %>
+		        <%=prefix+cid%>.setObject(count<%=cid%>,bufferL<%=cid%>.<%=column.getName()%>,java.sql.Types.DECIMAL,<%=column.getColumn().getPrecision()%>);
+		        <%
 		    }else{
 		%>
 		        <%=prefix+cid%>.set<%=typeToGenerate%>(count<%=cid%>,bufferL<%=cid%>.<%=column.getName()%>);
