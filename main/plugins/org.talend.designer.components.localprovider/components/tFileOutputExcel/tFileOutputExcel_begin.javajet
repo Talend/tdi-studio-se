@@ -350,9 +350,12 @@ if ((metadatas!=null)&&(metadatas.size()>0)) {
 			<%
 		}
 		%>
+		
 		int columnIndex_<%=cid%> = 0;
+		boolean headerIsInserted_<%=cid%> = false;
+		
 		<%
-    	if(!version07){//version judgement
+		if(!version07){//version judgement
 %>
 		int nb_line_<%=cid%> = 0;
 
@@ -743,6 +746,7 @@ if(!hasDynamic && isIncludeHeader){
 	}
 %>
 		nb_line_<%=cid%> ++;
+		headerIsInserted_<%=cid%> = true;
 	}
 <%
 }
@@ -969,6 +973,7 @@ if(!hasDynamic && isIncludeHeader){
 			}
 		%>
 		nb_line_<%=cid %>++;
+		headerIsInserted_<%=cid%> = true;
 		<%
 			if(!firstCellYAbsolute) {
 		%>

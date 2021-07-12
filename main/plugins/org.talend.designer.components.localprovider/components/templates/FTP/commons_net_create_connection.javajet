@@ -10,6 +10,7 @@
             ftp_<%=cid %>.setDefaultTimeout(connectionTimeout_<%=cid %>);
         }
 
+        ftp_<%=cid %>.setStrictReplyParsing(<%=useStrictReplyParsing %>);
         ftp_<%=cid %>.connect(<%=host %>,<%=portToConnect%>);
         <%if(isLog4jEnabled){%>
             log.info("<%=cid%> - Connect to '" + <%=host %> + "' has succeeded.");

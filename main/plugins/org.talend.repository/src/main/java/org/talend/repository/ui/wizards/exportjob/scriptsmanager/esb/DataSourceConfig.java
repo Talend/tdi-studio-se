@@ -12,6 +12,7 @@
 // ============================================================================
 package org.talend.repository.ui.wizards.exportjob.scriptsmanager.esb;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -108,8 +109,8 @@ public class DataSourceConfig {
                             val = new JSONObject(elementParameter.getValue());
                             if (val != null && val.get("dataSource") instanceof JSONObject) {
                                 JSONObject dataSource = (JSONObject) val.get("dataSource");
-                                if (dataSource != null) {
-                                    String storeValue = (String) dataSource.get("storedValue");
+                                if (dataSource != null && !Arrays.asList("null","{}").contains(dataSource.getString("storedValue"))) {
+                                    String storeValue = dataSource.getString("storedValue");
                                     if (StringUtils.isNoneBlank(storeValue)) {
                                         useDS = true;
                                         value = storeValue;

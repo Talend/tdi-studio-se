@@ -177,8 +177,12 @@ public class CategoryComposite extends Composite {
                     VirtualMetadataColumn column = new VirtualMetadataColumn();
                     column.setTalendType(function.getTalendType().getName());
                     column.setFunction(function);
+                    String dragData = FunctionManagerExt.getOneColData(column, false, false);
+                    if (column.getFunction().isRoutineJar()) {
+                        dragData = dragData + ";" + function.isRoutineJarDependencyMissing() + ";" + function.getRoutineJarName();
+                    }
 
-                    event.data = (FunctionManagerExt.getOneColData(column, false, false));
+                    event.data = dragData;
                 }
             }
 
@@ -313,6 +317,12 @@ public class CategoryComposite extends Composite {
                             VirtualMetadataColumn column = new VirtualMetadataColumn();
                             column.setTalendType(function.getTalendType().getName());
                             column.setFunction(function);
+
+                            ExpressionBuilderDialog.hideWarningLabel();
+                            if (column.getFunction().isRoutineJar() && column.getFunction().isRoutineJarDependencyMissing()) {
+                                ExpressionBuilderDialog.showWarningLabel(Messages.getString(
+                                        "CategoryComposite.missingRoutineJar", column.getFunction().getRoutineJarName()));
+                            }
 
                             ExpressionComposite expressionComposite = ExpressionBuilderDialog.getExpressionComposite();
                             if (expressionComposite != null) {
