@@ -66,6 +66,8 @@ skeleton="../templates/db_output_bulk.skeleton"
     //feature:2880
     ((OracleManager)getManager(dbmsId, cid, node)).setDbVersion(dbVersion);
     boolean whereSupportNull = ElementParameterParser.getValue(node, "__SUPPORT_NULL_WHERE__").equals("true");
+    
+    boolean containBlobFromOtherDB = "true".equals(ElementParameterParser.getValue(node, "__CONTAIN_BLOB_FROM_OTHER_DB__"));
 
     String incomingConnName = null;
     List<IMetadataColumn> columnList = getColumnList(node);
@@ -454,7 +456,12 @@ skeleton="../templates/db_output_bulk.skeleton"
                 <%
                 }
                 if("Dynamic".equals(typeToGenerate)) {
-                %>
+                	if(containBlobFromOtherDB){
+                	%>
+                		blobTypeUtil_<%=cid%>.adaptBlobFromOtherDB(<%=incomingConnName%>.<%=dynamicColumn.getName()%>,conn_<%=cid%>);
+                	<%
+                	}
+                	%>
                     DynamicUtils.writeColumnsToDatabse(<%=incomingConnName%>.<%=dynamicColumn.getName()%>, pstmt_<%=cid%>, <%=counter-1%>, "<%=dbmsId%>");
                 <%
                 }
@@ -547,7 +554,12 @@ globalMap.put("<%=cid%>_ERROR_MESSAGE",e_<%=cid%>.getMessage());
                         routines.system.DynamicUtils.debugDynamicSql(query_<%=cid%>,<%=incomingConnName%>.<%=dynamicColumn.getName()%>, <%=counterCol%>,updateSQLSplits_<%=cid%>);
                     <%
                     }
-                    %>
+                	if(containBlobFromOtherDB){
+                	%>
+                		blobTypeUtil_<%=cid%>.adaptBlobFromOtherDB(<%=incomingConnName%>.<%=dynamicColumn.getName()%>,conn_<%=cid%>);
+                	<%
+                	}
+                	%>
                     int count_<%=cid%>=DynamicUtils.writeColumnsToDatabse(<%=incomingConnName%>.<%=dynamicColumn.getName()%>, pstmt_<%=cid%>, <%=counterCol-1%>, "<%=dbmsId%>");
                 <%
                 }
@@ -721,7 +733,12 @@ globalMap.put("<%=cid%>_ERROR_MESSAGE",e_<%=cid%>.getMessage());
                             routines.system.DynamicUtils.debugDynamicSql(query_<%=cid%>,<%=incomingConnName%>.<%=dynamicColumn.getName()%>, <%=counterCol%>,updateSQLSplits_<%=cid%>);
                         <%
                         }
-                        %>
+	                	if(containBlobFromOtherDB){
+	                	%>
+	                		blobTypeUtil_<%=cid%>.adaptBlobFromOtherDB(<%=incomingConnName%>.<%=dynamicColumn.getName()%>,conn_<%=cid%>);
+	                	<%
+	                	}
+	                	%>
                         int count_<%=cid%>=DynamicUtils.writeColumnsToDatabse(<%=incomingConnName%>.<%=dynamicColumn.getName()%>, pstmtUpdate_<%=cid%>, <%=counterCol-1%>, "<%=dbmsId%>");
                     <%
                     }
@@ -851,7 +868,12 @@ globalMap.put("<%=cid%>_ERROR_MESSAGE",e_<%=cid%>.getMessage());
                             routines.system.DynamicUtils.debugDynamicSql(query_<%=cid%>,<%=incomingConnName%>.<%=dynamicColumn.getName()%>, <%=counterInsert%>,insertSQLSplits_<%=cid%>);
                         <%
                         }
-                        %>
+	                	if(containBlobFromOtherDB){
+	                	%>
+	                		blobTypeUtil_<%=cid%>.adaptBlobFromOtherDB(<%=incomingConnName%>.<%=dynamicColumn.getName()%>,conn_<%=cid%>);
+	                	<%
+	                	}
+	                	%>
                         DynamicUtils.writeColumnsToDatabse(<%=incomingConnName%>.<%=dynamicColumn.getName()%>, pstmtInsert_<%=cid%>, <%=counterInsert-1%>, "<%=dbmsId%>");
                     <%
                     }
@@ -936,8 +958,12 @@ globalMap.put("<%=cid%>_ERROR_MESSAGE",e_<%=cid%>.getMessage());
                         routines.system.DynamicUtils.debugDynamicSql(query_<%=cid%>,<%=incomingConnName%>.<%=dynamicColumn.getName()%>, <%=counterColUpdate%>,updateSQLSplits_<%=cid%>);
                     <%
                     }
-                    %>
-
+                	if(containBlobFromOtherDB){
+                	%>
+                		blobTypeUtil_<%=cid%>.adaptBlobFromOtherDB(<%=incomingConnName%>.<%=dynamicColumn.getName()%>,conn_<%=cid%>);
+                	<%
+                	}
+                	%>
                     int count_<%=cid%>=DynamicUtils.writeColumnsToDatabse(<%=incomingConnName%>.<%=dynamicColumn.getName()%>, pstmtUpdate_<%=cid%>, <%=counterColUpdate-1%>, "<%=dbmsId%>");
                 <%
                 }
@@ -1038,7 +1064,12 @@ globalMap.put("<%=cid%>_ERROR_MESSAGE",e_<%=cid%>.getMessage());
                                 routines.system.DynamicUtils.debugDynamicSql(query_<%=cid%>,<%=incomingConnName%>.<%=dynamicColumn.getName()%>, <%=counter%>,insertSQLSplits_<%=cid%>);
                             <%
                             }
-                            %>
+		                	if(containBlobFromOtherDB){
+		                	%>
+		                		blobTypeUtil_<%=cid%>.adaptBlobFromOtherDB(<%=incomingConnName%>.<%=dynamicColumn.getName()%>,conn_<%=cid%>);
+		                	<%
+		                	}
+		                	%>
                             DynamicUtils.writeColumnsToDatabse(<%=incomingConnName%>.<%=dynamicColumn.getName()%>, pstmtInsert_<%=cid%>, <%=counter-1%>, "<%=dbmsId%>");
                         <%
                         }

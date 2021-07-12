@@ -459,6 +459,14 @@
     >
       <DEFAULT>false</DEFAULT>
     </PARAMETER>
+    
+    <PARAMETER
+      NAME="CONTAIN_BLOB_FROM_OTHER_DB"
+      FIELD="CHECK"
+      NUM_ROW="58"
+    >
+      <DEFAULT>false</DEFAULT>
+    </PARAMETER>
 
   	<PARAMETER
   	  NAME="ENABLE_DEBUG_MODE"
