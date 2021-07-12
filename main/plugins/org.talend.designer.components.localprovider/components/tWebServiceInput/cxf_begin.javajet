@@ -147,7 +147,9 @@ if(("false").equals(ElementParameterParser.getValue(node,"__ADVANCED_USE__"))) {
 					if(result_<%=cid %>!=null) {
 						int k_<%=cid%> = 0;
 						for (String key_<%=cid %> : result_<%=cid %>.keySet()) {
-							results_<%=cid %>[k_<%=cid%>++] = result_<%=cid %>.get(key_<%=cid %>);
+							if(k_<%=cid%> < results_<%=cid %>.length) {
+								results_<%=cid %>[k_<%=cid%>++] = result_<%=cid %>.get(key_<%=cid %>);
+							}
 						}
 					}
 			<%} else {%>
