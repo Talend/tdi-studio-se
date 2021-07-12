@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: %pluginName
 Bundle-SymbolicName: org.talend.designer.dbmap;singleton:=true
 Automatic-Module-Name: org.talend.designer.dbmap
-Bundle-Version: 7.4.1.qualifier
+Bundle-Version: 8.0.1.qualifier
 Bundle-ClassPath: .
 Require-Bundle: org.eclipse.core.runtime,
  org.apache.commons.collections,
