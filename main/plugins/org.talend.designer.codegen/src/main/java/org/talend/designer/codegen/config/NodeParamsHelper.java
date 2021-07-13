@@ -107,6 +107,23 @@ public class NodeParamsHelper {
     }
 
     /**
+     * Gets the int parameter by {@code key}. If no {@code key} provided
+     *
+     * @param key
+     *            the key
+     * @return the int parameter
+     */
+    public int getIntParam(String key) {
+        try {
+            int value = Integer.parseInt(getStringParam(key));
+            return value;
+        } catch (NumberFormatException ex) {
+            ex.printStackTrace();
+            return 0;
+        }
+    }
+
+    /**
      * Gets the boolean parameter by {@code key}. If no {@code key} provided
      *
      * @param key
