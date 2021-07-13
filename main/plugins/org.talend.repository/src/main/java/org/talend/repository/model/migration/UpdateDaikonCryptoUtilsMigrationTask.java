@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.logging.Logger;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.maven.artifact.versioning.DefaultArtifactVersion;
 import org.apache.maven.model.Dependency;
 import org.apache.maven.model.Model;
 import org.eclipse.core.resources.IFile;
@@ -37,6 +38,9 @@ import org.talend.designer.maven.tools.BuildCacheManager;
 public class UpdateDaikonCryptoUtilsMigrationTask extends AbstractProjectMigrationTask {
 
     private static final Logger LOGGER = Logger.getLogger(UpdateDaikonCryptoUtilsMigrationTask.class.getCanonicalName());
+
+    private static final String TARGET_VERSION = "0.31.12";
+
 
     @Override
     public Date getOrder() {
@@ -81,8 +85,13 @@ public class UpdateDaikonCryptoUtilsMigrationTask extends AbstractProjectMigrati
         if (deps == null || deps.isEmpty()) {
             return false;
         }
+        DefaultArtifactVersion targetVersion = new DefaultArtifactVersion(TARGET_VERSION);
+
         for (Dependency dep : deps) {
-            if (StringUtils.equals("org.talend.daikon", dep.getGroupId()) && StringUtils.equals("0.31.10", dep.getVersion())) {
+            DefaultArtifactVersion actualVersion = new DefaultArtifactVersion(dep.getVersion());
+            int cmp = targetVersion.compareTo(actualVersion);
+
+            if (StringUtils.equals("org.talend.daikon", dep.getGroupId()) && cmp > 0) {
                 if (StringUtils.equals("crypto-utils", dep.getArtifactId())
                         || StringUtils.equals("daikon", dep.getArtifactId())) {
                     return true;

@@ -54,6 +54,8 @@ skeleton="../templates/db_output_bulk.skeleton"
 
 	boolean useAlternateSchema = "true".equals(ElementParameterParser.getValue(node, "__USE_ALTERNATE_SCHEMA__"));
 	
+	boolean containBlobFromOtherDB = "true".equals(ElementParameterParser.getValue(node, "__CONTAIN_BLOB_FROM_OTHER_DB__"));
+	
 	String alternateSchema = ElementParameterParser.getValue(node,"__ALTERNATE_SCHEMA__");
 	
     String rejectConnName = null;
@@ -511,12 +513,13 @@ globalMap.put("<%=cid%>_ERROR_MESSAGE",exp.getMessage());
     <%
     }
 
-    if(blobTypeExist) {
+    if(blobTypeExist || isDynamic) {
     %>
 
         class BlobTypeUtil_<%=cid%> {
             public Object getBLOB(Object data, java.sql.Connection conn) throws java.sql.SQLException {
-                if(!(data instanceof java.sql.Blob) || (data instanceof oracle.sql.BLOB)) {
+            	boolean containBlobFromOtherDB = <%=containBlobFromOtherDB%>;
+                if(!(data instanceof java.sql.Blob) || (data instanceof oracle.sql.BLOB && !containBlobFromOtherDB)) {
                 	return data;
                 }
 
@@ -593,6 +596,21 @@ globalMap.put("<%=cid%>_ERROR_MESSAGE",exp.getMessage());
                 return null;
 
             }
+<%
+if(isDynamic) {
+%>
+			public void adaptBlobFromOtherDB(routines.system.Dynamic dynamicColumnValue, java.sql.Connection conn) throws java.sql.SQLException {
+                int size = dynamicColumnValue.getColumnCount();
+               	for(int index = 0; index < size; index++){
+                	Object value = dynamicColumnValue.getColumnValue(index);
+                	if(value instanceof java.sql.Blob || (value instanceof oracle.sql.BLOB)) {
+                		 dynamicColumnValue.setColumnValue(index, getBLOB(value, conn));
+	                }
+                }
+            }
+<%
+}
+%>
 
         }
         BlobTypeUtil_<%=cid%> blobTypeUtil_<%=cid%>=new BlobTypeUtil_<%=cid%>();
