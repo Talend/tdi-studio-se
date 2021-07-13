@@ -87,39 +87,13 @@ class BigQueryUtil_<%=cid%> {
 			insert = bigqueryclient.jobs().insert(projectId, job).execute();
 			jobId = insert.getJobReference();
 		} catch (com.google.api.client.googleapis.json.GoogleJsonResponseException e) {
-			if(tokenFile != null){
-				try {
-					java.io.File f = new java.io.File(tokenFile);
-					boolean isRemoved = f.delete();
-					if(isRemoved){
-						<%
-				    	if(isLog4jEnabled){
-						%>
-							log.error("<%=cid%> - Unable to connect. This might come from the token expiration. Execute again the job with an empty authorization code.");
-						<%
-						}else{
-				    	%>
-							System.err.println("---> Unable to connect. This might come from the token expiration. Execute again the job with an empty authorization code.");
-						<%
-						}
-						%>
-					}else{
-						throw new java.lang.Exception();
-					}
-				} catch (java.lang.Exception ee) {
-					<%
-			    	if(isLog4jEnabled){
-					%>
-						log.error("<%=cid%> - Unable to connect. This might come from the token expiration. Remove the file " + tokenFile + " Execute again the job with an empty authorization code.");
-					<%
-					}else{
-			    	%>
-						System.err.println("---> Unable to connect. This might come from the token expiration. Remove the file " + tokenFile + " Execute again the job with an empty authorization code.");
-					<%
-					}
-					%>
-				}
+			//Auth errors throw TokenResponseExceptions.
+			if(e.getStatusCode() == 401) {
+				tryDeleteTokenPropertiesFile();
 			}
+			throw e;
+		} catch (com.google.api.client.auth.oauth2.TokenResponseException e) {
+			tryDeleteTokenPropertiesFile();
 			throw e;
 		}
 
@@ -171,6 +145,42 @@ class BigQueryUtil_<%=cid%> {
 			}
 
 			return insert;
+		}
+		
+		private void tryDeleteTokenPropertiesFile() {
+			if(tokenFile != null){
+				try {
+					java.io.File f = new java.io.File(tokenFile);
+					boolean isRemoved = f.delete();
+					if(isRemoved){
+						<%
+				    	if(isLog4jEnabled){
+						%>
+							log.error("<%=cid%> - Unable to connect. This might come from the token expiration. Execute again the job with an empty authorization code.");
+						<%
+						}else{
+				    	%>
+							System.err.println("---> Unable to connect. This might come from the token expiration. Execute again the job with an empty authorization code.");
+						<%
+						}
+						%>
+					}else{
+						throw new java.lang.Exception();
+					}
+				} catch (java.lang.Exception ee) {
+					<%
+			    	if(isLog4jEnabled){
+					%>
+						log.error("<%=cid%> - Unable to connect. This might come from the token expiration. Remove the file " + tokenFile + " Execute again the job with an empty authorization code.");
+					<%
+					}else{
+			    	%>
+						System.err.println("---> Unable to connect. This might come from the token expiration. Remove the file " + tokenFile + " Execute again the job with an empty authorization code.");
+					<%
+					}
+					%>
+				}
+			}
 		}
  		
 	}
