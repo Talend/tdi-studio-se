@@ -154,6 +154,13 @@ if(("false").equals(ElementParameterParser.getValue(node,"__ADVANCED_USE__"))) {
 					}
 			<%} else {%>
 			//TODO call the special Talend runJob webservice by cxf
+			int nb_line_<%=cid %> = 0;
+			Object[] results_<%=cid %> = null;
+			if(true) {
+				throw new RuntimeException("not support special Talend runJob web service");
+			}
+			
+			{
 			<%}%>
 		
 	        nb_line_<%=cid %>++;
