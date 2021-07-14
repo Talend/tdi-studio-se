@@ -14,24 +14,59 @@ imports="
     String projectId = ElementParameterParser.getValue(node,"__PROJECT_ID__");
     String resultSizeType = ElementParameterParser.getValue(node,"__RESULT_SIZE__");
     boolean isCustomTemporaryName = ElementParameterParser.getBooleanValue(node,"__USE_CUSTOM_TEMPORARY_DATASET__");
+    boolean isLog4jEnabled = ("true").equals(ElementParameterParser.getValue(node.getProcess(), "__LOG4J_ACTIVATE__"));
 
 	if (authMode.equals("OAUTH") || authMode.equals("TOKEN")) {
 	%>
-			}
-		pageToken_<%=cid%> = dataList_<%=cid %>.getPageToken();
-		if (null == pageToken_<%=cid%>) {
-			break;
-		}
-	}
-	bigQueryUtil_<%=cid%>.cleanup();
+            }
+            pageToken_<%=cid%> = dataList_<%=cid %>.getPageToken();
+            if (null == pageToken_<%=cid%>) {
+                break;
+            }
+        }
+    }
   	<%
   	} else if (authMode.equals("SERVICEACCOUNT")) {
   	%>
-  		}
-        serviceAccountBigQueryUtil_<%=cid%>.cleanup();
-        <%
+            }
+            if (child_statistics_<%=cid%> != null) {
+                globalMap.put("<%=cid%>_STATISTICS_CHILD", child_statistics_<%=cid%>.stream().collect(java.util.stream.Collectors.joining(",", "{\"statistics\": [", "]}")));
+            }
+        //}
+<%
       } else {
           throw new IllegalArgumentException("authentication mode should be either \"SERVICEACCOUNT\" or \"OAUTH\" or \"TOKEN\", but it is " + authMode);
       }
       log4jFileUtil.retrievedDataNumberInfo(node);
-%>
+      // Else job has finished successfully with the results. Finish }.
+      %>
+}
+<%
+    if (authMode.equals("OAUTH") || authMode.equals("TOKEN")) {
+        %>
+        } catch (Exception e_<%=cid%>) {
+            String message_<%=cid%> = e_<%=cid%>.getMessage();
+            <%
+            log4jFileUtil.logErrorMessage();
+            %>
+            globalMap.put("<%=cid%>_ERROR_MESSAGE", message_<%=cid%>);
+            throw e_<%=cid%>;
+        } finally {
+            bigQueryUtil_<%=cid%>.cleanup();
+        }
+    <%
+    } else {
+    %>
+        } catch (Exception e_<%=cid%>) {
+            String message_<%=cid%> = e_<%=cid%>.getMessage();
+            <%
+            log4jFileUtil.logErrorMessage();
+            %>
+            globalMap.put("<%=cid%>_ERROR_MESSAGE", message_<%=cid%>);
+            throw e_<%=cid%>;
+        } finally {
+            serviceAccountBigQueryUtil_<%=cid%>.cleanup();
+        }
+    <%
+    }
+    %>

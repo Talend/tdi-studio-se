@@ -23,7 +23,6 @@
 	String authMode = ElementParameterParser.getValue(node,"__AUTH_MODE__");
 	String query = ElementParameterParser.getValue(node,"__QUERY__");
 	boolean useLegacySql = ElementParameterParser.getBooleanValue(node,"__USE_LEGACY_SQL__");
-
 	query = query.replaceAll("\n"," ").replaceAll("\r"," ");
 
 	boolean isLog4jEnabled = ("true").equals(ElementParameterParser.getValue(node.getProcess(), "__LOG4J_ACTIVATE__"));
@@ -51,24 +50,38 @@
     if(authMode.equals("TOKEN") && !ElementParameterParser.canEncrypt(node, "__ACCESS_TOKEN__")) { %>
       credential_<%=cid%>.setAccessToken(<%= ElementParameterParser.getValue(node, "__ACCESS_TOKEN__")%>);
     <% } %>
+        try {
+            com.google.api.services.bigquery.model.Job insert_<%=cid %> = bigQueryUtil_<%=cid%>.executeQuery(querySql_<%=cid%>, <%="LARGE".equals(resultSizeType) ? true : false%>, <%=useLegacySql%>);
+        <%
+        if(isLog4jEnabled){
+        %>
+            log.info("<%=cid%> - Executing query.");
+        <%
+        }
+        %>
+        String pageToken_<%=cid%> = null;
+        if(insert_<%=cid%>.getStatus().getErrorResult() != null ) {
+            globalMap.put("<%=cid%>_ERROR_MESSAGE", insert_<%=cid%>.getStatus().getErrorResult().getMessage());
+            String message_<%=cid%> = "<%=cid%> - " + insert_<%=cid%>.getStatus().getErrorResult().getMessage();
+            <%
+                log4jFileUtil.logErrorMessage();
 
-		com.google.api.services.bigquery.model.Job insert_<%=cid %> = bigQueryUtil_<%=cid%>.executeQuery(querySql_<%=cid%>, <%="LARGE".equals(resultSizeType) ? true : false%>, <%=useLegacySql%>);
-
-<%
-		if(isLog4jEnabled){
-		%>
-			log.info("<%=cid%> - Executing query.");
-		<%
-		}
-		%>
-		String pageToken_<%=cid%> = null;
+            // Else job has finished successfully with the results. Start {.
+            %>
+        } else {
+            java.util.List<com.google.api.services.bigquery.model.Job> insert_jobs_<%=cid%>;
+            if (insert_<%=cid %>.getStatistics().getNumChildJobs() != null) {
+                insert_jobs_<%=cid%> = bigQueryUtil_<%=cid%>.listChildJobs(insert_<%=cid %>.getJobReference().getJobId());
+            } else {
+                insert_jobs_<%=cid%> = java.util.Collections.singletonList(insert_<%=cid%>);
+            }
 	<%
 	} else if (authMode.equals("SERVICEACCOUNT")) {
 	%>
 		com.google.cloud.bigquery.QueryJobConfiguration queryConfiguration_<%=cid%> = com.google.cloud.bigquery.QueryJobConfiguration.newBuilder(<%=query%>).setUseLegacySql(<%=useLegacySql%>).build();
 		com.google.cloud.bigquery.JobId jobId_<%=cid%> = com.google.cloud.bigquery.JobId.of(java.util.UUID.randomUUID().toString());
 		com.google.cloud.bigquery.Job job_<%=cid%> = bigquery_<%=cid%>.create(com.google.cloud.bigquery.JobInfo.newBuilder(queryConfiguration_<%=cid%>).setJobId(jobId_<%=cid%>).build());
-
+        globalMap.put("<%=cid%>_JOBID", jobId_<%=cid%>.getJob());
 		<%
 		if(isLog4jEnabled){
 		%>
@@ -76,14 +89,41 @@
 		<%
 		}
 		%>
-		job_<%=cid%> = job_<%=cid%>.waitFor();
+        try {
+            job_<%=cid%> = job_<%=cid%>.waitFor();
 
-		if (job_<%=cid%> == null) {
-			throw new RuntimeException("Job no longer exists");
-		} else if (job_<%=cid%>.getStatus().getError() != null) {
-			throw new RuntimeException(job_<%=cid%>.getStatus().getError().toString());
-		}
+            if (job_<%=cid%> == null) {
+                String message_<%=cid%> = "<%=cid%> - Job no longer exists";
+                globalMap.put("<%=cid%>_ERROR_MESSAGE", message_<%=cid%>);
+                <%
+                    log4jFileUtil.logErrorMessage();
+                %>
+            } else if (job_<%=cid%>.getStatus().getError() != null) {
+                com.google.gson.Gson gsonObject_<%=cid%> = new com.google.gson.Gson();
+                globalMap.put("<%=cid%>_STATISTICS", gsonObject_<%=cid%>.toJson(job_<%=cid%>.getStatistics()));
+                String message_<%=cid%> = "<%=cid%> - " + job_<%=cid%>.getStatus().getError().toString();
+                globalMap.put("<%=cid%>_ERROR_MESSAGE", job_<%=cid%>.getStatus().getError().toString());
+                <%
+                    log4jFileUtil.logErrorMessage();
 
+                // Else job has finished successfully with the results. Start {.
+                %>
+            } else {
+                com.google.gson.Gson gsonObject_<%=cid%> = new com.google.gson.Gson();
+                globalMap.put("<%=cid%>_STATISTICS", gsonObject_<%=cid%>.toJson(job_<%=cid%>.getStatistics()));
+                java.util.List<com.google.cloud.bigquery.Job> childJobs_<%=cid%>;
+                if (job_<%=cid%>.getStatistics().getNumChildJobs() != null) {
+                    childJobs_<%=cid%> = java.util.Optional.ofNullable(bigquery_<%=cid%>.listJobs(com.google.cloud.bigquery.BigQuery.JobListOption.parentJobId(jobId_<%=cid%>.getJob())))
+                                .map(com.google.api.gax.paging.Page::getValues)
+                                .flatMap(iterable_<%=cid%> ->
+                                        java.util.Optional.ofNullable(java.util.stream.StreamSupport
+                                            .stream(iterable_<%=cid%>.spliterator(), false)
+                                            .collect(java.util.stream.Collectors.toList())))
+                                .orElse(java.util.Collections.emptyList());
+                    java.util.Collections.reverse(childJobs_<%=cid%>);
+                } else {
+                    childJobs_<%=cid%> = java.util.Collections.singletonList(job_<%=cid%>);
+                }
 		<%
 		if(isLog4jEnabled){
 		%>
@@ -91,7 +131,6 @@
 		<%
 		}
 		%>
-
 	<%
 	} else {
 		throw new IllegalArgumentException("authentication mode should be either \"SERVICEACCOUNT\", \"OAUTH\" or \"TOKEN\", but it is " + authMode);
@@ -104,19 +143,26 @@
 				String connName = conn.getName();
 				if (conn.getLineStyle().hasConnectionCategory(IConnectionCategory.DATA)) {
 
-					if (authMode.equals("OAUTH") || authMode.equals("TOKEN")) {
-						%>
+                    if (authMode.equals("OAUTH") || authMode.equals("TOKEN")) {
+                    %>
+                            for (com.google.api.services.bigquery.model.Job insert_elem_<%=cid %> : insert_jobs_<%=cid%>) {
+                                insert_<%=cid %> = insert_elem_<%=cid %>;
+                                if (insert_<%=cid %>.getStatus().getErrorResult() != null) {
+                                    globalMap.put("<%=cid%>_ERROR_MESSAGE", insert_<%=cid %>.getStatus().getErrorResult());
+                                    String message_<%=cid%> = "<%=cid%> - " + "Query has error Result, skipping its ResultSet." + insert_<%=cid %>.getStatus().getErrorResult();
+                                    <%
+                                        log4jFileUtil.logErrorMessage();
+                                    %>
+                                    continue;
+                                }
 						while (true) {
 							// Fetch Results
-							com.google.api.services.bigquery.model.TableDataList dataList_<%=cid %> = bigqueryclient_<%=cid%>.tabledata()
-										.list(PROJECT_ID_<%=cid %>,
-												insert_<%=cid %>.getConfiguration().getQuery()
-														.getDestinationTable().getDatasetId(),
-												insert_<%=cid %>.getConfiguration().getQuery()
-														.getDestinationTable().getTableId())
-										.setPageToken(pageToken_<%=cid%>).execute();
+                            com.google.api.services.bigquery.model.GetQueryResultsResponse queryResultsResponse_<%=cid %> = bigqueryclient_<%=cid%>.jobs()
+                                    .getQueryResults(PROJECT_ID_<%=cid %>, insert_<%=cid %>.getJobReference().getJobId())
+                                    .setPageToken(pageToken_<%=cid%>)
+                                    .execute();
 
-							List<com.google.api.services.bigquery.model.TableRow> rows_<%=cid %> = dataList_<%=cid %>.getRows();
+                            List<com.google.api.services.bigquery.model.TableRow> rows_<%=cid %> = queryResultsResponse_<%=cid %>.getRows();
 
 							if(rows_<%=cid %> == null) {
 								// Means there is no record.
@@ -130,13 +176,20 @@
 						<%
 					} else if (authMode.equals("SERVICEACCOUNT")) {
 						%>
-						com.google.cloud.bigquery.TableResult result_<%=cid%> = job_<%=cid%>.getQueryResults();
-
-						long nb_line_<%=cid%> = 0;
-
-						for (com.google.cloud.bigquery.FieldValueList field_<%=cid %> : result_<%=cid%>.iterateAll()) {
-							Object value_<%=cid%>;
-							nb_line_<%=cid%> ++;
+                        long nb_line_<%=cid%> = 0;
+                        for (com.google.cloud.bigquery.Job job_iterable_<%=cid%> : childJobs_<%=cid%>) {
+                            if (job_iterable_<%=cid%>.getStatus().getError() != null) {
+                                globalMap.put("<%=cid%>_ERROR_MESSAGE", job_iterable_<%=cid%>.getStatus().getError().toString());
+                                String message_<%=cid%> = "<%=cid%> - " + job_iterable_<%=cid%>.getStatus().getError().toString();
+                                <%
+                                    log4jFileUtil.logErrorMessage();
+                                %>
+                                continue;
+                            }
+                            com.google.cloud.bigquery.TableResult result_<%=cid%> = job_iterable_<%=cid%>.getQueryResults();
+                            for (com.google.cloud.bigquery.FieldValueList field_<%=cid %> : result_<%=cid%>.iterateAll()) {
+                                Object value_<%=cid%>;
+                                nb_line_<%=cid%> ++;
 					<%
 					} else {
 						throw new IllegalArgumentException("authentication mode should be either \"SERVICEACCOUNT\", \"OAUTH\" or \"TOKEN\", but it is " + authMode);

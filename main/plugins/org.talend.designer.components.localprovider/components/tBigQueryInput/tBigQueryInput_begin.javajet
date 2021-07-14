@@ -44,7 +44,6 @@
 
     String tokenFile = ElementParameterParser.getValue(node,"__TOKEN_NAME__");
     boolean isLog4jEnabled = ("true").equals(ElementParameterParser.getValue(node.getProcess(), "__LOG4J_ACTIVATE__"));
-
 	//Dynamic start
 	List<IMetadataTable> metadatas = node.getMetadataList();
 	    int sizeListColumns = 0;
@@ -244,7 +243,8 @@ globalMap.put("<%=cid%>_ERROR_MESSAGE",ee_<%=cid%>.getMessage());
 		<%
 		}
 		%>
-		com.google.api.services.bigquery.model.Job insert_<%=cid %> = bigQueryUtil_<%=cid%>.executeQuery(querySql_<%=cid%>, <%="LARGE".equals(resultSizeType) ? true : false%>, <%=useLegacySql%>);
+        try {
+            com.google.api.services.bigquery.model.Job insert_<%=cid %> = bigQueryUtil_<%=cid%>.executeQuery(querySql_<%=cid%>, <%="LARGE".equals(resultSizeType) ? true : false%>, <%=useLegacySql%>);
 
 		<%
 		if(isLog4jEnabled){
@@ -305,16 +305,42 @@ globalMap.put("<%=cid%>_ERROR_MESSAGE",ee_<%=cid%>.getMessage());
 
 		ServiceAccountBigQueryUtil_<%=cid%> serviceAccountBigQueryUtil_<%=cid%> = new ServiceAccountBigQueryUtil_<%=cid%>();
 
-		com.google.cloud.bigquery.Job job_<%=cid%> = serviceAccountBigQueryUtil_<%=cid%>.executeQuery(<%=query%>, <%=useLegacySql%>);
+        try {
+                com.google.cloud.bigquery.Job job_<%=cid%> = serviceAccountBigQueryUtil_<%=cid%>.executeQuery(<%=query%>, <%=useLegacySql%>);
+            <%
+                if(isLog4jEnabled){
+            %>
+                log.info("<%=cid%> - Retrieving records from dataset.");
+            <%
+                }
+            %>
 
-		<%
-			if(isLog4jEnabled){
-		%>
-			log.info("<%=cid%> - Retrieving records from dataset.");
-		<%
-			}
-		%>
-		com.google.cloud.bigquery.TableResult result_<%=cid%> = job_<%=cid%>.getQueryResults();
+                com.google.gson.Gson gsonObject_<%=cid%> = new com.google.gson.Gson();
+                globalMap.put("<%=cid%>_STATISTICS", gsonObject_<%=cid%>.toJson(job_<%=cid%>.getStatistics()));
+                long nb_line_<%=cid%> = 0;
+                java.util.List<String> child_statistics_<%=cid%> = null;
+                java.util.List<com.google.cloud.bigquery.Job> childJobs_<%=cid%>;
+                if(job_<%=cid%>.getStatistics().getNumChildJobs() != null){
+                    childJobs_<%=cid%> = serviceAccountBigQueryUtil_<%=cid%>.getChildJobs(job_<%=cid%>.getJobId().getJob());
+                    java.util.Collections.reverse(childJobs_<%=cid%>);
+                    child_statistics_<%=cid%> = new java.util.ArrayList<>();
+                } else {
+                    childJobs_<%=cid%> = java.util.Collections.singletonList(job_<%=cid%>);
+                }
+                for (com.google.cloud.bigquery.Job job_iterable_<%=cid%> : childJobs_<%=cid%>) {
+                    if (child_statistics_<%=cid%> != null) {
+                        child_statistics_<%=cid%>.add(gsonObject_<%=cid%>.toJson(job_iterable_<%=cid%>.getStatistics()));
+                    }
+                    if (job_iterable_<%=cid%>.getStatus().getError() != null) {
+                        globalMap.put("<%=cid%>_ERROR_MESSAGE", job_iterable_<%=cid%>.getStatus().getError().toString());
+                        String message_<%=cid%> = "<%=cid%> - " + job_iterable_<%=cid%>.getStatus().getError().toString();
+                        <%
+                            log4jFileUtil.logErrorMessage();
+                        %>
+                        continue;
+                    }
+
+                    com.google.cloud.bigquery.TableResult result_<%=cid%> = job_iterable_<%=cid%>.getQueryResults();
 		//Dynamic start
 
 		<%
@@ -358,39 +384,59 @@ globalMap.put("<%=cid%>_ERROR_MESSAGE",ee_<%=cid%>.getMessage());
 		}
 		%>
 		//Dynamic end
-		long nb_line_<%=cid%> = 0;
 	<%
 	} else {
 		throw new IllegalArgumentException("authentication mode should be either \"SERVICEACCOUNT\", \"OAUTH\" or \"TOKEN\", but it is " + authMode);
 	}
 
-
 	if (authMode.equals("OAUTH") || authMode.equals("TOKEN")) {
 	%>
-	while (true) {
-		// Fetch Results
-    <% if(authMode.equals("TOKEN") && !ElementParameterParser.canEncrypt(node, "__ACCESS_TOKEN__")) { %>
-    credential_<%=cid%>.setAccessToken(<%= ElementParameterParser.getValue(node, "__ACCESS_TOKEN__")%>);
-    <% } %>
-		com.google.api.services.bigquery.model.TableDataList dataList_<%=cid %> = bigqueryclient_<%=cid%>.tabledata()
-					.list(PROJECT_ID_<%=cid %>,
-							insert_<%=cid %>.getConfiguration().getQuery()
-									.getDestinationTable().getDatasetId(),
-							insert_<%=cid %>.getConfiguration().getQuery()
-									.getDestinationTable().getTableId())
-					.setPageToken(pageToken_<%=cid%>).execute();
+    if (insert_<%=cid%>.getStatus().getErrorResult() != null) {
+        globalMap.put("<%=cid%>_ERROR_MESSAGE", insert_<%=cid%>.getStatus().getErrorResult().getMessage());
+        String message_<%=cid%> = "<%=cid%> - " + insert_<%=cid%>.getStatus().getErrorResult().getMessage();
+        <%
+            log4jFileUtil.logErrorMessage();
 
-		List<com.google.api.services.bigquery.model.TableRow> rows_<%=cid %> = dataList_<%=cid %>.getRows();
-		if(rows_<%=cid %> == null) {
-			// Means there is no record.
-			rows_<%=cid %> = new java.util.ArrayList<com.google.api.services.bigquery.model.TableRow>();
-		}
+        // Else job has finished successfully with the results. Start {.
+        %>
+    } else {
+        java.util.List<com.google.api.services.bigquery.model.Job> insert_jobs_<%=cid%>;
+        if (insert_<%=cid %>.getStatistics().getNumChildJobs() != null) {
+            insert_jobs_<%=cid%> = bigQueryUtil_<%=cid%>.listChildJobs(insert_<%=cid %>.getJobReference().getJobId());
+        } else {
+            insert_jobs_<%=cid%> = java.util.Collections.singletonList(insert_<%=cid%>);
+        }
+        for (com.google.api.services.bigquery.model.Job insert_elem_<%=cid %> : insert_jobs_<%=cid%>) {
+            insert_<%=cid %> = insert_elem_<%=cid %>;
+            if (insert_<%=cid %>.getStatus().getErrorResult() != null) {
+                globalMap.put("<%=cid%>_ERROR_MESSAGE", insert_<%=cid%>.getStatus().getErrorResult().getMessage());
+                String message_<%=cid%> = "<%=cid%> - " + "Query has error Result, skipping its ResultSet." + insert_<%=cid %>.getStatus().getErrorResult();
+                <%
+                    log4jFileUtil.logErrorMessage();
+                %>
+                continue;
+            }
+            while (true) {
+                // Fetch Results
+                <% if(authMode.equals("TOKEN") && !ElementParameterParser.canEncrypt(node, "__ACCESS_TOKEN__")) { %>
+                credential_<%=cid%>.setAccessToken(<%= ElementParameterParser.getValue(node, "__ACCESS_TOKEN__")%>);
+                <% } %>
+                com.google.api.services.bigquery.model.TableDataList dataList_<%=cid %> = bigqueryclient_<%=cid%>.tabledata()
+                        .list(PROJECT_ID_<%=cid %>, insert_<%=cid %>.getConfiguration().getQuery().getDestinationTable().getDatasetId(),
+                                insert_<%=cid %>.getConfiguration().getQuery().getDestinationTable().getTableId())
+                            .setPageToken(pageToken_<%=cid%>).execute();
 
-		for (com.google.api.services.bigquery.model.TableRow row_<%=cid %> : rows_<%=cid %>) {
-			java.util.List<com.google.api.services.bigquery.model.TableCell> field_<%=cid %> = row_<%=cid %>.getF();
-			Object value_<%=cid%> = null;
-			nb_line_<%=cid%> ++;
-		<%
+                List<com.google.api.services.bigquery.model.TableRow> rows_<%=cid %> = dataList_<%=cid %>.getRows();
+                if(rows_<%=cid %> == null) {
+                    // Means there is no record.
+                    rows_<%=cid %> = new java.util.ArrayList<com.google.api.services.bigquery.model.TableRow>();
+                }
+
+                for (com.google.api.services.bigquery.model.TableRow row_<%=cid %> : rows_<%=cid %>) {
+                    java.util.List<com.google.api.services.bigquery.model.TableCell> field_<%=cid %> = row_<%=cid %>.getF();
+                    Object value_<%=cid%> = null;
+                    nb_line_<%=cid%> ++;
+    <%
 	} else if (authMode.equals("SERVICEACCOUNT")) {
 	%>
 		for (com.google.cloud.bigquery.FieldValueList field_<%=cid %> : result_<%=cid%>.iterateAll()) {
