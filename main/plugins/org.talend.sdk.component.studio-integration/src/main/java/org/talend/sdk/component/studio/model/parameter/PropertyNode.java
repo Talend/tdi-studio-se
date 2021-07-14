@@ -220,7 +220,7 @@ public class PropertyNode {
         if (MAIN_FORM.equals(form)) {
             return getMainChildrenNames();
         }
-        return property.getChildrenNames(form);
+        return getOtherChildrenNames(form);
     }
 
     /**
@@ -245,6 +245,16 @@ public class PropertyNode {
             return property.getOptionsOrderNames();
         }
         return getChildrenNames();
+    }
+
+    private List<String> getOtherChildrenNames(final String form) {
+        if (property.hasGridLayout(form)) {
+            return property.getChildrenNames(form);
+        }
+        if (property.hasOptionsOrder()) {
+            return property.getOptionsOrderNames();
+        }
+        return Collections.emptyList();
     }
 
     public Layout getLayout(final String name) {

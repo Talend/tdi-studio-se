@@ -412,7 +412,7 @@
                     
                     if(ignoredParamsNames.contains(name)) {
                         //do nothing
-                    } else if(org.talend.core.model.process.EParameterFieldType.PASSWORD.equals(ep.getFieldType())){
+                    } else if(org.talend.core.model.process.EParameterFieldType.PASSWORD.equals(ep.getFieldType()) || org.talend.core.model.process.EParameterFieldType.HIDDEN_TEXT.equals(ep.getFieldType())){
                         //not log password
                     }else{
                         String value = org.talend.core.model.utils.NodeUtil.getRuntimeParameterValue(node, ep);

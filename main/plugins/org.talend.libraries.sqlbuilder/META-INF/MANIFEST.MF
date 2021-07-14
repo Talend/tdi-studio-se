@@ -3,7 +3,7 @@ Automatic-Module-Name: org.talend.libraries.sqlbuilder
 Bundle-ManifestVersion: 2
 Bundle-Name: Sqlbuilder
 Bundle-SymbolicName: org.talend.libraries.sqlbuilder;singleton:=true
-Bundle-Version: 7.4.1.qualifier
+Bundle-Version: 8.0.1.qualifier
 Bundle-ClassPath: .,
  lib/sqlexplorer.jar,
  lib/squirrel.jar
