@@ -20,7 +20,6 @@ import java.util.Map;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
-import org.eclipse.core.runtime.Platform;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -158,7 +157,6 @@ public class MdmEeDemoImportTest extends DemosImportTest {
 		map.put(rootPath + File.separator + mdmRoutingrulePath, FileConstants.ITEM_EXTENSION);
 		map.put(rootPath + File.separator + mdmTransformerV2Path, FileConstants.ITEM_EXTENSION);
 		map.put(rootPath + File.separator + mdmViewPath, FileConstants.ITEM_EXTENSION);
-		map.put(rootPath + File.separator + mdmWorkflowPath, FileConstants.ITEM_EXTENSION);
 		return map;
 	}
 

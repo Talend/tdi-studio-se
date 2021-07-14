@@ -15,6 +15,8 @@ package org.talend.designer.unifiedcomponent.resources;
 import java.util.Map;
 
 import org.eclipse.jface.resource.ImageDescriptor;
+import org.talend.commons.CommonsPlugin;
+import org.talend.commons.ui.runtime.image.EImage;
 import org.talend.commons.ui.runtime.image.IImage;
 import org.talend.commons.ui.runtime.image.ImageProvider;
 
@@ -44,6 +46,9 @@ public class ComponentIconLoading {
     }
 
     public ImageDescriptor getImage32() {
+        if (CommonsPlugin.isHeadless()) {
+            return ImageProvider.getImageDesc(EImage.COMPONENT_MISSING);
+        }
         ImageDescriptor image32 = registry.get(iImage_32.getLocation() + iImage_32.getPath() + "_icon32");
         if (image32 == null || image32.getImageData() == null) {
             image32 = ImageProvider.getImageDesc(iImage_32);
@@ -53,6 +58,9 @@ public class ComponentIconLoading {
     }
 
     public ImageDescriptor getImage24() {
+        if (CommonsPlugin.isHeadless()) {
+            return ImageProvider.getImageDesc(EImage.COMPONENT_MISSING);
+        }
         ImageDescriptor image24 = registry.get(iImage_32.getLocation() + iImage_32.getPath() + "_icon24");
         if (image24 == null || image24.getImageData() == null) {
             try {
@@ -67,6 +75,9 @@ public class ComponentIconLoading {
     }
 
     public ImageDescriptor getImage16() {
+        if (CommonsPlugin.isHeadless()) {
+            return ImageProvider.getImageDesc(EImage.COMPONENT_MISSING);
+        }
         ImageDescriptor image16 = registry.get(iImage_32.getLocation() + iImage_32.getPath() + "_icon16");
         if (image16 == null || image16.getImageData() == null) {
             try {

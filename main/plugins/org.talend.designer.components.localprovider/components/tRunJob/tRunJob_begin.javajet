@@ -26,6 +26,12 @@ if(useDynamicJob) {
 } else {
 	context = ElementParameterParser.getValue(node,"__PROCESS_TYPE_CONTEXT__");
 }
+
+boolean useExtraClassPath = "true".equals(ElementParameterParser.getValue(node, "__USE_EXTRA_CLASSPATH__"));
+String extraClassPath = ElementParameterParser.getValue(node,"__EXTRA_CLASSPATH__");
+boolean useDynamicContext = "true".equals(ElementParameterParser.getValue(node, "__USE_DYNAMIC_CONTEXT__"));
+String dynamicContext = ElementParameterParser.getValue(node,"__DYNAMIC_CONTEXT__");
+			
 String[] codeOptions = null;
 
 String[] commandLine = new String[] {"<command>"};
@@ -124,7 +130,56 @@ class DealChildJobLibrary_<%=cid%> {
 		boolean custom_jmxremote_authenticate;
 		<%}%>
 		
+		private void addClasspath(java.util.List<String> target_argument_list, String job_origin_classpath) {
+			<%
+			if(!useExtraClassPath) {
+				extraClassPath = null;
+			}
+			%>
+			String extra_classpath = <%=extraClassPath%>;
+			String path_separator = System.getProperty("path.separator");
+			if (path_separator != null && path_separator.length() > 1) {
+				throw new RuntimeException("path separator should be single character");
+			}
+			
+			if(extra_classpath!=null && !extra_classpath.isEmpty()) {
+				if(extra_classpath.endsWith(path_separator)) {
+					target_argument_list.add(extra_classpath+job_origin_classpath);
+				} else if(extra_classpath.contains(path_separator)) {
+					target_argument_list.add(concatStr(extra_classpath, path_separator, job_origin_classpath));
+				} else if(extra_classpath.endsWith(":")) {
+					target_argument_list.add(extra_classpath.replace(":", path_separator)+job_origin_classpath);
+				} else if(extra_classpath.endsWith(";")) {
+					target_argument_list.add(extra_classpath.replace(";", path_separator)+job_origin_classpath);
+				} else if(extra_classpath.contains(":")) {
+					target_argument_list.add(concatStr(extra_classpath.replace(":", path_separator), path_separator, job_origin_classpath));
+				} else if(extra_classpath.contains(";")) {
+					target_argument_list.add(concatStr(extra_classpath.replace(";", path_separator), path_separator, job_origin_classpath));
+				} else {
+					target_argument_list.add(concatStr(extra_classpath, path_separator, job_origin_classpath));
+				}
+				return;
+			}
+			
+			target_argument_list.add(job_origin_classpath);
+		}
+		
+		private String concatStr(String s1, String s2, String s3) {
+			java.lang.StringBuilder strB = new java.lang.StringBuilder();
+			strB.append(s1).append(s2).append(s3);
+			return strB.toString();
+		}
+		
 		public void addArgumentsTo(java.util.List<String> target_argument_list, String argument_from_child) {
+			addArgumentsTo(target_argument_list, argument_from_child, false);
+		}
+		
+		public void addArgumentsTo(java.util.List<String> target_argument_list, String argument_from_child, boolean isCP) {
+			if(isCP) {
+				addClasspath(target_argument_list, argument_from_child);
+				return;
+			}
+		
 			<%if(use_custom_jvm_setting) {%>
 			if(!have_set_custom_argument) {
 				custom_arguments = new java.util.ArrayList<>();
@@ -192,7 +247,20 @@ class DealChildJobLibrary_<%=cid%> {
 				return;
 			}
 			<%}%>
+			
+			<%
+			if(useDynamicContext) {
+			%>
+			if(argument_from_child.startsWith("--context=")) {
+				target_argument_list.add("--context="+<%=dynamicContext%>);
+			} else {
+				target_argument_list.add(argument_from_child);
+			}
+			<%
+			} else {
+			%>
 			target_argument_list.add(argument_from_child);
+			<%}%>
 		}
 		
 		<%
@@ -300,7 +368,7 @@ try {
 				      			classpath_<%=cid %>_<%=i %>_<%=j %> += audit_jar_path_<%=cid %>;
 				      		}
 				      		<%}%>
-				      		jvm_argument_helper_<%=cid%>.addArgumentsTo(childJob_commandLine_<%=cid%>, dealChildJobLibrary_<%=cid %>.replaceJarPathsFromCrcMap(classpath_<%=cid %>_<%=i %>_<%=j %>).replaceAll(";",classpathSeparator_<%=cid%>));
+				      		jvm_argument_helper_<%=cid%>.addArgumentsTo(childJob_commandLine_<%=cid%>, dealChildJobLibrary_<%=cid %>.replaceJarPathsFromCrcMap(classpath_<%=cid %>_<%=i %>_<%=j %>).replaceAll(";",classpathSeparator_<%=cid%>), <%=isCP%>);
 				    <%
 				    	}else{
 				    %>
@@ -322,7 +390,7 @@ try {
 				      			classpath_<%=cid %>_<%=i %>_<%=j %> += audit_jar_path_<%=cid %>;
 				      		}
 				      		<%}%>
-				    		jvm_argument_helper_<%=cid%>.addArgumentsTo(childJob_commandLine_<%=cid%>, dealChildJobLibrary_<%=cid %>.replaceJarPathsFromCrcMap(classpath_<%=cid %>_<%=i %>_<%=j %>).replaceAll(";",classpathSeparator_<%=cid%>));
+				    		jvm_argument_helper_<%=cid%>.addArgumentsTo(childJob_commandLine_<%=cid%>, dealChildJobLibrary_<%=cid %>.replaceJarPathsFromCrcMap(classpath_<%=cid %>_<%=i %>_<%=j %>).replaceAll(";",classpathSeparator_<%=cid%>), <%=isCP%>);
 				    <%
 				    	}else{
 				    %>

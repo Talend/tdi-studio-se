@@ -35,6 +35,7 @@ String protectionBufferSize = ElementParameterParser.getValue(node, "__FTPS_PROT
 String timeoutValue = ElementParameterParser.getValue(node, "__CONNECTION_TIMEOUT__");
 boolean useRemoteVerification = ("true").equals(ElementParameterParser.getValue(node, "__REMOTE_VERIFICATION__"));
 boolean isLog4jEnabled = ("true").equals(ElementParameterParser.getValue(node.getProcess(), "__LOG4J_ACTIVATE__"));
+boolean useStrictReplyParsing = ("true").equals(ElementParameterParser.getValue(node, "__USE_STRICT_REPLY_PARSING__"));
 String passwordFieldName = "";
 
 if (useProxy) {

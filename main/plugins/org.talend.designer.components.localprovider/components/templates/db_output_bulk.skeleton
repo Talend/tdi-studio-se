@@ -282,6 +282,10 @@ public class CLASS {
                   return false;
               }
               
+              if (columnName.startsWith("\\\"") && columnName.endsWith("\\\"")) {
+              	  return false;
+              }
+              
               if (columnName.contains(" ")) {
                   return true;
               }

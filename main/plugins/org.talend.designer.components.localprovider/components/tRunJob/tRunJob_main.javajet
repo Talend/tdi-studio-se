@@ -57,6 +57,9 @@ String[] commandLineUnix = new String[] {"<command>"};
 String[] commandLine = new String[] {"<command>"};
 String childJob = ElementParameterParser.getValue(node,"__PROCESS__");
 
+boolean useDynamicContext = "true".equals(ElementParameterParser.getValue(node, "__USE_DYNAMIC_CONTEXT__"));
+String dynamicContext = ElementParameterParser.getValue(node,"__DYNAMIC_CONTEXT__");
+
 boolean isPropagateChildResult = ("true").equals(ElementParameterParser.getValue(node, "__PROPAGATE_CHILD_RESULT__"));
 
 boolean useDynamicJob = ("true").equals(ElementParameterParser.getValue(node, "__USE_DYNAMIC_JOB__"));
@@ -170,11 +173,26 @@ String inputConnName = null;
 					childJob = commandLine[0];
 				} else if (i > 0){
 					if (commandLine[i].indexOf("\"") >= 0){
+						if(useDynamicContext && commandLine[i].startsWith("\"--context=")) {
 	      			%>
-	        			paraList_<%=cid %>.add(<%=commandLine[i] %>);
-	      			<%}else{%>
-	        			paraList_<%=cid %>.add("<%=commandLine[i] %>");
-	      			<%}
+	        				paraList_<%=cid %>.add("--context="+<%=dynamicContext%>);
+	      			<%
+	      				} else {
+	      			%>
+	        				paraList_<%=cid %>.add(<%=commandLine[i] %>);
+	      			<%
+	      				}
+	      			}else{
+	      				if(useDynamicContext && commandLine[i].startsWith("--context=")) {
+	      			%>
+	        				paraList_<%=cid %>.add("--context="+<%=dynamicContext%>);
+	      			<%
+	      				} else {
+	      			%>
+	        				paraList_<%=cid %>.add("<%=commandLine[i] %>");
+	      			<%
+	      				}
+	      			}
 	    		}
 	  		}
 		} else {
@@ -213,7 +231,7 @@ String inputConnName = null;
 		      						classpath_<%=cid %>_<%=i %> += audit_jar_path_<%=cid %>;
 		      					}
 		      					<%}%>
-								jvm_argument_helper_<%=cid%>.addArgumentsTo(paraList_<%=cid %>, dealChildJobLibrary_<%=cid %>.replaceJarPathsFromCrcMap(classpath_<%=cid %>_<%=i %>));
+								jvm_argument_helper_<%=cid%>.addArgumentsTo(paraList_<%=cid %>, dealChildJobLibrary_<%=cid %>.replaceJarPathsFromCrcMap(classpath_<%=cid %>_<%=i %>), <%=isCP%>);
 		      				<%
 							}else{
 		      				%>
@@ -235,7 +253,7 @@ String inputConnName = null;
 		      						classpath_<%=cid %>_<%=i %> += audit_jar_path_<%=cid %>;
 		      					}
 		      					<%}%>
-	        					jvm_argument_helper_<%=cid%>.addArgumentsTo(paraList_<%=cid %>, dealChildJobLibrary_<%=cid %>.replaceJarPathsFromCrcMap(classpath_<%=cid %>_<%=i %>));
+	        					jvm_argument_helper_<%=cid%>.addArgumentsTo(paraList_<%=cid %>, dealChildJobLibrary_<%=cid %>.replaceJarPathsFromCrcMap(classpath_<%=cid %>_<%=i %>), <%=isCP%>);
 		      				<%
 		          			}else{
               				%>
@@ -289,7 +307,7 @@ String inputConnName = null;
 		      						classpath_<%=cid %>_<%=i %> += audit_jar_path_<%=cid %>;
 		      					}
 		      					<%}%>
-								jvm_argument_helper_<%=cid%>.addArgumentsTo(paraList_<%=cid %>, dealChildJobLibrary_<%=cid %>.replaceJarPathsFromCrcMap(classpath_<%=cid %>_<%=i %>).replace("$ROOT_PATH",System.getProperty("user.dir")));
+								jvm_argument_helper_<%=cid%>.addArgumentsTo(paraList_<%=cid %>, dealChildJobLibrary_<%=cid %>.replaceJarPathsFromCrcMap(classpath_<%=cid %>_<%=i %>).replace("$ROOT_PATH",System.getProperty("user.dir")), <%=isCP%>);
 		      				<%}else{%>
 		        				jvm_argument_helper_<%=cid%>.addArgumentsTo(paraList_<%=cid %>, <%=param %>.replace("$ROOT_PATH",System.getProperty("user.dir")));
 		     	 			<%
@@ -303,7 +321,7 @@ String inputConnName = null;
 		      						classpath_<%=cid %>_<%=i %> += audit_jar_path_<%=cid %>;
 		      					}
 		      					<%}%>
-	      						jvm_argument_helper_<%=cid%>.addArgumentsTo(paraList_<%=cid %>, dealChildJobLibrary_<%=cid %>.replaceJarPathsFromCrcMap(classpath_<%=cid %>_<%=i %>).replace("$ROOT_PATH",System.getProperty("user.dir")));
+	      						jvm_argument_helper_<%=cid%>.addArgumentsTo(paraList_<%=cid %>, dealChildJobLibrary_<%=cid %>.replaceJarPathsFromCrcMap(classpath_<%=cid %>_<%=i %>).replace("$ROOT_PATH",System.getProperty("user.dir")), <%=isCP%>);
 		      				<%}else{%>
 								jvm_argument_helper_<%=cid%>.addArgumentsTo(paraList_<%=cid %>, <%=param %>);
 		      				<%

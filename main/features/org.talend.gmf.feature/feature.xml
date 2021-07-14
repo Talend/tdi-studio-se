@@ -2,7 +2,7 @@
 <feature
       id="org.talend.gmf.feature"
       label="Gmf"
-      version="7.4.1.qualifier">
+      version="8.0.1.qualifier">
 
    <description url="http://www.example.com/description">
       [Enter Feature Description here.]
@@ -348,7 +348,7 @@
          id="org.apache.xerces"
          download-size="0"
          install-size="0"
-         version="2.9.0.v201101211617"
+         version="2.12.1.v20210115-0812"
          unpack="false"/>
 
    <plugin

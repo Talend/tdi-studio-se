@@ -36,6 +36,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.eclipse.jface.resource.ImageDescriptor;
+import org.talend.commons.CommonsPlugin;
 import org.talend.commons.exception.ExceptionHandler;
 import org.talend.core.PluginChecker;
 import org.talend.core.model.components.ComponentCategory;
@@ -125,8 +126,13 @@ public class ComponentModel extends AbstractBasicComponent implements IAdditiona
         this.reportPath = reportPath;
         this.isCatcherAvailable = isCatcherAvailable;
         this.image = image32;
-        this.image24 = ImageDescriptor.createFromImageData(image.getImageData().scaledTo(24, 24));
-        this.image16 = ImageDescriptor.createFromImageData(image.getImageData().scaledTo(16, 16));
+        if (CommonsPlugin.isHeadless()) {
+            this.image24 = this.image;
+            this.image16 = this.image;
+        } else {
+            this.image24 = ImageDescriptor.createFromImageData(image.getImageData().scaledTo(24, 24));
+            this.image16 = ImageDescriptor.createFromImageData(image.getImageData().scaledTo(16, 16));
+        }
     }
 
     @Deprecated // to drop since it is not used at all in main code

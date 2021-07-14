@@ -4818,7 +4818,7 @@ public class Node extends Element implements IGraphicalNode {
     public Dimension getSize() {
         if (size == null) {
             size = new Dimension();
-            if (getIcon32() != null) {
+            if (!CommonsPlugin.isHeadless() && getIcon32() != null) {
                 ImageData data = getIcon32().getImageData();
                 size.height = data.height;
                 size.width = data.width;
