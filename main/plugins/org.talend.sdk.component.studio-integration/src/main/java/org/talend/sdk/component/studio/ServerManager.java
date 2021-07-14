@@ -31,6 +31,7 @@ import org.osgi.framework.ServiceRegistration;
 import org.talend.commons.CommonsPlugin;
 import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.utils.VersionUtils;
+import org.talend.core.nexus.TalendMavenResolver;
 import org.talend.osgi.hook.maven.MavenResolver;
 import org.talend.sdk.component.studio.debounce.DebounceManager;
 import org.talend.sdk.component.studio.metadata.TaCoKitCache;
@@ -113,10 +114,9 @@ public class ServerManager {
 
             reset = Lookups.init();
 
-            final MavenResolver mavenResolver = findMavenResolver();
             final Function<String, File> mvnResolverImpl = gav -> {
                 try { // convert to pax-url syntax
-                    return mavenResolver.resolve(Mvn.locationToMvn(gav));
+                    return TalendMavenResolver.resolve(Mvn.locationToMvn(gav));
                 } catch (final IOException e) {
                     throw new IllegalArgumentException("can't resolve '" + gav + "', "
                             + "in development ensure you are using maven" + ".repository=global in configuration/config.ini, "
