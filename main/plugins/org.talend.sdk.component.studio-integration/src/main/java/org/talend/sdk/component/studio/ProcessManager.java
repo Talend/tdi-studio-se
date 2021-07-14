@@ -50,6 +50,9 @@ import java.util.logging.SimpleFormatter;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Level;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.spi.LoggerRepository;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.m2e.core.MavenPlugin;
 import org.talend.commons.CommonsPlugin;
@@ -265,6 +268,13 @@ public class ProcessManager implements AutoCloseable {
     }
 
     public synchronized void start() {
+        String julLevel = System.getProperty("jul.level");
+        if (StringUtils.isNotBlank(julLevel)) {
+            LoggerRepository repository = LogManager.getLoggerRepository();
+            org.apache.log4j.Logger osgiLogger = repository.getLogger(JULToOsgiHandler.class.getCanonicalName());
+            osgiLogger.setLevel(Level.toLevel(julLevel));
+        }
+
         final Collection<URL> paths;
         try {
             paths = createClasspath();
@@ -370,17 +380,9 @@ public class ProcessManager implements AutoCloseable {
             public void run() {
 
                 List<String> localHostAddresses = NetworkUtil.getLocalLoopbackAddresses(true);
-                // if (CommonsPlugin.isDebugMode()) {
-                // ExceptionHandler.log("Local addresses passed to sdk: " + localHostAddresses);
-                // }
                 LOGGER.info("Local addresses passed to sdk: " + localHostAddresses);
-
+                
                 int addressCount = localHostAddresses.size();
-                String customHost = System.getProperty("talend.studio.sdk.host");
-                if (customHost != null) {
-                    LOGGER.info("custom host detected, will use [" + customHost + "] as hostname");
-                }
-                Thread thread = Thread.currentThread();
                 final long end = System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(15);
                 for (int i = 0; end - System.currentTimeMillis() >= 0; i++) {
                     final Thread serverThread = ProcessManager.this.serverThread;
@@ -396,12 +398,7 @@ public class ProcessManager implements AutoCloseable {
                         // ipv6
                         ip = ip.substring(1, ip.length() - 1);
                     }
-                    if (customHost != null) {
-                        clientIp = customHost;
-                        ip = customHost;
-                    }
                     String urlString = "http://" + clientIp + ":" + port + "/api/v1/environment";
-                    LOGGER.info("Try to open connection with URL: [" + urlString + "] ...");
                     try (final Socket ignored = new Socket(ip, port)) {
                         final URLConnection conn = new URL(urlString).openConnection();
                         conn.setRequestProperty("Content-Type", "application/json");
@@ -411,16 +408,16 @@ public class ProcessManager implements AutoCloseable {
                         setServerAddress(clientIp);
                         lock.unlock();
                         ready.countDown();
-                        LOGGER.info("Connection with URL: [" + urlString + "] established");
+                        LOGGER.info("Succeed to connect [" + urlString + "]");
                         return;
                     } catch (final Exception e) {
                         if (CommonsPlugin.isDebugMode()) {
                             ExceptionHandler.process(e);
                         }
                         try {
-                            thread.sleep(100);
+                            Thread.sleep(500);
                         } catch (final InterruptedException e1) {
-                            thread.interrupted();
+                            Thread.interrupted();
                             break;
                         }
                     }
