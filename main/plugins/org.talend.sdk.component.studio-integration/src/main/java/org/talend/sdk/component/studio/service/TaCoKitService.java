@@ -65,14 +65,12 @@ public class TaCoKitService implements ITaCoKitService {
     }
     
     public void installTCKComponents(IProgressMonitor monitor) {
-        List<IComponentInstallerTask> tasks = ComponentInstallerTaskRegistryReader.getInstance().getTasks(IComponentInstallerTask.ComponentType.TCK);
+        List<IComponentInstallerTask> tasks = ComponentInstallerTaskRegistryReader.getInstance().getTasks(IComponentInstallerTask.COMPONENT_TYPE_TCOMPV1);
         tasks.forEach(t -> {
-            if (t.needInstall()) {
-                try {
-                    t.install(monitor);
-                } catch (InvocationTargetException | InterruptedException e) {
-                    ExceptionHandler.process(e);
-                }
+            try {
+                t.install(monitor);
+            } catch (InvocationTargetException | InterruptedException e) {
+                ExceptionHandler.process(e);
             }
         });
     }
