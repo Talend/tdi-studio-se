@@ -27,9 +27,6 @@
   </requires>  
   <plugin id="org.talend.libraries.json" download-size="0" install-size="0" version="0.0.0"/>
   <plugin id="org.talend.repository.ftp" download-size="0" install-size="0" version="0.0.0" unpack="false"/>
-  <plugin id="org.talend.repository.ftp.nl" download-size="0" install-size="0" version="0.0.0" fragment="true" unpack="false"/>
   <plugin id="org.talend.repository.json" download-size="0" install-size="0" version="0.0.0" unpack="false"/>
-  <plugin id="org.talend.repository.json.nl" download-size="0" install-size="0" version="0.0.0" fragment="true" unpack="false"/>
   <plugin id="org.talend.repository.mdm" download-size="0" install-size="0" version="0.0.0" unpack="false"/>
-  <plugin id="org.talend.repository.mdm.nl" download-size="0" install-size="0" version="0.0.0" fragment="true" unpack="false"/>
 </feature>

@@ -13,21 +13,12 @@
     <import plugin="org.eclipse.core.net" version="0.0.0" match="greaterOrEqual"/>
   </requires>  
   <plugin id="org.talend.designer.documentation" download-size="0" install-size="0" version="0.0.0" unpack="false"/>
-  <plugin id="org.talend.designer.documentation.nl" download-size="0" install-size="0" version="0.0.0" fragment="true" unpack="false"/>
   <plugin id="org.talend.registration" download-size="0" install-size="0" version="0.0.0" unpack="false"/>
-  <plugin id="org.talend.registration.nl" download-size="0" install-size="0" version="0.0.0" fragment="true" unpack="false"/>
   <plugin id="org.talend.repository" download-size="0" install-size="0" version="0.0.0" unpack="false"/>
   <plugin id="org.talend.repository.items.importexport" download-size="0" install-size="0" version="0.0.0" unpack="false"/>
-  <plugin id="org.talend.repository.items.importexport.nl" download-size="0" install-size="0" version="0.0.0" fragment="true" unpack="false"/>
   <plugin id="org.talend.repository.items.importexport.ui" download-size="0" install-size="0" version="0.0.0" unpack="false"/>
-  <plugin id="org.talend.repository.items.importexport.ui.nl" download-size="0" install-size="0" version="0.0.0" fragment="true" unpack="false"/>
   <plugin id="org.talend.repository.localprovider" download-size="0" install-size="0" version="0.0.0" unpack="false"/>
-  <plugin id="org.talend.repository.localprovider.nl" download-size="0" install-size="0" version="0.0.0" fragment="true" unpack="false"/>
   <plugin id="org.talend.repository.metadata" download-size="0" install-size="0" version="0.0.0" unpack="false"/>
-  <plugin id="org.talend.repository.metadata.nl" download-size="0" install-size="0" version="0.0.0" fragment="true" unpack="false"/>
-  <plugin id="org.talend.repository.nl" download-size="0" install-size="0" version="0.0.0" fragment="true" unpack="false"/>
   <plugin id="org.talend.repository.view" download-size="0" install-size="0" version="0.0.0" unpack="false"/>
   <plugin id="org.talend.repository.view.di" download-size="0" install-size="0" version="0.0.0" unpack="false"/>
-  <plugin id="org.talend.repository.view.di.nl" download-size="0" install-size="0" version="0.0.0" fragment="true" unpack="false"/>
-  <plugin id="org.talend.repository.view.nl" download-size="0" install-size="0" version="0.0.0" fragment="true" unpack="false"/>
 </feature>
