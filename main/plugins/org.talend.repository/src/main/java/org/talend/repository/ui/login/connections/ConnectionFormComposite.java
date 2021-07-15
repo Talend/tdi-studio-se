@@ -195,7 +195,7 @@ public class ConnectionFormComposite extends Composite {
         userText = toolkit.createText(formBody, "", SWT.BORDER); //$NON-NLS-1$
         formDefaultFactory.copy().grab(true, false).span(2, 1).applyTo(userText);
 
-        passwordLabel = toolkit.createLabel(formBody, Messages.getString("connections.form.field.password")); //$NON-NLS-1$
+        passwordLabel = toolkit.createLabel(formBody, Messages.getString("connections.form.field.password.label")); //$NON-NLS-1$
         formDefaultFactory.copy().applyTo(passwordLabel);
 
         tpPlaceHolder = new Label(formBody, SWT.NONE);
@@ -207,7 +207,7 @@ public class ConnectionFormComposite extends Composite {
         formDefaultFactory.copy().grab(true, false).span(2, 1).applyTo(tpCompo);
 
         // Password
-        passwordButton = toolkit.createButton(tpCompo, Messages.getString("connections.form.field.password"), SWT.RADIO); //$NON-NLS-1$
+        passwordButton = toolkit.createButton(tpCompo, Messages.getString("connections.form.field.password.label"), SWT.RADIO); //$NON-NLS-1$
         formDefaultFactory.copy().applyTo(passwordButton);
 
         passwordText = toolkit.createText(tpCompo, "", SWT.PASSWORD | SWT.BORDER); //$NON-NLS-1$
