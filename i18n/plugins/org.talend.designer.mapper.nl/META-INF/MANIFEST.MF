@@ -1,7 +1,0 @@
-Manifest-Version: 1.0
-Bundle-ManifestVersion: 2
-Bundle-Name: Mapper component Plug-in Nl Fragment
-Bundle-SymbolicName: org.talend.designer.mapper.nl
-Bundle-Version: 8.0.1.qualifier
-Fragment-Host: org.talend.designer.mapper
-Bundle-Vendor: .Talend SA.
