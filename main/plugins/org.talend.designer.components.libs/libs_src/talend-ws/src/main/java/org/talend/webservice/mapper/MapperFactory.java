@@ -4,6 +4,7 @@
 package org.talend.webservice.mapper;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -336,7 +337,8 @@ public class MapperFactory {
         Class<?> clazz = classMapper.getClassForType(xmlSchemaComplexType.getQName(), orderedMap.keyList(), 1);
 
         // 3.create propertyMapper (propertyName,class,schemaTypeMap,typeMapperQname)
-        Map<String, PropertyMapper> mappers = new HashMap<String, PropertyMapper>();
+        //need to use the order map as the order is important for response auto parser by index
+        Map<String, PropertyMapper> mappers = new LinkedHashMap<>();
         for (String key : properties.keySet()) {
             Object xmlSchemaObject = properties.get(key);
             if (xmlSchemaObject == null) {

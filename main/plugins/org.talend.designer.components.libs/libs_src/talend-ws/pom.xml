@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.talend.components</groupId>
 	<artifactId>talend-ws</artifactId>
-	<version>1.0.4-20210429</version>
+	<version>1.0.5-20210629</version>
 	<packaging>jar</packaging>
 
 	<properties>
@@ -100,6 +100,12 @@
 			<groupId>org.apache.cxf</groupId>
 			<artifactId>cxf-core</artifactId>
 			<version>${cxf.version}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.glassfish.jaxb</groupId>
+					<artifactId>jaxb-runtime</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.cxf</groupId>
@@ -110,6 +116,16 @@
 			<groupId>org.apache.cxf</groupId>
 			<artifactId>cxf-tools-common</artifactId>
 			<version>${cxf.version}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.glassfish.jaxb</groupId>
+					<artifactId>jaxb-xjc</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.glassfish.jaxb</groupId>
+					<artifactId>jaxb-runtime</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.cxf</groupId>
@@ -135,6 +151,16 @@
 			<groupId>org.apache.cxf</groupId>
 			<artifactId>cxf-rt-transports-http</artifactId>
 			<version>${cxf.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>javax.xml.bind</groupId>
+			<artifactId>jaxb-api</artifactId>
+			<version>2.2.6</version>
+		</dependency>
+		<dependency>
+			<groupId>org.talend.libraries</groupId>
+			<artifactId>jaxb-impl-2.2.6-modified</artifactId>
+			<version>6.0.0</version>
 		</dependency>
 		<dependency>
 			<groupId>org.talend.libraries</groupId>

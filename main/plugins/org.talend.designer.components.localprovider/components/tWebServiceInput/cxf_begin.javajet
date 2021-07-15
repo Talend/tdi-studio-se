@@ -1,0 +1,288 @@
+<%@ jet 
+%>
+
+<%
+// component id
+String cid = node.getUniqueName();
+
+log = new LogUtil(node);
+
+if(("false").equals(ElementParameterParser.getValue(node,"__ADVANCED_USE__"))) {
+	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	
+	List<IMetadataTable> metadatas = node.getMetadataList();
+	if ((metadatas!=null)&&(metadatas.size()>0)) {
+	    IMetadataTable metadata = metadatas.get(0);
+	    if (metadata!=null) {
+	     
+	        List<IMetadataColumn> listColumns = metadata.getListColumns(); 
+	        
+	        List<Map<String, String>> params = (List<Map<String,String>>)ElementParameterParser.getObjectValue(node,"__PARAMS__");
+	        
+	        boolean needAuth = ("true").equals(ElementParameterParser.getValue(node,"__NEED_AUTH__"));
+	        String username = ElementParameterParser.getValue(node,"__AUTH_USERNAME__");
+	        String password = ElementParameterParser.getValue(node,"__AUTH_PASSWORD__");
+	        
+	        String domain = ElementParameterParser.getValue(node,"__DOMAIN__");
+	        
+	        boolean useProxy = ("true").equals(ElementParameterParser.getValue(node,"__USE_PROXY__"));
+	        String proxuHost = ElementParameterParser.getValue(node,"__PROXY_HOST__");
+	        String proxyPort = ElementParameterParser.getValue(node,"__PROXY_PORT__");
+	        String proxuUser = ElementParameterParser.getValue(node,"__PROXY_USERNAME__");
+	        String proxyPassword = ElementParameterParser.getValue(node,"__PROXY_PASSWORD__");
+	        
+	        boolean needSSLtoTrustServer = ("true").equals(ElementParameterParser.getValue(node,"__NEED_SSL_TO_TRUSTSERVER__"));
+	        String trustStoreFile = ElementParameterParser.getValue(node,"__SSL_TRUSTSERVER_TRUSTSTORE__");
+	        String trustStorePassword = ElementParameterParser.getValue(node,"__SSL_TRUSTSERVER_PASSWORD__");
+	        
+	        
+	        String timeoutStr = ElementParameterParser.getValue(node,"__TIMEOUT__");
+	        if(timeoutStr == null || "".equals(timeoutStr) || "\"\"".equals(timeoutStr)){
+	            timeoutStr = "20";
+	        }
+			%>
+			long timeout_<%=cid %> = (long)(Double.valueOf(<%= timeoutStr %>) * 1000);
+			<%
+	        String endpoint = ElementParameterParser.getValue(node,"__ENDPOINT__");
+	        String method = ElementParameterParser.getValue(node,"__METHOD__");
+	        
+	        String passwordFieldName = "";
+	        
+	        if(method != null && !("\"runJob\"").equals(method.trim())) {
+			%>
+				System.setProperty("javax.xml.transform.TransformerFactory", "org.apache.xalan.processor.TransformerFactoryImpl");
+				System.setProperty("org.apache.commons.logging.Log", "org.apache.commons.logging.impl.NoOpLog");
+				
+				System.setProperty("javax.xml.accessExternalSchema", "all");
+				
+				//shade the log level for DynamicClientFactory.class
+				java.util.logging.Logger LOG_<%=cid%> = org.apache.cxf.common.logging.LogUtils.getL7dLogger(org.apache.cxf.endpoint.dynamic.DynamicClientFactory.class);
+				LOG_<%=cid%>.setLevel(java.util.logging.Level.WARNING);
+				
+				org.talend.webservice.helper.Utils util_<%=cid%> = new org.talend.webservice.helper.Utils();
+				
+				org.talend.webservice.helper.conf.ServiceHelperConfiguration config_<%=cid%> = new org.talend.webservice.helper.conf.ServiceHelperConfiguration();
+				
+				config_<%=cid%>.setConnectionTimeout(timeout_<%=cid %>);
+				config_<%=cid%>.setReceiveTimeout(timeout_<%=cid %>);
+				
+				config_<%=cid%>.setKeyStoreFile(System.getProperty("javax.net.ssl.keyStore"));
+				config_<%=cid%>.setKeyStoreType(System.getProperty("javax.net.ssl.keyStoreType"));
+				config_<%=cid%>.setKeyStorePwd(System.getProperty("javax.net.ssl.keyStorePassword"));
+				
+				java.util.List<Object> params_<%=cid %> = new java.util.ArrayList<>();
+				<%
+				for (int i = 0; i < params.size(); i++) {
+					Map<String, String> line = params.get(i);
+					%>
+					params_<%=cid %>.add(<%=line.get("VALUE") %>);
+				<%
+				}
+				if (needSSLtoTrustServer) {
+				%>   
+					System.setProperty("javax.net.ssl.trustStore", <%=trustStoreFile %>);
+					
+                    <%
+                    passwordFieldName = "__SSL_TRUSTSERVER_PASSWORD__";
+                    %>
+                    
+                    <%if (ElementParameterParser.canEncrypt(node, passwordFieldName)) {%> 
+                    	final String decryptedPwd_<%=cid%> = routines.system.PasswordEncryptUtil.decryptPassword(<%=ElementParameterParser.getEncryptedValue(node, passwordFieldName)%>);
+                    <%} else {%>
+                    	final String decryptedPwd_<%=cid%> = <%= ElementParameterParser.getValue(node, passwordFieldName)%>; 
+                    <%}%>					
+					
+					System.setProperty("javax.net.ssl.trustStorePassword", decryptedPwd_<%=cid%>);
+					<%log.info(log.str("Set ssl."));%>
+				<% 
+				}
+				if(needAuth){
+                passwordFieldName = "__AUTH_PASSWORD__";
+                %>
+                
+                <%@ include file="@{org.talend.designer.components.localprovider}/components/templates/password.javajet"%>				
+						
+				config_<%=cid%>.setUsername(<%=username%>);
+				config_<%=cid%>.setPassword(decryptedPassword_<%=cid%>);
+				<%log.info(log.str("Set username and password."));%>
+				
+				<%
+		  		}
+				if (useProxy) {
+				%>  
+				
+                    <%
+                    passwordFieldName = "__PROXY_PASSWORD__";
+                    %>
+                    
+                    <%if (ElementParameterParser.canEncrypt(node, passwordFieldName)) {%> 
+                    	final String decryptedProxyPwd_<%=cid%> = routines.system.PasswordEncryptUtil.decryptPassword(<%=ElementParameterParser.getEncryptedValue(node, passwordFieldName)%>);
+                    <%} else {%>
+                    	final String decryptedProxyPwd_<%=cid%> = <%= ElementParameterParser.getValue(node, passwordFieldName)%>; 
+                    <%}%>				
+				
+					System.setProperty("http.proxyHost", <%=proxuHost %>);
+					System.setProperty("http.proxyPort", <%=proxyPort %>);
+					System.setProperty("http.proxyUser", <%=proxuUser %>);
+						
+					config_<%=cid%>.setProxyPassword(decryptedProxyPwd_<%=cid%>);
+					
+					<%log.info(log.str("Set proxy."));%>
+				<%
+	  			}
+				%>
+			
+				<%log.info(log.str("Sending soap request to endpoint."));%>
+				
+				org.talend.webservice.helper.ServiceDiscoveryHelper serviceDiscoveryHelper_<%=cid%> = new org.talend.webservice.helper.ServiceDiscoveryHelper(<%=endpoint%>,config_<%=cid%>, null, false);
+ 				org.talend.webservice.helper.ServiceInvokerHelper serviceInvokerHelper_<%=cid%> = new org.talend.webservice.helper.ServiceInvokerHelper(serviceDiscoveryHelper_<%=cid%>,config_<%=cid%>);
+ 				
+				java.util.Map<String, Object> result_<%=cid %> = serviceInvokerHelper_<%=cid%>.invokeDynamic(<%=method%>, params_<%=cid %>);
+				Object[] results_<%=cid %> = null;
+				int nb_line_<%=cid %> = 0;
+			
+				{
+					results_<%=cid %> = new Object[<%=listColumns.size()==0? 1 : listColumns.size()%>];
+					
+					if(result_<%=cid %>!=null) {
+						int k_<%=cid%> = 0;
+						for (String key_<%=cid %> : result_<%=cid %>.keySet()) {
+							if(k_<%=cid%> < results_<%=cid %>.length) {
+								results_<%=cid %>[k_<%=cid%>++] = result_<%=cid %>.get(key_<%=cid %>);
+							}
+						}
+					}
+			<%} else {%>
+			//TODO call the special Talend runJob webservice by cxf
+			int nb_line_<%=cid %> = 0;
+			Object[] results_<%=cid %> = null;
+			if(true) {
+				throw new RuntimeException("not support special Talend runJob web service");
+			}
+			
+			{
+			<%}%>
+		
+	        nb_line_<%=cid %>++;
+		       
+			// for output
+			<%
+			List<? extends IConnection> conns = node.getOutgoingSortedConnections();
+			String firstConnName = "";
+			if (conns!=null) {//1
+				if (conns.size()>0) {//2
+					IConnection conn = conns.get(0); //the first connection
+					firstConnName = conn.getName();			
+					if (conn.getLineStyle().hasConnectionCategory(IConnectionCategory.DATA)) {//3
+		
+						List<IMetadataColumn> columns=metadata.getListColumns();
+						int columnSize = columns.size();
+						for (int i=0;i<columnSize;i++) {//4
+							IMetadataColumn column=columns.get(i);
+							String typeToGenerate = JavaTypesManager.getTypeToGenerate(column.getTalendType(), column.isNullable());
+							JavaType javaType = JavaTypesManager.getJavaTypeFromId(column.getTalendType());
+							String patternValue = column.getPattern() == null || column.getPattern().trim().length() == 0 ? null : column.getPattern();
+							%>
+								
+					
+							if(<%=i %> < results_<%=cid %>.length && results_<%=cid %>[<%=i %>]!=null){				
+								<%
+								if(javaType == JavaTypesManager.OBJECT){//Object
+								%>
+									<%=conn.getName() %>.<%=column.getLabel() %> = results_<%=cid %>[<%=i %>];					
+								<%
+								}else if(javaType == JavaTypesManager.STRING) { //String 
+								%>
+									<%=conn.getName() %>.<%=column.getLabel() %> = results_<%=cid %>[<%=i %>].toString();
+								<%
+								} else if(javaType == JavaTypesManager.DATE) { //Date
+								%>					
+									if(results_<%=cid %>[<%=i %>] instanceof java.util.GregorianCalendar) {
+										<%=conn.getName() %>.<%=column.getLabel() %> = ((java.util.GregorianCalendar)results_<%=cid %>[<%=i%>]).getTime();
+				                   	}else{
+										<%=conn.getName() %>.<%=column.getLabel() %> = ParserUtils.parseTo_Date(results_<%=cid %>[<%=i %>].toString(), <%= patternValue %>);
+									}
+								<%
+								} else if(javaType == JavaTypesManager.BYTE_ARRAY) { //byte[]
+								%>
+									<%=conn.getName() %>.<%=column.getLabel() %> = results_<%=cid %>[<%=i %>].toString().getBytes();
+								<%
+								} else  { //other
+								%>						
+									<%=conn.getName() %>.<%=column.getLabel() %> = ParserUtils.parseTo_<%= typeToGenerate %>(results_<%=cid %>[<%=i %>].toString());
+								<%
+								}
+								%>
+							} else { 
+								<%=conn.getName() %>.<%=column.getLabel() %> = <%=JavaTypesManager.getDefaultValueFromJavaType(typeToGenerate)%>;
+							}
+						<%		
+						} //4
+						log.debug(log.str("Retrieving the record "), log.var("nb_line"), log.str("."));
+					}//3
+					if (conns.size()>1) {
+						for (int i=1;i<conns.size();i++) {
+							IConnection conn2 = conns.get(i);
+							if ((conn2.getName().compareTo(firstConnName)!=0)&&(conn2.getLineStyle().hasConnectionCategory(IConnectionCategory.DATA))) {
+						    	for (IMetadataColumn column: metadata.getListColumns()) {%>
+			      					<%=conn2.getName() %>.<%=column.getLabel() %> = <%=firstConnName %>.<%=column.getLabel() %>;
+							 	<%
+							 	}
+							}
+						}
+					}
+				}//2
+			}//1
+			%>
+		///////////////////////////////////       
+		<%
+	  	}
+	}  
+ 	%>
+ 
+<%
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+}else{//the following is the use the wsdl2java
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+%>
+
+	<%
+	List<IMetadataTable> metadatas = node.getMetadataList();
+	if ((metadatas!=null)&&(metadatas.size()>0)) {
+	    IMetadataTable metadata = metadatas.get(0);
+	    if (metadata!=null) {
+	        String code = ElementParameterParser.getValue(node, "__CODE__");
+	        
+	        // we give a default value to prevComponentName so that no error
+	        // occur when the user tries to generated Java code while no input
+	        // component was linked to our tJavaRow.        
+	        String outputRowName = new String("output_row");
+	        
+	        List< ? extends IConnection> outConns = node.getOutgoingSortedConnections();
+	        if (outConns != null && !outConns.isEmpty()) {
+	            IConnection outConn = outConns.get(0);
+	            outputRowName = outConn.getName();
+	        }
+	
+	        // In case the user would make some tricky Java things, he can use
+	        // the arrays as a whole.
+	
+	        code = code.replaceAll(
+	            "output_row",
+	            outputRowName
+	        );
+			%>
+			int nb_line_<%=cid %> = 0;
+			
+		    <%=code%>
+	    
+	    	nb_line_<%=cid %>++;
+		<%
+	    }
+	}
+	%>
+
+<%
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+}
+%> 

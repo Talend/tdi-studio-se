@@ -7,27 +7,17 @@
 %>
 <%@ include file="@{org.talend.designer.components.localprovider}/components/templates/Log4j/LogUtil.javajet"%>
 <%
-	CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
-	INode node = (INode)codeGenArgument.getArgument();
-	String cid = node.getUniqueName();
-	log = new LogUtil(node);
-if(("false").equals(ElementParameterParser.getValue(node,"__ADVANCED_USE__"))) {
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		
-%>
-	}
-	globalMap.put("<%=cid %>_NB_LINE", nb_line_<%=cid %>);
+CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
+INode node = (INode)codeGenArgument.getArgument();
 
-<%
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-}else{//the following is the use the wsdl2java
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+String api = ElementParameterParser.getValue(node,"__API__");
+if("CXF".equals(api)) {
 %>
-	<%=ElementParameterParser.getValue(node, "__MATCHBRACKETS__") %>
-		
-	globalMap.put("<%=cid %>_NB_LINE", nb_line_<%=cid %>);
+<%@ include file="cxf_end.javajet"%>
 <%
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+} else {
+%>
+<%@ include file="axis_end.javajet"%>
+<%
 }
-log.info(log.str("Retrieved records count: "), log.var("nb_line"), log.str("."));
 %>
