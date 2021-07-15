@@ -2,6 +2,10 @@
 imports="
     org.talend.core.model.process.INode 
     org.talend.core.model.process.ElementParameterParser
+    org.talend.core.model.metadata.IMetadataColumn 
+    org.talend.core.model.process.IConnection
+    org.talend.core.model.process.IConnectionCategory
+
     org.talend.designer.codegen.config.CodeGeneratorArgument
 	java.util.List
     java.util.Map	
@@ -17,10 +21,85 @@ String xmlFile = ElementParameterParser.getValue(node, "__XML_FILE__");
 String xslFile = ElementParameterParser.getValue(node, "__XSLT_FILE__");
 String outputFile = ElementParameterParser.getValue(node, "__OUTPUT_FILE__");
 
+ boolean overrideXml 	= "true".equals(ElementParameterParser.getValue(node, "__OVERRIDE_INPUT_XML_FILE__"));
+ boolean overrideXsl 	= "true".equals(ElementParameterParser.getValue(node, "__OVERRIDE_INPUT_XSL_FILE__"));
+ boolean overrideOutput = "true".equals(ElementParameterParser.getValue(node, "__OVERRIDE_OUTPUT__"));
+ 
+ String xmlCol = ElementParameterParser.getValue(node, "__INPUT_XML_FILE_COL__");
+ String xslCol = ElementParameterParser.getValue(node, "__INPUT_XSL_FILE_COL__");
+ String outputCol = ElementParameterParser.getValue(node, "__OUTPUT_COL__");
+
 List<Map<String, String>> params = (List<Map<String,String>>)ElementParameterParser.getObjectValue(node,"__PARAMS__");
 %>
-	java.io.File xsltFile<%=cid%> = new java.io.File(<%=xslFile%>);
-	javax.xml.transform.stream.StreamSource styleSource<%=cid%> = new javax.xml.transform.stream.StreamSource(xsltFile<%=cid%>);
+//TODO
+<%
+//incoming
+String inConnName ="";
+IConnection inConn = null;
+List< ? extends IConnection> inConns = node.getIncomingConnections();
+List<IMetadataColumn> inColumns = null;
+if (inConns!=null) {
+    for (IConnection incomingConn : inConns) {
+        if (incomingConn.getLineStyle().hasConnectionCategory(IConnectionCategory.DATA)) {
+            inConn = incomingConn;
+            inColumns = inConn.getMetadataTable().getListColumns();
+			inConnName = inConn.getName();
+            break;
+        }
+    }
+}
+//outgoing
+IConnection outConn = null;
+String firstConnName = "";
+List< ? extends IConnection> outConns = node.getOutgoingSortedConnections();
+if(outConns!=null){
+    for (IConnection conn : outConns) {
+        if (conn.getLineStyle().hasConnectionCategory(IConnectionCategory.DATA)) {
+            outConn = conn;
+            firstConnName = outConn.getName();
+            break;
+        }
+    }
+}
+
+//propagate schema
+if(outConns!=null ){
+    for (IConnection conn : outConns) {
+        if (conn.getLineStyle().hasConnectionCategory(IConnectionCategory.DATA)) {
+%>
+//THIS?
+	{
+		<%=firstConnName%> = new <%=firstConnName%>Struct();
+<%
+            for(IMetadataColumn outCol : conn.getMetadataTable().getListColumns()) {
+            	if(inColumns!=null ) {
+            		for(IMetadataColumn col : inColumns) {
+            			if( col.getLabel().equals(outCol.getLabel()) ) {
+%>
+	<%=firstConnName%>.<%=outCol.getLabel()%> = <%=inConnName%>.<%=outCol.getLabel()%>;
+<%
+            			}
+            		}
+            	}
+            }
+        }
+    }
+}
+
+%>
+
+
+	javax.xml.transform.stream.StreamSource styleSource<%=cid%> = null;
+<% if(!overrideXsl) { %> 
+	Object xslFile_<%=cid%> = <%=xslFile%>;
+	if(xslFile_<%=cid%> instanceof java.io.InputStream){
+		styleSource<%=cid%> = new javax.xml.transform.stream.StreamSource( (java.io.InputStream)xslFile_<%=cid%>);	
+	} else {
+		styleSource<%=cid%> = new javax.xml.transform.stream.StreamSource(new java.io.File((String)xslFile_<%=cid%>));
+	}
+<%} else {%>
+ 	styleSource<%=cid%> = new javax.xml.transform.stream.StreamSource( new java.io.StringBufferInputStream ( <%=inConnName%>.<%=xslCol%>) );
+<%}%>
 	javax.xml.transform.Transformer t<%=cid%> = javax.xml.transform.TransformerFactory.newInstance(net.sf.saxon.TransformerFactoryImpl.class.getName(), null).newTransformer(styleSource<%=cid%>);
 
 	<%
@@ -32,7 +111,20 @@ List<Map<String, String>> params = (List<Map<String,String>>)ElementParameterPar
 		}
 	%>
 
-	javax.xml.transform.stream.StreamSource xmlSource<%=cid%> = new javax.xml.transform.stream.StreamSource(new java.io.File(<%=xmlFile%>));
+	javax.xml.transform.stream.StreamSource xmlSource<%=cid%> = null;
+<% if(!overrideXsl) { %> 
+	Object xmlFile_<%=cid%> = <%=xmlFile%>;
+	if(xmlFile_<%=cid%> instanceof java.io.InputStream){
+		xmlSource<%=cid%> = new javax.xml.transform.stream.StreamSource( (java.io.InputStream)xmlFile_<%=cid%>);	
+	} else {
+		xmlSource<%=cid%> = new javax.xml.transform.stream.StreamSource(new java.io.File((String) xmlFile_<%=cid%>));
+	}
+<%} else {%>
+		xmlSource<%=cid%> = new javax.xml.transform.stream.StreamSource( new java.io.StringBufferInputStream ( <%=inConnName%>.<%=xmlCol%>) );
+<%}%>
+
+<% if(!overrideOutput) { %> 
+
 	t<%=cid%>.transform(xmlSource<%=cid%>, new javax.xml.transform.stream.StreamResult(new java.io.File(<%=outputFile%>)));
 		
 	if((<%=outputFile%>).indexOf("/") != -1)
@@ -45,3 +137,9 @@ List<Map<String, String>> params = (List<Map<String,String>>)ElementParameterPar
 		globalMap.put("<%=cid %>_OUTPUT_FILEPATH", <%=outputFile%>);
 		globalMap.put("<%=cid %>_OUTPUT_FILENAME", <%=outputFile%>);	
 	}					
+<%} else {%>
+	java.io.StringWriter writer<%=cid%> = new java.io.StringWriter();
+	javax.xml.transform.stream.StreamResult result<%=cid%> = new javax.xml.transform.stream.StreamResult(writer<%=cid%>);
+	t<%=cid%>.transform(xmlSource<%=cid%>, result<%=cid%>);
+	<%=firstConnName%>.<%=outputCol%> = writer<%=cid%>.toString();
+<%}%>

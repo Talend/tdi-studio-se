@@ -10,8 +10,14 @@
     AUTHOR="Talend"
     RELEASE_DATE="20050320A"
     STARTABLE="true"
-	PARTITIONING="NONE"
+  	PARTITIONING="NONE"
+    SCHEMA_AUTO_PROPAGATE="false"
+    HAS_CONDITIONAL_OUTPUTS="true"
+    IS_MULTIPLYING_OUTPUTS="true"
+    DATA_AUTO_PROPAGATE="false"
   >
+   <!--
+  -->
     <SIGNATURE />
   </HEADER>
 
@@ -34,11 +40,12 @@
   </CONNECTORS>
 
   <PARAMETERS>
+
     <PARAMETER
       NAME="XML_FILE"
       FIELD="FILE"
       NUM_ROW="1"
-      REQUIRED="true"
+      SHOW_IF="OVERRIDE_INPUT_XML_FILE != 'true'"
     >
     <DEFAULT>"__COMP_DEFAULT_FILE_DIR__/in.xml"</DEFAULT>
     </PARAMETER>
@@ -47,7 +54,7 @@
       NAME="XSLT_FILE"
       FIELD="FILE"
       NUM_ROW="2"
-      REQUIRED="true"
+      SHOW_IF="OVERRIDE_INPUT_XSL_FILE != 'true'"
     > 
 	<DEFAULT>"__COMP_DEFAULT_FILE_DIR__/in.xsl"</DEFAULT>  
     </PARAMETER>
@@ -55,7 +62,7 @@
       NAME="OUTPUT_FILE"
       FIELD="FILE"
       NUM_ROW="3"
-      REQUIRED="true"      
+      SHOW_IF="OVERRIDE_OUTPUT != 'true'"
      >
      <DEFAULT>"__COMP_DEFAULT_FILE_DIR__/in.html"</DEFAULT>
     </PARAMETER>
@@ -65,6 +72,67 @@
    		<ITEM NAME="NAME"/>
         <ITEM NAME="VALUE"/>
       </ITEMS>
+    </PARAMETER>
+
+  <PARAMETER 
+    NAME="NOTE" 
+    FIELD="LABEL" 
+    NUM_ROW="19">
+    <DEFAULT>*Note: These fields are optional and will override the selected files</DEFAULT>
+  </PARAMETER>
+
+  <PARAMETER
+      NAME="OVERRIDE_INPUT_XML_FILE"
+      FIELD="CHECK"
+      NUM_ROW="21"
+      >
+      <DEFAULT>false</DEFAULT>
+  </PARAMETER>
+  <PARAMETER
+      NAME="INPUT_XML_FILE_COL"
+      FIELD="PREV_COLUMN_LIST"
+      NUM_ROW="21"
+      SHOW_IF="OVERRIDE_INPUT_XML_FILE == 'true'"
+    >
+  </PARAMETER>
+
+  <PARAMETER
+      NAME="OVERRIDE_INPUT_XSL_FILE"
+      FIELD="CHECK"
+      NUM_ROW="22"
+      >
+      <DEFAULT>false</DEFAULT>
+  </PARAMETER>
+  <PARAMETER
+      NAME="INPUT_XSL_FILE_COL"
+      FIELD="PREV_COLUMN_LIST"
+      NUM_ROW="22"
+      SHOW_IF="OVERRIDE_INPUT_XSL_FILE == 'true'"
+    >
+  </PARAMETER>
+
+  <PARAMETER
+      NAME="OVERRIDE_OUTPUT"
+      FIELD="CHECK"
+      NUM_ROW="23"
+      >
+      <DEFAULT>false</DEFAULT>
+  </PARAMETER>
+  <PARAMETER
+      NAME="OUTPUT_COL"
+      FIELD="COLUMN_LIST"
+      NUM_ROW="23"
+      SHOW_IF="OVERRIDE_OUTPUT == 'true'"
+    >
+  </PARAMETER>
+
+    <PARAMETER
+      NAME="SCHEMA"
+      FIELD="SCHEMA_TYPE"
+      REQUIRED="true"
+      NUM_ROW="25"
+    >
+      <DEFAULT/>
     </PARAMETER>
 
   </PARAMETERS>
