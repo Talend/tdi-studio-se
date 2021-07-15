@@ -38317,7 +38317,7 @@
             <IMPORT NAME="jcifs" MODULE="jcifs-1.3.0.jar" MVN="mvn:org.talend.libraries/jcifs-1.3.0/6.0.0"  REQUIRED_IF="((AUTH_TYPE == 'ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2011')) OR (API_VERSION=='API_2007')" />
             <!-- 2011 -->
             <!-- crm client -->
-            <IMPORT NAME="talend-mscrm" MODULE="talend-mscrm-3.8-20210707.jar" MVN="mvn:org.talend.components/talend-mscrm/3.8-20210707" REQUIRED_IF="((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2011' OR API_VERSION =='API_2016_ODATA' OR API_VERSION =='API_2018_ODATA')) OR ((AUTH_TYPE == 'ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016' OR MS_CRM_VERSION == 'CRM_2018'))" />
+            <IMPORT NAME="talend-mscrm" MODULE="talend-mscrm-3.9-20210713.jar" MVN="mvn:org.talend.components/talend-mscrm/3.9-20210713" REQUIRED_IF="((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2011' OR API_VERSION =='API_2016_ODATA' OR API_VERSION =='API_2018_ODATA')) OR ((AUTH_TYPE == 'ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016' OR MS_CRM_VERSION == 'CRM_2018'))" />
             <!-- axis2 1.7.4 -->
             <IMPORT NAME="activation-1.1" MODULE="activation-1.1.jar" MVN="mvn:org.talend.libraries/activation-1.1/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.apache.axis2/lib/activation-1.1.jar" REQUIRED_IF="(AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2011')" />
             <IMPORT NAME="axiom-api-1.2.20" MODULE="axiom-api-1.2.20.jar" MVN="mvn:org.talend.libraries/axiom-api-1.2.20/6.0.0"  REQUIRED_IF="(AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2011')" />
@@ -38569,9 +38569,9 @@
                 MVN="mvn:org.talend.libraries/aalto-xml-0.9.10/6.4.0"
                 REQUIRED_IF="((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2011' OR API_VERSION=='API_2016_ODATA' OR API_VERSION=='API_2018_ODATA')) OR ((AUTH_TYPE == 'ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016' OR MS_CRM_VERSION == 'CRM_2018'))" />
             <IMPORT
-                NAME="adal4j-1.1.1-20191012"
-                MODULE="adal4j-1.1.1-20191012.jar"
-                MVN="mvn:com.microsoft.azure/adal4j/1.1.1-20191012"
+                NAME="adal4j-1.6.4-20210713"
+                MODULE="adal4j-1.6.4-20210713.jar"
+                MVN="mvn:com.microsoft.azure/adal4j/1.6.4-20210713"
                 REQUIRED_IF="((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2011' OR API_VERSION=='API_2016_ODATA' OR API_VERSION=='API_2018_ODATA')) OR ((AUTH_TYPE == 'ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016' OR MS_CRM_VERSION == 'CRM_2018'))" />
             <IMPORT
                 NAME="commons-codec-1.14.jar"
@@ -38590,9 +38590,9 @@
                 MVN="mvn:org.apache.commons/commons-lang3/3.10"
                 REQUIRED_IF="((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2011' OR API_VERSION=='API_2016_ODATA' OR API_VERSION=='API_2018_ODATA')) OR ((AUTH_TYPE == 'ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016' OR MS_CRM_VERSION == 'CRM_2018'))" />
             <IMPORT
-                NAME="gson-2.3.1"
-                MODULE="gson-2.3.1.jar"
-                MVN="mvn:org.talend.libraries/gson-2.3.1/6.1.0"
+                NAME="gson"
+                MODULE="gson-2.8.6.jar"
+                MVN="mvn:com.google.code.gson/gson/2.8.6"
                 REQUIRED_IF="((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2011' OR API_VERSION=='API_2016_ODATA' OR API_VERSION=='API_2018_ODATA')) OR ((AUTH_TYPE == 'ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016' OR MS_CRM_VERSION == 'CRM_2018'))" />
             <IMPORT
                 NAME="commons-logging"
@@ -38636,19 +38636,19 @@
                 MVN="mvn:net.minidev/accessors-smart/2.4.7"
                 REQUIRED_IF="((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2011' OR API_VERSION=='API_2016_ODATA' OR API_VERSION=='API_2018_ODATA')) OR ((AUTH_TYPE == 'ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016' OR MS_CRM_VERSION == 'CRM_2018'))" />
             <IMPORT
-                NAME="mail-1.4.7"
-                MODULE="mail-1.4.7.jar"
-                MVN="mvn:javax.mail/mail/1.4.7"
+                NAME="javax.mail"
+                MODULE="javax.mail-1.6.2.jar"
+                MVN="mvn:com.sun.mail/javax.mail/1.6.2"
                 REQUIRED_IF="((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2011' OR API_VERSION=='API_2016_ODATA' OR API_VERSION=='API_2018_ODATA')) OR ((AUTH_TYPE == 'ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016' OR MS_CRM_VERSION == 'CRM_2018'))" />
             <IMPORT
-                NAME="nimbus-jose-jwt-3.1.2"
-                MODULE="nimbus-jose-jwt-3.1.2.jar"
-                MVN="mvn:org.talend.libraries/nimbus-jose-jwt-3.1.2/6.4.0"
+                NAME="nimbus-jose-jwt"
+                MODULE="nimbus-jose-jwt-8.11.jar"
+                MVN="mvn:com.nimbusds/nimbus-jose-jwt/8.11"
                 REQUIRED_IF="((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2011' OR API_VERSION=='API_2016_ODATA' OR API_VERSION=='API_2018_ODATA')) OR ((AUTH_TYPE == 'ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016' OR MS_CRM_VERSION == 'CRM_2018'))" />
             <IMPORT
-                NAME="oauth2-oidc-sdk-4.5"
-                MODULE="oauth2-oidc-sdk-4.5.jar"
-                MVN="mvn:org.talend.libraries/oauth2-oidc-sdk-4.5/6.4.0"
+                NAME="oauth2-oidc-sdk"
+                MODULE="oauth2-oidc-sdk-6.5.jar"
+                MVN="mvn:com.nimbusds/oauth2-oidc-sdk/6.5"
                 REQUIRED_IF="((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2011' OR API_VERSION=='API_2016_ODATA' OR API_VERSION=='API_2018_ODATA')) OR ((AUTH_TYPE == 'ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016' OR MS_CRM_VERSION == 'CRM_2018'))" />
             <IMPORT
                 NAME="odata-client-core-4.7.1"
@@ -38671,9 +38671,9 @@
                 MVN="mvn:org.apache.olingo/odata-commons-core/4.7.1"
                 REQUIRED_IF="((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2011' OR API_VERSION=='API_2016_ODATA' OR API_VERSION=='API_2018_ODATA')) OR ((AUTH_TYPE == 'ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016' OR MS_CRM_VERSION == 'CRM_2018'))" />
             <IMPORT
-                NAME="slf4j-api-1.7.12"
-                MODULE="slf4j-api-1.7.12.jar"
-                MVN="mvn:org.talend.libraries/slf4j-api-1.7.12/6.0.0"
+                NAME="slf4j-api-1.7.25.jar"
+                MODULE="slf4j-api-1.7.25.jar"
+                MVN="mvn:org.slf4j/slf4j-api/1.7.25"
                 REQUIRED_IF="((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2011' OR API_VERSION=='API_2016_ODATA' OR API_VERSION=='API_2018_ODATA')) OR ((AUTH_TYPE == 'ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016' OR MS_CRM_VERSION == 'CRM_2018'))" />
             <IMPORT
                 NAME="slf4j-simple-1.7.2"
