@@ -55,6 +55,8 @@ public final class JSONConnectionContextUtils {
         //
         cloneConn.setMaskXPattern(fileConn.getMaskXPattern());
         cloneConn.setGuess(fileConn.isGuess());
+        
+        cloneConn.setReadbyMode(fileConn.getReadbyMode());
 
         ConnectionContextHelper.cloneConnectionProperties(fileConn, cloneConn);
 
