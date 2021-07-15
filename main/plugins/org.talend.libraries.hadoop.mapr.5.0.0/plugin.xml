@@ -431,7 +431,7 @@
                  id="curator-framework-2.6.0.jar">
            </library>
            <library
-                 id="httpclient-4.2.5.jar">
+                 id="httpclient-4.5.13.jar">
            </library>
            <library
                  id="httpcore-4.2.5.jar">
