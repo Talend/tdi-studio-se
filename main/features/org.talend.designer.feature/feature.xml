@@ -10,7 +10,8 @@
   </url>  
   <requires>
     <import feature="org.eclipse.gef" version="0.0.0" match="greaterOrEqual"/>
-    <import feature="org.talend.m2e.feature" version="0.0.0" match="greaterOrEqual"/>
+    <import feature="org.eclipse.m2e.feature" version="0.0.0" match="greaterOrEqual"/>
+    <import feature="org.eclipse.equinox.p2.discovery.feature" version="0.0.0" match="greaterOrEqual"/>
     <import feature="org.talend.utils.feature" version="0.0.0" match="greaterOrEqual"/>
     <import plugin="javax.xml.rpc" version="0.0.0" match="greaterOrEqual"/>
     <import plugin="net.jeeeyul.eclipse.themes" version="0.0.0" match="greaterOrEqual"/>

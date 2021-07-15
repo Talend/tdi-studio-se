@@ -4,15 +4,13 @@
  */
 package org.talend.webservice.helper.map;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import javax.xml.namespace.QName;
 
 import org.talend.webservice.helper.PathUtil;
 import org.talend.webservice.mapper.AnyTypeMapper;
+import sun.awt.image.ImageWatched;
 
 /**
  *
@@ -24,35 +22,44 @@ public class MapConverter {
     public static final String LEFT_SQUARE_BRACKET = "[";
     public static final String RIGHT_SQUARE_BRACKET = "]";
 
+    private static Map<String, Object> newMap(boolean keepOrder) {
+        if(keepOrder) return new LinkedHashMap<>();
+        return new HashMap<>();
+    }
+
     public static Map<String, Object> deepMapToMap(Map<String, Object> map) {
-        return deepMapToMap(map, null, SEPARATOR);
+        return deepMapToMap(map, null, SEPARATOR, false);
+    }
+
+    public static Map<String, Object> deepMapToMap(Map<String, Object> map, boolean keepOrder) {
+        return deepMapToMap(map, null, SEPARATOR, keepOrder);
     }
 
     public static Map<String, Object> mapToDeepMap(Map<String, Object> map) {
         return mapToDeepMap(map, SEPARATOR);
     }
 
-    private static Map<String, Object> deepMapToMap(Object value, String k, String sep) {
+    private static Map<String, Object> deepMapToMap(Object value, String k, String sep, boolean keepOrder) {
         if (value instanceof Map) {
             Map<String, Object> map = (Map<String, Object>) value;
-            Map<String, Object> out = new HashMap<String, Object>();
+            Map<String, Object> out = newMap(keepOrder);
             for (Map.Entry<String, Object> entry : map.entrySet()) {
                 if (k == null) {
-                    out.putAll(deepMapToMap(entry.getValue(), entry.getKey(), sep));
+                    out.putAll(deepMapToMap(entry.getValue(), entry.getKey(), sep, keepOrder));
                 } else {
                     out.putAll(deepMapToMap(entry.getValue(), k + sep + entry.
-                            getKey(), sep));
+                            getKey(), sep, keepOrder));
                 }
             }
             return out;
         } else if (value instanceof List) {
             List<Object> list = (List<Object>) value;
-            Map<String, Object> out = new HashMap<String, Object>();
+            Map<String, Object> out = newMap(keepOrder);
             int i = 0;
             for (Object val : list) {
                 StringBuffer sb = new StringBuffer();
                 sb.append(k).append(LEFT_SQUARE_BRACKET).append(i).append(RIGHT_SQUARE_BRACKET);
-                out.putAll(deepMapToMap(val, sb.toString(), sep));
+                out.putAll(deepMapToMap(val, sb.toString(), sep, keepOrder));
                 i++;
             }
             out.put(k + ".size", list.size());

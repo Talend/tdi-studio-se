@@ -3,30 +3,6 @@
  */
 package org.talend.webservice.helper;
 
-import java.beans.PropertyDescriptor;
-import java.io.File;
-import java.io.IOException;
-import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-import java.util.Set;
-
-import javax.wsdl.Input;
-import javax.wsdl.Message;
-import javax.wsdl.Operation;
-import javax.wsdl.Output;
-import javax.wsdl.Port;
-import javax.wsdl.Service;
-import javax.wsdl.WSDLException;
-import javax.xml.bind.annotation.XmlSchema;
-import javax.xml.bind.annotation.XmlType;
-import javax.xml.namespace.QName;
-import javax.xml.transform.TransformerException;
-
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.cxf.endpoint.Client;
@@ -39,11 +15,18 @@ import org.talend.webservice.helper.conf.ServiceHelperConfiguration;
 import org.talend.webservice.helper.map.MapConverter;
 import org.talend.webservice.jaxb.JAXBUtils;
 import org.talend.webservice.jaxb.JAXBUtils.IdentifierType;
-import org.talend.webservice.mapper.AnyPropertyMapper;
-import org.talend.webservice.mapper.ClassMapper;
-import org.talend.webservice.mapper.EmptyMessageMapper;
-import org.talend.webservice.mapper.MapperFactory;
-import org.talend.webservice.mapper.MessageMapper;
+import org.talend.webservice.mapper.*;
+
+import javax.wsdl.*;
+import javax.xml.bind.annotation.XmlSchema;
+import javax.xml.bind.annotation.XmlType;
+import javax.xml.namespace.QName;
+import javax.xml.transform.TransformerException;
+import java.beans.PropertyDescriptor;
+import java.io.File;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.util.*;
 
 /**
  * 
@@ -259,6 +242,61 @@ public class ServiceInvokerHelper implements ClassMapper {
         Map<String, Object> result = invoke(serviceName, portName, operationName, params);
 
         return MapConverter.deepMapToMap(result);
+    }
+
+    //auto decide the service, port, and operation name and params are necessary
+    public Map<String, Object> invokeDynamic(String operationNameAndPortName, List<Object> param_values)
+            throws Exception, LocalizedException {
+        String portName = null;
+        String operationName = operationNameAndPortName;
+        try {
+            portName = operationName.substring(operationName.indexOf("(") + 1, operationName.indexOf(")"));
+            operationName = operationName.substring(0, operationName.indexOf("("));
+        } catch (Exception ignored) {
+        }
+
+        WSDLMetadataUtils utils = new WSDLMetadataUtils();
+        WSDLMetadataUtils.OperationInfo info = utils.parseOperationInfo(this.serviceDiscoveryHelper, portName, operationName);
+
+        Map<String, Object> paramsMap = null;
+        if(param_values!=null && !param_values.isEmpty()) {
+            List<String> paths = new ArrayList<>();
+            flat(paths, info.inputParameters, null);
+
+            int size = Math.min(paths.size(), param_values.size());
+
+            paramsMap = new HashMap<>();
+
+            for(int i=0;i<size;i++) {
+                paramsMap.put(paths.get(i), param_values.get(i));
+            }
+
+            if (!paramsMap.isEmpty()) {
+                paramsMap = MapConverter.mapToDeepMap(paramsMap);
+            }
+
+            if (paramsMap.isEmpty()) {
+                paramsMap = null;
+            }
+        }
+        Map<String, Object> result = invoke(info.service, info.port, info.operationName, paramsMap);
+
+        if(result==null || result.isEmpty()) return null;
+
+        return MapConverter.deepMapToMap(result, true);
+    }
+
+    private void flat(List<String> paths, List<WSDLMetadataUtils.ParameterInfo> inputParameters, String path) {
+        if(inputParameters==null || inputParameters.isEmpty()) {
+            if(path!=null) {
+                paths.add(path);
+            }
+            return;
+        }
+
+        for(WSDLMetadataUtils.ParameterInfo info : inputParameters) {
+            flat(paths, info.childParameters, path!=null? path + "." + info.name : info.name);
+        }
     }
 
     protected String getClassNameForType(QName xmlSchemaTypeMapperQname) {

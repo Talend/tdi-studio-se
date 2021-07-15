@@ -380,6 +380,7 @@ public class ProcessManager implements AutoCloseable {
                 if (customHost != null) {
                     LOGGER.info("custom host detected, will use [" + customHost + "] as hostname");
                 }
+                Thread thread = Thread.currentThread();
                 final long end = System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(15);
                 for (int i = 0; end - System.currentTimeMillis() >= 0; i++) {
                     final Thread serverThread = ProcessManager.this.serverThread;
@@ -417,9 +418,9 @@ public class ProcessManager implements AutoCloseable {
                             ExceptionHandler.process(e);
                         }
                         try {
-                            Thread.sleep(500);
+                            thread.sleep(100);
                         } catch (final InterruptedException e1) {
-                            Thread.interrupted();
+                            thread.interrupted();
                             break;
                         }
                     }

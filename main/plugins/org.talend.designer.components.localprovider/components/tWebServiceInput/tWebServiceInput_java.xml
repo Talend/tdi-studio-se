@@ -49,12 +49,12 @@
 			<DEFAULT>"password"</DEFAULT>
 		</PARAMETER>
 		<PARAMETER NAME="WIN_AUTH" FIELD="CHECK" REQUIRED="true"
-			NUM_ROW="52" SHOW_IF="NEED_AUTH == 'true'">
+			NUM_ROW="52" SHOW_IF="(API=='AXIS') AND (NEED_AUTH == 'true')">
 			<DEFAULT>false</DEFAULT>
 		</PARAMETER>
 
 		<PARAMETER NAME="DOMAIN" FIELD="TEXT" REQUIRED="true"
-			NUM_ROW="52" SHOW_IF="(NEED_AUTH == 'true') AND (WIN_AUTH == 'true')" >
+			NUM_ROW="52" SHOW_IF="(API=='AXIS') AND (NEED_AUTH == 'true') AND (WIN_AUTH == 'true')" >
 			<DEFAULT>"windows_domain"</DEFAULT>
 		</PARAMETER>
 
@@ -111,23 +111,32 @@
 		<PARAMETER NAME="PARAMS" FIELD="TABLE" NUM_ROW="80"
 			NB_LINES="6" REPOSITORY_VALUE="WSDL_PARAMS" >
 			<ITEMS>
-				<!--    <ITEM NAME="NAME"/> -->
 				<ITEM NAME="VALUE"/>
 			</ITEMS>
 		</PARAMETER>
 	</PARAMETERS>
 
-	  <ADVANCED_PARAMETERS>
+	<ADVANCED_PARAMETERS>
+		<PARAMETER
+			NAME="API"
+			FIELD="CLOSED_LIST"
+			NUM_ROW="20"
+		>
+			<ITEMS DEFAULT="AXIS">
+				<ITEM NAME="CXF" VALUE="CXF" />
+				<ITEM NAME="AXIS" VALUE="AXIS" />
+			</ITEMS>
+		</PARAMETER>
 
-		<PARAMETER NAME="ADVANCED_USE" FIELD="CHECK" REQUIRED="true" NUM_ROW="30">
+		<PARAMETER NAME="ADVANCED_USE" FIELD="CHECK" REQUIRED="true" NUM_ROW="30" SHOW_IF="(API=='AXIS')">
 			<DEFAULT>false</DEFAULT>
 		</PARAMETER>
 
-		<PARAMETER NAME="WSDL2Java" FIELD="WSDL2JAVA"  SHOW_IF="ADVANCED_USE == 'true'" REQUIRED="false" NUM_ROW="40">
+		<PARAMETER NAME="WSDL2Java" FIELD="WSDL2JAVA"  SHOW_IF="(API=='AXIS') AND (ADVANCED_USE == 'true')" REQUIRED="false" NUM_ROW="40">
 			<DEFAULT>false</DEFAULT>
 		</PARAMETER>
 
-		<PARAMETER NAME="CODE" FIELD="MEMO_JAVA" RAW="true" SHOW_IF="ADVANCED_USE == 'true'" REQUIRED="false" NUM_ROW="50" NB_LINES="9" CONTEXT="begin">
+		<PARAMETER NAME="CODE" FIELD="MEMO_JAVA" RAW="true" SHOW_IF="(API=='AXIS') AND (ADVANCED_USE == 'true')" REQUIRED="false" NUM_ROW="50" NB_LINES="9" CONTEXT="begin">
 		    <DEFAULT>
 //==============================================================================
 //example code for : http://www.deeptraining.com/webservices/weather.asmx?WSDL
@@ -186,7 +195,7 @@ for(int i = 0; i &lt; result.length; i++){
 	    <PARAMETER
 	      NAME="MATCHBRACKETS"
 	      FIELD="CLOSED_LIST"
-	      SHOW_IF="ADVANCED_USE == 'true'"
+	      SHOW_IF="(API=='AXIS') AND (ADVANCED_USE == 'true')"
 	      REQUIRED="false"
 	      NUM_ROW="60"
 	    >
@@ -201,24 +210,204 @@ for(int i = 0; i &lt; result.length; i++){
 
 	<CODEGENERATION>
 		<IMPORTS>
+			<!-- axis1 api support -->
 			<IMPORT NAME="WebServiceInput" MODULE="talend-webservice-input-1.0.2.jar" MVN="mvn:org.talend.libraries/talend-webservice-input-1.0.2/6.0.0"
-				REQUIRED="true" />
-			<IMPORT NAME="SOAP-axis" MODULE="axis-1.4.jar" MVN="mvn:org.apache.axis/axis/1.4" REQUIRED="true"/>
+				REQUIRED_IF="(API=='AXIS')" />
+			<IMPORT NAME="SOAP-axis" MODULE="axis-1.4.jar" MVN="mvn:org.apache.axis/axis/1.4" REQUIRED_IF="(API=='AXIS')"/>
 			<IMPORT NAME="SOAP-jaxrpc" MODULE="jaxrpc.jar" MVN="mvn:org.talend.libraries/jaxrpc/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.jax/lib/jaxrpc.jar"
-				REQUIRED="true" />
-			<IMPORT NAME="SOAP-saaj" MODULE="saaj.jar" MVN="mvn:org.talend.libraries/saaj/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.saaj/lib/saaj.jar" REQUIRED="true" />
-			<IMPORT NAME="WSDL4J-1_6_3" MODULE="wsdl4j-1.6.3.jar" MVN="mvn:wsdl4j/wsdl4j/1.6.3"
-				REQUIRED="true" />
+				REQUIRED_IF="(API=='AXIS')" />
+			<IMPORT NAME="SOAP-saaj" MODULE="saaj.jar" MVN="mvn:org.talend.libraries/saaj/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.saaj/lib/saaj.jar" REQUIRED_IF="(API=='AXIS')" />
 			<IMPORT NAME="SOAP-discovery"
-				MODULE="commons-discovery-0.2.jar" MVN="mvn:org.talend.libraries/commons-discovery-0.2/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.apache.common/lib/commons-discovery-0.2.jar" REQUIRED="true" />
+				MODULE="commons-discovery-0.2.jar" MVN="mvn:org.talend.libraries/commons-discovery-0.2/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.apache.common/lib/commons-discovery-0.2.jar" REQUIRED_IF="(API=='AXIS')" />
 			<IMPORT NAME="SOAP-logging" MODULE="commons-logging-1.1.jar" MVN="mvn:org.talend.libraries/commons-logging-1.1/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.apache.common/lib/commons-logging-1.1.jar"
-				REQUIRED="true" />
-			<IMPORT NAME="SOAP-JavaMail" MODULE="mail.jar" MVN="mvn:org.talend.libraries/mail/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.apache.axis2/lib/mail.jar"
-				REQUIRED="true" />
-			<IMPORT NAME="SOAP-JAF" MODULE="activation.jar" MVN="mvn:org.talend.libraries/activation/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.apache.axis2/lib/activation.jar"
-				REQUIRED="true" />
-			<IMPORT NAME="COMMONSCODEC" MODULE="commons-codec-1.14.jar" MVN="mvn:commons-codec/commons-codec/1.14"
-				REQUIRED="true" />
+				REQUIRED_IF="(API=='AXIS')" />
+			<IMPORT NAME="COMMONSHTTPCLIENT" MODULE="commons-httpclient-3.1.jar" MVN="mvn:commons-httpclient/commons-httpclient/3.1"  UrlPath="platform:/plugin/org.talend.libraries.apache.http/lib/commons-httpclient-3.1.jar"
+				REQUIRED_IF="(API=='AXIS')" />
+			
+			<!-- common jars both used for axis1 and cxf -->
+			<IMPORT
+				NAME="commons-codec-1.14"
+				MODULE="commons-codec-1.14.jar"
+				MVN="mvn:commons-codec/commons-codec/1.14"
+				REQUIRED="true"
+			/>
+			<IMPORT
+				NAME="SOAP-JAF"
+				MODULE="activation.jar"
+				MVN="mvn:org.talend.libraries/activation/6.0.0"
+				UrlPath="platform:/plugin/org.talend.libraries.apache.axis2/lib/activation.jar"
+				REQUIRED="true"
+			/>
+			<IMPORT
+				NAME="SOAP-JavaMail"
+				MODULE="mail.jar"
+				MVN="mvn:org.talend.libraries/mail/6.0.0"
+				UrlPath="platform:/plugin/org.talend.libraries.apache.axis2/lib/mail.jar"
+				REQUIRED="true"
+			/>
+			<IMPORT
+				NAME="WSDL4J-1_6_3"
+				MODULE="wsdl4j-1.6.3.jar"
+				MVN="mvn:wsdl4j/wsdl4j/1.6.3"
+				BundleID="org.apache.servicemix.bundles.wsdl4j"
+				REQUIRED="true"
+			/>
+		
+			<!-- cxf api support -->
+			<IMPORT
+				NAME="cxf-core-3.3.10"
+				MODULE="cxf-core-3.3.10.jar"
+				MVN="mvn:org.apache.cxf/cxf-core/3.3.10"
+				REQUIRED_IF="(API=='CXF')"
+			/>
+			<IMPORT
+				NAME="cxf-rt-frontend-simple-3.3.10"
+				MODULE="cxf-rt-frontend-simple-3.3.10.jar"
+				MVN="mvn:org.apache.cxf/cxf-rt-frontend-simple/3.3.10"
+				REQUIRED_IF="(API=='CXF')"
+			/>
+			<IMPORT
+				NAME="XMLSCHEMA-CORE"
+				MODULE="xmlschema-core-2.2.3.jar"
+				MVN="mvn:org.apache.ws.xmlschema/xmlschema-core/2.2.3"
+				REQUIRED_IF="(API=='CXF')"
+			/>
+			<IMPORT
+				NAME="cxf-tools-common-3.3.10"
+				MODULE="cxf-tools-common-3.3.10.jar"
+				MVN="mvn:org.apache.cxf/cxf-tools-common/3.3.10"
+				REQUIRED_IF="(API=='CXF')"
+			/>
+			<IMPORT
+				NAME="cxf-rt-wsdl-3.3.10"
+				MODULE="cxf-rt-wsdl-3.3.10.jar"
+				MVN="mvn:org.apache.cxf/cxf-rt-wsdl/3.3.10"
+				REQUIRED_IF="(API=='CXF')"
+			/>
+			<IMPORT
+				NAME="WOODSTOX-CORE"
+				MODULE="woodstox-core-5.2.0.jar"
+				MVN="mvn:com.fasterxml.woodstox/woodstox-core/5.2.0"
+				REQUIRED_IF="(API=='CXF')"
+			/>
+			<IMPORT
+				NAME="STAX2-API"
+				MODULE="stax2-api-4.1.jar"
+				MVN="mvn:org.codehaus.woodstox/stax2-api/4.1"
+				REQUIRED_IF="(API=='CXF')"
+			/>
+			<IMPORT
+				NAME="cxf-rt-bindings-soap-3.3.10"
+				MODULE="cxf-rt-bindings-soap-3.3.10.jar"
+				MVN="mvn:org.apache.cxf/cxf-rt-bindings-soap/3.3.10"
+				REQUIRED_IF="(API=='CXF')"
+			/>
+			<IMPORT
+				NAME="cxf-rt-databinding-jaxb-3.3.10"
+				MODULE="cxf-rt-databinding-jaxb-3.3.10.jar"
+				MVN="mvn:org.apache.cxf/cxf-rt-databinding-jaxb/3.3.10"
+				REQUIRED_IF="(API=='CXF')"
+			/>
+			<IMPORT
+				NAME="cxf-rt-transports-http-jetty-3.3.10"
+				MODULE="cxf-rt-transports-http-jetty-3.3.10.jar"
+				MVN="mvn:org.apache.cxf/cxf-rt-transports-http-jetty/3.3.10"
+				REQUIRED_IF="(API=='CXF')"
+			/>
+			<IMPORT
+				NAME="cxf-rt-transports-http-3.3.10"
+				MODULE="cxf-rt-transports-http-3.3.10.jar"
+				MVN="mvn:org.apache.cxf/cxf-rt-transports-http/3.3.10"
+				REQUIRED_IF="(API=='CXF')"
+			/>
+			<IMPORT
+				NAME="httpclient-4.5.13"
+				MODULE="httpclient-4.5.13.jar"
+				MVN="mvn:org.apache.httpcomponents/httpclient/4.5.13"
+				REQUIRED_IF="(API=='CXF')"
+			/>
+			<IMPORT
+				NAME="httpcore-4.4.13"
+				MODULE="httpcore-4.4.13.jar"
+				MVN="mvn:org.apache.httpcomponents/httpcore/4.4.13"
+				REQUIRED_IF="(API=='CXF')" />
+			<IMPORT
+				NAME="commons-logging"
+				MODULE="commons-logging-1.1.1.jar"
+				MVN="mvn:org.talend.libraries/commons-logging-1.1.1/6.0.0"
+				UrlPath="platform:/base/plugins/org.apache.commons.logging_1.1.1.v201101211721.jar"
+				REQUIRED_IF="(API=='CXF')"
+			/>
+			<IMPORT
+				NAME="commons-lang"
+				MODULE="commons-lang-2.6.jar"
+				MVN="mvn:commons-lang/commons-lang/2.6"
+				UrlPath="platform:/plugin/org.talend.libraries.apache.common/lib/commons-lang-2.6.jar"
+				REQUIRED_IF="(API=='CXF')"
+			/>
+			<IMPORT
+				NAME="commons-collections"
+				MODULE="commons-collections-3.2.2.jar"
+				MVN="mvn:commons-collections/commons-collections/3.2.2"
+				UrlPath="platform:/plugin/org.talend.libraries.apache.common/lib/commons-collections-3.2.2.jar"
+				REQUIRED_IF="(API=='CXF')"
+			/>
+			<IMPORT
+				NAME="commons-beanutils"
+				MODULE="commons-beanutils-1.9.4.jar"
+				MVN="mvn:commons-beanutils/commons-beanutils/1.9.4"
+				REQUIRED_IF="(API=='CXF')"
+			/>
+			<IMPORT
+				NAME="talend-ws"
+				MODULE="talend-ws-1.0.5-20210629.jar"
+				MVN="mvn:org.talend.components/talend-ws/1.0.5-20210629"
+				REQUIRED_IF="(API=='CXF')"
+			/>
+			<IMPORT
+				NAME="xalan"
+				MODULE="xalan-2.7.2.jar"
+				MVN="mvn:xalan/xalan/2.7.2"
+				REQUIRED_IF="(API=='CXF')"
+			/>
+			<IMPORT
+				NAME="serializer"
+				MODULE="serializer-2.7.2.jar"
+				MVN="mvn:xalan/serializer/2.7.2"
+				REQUIRED_IF="(API=='CXF')"
+			/>
+	
+			<IMPORT
+				NAME="velocity"
+				MODULE="velocity-1.7.jar"
+				MVN="mvn:org.apache.velocity/velocity/1.7"
+				REQUIRED_IF="(API=='CXF')"
+			/>
+	
+			<IMPORT
+				NAME="jaxb-api"
+				MODULE="jaxb-api-2.2.6.jar"
+				MVN="mvn:javax.xml.bind/jaxb-api/2.2.6"
+				REQUIRED_IF="(API=='CXF')"
+			/>
+			<IMPORT
+				NAME="javax.annotation-api"
+				MODULE="javax.annotation-api-1.3.jar"
+				MVN="mvn:javax.annotation/javax.annotation-api/1.3"
+				REQUIRED_IF="(API=='CXF')"
+			/>
+			<IMPORT
+				NAME="jaxb-xjc"
+				MODULE="jaxb-xjc-2.2.6-modified.jar"
+				MVN="mvn:org.talend.libraries/jaxb-xjc-2.2.6-modified/6.0.0"
+				REQUIRED_IF="(API=='CXF')"
+			/>
+			<IMPORT
+				NAME="jaxb-impl"
+				MODULE="jaxb-impl-2.2.6-modified.jar"
+				MVN="mvn:org.talend.libraries/jaxb-impl-2.2.6-modified/6.0.0"
+				REQUIRED_IF="(API=='CXF')"
+			/>
 		</IMPORTS>
 	</CODEGENERATION>
 

@@ -20,8 +20,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.Test;
 import org.talend.core.model.process.EParameterFieldType;
 import org.talend.core.model.process.IElement;
 import org.talend.core.model.process.IElementParameter;
@@ -33,7 +31,6 @@ import org.talend.sdk.component.studio.model.parameter.TextElementParameter;
 
 public class UpdateCommandTest {
 
-    @Test
     public void testOnResultFireCalled() {
         final ButtonParameterMock buttonMock = new ButtonParameterMock(null);
         final UpdateCommand command = new UpdateCommand(null, "conf", Collections.emptyMap(), buttonMock);
@@ -41,7 +38,6 @@ public class UpdateCommandTest {
         Assertions.assertTrue(buttonMock.firePropertyChangeCalled());
     }
 
-    @Test
     public void testOnResultListOption() {
         final List<Map<String, Object>> expectedValue = new ArrayList<Map<String, Object>>();
         final Map<String, Object> row1 = new HashMap<>();
@@ -104,7 +100,6 @@ public class UpdateCommandTest {
         Assertions.assertEquals(expectedValue, table.getValue());
     }
 
-    @Test
     public void testOnResultIntegerOption() {
         final String expectedValue = "42";
 
@@ -124,7 +119,6 @@ public class UpdateCommandTest {
         Assertions.assertEquals(expectedValue, text.getValue());
     }
 
-    @Test
     public void testOnResultStringOption() {
         final String expectedValue = "value";
 
@@ -144,7 +138,7 @@ public class UpdateCommandTest {
         Assertions.assertEquals(expectedValue, text.getValue());
     }
 
-    @Test
+
     public void testOnResultBooleanOption() {
         final boolean expectedValue = false;
 
@@ -164,8 +158,7 @@ public class UpdateCommandTest {
         Assertions.assertEquals(expectedValue, check.getValue());
     }
 
-    @Test
-    @Disabled
+
     public void testOnResultSchemaOption() {
         final List<String> expectedValue = Arrays.asList("col1", "col2", "col3");
 

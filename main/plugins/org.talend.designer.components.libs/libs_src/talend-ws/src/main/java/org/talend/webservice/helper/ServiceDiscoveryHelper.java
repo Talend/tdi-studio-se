@@ -3,29 +3,22 @@
  */
 package org.talend.webservice.helper;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.Vector;
+import com.ibm.wsdl.Constants;
+import com.ibm.wsdl.extensions.schema.SchemaConstants;
+import com.ibm.wsdl.util.xml.DOMUtils;
+import com.ibm.wsdl.util.xml.QNameUtils;
+import org.apache.ws.commons.schema.XmlSchema;
+import org.apache.ws.commons.schema.XmlSchemaCollection;
+import org.talend.webservice.helper.conf.ServiceHelperConfiguration;
+import org.talend.webservice.helper.conf.WSDLLocatorImpl;
+import org.w3c.dom.Element;
 
 import javax.wsdl.Definition;
 import javax.wsdl.Import;
 import javax.wsdl.Types;
 import javax.wsdl.WSDLException;
 import javax.wsdl.extensions.ExtensibilityElement;
+import javax.wsdl.extensions.UnknownExtensibilityElement;
 import javax.wsdl.extensions.schema.Schema;
 import javax.wsdl.extensions.schema.SchemaImport;
 import javax.wsdl.extensions.schema.SchemaReference;
@@ -37,16 +30,15 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
-
-import org.apache.ws.commons.schema.XmlSchemaCollection;
-import org.talend.webservice.helper.conf.ServiceHelperConfiguration;
-import org.talend.webservice.helper.conf.WSDLLocatorImpl;
-import org.w3c.dom.Element;
-
-import com.ibm.wsdl.Constants;
-import com.ibm.wsdl.extensions.schema.SchemaConstants;
-import com.ibm.wsdl.util.xml.DOMUtils;
-import com.ibm.wsdl.util.xml.QNameUtils;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.util.*;
 
 /**
  * This helper allow easy discovery of services and types
@@ -70,26 +62,36 @@ public class ServiceDiscoveryHelper {
     private Set<String> namespaces;
 
     private final String LOCAL_WSDL_NAME = "mainWSDL.wsdl";
-
+    
+    private boolean createTempFiles = true;
+    
     public ServiceDiscoveryHelper(String wsdlUri) throws WSDLException, IOException, TransformerException, URISyntaxException {
-        this(wsdlUri, null, null);
+        this(wsdlUri, null, null, true);
     }
 
     public ServiceDiscoveryHelper(String wsdlUri, String tempPath) throws WSDLException, IOException, TransformerException,
             URISyntaxException {
-        this(wsdlUri, null, tempPath);
+        this(wsdlUri, null, tempPath, true);
     }
 
     public ServiceDiscoveryHelper(String wsdlUri, ServiceHelperConfiguration configuration) throws WSDLException, IOException,
             TransformerException, URISyntaxException {
-        this(wsdlUri, configuration, null);
+        this(wsdlUri, configuration, null, true);
     }
 
     public ServiceDiscoveryHelper(String wsdlUri, ServiceHelperConfiguration configuration, String tempPath)
             throws WSDLException, IOException, TransformerException, URISyntaxException {
+        this(wsdlUri, configuration, tempPath, true);
+    }
+    
+    public ServiceDiscoveryHelper(String wsdlUri, ServiceHelperConfiguration configuration, String tempPath, boolean createTempFiles)
+            throws WSDLException, IOException, TransformerException, URISyntaxException {
         this.wsdlUri = wsdlUri;
         this.configuration = configuration;
-        this.wsdlTmpDir = createTempWsdlDir(tempPath);
+        this.createTempFiles = createTempFiles;
+        if(createTempFiles) {
+            this.wsdlTmpDir = createTempWsdlDir(tempPath);
+        }
         init();
     }
 
@@ -139,7 +141,9 @@ public class ServiceDiscoveryHelper {
 
         namespaces = collectNamespaces();
 
-        generateTempWsdlFile();
+        if(this.createTempFiles) {
+            generateTempWsdlFile();
+        }
 
     }
 
@@ -436,6 +440,10 @@ public class ServiceDiscoveryHelper {
         return definitions.get(this.LOCAL_WSDL_NAME);
     }
 
+    Collection<Definition> getDefinitions() {
+        return definitions.values();
+    }
+
     /**
      * Return the xml schema collection
      * 
@@ -450,7 +458,11 @@ public class ServiceDiscoveryHelper {
     }
 
     public String getLocalWsdlUri() {
-        return new File(wsdlTmpDir, this.LOCAL_WSDL_NAME).toURI().toString();
+        if(createTempFiles) {
+            return new File(wsdlTmpDir, this.LOCAL_WSDL_NAME).toURI().toString();
+        } else {
+            return this.wsdlUri;
+        }
     }
 
     public Set<String> getNamespaces() {
@@ -463,5 +475,34 @@ public class ServiceDiscoveryHelper {
         } catch (MalformedURLException e) {
             return "NOLOCATION";
         }
+    }
+
+    public static void main(String[] args) throws Exception {
+        System.setProperty("javax.xml.transform.TransformerFactory", "org.apache.xalan.processor.TransformerFactoryImpl");
+        System.setProperty("org.apache.commons.logging.Log", "org.apache.commons.logging.impl.NoOpLog");
+
+        System.setProperty("javax.xml.accessExternalSchema", "all");
+
+        //shade the log level for DynamicClientFactory.class
+        java.util.logging.Logger LOG = org.apache.cxf.common.logging.LogUtils.getL7dLogger(org.apache.cxf.endpoint.dynamic.DynamicClientFactory.class);
+        LOG.setLevel(java.util.logging.Level.WARNING);
+
+        ServiceDiscoveryHelper helper = new ServiceDiscoveryHelper("http://gcomputer.net/webservices/knowledge.asmx?WSDL", null, null, false);
+        //ServiceDiscoveryHelper helper = new ServiceDiscoveryHelper("/Users/wangwei/Downloads/knowledge.wsdl", null, null, false);
+        /*
+        WSDLMetadataUtils utils = new WSDLMetadataUtils();
+        //WSDLMetadataUtils.OperationInfo info = utils.parseOperationInfo(helper, "KnowledgeLeakSoap12", "Knowledge");
+        WSDLMetadataUtils.OperationInfo info = utils.parseOperationInfo(helper, null, "Knowledge");
+        System.out.println(info.operationName);
+        System.out.println(info.port);
+        System.out.println(info.service);
+        System.out.println(info.inputParameters);
+        System.out.println(info.outputParameter);
+        System.out.println("done");
+        */
+
+        org.talend.webservice.helper.ServiceInvokerHelper serviceInvokerHelper = new org.talend.webservice.helper.ServiceInvokerHelper(helper, null);
+        Map<String, Object> result = serviceInvokerHelper.invokeDynamic("Knowledge", Arrays.asList(1));
+        System.out.println(result);
     }
 }
