@@ -715,6 +715,41 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
             // see feature 4610:option to see byte length of each code method
             processCode = computeMethodSizeIfNeeded(processCode);
             InputStream codeStream = new ByteArrayInputStream(processCode.getBytes());
+            
+            if(!ComponentCategory.CATEGORY_4_DI.getName().equals(process.getComponentsType())) {
+            	String uuid = java.util.UUID.randomUUID().toString().replaceAll("-", "");
+            	INode sparkNode = null;
+            	List<? extends INode> nodes = process.getNodesOfType("tSparkConfiguration");
+                if (nodes != null && !nodes.isEmpty()) {
+                	sparkNode = nodes.get(0);
+                }
+                
+                if ("DATABRICKS".equals(sparkNode.getElementParameter("DISTRIBUTION").getValue()) && "true".equals(sparkNode.getElementParameter("DATABRICKS_FORCE_APPLICATION_JAR_UPLOAD").getValue().toString())) {
+                	processCode = processCode.replaceAll("DATABRICKS_FORCE_APPLICATION_JAR_UPLOAD_JAVA_CLASS", process.getElementParameter("NAME").getValue().toString() + uuid);
+                	String newCode = processCode.replaceAll("public class " + process.getElementParameter("NAME").getValue().toString(), "public class " + process.getElementParameter("NAME").getValue().toString() + uuid);
+                	InputStream newCodeStream = new ByteArrayInputStream(newCode.getBytes());
+                    // Generating files
+                	String newFilePath = this.getSrcCodePath().toString().split("\\.java")[0] + uuid + ".java";
+                    IFile newCodeFile = this.getCodeProject().getFile(new Path(newFilePath));
+                    
+                    if (!newCodeFile.exists()) {
+                        // maybe have been removed in cleanBeforeGenerate. just confirm to remove the files with different case
+                        // in win.
+                        try {
+                            org.talend.commons.utils.io.FilesUtils.removeExistedResources(null, newCodeFile, true, true);
+                        } catch (Exception e) {
+                            throw new ProcessorException(e);
+                        }
+                        IFolder parentFolder = (IFolder) newCodeFile.getParent();
+                        if (!parentFolder.exists()) {
+                            parentFolder.create(true, true, null);
+                        }
+                        newCodeFile.create(newCodeStream, true, null);
+                    } else {
+                    	newCodeFile.setContents(newCodeStream, true, false, null);
+                    }
+                }
+            }
 
             // Generating files
             IFile codeFile = this.getCodeProject().getFile(this.getSrcCodePath());
