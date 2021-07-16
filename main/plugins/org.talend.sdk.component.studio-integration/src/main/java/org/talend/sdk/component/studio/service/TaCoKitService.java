@@ -13,16 +13,21 @@
 package org.talend.sdk.component.studio.service;
 
 import java.io.File;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.talend.commons.CommonsPlugin;
 import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.runtime.service.ITaCoKitService;
 import org.talend.core.PluginChecker;
 import org.talend.core.model.repository.ERepositoryObjectType;
+import org.talend.core.model.utils.ComponentInstallerTaskRegistryReader;
+import org.talend.core.model.utils.IComponentInstallerTask;
 import org.talend.sdk.component.server.front.model.ComponentDetail;
 import org.talend.sdk.component.studio.Lookups;
 import org.talend.sdk.component.studio.ServerManager;
@@ -39,10 +44,35 @@ public class TaCoKitService implements ITaCoKitService {
     @Override
     public void start() {
         if (CommonsPlugin.isHeadless() || CommonsPlugin.isJUnitTest() || PluginChecker.isSWTBotLoaded()) {
+            // install all of TCK components here
+//            installTCKComponents(new NullProgressMonitor());
             ServerManager.getInstance().start();
         } else {
-            new Thread(() -> ServerManager.getInstance().start(), "Starting TaCoKit in background...").start();
+            new Thread(new Runnable() {
+              
+                @Override
+                public void run() {
+                    
+                    // install all of TCK components here
+//                    installTCKComponents(new NullProgressMonitor());
+                    
+                    // start server
+                    ServerManager.getInstance().start();
+                }
+                
+            }, "Starting TaCoKit in background...").start();
         }
+    }
+    
+    public void installTCKComponents(IProgressMonitor monitor) {
+        List<IComponentInstallerTask> tasks = ComponentInstallerTaskRegistryReader.getInstance().getTasks(IComponentInstallerTask.COMPONENT_TYPE_TCOMPV1);
+        tasks.forEach(t -> {
+            try {
+                t.install(monitor);
+            } catch (InvocationTargetException | InterruptedException e) {
+                ExceptionHandler.process(e);
+            }
+        });
     }
 
     public void waitForStart() {

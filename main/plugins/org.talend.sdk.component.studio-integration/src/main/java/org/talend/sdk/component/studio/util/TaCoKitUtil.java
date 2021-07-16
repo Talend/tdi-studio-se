@@ -850,6 +850,49 @@ public class TaCoKitUtil {
         public void setType(String type) {
             this.type = type;
         }
+        
+        public String toMavenUri() {
+            StringBuffer sb = new StringBuffer();
+            sb.append("mvn:");
+            sb.append(toStr("/"));
+            
+            sb.append("/");
+            if (!StringUtils.isEmpty(type)) {
+                sb.append(type);
+            }
+            return sb.toString();
+        }
+        
+        public String toCoordinateStr() {
+            return toStr(":");
+        }
+        
+        private String toStr(String sep) {
+            StringBuffer sb = new StringBuffer();
+
+            if (!StringUtils.isEmpty(groupId)) {
+                sb.append(this.groupId);
+            }
+
+            if (!StringUtils.isEmpty(artifactId)) {
+                if (sb.length() > 0) {
+                    sb.append(sep);
+                }
+                sb.append(this.artifactId);
+            }
+
+            if (!StringUtils.isEmpty(version)) {
+                sb.append(sep);
+                sb.append(this.version);
+            }
+            if (!StringUtils.isEmpty(classifier)) {
+                sb.append(sep);
+                sb.append(this.classifier);
+            }
+
+            return sb.toString();
+        }
+
 
     }
 }

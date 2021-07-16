@@ -71,15 +71,15 @@ public class TaCoKitUpdateService implements ITaCoKitUpdateService {
 
     @Override
     public ICarInstallationResult installCars(Collection<File> files, boolean share, IProgressMonitor monitor) throws Exception {
-        return installCars(files, share, false, monitor);
+        return installCars(files, share, false, monitor, true);
     }
     
     @Override
     public ICarInstallationResult deployCars(Collection<File> files, boolean share, IProgressMonitor monitor) throws Exception {
-        return installCars(files, share, true, monitor);
+        return installCars(files, share, true, monitor, true);
     }
     
-    private ICarInstallationResult installCars(Collection<File> files, boolean share, boolean isDeployCommand, IProgressMonitor monitor) throws Exception {
+    private ICarInstallationResult installCars(Collection<File> files, boolean share, boolean isDeployCommand, IProgressMonitor monitor, boolean deleteCar) throws Exception {
         if (monitor == null) {
             monitor = new NullProgressMonitor();
         }
@@ -98,6 +98,7 @@ public class TaCoKitUpdateService implements ITaCoKitUpdateService {
                 try {
                     carFeature = generateExtraFeature(carFile, monitor);
                     carFeature.setShareEnable(share);
+                    carFeature.setDeleteCar(deleteCar);
                     carFeature.setDeployCommand(isDeployCommand);
                 } catch (Exception e) {
                     ExceptionHandler.process(e);
@@ -151,7 +152,7 @@ public class TaCoKitUpdateService implements ITaCoKitUpdateService {
                         if (share) {
                             // won't share here, just copy file to installed folder
                             carFeature.setShareEnable(false);
-                            carFeature.syncComponentsToInstalledFolder(monitor, carFeature.getStorage().getFeatureFile(monitor));
+                            carFeature.syncComponentsToInstalledFolder(monitor, carFeature.getStorage().getFeatureFile(monitor), carFeature.isDeleteCar());
                         }
                         result.getInstalledStatus().put(carFeature.getCarFile(monitor), installStatus);
                         if (carFeature.needRestart()) {
@@ -270,5 +271,10 @@ public class TaCoKitUpdateService implements ITaCoKitUpdateService {
             return failedFiles;
         }
 
+    }
+
+    @Override
+    public ICarInstallationResult installCars(Collection<File> files, boolean share, IProgressMonitor monitor, boolean deleteCar) throws Exception {
+        return installCars(files, share, false, monitor, deleteCar);
     }
 }

@@ -265,6 +265,7 @@ public class ProcessManager implements AutoCloseable {
     }
 
     public synchronized void start() {
+        reloadProperties();
         final Collection<URL> paths;
         try {
             paths = createClasspath();
