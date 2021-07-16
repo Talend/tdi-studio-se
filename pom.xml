@@ -32,33 +32,6 @@
 		</repository>
 	</repositories>
 	<modules>
-		<module>i18n/plugins/org.talend.designer.abstractmap.nl</module>
-		<module>i18n/plugins/org.talend.designer.alfrescooutput.nl</module>
-		<module>i18n/plugins/org.talend.designer.business.diagram.nl</module>
-		<module>i18n/plugins/org.talend.designer.codegen.nl</module>
-		<module>i18n/plugins/org.talend.designer.components.exchange.nl</module>
-		<module>i18n/plugins/org.talend.designer.core.nl</module>
-		<module>i18n/plugins/org.talend.designer.dbmap.nl</module>
-		<module>i18n/plugins/org.talend.designer.documentation.nl</module>
-		<module>i18n/plugins/org.talend.designer.fileoutputxml.nl</module>
-		<module>i18n/plugins/org.talend.designer.gefabstractmap.nl</module>
-		<module>i18n/plugins/org.talend.designer.mapper.nl</module>
-		<module>i18n/plugins/org.talend.designer.maven.job.nl</module>
-		<module>i18n/plugins/org.talend.designer.rowgenerator.nl</module>
-		<module>i18n/plugins/org.talend.designer.runprocess.nl</module>
-		<module>i18n/plugins/org.talend.designer.scd.nl</module>
-		<module>i18n/plugins/org.talend.designer.webservice.nl</module>
-		<module>i18n/plugins/org.talend.designer.xmlmap.nl</module>
-		<module>i18n/plugins/org.talend.expressionbuilder.nl</module>
-		<module>i18n/plugins/org.talend.presentation.onboarding.resource.nl</module>
-		<module>i18n/plugins/org.talend.presentation.onboarding.resource.tos.nl</module>
-		<module>i18n/plugins/org.talend.repository.ftp.nl</module>
-		<module>i18n/plugins/org.talend.repository.json.nl</module>
-		<module>i18n/plugins/org.talend.repository.nl</module>
-		<module>i18n/plugins/org.talend.repository.view.di.nl</module>
-		<module>i18n/plugins/org.talend.sbi.engines.client.nl</module>
-		<module>i18n/plugins/org.talend.spagic.engines.client.nl</module>
-		<module>i18n/plugins/org.talend.sqlbuilder.nl</module>
 		<module>main/features/org.talend.designer.feature</module>
 		<module>main/features/org.talend.gmf.feature</module>
 		<module>main/features/org.talend.designer.business.feature</module>

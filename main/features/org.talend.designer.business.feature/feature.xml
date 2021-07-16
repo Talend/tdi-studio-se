@@ -20,5 +20,4 @@
     <import feature="org.eclipse.gmf.runtime.notation" version="0.0.0" match="greaterOrEqual"/>
   </requires>
   <plugin id="org.talend.designer.business.diagram" download-size="0" install-size="0" version="0.0.0" unpack="false"/>
-  <plugin id="org.talend.designer.business.diagram.nl" download-size="0" install-size="0" version="0.0.0" fragment="true" unpack="false"/>
 </feature>

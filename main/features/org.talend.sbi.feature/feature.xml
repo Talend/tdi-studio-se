@@ -8,5 +8,4 @@
     <discovery label="Talend web site" url="http://www.talend.com"/> 
   </url>  
   <plugin id="org.talend.sbi.engines.client" download-size="0" install-size="0" version="0.0.0"/>
-  <plugin id="org.talend.sbi.engines.client.nl" download-size="0" install-size="0" version="0.0.0" fragment="true" unpack="false"/>
 </feature>

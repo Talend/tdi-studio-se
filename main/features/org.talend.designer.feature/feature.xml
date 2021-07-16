@@ -19,21 +19,14 @@
     <import plugin="org.apache.axis" version="0.0.0" match="greaterOrEqual"/>
   </requires>  
   <plugin id="org.talend.designer.codegen" download-size="0" install-size="0" version="0.0.0"/>
-  <plugin id="org.talend.designer.codegen.nl" download-size="0" install-size="0" version="0.0.0" fragment="true" unpack="false"/>
   <plugin id="org.talend.designer.core" download-size="0" install-size="0" version="0.0.0" unpack="false"/>
-  <plugin id="org.talend.designer.core.nl" download-size="0" install-size="0" version="0.0.0" fragment="true" unpack="false"/>
-  <plugin download-size="0" install-size="0" version="0.0.0" unpack="false" id="org.talend.designer.dbmap.nl"/>
   <plugin id="org.talend.designer.maven" download-size="0" install-size="0" version="0.0.0" unpack="false"/>
   <plugin download-size="0" install-size="0" version="0.0.0" unpack="false" id="org.talend.designer.maven.job"/>
-  <plugin download-size="0" install-size="0" version="0.0.0" unpack="false" id="org.talend.designer.maven.job.nl"/>
   <plugin id="org.talend.designer.maven.ui" download-size="0" install-size="0" version="0.0.0" unpack="false"/>
-  <plugin id="org.talend.designer.maven.ui.nl" download-size="0" install-size="0" version="0.0.0" fragment="true"/>
   <plugin id="org.talend.designer.runprocess" download-size="0" install-size="0" version="0.0.0" unpack="false"/>
-  <plugin id="org.talend.designer.runprocess.nl" download-size="0" install-size="0" version="0.0.0" fragment="true" unpack="false"/>
   <plugin id="org.talend.designer.runtime.visualization" download-size="0" install-size="0" version="0.0.0" unpack="false"/>
   <plugin id="org.talend.designer.runtime.visualization.tools" download-size="0" install-size="0" version="0.0.0" unpack="false"/>
   <plugin id="org.talend.libraries.mozilla" download-size="0" install-size="0" version="0.0.0"/>
   <plugin id="org.talend.libraries.sqlbuilder" download-size="0" install-size="0" version="0.0.0" unpack="false"/>
   <plugin id="org.talend.sqlbuilder" download-size="0" install-size="0" version="0.0.0" unpack="false"/>
-  <plugin id="org.talend.sqlbuilder.nl" download-size="0" install-size="0" version="0.0.0" fragment="true" unpack="false"/>
 </feature>
