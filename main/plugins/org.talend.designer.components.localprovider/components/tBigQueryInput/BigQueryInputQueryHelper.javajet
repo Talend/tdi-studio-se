@@ -139,10 +139,12 @@ class BigQueryUtil_<%=cid%> {
 		<%
 		if(isLog4jEnabled){
 		%>
-			log.info("<%=cid%> - Wait for query execution");
+            log.info("<%=cid%> - Wait for query execution- jobId: " + insert.getJobReference().getJobId());
 		<%
 		}
 		%>
+        globalMap.put("<%=cid%>_JOBID",insert.getJobReference().getJobId());
+
 		// wait for query execution
 		while (true) {
       <% if(authMode.equals("TOKEN") && !ElementParameterParser.canEncrypt(node, "__ACCESS_TOKEN__")) { %>
@@ -190,15 +192,14 @@ class BigQueryUtil_<%=cid%> {
 					}
 					%>
 					}// else job successful
-					break;
-				}
+                    globalMap.put("<%=cid%>_STATISTICS", pollJob.getStatistics().toString() );
+                    return pollJob;
+                }
 				// Pause execution for one second before polling job status again, to
 				// reduce unnecessary calls to the BigQUery API and lower overall
 				// application bandwidth.
 				Thread.sleep(1000);
 			}
-
-			return insert;
 		}
 		
 		private void tryDeleteTokenPropertiesFile() {
@@ -238,4 +239,29 @@ class BigQueryUtil_<%=cid%> {
 				}
 			}
 		}
-	}
+
+    public java.util.ArrayList<<%=basePackage%>com.google.api.services.bigquery.model.Job> listChildJobs(String parentJobId) throws Exception {
+        java.util.ArrayList<<%=basePackage%>com.google.api.services.bigquery.model.Job> jobList = new java.util.ArrayList<>();
+        <%=basePackage%>com.google.api.services.bigquery.model.JobList jobs = bigqueryclient.jobs().list(projectId).setParentJobId(parentJobId).execute();
+        java.util.ArrayList<String> statistics_<%=cid %> = new java.util.ArrayList<>();
+        for(<%=basePackage%>com.google.api.services.bigquery.model.JobList.Jobs childJob : jobs.getJobs()) {
+            <%=basePackage%>com.google.api.services.bigquery.model.Job job =
+            <%
+                if("".equals(basePackage)) {
+            %>
+            bigqueryclient.jobs().get(projectId, childJob.getJobReference().getJobId()).set("location", childJob.getJobReference().getLocation()).execute();
+            <%
+                } else {
+            %>
+            bigqueryclient.jobs().get(projectId, childJob.getJobReference().getJobId()).setLocation(childJob.getJobReference().getLocation()).execute();
+            <%
+                }
+            %>
+            jobList.add(job);
+            statistics_<%=cid %>.add(job.getStatistics().toString());
+        }
+        java.util.Collections.reverse(jobList);
+        globalMap.put("<%=cid%>_STATISTICS_CHILD", statistics_<%=cid %>.stream().collect(java.util.stream.Collectors.joining(",", "{\"statistics\": [", "]}")));
+        return jobList;
+    }
+}

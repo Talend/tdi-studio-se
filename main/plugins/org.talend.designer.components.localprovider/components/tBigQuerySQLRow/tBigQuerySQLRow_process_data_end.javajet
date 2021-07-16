@@ -13,6 +13,7 @@ imports="
     CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
     INode node = (INode)codeGenArgument.getArgument();
     String cid = node.getUniqueName();
+    boolean isLog4jEnabled = ("true").equals(ElementParameterParser.getValue(node.getProcess(), "__LOG4J_ACTIVATE__"));
     String authMode = ElementParameterParser.getValue(node,"__AUTH_MODE__");
     List< ? extends IConnection> conns = node.getOutgoingSortedConnections();
     if (conns != null){
@@ -23,16 +24,18 @@ imports="
                 if (authMode.equals("OAUTH") || authMode.equals("TOKEN")) {
                 %>
                     }
-                    pageToken_<%=cid%> = dataList_<%=cid %>.getPageToken();
+                    pageToken_<%=cid%> = queryResultsResponse_<%=cid %>.getPageToken();
                     if (null == pageToken_<%=cid%>) {
                         break;
                     }
                 }
-                bigQueryUtil_<%=cid%>.cleanup();
+            }
                 <%
                 } else if (authMode.equals("SERVICEACCOUNT")) {
                 %>
+                    }
                 }
+
                 <%
                 } else {
                     throw new IllegalArgumentException("authentication mode should be either \"SERVICEACCOUNT\" or \"OAUTH\"or \"TOKEN\", but it is " + authMode);
@@ -40,5 +43,39 @@ imports="
                 log4jFileUtil.retrievedDataNumberInfo(node);
             }
         }
+    }
+                if (authMode.equals("SERVICEACCOUNT")) {
+                    %>
+                            if (job_<%=cid%>.getStatistics().getNumChildJobs() != null) {
+                                globalMap.put("<%=cid%>_STATISTICS_CHILD", childJobs_<%=cid%>.stream()
+                                    .map(com.google.cloud.bigquery.Job::getStatistics)
+                                    .map(gsonObject_<%=cid%>::toJson)
+                                    .collect(java.util.stream.Collectors.joining(",", "{\"statistics\": [", "]}")));
+                            }
+                        }
+                    } catch (Exception e_<%=cid%>) {
+                        String message_<%=cid%> = e_<%=cid%>.getMessage();
+                        <%
+                        log4jFileUtil.logErrorMessage();
+                        %>
+                        globalMap.put("<%=cid%>_ERROR_MESSAGE", message_<%=cid%>);
+                        throw e_<%=cid%>;
+                    }
+                    <%
+                } else {
+            // Else job has finished successfully with the results. Finish }.
+        %>
+            }
+        } catch (Exception e_<%=cid%>) {
+            String message_<%=cid%> = e_<%=cid%>.getMessage();
+            <%
+            log4jFileUtil.logErrorMessage();
+            %>
+            globalMap.put("<%=cid%>_ERROR_MESSAGE", message_<%=cid%>);
+            throw e_<%=cid%>;
+        } finally {
+            bigQueryUtil_<%=cid%>.cleanup();
+        }
+    <%
     }
     %>

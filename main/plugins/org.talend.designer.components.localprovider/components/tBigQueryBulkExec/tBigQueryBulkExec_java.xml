@@ -313,7 +313,7 @@
     <IMPORT NAME="google-cloud-storage-1.104.0" MODULE="google-cloud-storage-1.104.0.jar" MVN="mvn:com.google.cloud/google-cloud-storage/1.104.0" REQUIRED_IF="(AUTH_TYPE == 'GS_SERVICE_ACCOUNT') OR (AUTH_TYPE == 'TOKEN')" />
       <!-- Transitive dependencies of google-cloud-storage -->
       <IMPORT NAME="google-api-services-storage-v1-rev20201112-1.31.0" MODULE="google-api-services-storage-v1-rev20201112-1.31.0.jar" MVN="mvn:com.google.apis/google-api-services-storage/v1-rev20201112-1.31.0" REQUIRED_IF="(AUTH_TYPE == 'GS_SERVICE_ACCOUNT') OR (AUTH_TYPE == 'TOKEN')" />
-      <IMPORT NAME="gson-2.8.6" MODULE="gson-2.8.6.jar" MVN="mvn:com.google.code.gson/gson/2.8.6" REQUIRED_IF="(AUTH_TYPE == 'GS_SERVICE_ACCOUNT') OR (AUTH_TYPE == 'TOKEN')" />
+      <IMPORT NAME="gson-2.8.6" MODULE="gson-2.8.6.jar" MVN="mvn:com.google.code.gson/gson/2.8.6" REQUIRED="true" />
       <IMPORT NAME="javax.annotation-api" MODULE="javax.annotation-api-1.3.jar" MVN="mvn:javax.annotation/javax.annotation-api/1.3" REQUIRED_IF="(AUTH_TYPE == 'GS_SERVICE_ACCOUNT') OR (AUTH_TYPE == 'TOKEN')" />
       <IMPORT NAME="protobuf-java-2.5.0" MODULE="protobuf-java-2.5.0.jar" MVN="mvn:com.google.protobuf/protobuf-java/2.5.0" REQUIRED_IF="(AUTH_TYPE == 'GS_SERVICE_ACCOUNT') OR (AUTH_TYPE == 'TOKEN')" />
       <IMPORT NAME="error_prone_annotation-2.1.3" MODULE="error_prone_annotation-2.1.3.jar" MVN="mvn:com.google.errorprone/error_prone_annotations/2.1.3" REQUIRED_IF="(AUTH_TYPE == 'GS_SERVICE_ACCOUNT') OR (AUTH_TYPE == 'TOKEN')" />
@@ -327,5 +327,7 @@
      </IMPORTS>
    </CODEGENERATION>
    <RETURNS>
+     <RETURN NAME="JOBID" TYPE="id_String" AVAILABILITY="AFTER"/>
+     <RETURN NAME="STATISTICS" TYPE="id_String" AVAILABILITY="AFTER"/>
    </RETURNS>
 </COMPONENT>
