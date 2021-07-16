@@ -114,7 +114,11 @@
     </PARAMETER>
   </ADVANCED_PARAMETERS>
 
-  <CODEGENERATION/>
+  <CODEGENERATION>
+    <IMPORTS>
+      <IMPORT NAME="talend-proxy" MODULE="talend-proxy-1.0.2.jar" MVN="mvn:org.talend.components.lib/talend-proxy/1.0.2" REQUIRED="true" />
+    </IMPORTS>
+  </CODEGENERATION>
 
   <RETURNS>
 	<RETURN AVAILABILITY="AFTER" NAME="CONNECTED" TYPE="id_Boolean" />

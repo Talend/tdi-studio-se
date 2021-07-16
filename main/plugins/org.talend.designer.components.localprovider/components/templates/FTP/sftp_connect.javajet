@@ -36,11 +36,14 @@ do {
     session_<%=cid%>.setUserInfo(defaultUserInfo_<%=cid%>); 
     <%if (!useProxy) {%>
         if(("true").equals(System.getProperty("http.proxySet"))) {
-            com.jcraft.jsch.ProxyHTTP proxy_<%=cid%> = new com.jcraft.jsch.ProxyHTTP(System.getProperty("http.proxyHost"),Integer.parseInt(System.getProperty("http.proxyPort")));
-            if(!"".equals(System.getProperty("http.proxyUser"))){
-                proxy_<%=cid%>.setUserPasswd(System.getProperty("http.proxyUser"),System.getProperty("http.proxyPassword"));
+            <%@ include file="@{org.talend.designer.components.localprovider}/components/templates/FTP/checkIfProxyHostExcluded.javajet"%>
+            if (!isHostIgnored_<%=cid %>) {
+                com.jcraft.jsch.ProxyHTTP proxy_<%=cid%> = new com.jcraft.jsch.ProxyHTTP(System.getProperty("http.proxyHost"),Integer.parseInt(System.getProperty("http.proxyPort")));
+                if(!"".equals(System.getProperty("http.proxyUser"))){
+                    proxy_<%=cid%>.setUserPasswd(System.getProperty("http.proxyUser"),System.getProperty("http.proxyPassword"));
+                }
+                session_<%=cid%>.setProxy(proxy_<%=cid%>);
             }
-            session_<%=cid%>.setProxy(proxy_<%=cid%>);
         } else if ("local".equals(System.getProperty("http.proxySet"))) {
             String uriString = <%=host %> + ":" + <%=port%>;
             java.net.Proxy proxyToUse = org.talend.proxy.TalendProxySelector.getInstance().getProxyForUriString(uriString);
