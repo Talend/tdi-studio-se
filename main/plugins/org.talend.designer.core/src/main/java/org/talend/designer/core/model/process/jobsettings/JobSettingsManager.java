@@ -1059,6 +1059,8 @@ public class JobSettingsManager {
                  *******************************************/
                 tContextLoadNode.getElementParameter(paramName).setListItemsDisplayCodeName(param.getListItemsDisplayCodeName());
                 tContextLoadNode.getElementParameter(paramName).setListItemsDisplayName(param.getListItemsDisplayName());
+                tContextLoadNode.getElementParameter(paramName).setListItemsValue(param.getListItemsValue());
+                tContextLoadNode.getElementParameter(paramName).setListItemsShowIf(param.getListItemsNotShowIf());
             }
 
             paramName = JobSettingsConstants.getExtraParameterName(EParameterName.DRIVER_CLASS.getName());
