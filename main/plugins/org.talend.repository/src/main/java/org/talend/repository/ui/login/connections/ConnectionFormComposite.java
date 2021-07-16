@@ -113,6 +113,8 @@ public class ConnectionFormComposite extends Composite {
 
     private String password;
 
+    private Button checkStoreCredentialsButton;
+
     private Text workSpaceText;
 
     private Button workSpaceButton;
@@ -193,7 +195,7 @@ public class ConnectionFormComposite extends Composite {
         userText = toolkit.createText(formBody, "", SWT.BORDER); //$NON-NLS-1$
         formDefaultFactory.copy().grab(true, false).span(2, 1).applyTo(userText);
 
-        passwordLabel = toolkit.createLabel(formBody, Messages.getString("connections.form.field.password")); //$NON-NLS-1$
+        passwordLabel = toolkit.createLabel(formBody, Messages.getString("connections.form.field.password.label")); //$NON-NLS-1$
         formDefaultFactory.copy().applyTo(passwordLabel);
 
         tpPlaceHolder = new Label(formBody, SWT.NONE);
@@ -205,7 +207,7 @@ public class ConnectionFormComposite extends Composite {
         formDefaultFactory.copy().grab(true, false).span(2, 1).applyTo(tpCompo);
 
         // Password
-        passwordButton = toolkit.createButton(tpCompo, Messages.getString("connections.form.field.password"), SWT.RADIO); //$NON-NLS-1$
+        passwordButton = toolkit.createButton(tpCompo, Messages.getString("connections.form.field.password.label"), SWT.RADIO); //$NON-NLS-1$
         formDefaultFactory.copy().applyTo(passwordButton);
 
         passwordText = toolkit.createText(tpCompo, "", SWT.PASSWORD | SWT.BORDER); //$NON-NLS-1$
@@ -325,6 +327,18 @@ public class ConnectionFormComposite extends Composite {
         deleteButtonGridData.horizontalSpan = 2;
         deleteProjectsButton.setLayoutData(deleteButtonGridData);
 
+        Label seperatorSC = new Label(formBody, SWT.NONE);
+        seperatorSC.setVisible(false);
+        GridData seperatorSCGridData = new GridData();
+        seperatorSCGridData.horizontalSpan = 3;
+        seperatorSCGridData.heightHint = 0;
+        seperatorSC.setLayoutData(seperatorSCGridData);
+        Label placeHolderSC = new Label(formBody, SWT.NONE);
+        checkStoreCredentialsButton = toolkit.createButton(formBody,
+                Messages.getString("connections.form.field.checkStoreCredentials"), //$NON-NLS-1$
+                SWT.CHECK);
+        formDefaultFactory.copy().applyTo(checkStoreCredentialsButton);
+
         addListeners();
         addTokenBrowseListener();
         addWorkSpaceListener();
@@ -354,7 +368,7 @@ public class ConnectionFormComposite extends Composite {
         if (dialog.getOKButton() != null) {
             dialog.getOKButton().setEnabled(true);
         }
-        IBrandingService brandingService = (IBrandingService) GlobalServiceRegister.getDefault().getService(
+        IBrandingService brandingService = GlobalServiceRegister.getDefault().getService(
                 IBrandingService.class);
         boolean isOnlyRemoteConnection = brandingService.getBrandingConfiguration().isOnlyRemoteConnection();
         boolean usesMailCheck = brandingService.getBrandingConfiguration().isUseMailLoginCheck();
@@ -388,6 +402,8 @@ public class ConnectionFormComposite extends Composite {
                 errorMsg = loginConncetion.checkConnectionValidation(getTextName(), getDesc(), getUser(), getPassword(),
                         getWorkspace(), connection.getDynamicFields().get(RepositoryConstants.REPOSITORY_URL));
             }
+        } else if (valid && checkStoreCredentialsButton.getSelection() && StringUtils.isBlank(passwordText.getText())) {
+            errorMsg = Messages.getString("ConnectionFormComposite.required.password"); //$NON-NLS-1$
         } else if (valid && getTextName() != null) {
             List<ConnectionBean> connectionBeanList = dialog.getConnections();
             if (connectionBeanList != null && connectionBeanList.size() > 1) {
@@ -473,18 +489,23 @@ public class ConnectionFormComposite extends Composite {
         // Check enable field or not
         boolean enablePasswordField = false;
         boolean enableTokenField = false;
+        boolean enableCheckStoreCredentialsField = false;
         if (connection != null) {
             IRepositoryFactory factory = RepositoryFactoryProvider.getRepositoriyById(connection.getRepositoryId());
             if (factory != null && factory.isAuthenticationNeeded()) {
                 enablePasswordField = true;
                 if (LoginHelper.isCloudConnection(connection)) {
                     enableTokenField = true;
+                } else {
+                    enableCheckStoreCredentialsField = true;
                 }
             }
         } else if (getRepository() != null && LoginHelper.isRemotesRepository(getRepository().getId())) {
             enablePasswordField = true;
             if (LoginHelper.isCloudRepository(getRepository().getId())) {
                 enableTokenField = true;
+            } else {
+                enableCheckStoreCredentialsField = true;
             }
         }
 
@@ -523,6 +544,9 @@ public class ConnectionFormComposite extends Composite {
             hideControl(tokenCompo, !enableTokenField, false);
             tokenText.getParent().getParent().layout();
             tokenText.getParent().getParent().getParent().layout();
+        }
+        if (checkStoreCredentialsButton != null && !checkStoreCredentialsButton.isDisposed()) {
+            hideControl(checkStoreCredentialsButton, !enableCheckStoreCredentialsField, false);
         }
 
         hideControl(tpPlaceHolder, !enableTokenField, false);
@@ -665,6 +689,28 @@ public class ConnectionFormComposite extends Composite {
         }
     };
 
+    SelectionListener checkStoreCredentialsClickListener = new SelectionListener() {
+
+        @Override
+        public void widgetSelected(SelectionEvent e) {
+            boolean isStoreCredentials = checkStoreCredentialsButton.getSelection();
+            if (isStoreCredentials) {
+                connection.setPassword(""); //$NON-NLS-1$
+            } else {
+                connection.setPassword(passwordText.getText());
+            }
+            // TODO
+            connection.setCredentials(passwordText.getText());
+            connection.setStoreCredentials(isStoreCredentials);
+            validateFields();
+        }
+
+        @Override
+        public void widgetDefaultSelected(SelectionEvent e) {
+            // nothing need to do
+        }
+    };
+
     private void addListeners() {
         repositoryCombo.addPostSelectionChangedListener(repositoryListener);
         nameText.addModifyListener(standardTextListener);
@@ -688,6 +734,7 @@ public class ConnectionFormComposite extends Composite {
         passwordButton.addSelectionListener(passwordClickListener);
         tokenButton.addSelectionListener(tokenClickListener);
         deleteProjectsButton.addSelectionListener(deleteProjectClickListener);
+        checkStoreCredentialsButton.addSelectionListener(checkStoreCredentialsClickListener);
     }
 
     public void changeUserLabel() {
@@ -776,6 +823,7 @@ public class ConnectionFormComposite extends Composite {
         passwordButton.removeSelectionListener(passwordClickListener);
         tokenButton.removeSelectionListener(tokenClickListener);
         deleteProjectsButton.removeSelectionListener(deleteProjectClickListener);
+        checkStoreCredentialsButton.removeSelectionListener(checkStoreCredentialsClickListener);
     }
 
     private void fillBean(boolean cleanDynamicValue, boolean enableHidePassword) {
@@ -840,7 +888,14 @@ public class ConnectionFormComposite extends Composite {
                         password = passwordText.getText();
                     }
                 }
-                connection.setPassword(password);
+                boolean isStoreCredentials = checkStoreCredentialsButton.getSelection();
+                if (isStoreCredentials) {
+                    connection.setPassword(""); //$NON-NLS-1$
+                } else {
+                    connection.setPassword(password);
+                }
+                // TODO
+                connection.setCredentials(password);
                 connection.setToken(tokenButton.getSelection());
             }
             connection.setWorkSpace(workSpaceText.getText());
@@ -946,6 +1001,10 @@ public class ConnectionFormComposite extends Composite {
                 passwordText.setText(passwordStr);
             }
             password = connection.getPassword() == null ? "" : connection.getPassword(); // $NON-NLS-1$
+            checkStoreCredentialsButton.setSelection(connection.isStoreCredentials());
+            if (connection.isStoreCredentials()) {
+                passwordText.setText(""); //$NON-NLS-1$
+            }
             workSpaceText
                     .setText(("".equals(connection.getWorkSpace()) || connection.getWorkSpace() == null) ? getRecentWorkSpace() : connection.getWorkSpace());//$NON-NLS-1$
             addListeners();
